@@ -45,7 +45,7 @@ const Navigation = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search artists..."
+                placeholder="Search"
                 className="pl-9 w-64 bg-background/50 border-accent/20 focus:border-accent"
               />
             </div>
