@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Music2, Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn } from "lucide-react";
+import { Music2, Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search } from "lucide-react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const Navigation = () => {
   return (
@@ -37,6 +38,17 @@ const Navigation = () => {
               <Mail className="h-4 w-4" />
               Contact
             </Link>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search artists..."
+                className="pl-9 w-64 bg-background/50 border-accent/20 focus:border-accent"
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
