@@ -5,12 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Calendar } from "@/components/ui/calendar";
 import { 
   User, 
   MapPin, 
   Star, 
   Music, 
-  Calendar, 
+  Calendar as CalendarIcon, 
   Award,
   Phone,
   Mail,
@@ -19,6 +20,7 @@ import {
   Youtube,
   ArrowLeft
 } from "lucide-react";
+import { useState } from "react";
 
 // Mock data - will be replaced with real data from backend
 const mockArtists: Record<string, any> = {
@@ -40,7 +42,19 @@ const mockArtists: Record<string, any> = {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
       youtube: "https://youtube.com/mariap"
-    }
+    },
+    busyDates: [
+      new Date(2025, 10, 15),
+      new Date(2025, 10, 16),
+      new Date(2025, 10, 22),
+      new Date(2025, 10, 23),
+      new Date(2025, 10, 30),
+      new Date(2025, 11, 5),
+      new Date(2025, 11, 12),
+      new Date(2025, 11, 24),
+      new Date(2025, 11, 25),
+      new Date(2025, 11, 31),
+    ]
   },
   "2": {
     id: "2",
@@ -60,7 +74,15 @@ const mockArtists: Record<string, any> = {
       instagram: "https://instagram.com/johnnyg",
       facebook: "https://facebook.com/johnnyg",
       youtube: "https://youtube.com/johnnyg"
-    }
+    },
+    busyDates: [
+      new Date(2025, 10, 18),
+      new Date(2025, 10, 25),
+      new Date(2025, 11, 2),
+      new Date(2025, 11, 10),
+      new Date(2025, 11, 20),
+      new Date(2025, 11, 28),
+    ]
   },
   "3": {
     id: "3",
@@ -80,13 +102,31 @@ const mockArtists: Record<string, any> = {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
       youtube: "https://youtube.com/anam"
-    }
+    },
+    busyDates: [
+      new Date(2025, 10, 20),
+      new Date(2025, 10, 27),
+      new Date(2025, 11, 4),
+      new Date(2025, 11, 15),
+      new Date(2025, 11, 22),
+    ]
   }
 };
 
 const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
   const artist = id ? mockArtists[id] : null;
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+
+  const isBusyDate = (date: Date) => {
+    if (!artist?.busyDates) return false;
+    return artist.busyDates.some(
+      (busyDate: Date) =>
+        busyDate.getDate() === date.getDate() &&
+        busyDate.getMonth() === date.getMonth() &&
+        busyDate.getFullYear() === date.getFullYear()
+    );
+  };
 
   if (!artist) {
     return (
@@ -204,10 +244,10 @@ const ArtistProfile = () => {
                   </div>
                 </div>
 
-                {/* Experience */}
+              {/* Experience */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-accent" />
+                    <CalendarIcon className="h-5 w-5 text-accent" />
                     Experience
                   </h3>
                   <div className="space-y-2">
@@ -218,6 +258,67 @@ const ArtistProfile = () => {
                       <Award className="h-4 w-4 text-accent" />
                       <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
                     </p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              {/* Availability Calendar */}
+              <div className="mb-8">
+                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5 text-accent" />
+                  Availability Calendar
+                </h3>
+                <div className="flex flex-col lg:flex-row gap-6">
+                  <div className="flex-1">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-lg border border-border shadow-sm"
+                      modifiers={{
+                        busy: artist.busyDates || []
+                      }}
+                      modifiersClassNames={{
+                        busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70"
+                      }}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                    />
+                  </div>
+                  <div className="lg:w-64 space-y-4">
+                    <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                      <h4 className="font-semibold text-foreground">Legend</h4>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                        <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-accent"></div>
+                        <span className="text-sm text-muted-foreground">Available</span>
+                      </div>
+                    </div>
+                    {selectedDate && (
+                      <div className="p-4 rounded-lg border border-border bg-card">
+                        <h4 className="font-semibold text-foreground mb-2">Selected Date</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {selectedDate.toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                        <Badge 
+                          className={isBusyDate(selectedDate) 
+                            ? "bg-destructive text-destructive-foreground" 
+                            : "bg-accent text-accent-foreground"
+                          }
+                        >
+                          {isBusyDate(selectedDate) ? "Busy" : "Available"}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
