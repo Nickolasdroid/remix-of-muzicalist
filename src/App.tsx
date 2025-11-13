@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Feed from "./pages/Feed";
 import Leaderboard from "./pages/Leaderboard";
 import Register from "./pages/Register";
 import Categories from "./pages/Categories";
@@ -25,6 +26,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/feed" element={<Feed />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/counties" element={<Counties />} />
