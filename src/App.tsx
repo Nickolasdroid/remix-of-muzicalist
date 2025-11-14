@@ -8,6 +8,7 @@ import Feed from "./pages/Feed";
 import Leaderboard from "./pages/Leaderboard";
 import Register from "./pages/Register";
 import Categories from "./pages/Categories";
+import CategoryArtists from "./pages/CategoryArtists";
 import Counties from "./pages/Counties";
 import CountyArtists from "./pages/CountyArtists";
 import Announcements from "./pages/Announcements";
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/categories" element={<Categories />} />
+          <Route path="/categories/:category" element={<CategoryArtists />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/counties" element={<Counties />} />
           <Route path="/counties/:county" element={<CountyArtists />} />
