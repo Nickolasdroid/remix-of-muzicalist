@@ -9,6 +9,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Register from "./pages/Register";
 import Categories from "./pages/Categories";
 import Counties from "./pages/Counties";
+import CountyArtists from "./pages/CountyArtists";
 import Announcements from "./pages/Announcements";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/categories" element={<Categories />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/counties" element={<Counties />} />
+          <Route path="/counties/:county" element={<CountyArtists />} />
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
