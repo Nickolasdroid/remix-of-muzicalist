@@ -78,16 +78,28 @@ const CountyArtists = () => {
         <div className="space-y-16 max-w-7xl mx-auto">
           {categories.map((category) => (
             <div key={category.title} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <CategoryCard {...category} />
+              <div className="text-center">
+                <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase inline-block border-b-2 border-accent pb-2">
+                  {category.title} ({category.count})
+                </h2>
               </div>
               
               {category.artists.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.artists.map((artist) => (
-                    <ArtistCard key={artist.id} {...artist} />
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {category.artists.map((artist) => (
+                      <ArtistCard key={artist.id} {...artist} />
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Link to={category.href}>
+                      <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-6 text-lg font-semibold rounded-full">
+                        Vezi lista
+                      </Button>
+                    </Link>
+                  </div>
+                </>
               )}
             </div>
           ))}
