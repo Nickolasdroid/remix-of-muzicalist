@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Counties = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -48,14 +49,15 @@ const Counties = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
           {filteredCounties.map((county) => (
-            <Button
-              key={county}
-              variant="outline"
-              className="h-auto py-6 flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
-            >
-              <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
-              <span className="text-lg font-medium">{county}</span>
-            </Button>
+            <Link key={county} to={`/counties/${county}`}>
+              <Button
+                variant="outline"
+                className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
+              >
+                <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
+                <span className="text-lg font-medium">{county}</span>
+              </Button>
+            </Link>
           ))}
         </div>
 
