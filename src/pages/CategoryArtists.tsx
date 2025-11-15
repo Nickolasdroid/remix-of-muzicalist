@@ -1,8 +1,7 @@
 import Navigation from "@/components/Navigation";
-import ArtistCard from "@/components/ArtistCard";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Filter } from "lucide-react";
+import { ArrowLeft, User, Filter } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
   Sheet,
@@ -30,15 +29,15 @@ const CategoryArtists = () => {
 
   // Mock data - in real app, this would be fetched based on category
   const artists = [
-    { id: "1", name: "Maria Popescu", stageName: "Maria P.", specialization: category || "Artist", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.8 },
-    { id: "2", name: "Ion Ionescu", stageName: "Ionuț", specialization: category || "Artist", imageUrl: undefined, county: "Cluj", experience: "intermediate", rating: 4.5 },
-    { id: "3", name: "Alex Gheorghe", stageName: "Alex G.", specialization: category || "Artist", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.2 },
-    { id: "4", name: "Mihai Dumitrescu", stageName: "DJ Mike", specialization: category || "Artist", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.9 },
-    { id: "5", name: "Andrei Popa", stageName: "DJ Andy", specialization: category || "Artist", imageUrl: undefined, county: "Iași", experience: "intermediate", rating: 4.6 },
-    { id: "6", name: "Elena Vasilescu", stageName: "Elena V.", specialization: category || "Artist", imageUrl: undefined, county: "Cluj", experience: "senior", rating: 4.7 },
-    { id: "7", name: "George Marinescu", stageName: "George M.", specialization: category || "Artist", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.3 },
-    { id: "8", name: "Diana Constantinescu", stageName: "Diana C.", specialization: category || "Artist", imageUrl: undefined, county: "Bucharest", experience: "intermediate", rating: 4.4 },
-    { id: "9", name: "Radu Stoica", stageName: "Radu S.", specialization: category || "Artist", imageUrl: undefined, county: "Iași", experience: "senior", rating: 4.8 },
+    { id: "1", name: "Maria Popescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.8 },
+    { id: "2", name: "Ion Ionescu", imageUrl: undefined, county: "Cluj", experience: "intermediate", rating: 4.5 },
+    { id: "3", name: "Alex Gheorghe", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.2 },
+    { id: "4", name: "Mihai Dumitrescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.9 },
+    { id: "5", name: "Andrei Popa", imageUrl: undefined, county: "Iași", experience: "intermediate", rating: 4.6 },
+    { id: "6", name: "Elena Vasilescu", imageUrl: undefined, county: "Cluj", experience: "senior", rating: 4.7 },
+    { id: "7", name: "George Marinescu", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.3 },
+    { id: "8", name: "Diana Constantinescu", imageUrl: undefined, county: "Bucharest", experience: "intermediate", rating: 4.4 },
+    { id: "9", name: "Radu Stoica", imageUrl: undefined, county: "Iași", experience: "senior", rating: 4.8 },
   ];
 
   // Filter and sort artists
@@ -186,19 +185,34 @@ const CategoryArtists = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {filteredArtists.length > 0 ? (
             filteredArtists.map((artist) => (
-              <ArtistCard 
-                key={artist.id}
-                id={artist.id}
-                name={artist.name}
-                stageName={artist.stageName}
-                specialization={artist.specialization}
-                county={artist.county}
-                rating={artist.rating}
-                imageUrl={artist.imageUrl}
-              />
+            <Link 
+              key={artist.id} 
+              to={`/artist/${artist.id}`}
+              className="group"
+            >
+              <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-accent transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105">
+                {artist.imageUrl ? (
+                  <img 
+                    src={artist.imageUrl} 
+                    alt={artist.name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
+                    <User className="h-24 w-24 text-accent" />
+                  </div>
+                )}
+                
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-4">
+                  <h3 className="text-lg font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
+                    {artist.name}
+                  </h3>
+                </div>
+              </div>
+            </Link>
             ))
           ) : (
             <div className="col-span-full text-center py-16">
