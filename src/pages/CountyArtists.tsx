@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
-import CategoryCard from "@/components/CategoryCard";
-import ArtistCard from "@/components/ArtistCard";
-import { Music, Mic, Music2, Users, ArrowLeft } from "lucide-react";
+import SimpleArtistCard from "@/components/SimpleArtistCard";
+import { ArrowLeft } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -11,45 +10,47 @@ const CountyArtists = () => {
   // Mock data - in real app, this would be fetched based on county
   const categories = [
     {
-      icon: Mic,
-      title: "Soloists",
-      description: "Professional vocalists for any event",
+      title: "Singers",
+      displayTitle: "SINGERS",
       count: 12,
       href: `/counties/${county}/soloists`,
       artists: [
-        { id: "1", name: "Maria Popescu", stageName: "Maria P.", specialization: "Soloist", county: county || "" },
-        { id: "2", name: "Ion Ionescu", stageName: "Ionuț", specialization: "Soloist", county: county || "" },
+        { id: "1", stageName: "Maria P." },
+        { id: "2", stageName: "Ionuț" },
+        { id: "3", stageName: "Elena V." },
       ]
     },
     {
-      icon: Music,
       title: "Instrumentalists",
-      description: "Skilled musicians with various instruments",
+      displayTitle: "INSTRUMENTALISTS",
       count: 8,
       href: `/counties/${county}/instrumentalists`,
       artists: [
-        { id: "3", name: "Alex Gheorghe", stageName: "Alex G.", specialization: "Instrumentalist", county: county || "" },
+        { id: "4", stageName: "Alex G." },
+        { id: "5", stageName: "Victor M." },
+        { id: "6", stageName: "Diana S." },
       ]
     },
     {
-      icon: Music2,
       title: "DJs",
-      description: "Expert DJs for parties and events",
+      displayTitle: "DJS",
       count: 15,
       href: `/counties/${county}/djs`,
       artists: [
-        { id: "4", name: "Mihai Dumitrescu", stageName: "DJ Mike", specialization: "DJ", county: county || "" },
-        { id: "5", name: "Andrei Popa", stageName: "DJ Andy", specialization: "DJ", county: county || "" },
+        { id: "7", stageName: "DJ Mike" },
+        { id: "8", stageName: "DJ Andy" },
+        { id: "9", stageName: "DJ Alex" },
       ]
     },
     {
-      icon: Users,
       title: "Bands",
-      description: "Complete musical groups for your events",
+      displayTitle: "BANDS",
       count: 6,
       href: `/counties/${county}/bands`,
       artists: [
-        { id: "6", name: "The Rockers", stageName: "The Rockers", specialization: "Band", county: county || "" },
+        { id: "10", stageName: "The Rockers" },
+        { id: "11", stageName: "Night Vibes" },
+        { id: "12", stageName: "Echo Band" },
       ]
     },
   ];
@@ -80,27 +81,28 @@ const CountyArtists = () => {
             <div key={category.title} className="space-y-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase inline-block border-b-2 border-accent pb-2">
-                  {category.title} ({category.count})
+                  {category.displayTitle} ({category.count})
                 </h2>
               </div>
               
-              {category.artists.length > 0 && (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {category.artists.map((artist) => (
-                      <ArtistCard key={artist.id} {...artist} />
-                    ))}
-                  </div>
-                  
-                  <div className="flex justify-center">
-                    <Link to={category.href}>
-                      <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-6 text-lg font-semibold rounded-full">
-                        Vezi lista
-                      </Button>
-                    </Link>
-                  </div>
-                </>
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {category.artists.map((artist) => (
+                  <SimpleArtistCard 
+                    key={artist.id} 
+                    id={artist.id}
+                    name={artist.stageName}
+                    stageName={artist.stageName}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex justify-center">
+                <Link to={category.href}>
+                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-6 text-lg font-semibold rounded-full">
+                    Vezi lista
+                  </Button>
+                </Link>
+              </div>
             </div>
           ))}
         </div>
