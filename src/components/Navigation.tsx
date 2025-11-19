@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { Music2, Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import logo from "@/assets/logo.png";
 
 const Navigation = () => {
   return (
@@ -9,7 +10,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-2 group">
-            <Music2 className="h-8 w-8 text-accent transition-transform group-hover:scale-110" />
+            <img src={logo} alt="Muzicalist" className="h-12 w-12 transition-transform group-hover:scale-110" />
             <span className="text-2xl font-display font-bold text-accent">Muzicalist</span>
           </Link>
 
