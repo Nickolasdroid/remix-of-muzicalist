@@ -18,9 +18,12 @@ import {
   Instagram,
   Facebook,
   Youtube,
-  ArrowLeft
+  ArrowLeft,
+  Images,
+  Play
 } from "lucide-react";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 // Mock data - will be replaced with real data from backend
 const mockArtists: Record<string, any> = {
@@ -42,6 +45,21 @@ const mockArtists: Record<string, any> = {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
       youtube: "https://youtube.com/mariap"
+    },
+    gallery: {
+      images: [
+        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800",
+        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800",
+        "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800",
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+        "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800",
+        "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=800",
+        "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800"
+      ],
+      videos: [
+        "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "https://www.youtube.com/embed/9bZkp7q19f0"
+      ]
     },
     busyDates: [
       new Date(2025, 10, 15),
@@ -75,6 +93,21 @@ const mockArtists: Record<string, any> = {
       facebook: "https://facebook.com/johnnyg",
       youtube: "https://youtube.com/johnnyg"
     },
+    gallery: {
+      images: [
+        "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=800",
+        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800",
+        "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800",
+        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
+        "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800",
+        "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800",
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"
+      ],
+      videos: [
+        "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "https://www.youtube.com/embed/9bZkp7q19f0"
+      ]
+    },
     busyDates: [
       new Date(2025, 10, 18),
       new Date(2025, 10, 25),
@@ -102,6 +135,21 @@ const mockArtists: Record<string, any> = {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
       youtube: "https://youtube.com/anam"
+    },
+    gallery: {
+      images: [
+        "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800",
+        "https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=800",
+        "https://images.unsplash.com/photo-1519683109079-d5f539e1542f?w=800",
+        "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800",
+        "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800",
+        "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800",
+        "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800"
+      ],
+      videos: [
+        "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "https://www.youtube.com/embed/9bZkp7q19f0"
+      ]
     },
     busyDates: [
       new Date(2025, 10, 20),
@@ -320,6 +368,60 @@ const ArtistProfile = () => {
                       </div>
                     )}
                   </div>
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              {/* Gallery */}
+              <div className="mb-8">
+                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                  <Images className="h-5 w-5 text-accent" />
+                  Gallery
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {/* Images */}
+                  {artist.gallery.images.map((image: string, index: number) => (
+                    <Dialog key={`image-${index}`}>
+                      <DialogTrigger asChild>
+                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                          <img 
+                            src={image} 
+                            alt={`Gallery image ${index + 1}`}
+                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl">
+                        <img 
+                          src={image} 
+                          alt={`Gallery image ${index + 1}`}
+                          className="w-full h-auto rounded-lg"
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  ))}
+                  
+                  {/* Videos */}
+                  {artist.gallery.videos.map((video: string, index: number) => (
+                    <Dialog key={`video-${index}`}>
+                      <DialogTrigger asChild>
+                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
+                          <Play className="h-12 w-12 text-accent" />
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl">
+                        <div className="aspect-video">
+                          <iframe
+                            src={video}
+                            className="w-full h-full rounded-lg"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  ))}
                 </div>
               </div>
 
