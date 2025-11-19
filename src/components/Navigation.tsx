@@ -11,7 +11,6 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="Muzicalist" className="h-12 w-12 transition-transform group-hover:scale-110" />
-            <span className="text-2xl font-display font-bold text-accent">Muzicalist</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
