@@ -1,9 +1,18 @@
 import Navigation from "@/components/Navigation";
 import ArtistCard from "@/components/ArtistCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Trophy, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 const Leaderboard = () => {
+  const [selectedRegion, setSelectedRegion] = useState<string>("All Regions");
+  const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
+
+  const regions = ["All Regions", "Transylvania", "Banat", "Moldova", "Oltenia", "Muntenia"];
+  const counties = ["All Counties", "București", "Cluj", "Timiș", "Brașov", "Iași", "Constanța"];
+
   // Mock data for demonstration
   const mockArtists = {
     singers: [
@@ -44,6 +53,48 @@ const Leaderboard = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Discover the highest-rated musical talents on our platform
             </p>
+
+            <div className="flex gap-4 justify-center mt-8">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="min-w-[180px] justify-between">
+                    {selectedRegion}
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="min-w-[180px]">
+                  {regions.map((region) => (
+                    <DropdownMenuItem
+                      key={region}
+                      onClick={() => setSelectedRegion(region)}
+                      className="cursor-pointer"
+                    >
+                      {region}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="min-w-[180px] justify-between">
+                    {selectedCounty}
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="min-w-[180px]">
+                  {counties.map((county) => (
+                    <DropdownMenuItem
+                      key={county}
+                      onClick={() => setSelectedCounty(county)}
+                      className="cursor-pointer"
+                    >
+                      {county}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           <Tabs defaultValue="singers" className="w-full">
