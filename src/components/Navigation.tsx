@@ -50,7 +50,7 @@ const Navigation = () => {
               <Input
                 type="search"
                 placeholder="Search"
-                className="pl-9 w-64 bg-background/50 border-accent/20 focus:border-accent"
+                className="pl-9 w-40 bg-background/50 border-accent/20 focus:border-accent"
               />
             </div>
           </div>
