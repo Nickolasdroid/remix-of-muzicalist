@@ -139,7 +139,7 @@ const CountyArtists = () => {
                   <CarouselNext className="right-0" />
                 </Carousel>
               ) : (
-                <div className="space-y-3 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
                   {category.artists.map((artist) => (
                     <Link key={artist.id} to={`/artist/${artist.id}`}>
                       <div className="flex items-center gap-4 p-3 rounded-lg border border-accent/30 hover:border-accent hover:bg-accent/5 transition-all duration-300">
