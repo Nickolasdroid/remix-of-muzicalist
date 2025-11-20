@@ -11,6 +11,7 @@ interface ArtistCardProps {
   rating?: number;
   imageUrl?: string;
   rank?: number;
+  isPremium?: boolean;
 }
 
 const ArtistCard = ({ 
@@ -21,10 +22,14 @@ const ArtistCard = ({
   county, 
   rating = 0, 
   imageUrl,
-  rank 
+  rank,
+  isPremium = true
 }: ArtistCardProps) => {
+  const borderColor = isPremium ? "border-accent" : "border-burgundy";
+  const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
+  
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)]">
+    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
       <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10 flex items-start gap-6">
@@ -35,7 +40,7 @@ const ArtistCard = ({
         )}
         
         <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-accent/50 group-hover:border-accent transition-all duration-500 group-hover:scale-110">
+          <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110`}>
             {imageUrl ? (
               <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
             ) : (
@@ -60,7 +65,7 @@ const ArtistCard = ({
           <p className="text-muted-foreground text-sm mb-2">{name}</p>
           
           <div className="flex items-center gap-4 mb-4 text-sm">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/20 text-accent font-semibold">
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${isPremium ? "bg-accent/20 text-accent" : "bg-burgundy/20 text-burgundy"} font-semibold`}>
               {specialization}
             </span>
             <span className="flex items-center gap-1 text-muted-foreground">
@@ -73,7 +78,7 @@ const ArtistCard = ({
             <Button 
               variant="outline" 
               size="sm"
-              className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+              className={`${isPremium ? "border-accent text-accent hover:bg-accent hover:text-accent-foreground" : "border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"} transition-all duration-300`}
             >
               View Profile
             </Button>
