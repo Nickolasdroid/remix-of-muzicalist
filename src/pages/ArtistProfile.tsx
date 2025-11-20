@@ -272,7 +272,7 @@ const ArtistProfile = () => {
                   <div className="flex flex-wrap gap-3 mt-6">
                     <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
                       <Mail className="mr-2 h-4 w-4" />
-                      Contact Artist
+                      Contact
                     </Button>
                     <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                       <Phone className="mr-2 h-4 w-4" />
