@@ -11,7 +11,51 @@ const Leaderboard = () => {
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
 
   const regions = ["All Regions", "Transylvania", "Banat", "Moldova", "Oltenia", "Muntenia"];
-  const counties = ["All Counties", "București", "Cluj", "Timiș", "Brașov", "Iași", "Constanța"];
+  const counties = [
+    "All Counties",
+    "Alba",
+    "Arad",
+    "Argeș",
+    "Bacău",
+    "Bihor",
+    "Bistrița-Năsăud",
+    "Botoșani",
+    "Brașov",
+    "Brăila",
+    "București",
+    "Buzău",
+    "Caraș-Severin",
+    "Călărași",
+    "Cluj",
+    "Constanța",
+    "Covasna",
+    "Dâmbovița",
+    "Dolj",
+    "Galați",
+    "Giurgiu",
+    "Gorj",
+    "Harghita",
+    "Hunedoara",
+    "Ialomița",
+    "Iași",
+    "Ilfov",
+    "Maramureș",
+    "Mehedinți",
+    "Mureș",
+    "Neamț",
+    "Olt",
+    "Prahova",
+    "Satu Mare",
+    "Sălaj",
+    "Sibiu",
+    "Suceava",
+    "Teleorman",
+    "Timiș",
+    "Tulcea",
+    "Vaslui",
+    "Vâlcea",
+    "Vrancea"
+  ];
 
   // Mock data for demonstration
   const mockArtists = {
