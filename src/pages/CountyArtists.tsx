@@ -3,6 +3,13 @@ import SimpleArtistCard from "@/components/SimpleArtistCard";
 import { ArrowLeft } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const CountyArtists = () => {
   const { county } = useParams<{ county: string }>();
@@ -85,16 +92,29 @@ const CountyArtists = () => {
                 </h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {category.artists.map((artist) => (
-                  <SimpleArtistCard 
-                    key={artist.id} 
-                    id={artist.id}
-                    name={artist.stageName}
-                    stageName={artist.stageName}
-                  />
-                ))}
-              </div>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full max-w-7xl mx-auto"
+              >
+                <CarouselContent>
+                  {category.artists.map((artist) => (
+                    <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
+                      <div className="p-3">
+                        <SimpleArtistCard 
+                          id={artist.id}
+                          name={artist.stageName}
+                          stageName={artist.stageName}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
               
               <div className="flex justify-center">
                 <Link to={category.href}>
