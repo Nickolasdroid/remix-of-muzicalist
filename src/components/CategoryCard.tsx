@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 interface CategoryCardProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  iconImage?: string;
   href: string;
   count?: number;
 }
 
-const CategoryCard = ({ title, description, icon: Icon, href, count }: CategoryCardProps) => {
+const CategoryCard = ({ title, description, icon: Icon, iconImage, href, count }: CategoryCardProps) => {
   return (
     <Link to={href}>
       <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-8 border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)] hover:scale-105">
@@ -17,7 +18,11 @@ const CategoryCard = ({ title, description, icon: Icon, href, count }: CategoryC
         
         <div className="relative z-10">
           <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 group-hover:bg-accent group-hover:scale-110 transition-all duration-500">
-            <Icon className="h-8 w-8 text-accent group-hover:text-accent-foreground transition-colors" />
+            {iconImage ? (
+              <img src={iconImage} alt={title} className="h-10 w-10 object-contain invert group-hover:invert-0 transition-all" />
+            ) : Icon ? (
+              <Icon className="h-8 w-8 text-accent group-hover:text-accent-foreground transition-colors" />
+            ) : null}
           </div>
           
           <h3 className="text-2xl font-display font-bold mb-2 text-foreground group-hover:text-accent transition-colors">
