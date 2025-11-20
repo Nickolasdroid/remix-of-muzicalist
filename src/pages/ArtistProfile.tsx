@@ -20,7 +20,8 @@ import {
   Youtube,
   ArrowLeft,
   Images,
-  Play
+  Play,
+  DollarSign
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -72,6 +73,13 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 24),
       new Date(2025, 11, 25),
       new Date(2025, 11, 31),
+    ],
+    pricing: [
+      { eventType: "Wedding", price: "2500-3500 RON" },
+      { eventType: "Corporate Event", price: "3000-4000 RON" },
+      { eventType: "Birthday Party", price: "1500-2000 RON" },
+      { eventType: "Concert", price: "4000-5000 RON" },
+      { eventType: "Private Event", price: "2000-3000 RON" }
     ]
   },
   "2": {
@@ -115,6 +123,13 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 10),
       new Date(2025, 11, 20),
       new Date(2025, 11, 28),
+    ],
+    pricing: [
+      { eventType: "Wedding", price: "3000-4000 RON" },
+      { eventType: "Festival", price: "5000-6000 RON" },
+      { eventType: "Bar/Club Performance", price: "2000-2500 RON" },
+      { eventType: "Corporate Event", price: "3500-4500 RON" },
+      { eventType: "Private Concert", price: "4000-5000 RON" }
     ]
   },
   "3": {
@@ -157,6 +172,13 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 4),
       new Date(2025, 11, 15),
       new Date(2025, 11, 22),
+    ],
+    pricing: [
+      { eventType: "Opera Performance", price: "4000-5500 RON" },
+      { eventType: "Wedding Ceremony", price: "2500-3500 RON" },
+      { eventType: "Classical Concert", price: "3500-4500 RON" },
+      { eventType: "Corporate Gala", price: "4500-5500 RON" },
+      { eventType: "Private Event", price: "2000-3000 RON" }
     ]
   }
 };
@@ -421,6 +443,26 @@ const ArtistProfile = () => {
                         </div>
                       </DialogContent>
                     </Dialog>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              {/* Estimated Prices */}
+              <div className="mb-8">
+                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-accent" />
+                  Estimated Prices
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {artist.pricing?.map((price: { eventType: string; price: string }, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-border">
+                      <span className="font-medium text-foreground">{price.eventType}</span>
+                      <Badge className="bg-accent text-accent-foreground px-3 py-1">
+                        {price.price}
+                      </Badge>
+                    </div>
                   ))}
                 </div>
               </div>
