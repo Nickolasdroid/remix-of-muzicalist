@@ -9,28 +9,28 @@ const Categories = () => {
   const categories = [
     {
       iconImage: singerIcon,
-      title: "Singers",
+      title: "Singer",
       description: "Professional vocalists for any event",
       count: 156,
       href: "/categories/Singers",
     },
     {
       iconImage: instrumentalistIcon,
-      title: "Instrumentalists",
+      title: "Instrumentalist",
       description: "Skilled musicians with various instruments",
       count: 89,
       href: "/categories/Instrumentalists",
     },
     {
       iconImage: djIcon,
-      title: "DJs",
+      title: "DJ",
       description: "Expert DJs for parties and events",
       count: 124,
       href: "/categories/DJs",
     },
     {
       iconImage: bandIcon,
-      title: "Bands",
+      title: "Band",
       description: "Complete musical groups for your events",
       count: 67,
       href: "/categories/Bands",
