@@ -10,7 +10,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-2 group">
-            <img src={logo} alt="Muzicalist" className="h-12 w-12 transition-transform group-hover:scale-110" />
+            <img src={logo} alt="Muzicalist" className="h-12 w-auto transition-transform group-hover:scale-110" />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
