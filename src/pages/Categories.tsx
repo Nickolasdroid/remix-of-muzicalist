@@ -1,32 +1,35 @@
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
-import { Music, Mic, Music2, Users } from "lucide-react";
+import singerIcon from "@/assets/singer-silhouette.png";
+import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
+import djIcon from "@/assets/dj-silhouette.png";
+import bandIcon from "@/assets/band-silhouette.png";
 
 const Categories = () => {
   const categories = [
     {
-      icon: Mic,
+      iconImage: singerIcon,
       title: "Singers",
       description: "Professional vocalists for any event",
       count: 156,
       href: "/categories/Singers",
     },
     {
-      icon: Music,
+      iconImage: instrumentalistIcon,
       title: "Instrumentalists",
       description: "Skilled musicians with various instruments",
       count: 89,
       href: "/categories/Instrumentalists",
     },
     {
-      icon: Music2,
+      iconImage: djIcon,
       title: "DJs",
       description: "Expert DJs for parties and events",
       count: 124,
       href: "/categories/DJs",
     },
     {
-      icon: Users,
+      iconImage: bandIcon,
       title: "Bands",
       description: "Complete musical groups for your events",
       count: 67,
