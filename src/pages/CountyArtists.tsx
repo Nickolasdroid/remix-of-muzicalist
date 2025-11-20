@@ -139,14 +139,20 @@ const CountyArtists = () => {
                   <CarouselNext className="right-0" />
                 </Carousel>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                <div className="space-y-3 max-w-4xl mx-auto">
                   {category.artists.map((artist) => (
-                    <SimpleArtistCard 
-                      key={artist.id}
-                      id={artist.id}
-                      name={artist.stageName}
-                      stageName={artist.stageName}
-                    />
+                    <Link key={artist.id} to={`/artist/${artist.id}`}>
+                      <div className="flex items-center gap-4 p-3 rounded-lg border border-accent/30 hover:border-accent hover:bg-accent/5 transition-all duration-300">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-accent flex-shrink-0">
+                          {artist.stageName ? (
+                            <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
+                          ) : (
+                            <img src="" alt={artist.stageName} className="w-full h-full object-cover" />
+                          )}
+                        </div>
+                        <p className="text-lg font-semibold text-foreground">{artist.stageName}</p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               )}
