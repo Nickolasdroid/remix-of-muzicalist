@@ -3,6 +3,7 @@ import { Mic2, Guitar, Music, Users } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import ArtistSearchBar from "@/components/ArtistSearchBar";
+import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
@@ -73,9 +74,32 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Search Section */}
+      {/* AI Search Section */}
       <section className="py-20 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4 text-foreground">
+              AI-Powered Smart Search
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Ask anything about artists, opportunities, or events. Our AI will help you find exactly what you're looking for.
+            </p>
+          </div>
+          <AISearchBar />
+        </div>
+      </section>
+
+      {/* Advanced Search Section */}
+      <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4 text-foreground">
+              Advanced Search
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Filter by category, location, price range, and more
+            </p>
+          </div>
           <ArtistSearchBar />
         </div>
       </section>
