@@ -156,14 +156,6 @@ const CountyArtists = () => {
                   ))}
                 </div>
               )}
-              
-              <div className="flex justify-center">
-                <Link to={category.href}>
-                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-6 text-lg font-semibold rounded-full">
-                    Vezi lista
-                  </Button>
-                </Link>
-              </div>
             </div>
           ))}
         </div>
