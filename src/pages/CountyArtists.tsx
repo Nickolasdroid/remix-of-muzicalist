@@ -1,8 +1,9 @@
 import Navigation from "@/components/Navigation";
 import SimpleArtistCard from "@/components/SimpleArtistCard";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Grid, List } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -13,6 +14,19 @@ import {
 
 const CountyArtists = () => {
   const { county } = useParams<{ county: string }>();
+  const [viewModes, setViewModes] = useState<Record<string, 'carousel' | 'list'>>({
+    Singers: 'carousel',
+    Instrumentalists: 'carousel',
+    DJs: 'carousel',
+    Bands: 'carousel',
+  });
+
+  const toggleViewMode = (category: string) => {
+    setViewModes(prev => ({
+      ...prev,
+      [category]: prev[category] === 'carousel' ? 'list' : 'carousel'
+    }));
+  };
 
   // Mock data - in real app, this would be fetched based on county
   const categories = [
@@ -86,35 +100,56 @@ const CountyArtists = () => {
         <div className="space-y-16 max-w-7xl mx-auto">
           {categories.map((category) => (
             <div key={category.title} className="space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase inline-block border-b-2 border-accent pb-2">
+              <div className="flex items-center justify-center gap-4">
+                <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
                   {category.displayTitle} ({category.count})
                 </h2>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => toggleViewMode(category.title)}
+                  className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                >
+                  {viewModes[category.title] === 'carousel' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
+                </Button>
               </div>
               
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full max-w-7xl mx-auto"
-              >
-                <CarouselContent>
+              {viewModes[category.title] === 'carousel' ? (
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full max-w-7xl mx-auto"
+                >
+                  <CarouselContent>
+                    {category.artists.map((artist) => (
+                      <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-3">
+                          <SimpleArtistCard 
+                            id={artist.id}
+                            name={artist.stageName}
+                            stageName={artist.stageName}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-0" />
+                  <CarouselNext className="right-0" />
+                </Carousel>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
                   {category.artists.map((artist) => (
-                    <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
-                      <div className="p-3">
-                        <SimpleArtistCard 
-                          id={artist.id}
-                          name={artist.stageName}
-                          stageName={artist.stageName}
-                        />
-                      </div>
-                    </CarouselItem>
+                    <SimpleArtistCard 
+                      key={artist.id}
+                      id={artist.id}
+                      name={artist.stageName}
+                      stageName={artist.stageName}
+                    />
                   ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-0" />
-                <CarouselNext className="right-0" />
-              </Carousel>
+                </div>
+              )}
               
               <div className="flex justify-center">
                 <Link to={category.href}>
