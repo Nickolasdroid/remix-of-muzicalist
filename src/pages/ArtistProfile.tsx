@@ -298,7 +298,7 @@ const ArtistProfile = () => {
               <Separator className="my-8" />
 
               {/* Details Grid */}
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="grid md:grid-cols-3 gap-8 mb-8">
                 {/* Music Genres */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
@@ -314,7 +314,7 @@ const ArtistProfile = () => {
                   </div>
                 </div>
 
-              {/* Experience */}
+                {/* Experience */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                     <CalendarIcon className="h-5 w-5 text-accent" />
@@ -328,6 +328,24 @@ const ArtistProfile = () => {
                       <Award className="h-4 w-4 text-accent" />
                       <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
                     </p>
+                  </div>
+                </div>
+
+                {/* Estimated Prices */}
+                <div>
+                  <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-accent" />
+                    Estimated Prices
+                  </h3>
+                  <div className="space-y-2">
+                    {artist.pricing?.slice(0, 3).map((price: { eventType: string; price: string }, index: number) => (
+                      <div key={index} className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{price.eventType}</span>
+                        <Badge variant="outline" className="border-accent/50 text-accent text-xs px-2 py-0.5">
+                          {price.price}
+                        </Badge>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -446,28 +464,6 @@ const ArtistProfile = () => {
                   ))}
                 </div>
               </div>
-
-              <Separator className="my-8" />
-
-              {/* Estimated Prices */}
-              <div className="mb-8">
-                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-accent" />
-                  Estimated Prices
-                </h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {artist.pricing?.map((price: { eventType: string; price: string }, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-border">
-                      <span className="font-medium text-foreground">{price.eventType}</span>
-                      <Badge className="bg-accent text-accent-foreground px-3 py-1">
-                        {price.price}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Separator className="my-8" />
 
               {/* Contact Information */}
               <div className="mb-8">
