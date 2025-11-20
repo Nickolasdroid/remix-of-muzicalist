@@ -24,7 +24,11 @@ import {
   DollarSign
 } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data - will be replaced with real data from backend
 const mockArtists: Record<string, any> = {
@@ -187,6 +191,15 @@ const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
   const artist = id ? mockArtists[id] : null;
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [bookingForm, setBookingForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    eventType: "",
+    message: ""
+  });
+  const { toast } = useToast();
 
   const isBusyDate = (date: Date) => {
     if (!artist?.busyDates) return false;
@@ -196,6 +209,29 @@ const ArtistProfile = () => {
         busyDate.getMonth() === date.getMonth() &&
         busyDate.getFullYear() === date.getFullYear()
     );
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date && !isBusyDate(date)) {
+      setBookingDialogOpen(true);
+    }
+  };
+
+  const handleBookingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Booking Request Sent!",
+      description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stageName}.`,
+    });
+    setBookingDialogOpen(false);
+    setBookingForm({
+      name: "",
+      email: "",
+      phone: "",
+      eventType: "",
+      message: ""
+    });
   };
 
   if (!artist) {
@@ -363,7 +399,7 @@ const ArtistProfile = () => {
                     <Calendar
                       mode="single"
                       selected={selectedDate}
-                      onSelect={setSelectedDate}
+                      onSelect={handleDateSelect}
                       className="rounded-lg border border-border shadow-sm"
                       modifiers={{
                         busy: artist.busyDates || []
@@ -412,6 +448,80 @@ const ArtistProfile = () => {
               </div>
 
               <Separator className="my-8" />
+
+              {/* Booking Dialog */}
+              <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-display">Book {artist.stageName}</DialogTitle>
+                    <DialogDescription>
+                      {selectedDate && `Selected date: ${selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}`}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleBookingSubmit} className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input
+                        id="name"
+                        placeholder="Your name"
+                        value={bookingForm.name}
+                        onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={bookingForm.email}
+                        onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+40 712 345 678"
+                        value={bookingForm.phone}
+                        onChange={(e) => setBookingForm({ ...bookingForm, phone: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="eventType">Event Type</Label>
+                      <Input
+                        id="eventType"
+                        placeholder="e.g., Wedding, Corporate Event, Birthday"
+                        value={bookingForm.eventType}
+                        onChange={(e) => setBookingForm({ ...bookingForm, eventType: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Additional Details</Label>
+                      <Textarea
+                        id="message"
+                        placeholder="Tell us more about your event..."
+                        value={bookingForm.message}
+                        onChange={(e) => setBookingForm({ ...bookingForm, message: e.target.value })}
+                        rows={4}
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                      Send Booking Request
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
 
               {/* Gallery */}
               <div className="mb-8">
