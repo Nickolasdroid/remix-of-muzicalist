@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Mic2, Guitar, Music, Users } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
+import ArtistSearchBar from "@/components/ArtistSearchBar";
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
@@ -69,6 +70,13 @@ const Home = () => {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Search Section */}
+      <section className="py-20 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <ArtistSearchBar />
         </div>
       </section>
 
