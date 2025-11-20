@@ -106,7 +106,7 @@ const Leaderboard = () => {
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px]">
+                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
                   {regions.map((region) => (
                     <DropdownMenuItem
                       key={region}
@@ -126,7 +126,7 @@ const Leaderboard = () => {
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px]">
+                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
                   {counties.map((county) => (
                     <DropdownMenuItem
                       key={county}
