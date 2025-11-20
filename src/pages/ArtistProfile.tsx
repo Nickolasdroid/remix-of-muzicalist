@@ -46,6 +46,7 @@ const mockArtists: Record<string, any> = {
     description: "Professional vocalist with 8 years of experience performing at weddings, corporate events, and concerts. Specializing in pop, jazz, and soul music with a unique voice that captivates audiences.",
     imageUrl: "",
     rating: 4.9,
+    isPremium: true,
     socialMedia: {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
@@ -100,6 +101,7 @@ const mockArtists: Record<string, any> = {
     description: "Experienced rock and blues singer with powerful vocals and stage presence. Available for concerts, festivals, and private events.",
     imageUrl: "",
     rating: 4.8,
+    isPremium: false,
     socialMedia: {
       instagram: "https://instagram.com/johnnyg",
       facebook: "https://facebook.com/johnnyg",
@@ -150,6 +152,7 @@ const mockArtists: Record<string, any> = {
     description: "Classically trained soprano with experience in opera and musical theatre. Perfect for elegant events and concerts.",
     imageUrl: "",
     rating: 4.7,
+    isPremium: true,
     socialMedia: {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
@@ -271,10 +274,10 @@ const ArtistProfile = () => {
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 mb-8">
                 <div className="flex-shrink-0">
-                  <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
+                  <Avatar className={`w-40 h-40 border-4 shadow-lg ${artist.isPremium ? 'border-accent' : 'border-burgundy'}`}>
                     <AvatarImage src={artist.imageUrl} alt={artist.stageName} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className="h-20 w-20 text-accent" />
+                    <AvatarFallback className={`bg-gradient-to-br ${artist.isPremium ? 'from-accent/30 to-accent/10' : 'from-burgundy/30 to-burgundy/10'}`}>
+                      <User className={`h-20 w-20 ${artist.isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
