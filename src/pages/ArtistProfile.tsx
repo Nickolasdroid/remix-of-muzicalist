@@ -46,6 +46,7 @@ const mockArtists: Record<string, any> = {
     description: "Professional vocalist with 8 years of experience performing at weddings, corporate events, and concerts. Specializing in pop, jazz, and soul music with a unique voice that captivates audiences.",
     imageUrl: "",
     rating: 4.9,
+    isPremium: true,
     socialMedia: {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
@@ -100,6 +101,7 @@ const mockArtists: Record<string, any> = {
     description: "Experienced rock and blues singer with powerful vocals and stage presence. Available for concerts, festivals, and private events.",
     imageUrl: "",
     rating: 4.8,
+    isPremium: false,
     socialMedia: {
       instagram: "https://instagram.com/johnnyg",
       facebook: "https://facebook.com/johnnyg",
@@ -150,6 +152,7 @@ const mockArtists: Record<string, any> = {
     description: "Classically trained soprano with experience in opera and musical theatre. Perfect for elegant events and concerts.",
     imageUrl: "",
     rating: 4.7,
+    isPremium: true,
     socialMedia: {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
@@ -266,15 +269,15 @@ const ArtistProfile = () => {
             </Button>
           </Link>
 
-          <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+          <Card className={`border-2 ${artist.isPremium ? "border-accent/30" : "border-burgundy/30"} shadow-[var(--shadow-gold)]`}>
             <CardContent className="p-8">
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 mb-8">
                 <div className="flex-shrink-0">
-                  <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
+                  <Avatar className={`w-40 h-40 border-4 ${artist.isPremium ? "border-accent" : "border-burgundy"} shadow-lg`}>
                     <AvatarImage src={artist.imageUrl} alt={artist.stageName} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className="h-20 w-20 text-accent" />
+                    <AvatarFallback className={`bg-gradient-to-br ${artist.isPremium ? "from-accent/30 to-accent/10" : "from-burgundy/30 to-burgundy/10"}`}>
+                      <User className={`h-20 w-20 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -288,7 +291,7 @@ const ArtistProfile = () => {
                       <p className="text-xl text-muted-foreground mb-4">{artist.fullName}</p>
                       
                       <div className="flex flex-wrap gap-3 mb-4">
-                        <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                        <Badge className={`${artist.isPremium ? "bg-accent text-accent-foreground" : "bg-burgundy text-burgundy-foreground"} px-4 py-2 text-base`}>
                           {artist.specialization}
                         </Badge>
                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -298,7 +301,7 @@ const ArtistProfile = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                    <div className={`flex items-center gap-2 px-6 py-3 rounded-xl ${artist.isPremium ? "bg-accent text-accent-foreground" : "bg-burgundy text-burgundy-foreground"} shadow-lg`}>
                       <Star className="h-6 w-6 fill-current" />
                       <span className="text-2xl font-bold">{artist.rating.toFixed(1)}</span>
                     </div>
@@ -306,11 +309,11 @@ const ArtistProfile = () => {
 
                   {/* Contact Buttons */}
                   <div className="flex flex-wrap gap-3 mt-6">
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Button className={`${artist.isPremium ? "bg-accent text-accent-foreground hover:bg-accent/90" : "bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"}`}>
                       <Mail className="mr-2 h-4 w-4" />
                       Contact
                     </Button>
-                    <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                    <Button variant="outline" className={`${artist.isPremium ? "border-accent text-accent hover:bg-accent hover:text-accent-foreground" : "border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"}`}>
                       <Phone className="mr-2 h-4 w-4" />
                       Call Now
                     </Button>
@@ -323,7 +326,7 @@ const ArtistProfile = () => {
               {/* Description */}
               <div className="mb-8">
                 <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
-                  <User className="h-6 w-6 text-accent" />
+                  <User className={`h-6 w-6 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                   About
                 </h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
@@ -338,12 +341,12 @@ const ArtistProfile = () => {
                 {/* Music Genres */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <Music className="h-5 w-5 text-accent" />
+                    <Music className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     Music Genres
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {artist.genres.map((genre: string) => (
-                      <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                      <Badge key={genre} variant="outline" className={`${artist.isPremium ? "border-accent/50 text-accent" : "border-burgundy/50 text-burgundy"} px-3 py-1`}>
                         {genre}
                       </Badge>
                     ))}
@@ -353,7 +356,7 @@ const ArtistProfile = () => {
                 {/* Experience */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <CalendarIcon className="h-5 w-5 text-accent" />
+                    <CalendarIcon className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     Experience
                   </h3>
                   <div className="space-y-2">
@@ -361,7 +364,7 @@ const ArtistProfile = () => {
                       <span className="font-semibold text-foreground">{artist.experienceYears} years</span> of professional experience
                     </p>
                     <p className="text-muted-foreground flex items-center gap-2">
-                      <Award className="h-4 w-4 text-accent" />
+                      <Award className={`h-4 w-4 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                       <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
                     </p>
                   </div>
@@ -370,14 +373,14 @@ const ArtistProfile = () => {
                 {/* Estimated Prices */}
                 <div>
                   <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-accent" />
+                    <DollarSign className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     Estimated Prices
                   </h3>
                   <div className="space-y-2">
                     {artist.pricing?.slice(0, 3).map((price: { eventType: string; price: string }, index: number) => (
                       <div key={index} className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">{price.eventType}</span>
-                        <Badge variant="outline" className="border-accent/50 text-accent text-xs px-2 py-0.5">
+                        <Badge variant="outline" className={`${artist.isPremium ? "border-accent/50 text-accent" : "border-burgundy/50 text-burgundy"} text-xs px-2 py-0.5`}>
                           {price.price}
                         </Badge>
                       </div>
@@ -391,7 +394,7 @@ const ArtistProfile = () => {
               {/* Availability Calendar */}
               <div className="mb-8">
                 <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 text-accent" />
+                  <CalendarIcon className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                   Availability Calendar
                 </h3>
                 <div className="flex flex-col lg:flex-row gap-6">
@@ -418,7 +421,7 @@ const ArtistProfile = () => {
                         <span className="text-sm text-muted-foreground">Busy / Booked</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-accent"></div>
+                        <div className={`w-6 h-6 rounded ${artist.isPremium ? "bg-accent" : "bg-burgundy"}`}></div>
                         <span className="text-sm text-muted-foreground">Available</span>
                       </div>
                     </div>
@@ -436,7 +439,7 @@ const ArtistProfile = () => {
                         <Badge 
                           className={isBusyDate(selectedDate) 
                             ? "bg-destructive text-destructive-foreground" 
-                            : "bg-accent text-accent-foreground"
+                            : artist.isPremium ? "bg-accent text-accent-foreground" : "bg-burgundy text-burgundy-foreground"
                           }
                         >
                           {isBusyDate(selectedDate) ? "Busy" : "Available"}
@@ -516,7 +519,7 @@ const ArtistProfile = () => {
                         rows={4}
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Button type="submit" className={`w-full ${artist.isPremium ? "bg-accent text-accent-foreground hover:bg-accent/90" : "bg-burgundy text-burgundy-foreground hover:bg-burgundy/90"}`}>
                       Send Booking Request
                     </Button>
                   </form>
@@ -526,7 +529,7 @@ const ArtistProfile = () => {
               {/* Gallery */}
               <div className="mb-8">
                 <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <Images className="h-5 w-5 text-accent" />
+                  <Images className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                   Gallery
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -534,7 +537,7 @@ const ArtistProfile = () => {
                   {artist.gallery.images.map((image: string, index: number) => (
                     <Dialog key={`image-${index}`}>
                       <DialogTrigger asChild>
-                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                        <div className={`aspect-square rounded-lg overflow-hidden cursor-pointer border-2 ${artist.isPremium ? "border-accent/20 hover:border-accent" : "border-burgundy/20 hover:border-burgundy"} transition-colors`}>
                           <img 
                             src={image} 
                             alt={`Gallery image ${index + 1}`}
@@ -556,8 +559,8 @@ const ArtistProfile = () => {
                   {artist.gallery.videos.map((video: string, index: number) => (
                     <Dialog key={`video-${index}`}>
                       <DialogTrigger asChild>
-                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                          <Play className="h-12 w-12 text-accent" />
+                        <div className={`aspect-square rounded-lg overflow-hidden cursor-pointer border-2 ${artist.isPremium ? "border-accent/20 hover:border-accent" : "border-burgundy/20 hover:border-burgundy"} transition-colors bg-black/80 flex items-center justify-center`}>
+                          <Play className={`h-12 w-12 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                         </div>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl">
@@ -580,19 +583,19 @@ const ArtistProfile = () => {
                 <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                    <Mail className="h-5 w-5 text-accent" />
+                    <Mail className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     <div>
                       <p className="text-sm text-muted-foreground">Email</p>
-                      <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
+                      <a href={`mailto:${artist.email}`} className={`text-foreground ${artist.isPremium ? "hover:text-accent" : "hover:text-burgundy"} transition-colors`}>
                         {artist.email}
                       </a>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                    <Phone className="h-5 w-5 text-accent" />
+                    <Phone className={`h-5 w-5 ${artist.isPremium ? "text-accent" : "text-burgundy"}`} />
                     <div>
                       <p className="text-sm text-muted-foreground">Phone</p>
-                      <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
+                      <a href={`tel:${artist.phone}`} className={`text-foreground ${artist.isPremium ? "hover:text-accent" : "hover:text-burgundy"} transition-colors`}>
                         {artist.phone}
                       </a>
                     </div>
