@@ -29,15 +29,15 @@ const CategoryArtists = () => {
 
   // Mock data - in real app, this would be fetched based on category
   const artists = [
-    { id: "1", name: "Maria Popescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.8 },
-    { id: "2", name: "Ion Ionescu", imageUrl: undefined, county: "Cluj", experience: "intermediate", rating: 4.5 },
-    { id: "3", name: "Alex Gheorghe", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.2 },
-    { id: "4", name: "Mihai Dumitrescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.9 },
-    { id: "5", name: "Andrei Popa", imageUrl: undefined, county: "Iași", experience: "intermediate", rating: 4.6 },
-    { id: "6", name: "Elena Vasilescu", imageUrl: undefined, county: "Cluj", experience: "senior", rating: 4.7 },
-    { id: "7", name: "George Marinescu", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.3 },
-    { id: "8", name: "Diana Constantinescu", imageUrl: undefined, county: "Bucharest", experience: "intermediate", rating: 4.4 },
-    { id: "9", name: "Radu Stoica", imageUrl: undefined, county: "Iași", experience: "senior", rating: 4.8 },
+    { id: "1", name: "Maria Popescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.8, isPremium: true },
+    { id: "2", name: "Ion Ionescu", imageUrl: undefined, county: "Cluj", experience: "intermediate", rating: 4.5, isPremium: false },
+    { id: "3", name: "Alex Gheorghe", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.2, isPremium: true },
+    { id: "4", name: "Mihai Dumitrescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.9, isPremium: false },
+    { id: "5", name: "Andrei Popa", imageUrl: undefined, county: "Iași", experience: "intermediate", rating: 4.6, isPremium: true },
+    { id: "6", name: "Elena Vasilescu", imageUrl: undefined, county: "Cluj", experience: "senior", rating: 4.7, isPremium: false },
+    { id: "7", name: "George Marinescu", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.3, isPremium: true },
+    { id: "8", name: "Diana Constantinescu", imageUrl: undefined, county: "Bucharest", experience: "intermediate", rating: 4.4, isPremium: false },
+    { id: "9", name: "Radu Stoica", imageUrl: undefined, county: "Iași", experience: "senior", rating: 4.8, isPremium: true },
   ];
 
   // Filter and sort artists
@@ -187,13 +187,16 @@ const CategoryArtists = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {filteredArtists.length > 0 ? (
-            filteredArtists.map((artist) => (
+            filteredArtists.map((artist) => {
+              const borderColor = artist.isPremium ? "border-accent" : "border-burgundy";
+              
+              return (
             <Link 
               key={artist.id} 
               to={`/artist/${artist.id}`}
               className="group"
             >
-              <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-accent transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105">
+              <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
                 {artist.imageUrl ? (
                   <img 
                     src={artist.imageUrl} 
@@ -213,7 +216,8 @@ const CategoryArtists = () => {
                 </div>
               </div>
             </Link>
-            ))
+            );
+            })
           ) : (
             <div className="col-span-full text-center py-16">
               <p className="text-xl text-muted-foreground">No artists found matching your filters</p>

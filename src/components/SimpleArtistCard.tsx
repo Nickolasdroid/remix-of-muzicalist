@@ -5,12 +5,16 @@ interface SimpleArtistCardProps {
   name: string;
   stageName: string;
   imageUrl?: string;
+  isPremium?: boolean;
 }
 
-const SimpleArtistCard = ({ id, name, stageName, imageUrl }: SimpleArtistCardProps) => {
+const SimpleArtistCard = ({ id, name, stageName, imageUrl, isPremium = true }: SimpleArtistCardProps) => {
+  const borderColor = isPremium ? "border-accent" : "border-burgundy";
+  const hoverBorderColor = isPremium ? "hover:border-accent/80" : "hover:border-burgundy/80";
+  
   return (
     <Link to={`/artist/${id}`}>
-      <div className="group relative aspect-square overflow-hidden rounded-lg border-2 border-accent hover:border-accent/80 transition-all duration-300 hover:shadow-[var(--shadow-gold)]">
+      <div className={`group relative aspect-square overflow-hidden rounded-lg border-2 ${borderColor} ${hoverBorderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)]`}>
         <div className="w-full h-full">
           {imageUrl ? (
             <img src={imageUrl} alt={stageName} className="w-full h-full object-cover" />

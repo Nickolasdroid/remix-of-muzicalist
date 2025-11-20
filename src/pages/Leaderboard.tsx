@@ -60,24 +60,24 @@ const Leaderboard = () => {
   // Mock data for demonstration
   const mockArtists = {
     singers: [
-      { id: "1", name: "Maria Popescu", stageName: "Maria P.", specialization: "Singer", county: "București", rating: 4.9 },
-      { id: "2", name: "Ion Georgescu", stageName: "Johnny G", specialization: "Singer", county: "Cluj", rating: 4.8 },
-      { id: "3", name: "Ana Marin", stageName: "Ana M", specialization: "Singer", county: "Timiș", rating: 4.7 },
+      { id: "1", name: "Maria Popescu", stageName: "Maria P.", specialization: "Singer", county: "București", rating: 4.9, isPremium: true },
+      { id: "2", name: "Ion Georgescu", stageName: "Johnny G", specialization: "Singer", county: "Cluj", rating: 4.8, isPremium: false },
+      { id: "3", name: "Ana Marin", stageName: "Ana M", specialization: "Singer", county: "Timiș", rating: 4.7, isPremium: true },
     ],
     instrumentalists: [
-      { id: "4", name: "Andrei Violin", stageName: "Master Andrei", specialization: "Instrumentalist", county: "Brașov", rating: 4.9 },
-      { id: "5", name: "Elena Piano", stageName: "Elena P", specialization: "Instrumentalist", county: "Iași", rating: 4.8 },
-      { id: "6", name: "Mihai Guitar", stageName: "Mike G", specialization: "Instrumentalist", county: "Constanța", rating: 4.7 },
+      { id: "4", name: "Andrei Violin", stageName: "Master Andrei", specialization: "Instrumentalist", county: "Brașov", rating: 4.9, isPremium: false },
+      { id: "5", name: "Elena Piano", stageName: "Elena P", specialization: "Instrumentalist", county: "Iași", rating: 4.8, isPremium: true },
+      { id: "6", name: "Mihai Guitar", stageName: "Mike G", specialization: "Instrumentalist", county: "Constanța", rating: 4.7, isPremium: false },
     ],
     djs: [
-      { id: "7", name: "Alex Beats", stageName: "DJ Alex", specialization: "DJ", county: "București", rating: 4.9 },
-      { id: "8", name: "Cristian Mix", stageName: "DJ Cris", specialization: "DJ", county: "Cluj", rating: 4.8 },
-      { id: "9", name: "David Sound", stageName: "DJ Dave", specialization: "DJ", county: "Timiș", rating: 4.7 },
+      { id: "7", name: "Alex Beats", stageName: "DJ Alex", specialization: "DJ", county: "București", rating: 4.9, isPremium: true },
+      { id: "8", name: "Cristian Mix", stageName: "DJ Cris", specialization: "DJ", county: "Cluj", rating: 4.8, isPremium: false },
+      { id: "9", name: "David Sound", stageName: "DJ Dave", specialization: "DJ", county: "Timiș", rating: 4.7, isPremium: true },
     ],
     bands: [
-      { id: "10", name: "Rock Masters", stageName: "Rock Masters", specialization: "Band", county: "București", rating: 4.9 },
-      { id: "11", name: "Jazz Collective", stageName: "Jazz Collective", specialization: "Band", county: "Cluj", rating: 4.8 },
-      { id: "12", name: "Pop Stars", stageName: "Pop Stars", specialization: "Band", county: "Brașov", rating: 4.7 },
+      { id: "10", name: "Rock Masters", stageName: "Rock Masters", specialization: "Band", county: "București", rating: 4.9, isPremium: false },
+      { id: "11", name: "Jazz Collective", stageName: "Jazz Collective", specialization: "Band", county: "Cluj", rating: 4.8, isPremium: true },
+      { id: "12", name: "Pop Stars", stageName: "Pop Stars", specialization: "Band", county: "Brașov", rating: 4.7, isPremium: false },
     ]
   };
 

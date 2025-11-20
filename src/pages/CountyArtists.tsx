@@ -36,9 +36,9 @@ const CountyArtists = () => {
       count: 12,
       href: `/counties/${county}/soloists`,
       artists: [
-        { id: "1", stageName: "Maria P." },
-        { id: "2", stageName: "Ionuț" },
-        { id: "3", stageName: "Elena V." },
+        { id: "1", stageName: "Maria P.", isPremium: true },
+        { id: "2", stageName: "Ionuț", isPremium: false },
+        { id: "3", stageName: "Elena V.", isPremium: true },
       ]
     },
     {
@@ -47,9 +47,9 @@ const CountyArtists = () => {
       count: 8,
       href: `/counties/${county}/instrumentalists`,
       artists: [
-        { id: "4", stageName: "Alex G." },
-        { id: "5", stageName: "Victor M." },
-        { id: "6", stageName: "Diana S." },
+        { id: "4", stageName: "Alex G.", isPremium: false },
+        { id: "5", stageName: "Victor M.", isPremium: true },
+        { id: "6", stageName: "Diana S.", isPremium: false },
       ]
     },
     {
@@ -58,9 +58,9 @@ const CountyArtists = () => {
       count: 15,
       href: `/counties/${county}/djs`,
       artists: [
-        { id: "7", stageName: "DJ Mike" },
-        { id: "8", stageName: "DJ Andy" },
-        { id: "9", stageName: "DJ Alex" },
+        { id: "7", stageName: "DJ Mike", isPremium: true },
+        { id: "8", stageName: "DJ Andy", isPremium: false },
+        { id: "9", stageName: "DJ Alex", isPremium: true },
       ]
     },
     {
@@ -69,9 +69,9 @@ const CountyArtists = () => {
       count: 6,
       href: `/counties/${county}/bands`,
       artists: [
-        { id: "10", stageName: "The Rockers" },
-        { id: "11", stageName: "Night Vibes" },
-        { id: "12", stageName: "Echo Band" },
+        { id: "10", stageName: "The Rockers", isPremium: false },
+        { id: "11", stageName: "Night Vibes", isPremium: true },
+        { id: "12", stageName: "Echo Band", isPremium: false },
       ]
     },
   ];
@@ -130,6 +130,7 @@ const CountyArtists = () => {
                             id={artist.id}
                             name={artist.stageName}
                             stageName={artist.stageName}
+                            isPremium={artist.isPremium}
                           />
                         </div>
                       </CarouselItem>
@@ -140,10 +141,16 @@ const CountyArtists = () => {
                 </Carousel>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
-                  {category.artists.map((artist) => (
+                  {category.artists.map((artist) => {
+                    const borderColor = artist.isPremium ? "border-accent/30" : "border-burgundy/30";
+                    const hoverBorderColor = artist.isPremium ? "hover:border-accent" : "hover:border-burgundy";
+                    const hoverBgColor = artist.isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
+                    const avatarBorderColor = artist.isPremium ? "border-accent" : "border-burgundy";
+                    
+                    return (
                     <Link key={artist.id} to={`/artist/${artist.id}`}>
-                      <div className="flex items-center gap-4 p-3 rounded-lg border border-accent/30 hover:border-accent hover:bg-accent/5 transition-all duration-300">
-                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-accent flex-shrink-0">
+                      <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
+                        <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
                           {artist.stageName ? (
                             <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
                           ) : (
@@ -153,7 +160,8 @@ const CountyArtists = () => {
                         <p className="text-lg font-semibold text-foreground">{artist.stageName}</p>
                       </div>
                     </Link>
-                  ))}
+                  );
+                  })}
                 </div>
               )}
             </div>
