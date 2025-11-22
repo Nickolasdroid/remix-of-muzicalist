@@ -79,6 +79,11 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 25),
       new Date(2025, 11, 31),
     ],
+    blockedDates: [
+      new Date(2025, 10, 19),
+      new Date(2025, 11, 8),
+      new Date(2025, 11, 18),
+    ],
     pricing: [
       { eventType: "Wedding", price: "2500-3500 RON" },
       { eventType: "Corporate Event", price: "3000-4000 RON" },
@@ -130,6 +135,11 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 20),
       new Date(2025, 11, 28),
     ],
+    blockedDates: [
+      new Date(2025, 10, 21),
+      new Date(2025, 11, 7),
+      new Date(2025, 11, 14),
+    ],
     pricing: [
       { eventType: "Wedding", price: "3000-4000 RON" },
       { eventType: "Festival", price: "5000-6000 RON" },
@@ -180,6 +190,11 @@ const mockArtists: Record<string, any> = {
       new Date(2025, 11, 15),
       new Date(2025, 11, 22),
     ],
+    blockedDates: [
+      new Date(2025, 10, 24),
+      new Date(2025, 11, 9),
+      new Date(2025, 11, 17),
+    ],
     pricing: [
       { eventType: "Opera Performance", price: "4000-5500 RON" },
       { eventType: "Wedding Ceremony", price: "2500-3500 RON" },
@@ -214,9 +229,19 @@ const ArtistProfile = () => {
     );
   };
 
+  const isBlockedDate = (date: Date) => {
+    if (!artist?.blockedDates) return false;
+    return artist.blockedDates.some(
+      (blockedDate: Date) =>
+        blockedDate.getDate() === date.getDate() &&
+        blockedDate.getMonth() === date.getMonth() &&
+        blockedDate.getFullYear() === date.getFullYear()
+    );
+  };
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    if (date && !isBusyDate(date)) {
+    if (date && !isBusyDate(date) && !isBlockedDate(date)) {
       setBookingDialogOpen(true);
     }
   };
@@ -405,10 +430,12 @@ const ArtistProfile = () => {
                       onSelect={handleDateSelect}
                       className="rounded-lg border border-border shadow-sm"
                       modifiers={{
-                        busy: artist.busyDates || []
+                        busy: artist.busyDates || [],
+                        blocked: artist.blockedDates || []
                       }}
                       modifiersClassNames={{
-                        busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70"
+                        busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                        blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                       }}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                     />
@@ -419,6 +446,10 @@ const ArtistProfile = () => {
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded bg-destructive/70"></div>
                         <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-muted/80"></div>
+                        <span className="text-sm text-muted-foreground">Unavailable</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded bg-accent"></div>
