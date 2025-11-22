@@ -15,13 +15,17 @@ const Register = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     stageName: "",
     email: "",
     phone: "",
     county: "",
     specialization: "",
-    description: "",
+    musicGenres: "",
+    experienceLevel: "",
+    numberOfEvents: "",
+    careerStartYear: "",
     password: "",
     confirmPassword: ""
   });
@@ -57,7 +61,7 @@ const Register = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!formData.fullName || !formData.stageName || !formData.email || !formData.phone) {
+        if (!formData.specialization || !formData.lastName || !formData.firstName || !formData.stageName || !formData.email || !formData.phone || !formData.county) {
           toast({
             title: "Error",
             description: "Please complete all fields in Step 1",
@@ -67,7 +71,7 @@ const Register = () => {
         }
         break;
       case 2:
-        if (!formData.county || !formData.specialization) {
+        if (!formData.musicGenres || !formData.experienceLevel || !formData.numberOfEvents || !formData.careerStartYear) {
           toast({
             title: "Error",
             description: "Please complete all fields in Step 2",
@@ -77,6 +81,16 @@ const Register = () => {
         }
         break;
       case 3:
+        if (!imageSrc) {
+          toast({
+            title: "Error",
+            description: "Please upload a profile picture",
+            variant: "destructive"
+          });
+          return false;
+        }
+        break;
+      case 4:
         if (!formData.password || !formData.confirmPassword) {
           toast({
             title: "Error",
@@ -115,15 +129,6 @@ const Register = () => {
       return;
     }
 
-    if (!imageSrc) {
-      toast({
-        title: "Error",
-        description: "Please upload a profile picture",
-        variant: "destructive"
-      });
-      return;
-    }
-
     toast({
       title: "Registration Successful!",
       description: "Your artist profile has been created. You can now login.",
@@ -151,33 +156,59 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
             
-            {/* Step 1: Personal Information */}
+            {/* Step 1: Basic Information */}
             {currentStep === 1 && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Personal Information</h2>
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Basic Information</h2>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="specialization">Specialization *</Label>
+                  <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue placeholder="Select specialization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Singer">Singer</SelectItem>
+                      <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
+                      <SelectItem value="DJ">DJ</SelectItem>
+                      <SelectItem value="Band">Band</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Label htmlFor="lastName">Last Name *</Label>
                     <Input
-                      id="fullName"
+                      id="lastName"
                       required
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                       className="bg-input border-border focus:border-accent"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="stageName">Stage Name *</Label>
+                    <Label htmlFor="firstName">First Name *</Label>
                     <Input
-                      id="stageName"
+                      id="firstName"
                       required
-                      value={formData.stageName}
-                      onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                       className="bg-input border-border focus:border-accent"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="stageName">Stage Name *</Label>
+                  <Input
+                    id="stageName"
+                    required
+                    value={formData.stageName}
+                    onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                    className="bg-input border-border focus:border-accent"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -206,6 +237,20 @@ const Register = () => {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="county">County *</Label>
+                  <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue placeholder="Select county" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {romanianCounties.map(county => (
+                        <SelectItem key={county} value={county}>{county}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="flex justify-end">
                   <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     Next <ArrowRight className="ml-2 h-4 w-4" />
@@ -214,51 +259,64 @@ const Register = () => {
               </div>
             )}
 
-            {/* Step 2: Artistic Information */}
+            {/* Step 2: Professional Information */}
             {currentStep === 2 && (
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Artistic Information</h2>
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Professional Information</h2>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="musicGenres">Music Genres *</Label>
+                  <Input
+                    id="musicGenres"
+                    required
+                    value={formData.musicGenres}
+                    onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
+                    className="bg-input border-border focus:border-accent"
+                    placeholder="e.g., Pop, Rock, Jazz"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="county">County *</Label>
-                    <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                    <Label htmlFor="experienceLevel">Experience Level *</Label>
+                    <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select county" />
+                        <SelectValue placeholder="Select experience level" />
                       </SelectTrigger>
                       <SelectContent>
-                        {romanianCounties.map(county => (
-                          <SelectItem key={county} value={county}>{county}</SelectItem>
-                        ))}
+                        <SelectItem value="Beginner">Beginner</SelectItem>
+                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+                        <SelectItem value="Advanced">Advanced</SelectItem>
+                        <SelectItem value="Professional">Professional</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="specialization">Specialization *</Label>
-                    <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
-                      <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select specialization" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Singer">Singer</SelectItem>
-                        <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
-                        <SelectItem value="DJ">DJ</SelectItem>
-                        <SelectItem value="Band">Band</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="numberOfEvents">Number of Events *</Label>
+                    <Input
+                      id="numberOfEvents"
+                      type="number"
+                      required
+                      min="0"
+                      value={formData.numberOfEvents}
+                      onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                    />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Short Description (max 500 characters)</Label>
-                  <Textarea
-                    id="description"
-                    maxLength={500}
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="bg-input border-border focus:border-accent min-h-[120px]"
-                    placeholder="Tell us about your musical experience..."
+                  <Label htmlFor="careerStartYear">Year of Career Start *</Label>
+                  <Input
+                    id="careerStartYear"
+                    type="number"
+                    required
+                    min="1900"
+                    max={new Date().getFullYear()}
+                    value={formData.careerStartYear}
+                    onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
+                    className="bg-input border-border focus:border-accent"
                   />
                 </div>
 
@@ -273,55 +331,13 @@ const Register = () => {
               </div>
             )}
 
-            {/* Step 3: Password */}
+            {/* Step 3: Profile Picture */}
             {currentStep === 3 && (
-              <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Set Your Password</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password *</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      className="bg-input border-border focus:border-accent"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      required
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                      className="bg-input border-border focus:border-accent"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                  </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    Next <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Profile Picture with Cropping */}
-            {currentStep === 4 && (
               <div className="space-y-6 animate-in fade-in duration-500">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">Profile Picture</h2>
                 
                 <div className="space-y-4">
-                  <Label htmlFor="profilePic">Upload Profile Picture</Label>
+                  <Label htmlFor="profilePic">Upload Profile Picture *</Label>
                   <Input
                     id="profilePic"
                     type="file"
@@ -361,6 +377,48 @@ const Register = () => {
                       </div>
                     </div>
                   )}
+                </div>
+
+                <div className="flex justify-between">
+                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                  </Button>
+                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    Next <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Password */}
+            {currentStep === 4 && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Set Your Password</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password *</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      required
+                      value={formData.password}
+                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-between">
