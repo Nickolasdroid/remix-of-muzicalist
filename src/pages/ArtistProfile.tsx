@@ -468,12 +468,20 @@ const ArtistProfile = () => {
                           })}
                         </p>
                         <Badge 
-                          className={isBusyDate(selectedDate) 
-                            ? "bg-destructive text-destructive-foreground" 
-                            : "bg-accent text-accent-foreground"
+                          className={
+                            isBlockedDate(selectedDate)
+                              ? "bg-muted text-muted-foreground"
+                              : isBusyDate(selectedDate) 
+                                ? "bg-destructive text-destructive-foreground" 
+                                : "bg-accent text-accent-foreground"
                           }
                         >
-                          {isBusyDate(selectedDate) ? "Busy" : "Available"}
+                          {isBlockedDate(selectedDate) 
+                            ? "Unavailable" 
+                            : isBusyDate(selectedDate) 
+                              ? "Busy" 
+                              : "Available"
+                          }
                         </Badge>
                       </div>
                     )}
