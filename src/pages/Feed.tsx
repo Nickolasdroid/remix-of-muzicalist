@@ -21,6 +21,7 @@ interface FeedItem {
   likes: number;
   isLiked: boolean;
   isSaved: boolean;
+  isPremium: boolean;
 }
 
 const Feed = () => {
@@ -37,7 +38,8 @@ const Feed = () => {
       },
       likes: 124,
       isLiked: false,
-      isSaved: false
+      isSaved: false,
+      isPremium: true
     },
     {
       id: "2",
@@ -51,7 +53,8 @@ const Feed = () => {
       },
       likes: 89,
       isLiked: false,
-      isSaved: false
+      isSaved: false,
+      isPremium: true
     },
     {
       id: "3",
@@ -63,7 +66,8 @@ const Feed = () => {
       },
       likes: 45,
       isLiked: false,
-      isSaved: false
+      isSaved: false,
+      isPremium: false
     },
     {
       id: "4",
@@ -77,7 +81,8 @@ const Feed = () => {
       },
       likes: 203,
       isLiked: false,
-      isSaved: false
+      isSaved: false,
+      isPremium: false
     }
   ]);
 
@@ -135,8 +140,8 @@ const Feed = () => {
                 {/* Artist Info */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                      <span className="text-accent font-semibold">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${item.isPremium ? 'bg-accent/20 border-accent' : 'bg-burgundy/20 border-burgundy'}`}>
+                      <span className={`font-semibold ${item.isPremium ? 'text-accent' : 'text-burgundy'}`}>
                         {item.artistName.charAt(0)}
                       </span>
                     </div>
