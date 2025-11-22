@@ -241,8 +241,22 @@ const ArtistProfile = () => {
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    if (date && !isBusyDate(date) && !isBlockedDate(date)) {
-      setBookingDialogOpen(true);
+    if (date) {
+      if (isBlockedDate(date)) {
+        toast({
+          title: "Date Unavailable",
+          description: `${artist?.stageName} is not available on this date. Please select another date.`,
+          variant: "destructive"
+        });
+      } else if (isBusyDate(date)) {
+        toast({
+          title: "Date Already Booked",
+          description: `${artist?.stageName} is already booked on this date. Please select another date.`,
+          variant: "destructive"
+        });
+      } else {
+        setBookingDialogOpen(true);
+      }
     }
   };
 
