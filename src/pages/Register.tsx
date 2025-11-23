@@ -161,22 +161,22 @@ const Register = () => {
               <div className="space-y-6 animate-in fade-in duration-500">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">Basic Information</h2>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="specialization">Specialization *</Label>
-                  <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder="Select specialization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Singer">Singer</SelectItem>
-                      <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
-                      <SelectItem value="DJ">DJ</SelectItem>
-                      <SelectItem value="Band">Band</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="specialization">Specialization *</Label>
+                    <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
+                      <SelectTrigger className="bg-input border-border">
+                        <SelectValue placeholder="Select specialization" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Singer">Singer</SelectItem>
+                        <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
+                        <SelectItem value="DJ">DJ</SelectItem>
+                        <SelectItem value="Band">Band</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name *</Label>
                     <Input
@@ -187,7 +187,9 @@ const Register = () => {
                       className="bg-input border-border focus:border-accent"
                     />
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name *</Label>
                     <Input
@@ -198,17 +200,17 @@ const Register = () => {
                       className="bg-input border-border focus:border-accent"
                     />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="stageName">Stage Name *</Label>
-                  <Input
-                    id="stageName"
-                    required
-                    value={formData.stageName}
-                    onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                    className="bg-input border-border focus:border-accent"
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="stageName">Stage Name *</Label>
+                    <Input
+                      id="stageName"
+                      required
+                      value={formData.stageName}
+                      onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
