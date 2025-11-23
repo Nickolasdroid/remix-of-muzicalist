@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { Heart, Bookmark, Mail, Play } from "lucide-react";
+import { Heart, Bookmark, Mail, Play, MoreVertical, Flag } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "@/hooks/use-toast";
 
 type PostType = "post" | "standard-ad" | "premium-ad";
 type ArtistType = "Soloist" | "Instrumentalist" | "DJ" | "Band";
@@ -157,6 +164,27 @@ const Feed = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          toast({
+                            title: "Report submitted",
+                            description: "Thank you for reporting this problem. We'll review it shortly.",
+                          });
+                        }}
+                      >
+                        <Flag className="h-4 w-4 mr-2" />
+                        Report Problem
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
                 {/* Content */}
