@@ -23,7 +23,9 @@ import {
   Images,
   Play,
   DollarSign,
-  Megaphone
+  Megaphone,
+  Video,
+  Disc3
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -52,7 +54,9 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
-      youtube: "https://youtube.com/mariap"
+      youtube: "https://youtube.com/mariap",
+      tiktok: "https://tiktok.com/@mariap",
+      spotify: "https://open.spotify.com/artist/mariap"
     },
     gallery: {
       images: [
@@ -126,7 +130,9 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/johnnyg",
       facebook: "https://facebook.com/johnnyg",
-      youtube: "https://youtube.com/johnnyg"
+      youtube: "https://youtube.com/johnnyg",
+      tiktok: "https://tiktok.com/@johnnyg",
+      spotify: "https://open.spotify.com/artist/johnnyg"
     },
     gallery: {
       images: [
@@ -196,7 +202,9 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
-      youtube: "https://youtube.com/anam"
+      youtube: "https://youtube.com/anam",
+      tiktok: "https://tiktok.com/@anam",
+      spotify: "https://open.spotify.com/artist/anam"
     },
     gallery: {
       images: [
@@ -763,6 +771,28 @@ const ArtistProfile = () => {
                     >
                       <Youtube className="h-5 w-5" />
                       YouTube
+                    </a>
+                  )}
+                  {artist.socialMedia.tiktok && (
+                    <a 
+                      href={artist.socialMedia.tiktok} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#000000] text-white hover:shadow-lg transition-all"
+                    >
+                      <Video className="h-5 w-5" />
+                      TikTok
+                    </a>
+                  )}
+                  {artist.socialMedia.spotify && (
+                    <a 
+                      href={artist.socialMedia.spotify} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#1DB954] text-white hover:shadow-lg transition-all"
+                    >
+                      <Disc3 className="h-5 w-5" />
+                      Spotify
                     </a>
                   )}
                 </div>
