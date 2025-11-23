@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   User, 
   MapPin, 
@@ -21,7 +22,8 @@ import {
   ArrowLeft,
   Images,
   Play,
-  DollarSign
+  DollarSign,
+  Megaphone
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -90,6 +92,20 @@ const mockArtists: Record<string, any> = {
       { eventType: "Birthday Party", price: "1500-2000 RON" },
       { eventType: "Concert", price: "4000-5000 RON" },
       { eventType: "Private Event", price: "2000-3000 RON" }
+    ],
+    announcements: [
+      {
+        id: "1",
+        title: "Available for Summer Festivals",
+        date: "2025-06-15",
+        description: "Booking slots available for summer festival season! Special rates for multi-day events."
+      },
+      {
+        id: "2",
+        title: "New Setlist Available",
+        date: "2025-05-20",
+        description: "Just released a new performance setlist featuring latest hits and classics. Perfect for wedding receptions!"
+      }
     ]
   },
   "2": {
@@ -146,6 +162,20 @@ const mockArtists: Record<string, any> = {
       { eventType: "Bar/Club Performance", price: "2000-2500 RON" },
       { eventType: "Corporate Event", price: "3500-4500 RON" },
       { eventType: "Private Concert", price: "4000-5000 RON" }
+    ],
+    announcements: [
+      {
+        id: "1",
+        title: "Performing at Blues Night Cluj",
+        date: "2025-07-10",
+        description: "Join me for a special blues night performance at Club Blue. Tickets available at the venue!"
+      },
+      {
+        id: "2",
+        title: "Holiday Season Bookings Open",
+        date: "2025-06-01",
+        description: "Now accepting bookings for December holiday events. Early bird discounts available!"
+      }
     ]
   },
   "3": {
@@ -201,6 +231,20 @@ const mockArtists: Record<string, any> = {
       { eventType: "Classical Concert", price: "3500-4500 RON" },
       { eventType: "Corporate Gala", price: "4500-5500 RON" },
       { eventType: "Private Event", price: "2000-3000 RON" }
+    ],
+    announcements: [
+      {
+        id: "1",
+        title: "Opera Gala at National Theatre",
+        date: "2025-08-20",
+        description: "Performing arias from La Traviata and Carmen at the National Theatre. Limited seats available!"
+      },
+      {
+        id: "2",
+        title: "Wedding Season Special Offer",
+        date: "2025-05-15",
+        description: "Exclusive package for couples booking ceremony and reception performances together."
+      }
     ]
   }
 };
@@ -348,146 +392,238 @@ const ArtistProfile = () => {
 
               <Separator className="my-8" />
 
-              {/* Description */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
-                  <User className="h-6 w-6 text-accent" />
-                  About
-                </h2>
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  {artist.description}
-                </p>
-              </div>
+              {/* Tabs Section */}
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-8">
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="announcements">Announcements</TabsTrigger>
+                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                  <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                </TabsList>
 
-              <Separator className="my-8" />
-
-              {/* Details Grid */}
-              <div className="grid md:grid-cols-3 gap-8 mb-8">
-                {/* Music Genres */}
-                <div>
-                  <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <Music className="h-5 w-5 text-accent" />
-                    Music Genres
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {artist.genres.map((genre: string) => (
-                      <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
-                        {genre}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Experience */}
-                <div>
-                  <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <CalendarIcon className="h-5 w-5 text-accent" />
-                    Experience
-                  </h3>
-                  <div className="space-y-2">
-                    <p className="text-muted-foreground">
-                      <span className="font-semibold text-foreground">{artist.experienceYears} years</span> of professional experience
-                    </p>
-                    <p className="text-muted-foreground flex items-center gap-2">
-                      <Award className="h-4 w-4 text-accent" />
-                      <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
+                {/* Details Tab */}
+                <TabsContent value="details" className="space-y-8">
+                  {/* Description */}
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
+                      <User className="h-6 w-6 text-accent" />
+                      About
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed text-lg">
+                      {artist.description}
                     </p>
                   </div>
-                </div>
 
-                {/* Estimated Prices */}
-                <div>
-                  <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-accent" />
-                    Estimated Prices
-                  </h3>
-                  <div className="space-y-2">
-                    {artist.pricing?.slice(0, 3).map((price: { eventType: string; price: string }, index: number) => (
-                      <div key={index} className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{price.eventType}</span>
-                        <Badge variant="outline" className="border-accent/50 text-accent text-xs px-2 py-0.5">
-                          {price.price}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                  <Separator />
 
-              <Separator className="my-8" />
-
-              {/* Availability Calendar */}
-              <div className="mb-8">
-                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 text-accent" />
-                  Availability Calendar
-                </h3>
-                <div className="flex flex-col lg:flex-row gap-6">
-                  <div className="flex-1">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      className="rounded-lg border border-border shadow-sm"
-                      modifiers={{
-                        busy: artist.busyDates || [],
-                        blocked: artist.blockedDates || []
-                      }}
-                      modifiersClassNames={{
-                        busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                        blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                      }}
-                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                    />
-                  </div>
-                  <div className="lg:w-64 space-y-4">
-                    <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
-                      <h4 className="font-semibold text-foreground">Legend</h4>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                        <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-muted/80"></div>
-                        <span className="text-sm text-muted-foreground">Unavailable</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-accent"></div>
-                        <span className="text-sm text-muted-foreground">Available</span>
+                  {/* Details Grid */}
+                  <div className="grid md:grid-cols-3 gap-8">
+                    {/* Music Genres */}
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <Music className="h-5 w-5 text-accent" />
+                        Music Genres
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {artist.genres.map((genre: string) => (
+                          <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                            {genre}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
-                    {selectedDate && (
-                      <div className="p-4 rounded-lg border border-border bg-card">
-                        <h4 className="font-semibold text-foreground mb-2">Selected Date</h4>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {selectedDate.toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}
+
+                    {/* Experience */}
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <CalendarIcon className="h-5 w-5 text-accent" />
+                        Experience
+                      </h3>
+                      <div className="space-y-2">
+                        <p className="text-muted-foreground">
+                          <span className="font-semibold text-foreground">{artist.experienceYears} years</span> of professional experience
                         </p>
-                        <Badge 
-                          className={
-                            isBlockedDate(selectedDate)
-                              ? "bg-muted text-muted-foreground"
-                              : isBusyDate(selectedDate) 
-                                ? "bg-destructive text-destructive-foreground" 
-                                : "bg-accent text-accent-foreground"
-                          }
-                        >
-                          {isBlockedDate(selectedDate) 
-                            ? "Unavailable" 
-                            : isBusyDate(selectedDate) 
-                              ? "Busy" 
-                              : "Available"
-                          }
-                        </Badge>
+                        <p className="text-muted-foreground flex items-center gap-2">
+                          <Award className="h-4 w-4 text-accent" />
+                          <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
+                        </p>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Estimated Prices */}
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-accent" />
+                        Estimated Prices
+                      </h3>
+                      <div className="space-y-2">
+                        {artist.pricing?.slice(0, 3).map((price: { eventType: string; price: string }, index: number) => (
+                          <div key={index} className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">{price.eventType}</span>
+                            <Badge variant="outline" className="border-accent/50 text-accent text-xs px-2 py-0.5">
+                              {price.price}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </TabsContent>
+
+                {/* Announcements Tab */}
+                <TabsContent value="announcements" className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                      <Megaphone className="h-6 w-6 text-accent" />
+                      Latest Announcements
+                    </h2>
+                    <div className="space-y-4">
+                      {artist.announcements?.map((announcement: any) => (
+                        <Card key={announcement.id} className="border-accent/20">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between gap-4 mb-3">
+                              <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
+                              <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
+                                {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </Badge>
+                            </div>
+                            <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Gallery Tab */}
+                <TabsContent value="gallery">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                      <Images className="h-6 w-6 text-accent" />
+                      Gallery
+                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {/* Images */}
+                      {artist.gallery.images.map((image: string, index: number) => (
+                        <Dialog key={`image-${index}`}>
+                          <DialogTrigger asChild>
+                            <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                              <img 
+                                src={image} 
+                                alt={`Gallery image ${index + 1}`}
+                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl">
+                            <img 
+                              src={image} 
+                              alt={`Gallery image ${index + 1}`}
+                              className="w-full h-auto rounded-lg"
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      ))}
+                      
+                      {/* Videos */}
+                      {artist.gallery.videos.map((video: string, index: number) => (
+                        <Dialog key={`video-${index}`}>
+                          <DialogTrigger asChild>
+                            <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
+                              <Play className="h-12 w-12 text-accent" />
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl">
+                            <div className="aspect-video">
+                              <iframe
+                                src={video}
+                                className="w-full h-full rounded-lg"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              ></iframe>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Calendar Tab */}
+                <TabsContent value="calendar">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                      <CalendarIcon className="h-6 w-6 text-accent" />
+                      Availability Calendar
+                    </h2>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      <div className="flex-1">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={handleDateSelect}
+                          className="rounded-lg border border-border shadow-sm"
+                          modifiers={{
+                            busy: artist.busyDates || [],
+                            blocked: artist.blockedDates || []
+                          }}
+                          modifiersClassNames={{
+                            busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                            blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                          }}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        />
+                      </div>
+                      <div className="lg:w-64 space-y-4">
+                        <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                          <h4 className="font-semibold text-foreground">Legend</h4>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                            <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-muted/80"></div>
+                            <span className="text-sm text-muted-foreground">Unavailable</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-accent"></div>
+                            <span className="text-sm text-muted-foreground">Available</span>
+                          </div>
+                        </div>
+                        {selectedDate && (
+                          <div className="p-4 rounded-lg border border-border bg-card">
+                            <h4 className="font-semibold text-foreground mb-2">Selected Date</h4>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              {selectedDate.toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                            <Badge 
+                              className={
+                                isBlockedDate(selectedDate)
+                                  ? "bg-muted text-muted-foreground"
+                                  : isBusyDate(selectedDate) 
+                                    ? "bg-destructive text-destructive-foreground" 
+                                    : "bg-accent text-accent-foreground"
+                              }
+                            >
+                              {isBlockedDate(selectedDate) 
+                                ? "Unavailable" 
+                                : isBusyDate(selectedDate) 
+                                  ? "Busy" 
+                                  : "Available"
+                              }
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
 
               <Separator className="my-8" />
 
@@ -564,58 +700,6 @@ const ArtistProfile = () => {
                   </form>
                 </DialogContent>
               </Dialog>
-
-              {/* Gallery */}
-              <div className="mb-8">
-                <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                  <Images className="h-5 w-5 text-accent" />
-                  Gallery
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {/* Images */}
-                  {artist.gallery.images.map((image: string, index: number) => (
-                    <Dialog key={`image-${index}`}>
-                      <DialogTrigger asChild>
-                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
-                          <img 
-                            src={image} 
-                            alt={`Gallery image ${index + 1}`}
-                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                          />
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl">
-                        <img 
-                          src={image} 
-                          alt={`Gallery image ${index + 1}`}
-                          className="w-full h-auto rounded-lg"
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                  
-                  {/* Videos */}
-                  {artist.gallery.videos.map((video: string, index: number) => (
-                    <Dialog key={`video-${index}`}>
-                      <DialogTrigger asChild>
-                        <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                          <Play className="h-12 w-12 text-accent" />
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl">
-                        <div className="aspect-video">
-                          <iframe
-                            src={video}
-                            className="w-full h-full rounded-lg"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                </div>
-              </div>
 
               {/* Contact Information */}
               <div className="mb-8">
