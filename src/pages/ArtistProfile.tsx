@@ -23,9 +23,7 @@ import {
   Images,
   Play,
   DollarSign,
-  Megaphone,
-  Video,
-  Music2
+  Megaphone
 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -54,9 +52,7 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/mariap",
       facebook: "https://facebook.com/mariap",
-      youtube: "https://youtube.com/mariap",
-      tiktok: "https://tiktok.com/@mariap",
-      spotify: "https://open.spotify.com/artist/mariap"
+      youtube: "https://youtube.com/mariap"
     },
     gallery: {
       images: [
@@ -130,9 +126,7 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/johnnyg",
       facebook: "https://facebook.com/johnnyg",
-      youtube: "https://youtube.com/johnnyg",
-      tiktok: "https://tiktok.com/@johnnyg",
-      spotify: "https://open.spotify.com/artist/johnnyg"
+      youtube: "https://youtube.com/johnnyg"
     },
     gallery: {
       images: [
@@ -202,9 +196,7 @@ const mockArtists: Record<string, any> = {
     socialMedia: {
       instagram: "https://instagram.com/anam",
       facebook: "https://facebook.com/anam",
-      youtube: "https://youtube.com/anam",
-      tiktok: "https://tiktok.com/@anam",
-      spotify: "https://open.spotify.com/artist/anam"
+      youtube: "https://youtube.com/anam"
     },
     gallery: {
       images: [
@@ -394,60 +386,6 @@ const ArtistProfile = () => {
                       <Phone className="mr-2 h-4 w-4" />
                       Call Now
                     </Button>
-                  </div>
-
-                  {/* Social Media Buttons */}
-                  <div className="flex flex-wrap gap-3 mt-4">
-                    {artist.socialMedia.instagram && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="border-accent/50 hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => window.open(artist.socialMedia.instagram, '_blank')}
-                      >
-                        <Instagram className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {artist.socialMedia.facebook && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="border-accent/50 hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => window.open(artist.socialMedia.facebook, '_blank')}
-                      >
-                        <Facebook className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {artist.socialMedia.youtube && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="border-accent/50 hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => window.open(artist.socialMedia.youtube, '_blank')}
-                      >
-                        <Youtube className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {artist.socialMedia.tiktok && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="border-accent/50 hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => window.open(artist.socialMedia.tiktok, '_blank')}
-                      >
-                        <Video className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {artist.socialMedia.spotify && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="border-accent/50 hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => window.open(artist.socialMedia.spotify, '_blank')}
-                      >
-                        <Music2 className="h-4 w-4" />
-                      </Button>
-                    )}
                   </div>
                 </div>
               </div>
