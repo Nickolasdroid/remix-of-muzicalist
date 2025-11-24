@@ -185,7 +185,7 @@ const CategoryArtists = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
           {filteredArtists.length > 0 ? (
             filteredArtists.map((artist) => {
               const borderColor = artist.isPremium ? "border-accent" : "border-burgundy";
@@ -205,12 +205,12 @@ const CategoryArtists = () => {
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                    <User className="h-24 w-24 text-accent" />
+                    <User className="h-16 w-16 text-accent" />
                   </div>
                 )}
                 
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-4">
-                  <h3 className="text-lg font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
+                  <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
                     {artist.name}
                   </h3>
                 </div>
