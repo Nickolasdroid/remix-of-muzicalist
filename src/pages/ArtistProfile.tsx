@@ -365,7 +365,6 @@ const ArtistProfile = () => {
                       <h1 className="text-4xl font-display font-bold text-foreground mb-2">
                         {artist.stageName}
                       </h1>
-                      <p className="text-xl text-muted-foreground mb-4">{artist.fullName}</p>
                       
                       <div className="flex flex-wrap gap-3 mb-4">
                         <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
