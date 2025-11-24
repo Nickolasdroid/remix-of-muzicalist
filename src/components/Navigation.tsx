@@ -34,7 +34,7 @@ const Navigation = () => {
       if (session?.user) {
         const { data } = await supabase
           .from('profiles')
-          .select('avatar_url, stage_name')
+          .select('avatar_url, stage_name, plan')
           .eq('id', session.user.id)
           .single();
         setProfile(data);
@@ -50,7 +50,7 @@ const Navigation = () => {
       if (session?.user) {
         supabase
           .from('profiles')
-          .select('avatar_url, stage_name')
+          .select('avatar_url, stage_name, plan')
           .eq('id', session.user.id)
           .single()
           .then(({ data }) => setProfile(data));
@@ -127,6 +127,11 @@ const Navigation = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-card border-accent/20">
                   <DropdownMenuLabel className="text-accent">My Account</DropdownMenuLabel>
+                  {profile?.plan && (
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                      Plan: <span className="font-semibold text-accent">{profile.plan}</span>
+                    </div>
+                  )}
                   <DropdownMenuSeparator className="bg-accent/20" />
                   <DropdownMenuItem onClick={() => navigate('/dashboard?tab=profile')} className="cursor-pointer hover:bg-accent/10">
                     <User className="mr-2 h-4 w-4" />
