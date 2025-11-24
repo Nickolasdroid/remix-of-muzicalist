@@ -1,10 +1,53 @@
 import { Link } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
 const Navigation = () => {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    // Check current session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url, stage_name')
+          .eq('id', session.user.id)
+          .single();
+        setProfile(data);
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        supabase
+          .from('profiles')
+          .select('avatar_url, stage_name')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => setProfile(data));
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-accent/20">
       <div className="container mx-auto px-4">
@@ -56,17 +99,31 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                Register
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+                <Avatar className="h-8 w-8 ring-2 ring-accent/30">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+                    {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden md:inline">Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
