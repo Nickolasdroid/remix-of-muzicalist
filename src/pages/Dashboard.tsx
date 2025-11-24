@@ -341,8 +341,6 @@ const Dashboard = () => {
       
       switch(field) {
         case 'names':
-          updateData.first_name = formData.firstName;
-          updateData.last_name = formData.lastName;
           updateData.stage_name = formData.stageName;
           break;
         case 'contact':
@@ -694,18 +692,6 @@ const Dashboard = () => {
                                   placeholder="Stage Name"
                                   className="text-2xl font-display font-bold"
                                 />
-                                <div className="grid grid-cols-2 gap-2">
-                                  <Input
-                                    value={formData.firstName}
-                                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                    placeholder="First Name"
-                                  />
-                                  <Input
-                                    value={formData.lastName}
-                                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                    placeholder="Last Name"
-                                  />
-                                </div>
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('names')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
@@ -732,9 +718,6 @@ const Dashboard = () => {
                                     <Edit2 className="h-4 w-4" />
                                   </Button>
                                 </div>
-                                <p className="text-xl text-muted-foreground mb-4">
-                                  {formData.firstName} {formData.lastName}
-                                </p>
                               </div>
                             )}
                             
