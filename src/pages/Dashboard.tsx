@@ -25,8 +25,17 @@ import {
   Phone,
   Mail,
   Edit2,
-  X
+  X,
+  Megaphone,
+  Plus,
+  Trash2,
+  Images,
+  Play,
+  Upload
 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
@@ -59,6 +68,23 @@ const Dashboard = () => {
     careerStartYear: ""
   });
 
+  // Announcements state
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: "", date: "", description: "" });
+  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+
+  // Gallery state
+  const [galleryItems, setGalleryItems] = useState<any[]>([]);
+  const [showGalleryDialog, setShowGalleryDialog] = useState(false);
+  const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
+  const [videoUrl, setVideoUrl] = useState("");
+
+  // Calendar state
+  const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [eventStatus, setEventStatus] = useState<'busy' | 'blocked' | 'available'>('busy');
+  const [eventNotes, setEventNotes] = useState("");
+
   const romanianCounties = [
     "București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", 
     "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
@@ -67,6 +93,14 @@ const Dashboard = () => {
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      loadAnnouncements();
+      loadGalleryItems();
+      loadCalendarEvents();
+    }
+  }, [user]);
 
   const checkAuth = async () => {
     try {
@@ -336,6 +370,232 @@ const Dashboard = () => {
     }
   };
 
+  // Announcements functions
+  const loadAnnouncements = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('announcements')
+      .select('*')
+      .eq('profile_id', user.id)
+      .order('date', { ascending: false });
+    if (data) setAnnouncements(data);
+  };
+
+  const handleAddAnnouncement = async () => {
+    if (!user || !newAnnouncement.title || !newAnnouncement.date) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .insert({
+          profile_id: user.id,
+          title: newAnnouncement.title,
+          date: newAnnouncement.date,
+          description: newAnnouncement.description
+        });
+
+      if (error) throw error;
+
+      await loadAnnouncements();
+      setNewAnnouncement({ title: "", date: "", description: "" });
+      setShowAnnouncementDialog(false);
+
+      toast({ title: "Success", description: "Announcement added!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadAnnouncements();
+      toast({ title: "Success", description: "Announcement deleted!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Gallery functions
+  const loadGalleryItems = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('gallery_items')
+      .select('*')
+      .eq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setGalleryItems(data);
+  };
+
+  const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/gallery/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const { error: insertError } = await supabase
+        .from('gallery_items')
+        .insert({
+          profile_id: user.id,
+          type: 'image',
+          url: publicUrl
+        });
+
+      if (insertError) throw insertError;
+
+      await loadGalleryItems();
+      setShowGalleryDialog(false);
+      toast({ title: "Success", description: "Image uploaded!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddVideo = async () => {
+    if (!user || !videoUrl) return;
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('gallery_items')
+        .insert({
+          profile_id: user.id,
+          type: 'video',
+          url: videoUrl
+        });
+
+      if (error) throw error;
+
+      await loadGalleryItems();
+      setVideoUrl("");
+      setShowGalleryDialog(false);
+      toast({ title: "Success", description: "Video added!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteGalleryItem = async (id: string, url: string, type: string) => {
+    setIsSaving(true);
+    try {
+      if (type === 'image') {
+        const filePath = url.split('/').slice(-3).join('/');
+        await supabase.storage.from('avatars').remove([filePath]);
+      }
+
+      const { error } = await supabase
+        .from('gallery_items')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadGalleryItems();
+      toast({ title: "Success", description: "Item deleted!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Calendar functions
+  const loadCalendarEvents = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('calendar_events')
+      .select('*')
+      .eq('profile_id', user.id);
+    if (data) setCalendarEvents(data);
+  };
+
+  const handleSaveCalendarEvent = async () => {
+    if (!user || !selectedDate) return;
+
+    setIsSaving(true);
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      
+      const { error } = await supabase
+        .from('calendar_events')
+        .upsert({
+          profile_id: user.id,
+          event_date: dateStr,
+          status: eventStatus,
+          notes: eventNotes
+        }, {
+          onConflict: 'profile_id,event_date'
+        });
+
+      if (error) throw error;
+
+      await loadCalendarEvents();
+      setEventNotes("");
+      toast({ title: "Success", description: "Calendar updated!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteCalendarEvent = async () => {
+    if (!user || !selectedDate) return;
+
+    setIsSaving(true);
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      
+      const { error } = await supabase
+        .from('calendar_events')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('event_date', dateStr);
+
+      if (error) throw error;
+
+      await loadCalendarEvents();
+      setSelectedDate(undefined);
+      toast({ title: "Success", description: "Event deleted!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getEventForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return calendarEvents.find(event => event.event_date === dateStr);
+  };
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -560,8 +820,11 @@ const Dashboard = () => {
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsList className="grid w-full grid-cols-5 mb-8">
                   <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="announcements">Announcements</TabsTrigger>
+                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                  <TabsTrigger value="calendar">Calendar</TabsTrigger>
                   <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
 
@@ -682,6 +945,282 @@ const Dashboard = () => {
                           </Button>
                         </div>
                       )}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Announcements Tab */}
+                <TabsContent value="announcements" className="space-y-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                      <Megaphone className="h-6 w-6 text-accent" />
+                      My Announcements
+                    </h2>
+                    <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Announcement
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>New Announcement</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                          <div>
+                            <Label>Title</Label>
+                            <Input
+                              value={newAnnouncement.title}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+                              placeholder="Announcement title"
+                            />
+                          </div>
+                          <div>
+                            <Label>Date</Label>
+                            <Input
+                              type="date"
+                              value={newAnnouncement.date}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, date: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label>Description</Label>
+                            <Textarea
+                              value={newAnnouncement.description}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, description: e.target.value})}
+                              placeholder="Announcement details..."
+                              rows={4}
+                            />
+                          </div>
+                          <Button onClick={handleAddAnnouncement} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
+                            {isSaving ? "Adding..." : "Add Announcement"}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="space-y-4">
+                    {announcements.map((announcement) => (
+                      <Card key={announcement.id} className="border-accent/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
+                                {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </Badge>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={() => handleDeleteAnnouncement(announcement.id)}
+                                disabled={isSaving}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {announcements.length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">No announcements yet. Add your first one!</p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Gallery Tab */}
+                <TabsContent value="gallery">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                      <Images className="h-6 w-6 text-accent" />
+                      My Gallery
+                    </h2>
+                    <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Media
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add Media</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                          <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
+                            <TabsList className="grid w-full grid-cols-2">
+                              <TabsTrigger value="image">Image</TabsTrigger>
+                              <TabsTrigger value="video">Video</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="image" className="space-y-4">
+                              <Label htmlFor="gallery-upload" className="cursor-pointer">
+                                <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                  <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                  <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                </div>
+                              </Label>
+                              <Input
+                                id="gallery-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleGalleryImageUpload}
+                                className="hidden"
+                              />
+                            </TabsContent>
+                            <TabsContent value="video" className="space-y-4">
+                              <div>
+                                <Label>YouTube/Video URL</Label>
+                                <Input
+                                  value={videoUrl}
+                                  onChange={(e) => setVideoUrl(e.target.value)}
+                                  placeholder="https://www.youtube.com/embed/..."
+                                />
+                              </div>
+                              <Button onClick={handleAddVideo} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
+                                {isSaving ? "Adding..." : "Add Video"}
+                              </Button>
+                            </TabsContent>
+                          </Tabs>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {galleryItems.map((item) => (
+                      <div key={item.id} className="relative group">
+                        {item.type === 'image' ? (
+                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
+                            <img 
+                              src={item.url} 
+                              alt="Gallery item"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
+                            <Play className="h-12 w-12 text-accent" />
+                          </div>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
+                          disabled={isSaving}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    {galleryItems.length === 0 && (
+                      <div className="col-span-full text-center text-muted-foreground py-8">
+                        No media yet. Add your first image or video!
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Calendar Tab */}
+                <TabsContent value="calendar">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                      <CalendarIcon className="h-6 w-6 text-accent" />
+                      My Availability Calendar
+                    </h2>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                      <div className="flex-1">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={(date) => {
+                            setSelectedDate(date);
+                            if (date) {
+                              const event = getEventForDate(date);
+                              if (event) {
+                                setEventStatus(event.status);
+                                setEventNotes(event.notes || "");
+                              } else {
+                                setEventStatus('busy');
+                                setEventNotes("");
+                              }
+                            }
+                          }}
+                          className="rounded-lg border border-border shadow-sm"
+                          modifiers={{
+                            busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
+                            blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                          }}
+                          modifiersClassNames={{
+                            busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                            blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                          }}
+                        />
+                      </div>
+                      <div className="lg:w-80 space-y-4">
+                        <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                          <h4 className="font-semibold text-foreground">Legend</h4>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                            <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-muted/80"></div>
+                            <span className="text-sm text-muted-foreground">Unavailable</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-accent"></div>
+                            <span className="text-sm text-muted-foreground">Available</span>
+                          </div>
+                        </div>
+                        {selectedDate && (
+                          <Card className="p-4">
+                            <h4 className="font-semibold text-foreground mb-3">
+                              {selectedDate.toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </h4>
+                            <div className="space-y-3">
+                              <div>
+                                <Label>Status</Label>
+                                <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="available">Available</SelectItem>
+                                    <SelectItem value="busy">Busy / Booked</SelectItem>
+                                    <SelectItem value="blocked">Unavailable</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label>Notes (optional)</Label>
+                                <Textarea
+                                  value={eventNotes}
+                                  onChange={(e) => setEventNotes(e.target.value)}
+                                  placeholder="Event details..."
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="flex gap-2">
+                                <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
+                                  {isSaving ? "Saving..." : "Save"}
+                                </Button>
+                                {getEventForDate(selectedDate) && (
+                                  <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
