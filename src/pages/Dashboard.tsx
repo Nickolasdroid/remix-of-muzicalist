@@ -120,6 +120,9 @@ const Dashboard = () => {
   const [eventStatus, setEventStatus] = useState<'busy' | 'blocked' | 'available'>('busy');
   const [eventNotes, setEventNotes] = useState("");
 
+  // Booking requests state
+  const [bookingRequests, setBookingRequests] = useState<any[]>([]);
+
   const romanianCounties = [
     "București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", 
     "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
@@ -155,6 +158,17 @@ const Dashboard = () => {
     if (data) setCalendarEvents(data);
   };
 
+  const loadBookingRequests = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('booking_requests')
+      .select('*')
+      .eq('profile_id', user.id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if (data) setBookingRequests(data);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -164,6 +178,7 @@ const Dashboard = () => {
       loadAnnouncements();
       loadGalleryItems();
       loadCalendarEvents();
+      loadBookingRequests();
     }
   }, [user]);
 
@@ -594,6 +609,61 @@ const Dashboard = () => {
   const getEventForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     return calendarEvents.find(event => event.event_date === dateStr);
+  };
+
+  // Booking request functions
+  const handleAcceptBooking = async (request: any) => {
+    setIsSaving(true);
+    try {
+      // Update the booking request status to accepted
+      const { error: updateError } = await supabase
+        .from('booking_requests')
+        .update({ status: 'accepted' })
+        .eq('id', request.id);
+
+      if (updateError) throw updateError;
+
+      // Add the event to the calendar
+      const { error: calendarError } = await supabase
+        .from('calendar_events')
+        .upsert({
+          profile_id: user!.id,
+          event_date: request.event_date,
+          status: 'busy',
+          notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}`
+        }, {
+          onConflict: 'profile_id,event_date'
+        });
+
+      if (calendarError) throw calendarError;
+
+      await loadBookingRequests();
+      await loadCalendarEvents();
+      toast({ title: "Success", description: "Booking accepted and added to calendar!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeclineBooking = async (requestId: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('booking_requests')
+        .delete()
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      await loadBookingRequests();
+      toast({ title: "Success", description: "Booking request declined." });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -1380,6 +1450,73 @@ const Dashboard = () => {
                               )}
                             </div>
                           </div>
+
+                          {/* Booking Requests Section */}
+                          {bookingRequests.length > 0 && (
+                            <div className="mt-8 pt-8 border-t border-border">
+                              <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                                <CalendarIcon className="h-5 w-5 text-accent" />
+                                Booking Requests
+                              </h3>
+                              <div className="space-y-4">
+                                {bookingRequests.map((request) => (
+                                  <Card key={request.id} className="border-accent/20">
+                                    <CardContent className="p-4">
+                                      <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1 space-y-2">
+                                          <div className="flex items-center gap-3">
+                                            <Badge variant="outline" className="border-accent/50 text-accent">
+                                              {new Date(request.event_date).toLocaleDateString('en-US', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                              })}
+                                            </Badge>
+                                            {request.event_type && (
+                                              <Badge variant="secondary">{request.event_type}</Badge>
+                                            )}
+                                          </div>
+                                          <div className="grid gap-1 text-sm">
+                                            <p className="font-semibold text-foreground">{request.requester_name}</p>
+                                            <p className="text-muted-foreground flex items-center gap-1">
+                                              <Mail className="h-3 w-3" />
+                                              {request.requester_email}
+                                            </p>
+                                            <p className="text-muted-foreground flex items-center gap-1">
+                                              <Phone className="h-3 w-3" />
+                                              {request.requester_phone}
+                                            </p>
+                                            {request.message && (
+                                              <p className="text-muted-foreground mt-2 italic">"{request.message}"</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                          <Button 
+                                            size="sm"
+                                            onClick={() => handleAcceptBooking(request)}
+                                            disabled={isSaving}
+                                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                                          >
+                                            Accept
+                                          </Button>
+                                          <Button 
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => handleDeclineBooking(request.id)}
+                                            disabled={isSaving}
+                                          >
+                                            Decline
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </TabsContent>
                     </Tabs>
