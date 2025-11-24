@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,7 +29,6 @@ import {
   Video,
   Disc3
 } from "lucide-react";
-import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -298,20 +299,45 @@ const ArtistProfile = () => {
     }
   };
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Booking Request Sent!",
-      description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stageName}.`,
-    });
-    setBookingDialogOpen(false);
-    setBookingForm({
-      name: "",
-      email: "",
-      phone: "",
-      eventType: "",
-      message: ""
-    });
+    
+    if (!selectedDate || !id) return;
+
+    try {
+      const { error } = await supabase.from('booking_requests').insert({
+        profile_id: id,
+        requester_name: bookingForm.name,
+        requester_email: bookingForm.email,
+        requester_phone: bookingForm.phone,
+        event_date: selectedDate.toISOString().split('T')[0],
+        event_type: bookingForm.eventType,
+        message: bookingForm.message,
+        status: 'pending'
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Booking Request Sent!",
+        description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stageName}.`,
+      });
+      
+      setBookingDialogOpen(false);
+      setBookingForm({
+        name: "",
+        email: "",
+        phone: "",
+        eventType: "",
+        message: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send booking request. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (!artist) {

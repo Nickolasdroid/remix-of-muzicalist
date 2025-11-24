@@ -52,6 +52,48 @@ export type Database = {
           },
         ]
       }
+      booking_requests: {
+        Row: {
+          created_at: string
+          event_date: string
+          event_type: string | null
+          id: string
+          message: string | null
+          profile_id: string
+          requester_email: string
+          requester_name: string
+          requester_phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          event_date: string
+          event_type?: string | null
+          id?: string
+          message?: string | null
+          profile_id: string
+          requester_email: string
+          requester_name: string
+          requester_phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          event_date?: string
+          event_type?: string | null
+          id?: string
+          message?: string | null
+          profile_id?: string
+          requester_email?: string
+          requester_name?: string
+          requester_phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           created_at: string
