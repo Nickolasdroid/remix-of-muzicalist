@@ -874,7 +874,57 @@ const Dashboard = () => {
 
                       {/* Details Tab */}
                       <TabsContent value="details" className="space-y-8">
-                        <div className="grid md:grid-cols-2 gap-8">
+                        {/* Bio/Description */}
+                        <div>
+                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                            <User className="h-5 w-5 text-accent" />
+                            About Me
+                          </h3>
+                          {editingField === 'bio' ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={formData.bio}
+                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                placeholder="Tell us about yourself, your musical journey, your style..."
+                                className="min-h-[120px]"
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
+                                  <Save className="h-3 w-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  <X className="h-3 w-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="group">
+                              {formData.bio ? (
+                                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                  {formData.bio}
+                                </p>
+                              ) : (
+                                <p className="text-muted-foreground italic">No description added yet</p>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                onClick={() => startEditing('bio')}
+                              >
+                                <Edit2 className="h-4 w-4 mr-2" />
+                                {formData.bio ? 'Edit Description' : 'Add Description'}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        <Separator />
+
+                        {/* Details Grid */}
+                        <div className="grid md:grid-cols-3 gap-8">
                           {/* Music Genres */}
                           <div>
                             <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
@@ -989,103 +1039,58 @@ const Dashboard = () => {
                               </div>
                             )}
                           </div>
-                        </div>
 
-                        {/* Bio/Description */}
-                        <div className="mt-8">
-                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                            <User className="h-5 w-5 text-accent" />
-                            About Me
-                          </h3>
-                          {editingField === 'bio' ? (
-                            <div className="space-y-2">
-                              <Textarea
-                                value={formData.bio}
-                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                placeholder="Tell us about yourself, your musical journey, your style..."
-                                className="min-h-[120px]"
-                              />
-                              <div className="flex gap-2">
-                                <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
-                                  <Save className="h-3 w-3 mr-1" />
-                                  Save
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                  <X className="h-3 w-3 mr-1" />
-                                  Cancel
+                          {/* Estimated Price */}
+                          <div>
+                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                              <DollarSign className="h-5 w-5 text-accent" />
+                              Estimated Price
+                            </h3>
+                            {editingField === 'price' ? (
+                              <div className="space-y-2">
+                                <Input
+                                  value={formData.estimatedPrice}
+                                  onChange={(e) => setFormData({...formData, estimatedPrice: e.target.value})}
+                                  placeholder="e.g., 500-1000 RON per event"
+                                />
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="group">
+                                {formData.estimatedPrice ? (
+                                  <p className="text-muted-foreground">
+                                    <span className="font-semibold text-foreground text-lg">{formData.estimatedPrice}</span>
+                                  </p>
+                                ) : (
+                                  <p className="text-muted-foreground italic">No price range added yet</p>
+                                )}
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                  onClick={() => startEditing('price')}
+                                >
+                                  <Edit2 className="h-4 w-4 mr-2" />
+                                  {formData.estimatedPrice ? 'Edit Price' : 'Add Price'}
                                 </Button>
                               </div>
-                            </div>
-                          ) : (
-                            <div className="group">
-                              {formData.bio ? (
-                                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                  {formData.bio}
-                                </p>
-                              ) : (
-                                <p className="text-muted-foreground italic">No description added yet</p>
-                              )}
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                onClick={() => startEditing('bio')}
-                              >
-                                <Edit2 className="h-4 w-4 mr-2" />
-                                {formData.bio ? 'Edit Description' : 'Add Description'}
-                              </Button>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
 
-                        {/* Estimated Price */}
-                        <div className="mt-8">
-                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                            <DollarSign className="h-5 w-5 text-accent" />
-                            Estimated Price
-                          </h3>
-                          {editingField === 'price' ? (
-                            <div className="space-y-2">
-                              <Input
-                                value={formData.estimatedPrice}
-                                onChange={(e) => setFormData({...formData, estimatedPrice: e.target.value})}
-                                placeholder="e.g., 500-1000 RON per event"
-                              />
-                              <div className="flex gap-2">
-                                <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
-                                  <Save className="h-3 w-3 mr-1" />
-                                  Save
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                  <X className="h-3 w-3 mr-1" />
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="group">
-                              {formData.estimatedPrice ? (
-                                <p className="text-muted-foreground">
-                                  <span className="font-semibold text-foreground text-lg">{formData.estimatedPrice}</span>
-                                </p>
-                              ) : (
-                                <p className="text-muted-foreground italic">No price range added yet</p>
-                              )}
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                onClick={() => startEditing('price')}
-                              >
-                                <Edit2 className="h-4 w-4 mr-2" />
-                                {formData.estimatedPrice ? 'Edit Price' : 'Add Price'}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
+                        <Separator />
 
                         {/* Social Networks */}
-                        <div className="mt-8">
+                        <div>
                           <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                             <LinkIcon className="h-5 w-5 text-accent" />
                             Social Networks
@@ -1197,7 +1202,7 @@ const Dashboard = () => {
                               </Button>
                             </div>
                           )}
-                        </div>
+                         </div>
                       </TabsContent>
 
                       {/* Gallery Tab */}
