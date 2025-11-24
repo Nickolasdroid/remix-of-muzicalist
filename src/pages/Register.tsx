@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +11,13 @@ import { UserPlus, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -122,17 +126,128 @@ const Register = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+    const image = new Image();
+    image.src = imageSrc;
+    
+    await new Promise((resolve) => {
+      image.onload = resolve;
+    });
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('Failed to get canvas context');
+    }
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+      }, 'image/jpeg', 0.95);
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateStep(currentStep)) {
       return;
     }
 
-    toast({
-      title: "Registration Successful!",
-      description: "Your artist profile has been created. You can now login.",
-    });
+    setIsSubmitting(true);
+
+    try {
+      // 1. Sign up the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        }
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("User creation failed");
+
+      // 2. Upload the cropped avatar
+      let avatarUrl = null;
+      if (imageSrc && croppedAreaPixels) {
+        const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+        const fileName = `${authData.user.id}/avatar.jpg`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, croppedBlob, {
+            contentType: 'image/jpeg',
+            upsert: true
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+        
+        avatarUrl = publicUrl;
+      }
+
+      // 3. Create the profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          stage_name: formData.stageName,
+          email: formData.email,
+          phone: formData.phone,
+          county: formData.county,
+          specialization: formData.specialization as any,
+          music_genres: formData.musicGenres,
+          experience_level: formData.experienceLevel as any,
+          number_of_events: parseInt(formData.numberOfEvents),
+          career_start_year: parseInt(formData.careerStartYear),
+          avatar_url: avatarUrl
+        });
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Registration Successful!",
+        description: "Your artist profile has been created. Redirecting to home...",
+      });
+
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration Failed",
+        description: error.message || "There was an error creating your account. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -430,9 +545,10 @@ const Register = () => {
                   <Button 
                     type="submit" 
                     size="lg"
+                    disabled={isSubmitting}
                     className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300"
                   >
-                    Create Artist Profile
+                    {isSubmitting ? "Creating Profile..." : "Create Artist Profile"}
                   </Button>
                 </div>
               </div>
