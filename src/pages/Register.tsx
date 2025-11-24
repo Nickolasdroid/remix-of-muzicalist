@@ -167,10 +167,18 @@ const Register = () => {
             <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
               Register as Artist
             </h1>
+            <p className="text-xl text-muted-foreground mb-6">
+              Step {currentStep} of {totalSteps}
+            </p>
+            <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
             
+            {/* Loading Animation */}
             {isLoading ? (
-              <div className="space-y-4 animate-in fade-in duration-300">
-                <Skeleton className="h-7 w-32 mx-auto" />
+              <div className="space-y-4 animate-in fade-in duration-300 pb-6 border-b border-border">
+                <Skeleton className="h-8 w-48 mx-auto" />
                 <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4].map((step) => (
                     <Skeleton 
@@ -182,18 +190,8 @@ const Register = () => {
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="animate-in fade-in duration-300">
-                <p className="text-xl text-muted-foreground mb-6">
-                  Step {currentStep} of {totalSteps}
-                </p>
-                <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
-              </div>
-            )}
-          </div>
+            ) : null}
 
-          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
-            
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
               <div className="space-y-6 animate-in fade-in duration-500">
