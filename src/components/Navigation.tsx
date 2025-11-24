@@ -123,7 +123,6 @@ const Navigation = () => {
                         {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden md:inline">Dashboard</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-card border-accent/20">
