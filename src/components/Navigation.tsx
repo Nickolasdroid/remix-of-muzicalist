@@ -14,6 +14,7 @@ import {
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
+import CountrySelector from "./CountrySelector";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -110,6 +111,7 @@ const Navigation = () => {
                 className="pl-9 w-40 bg-background/50 border-accent/20 focus:border-accent"
               />
             </div>
+            <CountrySelector />
           </div>
 
           <div className="flex items-center gap-4">
