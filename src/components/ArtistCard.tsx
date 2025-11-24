@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 interface ArtistCardProps {
   id: string;
-  name: string;
+  name?: string;
   stageName: string;
   specialization: string;
   county: string;
@@ -59,10 +59,9 @@ const ArtistCard = ({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-2xl font-display font-bold text-foreground mb-1 group-hover:text-accent transition-colors truncate">
+          <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-accent transition-colors truncate">
             {stageName}
           </h3>
-          <p className="text-muted-foreground text-sm mb-2">{name}</p>
           
           <div className="flex items-center gap-4 mb-4 text-sm">
             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${isPremium ? "bg-accent/20 text-accent" : "bg-burgundy/20 text-burgundy"} font-semibold`}>
