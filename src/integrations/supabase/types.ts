@@ -142,6 +142,7 @@ export type Database = {
           music_genres: string
           number_of_events: number
           phone: string
+          plan: string
           specialization: Database["public"]["Enums"]["artist_specialization"]
           stage_name: string
           updated_at: string | null
@@ -159,6 +160,7 @@ export type Database = {
           music_genres: string
           number_of_events?: number
           phone: string
+          plan?: string
           specialization: Database["public"]["Enums"]["artist_specialization"]
           stage_name: string
           updated_at?: string | null
@@ -176,6 +178,7 @@ export type Database = {
           music_genres?: string
           number_of_events?: number
           phone?: string
+          plan?: string
           specialization?: Database["public"]["Enums"]["artist_specialization"]
           stage_name?: string
           updated_at?: string | null

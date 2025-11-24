@@ -39,6 +39,17 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
@@ -556,6 +567,40 @@ const Dashboard = () => {
   const getEventForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     return calendarEvents.find(event => event.event_date === dateStr);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      // Delete user's data from tables
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Sign out and delete auth user
+      const { error: authError } = await supabase.auth.signOut();
+      if (authError) throw authError;
+
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted.",
+      });
+
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete account.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
@@ -1244,6 +1289,46 @@ const Dashboard = () => {
                         <LogOut className="h-4 w-4 mr-2" />
                         Sign Out
                       </Button>
+
+                      <Separator className="my-6" />
+
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-display font-bold text-destructive">Danger Zone</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Once you delete your account, there is no going back. Please be certain.
+                        </p>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="destructive" 
+                              className="w-full"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Account
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                account and remove all your data from our servers including your profile,
+                                announcements, gallery, and calendar events.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={handleDeleteAccount}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                disabled={isSaving}
+                              >
+                                {isSaving ? "Deleting..." : "Delete Account"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
