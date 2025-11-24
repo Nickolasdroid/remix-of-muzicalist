@@ -31,13 +31,69 @@ import {
   Trash2,
   Images,
   Play,
-  Upload
+  Upload,
+  MessageSquare,
+  FileText,
+  Settings,
+  Menu
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
+
+const DashboardSidebar = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
+
+  const menuItems = [
+    { title: "My Profile", value: "profile", icon: User },
+    { title: "My Messages", value: "messages", icon: MessageSquare },
+    { title: "My Announcements", value: "announcements", icon: Megaphone },
+    { title: "My Posts", value: "posts", icon: FileText },
+    { title: "Settings", value: "settings", icon: Settings },
+  ];
+
+  return (
+    <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.value}>
+                  <SidebarMenuButton
+                    onClick={() => onTabChange(item.value)}
+                    isActive={activeTab === item.value}
+                    className="hover:bg-accent/50"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {!collapsed && <span>{item.title}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+};
 
 const Dashboard = () => {
   const { toast } = useToast();
@@ -47,6 +103,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("profile");
   
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -282,65 +339,13 @@ const Dashboard = () => {
     }
   };
 
-  const handleSaveProfile = async () => {
-    if (!user) return;
-
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          stage_name: formData.stageName,
-          phone: formData.phone,
-          county: formData.county,
-          specialization: formData.specialization as any,
-          music_genres: formData.musicGenres,
-          experience_level: formData.experienceLevel as any,
-          number_of_events: parseInt(formData.numberOfEvents),
-          career_start_year: parseInt(formData.careerStartYear)
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      await checkAuth();
-      setEditingField(null);
-
-      toast({
-        title: "Success",
-        description: "Profile updated successfully!"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update profile.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   const startEditing = (field: string) => {
     setEditingField(field);
   };
 
   const cancelEditing = () => {
     setEditingField(null);
-    checkAuth(); // Reset to original values
+    checkAuth();
   };
 
   const saveField = async (field: string) => {
@@ -597,366 +602,598 @@ const Dashboard = () => {
     return calendarEvents.find(event => event.event_date === dateStr);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      <div className="pt-32 pb-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-display font-bold text-foreground">My Profile</h1>
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+    <SidebarProvider>
+      <div className="min-h-screen w-full">
+        <Navigation />
+        
+        <div className="flex w-full pt-20">
+          <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-          <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-            <CardContent className="p-8">
-              {/* Header Section */}
-              <div className="flex flex-col md:flex-row gap-8 mb-8">
-                <div className="flex-shrink-0 relative group">
-                  <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
-                    <AvatarImage src={profile?.avatar_url} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className="h-20 w-20 text-accent" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <Camera className="h-8 w-8 text-white" />
-                  </label>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </div>
+          <main className="flex-1 p-8">
+            <div className="flex items-center gap-4 mb-6">
+              <SidebarTrigger className="lg:hidden">
+                <Menu className="h-5 w-5" />
+              </SidebarTrigger>
+              <h1 className="text-3xl font-display font-bold text-foreground">
+                {activeTab === "profile" && "My Profile"}
+                {activeTab === "messages" && "My Messages"}
+                {activeTab === "announcements" && "My Announcements"}
+                {activeTab === "posts" && "My Posts"}
+                {activeTab === "settings" && "Settings"}
+              </h1>
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="ml-auto border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between flex-wrap gap-4">
-                    <div className="flex-1">
-                      {editingField === 'names' ? (
-                        <div className="space-y-3">
-                          <Input
-                            value={formData.stageName}
-                            onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                            placeholder="Stage Name"
-                            className="text-2xl font-display font-bold"
-                          />
-                          <div className="grid grid-cols-2 gap-2">
-                            <Input
-                              value={formData.firstName}
-                              onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                              placeholder="First Name"
-                            />
-                            <Input
-                              value={formData.lastName}
-                              onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                              placeholder="Last Name"
-                            />
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={() => saveField('names')} disabled={isSaving}>
-                              <Save className="h-3 w-3 mr-1" />
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing}>
-                              <X className="h-3 w-3 mr-1" />
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="group">
-                          <div className="flex items-center gap-2">
-                            <h1 className="text-4xl font-display font-bold text-foreground">
-                              {formData.stageName}
-                            </h1>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => startEditing('names')}
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <p className="text-xl text-muted-foreground mb-4">
-                            {formData.firstName} {formData.lastName}
-                          </p>
-                        </div>
-                      )}
-                      
-                      <div className="flex flex-wrap gap-3 mb-4">
-                        {editingField === 'specialization' ? (
-                          <div className="flex items-center gap-2">
-                            <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Singer">Singer</SelectItem>
-                                <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
-                                <SelectItem value="DJ">DJ</SelectItem>
-                                <SelectItem value="Band">Band</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <Button size="sm" onClick={() => saveField('specialization')} disabled={isSaving}>
-                              <Save className="h-3 w-3" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing}>
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="group flex items-center gap-2">
-                            <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
-                              {formData.specialization}
-                            </Badge>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                              onClick={() => startEditing('specialization')}
-                            >
-                              <Edit2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                        
-                        {editingField === 'location' ? (
-                          <div className="flex items-center gap-2">
-                            <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {romanianCounties.map(county => (
-                                  <SelectItem key={county} value={county}>{county}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Button size="sm" onClick={() => saveField('location')} disabled={isSaving}>
-                              <Save className="h-3 w-3" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing}>
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="group flex items-center gap-2 text-muted-foreground">
-                            <MapPin className="h-5 w-5" />
-                            <span className="text-base">{formData.county}</span>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                              onClick={() => startEditing('location')}
-                            >
-                              <Edit2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                      <Star className="h-6 w-6 fill-current" />
-                      <span className="text-2xl font-bold">New</span>
-                    </div>
-                  </div>
-
-                  {/* Contact Buttons */}
-                  <div className="flex flex-wrap gap-3 mt-6">
-                    {editingField === 'contact' ? (
-                      <div className="flex items-center gap-2 flex-1">
-                        <Input
-                          value={formData.phone}
-                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          placeholder="Phone Number"
-                          className="flex-1"
+            <div className="container mx-auto max-w-6xl">
+              {/* Profile Tab */}
+              {activeTab === "profile" && (
+                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+                  <CardContent className="p-8">
+                    {/* Header Section */}
+                    <div className="flex flex-col md:flex-row gap-8 mb-8">
+                      <div className="flex-shrink-0 relative group">
+                        <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
+                          <AvatarImage src={profile?.avatar_url} />
+                          <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                            <User className="h-20 w-20 text-accent" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                          <Camera className="h-8 w-8 text-white" />
+                        </label>
+                        <input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
                         />
-                        <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
-                          <Save className="h-3 w-3 mr-1" />
-                          Save
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={cancelEditing}>
-                          <X className="h-3 w-3 mr-1" />
-                          Cancel
-                        </Button>
                       </div>
-                    ) : (
-                      <>
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                          <Mail className="mr-2 h-4 w-4" />
-                          {formData.email}
-                        </Button>
-                        <div className="group flex items-center gap-2">
-                          <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                            <Phone className="mr-2 h-4 w-4" />
-                            {formData.phone || 'Add Phone'}
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
-                            onClick={() => startEditing('contact')}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
 
-              <Separator className="my-8" />
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between flex-wrap gap-4">
+                          <div className="flex-1">
+                            {editingField === 'names' ? (
+                              <div className="space-y-3">
+                                <Input
+                                  value={formData.stageName}
+                                  onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                                  placeholder="Stage Name"
+                                  className="text-2xl font-display font-bold"
+                                />
+                                <div className="grid grid-cols-2 gap-2">
+                                  <Input
+                                    value={formData.firstName}
+                                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                    placeholder="First Name"
+                                  />
+                                  <Input
+                                    value={formData.lastName}
+                                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                    placeholder="Last Name"
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('names')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="group">
+                                <div className="flex items-center gap-2">
+                                  <h1 className="text-4xl font-display font-bold text-foreground">
+                                    {formData.stageName}
+                                  </h1>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => startEditing('names')}
+                                  >
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                <p className="text-xl text-muted-foreground mb-4">
+                                  {formData.firstName} {formData.lastName}
+                                </p>
+                              </div>
+                            )}
+                            
+                            <div className="flex flex-wrap gap-3 mb-4">
+                              {editingField === 'specialization' ? (
+                                <div className="flex items-center gap-2">
+                                  <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
+                                    <SelectTrigger className="w-[180px]">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Singer">Singer</SelectItem>
+                                      <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
+                                      <SelectItem value="DJ">DJ</SelectItem>
+                                      <SelectItem value="Band">Band</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Button size="sm" onClick={() => saveField('specialization')} disabled={isSaving}>
+                                    <Save className="h-3 w-3" />
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="group flex items-center gap-2">
+                                  <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                                    {formData.specialization}
+                                  </Badge>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                                    onClick={() => startEditing('specialization')}
+                                  >
+                                    <Edit2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+                              
+                              {editingField === 'location' ? (
+                                <div className="flex items-center gap-2">
+                                  <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                                    <SelectTrigger className="w-[180px]">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {romanianCounties.map(county => (
+                                        <SelectItem key={county} value={county}>{county}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <Button size="sm" onClick={() => saveField('location')} disabled={isSaving}>
+                                    <Save className="h-3 w-3" />
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="group flex items-center gap-2 text-muted-foreground">
+                                  <MapPin className="h-5 w-5" />
+                                  <span className="text-base">{formData.county}</span>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                                    onClick={() => startEditing('location')}
+                                  >
+                                    <Edit2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
 
-              {/* Tabs Section */}
-              <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-8">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="announcements">Announcements</TabsTrigger>
-                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
-                  <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                  <TabsTrigger value="settings">Settings</TabsTrigger>
-                </TabsList>
-
-                {/* Details Tab */}
-                <TabsContent value="details" className="space-y-8">
-                  {/* Details Grid */}
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {/* Music Genres */}
-                    <div>
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <Music className="h-5 w-5 text-accent" />
-                        Music Genres
-                      </h3>
-                      {editingField === 'genres' ? (
-                        <div className="space-y-2">
-                          <Input
-                            value={formData.musicGenres}
-                            onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
-                            placeholder="e.g., Pop, Rock, Jazz"
-                          />
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
-                              <Save className="h-3 w-3 mr-1" />
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing}>
-                              <X className="h-3 w-3 mr-1" />
-                              Cancel
-                            </Button>
+                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                            <Star className="h-6 w-6 fill-current" />
+                            <span className="text-2xl font-bold">New</span>
                           </div>
                         </div>
-                      ) : (
-                        <div className="group">
-                          <div className="flex flex-wrap gap-2">
-                            {formData.musicGenres?.split(',').map((genre: string) => (
-                              <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
-                                {genre.trim()}
-                              </Badge>
-                            ))}
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                            onClick={() => startEditing('genres')}
-                          >
-                            <Edit2 className="h-4 w-4 mr-2" />
-                            Edit Genres
-                          </Button>
+
+                        {/* Contact Buttons */}
+                        <div className="flex flex-wrap gap-3 mt-6">
+                          {editingField === 'contact' ? (
+                            <div className="flex items-center gap-2 flex-1">
+                              <Input
+                                value={formData.phone}
+                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                placeholder="Phone Number"
+                                className="flex-1"
+                              />
+                              <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
+                                <Save className="h-3 w-3 mr-1" />
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                <X className="h-3 w-3 mr-1" />
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <>
+                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                <Mail className="mr-2 h-4 w-4" />
+                                {formData.email}
+                              </Button>
+                              <div className="group flex items-center gap-2">
+                                <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                                  <Phone className="mr-2 h-4 w-4" />
+                                  {formData.phone || 'Add Phone'}
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                                  onClick={() => startEditing('contact')}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
 
-                    {/* Experience */}
-                    <div>
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <CalendarIcon className="h-5 w-5 text-accent" />
-                        Experience
-                      </h3>
-                      {editingField === 'experience' ? (
-                        <div className="space-y-3">
-                          <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Experience Level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Beginner">Beginner</SelectItem>
-                              <SelectItem value="Intermediate">Intermediate</SelectItem>
-                              <SelectItem value="Advanced">Advanced</SelectItem>
-                              <SelectItem value="Professional">Professional</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            type="number"
-                            value={formData.numberOfEvents}
-                            onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
-                            placeholder="Number of Events"
-                          />
-                          <Input
-                            type="number"
-                            value={formData.careerStartYear}
-                            onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
-                            placeholder="Career Start Year"
-                          />
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
-                              <Save className="h-3 w-3 mr-1" />
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing}>
-                              <X className="h-3 w-3 mr-1" />
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="group">
-                          <div className="space-y-2">
-                            <p className="text-muted-foreground">
-                              Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
-                            </p>
-                            <p className="text-muted-foreground flex items-center gap-2">
-                              <Award className="h-4 w-4 text-accent" />
-                              <span className="font-semibold text-foreground">{formData.numberOfEvents}+</span> events performed
-                            </p>
-                            <p className="text-muted-foreground">
-                              Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
-                            </p>
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                            onClick={() => startEditing('experience')}
-                          >
-                            <Edit2 className="h-4 w-4 mr-2" />
-                            Edit Experience
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
+                    <Separator className="my-8" />
 
-                {/* Announcements Tab */}
-                <TabsContent value="announcements" className="space-y-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                      <Megaphone className="h-6 w-6 text-accent" />
-                      My Announcements
-                    </h2>
+                    {/* Tabs Section */}
+                    <Tabs defaultValue="details" className="w-full">
+                      <TabsList className="grid w-full grid-cols-3 mb-8">
+                        <TabsTrigger value="details">Details</TabsTrigger>
+                        <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                        <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                      </TabsList>
+
+                      {/* Details Tab */}
+                      <TabsContent value="details" className="space-y-8">
+                        <div className="grid md:grid-cols-2 gap-8">
+                          {/* Music Genres */}
+                          <div>
+                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                              <Music className="h-5 w-5 text-accent" />
+                              Music Genres
+                            </h3>
+                            {editingField === 'genres' ? (
+                              <div className="space-y-2">
+                                <Input
+                                  value={formData.musicGenres}
+                                  onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
+                                  placeholder="e.g., Pop, Rock, Jazz"
+                                />
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="group">
+                                <div className="flex flex-wrap gap-2">
+                                  {formData.musicGenres?.split(',').map((genre: string) => (
+                                    <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                                      {genre.trim()}
+                                    </Badge>
+                                  ))}
+                                </div>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                  onClick={() => startEditing('genres')}
+                                >
+                                  <Edit2 className="h-4 w-4 mr-2" />
+                                  Edit Genres
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Experience */}
+                          <div>
+                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                              <CalendarIcon className="h-5 w-5 text-accent" />
+                              Experience
+                            </h3>
+                            {editingField === 'experience' ? (
+                              <div className="space-y-3">
+                                <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Experience Level" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Beginner">Beginner</SelectItem>
+                                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+                                    <SelectItem value="Advanced">Advanced</SelectItem>
+                                    <SelectItem value="Professional">Professional</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Input
+                                  type="number"
+                                  value={formData.numberOfEvents}
+                                  onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
+                                  placeholder="Number of Events"
+                                />
+                                <Input
+                                  type="number"
+                                  value={formData.careerStartYear}
+                                  onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
+                                  placeholder="Career Start Year"
+                                />
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="group">
+                                <div className="space-y-2">
+                                  <p className="text-muted-foreground">
+                                    Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
+                                  </p>
+                                  <p className="text-muted-foreground flex items-center gap-2">
+                                    <Award className="h-4 w-4 text-accent" />
+                                    <span className="font-semibold text-foreground">{formData.numberOfEvents}+</span> events performed
+                                  </p>
+                                  <p className="text-muted-foreground">
+                                    Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
+                                  </p>
+                                </div>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                  onClick={() => startEditing('experience')}
+                                >
+                                  <Edit2 className="h-4 w-4 mr-2" />
+                                  Edit Experience
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      {/* Gallery Tab */}
+                      <TabsContent value="gallery">
+                        <div className="flex items-center justify-between mb-4">
+                          <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                            <Images className="h-6 w-6 text-accent" />
+                            My Gallery
+                          </h2>
+                          <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+                            <DialogTrigger asChild>
+                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Media
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add Media</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 mt-4">
+                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
+                                  <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="image">Image</TabsTrigger>
+                                    <TabsTrigger value="video">Video</TabsTrigger>
+                                  </TabsList>
+                                  <TabsContent value="image" className="space-y-4">
+                                    <Label htmlFor="gallery-upload" className="cursor-pointer">
+                                      <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                        <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                        <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                      </div>
+                                    </Label>
+                                    <Input
+                                      id="gallery-upload"
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={handleGalleryImageUpload}
+                                      className="hidden"
+                                    />
+                                  </TabsContent>
+                                  <TabsContent value="video" className="space-y-4">
+                                    <div>
+                                      <Label>YouTube/Video URL</Label>
+                                      <Input
+                                        value={videoUrl}
+                                        onChange={(e) => setVideoUrl(e.target.value)}
+                                        placeholder="https://www.youtube.com/embed/..."
+                                      />
+                                    </div>
+                                    <Button onClick={handleAddVideo} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Adding..." : "Add Video"}
+                                    </Button>
+                                  </TabsContent>
+                                </Tabs>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                          {galleryItems.map((item) => (
+                            <div key={item.id} className="relative group">
+                              {item.type === 'image' ? (
+                                <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
+                                  <img 
+                                    src={item.url} 
+                                    alt="Gallery item"
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
+                                  <Play className="h-12 w-12 text-accent" />
+                                </div>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
+                                disabled={isSaving}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {galleryItems.length === 0 && (
+                            <div className="col-span-full text-center text-muted-foreground py-8">
+                              No media yet. Add your first image or video!
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
+
+                      {/* Calendar Tab */}
+                      <TabsContent value="calendar">
+                        <div>
+                          <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                            <CalendarIcon className="h-6 w-6 text-accent" />
+                            My Availability Calendar
+                          </h2>
+                          <div className="flex flex-col lg:flex-row gap-6">
+                            <div className="flex-1">
+                              <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={(date) => {
+                                  setSelectedDate(date);
+                                  if (date) {
+                                    const event = getEventForDate(date);
+                                    if (event) {
+                                      setEventStatus(event.status);
+                                      setEventNotes(event.notes || "");
+                                    } else {
+                                      setEventStatus('busy');
+                                      setEventNotes("");
+                                    }
+                                  }
+                                }}
+                                className="rounded-lg border border-border shadow-sm"
+                                modifiers={{
+                                  busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
+                                  blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                                }}
+                                modifiersClassNames={{
+                                  busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                                  blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                                }}
+                              />
+                            </div>
+                            <div className="lg:w-80 space-y-4">
+                              <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                                <h4 className="font-semibold text-foreground">Legend</h4>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                                  <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-muted/80"></div>
+                                  <span className="text-sm text-muted-foreground">Unavailable</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-accent"></div>
+                                  <span className="text-sm text-muted-foreground">Available</span>
+                                </div>
+                              </div>
+                              {selectedDate && (
+                                <Card className="p-4">
+                                  <h4 className="font-semibold text-foreground mb-3">
+                                    {selectedDate.toLocaleDateString('en-US', { 
+                                      weekday: 'long', 
+                                      year: 'numeric', 
+                                      month: 'long', 
+                                      day: 'numeric' 
+                                    })}
+                                  </h4>
+                                  <div className="space-y-3">
+                                    <div>
+                                      <Label>Status</Label>
+                                      <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
+                                        <SelectTrigger>
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="available">Available</SelectItem>
+                                          <SelectItem value="busy">Busy / Booked</SelectItem>
+                                          <SelectItem value="blocked">Unavailable</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <Label>Notes (optional)</Label>
+                                      <Textarea
+                                        value={eventNotes}
+                                        onChange={(e) => setEventNotes(e.target.value)}
+                                        placeholder="Event details..."
+                                        rows={3}
+                                      />
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
+                                        {isSaving ? "Saving..." : "Save"}
+                                      </Button>
+                                      {getEventForDate(selectedDate) && (
+                                        <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Card>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Messages Tab */}
+              {activeTab === "messages" && (
+                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+                  <CardContent className="p-8">
+                    <div className="text-center py-12">
+                      <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <h2 className="text-2xl font-display font-bold mb-2">Messages</h2>
+                      <p className="text-muted-foreground">Coming soon - message system for booking inquiries</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Announcements Tab */}
+              {activeTab === "announcements" && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
                     <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                       <DialogTrigger asChild>
                         <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
@@ -1029,206 +1266,26 @@ const Dashboard = () => {
                       <p className="text-center text-muted-foreground py-8">No announcements yet. Add your first one!</p>
                     )}
                   </div>
-                </TabsContent>
+                </div>
+              )}
 
-                {/* Gallery Tab */}
-                <TabsContent value="gallery">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                      <Images className="h-6 w-6 text-accent" />
-                      My Gallery
-                    </h2>
-                    <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Media
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add Media</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                          <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                            <TabsList className="grid w-full grid-cols-2">
-                              <TabsTrigger value="image">Image</TabsTrigger>
-                              <TabsTrigger value="video">Video</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="image" className="space-y-4">
-                              <Label htmlFor="gallery-upload" className="cursor-pointer">
-                                <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                  <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                  <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                </div>
-                              </Label>
-                              <Input
-                                id="gallery-upload"
-                                type="file"
-                                accept="image/*"
-                                onChange={handleGalleryImageUpload}
-                                className="hidden"
-                              />
-                            </TabsContent>
-                            <TabsContent value="video" className="space-y-4">
-                              <div>
-                                <Label>YouTube/Video URL</Label>
-                                <Input
-                                  value={videoUrl}
-                                  onChange={(e) => setVideoUrl(e.target.value)}
-                                  placeholder="https://www.youtube.com/embed/..."
-                                />
-                              </div>
-                              <Button onClick={handleAddVideo} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
-                                {isSaving ? "Adding..." : "Add Video"}
-                              </Button>
-                            </TabsContent>
-                          </Tabs>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {galleryItems.map((item) => (
-                      <div key={item.id} className="relative group">
-                        {item.type === 'image' ? (
-                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
-                            <img 
-                              src={item.url} 
-                              alt="Gallery item"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
-                            <Play className="h-12 w-12 text-accent" />
-                          </div>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
-                          disabled={isSaving}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    {galleryItems.length === 0 && (
-                      <div className="col-span-full text-center text-muted-foreground py-8">
-                        No media yet. Add your first image or video!
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                {/* Calendar Tab */}
-                <TabsContent value="calendar">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                      <CalendarIcon className="h-6 w-6 text-accent" />
-                      My Availability Calendar
-                    </h2>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                      <div className="flex-1">
-                        <Calendar
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={(date) => {
-                            setSelectedDate(date);
-                            if (date) {
-                              const event = getEventForDate(date);
-                              if (event) {
-                                setEventStatus(event.status);
-                                setEventNotes(event.notes || "");
-                              } else {
-                                setEventStatus('busy');
-                                setEventNotes("");
-                              }
-                            }
-                          }}
-                          className="rounded-lg border border-border shadow-sm"
-                          modifiers={{
-                            busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
-                            blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
-                          }}
-                          modifiersClassNames={{
-                            busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                            blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                          }}
-                        />
-                      </div>
-                      <div className="lg:w-80 space-y-4">
-                        <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
-                          <h4 className="font-semibold text-foreground">Legend</h4>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                            <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-muted/80"></div>
-                            <span className="text-sm text-muted-foreground">Unavailable</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-accent"></div>
-                            <span className="text-sm text-muted-foreground">Available</span>
-                          </div>
-                        </div>
-                        {selectedDate && (
-                          <Card className="p-4">
-                            <h4 className="font-semibold text-foreground mb-3">
-                              {selectedDate.toLocaleDateString('en-US', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
-                              })}
-                            </h4>
-                            <div className="space-y-3">
-                              <div>
-                                <Label>Status</Label>
-                                <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="available">Available</SelectItem>
-                                    <SelectItem value="busy">Busy / Booked</SelectItem>
-                                    <SelectItem value="blocked">Unavailable</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label>Notes (optional)</Label>
-                                <Textarea
-                                  value={eventNotes}
-                                  onChange={(e) => setEventNotes(e.target.value)}
-                                  placeholder="Event details..."
-                                  rows={3}
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
-                                  {isSaving ? "Saving..." : "Save"}
-                                </Button>
-                                {getEventForDate(selectedDate) && (
-                                  <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </Card>
-                        )}
-                      </div>
+              {/* Posts Tab */}
+              {activeTab === "posts" && (
+                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+                  <CardContent className="p-8">
+                    <div className="text-center py-12">
+                      <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <h2 className="text-2xl font-display font-bold mb-2">Posts</h2>
+                      <p className="text-muted-foreground">Coming soon - blog/news posts feature</p>
                     </div>
-                  </div>
-                </TabsContent>
+                  </CardContent>
+                </Card>
+              )}
 
-                {/* Settings Tab */}
-                <TabsContent value="settings" className="space-y-6">
-                  <Card className="p-6 bg-card/50">
+              {/* Settings Tab */}
+              {activeTab === "settings" && (
+                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+                  <CardContent className="p-8">
                     <h3 className="text-xl font-display font-bold mb-4">Account Settings</h3>
                     <div className="space-y-4">
                       <div>
@@ -1248,11 +1305,11 @@ const Dashboard = () => {
                         Sign Out
                       </Button>
                     </div>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </main>
         </div>
       </div>
 
@@ -1300,7 +1357,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </SidebarProvider>
   );
 };
 
