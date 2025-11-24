@@ -148,42 +148,10 @@ const Register = () => {
             <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
               Register as Artist
             </h1>
-            <p className="text-xl text-muted-foreground mb-2">
+            <p className="text-xl text-muted-foreground mb-6">
               Step {currentStep} of {totalSteps}
             </p>
-            
-            {/* Progress Bar with Step Indicators */}
-            <div className="w-full max-w-2xl mx-auto space-y-4">
-              <Progress value={progressPercentage} className="h-3" />
-              
-              {/* Step Labels */}
-              <div className="grid grid-cols-4 gap-2 text-sm">
-                <div className={`text-center ${currentStep >= 1 ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
-                  <div className={`w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}`}>
-                    1
-                  </div>
-                  Basic Info
-                </div>
-                <div className={`text-center ${currentStep >= 2 ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
-                  <div className={`w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}`}>
-                    2
-                  </div>
-                  Professional
-                </div>
-                <div className={`text-center ${currentStep >= 3 ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
-                  <div className={`w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}`}>
-                    3
-                  </div>
-                  Profile Pic
-                </div>
-                <div className={`text-center ${currentStep >= 4 ? 'text-accent font-semibold' : 'text-muted-foreground'}`}>
-                  <div className={`w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center ${currentStep >= 4 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}`}>
-                    4
-                  </div>
-                  Password
-                </div>
-              </div>
-            </div>
+            <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
