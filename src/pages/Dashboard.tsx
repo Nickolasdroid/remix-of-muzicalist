@@ -1315,38 +1315,72 @@ const Dashboard = () => {
                             </DialogContent>
                           </Dialog>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                          {galleryItems.map((item) => (
-                            <div key={item.id} className="relative group">
-                              {item.type === 'image' ? (
-                                <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
-                                  <img 
-                                    src={item.url} 
-                                    alt="Gallery item"
-                                    className="w-full h-full object-cover"
-                                  />
+                        <div className="space-y-8">
+                          {/* Photos Section */}
+                          <div>
+                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                              <Images className="h-5 w-5 text-accent" />
+                              Photos
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                              {galleryItems.filter(item => item.type === 'image').map((item) => (
+                                <div key={item.id} className="relative group">
+                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
+                                    <img 
+                                      src={item.url} 
+                                      alt="Gallery item"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
+                                    disabled={isSaving}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                              ) : (
-                                <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
-                                  <Play className="h-12 w-12 text-accent" />
+                              ))}
+                              {galleryItems.filter(item => item.type === 'image').length === 0 && (
+                                <div className="col-span-full text-center text-muted-foreground py-8">
+                                  No photos yet. Add your first image!
                                 </div>
                               )}
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
-                                disabled={isSaving}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
                             </div>
-                          ))}
-                          {galleryItems.length === 0 && (
-                            <div className="col-span-full text-center text-muted-foreground py-8">
-                              No media yet. Add your first image or video!
+                          </div>
+
+                          {/* Videos Section */}
+                          <div>
+                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                              <Play className="h-5 w-5 text-accent" />
+                              Videos
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                              {galleryItems.filter(item => item.type === 'video').map((item) => (
+                                <div key={item.id} className="relative group">
+                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
+                                    <Play className="h-12 w-12 text-accent" />
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
+                                    disabled={isSaving}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                              {galleryItems.filter(item => item.type === 'video').length === 0 && (
+                                <div className="col-span-full text-center text-muted-foreground py-8">
+                                  No videos yet. Add your first video!
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
                         </div>
                       </TabsContent>
 

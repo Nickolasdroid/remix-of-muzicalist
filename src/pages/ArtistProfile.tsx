@@ -530,54 +530,74 @@ const ArtistProfile = () => {
 
                 {/* Gallery Tab */}
                 <TabsContent value="gallery">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                      <Images className="h-6 w-6 text-accent" />
-                      Gallery
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {/* Images */}
-                      {artist.gallery.images.map((image: string, index: number) => (
-                        <Dialog key={`image-${index}`}>
-                          <DialogTrigger asChild>
-                            <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                  <div className="space-y-8">
+                    {/* Photos Section */}
+                    <div>
+                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                        <Images className="h-6 w-6 text-accent" />
+                        Photos
+                      </h2>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {artist.gallery.images.map((image: string, index: number) => (
+                          <Dialog key={`image-${index}`}>
+                            <DialogTrigger asChild>
+                              <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                                <img 
+                                  src={image} 
+                                  alt={`Gallery image ${index + 1}`}
+                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl">
                               <img 
                                 src={image} 
                                 alt={`Gallery image ${index + 1}`}
-                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                className="w-full h-auto rounded-lg"
                               />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl">
-                            <img 
-                              src={image} 
-                              alt={`Gallery image ${index + 1}`}
-                              className="w-full h-auto rounded-lg"
-                            />
-                          </DialogContent>
-                        </Dialog>
-                      ))}
-                      
-                      {/* Videos */}
-                      {artist.gallery.videos.map((video: string, index: number) => (
-                        <Dialog key={`video-${index}`}>
-                          <DialogTrigger asChild>
-                            <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                              <Play className="h-12 w-12 text-accent" />
-                            </div>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl">
-                            <div className="aspect-video">
-                              <iframe
-                                src={video}
-                                className="w-full h-full rounded-lg"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                              ></iframe>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      ))}
+                            </DialogContent>
+                          </Dialog>
+                        ))}
+                        {artist.gallery.images.length === 0 && (
+                          <div className="col-span-full text-center text-muted-foreground py-8">
+                            No photos available yet.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Videos Section */}
+                    <div>
+                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                        <Play className="h-6 w-6 text-accent" />
+                        Videos
+                      </h2>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {artist.gallery.videos.map((video: string, index: number) => (
+                          <Dialog key={`video-${index}`}>
+                            <DialogTrigger asChild>
+                              <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
+                                <Play className="h-12 w-12 text-accent" />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl">
+                              <div className="aspect-video">
+                                <iframe
+                                  src={video}
+                                  className="w-full h-full rounded-lg"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                ></iframe>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        ))}
+                        {artist.gallery.videos.length === 0 && (
+                          <div className="col-span-full text-center text-muted-foreground py-8">
+                            No videos available yet.
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
