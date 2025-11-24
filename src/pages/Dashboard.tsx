@@ -107,6 +107,16 @@ const Dashboard = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: "", date: "", description: "" });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  
+  // Ad limits
+  const STANDARD_AD_LIMIT = 5;
+  const PREMIUM_AD_LIMIT = 2;
+  
+  // Calculate used ads
+  const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
+  const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
+  const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
+  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -1619,6 +1629,40 @@ const Dashboard = () => {
                       </DialogContent>
                     </Dialog>
                   </div>
+                  
+                  {/* Ad Allocation Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <Card className="border-accent/20">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <FileText className="h-5 w-5 text-accent" />
+                          <h3 className="font-semibold text-foreground">Standard Ads (Text Only)</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Used: {standardAdsUsed} / {STANDARD_AD_LIMIT}
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                          Remaining: {standardAdsRemaining}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="border-accent/20">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Images className="h-5 w-5 text-accent" />
+                          <h3 className="font-semibold text-foreground">Premium Ads (Text + Media)</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Used: {premiumAdsUsed} / {PREMIUM_AD_LIMIT}
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                          Remaining: {premiumAdsRemaining}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
                   <div className="space-y-4">
                     {announcements.map((announcement) => (
                       <Card key={announcement.id} className="border-accent/20">

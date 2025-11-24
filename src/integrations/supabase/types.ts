@@ -20,6 +20,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          is_premium: boolean
           profile_id: string
           title: string
           updated_at: string
@@ -29,6 +30,7 @@ export type Database = {
           date?: string
           description: string
           id?: string
+          is_premium?: boolean
           profile_id: string
           title: string
           updated_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          is_premium?: boolean
           profile_id?: string
           title?: string
           updated_at?: string
