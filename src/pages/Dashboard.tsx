@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,76 +34,32 @@ import {
   Upload,
   MessageSquare,
   FileText,
-  Settings,
-  Menu
+  Settings as SettingsIcon
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
-
-const DashboardSidebar = ({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) => {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
-
-  const menuItems = [
-    { title: "My Profile", value: "profile", icon: User },
-    { title: "My Messages", value: "messages", icon: MessageSquare },
-    { title: "My Announcements", value: "announcements", icon: Megaphone },
-    { title: "My Posts", value: "posts", icon: FileText },
-    { title: "Settings", value: "settings", icon: Settings },
-  ];
-
-  return (
-    <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.value}>
-                  <SidebarMenuButton
-                    onClick={() => onTabChange(item.value)}
-                    isActive={activeTab === item.value}
-                    className="hover:bg-accent/50"
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {!collapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-  );
-};
 
 const Dashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+
+  // Update active tab when URL params change
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -614,36 +570,20 @@ const Dashboard = () => {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen w-full">
-        <Navigation />
-        
-        <div className="flex w-full pt-20">
-          <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-
-          <main className="flex-1 p-8">
-            <div className="flex items-center gap-4 mb-6">
-              <SidebarTrigger className="lg:hidden">
-                <Menu className="h-5 w-5" />
-              </SidebarTrigger>
-              <h1 className="text-3xl font-display font-bold text-foreground">
-                {activeTab === "profile" && "My Profile"}
-                {activeTab === "messages" && "My Messages"}
-                {activeTab === "announcements" && "My Announcements"}
-                {activeTab === "posts" && "My Posts"}
-                {activeTab === "settings" && "Settings"}
-              </h1>
-              <Button 
-                variant="outline" 
-                onClick={handleLogout}
-                className="ml-auto border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-
-            <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen">
+      <Navigation />
+      
+      <div className="pt-32 pb-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-display font-bold text-foreground">
+              {activeTab === "profile" && "My Profile"}
+              {activeTab === "messages" && "My Messages"}
+              {activeTab === "announcements" && "My Announcements"}
+              {activeTab === "posts" && "My Posts"}
+              {activeTab === "settings" && "Settings"}
+            </h1>
+          </div>
               {/* Profile Tab */}
               {activeTab === "profile" && (
                 <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
@@ -1308,8 +1248,6 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
               )}
-            </div>
-          </main>
         </div>
       </div>
 
@@ -1357,7 +1295,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </SidebarProvider>
+    </div>
   );
 };
 
