@@ -131,13 +131,17 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           career_start_year: number
           county: string
           created_at: string | null
           email: string
+          estimated_price: string | null
           experience_level: Database["public"]["Enums"]["experience_level"]
+          facebook_url: string | null
           first_name: string
           id: string
+          instagram_url: string | null
           last_name: string
           music_genres: string
           number_of_events: number
@@ -145,17 +149,23 @@ export type Database = {
           plan: string
           specialization: Database["public"]["Enums"]["artist_specialization"]
           stage_name: string
+          tiktok_url: string | null
           updated_at: string | null
+          youtube_url: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           career_start_year: number
           county: string
           created_at?: string | null
           email: string
+          estimated_price?: string | null
           experience_level: Database["public"]["Enums"]["experience_level"]
+          facebook_url?: string | null
           first_name: string
           id: string
+          instagram_url?: string | null
           last_name: string
           music_genres: string
           number_of_events?: number
@@ -163,17 +173,23 @@ export type Database = {
           plan?: string
           specialization: Database["public"]["Enums"]["artist_specialization"]
           stage_name: string
+          tiktok_url?: string | null
           updated_at?: string | null
+          youtube_url?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           career_start_year?: number
           county?: string
           created_at?: string | null
           email?: string
+          estimated_price?: string | null
           experience_level?: Database["public"]["Enums"]["experience_level"]
+          facebook_url?: string | null
           first_name?: string
           id?: string
+          instagram_url?: string | null
           last_name?: string
           music_genres?: string
           number_of_events?: number
@@ -181,7 +197,9 @@ export type Database = {
           plan?: string
           specialization?: Database["public"]["Enums"]["artist_specialization"]
           stage_name?: string
+          tiktok_url?: string | null
           updated_at?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }

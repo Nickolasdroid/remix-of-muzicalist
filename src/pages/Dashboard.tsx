@@ -34,7 +34,12 @@ import {
   Upload,
   MessageSquare,
   FileText,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  DollarSign,
+  Facebook,
+  Instagram,
+  Youtube,
+  Link as LinkIcon
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
@@ -89,7 +94,13 @@ const Dashboard = () => {
     musicGenres: "",
     experienceLevel: "",
     numberOfEvents: "",
-    careerStartYear: ""
+    careerStartYear: "",
+    bio: "",
+    estimatedPrice: "",
+    facebookUrl: "",
+    instagramUrl: "",
+    youtubeUrl: "",
+    tiktokUrl: ""
   });
 
   // Announcements state
@@ -187,7 +198,13 @@ const Dashboard = () => {
         musicGenres: profileData.music_genres || "",
         experienceLevel: profileData.experience_level || "",
         numberOfEvents: profileData.number_of_events?.toString() || "",
-        careerStartYear: profileData.career_start_year?.toString() || ""
+        careerStartYear: profileData.career_start_year?.toString() || "",
+        bio: profileData.bio || "",
+        estimatedPrice: profileData.estimated_price || "",
+        facebookUrl: profileData.facebook_url || "",
+        instagramUrl: profileData.instagram_url || "",
+        youtubeUrl: profileData.youtube_url || "",
+        tiktokUrl: profileData.tiktok_url || ""
       });
     } catch (error: any) {
       console.error('Auth check error:', error);
@@ -344,6 +361,18 @@ const Dashboard = () => {
           updateData.experience_level = formData.experienceLevel as any;
           updateData.number_of_events = parseInt(formData.numberOfEvents);
           updateData.career_start_year = parseInt(formData.careerStartYear);
+          break;
+        case 'bio':
+          updateData.bio = formData.bio;
+          break;
+        case 'price':
+          updateData.estimated_price = formData.estimatedPrice;
+          break;
+        case 'social':
+          updateData.facebook_url = formData.facebookUrl;
+          updateData.instagram_url = formData.instagramUrl;
+          updateData.youtube_url = formData.youtubeUrl;
+          updateData.tiktok_url = formData.tiktokUrl;
           break;
       }
 
@@ -960,6 +989,214 @@ const Dashboard = () => {
                               </div>
                             )}
                           </div>
+                        </div>
+
+                        {/* Bio/Description */}
+                        <div className="mt-8">
+                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                            <User className="h-5 w-5 text-accent" />
+                            About Me
+                          </h3>
+                          {editingField === 'bio' ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={formData.bio}
+                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                placeholder="Tell us about yourself, your musical journey, your style..."
+                                className="min-h-[120px]"
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
+                                  <Save className="h-3 w-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  <X className="h-3 w-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="group">
+                              {formData.bio ? (
+                                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                  {formData.bio}
+                                </p>
+                              ) : (
+                                <p className="text-muted-foreground italic">No description added yet</p>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                onClick={() => startEditing('bio')}
+                              >
+                                <Edit2 className="h-4 w-4 mr-2" />
+                                {formData.bio ? 'Edit Description' : 'Add Description'}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Estimated Price */}
+                        <div className="mt-8">
+                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                            <DollarSign className="h-5 w-5 text-accent" />
+                            Estimated Price
+                          </h3>
+                          {editingField === 'price' ? (
+                            <div className="space-y-2">
+                              <Input
+                                value={formData.estimatedPrice}
+                                onChange={(e) => setFormData({...formData, estimatedPrice: e.target.value})}
+                                placeholder="e.g., 500-1000 RON per event"
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
+                                  <Save className="h-3 w-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  <X className="h-3 w-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="group">
+                              {formData.estimatedPrice ? (
+                                <p className="text-muted-foreground">
+                                  <span className="font-semibold text-foreground text-lg">{formData.estimatedPrice}</span>
+                                </p>
+                              ) : (
+                                <p className="text-muted-foreground italic">No price range added yet</p>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                onClick={() => startEditing('price')}
+                              >
+                                <Edit2 className="h-4 w-4 mr-2" />
+                                {formData.estimatedPrice ? 'Edit Price' : 'Add Price'}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Social Networks */}
+                        <div className="mt-8">
+                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                            <LinkIcon className="h-5 w-5 text-accent" />
+                            Social Networks
+                          </h3>
+                          {editingField === 'social' ? (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2">
+                                <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input
+                                  value={formData.facebookUrl}
+                                  onChange={(e) => setFormData({...formData, facebookUrl: e.target.value})}
+                                  placeholder="Facebook profile URL"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input
+                                  value={formData.instagramUrl}
+                                  onChange={(e) => setFormData({...formData, instagramUrl: e.target.value})}
+                                  placeholder="Instagram profile URL"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input
+                                  value={formData.youtubeUrl}
+                                  onChange={(e) => setFormData({...formData, youtubeUrl: e.target.value})}
+                                  placeholder="YouTube channel URL"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Music className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input
+                                  value={formData.tiktokUrl}
+                                  onChange={(e) => setFormData({...formData, tiktokUrl: e.target.value})}
+                                  placeholder="TikTok profile URL"
+                                />
+                              </div>
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
+                                  <Save className="h-3 w-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  <X className="h-3 w-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="group">
+                              <div className="flex flex-wrap gap-3">
+                                {formData.facebookUrl && (
+                                  <a 
+                                    href={formData.facebookUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                                  >
+                                    <Facebook className="h-5 w-5 text-accent" />
+                                    <span className="text-sm">Facebook</span>
+                                  </a>
+                                )}
+                                {formData.instagramUrl && (
+                                  <a 
+                                    href={formData.instagramUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                                  >
+                                    <Instagram className="h-5 w-5 text-accent" />
+                                    <span className="text-sm">Instagram</span>
+                                  </a>
+                                )}
+                                {formData.youtubeUrl && (
+                                  <a 
+                                    href={formData.youtubeUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                                  >
+                                    <Youtube className="h-5 w-5 text-accent" />
+                                    <span className="text-sm">YouTube</span>
+                                  </a>
+                                )}
+                                {formData.tiktokUrl && (
+                                  <a 
+                                    href={formData.tiktokUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                                  >
+                                    <Music className="h-5 w-5 text-accent" />
+                                    <span className="text-sm">TikTok</span>
+                                  </a>
+                                )}
+                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && (
+                                  <p className="text-muted-foreground italic">No social networks added yet</p>
+                                )}
+                              </div>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                                onClick={() => startEditing('social')}
+                              >
+                                <Edit2 className="h-4 w-4 mr-2" />
+                                {(formData.facebookUrl || formData.instagramUrl || formData.youtubeUrl || formData.tiktokUrl) ? 'Edit Social Networks' : 'Add Social Networks'}
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </TabsContent>
 
