@@ -90,6 +90,36 @@ const Dashboard = () => {
     "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
   ];
 
+  // Data loading functions (defined early to avoid hoisting issues)
+  const loadAnnouncements = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('announcements')
+      .select('*')
+      .eq('profile_id', user.id)
+      .order('date', { ascending: false });
+    if (data) setAnnouncements(data);
+  };
+
+  const loadGalleryItems = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('gallery_items')
+      .select('*')
+      .eq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setGalleryItems(data);
+  };
+
+  const loadCalendarEvents = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('calendar_events')
+      .select('*')
+      .eq('profile_id', user.id);
+    if (data) setCalendarEvents(data);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -371,16 +401,6 @@ const Dashboard = () => {
   };
 
   // Announcements functions
-  const loadAnnouncements = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('announcements')
-      .select('*')
-      .eq('profile_id', user.id)
-      .order('date', { ascending: false });
-    if (data) setAnnouncements(data);
-  };
-
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.title || !newAnnouncement.date) return;
     
@@ -429,16 +449,6 @@ const Dashboard = () => {
   };
 
   // Gallery functions
-  const loadGalleryItems = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('gallery_items')
-      .select('*')
-      .eq('profile_id', user.id)
-      .order('created_at', { ascending: false });
-    if (data) setGalleryItems(data);
-  };
-
   const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -527,15 +537,6 @@ const Dashboard = () => {
   };
 
   // Calendar functions
-  const loadCalendarEvents = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('calendar_events')
-      .select('*')
-      .eq('profile_id', user.id);
-    if (data) setCalendarEvents(data);
-  };
-
   const handleSaveCalendarEvent = async () => {
     if (!user || !selectedDate) return;
 
