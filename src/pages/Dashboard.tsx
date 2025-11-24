@@ -5,11 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User } from "lucide-react";
+import { 
+  LogOut, 
+  Camera, 
+  Save, 
+  User, 
+  MapPin, 
+  Star, 
+  Music, 
+  Calendar as CalendarIcon, 
+  Award,
+  Phone,
+  Mail,
+  Edit2,
+  X
+} from "lucide-react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
@@ -20,7 +37,7 @@ const Dashboard = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
   
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -225,7 +242,7 @@ const Dashboard = () => {
       if (error) throw error;
 
       await checkAuth();
-      setIsEditing(false);
+      setEditingField(null);
 
       toast({
         title: "Success",
@@ -253,19 +270,80 @@ const Dashboard = () => {
     );
   }
 
+  const startEditing = (field: string) => {
+    setEditingField(field);
+  };
+
+  const cancelEditing = () => {
+    setEditingField(null);
+    checkAuth(); // Reset to original values
+  };
+
+  const saveField = async (field: string) => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const updateData: any = {};
+      
+      switch(field) {
+        case 'names':
+          updateData.first_name = formData.firstName;
+          updateData.last_name = formData.lastName;
+          updateData.stage_name = formData.stageName;
+          break;
+        case 'contact':
+          updateData.phone = formData.phone;
+          break;
+        case 'location':
+          updateData.county = formData.county;
+          break;
+        case 'specialization':
+          updateData.specialization = formData.specialization as any;
+          break;
+        case 'genres':
+          updateData.music_genres = formData.musicGenres;
+          break;
+        case 'experience':
+          updateData.experience_level = formData.experienceLevel as any;
+          updateData.number_of_events = parseInt(formData.numberOfEvents);
+          updateData.career_start_year = parseInt(formData.careerStartYear);
+          break;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      await checkAuth();
+      setEditingField(null);
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-accent/5">
+    <div className="min-h-screen">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-2">
-                Artist Dashboard
-              </h1>
-              <p className="text-muted-foreground">Manage your profile and settings</p>
-            </div>
+      <div className="pt-32 pb-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-display font-bold text-foreground">My Profile</h1>
             <Button 
               variant="outline" 
               onClick={handleLogout}
@@ -276,194 +354,365 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Profile Picture Card */}
-            <Card className="p-6 bg-card/50 backdrop-blur border-accent/20">
-              <div className="text-center">
-                <Avatar className="h-32 w-32 mx-auto mb-4 ring-4 ring-accent/20">
-                  <AvatarImage src={profile?.avatar_url} />
-                  <AvatarFallback className="bg-accent text-accent-foreground text-2xl">
-                    {formData.stageName?.charAt(0) || <User className="h-12 w-12" />}
-                  </AvatarFallback>
-                </Avatar>
-
-                <h2 className="text-2xl font-display font-bold text-foreground mb-1">
-                  {formData.stageName}
-                </h2>
-                <p className="text-muted-foreground mb-4">{formData.specialization}</p>
-
-                <label htmlFor="avatar-upload">
-                  <Button variant="outline" className="w-full" asChild>
-                    <span className="cursor-pointer">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Change Picture
-                    </span>
-                  </Button>
-                </label>
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </div>
-            </Card>
-
-            {/* Profile Details Card */}
-            <Card className="lg:col-span-2 p-6 bg-card/50 backdrop-blur border-accent/20">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-display font-bold text-foreground">Profile Information</h3>
-                {!isEditing ? (
-                  <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                    Edit Profile
-                  </Button>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSaveProfile} disabled={isSaving} size="sm" className="bg-accent text-accent-foreground">
-                      <Save className="h-4 w-4 mr-2" />
-                      {isSaving ? "Saving..." : "Save"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>First Name</Label>
-                    <Input
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                      disabled={!isEditing}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label>Last Name</Label>
-                    <Input
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                      disabled={!isEditing}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label>Stage Name</Label>
-                  <Input
-                    value={formData.stageName}
-                    onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                    disabled={!isEditing}
-                    className="mt-2"
+          <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+            <CardContent className="p-8">
+              {/* Header Section */}
+              <div className="flex flex-col md:flex-row gap-8 mb-8">
+                <div className="flex-shrink-0 relative group">
+                  <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                      <User className="h-20 w-20 text-accent" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Camera className="h-8 w-8 text-white" />
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Email</Label>
-                    <Input
-                      value={formData.email}
-                      disabled
-                      className="mt-2 bg-muted/50"
-                    />
-                  </div>
-                  <div>
-                    <Label>Phone</Label>
-                    <Input
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      disabled={!isEditing}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between flex-wrap gap-4">
+                    <div className="flex-1">
+                      {editingField === 'names' ? (
+                        <div className="space-y-3">
+                          <Input
+                            value={formData.stageName}
+                            onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                            placeholder="Stage Name"
+                            className="text-2xl font-display font-bold"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              value={formData.firstName}
+                              onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                              placeholder="First Name"
+                            />
+                            <Input
+                              value={formData.lastName}
+                              onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                              placeholder="Last Name"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => saveField('names')} disabled={isSaving}>
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing}>
+                              <X className="h-3 w-3 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="group">
+                          <div className="flex items-center gap-2">
+                            <h1 className="text-4xl font-display font-bold text-foreground">
+                              {formData.stageName}
+                            </h1>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => startEditing('names')}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <p className="text-xl text-muted-foreground mb-4">
+                            {formData.firstName} {formData.lastName}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-wrap gap-3 mb-4">
+                        {editingField === 'specialization' ? (
+                          <div className="flex items-center gap-2">
+                            <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Singer">Singer</SelectItem>
+                                <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
+                                <SelectItem value="DJ">DJ</SelectItem>
+                                <SelectItem value="Band">Band</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button size="sm" onClick={() => saveField('specialization')} disabled={isSaving}>
+                              <Save className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing}>
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="group flex items-center gap-2">
+                            <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                              {formData.specialization}
+                            </Badge>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                              onClick={() => startEditing('specialization')}
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {editingField === 'location' ? (
+                          <div className="flex items-center gap-2">
+                            <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {romanianCounties.map(county => (
+                                  <SelectItem key={county} value={county}>{county}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button size="sm" onClick={() => saveField('location')} disabled={isSaving}>
+                              <Save className="h-3 w-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing}>
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="group flex items-center gap-2 text-muted-foreground">
+                            <MapPin className="h-5 w-5" />
+                            <span className="text-base">{formData.county}</span>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                              onClick={() => startEditing('location')}
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>County</Label>
-                    <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})} disabled={!isEditing}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {romanianCounties.map(county => (
-                          <SelectItem key={county} value={county}>{county}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                      <Star className="h-6 w-6 fill-current" />
+                      <span className="text-2xl font-bold">New</span>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Specialization</Label>
-                    <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})} disabled={!isEditing}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Singer">Singer</SelectItem>
-                        <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
-                        <SelectItem value="DJ">DJ</SelectItem>
-                        <SelectItem value="Band">Band</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
 
-                <div>
-                  <Label>Music Genres</Label>
-                  <Input
-                    value={formData.musicGenres}
-                    onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
-                    disabled={!isEditing}
-                    className="mt-2"
-                    placeholder="e.g., Pop, Rock, Jazz"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Experience Level</Label>
-                    <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})} disabled={!isEditing}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Beginner">Beginner</SelectItem>
-                        <SelectItem value="Intermediate">Intermediate</SelectItem>
-                        <SelectItem value="Advanced">Advanced</SelectItem>
-                        <SelectItem value="Professional">Professional</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  {/* Contact Buttons */}
+                  <div className="flex flex-wrap gap-3 mt-6">
+                    {editingField === 'contact' ? (
+                      <div className="flex items-center gap-2 flex-1">
+                        <Input
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          placeholder="Phone Number"
+                          className="flex-1"
+                        />
+                        <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
+                          <Save className="h-3 w-3 mr-1" />
+                          Save
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={cancelEditing}>
+                          <X className="h-3 w-3 mr-1" />
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Mail className="mr-2 h-4 w-4" />
+                          {formData.email}
+                        </Button>
+                        <div className="group flex items-center gap-2">
+                          <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                            <Phone className="mr-2 h-4 w-4" />
+                            {formData.phone || 'Add Phone'}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                            onClick={() => startEditing('contact')}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <div>
-                    <Label>Number of Events</Label>
-                    <Input
-                      type="number"
-                      value={formData.numberOfEvents}
-                      onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
-                      disabled={!isEditing}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label>Career Start Year</Label>
-                  <Input
-                    type="number"
-                    value={formData.careerStartYear}
-                    onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
-                    disabled={!isEditing}
-                    className="mt-2"
-                  />
                 </div>
               </div>
-            </Card>
-          </div>
+
+              <Separator className="my-8" />
+
+              {/* Tabs Section */}
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-8">
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
+
+                {/* Details Tab */}
+                <TabsContent value="details" className="space-y-8">
+                  {/* Details Grid */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* Music Genres */}
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <Music className="h-5 w-5 text-accent" />
+                        Music Genres
+                      </h3>
+                      {editingField === 'genres' ? (
+                        <div className="space-y-2">
+                          <Input
+                            value={formData.musicGenres}
+                            onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
+                            placeholder="e.g., Pop, Rock, Jazz"
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing}>
+                              <X className="h-3 w-3 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="group">
+                          <div className="flex flex-wrap gap-2">
+                            {formData.musicGenres?.split(',').map((genre: string) => (
+                              <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                                {genre.trim()}
+                              </Badge>
+                            ))}
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                            onClick={() => startEditing('genres')}
+                          >
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit Genres
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Experience */}
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <CalendarIcon className="h-5 w-5 text-accent" />
+                        Experience
+                      </h3>
+                      {editingField === 'experience' ? (
+                        <div className="space-y-3">
+                          <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Experience Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Beginner">Beginner</SelectItem>
+                              <SelectItem value="Intermediate">Intermediate</SelectItem>
+                              <SelectItem value="Advanced">Advanced</SelectItem>
+                              <SelectItem value="Professional">Professional</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            type="number"
+                            value={formData.numberOfEvents}
+                            onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
+                            placeholder="Number of Events"
+                          />
+                          <Input
+                            type="number"
+                            value={formData.careerStartYear}
+                            onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
+                            placeholder="Career Start Year"
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing}>
+                              <X className="h-3 w-3 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="group">
+                          <div className="space-y-2">
+                            <p className="text-muted-foreground">
+                              Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
+                            </p>
+                            <p className="text-muted-foreground flex items-center gap-2">
+                              <Award className="h-4 w-4 text-accent" />
+                              <span className="font-semibold text-foreground">{formData.numberOfEvents}+</span> events performed
+                            </p>
+                            <p className="text-muted-foreground">
+                              Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
+                            onClick={() => startEditing('experience')}
+                          >
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit Experience
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Settings Tab */}
+                <TabsContent value="settings" className="space-y-6">
+                  <Card className="p-6 bg-card/50">
+                    <h3 className="text-xl font-display font-bold mb-4">Account Settings</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Email (Cannot be changed)</Label>
+                        <Input
+                          value={formData.email}
+                          disabled
+                          className="mt-2 bg-muted/50"
+                        />
+                      </div>
+                      <Button 
+                        variant="destructive" 
+                        onClick={handleLogout}
+                        className="w-full"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
