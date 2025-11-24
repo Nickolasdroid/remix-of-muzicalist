@@ -14,7 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          career_start_year: number
+          county: string
+          created_at: string | null
+          email: string
+          experience_level: Database["public"]["Enums"]["experience_level"]
+          first_name: string
+          id: string
+          last_name: string
+          music_genres: string
+          number_of_events: number
+          phone: string
+          specialization: Database["public"]["Enums"]["artist_specialization"]
+          stage_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          career_start_year: number
+          county: string
+          created_at?: string | null
+          email: string
+          experience_level: Database["public"]["Enums"]["experience_level"]
+          first_name: string
+          id: string
+          last_name: string
+          music_genres: string
+          number_of_events?: number
+          phone: string
+          specialization: Database["public"]["Enums"]["artist_specialization"]
+          stage_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          career_start_year?: number
+          county?: string
+          created_at?: string | null
+          email?: string
+          experience_level?: Database["public"]["Enums"]["experience_level"]
+          first_name?: string
+          id?: string
+          last_name?: string
+          music_genres?: string
+          number_of_events?: number
+          phone?: string
+          specialization?: Database["public"]["Enums"]["artist_specialization"]
+          stage_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +76,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"
+      experience_level:
+        | "Beginner"
+        | "Intermediate"
+        | "Advanced"
+        | "Professional"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +208,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      artist_specialization: ["Singer", "Instrumentalist", "DJ", "Band"],
+      experience_level: [
+        "Beginner",
+        "Intermediate",
+        "Advanced",
+        "Professional",
+      ],
+    },
   },
 } as const
