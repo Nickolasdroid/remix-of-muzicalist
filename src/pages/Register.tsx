@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
 import { UserPlus, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
@@ -15,7 +14,6 @@ import { Area } from "react-easy-crop";
 const Register = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -44,23 +42,6 @@ const Register = () => {
 
   const totalSteps = 4;
   const progressPercentage = (currentStep / totalSteps) * 100;
-
-  useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Show loading animation when changing steps
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [currentStep]);
 
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -175,23 +156,6 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
             
-            {/* Loading Animation */}
-            {isLoading ? (
-              <div className="space-y-4 animate-in fade-in duration-300 pb-6 border-b border-border">
-                <Skeleton className="h-8 w-48 mx-auto" />
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4].map((step) => (
-                    <Skeleton 
-                      key={step} 
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        step === currentStep ? 'w-12' : 'w-8'
-                      }`} 
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
               <div className="space-y-6 animate-in fade-in duration-500">
