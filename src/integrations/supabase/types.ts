@@ -177,22 +177,26 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
-          career_start_year: number
+          career_start_year: number | null
           county: string
           created_at: string | null
           email: string
           estimated_price: string | null
-          experience_level: Database["public"]["Enums"]["experience_level"]
+          experience_level:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
           facebook_url: string | null
           first_name: string
           id: string
           instagram_url: string | null
           last_name: string
-          music_genres: string
+          music_genres: string | null
           number_of_events: number
           phone: string
           plan: string
-          specialization: Database["public"]["Enums"]["artist_specialization"]
+          specialization:
+            | Database["public"]["Enums"]["artist_specialization"]
+            | null
           stage_name: string
           tiktok_url: string | null
           updated_at: string | null
@@ -201,22 +205,26 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
-          career_start_year: number
+          career_start_year?: number | null
           county: string
           created_at?: string | null
           email: string
           estimated_price?: string | null
-          experience_level: Database["public"]["Enums"]["experience_level"]
+          experience_level?:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
           facebook_url?: string | null
           first_name: string
           id: string
           instagram_url?: string | null
           last_name: string
-          music_genres: string
+          music_genres?: string | null
           number_of_events?: number
           phone: string
           plan?: string
-          specialization: Database["public"]["Enums"]["artist_specialization"]
+          specialization?:
+            | Database["public"]["Enums"]["artist_specialization"]
+            | null
           stage_name: string
           tiktok_url?: string | null
           updated_at?: string | null
@@ -225,26 +233,51 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
-          career_start_year?: number
+          career_start_year?: number | null
           county?: string
           created_at?: string | null
           email?: string
           estimated_price?: string | null
-          experience_level?: Database["public"]["Enums"]["experience_level"]
+          experience_level?:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
           facebook_url?: string | null
           first_name?: string
           id?: string
           instagram_url?: string | null
           last_name?: string
-          music_genres?: string
+          music_genres?: string | null
           number_of_events?: number
           phone?: string
           plan?: string
-          specialization?: Database["public"]["Enums"]["artist_specialization"]
+          specialization?:
+            | Database["public"]["Enums"]["artist_specialization"]
+            | null
           stage_name?: string
           tiktok_url?: string | null
           updated_at?: string | null
           youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          user_id: string
+          user_type: Database["public"]["Enums"]["user_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          user_id: string
+          user_type: Database["public"]["Enums"]["user_type"]
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          user_type?: Database["public"]["Enums"]["user_type"]
         }
         Relationships: []
       }
@@ -253,7 +286,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_type: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["user_type"]
+      }
     }
     Enums: {
       artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"
@@ -262,6 +298,7 @@ export type Database = {
         | "Intermediate"
         | "Advanced"
         | "Professional"
+      user_type: "artist" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -396,6 +433,7 @@ export const Constants = {
         "Advanced",
         "Professional",
       ],
+      user_type: ["artist", "user"],
     },
   },
 } as const

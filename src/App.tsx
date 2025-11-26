@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import Feed from "./pages/Feed";
 import Leaderboard from "./pages/Leaderboard";
 import Register from "./pages/Register";
+import RegisterArtist from "./pages/RegisterArtist";
+import RegisterUser from "./pages/RegisterUser";
 import Categories from "./pages/Categories";
 import CategoryArtists from "./pages/CategoryArtists";
 import Counties from "./pages/Counties";
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register/artist" element={<RegisterArtist />} />
+          <Route path="/register/user" element={<RegisterUser />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/artist/:id" element={<ArtistProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
