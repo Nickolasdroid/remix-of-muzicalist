@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Filter } from "lucide-react";
 import { useState, useMemo } from "react";
+import { ArtistProfileDrawer } from "@/components/ArtistProfileDrawer";
 import {
   Sheet,
   SheetContent,
@@ -26,19 +27,152 @@ const CategoryArtists = () => {
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [filterRating, setFilterRating] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
+  const [selectedArtist, setSelectedArtist] = useState<any>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Mock data - in real app, this would be fetched based on category
   const artists = [
-    { id: "1", name: "Maria Popescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.8, isPremium: true },
-    { id: "2", name: "Ion Ionescu", imageUrl: undefined, county: "Cluj", experience: "intermediate", rating: 4.5, isPremium: false },
-    { id: "3", name: "Alex Gheorghe", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.2, isPremium: true },
-    { id: "4", name: "Mihai Dumitrescu", imageUrl: undefined, county: "Bucharest", experience: "senior", rating: 4.9, isPremium: false },
-    { id: "5", name: "Andrei Popa", imageUrl: undefined, county: "Iași", experience: "intermediate", rating: 4.6, isPremium: true },
-    { id: "6", name: "Elena Vasilescu", imageUrl: undefined, county: "Cluj", experience: "senior", rating: 4.7, isPremium: false },
-    { id: "7", name: "George Marinescu", imageUrl: undefined, county: "Timișoara", experience: "beginner", rating: 4.3, isPremium: true },
-    { id: "8", name: "Diana Constantinescu", imageUrl: undefined, county: "Bucharest", experience: "intermediate", rating: 4.4, isPremium: false },
-    { id: "9", name: "Radu Stoica", imageUrl: undefined, county: "Iași", experience: "senior", rating: 4.8, isPremium: true },
+    { 
+      id: "1", 
+      name: "Maria Popescu", 
+      stageName: "Maria P.",
+      imageUrl: undefined, 
+      county: "Bucharest", 
+      experience: "senior", 
+      rating: 4.8, 
+      isPremium: true,
+      specialization: "Singer",
+      genres: ["Pop", "Jazz", "Soul"],
+      experienceYears: 8,
+      eventsPerformed: 150,
+      description: "Professional vocalist with 8 years of experience performing at weddings, corporate events, and concerts.",
+    },
+    { 
+      id: "2", 
+      name: "Ion Ionescu",
+      stageName: "Johnny G", 
+      imageUrl: undefined, 
+      county: "Cluj", 
+      experience: "intermediate", 
+      rating: 4.5, 
+      isPremium: false,
+      specialization: "Singer",
+      genres: ["Rock", "Blues"],
+      experienceYears: 12,
+      eventsPerformed: 200,
+      description: "Experienced rock and blues singer with powerful vocals and stage presence.",
+    },
+    { 
+      id: "3", 
+      name: "Alex Gheorghe",
+      stageName: "Alex G", 
+      imageUrl: undefined, 
+      county: "Timișoara", 
+      experience: "beginner", 
+      rating: 4.2, 
+      isPremium: true,
+      specialization: "DJ",
+      genres: ["Electronic", "House"],
+      experienceYears: 3,
+      eventsPerformed: 50,
+      description: "Young and energetic DJ specializing in electronic and house music.",
+    },
+    { 
+      id: "4", 
+      name: "Mihai Dumitrescu",
+      stageName: "Mike D", 
+      imageUrl: undefined, 
+      county: "Bucharest", 
+      experience: "senior", 
+      rating: 4.9, 
+      isPremium: false,
+      specialization: "Instrumentalist",
+      genres: ["Jazz", "Classical"],
+      experienceYears: 15,
+      eventsPerformed: 300,
+      description: "Professional saxophonist with extensive experience in jazz and classical music.",
+    },
+    { 
+      id: "5", 
+      name: "Andrei Popa",
+      stageName: "Andy P", 
+      imageUrl: undefined, 
+      county: "Iași", 
+      experience: "intermediate", 
+      rating: 4.6, 
+      isPremium: true,
+      specialization: "Band",
+      genres: ["Rock", "Pop"],
+      experienceYears: 10,
+      eventsPerformed: 180,
+      description: "Lead member of a popular rock and pop band.",
+    },
+    { 
+      id: "6", 
+      name: "Elena Vasilescu",
+      stageName: "Elena V", 
+      imageUrl: undefined, 
+      county: "Cluj", 
+      experience: "senior", 
+      rating: 4.7, 
+      isPremium: false,
+      specialization: "Singer",
+      genres: ["Opera", "Classical"],
+      experienceYears: 20,
+      eventsPerformed: 400,
+      description: "Classically trained soprano with opera performance background.",
+    },
+    { 
+      id: "7", 
+      name: "George Marinescu",
+      stageName: "DJ George", 
+      imageUrl: undefined, 
+      county: "Timișoara", 
+      experience: "beginner", 
+      rating: 4.3, 
+      isPremium: true,
+      specialization: "DJ",
+      genres: ["Hip-Hop", "R&B"],
+      experienceYears: 2,
+      eventsPerformed: 30,
+      description: "Fresh DJ bringing energy to parties with hip-hop and R&B beats.",
+    },
+    { 
+      id: "8", 
+      name: "Diana Constantinescu",
+      stageName: "Diana C", 
+      imageUrl: undefined, 
+      county: "Bucharest", 
+      experience: "intermediate", 
+      rating: 4.4, 
+      isPremium: false,
+      specialization: "Instrumentalist",
+      genres: ["Classical", "Pop"],
+      experienceYears: 7,
+      eventsPerformed: 120,
+      description: "Talented violinist specializing in classical and contemporary music.",
+    },
+    { 
+      id: "9", 
+      name: "Radu Stoica",
+      stageName: "Radu S", 
+      imageUrl: undefined, 
+      county: "Iași", 
+      experience: "senior", 
+      rating: 4.8, 
+      isPremium: true,
+      specialization: "Band",
+      genres: ["Folk", "Traditional"],
+      experienceYears: 18,
+      eventsPerformed: 350,
+      description: "Leader of a traditional folk band celebrating Romanian musical heritage.",
+    },
   ];
+
+  const handleArtistClick = (artist: any) => {
+    setSelectedArtist(artist);
+    setDrawerOpen(true);
+  };
 
   // Filter and sort artists
   const filteredArtists = useMemo(() => {
@@ -191,10 +325,10 @@ const CategoryArtists = () => {
               const borderColor = artist.isPremium ? "border-accent" : "border-burgundy";
               
               return (
-            <Link 
+            <div 
               key={artist.id} 
-              to={`/artist/${artist.id}`}
-              className="group"
+              onClick={() => handleArtistClick(artist)}
+              className="group cursor-pointer"
             >
               <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
                 {artist.imageUrl ? (
@@ -215,7 +349,7 @@ const CategoryArtists = () => {
                   </h3>
                 </div>
               </div>
-            </Link>
+            </div>
             );
             })
           ) : (
@@ -224,6 +358,12 @@ const CategoryArtists = () => {
             </div>
           )}
         </div>
+
+        <ArtistProfileDrawer
+          artist={selectedArtist}
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+        />
       </div>
     </div>
   );
