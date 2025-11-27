@@ -4,13 +4,12 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -116,8 +115,8 @@ const Navigation = () => {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <Sheet>
+                <SheetTrigger asChild>
                   <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
                     <Avatar className="h-8 w-8 ring-2 ring-accent/30">
                       <AvatarImage src={profile?.avatar_url} />
@@ -126,42 +125,63 @@ const Navigation = () => {
                       </AvatarFallback>
                     </Avatar>
                   </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-card border-accent/20">
-                  <DropdownMenuLabel className="text-accent">My Account</DropdownMenuLabel>
-                  {profile?.plan && (
-                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                      Plan: <span className="font-semibold text-accent">{profile.plan}</span>
-                    </div>
-                  )}
-                  <DropdownMenuSeparator className="bg-accent/20" />
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=profile')} className="cursor-pointer hover:bg-accent/10">
-                    <User className="mr-2 h-4 w-4" />
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=messages')} className="cursor-pointer hover:bg-accent/10">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    My Messages
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=announcements')} className="cursor-pointer hover:bg-accent/10">
-                    <Megaphone className="mr-2 h-4 w-4" />
-                    My Announcements
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=posts')} className="cursor-pointer hover:bg-accent/10">
-                    <FileText className="mr-2 h-4 w-4" />
-                    My Posts
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-accent/20" />
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=settings')} className="cursor-pointer hover:bg-accent/10">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-destructive/10 text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-80 bg-card border-accent/20">
+                  <SheetHeader>
+                    <SheetTitle className="text-accent">My Account</SheetTitle>
+                    {profile?.plan && (
+                      <div className="text-sm text-muted-foreground">
+                        Plan: <span className="font-semibold text-accent">{profile.plan}</span>
+                      </div>
+                    )}
+                  </SheetHeader>
+                  <div className="mt-6 space-y-2">
+                    <button
+                      onClick={() => navigate('/dashboard?tab=profile')}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                    >
+                      <User className="h-5 w-5" />
+                      <span>My Profile</span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/dashboard?tab=messages')}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                      <span>My Messages</span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/dashboard?tab=announcements')}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                    >
+                      <Megaphone className="h-5 w-5" />
+                      <span>My Announcements</span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/dashboard?tab=posts')}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                    >
+                      <FileText className="h-5 w-5" />
+                      <span>My Posts</span>
+                    </button>
+                    <div className="h-px bg-accent/20 my-2" />
+                    <button
+                      onClick={() => navigate('/dashboard?tab=settings')}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                    >
+                      <Settings className="h-5 w-5" />
+                      <span>Settings</span>
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-destructive/10 text-destructive transition-colors text-left"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </SheetContent>
+              </Sheet>
             ) : (
               <>
                 <Link to="/login">
