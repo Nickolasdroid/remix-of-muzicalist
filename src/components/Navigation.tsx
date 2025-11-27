@@ -15,11 +15,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import CountrySelector from "./CountrySelector";
+import ArtistSidebar from "./ArtistSidebar";
 
 const Navigation = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [userType, setUserType] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -33,12 +36,20 @@ const Navigation = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const { data } = await supabase
+        const { data: profileData } = await supabase
           .from('profiles')
-          .select('avatar_url, stage_name, plan')
+          .select('avatar_url, stage_name, plan, specialization')
           .eq('id', session.user.id)
           .single();
-        setProfile(data);
+        setProfile(profileData);
+
+        // Fetch user type
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .single();
+        setUserType(roleData?.user_type ?? null);
       }
     };
 
@@ -51,12 +62,20 @@ const Navigation = () => {
       if (session?.user) {
         supabase
           .from('profiles')
-          .select('avatar_url, stage_name, plan')
+          .select('avatar_url, stage_name, plan, specialization')
           .eq('id', session.user.id)
           .single()
           .then(({ data }) => setProfile(data));
+
+        supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data }) => setUserType(data?.user_type ?? null));
       } else {
         setProfile(null);
+        setUserType(null);
       }
     });
 
@@ -116,52 +135,68 @@ const Navigation = () => {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
-                    <Avatar className="h-8 w-8 ring-2 ring-accent/30">
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback className="bg-accent text-accent-foreground text-xs">
-                        {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-card border-accent/20">
-                  <DropdownMenuLabel className="text-accent">My Account</DropdownMenuLabel>
-                  {profile?.plan && (
-                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                      Plan: <span className="font-semibold text-accent">{profile.plan}</span>
-                    </div>
-                  )}
-                  <DropdownMenuSeparator className="bg-accent/20" />
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=profile')} className="cursor-pointer hover:bg-accent/10">
-                    <User className="mr-2 h-4 w-4" />
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=messages')} className="cursor-pointer hover:bg-accent/10">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    My Messages
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=announcements')} className="cursor-pointer hover:bg-accent/10">
-                    <Megaphone className="mr-2 h-4 w-4" />
-                    My Announcements
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=posts')} className="cursor-pointer hover:bg-accent/10">
-                    <FileText className="mr-2 h-4 w-4" />
-                    My Posts
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-accent/20" />
-                  <DropdownMenuItem onClick={() => navigate('/dashboard?tab=settings')} className="cursor-pointer hover:bg-accent/10">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-destructive/10 text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                {userType === 'artist' ? (
+                  <>
+                    <button 
+                      onClick={() => setSidebarOpen(true)}
+                      className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none"
+                    >
+                      <Avatar className="h-8 w-8 ring-2 ring-accent/30">
+                        <AvatarImage src={profile?.avatar_url} />
+                        <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+                          {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                    <ArtistSidebar 
+                      open={sidebarOpen} 
+                      onOpenChange={setSidebarOpen}
+                      profile={profile}
+                      onLogout={handleLogout}
+                    />
+                  </>
+                ) : (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
+                        <Avatar className="h-8 w-8 ring-2 ring-accent/30">
+                          <AvatarImage src={profile?.avatar_url} />
+                          <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+                            {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 bg-card border-accent/20">
+                      <DropdownMenuLabel className="text-accent">My Account</DropdownMenuLabel>
+                      {profile?.plan && (
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                          Plan: <span className="font-semibold text-accent">{profile.plan}</span>
+                        </div>
+                      )}
+                      <DropdownMenuSeparator className="bg-accent/20" />
+                      <DropdownMenuItem onClick={() => navigate('/dashboard?tab=profile')} className="cursor-pointer hover:bg-accent/10">
+                        <User className="mr-2 h-4 w-4" />
+                        My Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/dashboard?tab=messages')} className="cursor-pointer hover:bg-accent/10">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        My Messages
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-accent/20" />
+                      <DropdownMenuItem onClick={() => navigate('/dashboard?tab=settings')} className="cursor-pointer hover:bg-accent/10">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-destructive/10 text-destructive">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </>
             ) : (
               <>
                 <Link to="/login">
