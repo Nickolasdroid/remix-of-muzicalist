@@ -82,10 +82,6 @@ const Announcements = () => {
                         )}
                       </div>
                       
-                      <h3 className="text-2xl font-display font-bold text-foreground mb-3">
-                        {announcement.title}
-                      </h3>
-                      
                       <p className="text-muted-foreground mb-4">
                         {announcement.description}
                       </p>
