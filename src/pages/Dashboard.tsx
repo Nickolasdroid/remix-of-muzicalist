@@ -105,7 +105,7 @@ const Dashboard = () => {
 
   // Announcements state
   const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [newAnnouncement, setNewAnnouncement] = useState({ title: "", date: "", description: "" });
+  const [newAnnouncement, setNewAnnouncement] = useState({ date: "", description: "" });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   
   // Ad limits
@@ -426,7 +426,7 @@ const Dashboard = () => {
 
   // Announcements functions
   const handleAddAnnouncement = async () => {
-    if (!user || !newAnnouncement.title || !newAnnouncement.date) return;
+    if (!user || !newAnnouncement.date) return;
     
     setIsSaving(true);
     try {
@@ -434,7 +434,7 @@ const Dashboard = () => {
         .from('announcements')
         .insert({
           profile_id: user.id,
-          title: newAnnouncement.title,
+          title: "Announcement",
           date: newAnnouncement.date,
           description: newAnnouncement.description
         });
@@ -442,7 +442,7 @@ const Dashboard = () => {
       if (error) throw error;
 
       await loadAnnouncements();
-      setNewAnnouncement({ title: "", date: "", description: "" });
+      setNewAnnouncement({ date: "", description: "" });
       setShowAnnouncementDialog(false);
 
       toast({ title: "Success", description: "Announcement added!" });
@@ -1598,14 +1598,6 @@ const Dashboard = () => {
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
                           <div>
-                            <Label>Title</Label>
-                            <Input
-                              value={newAnnouncement.title}
-                              onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
-                              placeholder="Announcement title"
-                            />
-                          </div>
-                          <div>
                             <Label>Date</Label>
                             <Input
                               type="date"
@@ -1668,20 +1660,19 @@ const Dashboard = () => {
                       <Card key={announcement.id} className="border-accent/20">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between gap-4 mb-3">
-                            <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
-                            <div className="flex items-center gap-2">
+                            <div className="flex-1">
                               <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
                                 {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </Badge>
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                onClick={() => handleDeleteAnnouncement(announcement.id)}
-                                disabled={isSaving}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
                             </div>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => handleDeleteAnnouncement(announcement.id)}
+                              disabled={isSaving}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
                           <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
                         </CardContent>
