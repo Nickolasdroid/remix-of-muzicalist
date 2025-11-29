@@ -118,6 +118,12 @@ const Dashboard = () => {
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
+  // Posts state
+  const [posts, setPosts] = useState<any[]>([]);
+  const [newPost, setNewPost] = useState({ content: "", mediaUrl: "", mediaType: "" });
+  const [showPostDialog, setShowPostDialog] = useState(false);
+  const [postMediaType, setPostMediaType] = useState<'text' | 'image' | 'video'>('text');
+
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
@@ -179,6 +185,16 @@ const Dashboard = () => {
     if (data) setBookingRequests(data);
   };
 
+  const loadPosts = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setPosts(data);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -189,6 +205,7 @@ const Dashboard = () => {
       loadGalleryItems();
       loadCalendarEvents();
       loadBookingRequests();
+      loadPosts();
     }
   }, [user]);
 
@@ -466,6 +483,81 @@ const Dashboard = () => {
 
       await loadAnnouncements();
       toast({ title: "Success", description: "Announcement deleted!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Posts functions
+  const handleAddPost = async () => {
+    if (!user || !newPost.content) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .insert({
+          profile_id: user.id,
+          content: newPost.content,
+          media_url: newPost.mediaUrl || null,
+          media_type: newPost.mediaType || null
+        });
+
+      if (error) throw error;
+
+      await loadPosts();
+      setNewPost({ content: "", mediaUrl: "", mediaType: "" });
+      setShowPostDialog(false);
+      setPostMediaType('text');
+
+      toast({ title: "Success", description: "Post created!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeletePost = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadPosts();
+      toast({ title: "Success", description: "Post deleted!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/posts/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      setNewPost({ ...newPost, mediaUrl: publicUrl, mediaType: 'image' });
+      toast({ title: "Success", description: "Image uploaded!" });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -1680,15 +1772,183 @@ const Dashboard = () => {
 
               {/* Posts Tab */}
               {activeTab === "posts" && (
-                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-                  <CardContent className="p-8">
-                    <div className="text-center py-12">
-                      <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                      <h2 className="text-2xl font-display font-bold mb-2">Posts</h2>
-                      <p className="text-muted-foreground">Coming soon - blog/news posts feature</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                      <FileText className="h-6 w-6 text-accent" />
+                      My Posts
+                    </h2>
+                    <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Post
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Create New Post</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                          <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'text' | 'image' | 'video')}>
+                            <TabsList className="grid w-full grid-cols-3">
+                              <TabsTrigger value="text">Text Only</TabsTrigger>
+                              <TabsTrigger value="image">Photo</TabsTrigger>
+                              <TabsTrigger value="video">Video</TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="text" className="space-y-4">
+                              <div>
+                                <Label>Post Content</Label>
+                                <Textarea
+                                  value={newPost.content}
+                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                                  placeholder="What's on your mind?"
+                                  rows={6}
+                                  className="mt-2"
+                                />
+                              </div>
+                            </TabsContent>
+                            
+                            <TabsContent value="image" className="space-y-4">
+                              <div>
+                                <Label>Post Content</Label>
+                                <Textarea
+                                  value={newPost.content}
+                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                                  placeholder="What's on your mind?"
+                                  rows={4}
+                                  className="mt-2"
+                                />
+                              </div>
+                              {newPost.mediaUrl && newPost.mediaType === 'image' && (
+                                <div className="relative">
+                                  <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-2 right-2"
+                                    onClick={() => setNewPost({...newPost, mediaUrl: "", mediaType: ""})}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                              {!newPost.mediaUrl && (
+                                <>
+                                  <Label htmlFor="post-image" className="cursor-pointer">
+                                    <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                      <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                      <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                    </div>
+                                  </Label>
+                                  <Input
+                                    id="post-image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handlePostImageUpload}
+                                    className="hidden"
+                                  />
+                                </>
+                              )}
+                            </TabsContent>
+                            
+                            <TabsContent value="video" className="space-y-4">
+                              <div>
+                                <Label>Post Content</Label>
+                                <Textarea
+                                  value={newPost.content}
+                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                                  placeholder="What's on your mind?"
+                                  rows={4}
+                                  className="mt-2"
+                                />
+                              </div>
+                              <div>
+                                <Label>Video URL (YouTube/Embed)</Label>
+                                <Input
+                                  value={newPost.mediaUrl}
+                                  onChange={(e) => {
+                                    setNewPost({...newPost, mediaUrl: e.target.value, mediaType: 'video'});
+                                  }}
+                                  placeholder="https://www.youtube.com/embed/..."
+                                  className="mt-2"
+                                />
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+                          
+                          <Button 
+                            onClick={handleAddPost} 
+                            disabled={isSaving || !newPost.content} 
+                            className="w-full bg-accent text-accent-foreground"
+                          >
+                            {isSaving ? "Creating..." : "Create Post"}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {posts.map((post) => (
+                      <Card key={post.id} className="border-accent/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <Badge variant="outline" className="border-accent/50 text-accent">
+                              {new Date(post.created_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </Badge>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => handleDeletePost(post.id)}
+                              disabled={isSaving}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                          
+                          <p className="text-foreground leading-relaxed mb-4">{post.content}</p>
+                          
+                          {post.media_url && post.media_type === 'image' && (
+                            <div className="rounded-lg overflow-hidden border border-accent/20">
+                              <img 
+                                src={post.media_url} 
+                                alt="Post media" 
+                                className="w-full max-h-96 object-cover"
+                              />
+                            </div>
+                          )}
+                          
+                          {post.media_url && post.media_type === 'video' && (
+                            <div className="rounded-lg overflow-hidden border border-accent/20 aspect-video">
+                              <iframe 
+                                src={post.media_url} 
+                                className="w-full h-full"
+                                allowFullScreen
+                              />
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                    
+                    {posts.length === 0 && (
+                      <Card className="border-2 border-dashed border-accent/30">
+                        <CardContent className="p-12 text-center">
+                          <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                          <p className="text-muted-foreground">No posts yet. Create your first post!</p>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* Settings Tab */}
