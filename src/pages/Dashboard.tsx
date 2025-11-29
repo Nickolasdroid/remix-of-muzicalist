@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -105,7 +106,12 @@ const Dashboard = () => {
 
   // Announcements state
   const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [newAnnouncement, setNewAnnouncement] = useState({ description: "" });
+  const [newAnnouncement, setNewAnnouncement] = useState({ 
+    description: "", 
+    isPremium: false, 
+    mediaUrl: "", 
+    mediaType: "" 
+  });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   
   // Ad limits
@@ -442,6 +448,33 @@ const Dashboard = () => {
   };
 
   // Announcements functions
+  const handleAnnouncementMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      setNewAnnouncement({ ...newAnnouncement, mediaUrl: publicUrl, mediaType });
+      toast({ title: "Success", description: "Media uploaded!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
     
@@ -454,13 +487,16 @@ const Dashboard = () => {
           profile_id: user.id,
           title: "Announcement",
           date: todayDate,
-          description: newAnnouncement.description
+          description: newAnnouncement.description,
+          is_premium: newAnnouncement.isPremium,
+          media_url: newAnnouncement.mediaUrl || null,
+          media_type: newAnnouncement.mediaType || null
         });
 
       if (error) throw error;
 
       await loadAnnouncements();
-      setNewAnnouncement({ description: "" });
+      setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "" });
       setShowAnnouncementDialog(false);
 
       toast({ title: "Success", description: "Announcement added!" });
@@ -1685,20 +1721,75 @@ const Dashboard = () => {
                           Add Announcement
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="max-w-md">
                         <DialogHeader>
-                          <DialogTitle>New Announcement</DialogTitle>
+                          <DialogTitle>Add New Announcement</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
+                          <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
+                            <Checkbox
+                              id="premium-ad"
+                              checked={newAnnouncement.isPremium}
+                              onCheckedChange={(checked) => 
+                                setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
+                              }
+                            />
+                            <Label htmlFor="premium-ad" className="cursor-pointer font-medium">
+                              Premium Ad (with photo/video)
+                            </Label>
+                          </div>
+                          
                           <div>
-                            <Label>Description</Label>
+                            <Label htmlFor="announcement-text">Announcement Text</Label>
                             <Textarea
+                              id="announcement-text"
                               value={newAnnouncement.description}
-                              onChange={(e) => setNewAnnouncement({...newAnnouncement, description: e.target.value})}
-                              placeholder="Announcement details..."
+                              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value })}
+                              placeholder="Write your announcement here..."
                               rows={4}
+                              className="mt-2"
                             />
                           </div>
+                          
+                          {newAnnouncement.isPremium && (
+                            <div>
+                              <Label htmlFor="announcement-media">Photo/Video</Label>
+                              {newAnnouncement.mediaUrl ? (
+                                <div className="mt-2 relative">
+                                  {newAnnouncement.mediaType === 'video' ? (
+                                    <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" />
+                                  ) : (
+                                    <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />
+                                  )}
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-2 right-2"
+                                    onClick={() => setNewAnnouncement({...newAnnouncement, mediaUrl: "", mediaType: ""})}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <>
+                                  <Label htmlFor="announcement-media-input" className="cursor-pointer">
+                                    <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                      <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                      <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                    </div>
+                                  </Label>
+                                  <Input
+                                    id="announcement-media-input"
+                                    type="file"
+                                    accept="image/*,video/*"
+                                    onChange={handleAnnouncementMediaUpload}
+                                    className="hidden"
+                                  />
+                                </>
+                              )}
+                            </div>
+                          )}
+                          
                           <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                             {isSaving ? "Adding..." : "Add Announcement"}
                           </Button>
@@ -1745,10 +1836,13 @@ const Dashboard = () => {
                       <Card key={announcement.id} className="border-accent/20">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between gap-4 mb-3">
-                            <div className="flex-1">
+                            <div className="flex-1 flex items-center gap-2">
                               <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
                                 {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </Badge>
+                              {announcement.is_premium && (
+                                <Badge className="bg-accent text-accent-foreground">Premium</Badge>
+                              )}
                             </div>
                             <Button 
                               size="sm" 
@@ -1759,7 +1853,16 @@ const Dashboard = () => {
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
-                          <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
+                          <p className="text-muted-foreground leading-relaxed mb-3">{announcement.description}</p>
+                          {announcement.media_url && (
+                            <div className="mt-3 rounded-lg overflow-hidden border border-accent/20">
+                              {announcement.media_type === 'video' ? (
+                                <video src={announcement.media_url} controls className="w-full max-h-96" />
+                              ) : (
+                                <img src={announcement.media_url} alt="Announcement media" className="w-full max-h-96 object-cover" />
+                              )}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}

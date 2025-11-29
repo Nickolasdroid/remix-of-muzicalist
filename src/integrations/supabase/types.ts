@@ -21,6 +21,8 @@ export type Database = {
           description: string
           id: string
           is_premium: boolean
+          media_type: string | null
+          media_url: string | null
           profile_id: string
           title: string
           updated_at: string
@@ -31,6 +33,8 @@ export type Database = {
           description: string
           id?: string
           is_premium?: boolean
+          media_type?: string | null
+          media_url?: string | null
           profile_id: string
           title: string
           updated_at?: string
@@ -41,6 +45,8 @@ export type Database = {
           description?: string
           id?: string
           is_premium?: boolean
+          media_type?: string | null
+          media_url?: string | null
           profile_id?: string
           title?: string
           updated_at?: string
