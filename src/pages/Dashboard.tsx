@@ -105,7 +105,7 @@ const Dashboard = () => {
 
   // Announcements state
   const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [newAnnouncement, setNewAnnouncement] = useState({ date: "", description: "" });
+  const [newAnnouncement, setNewAnnouncement] = useState({ description: "" });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   
   // Ad limits
@@ -426,23 +426,24 @@ const Dashboard = () => {
 
   // Announcements functions
   const handleAddAnnouncement = async () => {
-    if (!user || !newAnnouncement.date) return;
+    if (!user || !newAnnouncement.description) return;
     
     setIsSaving(true);
     try {
+      const todayDate = new Date().toISOString().split('T')[0];
       const { error } = await supabase
         .from('announcements')
         .insert({
           profile_id: user.id,
           title: "Announcement",
-          date: newAnnouncement.date,
+          date: todayDate,
           description: newAnnouncement.description
         });
 
       if (error) throw error;
 
       await loadAnnouncements();
-      setNewAnnouncement({ date: "", description: "" });
+      setNewAnnouncement({ description: "" });
       setShowAnnouncementDialog(false);
 
       toast({ title: "Success", description: "Announcement added!" });
@@ -1598,14 +1599,6 @@ const Dashboard = () => {
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
                           <div>
-                            <Label>Date</Label>
-                            <Input
-                              type="date"
-                              value={newAnnouncement.date}
-                              onChange={(e) => setNewAnnouncement({...newAnnouncement, date: e.target.value})}
-                            />
-                          </div>
-                          <div>
                             <Label>Description</Label>
                             <Textarea
                               value={newAnnouncement.description}
@@ -1614,7 +1607,7 @@ const Dashboard = () => {
                               rows={4}
                             />
                           </div>
-                          <Button onClick={handleAddAnnouncement} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
+                          <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                             {isSaving ? "Adding..." : "Add Announcement"}
                           </Button>
                         </div>
