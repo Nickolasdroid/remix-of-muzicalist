@@ -1,5 +1,4 @@
 import { User, MapPin, Star } from "lucide-react";
-import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
 interface ArtistCardProps {
@@ -39,8 +38,8 @@ const ArtistCard = ({
           </div>
         )}
         
-        <div className="relative">
-          <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110`}>
+        <Link to={`/artist/${id}`} className="relative">
+          <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer`}>
             {imageUrl ? (
               <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
             ) : (
@@ -56,14 +55,16 @@ const ArtistCard = ({
               <span>{rating.toFixed(1)}</span>
             </div>
           )}
-        </div>
+        </Link>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-accent transition-colors truncate">
-            {stageName}
-          </h3>
+          <Link to={`/artist/${id}`}>
+            <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-accent transition-colors truncate cursor-pointer">
+              {stageName}
+            </h3>
+          </Link>
           
-          <div className="flex items-center gap-4 mb-4 text-sm">
+          <div className="flex items-center gap-4 text-sm">
             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${isPremium ? "bg-accent/20 text-accent" : "bg-burgundy/20 text-burgundy"} font-semibold`}>
               {specialization}
             </span>
@@ -72,16 +73,6 @@ const ArtistCard = ({
               {county}
             </span>
           </div>
-
-          <Link to={`/artist/${id}`}>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className={`${isPremium ? "border-accent text-accent hover:bg-accent hover:text-accent-foreground" : "border-burgundy text-burgundy hover:bg-burgundy hover:text-burgundy-foreground"} transition-all duration-300`}
-            >
-              View Profile
-            </Button>
-          </Link>
         </div>
       </div>
     </div>
