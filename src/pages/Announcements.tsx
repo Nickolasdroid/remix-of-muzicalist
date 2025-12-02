@@ -60,33 +60,35 @@ const Announcements = () => {
           ) : (
             announcements.map((announcement) => (
               <Card key={announcement.id} className="p-6 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
-                <div className="flex gap-6">
-                  <Link to={`/artist/${announcement.profile_id}`} className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity">
+                <div className="flex gap-4">
+                  <Link to={`/artist/${announcement.profile_id}`} className="shrink-0 hover:opacity-80 transition-opacity">
                     <Avatar className="h-16 w-16 border-2 border-accent ring-2 ring-accent/30">
                       <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
                       <AvatarFallback>
                         <User className="h-8 w-8" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-display font-bold text-foreground text-lg hover:text-accent transition-colors">
-                      {announcement.profiles?.stage_name || "Artist"}
-                    </span>
                   </Link>
                   
                   <div className="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
+                      <div className="flex items-center gap-3 mb-1">
+                        <Link to={`/artist/${announcement.profile_id}`} className="hover:text-accent transition-colors">
+                          <span className="font-display font-bold text-foreground text-lg">
+                            {announcement.profiles?.stage_name || "Artist"}
+                          </span>
+                        </Link>
                         {announcement.is_premium && (
                           <Badge className="bg-accent/10 text-accent border-accent/30">
                             Premium
                           </Badge>
                         )}
-                        {announcement.profiles?.specialization && (
-                          <Badge variant="outline" className="border-accent/20">
-                            {announcement.profiles.specialization}
-                          </Badge>
-                        )}
                       </div>
+                      {announcement.profiles?.specialization && (
+                        <span className="text-sm text-muted-foreground mb-3 block">
+                          {announcement.profiles.specialization}
+                        </span>
+                      )}
                       
                       <p className="text-muted-foreground mb-4">
                         {announcement.description}
