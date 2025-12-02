@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar, MapPin, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -60,17 +61,17 @@ const Announcements = () => {
             announcements.map((announcement) => (
               <Card key={announcement.id} className="p-6 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
                 <div className="flex gap-6">
-                  <div className="flex items-center gap-3 shrink-0">
+                  <Link to={`/artist/${announcement.profile_id}`} className="flex items-center gap-3 shrink-0 hover:opacity-80 transition-opacity">
                     <Avatar className="h-16 w-16 border-2 border-accent ring-2 ring-accent/30">
                       <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
                       <AvatarFallback>
                         <User className="h-8 w-8" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-display font-bold text-foreground text-lg">
+                    <span className="font-display font-bold text-foreground text-lg hover:text-accent transition-colors">
                       {announcement.profiles?.stage_name || "Artist"}
                     </span>
-                  </div>
+                  </Link>
                   
                   <div className="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="flex-1">
