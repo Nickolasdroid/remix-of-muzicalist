@@ -397,16 +397,12 @@ const Dashboard = () => {
         case 'location':
           updateData.county = formData.county;
           break;
-        case 'specialization':
-          updateData.specialization = formData.specialization as any;
-          break;
         case 'genres':
           updateData.music_genres = formData.musicGenres;
           break;
         case 'experience':
           updateData.experience_level = formData.experienceLevel as any;
           updateData.number_of_events = parseInt(formData.numberOfEvents);
-          updateData.career_start_year = parseInt(formData.careerStartYear);
           break;
         case 'bio':
           updateData.bio = formData.bio;
@@ -931,41 +927,9 @@ const Dashboard = () => {
                             )}
                             
                             <div className="flex flex-wrap gap-3 mb-4">
-                              {editingField === 'specialization' ? (
-                                <div className="flex items-center gap-2">
-                                  <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
-                                    <SelectTrigger className="w-[180px]">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="Singer">Singer</SelectItem>
-                                      <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
-                                      <SelectItem value="DJ">DJ</SelectItem>
-                                      <SelectItem value="Band">Band</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <Button size="sm" onClick={() => saveField('specialization')} disabled={isSaving}>
-                                    <Save className="h-3 w-3" />
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="group flex items-center gap-2">
-                                  <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
-                                    {formData.specialization}
-                                  </Badge>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                                    onClick={() => startEditing('specialization')}
-                                  >
-                                    <Edit2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              )}
+                              <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                                {formData.specialization}
+                              </Badge>
                               
                               {editingField === 'location' ? (
                                 <div className="flex items-center gap-2">
@@ -1187,12 +1151,6 @@ const Dashboard = () => {
                                   value={formData.numberOfEvents}
                                   onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
                                   placeholder="Number of Events"
-                                />
-                                <Input
-                                  type="number"
-                                  value={formData.careerStartYear}
-                                  onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
-                                  placeholder="Career Start Year"
                                 />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
