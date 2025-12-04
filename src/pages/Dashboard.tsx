@@ -1486,7 +1486,7 @@ const Dashboard = () => {
                         <div>
                           <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                             <CalendarIcon className="h-6 w-6 text-accent" />
-                            My Availability Calendar
+                            My Calendar
                           </h2>
                           <div className="flex flex-col lg:flex-row gap-6">
                             <div className="flex-1">
