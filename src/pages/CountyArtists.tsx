@@ -61,7 +61,7 @@ const CountyArtists = () => {
   };
 
   const getArtistsBySpecialization = (specialization: string) => {
-    return artists.filter(artist => artist.specialization === specialization);
+    return artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
   };
 
   const categories = [
