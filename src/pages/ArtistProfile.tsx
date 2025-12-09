@@ -75,21 +75,38 @@ interface CalendarEvent {
   status: string;
 }
 
+interface Review {
+  id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
 const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [artist, setArtist] = useState<Profile | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
   const [bookingForm, setBookingForm] = useState({
     name: "",
     email: "",
     phone: "",
     eventType: "",
     message: ""
+  });
+  const [reviewForm, setReviewForm] = useState({
+    name: "",
+    email: "",
+    rating: 5,
+    comment: ""
   });
   const { toast } = useToast();
 
@@ -134,6 +151,15 @@ const ArtistProfile = () => {
         .eq('profile_id', id);
 
       setCalendarEvents(calendarData || []);
+
+      // Fetch reviews
+      const { data: reviewsData } = await supabase
+        .from('reviews')
+        .select('id, reviewer_name, rating, comment, created_at')
+        .eq('profile_id', id)
+        .order('created_at', { ascending: false });
+
+      setReviews(reviewsData || []);
 
       setLoading(false);
     };
@@ -232,6 +258,73 @@ const ArtistProfile = () => {
   const getImages = () => galleryItems.filter(item => item.type === 'image');
   const getVideos = () => galleryItems.filter(item => item.type === 'video');
 
+  const getAverageRating = () => {
+    if (reviews.length === 0) return null;
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews.length).toFixed(1);
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
+
+    setSubmittingReview(true);
+    try {
+      const { error } = await supabase.from('reviews').insert({
+        profile_id: id,
+        reviewer_name: reviewForm.name.trim(),
+        reviewer_email: reviewForm.email.trim(),
+        rating: reviewForm.rating,
+        comment: reviewForm.comment.trim() || null
+      });
+
+      if (error) throw error;
+
+      // Refetch reviews
+      const { data: reviewsData } = await supabase
+        .from('reviews')
+        .select('id, reviewer_name, rating, comment, created_at')
+        .eq('profile_id', id)
+        .order('created_at', { ascending: false });
+
+      setReviews(reviewsData || []);
+
+      toast({
+        title: "Review Submitted!",
+        description: `Thank you for reviewing ${artist?.stage_name}.`,
+      });
+
+      setReviewDialogOpen(false);
+      setReviewForm({ name: "", email: "", rating: 5, comment: "" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit review. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const renderStars = (rating: number, interactive = false, onRate?: (r: number) => void) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`h-5 w-5 ${
+              star <= rating
+                ? 'text-accent fill-accent'
+                : 'text-muted-foreground'
+            } ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`}
+            onClick={() => interactive && onRate?.(star)}
+          />
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen">
@@ -314,7 +407,10 @@ const ArtistProfile = () => {
 
                     <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                       <Star className="h-6 w-6 fill-current" />
-                      <span className="text-2xl font-bold">N/A</span>
+                      <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
+                      {reviews.length > 0 && (
+                        <span className="text-sm opacity-80">({reviews.length})</span>
+                      )}
                     </div>
                   </div>
 
@@ -340,11 +436,12 @@ const ArtistProfile = () => {
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-8">
+                <TabsList className="grid w-full grid-cols-5 mb-8">
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="announcements">Announcements</TabsTrigger>
                   <TabsTrigger value="gallery">Gallery</TabsTrigger>
                   <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                  <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
                 </TabsList>
 
                 {/* Details Tab */}
@@ -598,7 +695,135 @@ const ArtistProfile = () => {
                     </div>
                   </div>
                 </TabsContent>
+
+                {/* Reviews Tab */}
+                <TabsContent value="reviews" className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                      <Star className="h-6 w-6 text-accent" />
+                      Reviews
+                      {getAverageRating() && (
+                        <span className="text-lg font-normal text-muted-foreground ml-2">
+                          (Average: {getAverageRating()} / 5)
+                        </span>
+                      )}
+                    </h2>
+                    <Button 
+                      onClick={() => setReviewDialogOpen(true)}
+                      className="bg-accent text-accent-foreground hover:bg-accent/90"
+                    >
+                      Write a Review
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {reviews.length > 0 ? (
+                      reviews.map((review) => (
+                        <Card key={review.id} className="border-accent/20">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between gap-4 mb-3">
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10 border border-accent/30">
+                                  <AvatarFallback className="bg-accent/10 text-accent">
+                                    {review.reviewer_name.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <h4 className="font-semibold text-foreground">{review.reviewer_name}</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    {new Date(review.created_at).toLocaleDateString('en-US', { 
+                                      month: 'short', 
+                                      day: 'numeric', 
+                                      year: 'numeric' 
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
+                              {renderStars(review.rating)}
+                            </div>
+                            {review.comment && (
+                              <p className="text-muted-foreground leading-relaxed">{review.comment}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center py-12">
+                        <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                        <p className="text-muted-foreground mb-4">No reviews yet. Be the first to review!</p>
+                        <Button 
+                          onClick={() => setReviewDialogOpen(true)}
+                          variant="outline"
+                          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                        >
+                          Write the First Review
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
               </Tabs>
+
+              {/* Review Dialog */}
+              <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-display">Review {artist.stage_name}</DialogTitle>
+                    <DialogDescription>
+                      Share your experience with this artist
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="reviewerName">Your Name</Label>
+                      <Input
+                        id="reviewerName"
+                        placeholder="Your name"
+                        value={reviewForm.name}
+                        onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                        required
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="reviewerEmail">Your Email</Label>
+                      <Input
+                        id="reviewerEmail"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={reviewForm.email}
+                        onChange={(e) => setReviewForm({ ...reviewForm, email: e.target.value })}
+                        required
+                        maxLength={255}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Rating</Label>
+                      <div className="py-2">
+                        {renderStars(reviewForm.rating, true, (rating) => setReviewForm({ ...reviewForm, rating }))}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="reviewComment">Your Review (Optional)</Label>
+                      <Textarea
+                        id="reviewComment"
+                        placeholder="Share your experience..."
+                        value={reviewForm.comment}
+                        onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                        rows={4}
+                        maxLength={1000}
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                      disabled={submittingReview}
+                    >
+                      {submittingReview ? "Submitting..." : "Submit Review"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
 
               <Separator className="my-8" />
 
