@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Bookmark, Mail, Play, MoreVertical, Flag } from "lucide-react";
+import { Heart, Bookmark, Mail, Play, MoreHorizontal, Flag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -213,7 +213,7 @@ const Feed = () => {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
