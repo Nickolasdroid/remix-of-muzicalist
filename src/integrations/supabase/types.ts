@@ -304,6 +304,44 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          profile_id: string
+          rating: number
+          reviewer_email: string
+          reviewer_name: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          profile_id: string
+          rating: number
+          reviewer_email: string
+          reviewer_name: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          profile_id?: string
+          rating?: number
+          reviewer_email?: string
+          reviewer_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
