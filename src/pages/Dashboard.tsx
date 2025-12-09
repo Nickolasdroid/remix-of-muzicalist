@@ -1517,68 +1517,70 @@ const Dashboard = () => {
                                 }}
                               />
                             </div>
-                            <div className="lg:w-80 space-y-4">
-                              <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
-                                <h4 className="font-semibold text-foreground">Legend</h4>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                                  <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-muted/80"></div>
-                                  <span className="text-sm text-muted-foreground">Unavailable</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-accent"></div>
-                                  <span className="text-sm text-muted-foreground">Available</span>
-                                </div>
-                              </div>
-                              {selectedDate && (
-                                <Card className="p-4">
-                                  <h4 className="font-semibold text-foreground mb-3">
-                                    {selectedDate.toLocaleDateString('en-US', { 
-                                      weekday: 'long', 
-                                      year: 'numeric', 
-                                      month: 'long', 
-                                      day: 'numeric' 
-                                    })}
-                                  </h4>
-                                  <div className="space-y-3">
-                                    <div>
-                                      <Label>Status</Label>
-                                      <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="available">Available</SelectItem>
-                                          <SelectItem value="busy">Busy / Booked</SelectItem>
-                                          <SelectItem value="blocked">Unavailable</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <div>
-                                      <Label>Notes (optional)</Label>
-                                      <Textarea
-                                        value={eventNotes}
-                                        onChange={(e) => setEventNotes(e.target.value)}
-                                        placeholder="Event details..."
-                                        rows={3}
-                                      />
-                                    </div>
-                                    <div className="flex gap-2">
-                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
-                                        {isSaving ? "Saving..." : "Save"}
-                                      </Button>
-                                      {getEventForDate(selectedDate) && (
-                                        <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      )}
-                                    </div>
+                            <div className="lg:w-80 flex flex-col gap-4">
+                              <div className="flex gap-4">
+                                <div className="p-4 rounded-lg bg-secondary/50 space-y-3 flex-shrink-0">
+                                  <h4 className="font-semibold text-foreground">Legend</h4>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                                    <span className="text-sm text-muted-foreground">Busy / Booked</span>
                                   </div>
-                                </Card>
-                              )}
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-muted/80"></div>
+                                    <span className="text-sm text-muted-foreground">Unavailable</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-accent"></div>
+                                    <span className="text-sm text-muted-foreground">Available</span>
+                                  </div>
+                                </div>
+                                {selectedDate && (
+                                  <Card className="p-4 flex-1">
+                                    <h4 className="font-semibold text-foreground mb-3">
+                                      {selectedDate.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                      })}
+                                    </h4>
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label>Status</Label>
+                                        <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="available">Available</SelectItem>
+                                            <SelectItem value="busy">Busy / Booked</SelectItem>
+                                            <SelectItem value="blocked">Unavailable</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Label>Notes (optional)</Label>
+                                        <Textarea
+                                          value={eventNotes}
+                                          onChange={(e) => setEventNotes(e.target.value)}
+                                          placeholder="Event details..."
+                                          rows={3}
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
+                                          {isSaving ? "Saving..." : "Save"}
+                                        </Button>
+                                        {getEventForDate(selectedDate) && (
+                                          <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </Card>
+                                )}
+                              </div>
                             </div>
                           </div>
 
