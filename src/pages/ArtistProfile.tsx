@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -25,9 +25,7 @@ import {
   Images,
   Play,
   DollarSign,
-  Megaphone,
-  Video,
-  Disc3
+  Megaphone
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -35,232 +33,55 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock data - will be replaced with real data from backend
-const mockArtists: Record<string, any> = {
-  "1": {
-    id: "1",
-    fullName: "Maria Popescu",
-    stageName: "Maria P.",
-    email: "maria.p@example.com",
-    phone: "+40 712 345 678",
-    county: "București",
-    specialization: "Singer",
-    genres: ["Pop", "Jazz", "Soul"],
-    experienceYears: 8,
-    eventsPerformed: 150,
-    description: "Professional vocalist with 8 years of experience performing at weddings, corporate events, and concerts. Specializing in pop, jazz, and soul music with a unique voice that captivates audiences.",
-    imageUrl: "",
-    rating: 4.9,
-    isPremium: true,
-    socialMedia: {
-      instagram: "https://instagram.com/mariap",
-      facebook: "https://facebook.com/mariap",
-      youtube: "https://youtube.com/mariap",
-      tiktok: "https://tiktok.com/@mariap",
-      spotify: "https://open.spotify.com/artist/mariap"
-    },
-    gallery: {
-      images: [
-        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800",
-        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800",
-        "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800",
-        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
-        "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800",
-        "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=800",
-        "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800"
-      ],
-      videos: [
-        "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        "https://www.youtube.com/embed/9bZkp7q19f0"
-      ]
-    },
-    busyDates: [
-      new Date(2025, 10, 15),
-      new Date(2025, 10, 16),
-      new Date(2025, 10, 22),
-      new Date(2025, 10, 23),
-      new Date(2025, 10, 30),
-      new Date(2025, 11, 5),
-      new Date(2025, 11, 12),
-      new Date(2025, 11, 24),
-      new Date(2025, 11, 25),
-      new Date(2025, 11, 31),
-    ],
-    blockedDates: [
-      new Date(2025, 10, 19),
-      new Date(2025, 11, 8),
-      new Date(2025, 11, 18),
-    ],
-    pricing: [
-      { eventType: "Wedding", price: "2500-3500 RON" },
-      { eventType: "Corporate Event", price: "3000-4000 RON" },
-      { eventType: "Birthday Party", price: "1500-2000 RON" },
-      { eventType: "Concert", price: "4000-5000 RON" },
-      { eventType: "Private Event", price: "2000-3000 RON" }
-    ],
-    announcements: [
-      {
-        id: "1",
-        title: "Available for Summer Festivals",
-        date: "2025-06-15",
-        description: "Booking slots available for summer festival season! Special rates for multi-day events."
-      },
-      {
-        id: "2",
-        title: "New Setlist Available",
-        date: "2025-05-20",
-        description: "Just released a new performance setlist featuring latest hits and classics. Perfect for wedding receptions!"
-      }
-    ]
-  },
-  "2": {
-    id: "2",
-    fullName: "Ion Georgescu",
-    stageName: "Johnny G",
-    email: "johnny.g@example.com",
-    phone: "+40 723 456 789",
-    county: "Cluj",
-    specialization: "Singer",
-    genres: ["Rock", "Blues", "Pop"],
-    experienceYears: 12,
-    eventsPerformed: 200,
-    description: "Experienced rock and blues singer with powerful vocals and stage presence. Available for concerts, festivals, and private events.",
-    imageUrl: "",
-    rating: 4.8,
-    isPremium: false,
-    socialMedia: {
-      instagram: "https://instagram.com/johnnyg",
-      facebook: "https://facebook.com/johnnyg",
-      youtube: "https://youtube.com/johnnyg",
-      tiktok: "https://tiktok.com/@johnnyg",
-      spotify: "https://open.spotify.com/artist/johnnyg"
-    },
-    gallery: {
-      images: [
-        "https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=800",
-        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800",
-        "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800",
-        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800",
-        "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800",
-        "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800",
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"
-      ],
-      videos: [
-        "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        "https://www.youtube.com/embed/9bZkp7q19f0"
-      ]
-    },
-    busyDates: [
-      new Date(2025, 10, 18),
-      new Date(2025, 10, 25),
-      new Date(2025, 11, 2),
-      new Date(2025, 11, 10),
-      new Date(2025, 11, 20),
-      new Date(2025, 11, 28),
-    ],
-    blockedDates: [
-      new Date(2025, 10, 21),
-      new Date(2025, 11, 7),
-      new Date(2025, 11, 14),
-    ],
-    pricing: [
-      { eventType: "Wedding", price: "3000-4000 RON" },
-      { eventType: "Festival", price: "5000-6000 RON" },
-      { eventType: "Bar/Club Performance", price: "2000-2500 RON" },
-      { eventType: "Corporate Event", price: "3500-4500 RON" },
-      { eventType: "Private Concert", price: "4000-5000 RON" }
-    ],
-    announcements: [
-      {
-        id: "1",
-        title: "Performing at Blues Night Cluj",
-        date: "2025-07-10",
-        description: "Join me for a special blues night performance at Club Blue. Tickets available at the venue!"
-      },
-      {
-        id: "2",
-        title: "Holiday Season Bookings Open",
-        date: "2025-06-01",
-        description: "Now accepting bookings for December holiday events. Early bird discounts available!"
-      }
-    ]
-  },
-  "3": {
-    id: "3",
-    fullName: "Ana Marin",
-    stageName: "Ana M",
-    email: "ana.m@example.com",
-    phone: "+40 734 567 890",
-    county: "Timiș",
-    specialization: "Singer",
-    genres: ["Classical", "Opera", "Musical Theatre"],
-    experienceYears: 6,
-    eventsPerformed: 80,
-    description: "Classically trained soprano with experience in opera and musical theatre. Perfect for elegant events and concerts.",
-    imageUrl: "",
-    rating: 4.7,
-    isPremium: true,
-    socialMedia: {
-      instagram: "https://instagram.com/anam",
-      facebook: "https://facebook.com/anam",
-      youtube: "https://youtube.com/anam",
-      tiktok: "https://tiktok.com/@anam",
-      spotify: "https://open.spotify.com/artist/anam"
-    },
-    gallery: {
-      images: [
-        "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800",
-        "https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=800",
-        "https://images.unsplash.com/photo-1519683109079-d5f539e1542f?w=800",
-        "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800",
-        "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800",
-        "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800",
-        "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800"
-      ],
-      videos: [
-        "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        "https://www.youtube.com/embed/9bZkp7q19f0"
-      ]
-    },
-    busyDates: [
-      new Date(2025, 10, 20),
-      new Date(2025, 10, 27),
-      new Date(2025, 11, 4),
-      new Date(2025, 11, 15),
-      new Date(2025, 11, 22),
-    ],
-    blockedDates: [
-      new Date(2025, 10, 24),
-      new Date(2025, 11, 9),
-      new Date(2025, 11, 17),
-    ],
-    pricing: [
-      { eventType: "Opera Performance", price: "4000-5500 RON" },
-      { eventType: "Wedding Ceremony", price: "2500-3500 RON" },
-      { eventType: "Classical Concert", price: "3500-4500 RON" },
-      { eventType: "Corporate Gala", price: "4500-5500 RON" },
-      { eventType: "Private Event", price: "2000-3000 RON" }
-    ],
-    announcements: [
-      {
-        id: "1",
-        title: "Opera Gala at National Theatre",
-        date: "2025-08-20",
-        description: "Performing arias from La Traviata and Carmen at the National Theatre. Limited seats available!"
-      },
-      {
-        id: "2",
-        title: "Wedding Season Special Offer",
-        date: "2025-05-15",
-        description: "Exclusive package for couples booking ceremony and reception performances together."
-      }
-    ]
-  }
-};
+interface Profile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  stage_name: string;
+  email: string;
+  phone: string;
+  county: string;
+  specialization: string | null;
+  music_genres: string | null;
+  career_start_year: number | null;
+  number_of_events: number;
+  bio: string | null;
+  avatar_url: string | null;
+  plan: string;
+  estimated_price: string | null;
+  facebook_url: string | null;
+  instagram_url: string | null;
+  youtube_url: string | null;
+  tiktok_url: string | null;
+}
+
+interface Announcement {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+}
+
+interface GalleryItem {
+  id: string;
+  type: string;
+  url: string;
+  thumbnail_url: string | null;
+}
+
+interface CalendarEvent {
+  id: string;
+  event_date: string;
+  status: string;
+}
 
 const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
-  const artist = id ? mockArtists[id] : null;
+  const [artist, setArtist] = useState<Profile | null>(null);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [bookingForm, setBookingForm] = useState({
@@ -272,9 +93,68 @@ const ArtistProfile = () => {
   });
   const { toast } = useToast();
 
+  useEffect(() => {
+    const fetchArtistData = async () => {
+      if (!id) return;
+
+      // Fetch profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      } else {
+        setArtist(profileData);
+      }
+
+      // Fetch announcements
+      const { data: announcementsData } = await supabase
+        .from('announcements')
+        .select('id, title, description, date')
+        .eq('profile_id', id)
+        .order('date', { ascending: false });
+
+      setAnnouncements(announcementsData || []);
+
+      // Fetch gallery items
+      const { data: galleryData } = await supabase
+        .from('gallery_items')
+        .select('id, type, url, thumbnail_url')
+        .eq('profile_id', id);
+
+      setGalleryItems(galleryData || []);
+
+      // Fetch calendar events
+      const { data: calendarData } = await supabase
+        .from('calendar_events')
+        .select('id, event_date, status')
+        .eq('profile_id', id);
+
+      setCalendarEvents(calendarData || []);
+
+      setLoading(false);
+    };
+
+    fetchArtistData();
+  }, [id]);
+
+  const getBusyDates = () => {
+    return calendarEvents
+      .filter(event => event.status === 'busy' || event.status === 'booked')
+      .map(event => new Date(event.event_date));
+  };
+
+  const getBlockedDates = () => {
+    return calendarEvents
+      .filter(event => event.status === 'blocked' || event.status === 'unavailable')
+      .map(event => new Date(event.event_date));
+  };
+
   const isBusyDate = (date: Date) => {
-    if (!artist?.busyDates) return false;
-    return artist.busyDates.some(
+    return getBusyDates().some(
       (busyDate: Date) =>
         busyDate.getDate() === date.getDate() &&
         busyDate.getMonth() === date.getMonth() &&
@@ -283,8 +163,7 @@ const ArtistProfile = () => {
   };
 
   const isBlockedDate = (date: Date) => {
-    if (!artist?.blockedDates) return false;
-    return artist.blockedDates.some(
+    return getBlockedDates().some(
       (blockedDate: Date) =>
         blockedDate.getDate() === date.getDate() &&
         blockedDate.getMonth() === date.getMonth() &&
@@ -320,7 +199,7 @@ const ArtistProfile = () => {
 
       toast({
         title: "Booking Request Sent!",
-        description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stageName}.`,
+        description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stage_name}.`,
       });
       
       setBookingDialogOpen(false);
@@ -339,6 +218,32 @@ const ArtistProfile = () => {
       });
     }
   };
+
+  const getExperienceYears = () => {
+    if (!artist?.career_start_year) return 0;
+    return new Date().getFullYear() - artist.career_start_year;
+  };
+
+  const getGenresArray = () => {
+    if (!artist?.music_genres) return [];
+    return artist.music_genres.split(',').map(g => g.trim());
+  };
+
+  const getImages = () => galleryItems.filter(item => item.type === 'image');
+  const getVideos = () => galleryItems.filter(item => item.type === 'video');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="pt-32 pb-20 px-4">
+          <div className="container mx-auto text-center">
+            <p className="text-xl text-muted-foreground">Loading artist profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!artist) {
     return (
@@ -359,6 +264,8 @@ const ArtistProfile = () => {
     );
   }
 
+  const isPremium = artist.plan === 'Premium';
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -377,10 +284,10 @@ const ArtistProfile = () => {
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 mb-8">
                 <div className="flex-shrink-0">
-                  <Avatar className={`w-40 h-40 border-4 shadow-lg ${artist.isPremium ? 'border-accent' : 'border-burgundy'}`}>
-                    <AvatarImage src={artist.imageUrl} alt={artist.stageName} />
-                    <AvatarFallback className={`bg-gradient-to-br ${artist.isPremium ? 'from-accent/30 to-accent/10' : 'from-burgundy/30 to-burgundy/10'}`}>
-                      <User className={`h-20 w-20 ${artist.isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                  <Avatar className={`w-40 h-40 border-4 shadow-lg ${isPremium ? 'border-accent' : 'border-burgundy'}`}>
+                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                    <AvatarFallback className={`bg-gradient-to-br ${isPremium ? 'from-accent/30 to-accent/10' : 'from-burgundy/30 to-burgundy/10'}`}>
+                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -389,13 +296,15 @@ const ArtistProfile = () => {
                   <div className="flex items-start justify-between flex-wrap gap-4">
                     <div>
                       <h1 className="text-4xl font-display font-bold text-foreground mb-2">
-                        {artist.stageName}
+                        {artist.stage_name}
                       </h1>
                       
                       <div className="flex flex-wrap gap-3 mb-4">
-                        <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
-                          {artist.specialization}
-                        </Badge>
+                        {artist.specialization && (
+                          <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                            {artist.specialization}
+                          </Badge>
+                        )}
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <MapPin className="h-5 w-5" />
                           <span className="text-base">{artist.county}</span>
@@ -405,20 +314,24 @@ const ArtistProfile = () => {
 
                     <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                       <Star className="h-6 w-6 fill-current" />
-                      <span className="text-2xl font-bold">{artist.rating.toFixed(1)}</span>
+                      <span className="text-2xl font-bold">N/A</span>
                     </div>
                   </div>
 
                   {/* Contact Buttons */}
                   <div className="flex flex-wrap gap-3 mt-6">
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                      <Mail className="mr-2 h-4 w-4" />
-                      Contact
-                    </Button>
-                    <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                      <Phone className="mr-2 h-4 w-4" />
-                      Call Now
-                    </Button>
+                    <a href={`mailto:${artist.email}`}>
+                      <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Mail className="mr-2 h-4 w-4" />
+                        Contact
+                      </Button>
+                    </a>
+                    <a href={`tel:${artist.phone}`}>
+                      <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Call Now
+                      </Button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -443,7 +356,7 @@ const ArtistProfile = () => {
                       About
                     </h2>
                     <p className="text-muted-foreground leading-relaxed text-lg">
-                      {artist.description}
+                      {artist.bio || "No bio available."}
                     </p>
                   </div>
 
@@ -458,11 +371,15 @@ const ArtistProfile = () => {
                         Music Genres
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {artist.genres.map((genre: string) => (
-                          <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
-                            {genre}
-                          </Badge>
-                        ))}
+                        {getGenresArray().length > 0 ? (
+                          getGenresArray().map((genre: string) => (
+                            <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                              {genre}
+                            </Badge>
+                          ))
+                        ) : (
+                          <p className="text-muted-foreground">No genres specified</p>
+                        )}
                       </div>
                     </div>
 
@@ -474,11 +391,11 @@ const ArtistProfile = () => {
                       </h3>
                       <div className="space-y-2">
                         <p className="text-muted-foreground">
-                          <span className="font-semibold text-foreground">{artist.experienceYears} years</span> of professional experience
+                          <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
                         </p>
                         <p className="text-muted-foreground flex items-center gap-2">
                           <Award className="h-4 w-4 text-accent" />
-                          <span className="font-semibold text-foreground">{artist.eventsPerformed}+</span> events performed
+                          <span className="font-semibold text-foreground">{artist.number_of_events}+</span> events performed
                         </p>
                       </div>
                     </div>
@@ -487,17 +404,16 @@ const ArtistProfile = () => {
                     <div>
                       <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                         <DollarSign className="h-5 w-5 text-accent" />
-                        Estimated Prices
+                        Estimated Price
                       </h3>
                       <div className="space-y-2">
-                        {artist.pricing?.slice(0, 3).map((price: { eventType: string; price: string }, index: number) => (
-                          <div key={index} className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">{price.eventType}</span>
-                            <Badge variant="outline" className="border-accent/50 text-accent text-xs px-2 py-0.5">
-                              {price.price}
-                            </Badge>
-                          </div>
-                        ))}
+                        {artist.estimated_price ? (
+                          <Badge variant="outline" className="border-accent/50 text-accent text-sm px-3 py-1">
+                            {artist.estimated_price}
+                          </Badge>
+                        ) : (
+                          <p className="text-muted-foreground">Contact for pricing</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -511,19 +427,23 @@ const ArtistProfile = () => {
                       Latest Announcements
                     </h2>
                     <div className="space-y-4">
-                      {artist.announcements?.map((announcement: any) => (
-                        <Card key={announcement.id} className="border-accent/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between gap-4 mb-3">
-                              <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
-                              <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
-                                {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </Badge>
-                            </div>
-                            <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
+                      {announcements.length > 0 ? (
+                        announcements.map((announcement) => (
+                          <Card key={announcement.id} className="border-accent/20">
+                            <CardContent className="p-6">
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
+                                <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
+                                  {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </Badge>
+                              </div>
+                              <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground text-center py-8">No announcements yet.</p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -538,27 +458,28 @@ const ArtistProfile = () => {
                         Photos
                       </h2>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {artist.gallery.images.map((image: string, index: number) => (
-                          <Dialog key={`image-${index}`}>
-                            <DialogTrigger asChild>
-                              <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                        {getImages().length > 0 ? (
+                          getImages().map((image, index) => (
+                            <Dialog key={image.id}>
+                              <DialogTrigger asChild>
+                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                                  <img 
+                                    src={image.url} 
+                                    alt={`Gallery image ${index + 1}`}
+                                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                  />
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl">
                                 <img 
-                                  src={image} 
+                                  src={image.url} 
                                   alt={`Gallery image ${index + 1}`}
-                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                  className="w-full h-auto rounded-lg"
                                 />
-                              </div>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
-                              <img 
-                                src={image} 
-                                alt={`Gallery image ${index + 1}`}
-                                className="w-full h-auto rounded-lg"
-                              />
-                            </DialogContent>
-                          </Dialog>
-                        ))}
-                        {artist.gallery.images.length === 0 && (
+                              </DialogContent>
+                            </Dialog>
+                          ))
+                        ) : (
                           <div className="col-span-full text-center text-muted-foreground py-8">
                             No photos available yet.
                           </div>
@@ -573,26 +494,27 @@ const ArtistProfile = () => {
                         Videos
                       </h2>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {artist.gallery.videos.map((video: string, index: number) => (
-                          <Dialog key={`video-${index}`}>
-                            <DialogTrigger asChild>
-                              <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                                <Play className="h-12 w-12 text-accent" />
-                              </div>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
-                              <div className="aspect-video">
-                                <iframe
-                                  src={video}
-                                  className="w-full h-full rounded-lg"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                ></iframe>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        ))}
-                        {artist.gallery.videos.length === 0 && (
+                        {getVideos().length > 0 ? (
+                          getVideos().map((video, index) => (
+                            <Dialog key={video.id}>
+                              <DialogTrigger asChild>
+                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
+                                  <Play className="h-12 w-12 text-accent" />
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl">
+                                <div className="aspect-video">
+                                  <iframe
+                                    src={video.url}
+                                    className="w-full h-full rounded-lg"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  ></iframe>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          ))
+                        ) : (
                           <div className="col-span-full text-center text-muted-foreground py-8">
                             No videos available yet.
                           </div>
@@ -617,8 +539,8 @@ const ArtistProfile = () => {
                           onSelect={handleDateSelect}
                           className="rounded-lg border border-border shadow-sm"
                           modifiers={{
-                            busy: artist.busyDates || [],
-                            blocked: artist.blockedDates || []
+                            busy: getBusyDates(),
+                            blocked: getBlockedDates()
                           }}
                           modifiersClassNames={{
                             busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
@@ -684,7 +606,7 @@ const ArtistProfile = () => {
               <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Book {artist.stageName}</DialogTitle>
+                    <DialogTitle className="text-2xl font-display">Book {artist.stage_name}</DialogTitle>
                     <DialogDescription>
                       {selectedDate && `Selected date: ${selectedDate.toLocaleDateString('en-US', { 
                         weekday: 'long', 
@@ -785,9 +707,9 @@ const ArtistProfile = () => {
               <div>
                 <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
                 <div className="flex flex-wrap gap-4">
-                  {artist.socialMedia.instagram && (
+                  {artist.instagram_url && (
                     <a 
-                      href={artist.socialMedia.instagram} 
+                      href={artist.instagram_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:shadow-lg transition-all"
@@ -796,9 +718,9 @@ const ArtistProfile = () => {
                       Instagram
                     </a>
                   )}
-                  {artist.socialMedia.facebook && (
+                  {artist.facebook_url && (
                     <a 
-                      href={artist.socialMedia.facebook} 
+                      href={artist.facebook_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#1877F2] text-white hover:shadow-lg transition-all"
@@ -807,9 +729,9 @@ const ArtistProfile = () => {
                       Facebook
                     </a>
                   )}
-                  {artist.socialMedia.youtube && (
+                  {artist.youtube_url && (
                     <a 
-                      href={artist.socialMedia.youtube} 
+                      href={artist.youtube_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#FF0000] text-white hover:shadow-lg transition-all"
@@ -818,27 +740,21 @@ const ArtistProfile = () => {
                       YouTube
                     </a>
                   )}
-                  {artist.socialMedia.tiktok && (
+                  {artist.tiktok_url && (
                     <a 
-                      href={artist.socialMedia.tiktok} 
+                      href={artist.tiktok_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#000000] text-white hover:shadow-lg transition-all"
+                      className="flex items-center gap-2 px-6 py-3 rounded-lg bg-black text-white hover:shadow-lg transition-all"
                     >
-                      <Video className="h-5 w-5" />
+                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+                      </svg>
                       TikTok
                     </a>
                   )}
-                  {artist.socialMedia.spotify && (
-                    <a 
-                      href={artist.socialMedia.spotify} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#1DB954] text-white hover:shadow-lg transition-all"
-                    >
-                      <Disc3 className="h-5 w-5" />
-                      Spotify
-                    </a>
+                  {!artist.instagram_url && !artist.facebook_url && !artist.youtube_url && !artist.tiktok_url && (
+                    <p className="text-muted-foreground">No social media links available.</p>
                   )}
                 </div>
               </div>
