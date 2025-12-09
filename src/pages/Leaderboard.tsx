@@ -4,81 +4,71 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Trophy, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Artist {
+  id: string;
+  stage_name: string;
+  specialization: string | null;
+  county: string;
+  plan: string;
+  avatar_url: string | null;
+  number_of_events: number;
+}
 
 const Leaderboard = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>("All Regions");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const regions = ["All Regions", "Transylvania", "Banat", "Moldova", "Oltenia", "Muntenia"];
   const counties = [
     "All Counties",
-    "Alba",
-    "Arad",
-    "Argeș",
-    "Bacău",
-    "Bihor",
-    "Bistrița-Năsăud",
-    "Botoșani",
-    "Brașov",
-    "Brăila",
-    "București",
-    "Buzău",
-    "Caraș-Severin",
-    "Călărași",
-    "Cluj",
-    "Constanța",
-    "Covasna",
-    "Dâmbovița",
-    "Dolj",
-    "Galați",
-    "Giurgiu",
-    "Gorj",
-    "Harghita",
-    "Hunedoara",
-    "Ialomița",
-    "Iași",
-    "Ilfov",
-    "Maramureș",
-    "Mehedinți",
-    "Mureș",
-    "Neamț",
-    "Olt",
-    "Prahova",
-    "Satu Mare",
-    "Sălaj",
-    "Sibiu",
-    "Suceava",
-    "Teleorman",
-    "Timiș",
-    "Tulcea",
-    "Vaslui",
-    "Vâlcea",
-    "Vrancea"
+    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
+    "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași",
+    "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
+    "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
+    "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj",
+    "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
   ];
 
-  // Mock data for demonstration
-  const mockArtists = {
-    singers: [
-      { id: "1", name: "Maria Popescu", stageName: "Maria P.", specialization: "Singer", county: "București", rating: 4.9, isPremium: true },
-      { id: "2", name: "Ion Georgescu", stageName: "Johnny G", specialization: "Singer", county: "Cluj", rating: 4.8, isPremium: false },
-      { id: "3", name: "Ana Marin", stageName: "Ana M", specialization: "Singer", county: "Timiș", rating: 4.7, isPremium: true },
-    ],
-    instrumentalists: [
-      { id: "4", name: "Andrei Violin", stageName: "Master Andrei", specialization: "Instrumentalist", county: "Brașov", rating: 4.9, isPremium: false },
-      { id: "5", name: "Elena Piano", stageName: "Elena P", specialization: "Instrumentalist", county: "Iași", rating: 4.8, isPremium: true },
-      { id: "6", name: "Mihai Guitar", stageName: "Mike G", specialization: "Instrumentalist", county: "Constanța", rating: 4.7, isPremium: false },
-    ],
-    djs: [
-      { id: "7", name: "Alex Beats", stageName: "DJ Alex", specialization: "DJ", county: "București", rating: 4.9, isPremium: true },
-      { id: "8", name: "Cristian Mix", stageName: "DJ Cris", specialization: "DJ", county: "Cluj", rating: 4.8, isPremium: false },
-      { id: "9", name: "David Sound", stageName: "DJ Dave", specialization: "DJ", county: "Timiș", rating: 4.7, isPremium: true },
-    ],
-    bands: [
-      { id: "10", name: "Rock Masters", stageName: "Rock Masters", specialization: "Band", county: "București", rating: 4.9, isPremium: false },
-      { id: "11", name: "Jazz Collective", stageName: "Jazz Collective", specialization: "Band", county: "Cluj", rating: 4.8, isPremium: true },
-      { id: "12", name: "Pop Stars", stageName: "Pop Stars", specialization: "Band", county: "Brașov", rating: 4.7, isPremium: false },
-    ]
+  useEffect(() => {
+    const fetchArtists = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, stage_name, specialization, county, plan, avatar_url, number_of_events')
+        .order('number_of_events', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching artists:', error);
+      } else {
+        setArtists(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchArtists();
+  }, []);
+
+  const getArtistsBySpecialization = (specialization: string) => {
+    let filtered = artists.filter(artist => 
+      artist.specialization?.toLowerCase() === specialization.toLowerCase()
+    );
+
+    if (selectedCounty !== "All Counties") {
+      filtered = filtered.filter(artist => artist.county === selectedCounty);
+    }
+
+    return filtered;
+  };
+
+  const categories = {
+    singers: getArtistsBySpecialization('Singer'),
+    instrumentalists: getArtistsBySpecialization('Instrumentalist'),
+    djs: getArtistsBySpecialization('DJ'),
+    bands: getArtistsBySpecialization('Band')
   };
 
   return (
@@ -169,15 +159,37 @@ const Leaderboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            {Object.entries(mockArtists).map(([key, artists]) => (
-              <TabsContent key={key} value={key} className="space-y-6">
-                <div className="grid gap-6">
-                  {artists.map((artist, index) => (
-                    <ArtistCard key={artist.id} {...artist} rank={index + 1} />
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
+            {loading ? (
+              <div className="text-center py-16">
+                <p className="text-xl text-muted-foreground">Loading artists...</p>
+              </div>
+            ) : (
+              Object.entries(categories).map(([key, categoryArtists]) => (
+                <TabsContent key={key} value={key} className="space-y-6">
+                  <div className="grid gap-6">
+                    {categoryArtists.length > 0 ? (
+                      categoryArtists.map((artist, index) => (
+                        <ArtistCard 
+                          key={artist.id} 
+                          id={artist.id}
+                          name={artist.stage_name}
+                          stageName={artist.stage_name}
+                          specialization={artist.specialization || ''}
+                          county={artist.county}
+                          isPremium={artist.plan === 'Premium'}
+                          imageUrl={artist.avatar_url || undefined}
+                          rank={index + 1} 
+                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-16">
+                        <p className="text-xl text-muted-foreground">No artists found in this category</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              ))
+            )}
           </Tabs>
         </div>
       </div>
