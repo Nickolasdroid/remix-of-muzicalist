@@ -3,7 +3,8 @@ import SimpleArtistCard from "@/components/SimpleArtistCard";
 import { ArrowLeft, Grid, List } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Carousel,
   CarouselContent,
@@ -12,14 +13,45 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+interface Artist {
+  id: string;
+  stage_name: string;
+  avatar_url: string | null;
+  plan: string;
+  specialization: string | null;
+}
+
 const CountyArtists = () => {
   const { county } = useParams<{ county: string }>();
   const [viewModes, setViewModes] = useState<Record<string, 'carousel' | 'list'>>({
-    Singers: 'carousel',
-    Instrumentalists: 'carousel',
-    DJs: 'carousel',
-    Bands: 'carousel',
+    singer: 'carousel',
+    instrumentalist: 'carousel',
+    dj: 'carousel',
+    band: 'carousel',
   });
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      if (!county) return;
+      
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, stage_name, avatar_url, plan, specialization')
+        .ilike('county', county);
+      
+      if (error) {
+        console.error('Error fetching artists:', error);
+      } else {
+        setArtists(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchArtists();
+  }, [county]);
 
   const toggleViewMode = (category: string) => {
     setViewModes(prev => ({
@@ -28,51 +60,34 @@ const CountyArtists = () => {
     }));
   };
 
-  // Mock data - in real app, this would be fetched based on county
+  const getArtistsBySpecialization = (specialization: string) => {
+    return artists.filter(artist => artist.specialization === specialization);
+  };
+
   const categories = [
     {
+      key: "singer",
       title: "Singers",
       displayTitle: "SINGERS",
-      count: 12,
       href: `/counties/${county}/soloists`,
-      artists: [
-        { id: "1", stageName: "Maria P.", isPremium: true },
-        { id: "2", stageName: "Ionuț", isPremium: false },
-        { id: "3", stageName: "Elena V.", isPremium: true },
-      ]
     },
     {
+      key: "instrumentalist",
       title: "Instrumentalists",
       displayTitle: "INSTRUMENTALISTS",
-      count: 8,
       href: `/counties/${county}/instrumentalists`,
-      artists: [
-        { id: "4", stageName: "Alex G.", isPremium: false },
-        { id: "5", stageName: "Victor M.", isPremium: true },
-        { id: "6", stageName: "Diana S.", isPremium: false },
-      ]
     },
     {
+      key: "dj",
       title: "DJs",
       displayTitle: "DJS",
-      count: 15,
       href: `/counties/${county}/djs`,
-      artists: [
-        { id: "7", stageName: "DJ Mike", isPremium: true },
-        { id: "8", stageName: "DJ Andy", isPremium: false },
-        { id: "9", stageName: "DJ Alex", isPremium: true },
-      ]
     },
     {
+      key: "band",
       title: "Bands",
       displayTitle: "BANDS",
-      count: 6,
       href: `/counties/${county}/bands`,
-      artists: [
-        { id: "10", stageName: "The Rockers", isPremium: false },
-        { id: "11", stageName: "Night Vibes", isPremium: true },
-        { id: "12", stageName: "Echo Band", isPremium: false },
-      ]
     },
   ];
 
@@ -97,76 +112,94 @@ const CountyArtists = () => {
           </p>
         </div>
 
-        <div className="space-y-16 max-w-7xl mx-auto">
-          {categories.map((category) => (
-            <div key={category.title} className="space-y-8">
-              <div className="flex items-center justify-center gap-4">
-                <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
-                  {category.displayTitle} ({category.count})
-                </h2>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => toggleViewMode(category.title)}
-                  className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                >
-                  {viewModes[category.title] === 'carousel' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
-                </Button>
-              </div>
+        {loading ? (
+          <div className="text-center text-muted-foreground">Loading artists...</div>
+        ) : (
+          <div className="space-y-16 max-w-7xl mx-auto">
+            {categories.map((category) => {
+              const categoryArtists = getArtistsBySpecialization(category.key);
               
-              {viewModes[category.title] === 'carousel' ? (
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                  className="w-full max-w-7xl mx-auto"
-                >
-                  <CarouselContent>
-                    {category.artists.map((artist) => (
-                      <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
-                        <div className="p-3">
-                          <SimpleArtistCard 
-                            id={artist.id}
-                            name={artist.stageName}
-                            stageName={artist.stageName}
-                            isPremium={artist.isPremium}
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-0" />
-                  <CarouselNext className="right-0" />
-                </Carousel>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
-                  {category.artists.map((artist) => {
-                    const borderColor = artist.isPremium ? "border-accent/30" : "border-burgundy/30";
-                    const hoverBorderColor = artist.isPremium ? "hover:border-accent" : "hover:border-burgundy";
-                    const hoverBgColor = artist.isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
-                    const avatarBorderColor = artist.isPremium ? "border-accent" : "border-burgundy";
-                    
-                    return (
-                    <Link key={artist.id} to={`/artist/${artist.id}`}>
-                      <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
-                        <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
-                          {artist.stageName ? (
-                            <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
-                          ) : (
-                            <img src="" alt={artist.stageName} className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <p className="text-lg font-semibold text-foreground">{artist.stageName}</p>
-                      </div>
-                    </Link>
-                  );
-                  })}
+              if (categoryArtists.length === 0) return null;
+              
+              return (
+                <div key={category.key} className="space-y-8">
+                  <div className="flex items-center justify-center gap-4">
+                    <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
+                      {category.displayTitle} ({categoryArtists.length})
+                    </h2>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => toggleViewMode(category.key)}
+                      className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                    >
+                      {viewModes[category.key] === 'carousel' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
+                    </Button>
+                  </div>
+                  
+                  {viewModes[category.key] === 'carousel' ? (
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                      className="w-full max-w-7xl mx-auto"
+                    >
+                      <CarouselContent>
+                        {categoryArtists.map((artist) => (
+                          <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
+                            <div className="p-3">
+                              <SimpleArtistCard 
+                                id={artist.id}
+                                name={artist.stage_name}
+                                stageName={artist.stage_name}
+                                isPremium={artist.plan === 'Premium'}
+                                imageUrl={artist.avatar_url || undefined}
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-0" />
+                      <CarouselNext className="right-0" />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
+                      {categoryArtists.map((artist) => {
+                        const isPremium = artist.plan === 'Premium';
+                        const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
+                        const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
+                        const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
+                        const avatarBorderColor = isPremium ? "border-accent" : "border-burgundy";
+                        
+                        return (
+                          <Link key={artist.id} to={`/artist/${artist.id}`}>
+                            <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
+                              <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
+                                {artist.avatar_url ? (
+                                  <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
+                                )}
+                              </div>
+                              <p className="text-lg font-semibold text-foreground">{artist.stage_name}</p>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              );
+            })}
+            
+            {artists.length === 0 && (
+              <div className="text-center text-muted-foreground">
+                No artists found in {county} yet.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
