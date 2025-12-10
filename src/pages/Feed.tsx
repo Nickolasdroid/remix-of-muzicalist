@@ -168,8 +168,8 @@ const Feed = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-0 sm:px-4 pt-16">
-        <div className="max-w-2xl mx-auto">
+      <div className="container mx-auto px-0 sm:px-4 pt-20">
+        <div className="max-w-2xl mx-auto space-y-4">
           
           {feedItems.length === 0 ? (
             <Card className="p-8 text-center">
@@ -177,7 +177,7 @@ const Feed = () => {
             </Card>
           ) : (
             feedItems.map((item) => (
-              <Card key={item.id} className="overflow-hidden rounded-none border-x-0 border-t-0 border-b border-border/40">
+              <Card key={item.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header */}
                 <div className="p-4 pb-0">
                   <div className="flex items-start justify-between">
