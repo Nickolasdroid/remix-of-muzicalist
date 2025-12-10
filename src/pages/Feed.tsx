@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Bookmark, Mail, Play, MoreHorizontal, Flag } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2, Bookmark, MoreHorizontal, Flag, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -178,42 +178,44 @@ const Feed = () => {
             </Card>
           ) : (
             feedItems.map((item) => (
-              <Card key={item.id} className="overflow-hidden border-border/40">
-                <CardContent className="p-6">
-                  {/* Artist Info */}
-                  <div className="flex items-center justify-between mb-4">
+              <Card key={item.id} className="overflow-hidden border-border/40 shadow-sm">
+                {/* Header */}
+                <div className="p-4 pb-0">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar 
-                        className={`w-10 h-10 cursor-pointer border-2 ${item.profile.plan === 'Premium' ? 'border-accent' : 'border-burgundy'}`}
+                        className="w-10 h-10 cursor-pointer"
                         onClick={() => navigate(`/artist/${item.profile_id}`)}
                       >
                         <AvatarImage src={item.profile.avatar_url || undefined} alt={item.profile.stage_name} />
-                        <AvatarFallback className={item.profile.plan === 'Premium' ? 'bg-accent/20 text-accent' : 'bg-burgundy/20 text-burgundy'}>
+                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
                           {item.profile.stage_name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 
-                          className="font-semibold text-foreground cursor-pointer hover:text-accent transition-colors"
-                          onClick={() => navigate(`/artist/${item.profile_id}`)}
-                        >
-                          {item.profile.stage_name}
-                        </h3>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {getSpecializationLabel(item.profile.specialization)}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(item.created_at)}
-                          </span>
+                          <h3 
+                            className="font-semibold text-foreground cursor-pointer hover:underline"
+                            onClick={() => navigate(`/artist/${item.profile_id}`)}
+                          >
+                            {item.profile.stage_name}
+                          </h3>
+                          {item.profile.plan === 'Premium' && (
+                            <span className="text-accent text-xs">✓</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <span>{formatDate(item.created_at)}</span>
+                          <span>·</span>
+                          <Globe className="h-3 w-3" />
                         </div>
                       </div>
                     </div>
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                          <MoreHorizontal className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -233,63 +235,76 @@ const Feed = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mb-4 whitespace-pre-wrap">{item.content}</p>
-                  
-                  {/* Media */}
-                  {item.media_url && (
-                    <div className="relative rounded-lg overflow-hidden mb-4">
-                      {item.media_type === "video" ? (
-                        <div className="relative aspect-video bg-muted flex items-center justify-center">
-                          <video 
-                            src={item.media_url} 
-                            controls
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <img 
-                          src={item.media_url} 
-                          alt="Post content"
-                          className="w-full h-auto rounded-lg"
-                        />
-                      )}
-                    </div>
-                  )}
-                </CardContent>
+                  <p className="text-foreground mt-3 whitespace-pre-wrap">{item.content}</p>
+                </div>
+                
+                {/* Media - Full width like Facebook */}
+                {item.media_url && (
+                  <div className="mt-3">
+                    {item.media_type === "video" ? (
+                      <video 
+                        src={item.media_url} 
+                        controls
+                        className="w-full"
+                      />
+                    ) : (
+                      <img 
+                        src={item.media_url} 
+                        alt="Post content"
+                        className="w-full"
+                      />
+                    )}
+                  </div>
+                )}
 
-                {/* Actions */}
-                <CardFooter className="p-6 pt-0 flex items-center justify-between border-t border-border/40">
-                  <div className="flex items-center gap-2">
+                {/* Reactions count */}
+                <div className="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground border-b border-border/40">
+                  <div className="flex items-center gap-1">
+                    {item.likes > 0 && (
+                      <>
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs">
+                          <ThumbsUp className="h-3 w-3" />
+                        </span>
+                        <span>{item.likes}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions - Facebook style */}
+                <div className="px-2 py-1">
+                  <div className="flex items-center justify-around">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleLike(item.id)}
-                      className={item.isLiked ? "text-accent" : ""}
+                      className={`flex-1 gap-2 rounded-md ${item.isLiked ? "text-primary" : "text-muted-foreground hover:bg-muted"}`}
                     >
-                      <Heart className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
-                      <span className="ml-2">{item.likes}</span>
+                      <ThumbsUp className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
+                      <span className="font-medium">Like</span>
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleContact(item.profile_id)}
+                      className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      <span className="font-medium">Contact</span>
                     </Button>
                     
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleSave(item.id)}
-                      className={item.isSaved ? "text-accent" : ""}
+                      className={`flex-1 gap-2 rounded-md ${item.isSaved ? "text-primary" : "text-muted-foreground hover:bg-muted"}`}
                     >
                       <Bookmark className={`w-5 h-5 ${item.isSaved ? "fill-current" : ""}`} />
+                      <span className="font-medium">Save</span>
                     </Button>
                   </div>
-
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="border-accent/20"
-                    onClick={() => handleContact(item.profile_id)}
-                  >
-                    <Mail className="w-4 h-4 mr-2" />
-                    Contact
-                  </Button>
-                </CardFooter>
+                </div>
               </Card>
             ))
           )}
