@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, Share2, Bookmark, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -293,16 +293,6 @@ const Feed = () => {
                     >
                       <MessageCircle className="w-5 h-5" />
                       <span className="font-medium">Contact</span>
-                    </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSave(item.id)}
-                      className={`flex-1 gap-2 rounded-md ${item.isSaved ? "text-primary" : "text-muted-foreground hover:bg-muted"}`}
-                    >
-                      <Bookmark className={`w-5 h-5 ${item.isSaved ? "fill-current" : ""}`} />
-                      <span className="font-medium">Save</span>
                     </Button>
                   </div>
                 </div>
