@@ -241,6 +241,7 @@ export type Database = {
           specialization:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
+          spotify_url: string | null
           stage_name: string
           tiktok_url: string | null
           updated_at: string | null
@@ -269,6 +270,7 @@ export type Database = {
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
+          spotify_url?: string | null
           stage_name: string
           tiktok_url?: string | null
           updated_at?: string | null
@@ -297,6 +299,7 @@ export type Database = {
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
+          spotify_url?: string | null
           stage_name?: string
           tiktok_url?: string | null
           updated_at?: string | null
