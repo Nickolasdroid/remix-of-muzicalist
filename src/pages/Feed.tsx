@@ -169,8 +169,7 @@ const Feed = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <h1 className="text-4xl font-display font-bold text-foreground mb-8">Feed</h1>
+        <div className="max-w-2xl mx-auto space-y-4">
           
           {feedItems.length === 0 ? (
             <Card className="p-8 text-center">
