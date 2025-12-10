@@ -891,43 +891,10 @@ const Dashboard = () => {
 
                       <div className="flex-1">
                         <div className="flex items-start justify-between flex-wrap gap-4">
-                          <div className="flex-1">
-                            {editingField === 'names' ? (
-                              <div className="space-y-3">
-                                <Input
-                                  value={formData.stageName}
-                                  onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                                  placeholder="Stage Name"
-                                  className="text-2xl font-display font-bold"
-                                />
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => saveField('names')} disabled={isSaving}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="group">
-                                <div className="flex items-center gap-2">
-                                  <h1 className="text-4xl font-display font-bold text-foreground">
-                                    {formData.stageName}
-                                  </h1>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => startEditing('names')}
-                                  >
-                                    <Edit2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
+                        <div className="flex-1">
+                            <h1 className="text-4xl font-display font-bold text-foreground">
+                              {formData.stageName}
+                            </h1>
                             
                             <div className="flex flex-wrap gap-3 mb-4">
                               <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
