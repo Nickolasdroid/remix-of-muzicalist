@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, MapPin, User } from "lucide-react";
+import { Calendar, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -94,15 +94,9 @@ const Announcements = () => {
                         {announcement.description}
                       </p>
                       
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-accent" />
-                          {announcement.profiles?.county || "Unknown"}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-accent" />
-                          {new Date(announcement.date).toLocaleDateString()}
-                        </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 text-accent" />
+                        {new Date(announcement.date).toLocaleDateString()}
                       </div>
                     </div>
                     
