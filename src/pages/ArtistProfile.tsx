@@ -377,9 +377,9 @@ const ArtistProfile = () => {
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 mb-8">
                 <div className="flex-shrink-0">
-                  <Avatar className={`w-40 h-40 border-4 shadow-lg ${isPremium ? 'border-accent' : 'border-burgundy'}`}>
+                  <Avatar className="w-40 h-40 border-4 shadow-lg border-accent">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                    <AvatarFallback className={`bg-gradient-to-br ${isPremium ? 'from-accent/30 to-accent/10' : 'from-burgundy/30 to-burgundy/10'}`}>
+                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
                       <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
