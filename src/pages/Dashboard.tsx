@@ -1795,36 +1795,67 @@ const Dashboard = () => {
                     </Card>
                   </div>
                   
-                  <div className="space-y-4">
+                  <div className="flex flex-col items-center space-y-4">
                     {announcements.map((announcement) => (
-                      <Card key={announcement.id} className="border-accent/20">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between gap-4 mb-3">
-                            <div className="flex-1 flex items-center gap-2">
-                              <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
-                                {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </Badge>
-                              {announcement.is_premium && (
-                                <Badge className="bg-accent text-accent-foreground">Premium</Badge>
-                              )}
+                      <Card key={announcement.id} className="w-full max-w-[500px] border-accent/20 overflow-hidden">
+                        <CardContent className="p-0">
+                          {/* Header with avatar and info */}
+                          <div className="flex items-center justify-between p-4 pb-3">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10 border-2 border-accent/30">
+                                <AvatarImage src={profile?.avatar_url || ""} />
+                                <AvatarFallback className="bg-accent/20 text-accent">
+                                  {formData.stageName?.charAt(0) || "A"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-foreground">{formData.stageName}</span>
+                                  {profile?.plan === "premium" && (
+                                    <Badge className="bg-accent text-accent-foreground text-xs">Premium</Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <span>{formData.specialization || "Artist"}</span>
+                                  <span>•</span>
+                                  <span>{formatPostDate(announcement.date)}</span>
+                                </div>
+                              </div>
                             </div>
                             <Button 
                               size="sm" 
                               variant="ghost" 
                               onClick={() => handleDeleteAnnouncement(announcement.id)}
                               disabled={isSaving}
+                              className="h-8 w-8 p-0"
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
-                          <p className="text-muted-foreground leading-relaxed mb-3">{announcement.description}</p>
+                          
+                          {/* Content */}
+                          <div className="px-4 pb-3">
+                            <p className="text-foreground whitespace-pre-wrap">{announcement.description}</p>
+                          </div>
+                          
+                          {/* Media - full width */}
                           {announcement.media_url && (
-                            <div className="mt-3 rounded-lg overflow-hidden border border-accent/20">
+                            <div className="w-full">
                               {announcement.media_type === 'video' ? (
-                                <video src={announcement.media_url} controls className="w-full max-h-96" />
+                                <video src={announcement.media_url} controls className="w-full" />
                               ) : (
-                                <img src={announcement.media_url} alt="Announcement media" className="w-full max-h-96 object-cover" />
+                                <img src={announcement.media_url} alt="Announcement media" className="w-full object-cover" />
                               )}
+                            </div>
+                          )}
+                          
+                          {/* Premium badge indicator */}
+                          {announcement.is_premium && (
+                            <div className="px-4 py-2 border-t border-border">
+                              <Badge variant="outline" className="border-accent/50 text-accent text-xs">
+                                <Megaphone className="h-3 w-3 mr-1" />
+                                Premium Ad
+                              </Badge>
                             </div>
                           )}
                         </CardContent>
