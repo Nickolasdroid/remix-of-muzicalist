@@ -273,6 +273,19 @@ const Dashboard = () => {
     navigate('/');
   };
 
+  const formatPostDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffHours < 1) return "Just now";
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -1944,52 +1957,72 @@ const Dashboard = () => {
                     </Dialog>
                   </div>
                   
-                  <div className="space-y-4">
+                  <div className="max-w-[500px] mx-auto space-y-4">
                     {posts.map((post) => (
-                      <Card key={post.id} className="border-accent/20">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between gap-4 mb-3">
-                            <Badge variant="outline" className="border-accent/50 text-accent">
-                              {new Date(post.created_at).toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                day: 'numeric', 
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </Badge>
+                      <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                        {/* Header */}
+                        <div className="p-4 pb-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-10 h-10">
+                                <AvatarImage src={profile?.avatar_url || undefined} alt={formData.stageName} />
+                                <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                  {formData.stageName.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-semibold text-foreground">
+                                    {formData.stageName}
+                                  </h3>
+                                  {profile?.plan === 'Premium' && (
+                                    <span className="text-accent text-xs">✓</span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <span>{formData.specialization || 'Artist'}</span>
+                                  <span>·</span>
+                                  <span>{formatPostDate(post.created_at)}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
                             <Button 
-                              size="sm" 
+                              size="icon" 
                               variant="ghost" 
+                              className="h-8 w-8 rounded-full"
                               onClick={() => handleDeletePost(post.id)}
                               disabled={isSaving}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
-                          
-                          <p className="text-foreground leading-relaxed mb-4">{post.content}</p>
-                          
-                          {post.media_url && post.media_type === 'image' && (
-                            <div className="rounded-lg overflow-hidden border border-accent/20">
+
+                          {/* Content */}
+                          <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
+                        </div>
+                        
+                        {/* Media - Full width like Facebook */}
+                        {post.media_url && (
+                          <div className="mt-3">
+                            {post.media_type === "video" ? (
+                              <video 
+                                src={post.media_url} 
+                                controls
+                                className="w-full"
+                              />
+                            ) : (
                               <img 
                                 src={post.media_url} 
-                                alt="Post media" 
-                                className="w-full max-h-96 object-cover"
+                                alt="Post content"
+                                className="w-full"
                               />
-                            </div>
-                          )}
-                          
-                          {post.media_url && post.media_type === 'video' && (
-                            <div className="rounded-lg overflow-hidden border border-accent/20 aspect-video">
-                              <iframe 
-                                src={post.media_url} 
-                                className="w-full h-full"
-                                allowFullScreen
-                              />
-                            </div>
-                          )}
-                        </CardContent>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Bottom padding */}
+                        <div className="p-4" />
                       </Card>
                     ))}
                     
