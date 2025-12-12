@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe, X } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -321,10 +320,7 @@ const Feed = () => {
 
       {/* Media Preview Dialog */}
       <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <DialogClose className="absolute right-4 top-4 z-50 rounded-full bg-background/20 p-2 hover:bg-background/40 transition-colors">
-            <X className="h-6 w-6 text-white" />
-          </DialogClose>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none [&>button]:text-white">
           <div className="flex items-center justify-center w-full h-full p-4">
             {mediaPreview?.type === "video" ? (
               <video 
