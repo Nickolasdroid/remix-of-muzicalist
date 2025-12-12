@@ -42,10 +42,20 @@ const CategoryArtists = () => {
     const fetchArtists = async () => {
       if (!category) return;
 
+      // Map URL category to database specialization value
+      const categoryMap: Record<string, string> = {
+        'Singers': 'Singer',
+        'Instrumentalists': 'Instrumentalist',
+        'DJs': 'DJ',
+        'Bands': 'Band',
+      };
+      
+      const specialization = categoryMap[category] || category;
+
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, experience_level, plan')
-        .ilike('specialization', category);
+        .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band");
 
       if (error) {
         console.error('Error fetching artists:', error);
