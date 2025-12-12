@@ -1,38 +1,72 @@
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import singerIcon from "@/assets/singer-silhouette.png";
 import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
 import djIcon from "@/assets/dj-silhouette.png";
 import bandIcon from "@/assets/band-silhouette.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const Categories = () => {
+  const [counts, setCounts] = useState({
+    Singer: 0,
+    Instrumentalist: 0,
+    DJ: 0,
+    Band: 0,
+  });
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("specialization");
+
+      if (data) {
+        const newCounts = {
+          Singer: 0,
+          Instrumentalist: 0,
+          DJ: 0,
+          Band: 0,
+        };
+        data.forEach((profile) => {
+          if (profile.specialization && newCounts[profile.specialization as keyof typeof newCounts] !== undefined) {
+            newCounts[profile.specialization as keyof typeof newCounts]++;
+          }
+        });
+        setCounts(newCounts);
+      }
+    };
+
+    fetchCounts();
+  }, []);
+
   const categories = [
     {
       iconImage: singerIcon,
       title: "Singer",
       description: "Professional vocalists for any event",
-      count: 156,
+      count: counts.Singer,
       href: "/categories/Singers",
     },
     {
       iconImage: instrumentalistIcon,
       title: "Instrumentalist",
       description: "Skilled musicians with various instruments",
-      count: 89,
+      count: counts.Instrumentalist,
       href: "/categories/Instrumentalists",
     },
     {
       iconImage: djIcon,
       title: "DJ",
       description: "Expert DJs for parties and events",
-      count: 124,
+      count: counts.DJ,
       href: "/categories/DJs",
     },
     {
       iconImage: bandIcon,
       title: "Band",
       description: "Complete musical groups for your events",
-      count: 67,
+      count: counts.Band,
       href: "/categories/Bands",
     },
   ];
