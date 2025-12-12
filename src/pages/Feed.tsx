@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,10 +38,16 @@ interface FeedItem {
   likes: number;
 }
 
+interface MediaPreview {
+  url: string;
+  type: "image" | "video";
+}
+
 const Feed = () => {
   const navigate = useNavigate();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -241,18 +252,24 @@ const Feed = () => {
                 
                 {/* Media - Full width like Facebook */}
                 {item.media_url && (
-                  <div className="mt-3">
+                  <div 
+                    className="mt-3 cursor-pointer"
+                    onClick={() => setMediaPreview({
+                      url: item.media_url!,
+                      type: item.media_type === "video" ? "video" : "image"
+                    })}
+                  >
                     {item.media_type === "video" ? (
                       <video 
                         src={item.media_url} 
-                        controls
                         className="w-full"
+                        onClick={(e) => e.stopPropagation()}
                       />
                     ) : (
                       <img 
                         src={item.media_url} 
                         alt="Post content"
-                        className="w-full"
+                        className="w-full hover:opacity-95 transition-opacity"
                       />
                     )}
                   </div>
@@ -301,6 +318,31 @@ const Feed = () => {
           )}
         </div>
       </div>
+
+      {/* Media Preview Dialog */}
+      <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <DialogClose className="absolute right-4 top-4 z-50 rounded-full bg-background/20 p-2 hover:bg-background/40 transition-colors">
+            <X className="h-6 w-6 text-white" />
+          </DialogClose>
+          <div className="flex items-center justify-center w-full h-full p-4">
+            {mediaPreview?.type === "video" ? (
+              <video 
+                src={mediaPreview.url} 
+                controls
+                autoPlay
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            ) : (
+              <img 
+                src={mediaPreview?.url} 
+                alt="Full size preview"
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
