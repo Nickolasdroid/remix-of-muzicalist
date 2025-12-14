@@ -52,7 +52,7 @@ const Announcements = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto space-y-6">
+        <div className="max-w-[500px] mx-auto space-y-4">
           {loading ? (
             <div className="text-center text-muted-foreground">Loading announcements...</div>
           ) : announcements.length === 0 ? (
