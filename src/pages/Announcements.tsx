@@ -22,7 +22,8 @@ const Announcements = () => {
             avatar_url,
             stage_name,
             county,
-            specialization
+            specialization,
+            plan
           )
         `)
         .order("created_at", { ascending: false });
@@ -62,12 +63,20 @@ const Announcements = () => {
               <Card key={announcement.id} className="p-6 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
                 <div className="flex gap-4">
                   <Link to={`/artist/${announcement.profile_id}`} className="shrink-0 hover:opacity-80 transition-opacity">
-                    <Avatar className="h-16 w-16 border-2 border-accent ring-2 ring-accent/30">
-                      <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
-                      <AvatarFallback>
-                        <User className="h-8 w-8" />
-                      </AvatarFallback>
-                    </Avatar>
+                    <div 
+                      className={`p-0.5 rounded-full ${
+                        announcement.profiles?.plan === 'Premium' 
+                          ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
+                          : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+                      }`}
+                    >
+                      <Avatar className="h-16 w-16 border-2 border-background">
+                        <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
+                        <AvatarFallback>
+                          <User className="h-8 w-8" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
                   </Link>
                   
                   <div className="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4">
