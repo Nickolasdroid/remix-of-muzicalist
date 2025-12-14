@@ -192,15 +192,23 @@ const Feed = () => {
                 <div className="p-4 pb-0">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <Avatar 
-                        className="w-10 h-10 cursor-pointer"
-                        onClick={() => navigate(`/artist/${item.profile_id}`)}
+                      <div 
+                        className={`p-0.5 rounded-full ${
+                          item.profile.plan === 'Premium' 
+                            ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
+                            : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+                        }`}
                       >
-                        <AvatarImage src={item.profile.avatar_url || undefined} alt={item.profile.stage_name} />
-                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                          {item.profile.stage_name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+                        <Avatar 
+                          className="w-10 h-10 cursor-pointer border-2 border-background"
+                          onClick={() => navigate(`/artist/${item.profile_id}`)}
+                        >
+                          <AvatarImage src={item.profile.avatar_url || undefined} alt={item.profile.stage_name} />
+                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                            {item.profile.stage_name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 
