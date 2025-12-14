@@ -257,27 +257,31 @@ const Feed = () => {
                   <p className="text-foreground mt-3 whitespace-pre-wrap">{item.content}</p>
                 </div>
                 
-                {/* Media - Full width like Facebook */}
+                {/* Media - Standardized aspect ratios */}
                 {item.media_url && (
                   <div 
-                    className="mt-3 cursor-pointer"
+                    className="mt-3 cursor-pointer bg-muted/30"
                     onClick={() => setMediaPreview({
                       url: item.media_url!,
                       type: item.media_type === "video" ? "video" : "image"
                     })}
                   >
                     {item.media_type === "video" ? (
-                      <video 
-                        src={item.media_url} 
-                        className="w-full"
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                      <div className="relative w-full aspect-video">
+                        <video 
+                          src={item.media_url} 
+                          className="absolute inset-0 w-full h-full object-contain bg-black"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
                     ) : (
-                      <img 
-                        src={item.media_url} 
-                        alt="Post content"
-                        className="w-full hover:opacity-95 transition-opacity"
-                      />
+                      <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                        <img 
+                          src={item.media_url} 
+                          alt="Post content"
+                          className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
