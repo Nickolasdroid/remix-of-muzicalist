@@ -99,9 +99,32 @@ const Announcements = () => {
                         </span>
                       )}
                       
-                      <p className="text-muted-foreground mb-4">
+                      <p className="text-muted-foreground mb-3">
                         {announcement.description}
                       </p>
+                      
+                      {/* Media for premium announcements */}
+                      {announcement.is_premium && announcement.media_url && (
+                        <div className="mb-4 rounded-lg overflow-hidden bg-muted/30">
+                          {announcement.media_type === "video" ? (
+                            <div className="relative w-full aspect-video">
+                              <video 
+                                src={announcement.media_url} 
+                                controls
+                                className="absolute inset-0 w-full h-full object-contain bg-black"
+                              />
+                            </div>
+                          ) : (
+                            <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                              <img 
+                                src={announcement.media_url} 
+                                alt="Announcement media"
+                                className="absolute inset-0 w-full h-full object-contain"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
                       
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4 text-accent" />
