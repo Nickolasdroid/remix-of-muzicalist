@@ -1676,13 +1676,24 @@ const Dashboard = () => {
 
               {/* Announcements Tab */}
               {activeTab === "announcements" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
+                <div className="space-y-4">
+                  {/* Header with stats and add button */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-accent" />
+                        <span className="text-sm text-muted-foreground">Premium: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                      </div>
+                    </div>
                     <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                       <DialogTrigger asChild>
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Announcement
+                        <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Plus className="h-4 w-4 mr-1" />
+                          New Ad
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
@@ -1762,107 +1773,61 @@ const Dashboard = () => {
                     </Dialog>
                   </div>
                   
-                  {/* Ad Allocation Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <Card className="border-accent/20">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <FileText className="h-5 w-5 text-accent" />
-                          <h3 className="font-semibold text-foreground">Standard Ads (Text Only)</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-1">
-                          Used: {standardAdsUsed} / {STANDARD_AD_LIMIT}
-                        </p>
-                        <p className="text-sm font-medium text-foreground">
-                          Remaining: {standardAdsRemaining}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="border-accent/20">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Images className="h-5 w-5 text-accent" />
-                          <h3 className="font-semibold text-foreground">Premium Ads (Text + Media)</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-1">
-                          Used: {premiumAdsUsed} / {PREMIUM_AD_LIMIT}
-                        </p>
-                        <p className="text-sm font-medium text-foreground">
-                          Remaining: {premiumAdsRemaining}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  <div className="flex flex-col items-center space-y-4">
+                  {/* Compact list of announcements */}
+                  <div className="space-y-2">
                     {announcements.map((announcement) => (
-                      <Card key={announcement.id} className="w-full max-w-[500px] border-accent/20 overflow-hidden">
-                        <CardContent className="p-0">
-                          {/* Header with avatar and info */}
-                          <div className="flex items-center justify-between p-4 pb-3">
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10 border-2 border-accent/30">
-                                <AvatarImage src={profile?.avatar_url || ""} />
-                                <AvatarFallback className="bg-accent/20 text-accent">
-                                  {formData.stageName?.charAt(0) || "A"}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-foreground">{formData.stageName}</span>
-                                  {profile?.plan === "premium" && (
-                                    <Badge className="bg-accent text-accent-foreground text-xs">Premium</Badge>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <span>{formData.specialization || "Artist"}</span>
-                                  <span>•</span>
-                                  <span>{formatPostDate(announcement.date)}</span>
+                      <div 
+                        key={announcement.id} 
+                        className="group flex items-start gap-3 p-3 rounded-lg border border-border/50 bg-card/30 hover:bg-card/60 transition-colors"
+                      >
+                        {/* Media thumbnail */}
+                        {announcement.media_url && (
+                          <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-muted">
+                            {announcement.media_type === 'video' ? (
+                              <div className="relative w-full h-full">
+                                <video src={announcement.media_url} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                  <Play className="h-6 w-6 text-white fill-white" />
                                 </div>
                               </div>
-                            </div>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleDeleteAnnouncement(announcement.id)}
-                              disabled={isSaving}
-                              className="h-8 w-8 p-0"
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                            ) : (
+                              <img src={announcement.media_url} alt="" className="w-full h-full object-cover" />
+                            )}
                           </div>
-                          
-                          {/* Content */}
-                          <div className="px-4 pb-3">
-                            <p className="text-foreground whitespace-pre-wrap">{announcement.description}</p>
-                          </div>
-                          
-                          {/* Media - full width */}
-                          {announcement.media_url && (
-                            <div className="w-full">
-                              {announcement.media_type === 'video' ? (
-                                <video src={announcement.media_url} controls className="w-full" />
-                              ) : (
-                                <img src={announcement.media_url} alt="Announcement media" className="w-full object-cover" />
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Premium badge indicator */}
-                          {announcement.is_premium && (
-                            <div className="px-4 py-2 border-t border-border">
-                              <Badge variant="outline" className="border-accent/50 text-accent text-xs">
-                                <Megaphone className="h-3 w-3 mr-1" />
-                                Premium Ad
+                        )}
+                        
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {announcement.is_premium && (
+                              <Badge variant="outline" className="border-accent/50 text-accent text-[10px] px-1.5 py-0">
+                                Premium
                               </Badge>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                            )}
+                            <span className="text-xs text-muted-foreground">
+                              {formatPostDate(announcement.date)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-foreground line-clamp-2">{announcement.description}</p>
+                        </div>
+                        
+                        {/* Delete button */}
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => handleDeleteAnnouncement(announcement.id)}
+                          disabled={isSaving}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 flex-shrink-0"
+                        >
+                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                        </Button>
+                      </div>
                     ))}
                     {announcements.length === 0 && (
-                      <p className="text-center text-muted-foreground py-8">No announcements yet. Add your first one!</p>
+                      <div className="text-center py-12 text-muted-foreground">
+                        <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                        <p className="text-sm">No announcements yet</p>
+                      </div>
                     )}
                   </div>
                 </div>
