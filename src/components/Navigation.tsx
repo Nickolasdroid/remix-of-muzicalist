@@ -75,6 +75,10 @@ const Navigation = () => {
               <Home className="h-4 w-4" />
               Home
             </Link>
+            <Link to="/announcements" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+              <Megaphone className="h-4 w-4" />
+              Announcements
+            </Link>
             <Link to="/categories" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
               <Users className="h-4 w-4" />
               Categories
@@ -86,10 +90,6 @@ const Navigation = () => {
             <Link to="/counties" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
               <MapPin className="h-4 w-4" />
               Counties
-            </Link>
-            <Link to="/announcements" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
-              <Megaphone className="h-4 w-4" />
-              Announcements
             </Link>
             <Link to="/about" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
               <Info className="h-4 w-4" />
