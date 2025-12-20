@@ -1516,6 +1516,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                 className="rounded-lg border border-border shadow-sm"
+                                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                                 modifiers={{
                                   busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
                                   blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
