@@ -568,11 +568,11 @@ const ArtistProfile = () => {
                                   />
                                 </div>
                               </DialogTrigger>
-                              <DialogContent className="max-w-4xl">
+                              <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-2 flex items-center justify-center">
                                 <img 
                                   src={image.url} 
                                   alt={`Gallery image ${index + 1}`}
-                                  className="w-full h-auto rounded-lg"
+                                  className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg"
                                 />
                               </DialogContent>
                             </Dialog>
