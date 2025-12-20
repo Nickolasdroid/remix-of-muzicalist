@@ -1026,19 +1026,29 @@ const Dashboard = () => {
                             <div className="space-y-2">
                               <Textarea
                                 value={formData.bio}
-                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                onChange={(e) => {
+                                  if (e.target.value.length <= 200) {
+                                    setFormData({...formData, bio: e.target.value});
+                                  }
+                                }}
                                 placeholder="Tell us about yourself, your musical journey, your style..."
                                 className="min-h-[120px]"
+                                maxLength={200}
                               />
-                              <div className="flex gap-2">
-                                <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
-                                  <Save className="h-3 w-3 mr-1" />
-                                  Save
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                  <X className="h-3 w-3 mr-1" />
-                                  Cancel
-                                </Button>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-xs ${formData.bio.length >= 200 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                  {formData.bio.length}/200 characters
+                                </span>
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           ) : (
