@@ -15,6 +15,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +37,7 @@ interface SettingsTabProps {
 
 const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: SettingsTabProps) => {
   const { toast } = useToast();
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [currentPasswordVerified, setCurrentPasswordVerified] = useState(false);
@@ -38,6 +46,11 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
     newPassword: "",
     confirmPassword: ""
   });
+
+  const resetPasswordForm = () => {
+    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    setCurrentPasswordVerified(false);
+  };
 
   const handleVerifyCurrentPassword = async () => {
     if (!passwordData.currentPassword) {
@@ -51,7 +64,6 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
 
     setIsVerifying(true);
     try {
-      // Re-authenticate by signing in with current credentials
       const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: passwordData.currentPassword
@@ -123,8 +135,8 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
         title: "Success",
         description: "Password updated successfully!"
       });
-      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-      setCurrentPasswordVerified(false);
+      resetPasswordForm();
+      setShowPasswordDialog(false);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -152,90 +164,108 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
 
           <Separator className="my-6" />
 
-          {/* Password Change Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Lock className="h-5 w-5 text-accent" />
-              <h3 className="text-xl font-display font-bold">Change Password</h3>
-            </div>
-            
-            {/* Step 1: Verify current password */}
-            <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-green-500/50 bg-green-500/10' : 'border-accent/30'}`}>
-              <div className="flex items-center justify-between mb-3">
-                <Label className="flex items-center gap-2">
-                  {currentPasswordVerified ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  Step 1: Verify Current Password
-                </Label>
-                {currentPasswordVerified && (
-                  <span className="text-xs text-green-500 font-medium">Verified</span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => {
-                    setPasswordData({ ...passwordData, currentPassword: e.target.value });
-                    if (currentPasswordVerified) setCurrentPasswordVerified(false);
-                  }}
-                  placeholder="Enter current password"
-                  disabled={currentPasswordVerified}
-                  className={currentPasswordVerified ? 'bg-muted/50' : ''}
-                />
-                <Button 
-                  onClick={handleVerifyCurrentPassword}
-                  disabled={isVerifying || !passwordData.currentPassword || currentPasswordVerified}
-                  variant={currentPasswordVerified ? "outline" : "default"}
-                  className={currentPasswordVerified ? '' : 'bg-accent text-accent-foreground'}
-                >
-                  {isVerifying ? "Verifying..." : currentPasswordVerified ? "Verified" : "Verify"}
-                </Button>
-              </div>
-            </div>
+          {/* Password Change Button */}
+          <Dialog open={showPasswordDialog} onOpenChange={(open) => {
+            setShowPasswordDialog(open);
+            if (!open) resetPasswordForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full border-accent/50 hover:bg-accent/10"
+              >
+                <Lock className="h-4 w-4 mr-2" />
+                Change Password
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-accent" />
+                  Change Password
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                {/* Step 1: Verify current password */}
+                <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-green-500/50 bg-green-500/10' : 'border-accent/30'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="flex items-center gap-2">
+                      {currentPasswordVerified ? (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      Step 1: Verify Current Password
+                    </Label>
+                    {currentPasswordVerified && (
+                      <span className="text-xs text-green-500 font-medium">Verified</span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) => {
+                        setPasswordData({ ...passwordData, currentPassword: e.target.value });
+                        if (currentPasswordVerified) setCurrentPasswordVerified(false);
+                      }}
+                      placeholder="Enter current password"
+                      disabled={currentPasswordVerified}
+                      className={currentPasswordVerified ? 'bg-muted/50' : ''}
+                    />
+                    <Button 
+                      onClick={handleVerifyCurrentPassword}
+                      disabled={isVerifying || !passwordData.currentPassword || currentPasswordVerified}
+                      variant={currentPasswordVerified ? "outline" : "default"}
+                      className={currentPasswordVerified ? '' : 'bg-accent text-accent-foreground'}
+                    >
+                      {isVerifying ? "..." : currentPasswordVerified ? "✓" : "Verify"}
+                    </Button>
+                  </div>
+                </div>
 
-            {/* Step 2: Set new password (disabled until verified) */}
-            <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-accent/30' : 'border-muted/30 opacity-50'}`}>
-              <Label className="flex items-center gap-2 mb-3">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                Step 2: Set New Password
-              </Label>
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-sm text-muted-foreground">New Password</Label>
-                  <Input
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    placeholder="Enter new password"
-                    disabled={!currentPasswordVerified}
-                    className="mt-1"
-                  />
+                {/* Step 2: Set new password (disabled until verified) */}
+                <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-accent/30' : 'border-muted/30 opacity-50'}`}>
+                  <Label className="flex items-center gap-2 mb-3">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                    Step 2: Set New Password
+                  </Label>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm text-muted-foreground">New Password</Label>
+                      <Input
+                        type="password"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        placeholder="Enter new password"
+                        disabled={!currentPasswordVerified}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
+                      <Input
+                        type="password"
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        placeholder="Confirm new password"
+                        disabled={!currentPasswordVerified}
+                        className="mt-1"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleChangePassword}
+                      disabled={isChangingPassword || !currentPasswordVerified || !passwordData.newPassword || !passwordData.confirmPassword}
+                      className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                    >
+                      {isChangingPassword ? "Updating..." : "Update Password"}
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
-                  <Input
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    placeholder="Confirm new password"
-                    disabled={!currentPasswordVerified}
-                    className="mt-1"
-                  />
-                </div>
-                <Button 
-                  onClick={handleChangePassword}
-                  disabled={isChangingPassword || !currentPasswordVerified || !passwordData.newPassword || !passwordData.confirmPassword}
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                >
-                  {isChangingPassword ? "Updating..." : "Update Password"}
-                </Button>
               </div>
-            </div>
-          </div>
+            </DialogContent>
+          </Dialog>
 
           <Separator className="my-6" />
 
