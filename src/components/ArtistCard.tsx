@@ -28,16 +28,15 @@ const ArtistCard = ({
   const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
   
   return (
-    <div className={`group relative rounded-2xl bg-gradient-to-br from-card to-secondary p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
-      
-      {rank && (
-        <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
-          <span className="text-lg font-display font-bold text-accent-foreground">#{rank}</span>
-        </div>
-      )}
+    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10 flex items-start gap-6">
+        {rank && (
+          <div className="absolute -top-2 -left-2 w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-lg">
+            <span className="text-xl font-display font-bold text-accent-foreground">#{rank}</span>
+          </div>
+        )}
         
         <Link to={`/artist/${id}`} className="relative">
           <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer`}>
