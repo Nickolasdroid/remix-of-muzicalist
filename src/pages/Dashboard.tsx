@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SettingsTab from "@/components/SettingsTab";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -2055,69 +2056,12 @@ const Dashboard = () => {
 
               {/* Settings Tab */}
               {activeTab === "settings" && (
-                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-                  <CardContent className="p-8">
-                    <h3 className="text-xl font-display font-bold mb-4">Account Settings</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Email (Cannot be changed)</Label>
-                        <Input
-                          value={formData.email}
-                          disabled
-                          className="mt-2 bg-muted/50"
-                        />
-                      </div>
-                      <Button 
-                        variant="destructive" 
-                        onClick={handleLogout}
-                        className="w-full"
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
-                      </Button>
-
-                      <Separator className="my-6" />
-
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-display font-bold text-destructive">Danger Zone</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Once you delete your account, there is no going back. Please be certain.
-                        </p>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="destructive" 
-                              className="w-full"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Account
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete your
-                                account and remove all your data from our servers including your profile,
-                                announcements, gallery, and calendar events.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={handleDeleteAccount}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                disabled={isSaving}
-                              >
-                                {isSaving ? "Deleting..." : "Delete Account"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <SettingsTab 
+                  formData={formData}
+                  handleLogout={handleLogout}
+                  handleDeleteAccount={handleDeleteAccount}
+                  isSaving={isSaving}
+                />
               )}
         </div>
       </div>
