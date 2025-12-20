@@ -1690,7 +1690,7 @@ const Dashboard = () => {
 
               {/* Announcements Tab */}
               {activeTab === "announcements" && (
-                <div className="space-y-4 max-w-md mx-auto">
+                <div className="space-y-4">
                   {/* Header with stats and add button */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
                     <div className="flex items-center gap-6">
@@ -1794,7 +1794,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Compact list of announcements */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-w-md mx-auto">
                     {announcements.map((announcement) => (
                       <div 
                         key={announcement.id} 
