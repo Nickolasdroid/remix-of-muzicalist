@@ -707,7 +707,8 @@ const Dashboard = () => {
 
     setIsSaving(true);
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      // Use local date to avoid timezone issues
+      const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
       
       const { error } = await supabase
         .from('calendar_events')
@@ -737,7 +738,8 @@ const Dashboard = () => {
 
     setIsSaving(true);
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      // Use local date to avoid timezone issues
+      const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
       
       const { error } = await supabase
         .from('calendar_events')
@@ -758,7 +760,8 @@ const Dashboard = () => {
   };
 
   const getEventForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    // Use local date to avoid timezone issues
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     return calendarEvents.find(event => event.event_date === dateStr);
   };
 
