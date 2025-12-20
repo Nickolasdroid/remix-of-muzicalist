@@ -132,28 +132,28 @@ const Leaderboard = () => {
           </div>
 
           <Tabs defaultValue="singers" className="w-full">
-            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-12 bg-card/50 p-2 rounded-xl border-2 border-accent/30">
+            <TabsList className="flex w-full max-w-2xl mx-auto mb-12 bg-card/50 p-2 rounded-xl border-2 border-accent/30">
               <TabsTrigger 
                 value="singers"
-                className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
+                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
               >
                 Singers
               </TabsTrigger>
               <TabsTrigger 
                 value="instrumentalists"
-                className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
+                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
               >
                 Instrumentalists
               </TabsTrigger>
               <TabsTrigger 
                 value="djs"
-                className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
+                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
               >
                 DJs
               </TabsTrigger>
               <TabsTrigger 
                 value="bands"
-                className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
+                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
               >
                 Bands
               </TabsTrigger>
