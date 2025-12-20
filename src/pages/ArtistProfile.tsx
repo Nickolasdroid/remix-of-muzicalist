@@ -61,6 +61,9 @@ interface Announcement {
   title: string;
   description: string;
   date: string;
+  is_premium: boolean;
+  media_url: string | null;
+  media_type: string | null;
 }
 
 interface GalleryItem {
@@ -131,8 +134,9 @@ const ArtistProfile = () => {
       // Fetch announcements
       const { data: announcementsData } = await supabase
         .from('announcements')
-        .select('id, title, description, date')
+        .select('id, title, description, date, is_premium, media_url, media_type')
         .eq('profile_id', id)
+        .order('is_premium', { ascending: false })
         .order('date', { ascending: false });
 
       setAnnouncements(announcementsData || []);
@@ -522,22 +526,40 @@ const ArtistProfile = () => {
                   <div>
                     <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                       <Megaphone className="h-6 w-6 text-accent" />
-                      Latest Announcements
+                      Announcements
                     </h2>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {announcements.length > 0 ? (
                         announcements.map((announcement) => (
-                          <Card key={announcement.id} className="border-accent/20">
-                            <CardContent className="p-6">
-                              <div className="flex items-start justify-between gap-4 mb-3">
-                                <h3 className="text-xl font-semibold text-foreground">{announcement.title}</h3>
-                                <Badge variant="outline" className="border-accent/50 text-accent whitespace-nowrap">
-                                  {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </Badge>
+                          <div 
+                            key={announcement.id} 
+                            className={`flex items-start gap-4 p-4 rounded-lg border transition-colors ${
+                              announcement.is_premium 
+                                ? 'border-accent bg-accent/5' 
+                                : 'border-border bg-card/50'
+                            }`}
+                          >
+                            {announcement.media_url && announcement.media_type === 'image' && (
+                              <img 
+                                src={announcement.media_url} 
+                                alt="" 
+                                className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                {announcement.is_premium && (
+                                  <Badge className="bg-accent text-accent-foreground text-xs px-2 py-0">
+                                    Promotion
+                                  </Badge>
+                                )}
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </span>
                               </div>
-                              <p className="text-muted-foreground leading-relaxed">{announcement.description}</p>
-                            </CardContent>
-                          </Card>
+                              <p className="text-sm text-foreground line-clamp-2">{announcement.description}</p>
+                            </div>
+                          </div>
                         ))
                       ) : (
                         <p className="text-muted-foreground text-center py-8">No announcements yet.</p>
