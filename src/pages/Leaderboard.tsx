@@ -166,7 +166,7 @@ const Leaderboard = () => {
             ) : (
               Object.entries(categories).map(([key, categoryArtists]) => (
                 <TabsContent key={key} value={key} className="space-y-6">
-                  <div className="grid gap-6">
+                  <div className="grid gap-6 max-w-2xl mx-auto">
                     {categoryArtists.length > 0 ? (
                       categoryArtists.map((artist, index) => (
                         <ArtistCard 
