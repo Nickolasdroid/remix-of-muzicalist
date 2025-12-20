@@ -47,7 +47,7 @@ const Announcements = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-accent/5">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 pt-32 pb-20">
