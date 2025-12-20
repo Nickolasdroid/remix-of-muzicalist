@@ -868,19 +868,19 @@ const Dashboard = () => {
       
       <div className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-display font-bold text-foreground">
-              {activeTab === "profile" && "My Profile"}
-              {activeTab === "messages" && "My Messages"}
-              {activeTab === "announcements" && "My Announcements"}
-              {activeTab === "posts" && "My Posts"}
-              {activeTab === "settings" && "Settings"}
-            </h1>
-          </div>
+          {activeTab !== "profile" && (
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl font-display font-bold text-foreground">
+                {activeTab === "messages" && "My Messages"}
+                {activeTab === "announcements" && "My Announcements"}
+                {activeTab === "posts" && "My Posts"}
+                {activeTab === "settings" && "Settings"}
+              </h1>
+            </div>
+          )}
               {/* Profile Tab */}
               {activeTab === "profile" && (
-                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-                  <CardContent className="p-8">
+                <div className="space-y-8">
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group">
@@ -1657,8 +1657,7 @@ const Dashboard = () => {
                         </div>
                       </TabsContent>
                     </Tabs>
-                  </CardContent>
-                </Card>
+                </div>
               )}
 
               {/* Messages Tab */}
