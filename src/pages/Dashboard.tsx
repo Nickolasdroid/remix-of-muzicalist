@@ -1692,13 +1692,18 @@ const Dashboard = () => {
                         <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
                       </div>
                     </div>
-                    <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                          <Plus className="h-4 w-4 mr-1" />
-                          New Ad
-                        </Button>
-                      </DialogTrigger>
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                        <DollarSign className="h-4 w-4 mr-1" />
+                        Buy Ads
+                      </Button>
+                      <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                            <Plus className="h-4 w-4 mr-1" />
+                            New Ad
+                          </Button>
+                        </DialogTrigger>
                       <DialogContent className="max-w-md">
                         <DialogHeader>
                           <DialogTitle>Add New Announcement</DialogTitle>
@@ -1774,6 +1779,7 @@ const Dashboard = () => {
                         </div>
                       </DialogContent>
                     </Dialog>
+                    </div>
                   </div>
                   
                   {/* Compact list of announcements */}
