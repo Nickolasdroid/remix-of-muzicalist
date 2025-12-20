@@ -97,7 +97,7 @@ const Announcements = () => {
                           </Link>
                           {announcement.is_premium && (
                             <Badge className="bg-accent/10 text-accent border-accent/30">
-                              Premium
+                              Promotion
                             </Badge>
                           )}
                         </div>

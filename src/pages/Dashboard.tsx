@@ -1685,7 +1685,7 @@ const Dashboard = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-accent" />
-                        <span className="text-sm text-muted-foreground">Premium: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                        <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
                       </div>
                     </div>
                     <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
@@ -1709,7 +1709,7 @@ const Dashboard = () => {
                               }
                             />
                             <Label htmlFor="premium-ad" className="cursor-pointer font-medium">
-                              Premium Ad (with photo/video)
+                              Promotion Ad (with photo/video)
                             </Label>
                           </div>
                           
@@ -1800,7 +1800,7 @@ const Dashboard = () => {
                           <div className="flex items-center gap-2 mb-1">
                             {announcement.is_premium && (
                               <Badge variant="outline" className="border-accent/50 text-accent text-[10px] px-1.5 py-0">
-                                Premium
+                                Promotion
                               </Badge>
                             )}
                             <span className="text-xs text-muted-foreground">
