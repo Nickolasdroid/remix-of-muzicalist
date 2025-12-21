@@ -24,6 +24,7 @@ interface MediaPreview {
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'promotion' | 'ads'>('all');
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
 
   useEffect(() => {
@@ -57,23 +58,52 @@ const Announcements = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-foreground mb-6">
-            Announcements
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Find opportunities or post your availability for events and collaborations
-          </p>
+      <div className="container mx-auto px-4 pt-24 pb-20">
+        {/* Filter buttons */}
+        <div className="max-w-[500px] mx-auto mb-4">
+          <div className="flex gap-2">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('all')}
+              className={filter === 'all' ? 'bg-accent text-accent-foreground' : ''}
+            >
+              All
+            </Button>
+            <Button
+              variant={filter === 'promotion' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('promotion')}
+              className={filter === 'promotion' ? 'bg-accent text-accent-foreground' : ''}
+            >
+              Promotion
+            </Button>
+            <Button
+              variant={filter === 'ads' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('ads')}
+              className={filter === 'ads' ? 'bg-accent text-accent-foreground' : ''}
+            >
+              Ads
+            </Button>
+          </div>
         </div>
 
         <div className="max-w-[500px] mx-auto space-y-4">
           {loading ? (
             <div className="text-center text-muted-foreground">Loading announcements...</div>
-          ) : announcements.length === 0 ? (
-            <div className="text-center text-muted-foreground">No announcements yet.</div>
-          ) : (
-            announcements.map((announcement) => (
+          ) : (() => {
+            const filteredAnnouncements = announcements.filter(a => {
+              if (filter === 'all') return true;
+              if (filter === 'promotion') return a.is_premium === true;
+              if (filter === 'ads') return a.is_premium === false;
+              return true;
+            });
+            
+            return filteredAnnouncements.length === 0 ? (
+              <div className="text-center text-muted-foreground">No announcements yet.</div>
+            ) : (
+              filteredAnnouncements.map((announcement) => (
               <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header - matching Feed layout */}
                 <div className="p-4 pb-0">
@@ -190,7 +220,8 @@ const Announcements = () => {
                 </div>
               </Card>
             ))
-          )}
+          );
+          })()}
         </div>
       </div>
 
