@@ -38,7 +38,7 @@ const ArtistCard = ({
           </div>
         )}
         
-        <Link to={`/artist/${id}`} className="relative">
+        <Link to={`/artist/${id}`} className="relative flex flex-col items-center">
           <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer`}>
             {imageUrl ? (
               <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
@@ -49,21 +49,17 @@ const ArtistCard = ({
             )}
           </div>
           
+          <h3 className="mt-3 text-lg font-display font-bold text-foreground group-hover:text-accent transition-colors truncate max-w-[150px] text-center cursor-pointer">
+            {stageName}
+          </h3>
+          
           {rating > 0 && (
-            <div className="absolute -bottom-2 -right-2 flex items-center gap-1 px-3 py-1 rounded-full bg-accent text-accent-foreground font-bold shadow-lg">
+            <div className="absolute top-16 -right-2 flex items-center gap-1 px-3 py-1 rounded-full bg-accent text-accent-foreground font-bold shadow-lg">
               <Star className="h-4 w-4 fill-current" />
               <span>{rating.toFixed(1)}</span>
             </div>
           )}
         </Link>
-
-        <div className="flex-1 min-w-0">
-          <Link to={`/artist/${id}`}>
-            <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-accent transition-colors truncate cursor-pointer">
-              {stageName}
-            </h3>
-          </Link>
-        </div>
       </div>
     </div>
   );
