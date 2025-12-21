@@ -652,6 +652,54 @@ const Dashboard = () => {
     }
   };
 
+  const handleGalleryVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Check file size (500 MB limit)
+    const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
+    if (file.size > maxSize) {
+      toast({ 
+        title: "Error", 
+        description: "Video file size must not exceed 500 MB.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/gallery/videos/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const { error: insertError } = await supabase
+        .from('gallery_items')
+        .insert({
+          profile_id: user.id,
+          type: 'video',
+          url: publicUrl
+        });
+
+      if (insertError) throw insertError;
+
+      await loadGalleryItems();
+      setShowGalleryDialog(false);
+      toast({ title: "Success", description: "Video uploaded!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleAddVideo = async () => {
     if (!user || !videoUrl) return;
 
@@ -681,8 +729,9 @@ const Dashboard = () => {
   const handleDeleteGalleryItem = async (id: string, url: string, type: string) => {
     setIsSaving(true);
     try {
-      if (type === 'image') {
-        const filePath = url.split('/').slice(-3).join('/');
+      // Check if it's an uploaded file (stored in our storage bucket)
+      if (url.includes('supabase.co/storage')) {
+        const filePath = url.split('/').slice(-4).join('/');
         await supabase.storage.from('avatars').remove([filePath]);
       }
 
@@ -1416,6 +1465,27 @@ const Dashboard = () => {
                                   </TabsContent>
                                   <TabsContent value="video" className="space-y-4">
                                     <div>
+                                      <Label htmlFor="gallery-video-upload" className="cursor-pointer">
+                                        <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors">
+                                          <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                          <p className="text-sm text-muted-foreground">Click to upload video</p>
+                                          <p className="text-xs text-muted-foreground mt-1">Max 500 MB</p>
+                                        </div>
+                                      </Label>
+                                      <Input
+                                        id="gallery-video-upload"
+                                        type="file"
+                                        accept="video/*"
+                                        onChange={handleGalleryVideoUpload}
+                                        className="hidden"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Separator className="flex-1" />
+                                      <span className="text-xs text-muted-foreground">or add URL</span>
+                                      <Separator className="flex-1" />
+                                    </div>
+                                    <div>
                                       <Label>YouTube/Video URL</Label>
                                       <Input
                                         value={videoUrl}
@@ -1423,8 +1493,8 @@ const Dashboard = () => {
                                         placeholder="https://www.youtube.com/embed/..."
                                       />
                                     </div>
-                                    <Button onClick={handleAddVideo} disabled={isSaving} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Adding..." : "Add Video"}
+                                    <Button onClick={handleAddVideo} disabled={isSaving || !videoUrl} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Adding..." : "Add Video URL"}
                                     </Button>
                                   </TabsContent>
                                 </Tabs>
