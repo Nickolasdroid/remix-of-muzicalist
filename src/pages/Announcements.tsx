@@ -4,7 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Calendar, User, MessageCircle } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -111,6 +118,27 @@ const Announcements = () => {
                         </div>
                       </div>
                     </div>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                          <MoreHorizontal className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                          onClick={() => {
+                            toast({
+                              title: "Report submitted",
+                              description: "Thank you for reporting this problem. We'll review it shortly.",
+                            });
+                          }}
+                        >
+                          <Flag className="h-4 w-4 mr-2" />
+                          Report Problem
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
                   {/* Content */}
