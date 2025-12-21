@@ -63,16 +63,6 @@ const ArtistCard = ({
               {stageName}
             </h3>
           </Link>
-          
-          <div className="flex items-center gap-4 text-sm">
-            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${isPremium ? "bg-accent/20 text-accent" : "bg-burgundy/20 text-burgundy"} font-semibold`}>
-              {specialization}
-            </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              {county}
-            </span>
-          </div>
         </div>
       </div>
     </div>
