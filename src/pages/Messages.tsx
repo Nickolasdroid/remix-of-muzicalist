@@ -349,7 +349,7 @@ const Messages = () => {
                         {getOtherProfile(selectedConversation).stage_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {selectedConversation.artist_profile?.specialization || 'Artist'}
+                        {(selectedConversation as any).artist_profile?.specialization || getOtherProfile(selectedConversation).specialization || 'Artist'}
                       </span>
                     </div>
                   </div>
