@@ -1523,6 +1523,7 @@ const Dashboard = () => {
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Images className="h-5 w-5 text-accent" />
                               Photos
+                              <span className="text-sm font-normal text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                               {galleryItems.filter(item => item.type === 'image').map((item) => (
@@ -1558,6 +1559,7 @@ const Dashboard = () => {
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
+                              <span className="text-sm font-normal text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                               {galleryItems.filter(item => item.type === 'video').map((item) => (
