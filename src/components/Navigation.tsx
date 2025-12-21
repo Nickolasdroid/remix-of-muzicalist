@@ -144,7 +144,7 @@ const Navigation = () => {
                       <span>My Profile</span>
                     </button>
                     <button
-                      onClick={() => navigate('/dashboard?tab=messages')}
+                      onClick={() => navigate('/messages')}
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
                     >
                       <MessageSquare className="h-5 w-5" />
