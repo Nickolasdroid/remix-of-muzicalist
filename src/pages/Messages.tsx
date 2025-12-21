@@ -334,15 +334,13 @@ const Messages = () => {
                         <User className="h-5 w-5" />
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <span className="font-semibold block">
+                    <div className="flex flex-col">
+                      <span className="font-semibold">
                         {getOtherProfile(selectedConversation).stage_name}
                       </span>
-                      {getOtherProfile(selectedConversation).specialization && (
-                        <span className="text-xs text-muted-foreground">
-                          {getOtherProfile(selectedConversation).specialization}
-                        </span>
-                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {getOtherProfile(selectedConversation).specialization || 'Artist'}
+                      </span>
                     </div>
                   </div>
 
