@@ -967,14 +967,17 @@ const Dashboard = () => {
                 <div className="space-y-8">
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
-                      <div className="flex-shrink-0 relative group">
+                      <div className="flex-shrink-0 relative group cursor-pointer">
                         <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
                           <AvatarImage src={profile?.avatar_url} />
                           <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
                             <User className="h-20 w-20 text-accent" />
                           </AvatarFallback>
                         </Avatar>
-                        <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <label 
+                          htmlFor="avatar-upload" 
+                          className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                        >
                           <Camera className="h-8 w-8 text-white" />
                         </label>
                         <input
