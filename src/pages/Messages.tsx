@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { User, Send, ArrowLeft, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { format, isToday, isYesterday, isSameDay } from "date-fns";
 
 interface Conversation {
   id: string;
@@ -267,6 +268,19 @@ const Messages = () => {
     );
   };
 
+  const formatMessageDate = (date: Date) => {
+    if (isToday(date)) return "Today";
+    if (isYesterday(date)) return "Yesterday";
+    return format(date, "EEEE, MMMM d, yyyy");
+  };
+
+  const shouldShowDateSeparator = (currentMsg: Message, prevMsg: Message | null) => {
+    if (!prevMsg) return true;
+    const currentDate = new Date(currentMsg.created_at);
+    const prevDate = new Date(prevMsg.created_at);
+    return !isSameDay(currentDate, prevDate);
+  };
+
   const getPlanRingColor = (plan?: string) => {
     switch (plan) {
       case 'Premium':
@@ -372,25 +386,40 @@ const Messages = () => {
                   {/* Messages */}
                   <ScrollArea className="flex-1 p-4">
                     <div className="space-y-4">
-                      {messages.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                              msg.sender_id === user?.id
-                                ? 'bg-accent text-accent-foreground'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            <p>{msg.content}</p>
-                            <p className="text-xs opacity-70 mt-1">
-                              {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </p>
+                      {messages.map((msg, index) => {
+                        const prevMsg = index > 0 ? messages[index - 1] : null;
+                        const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
+                        
+                        return (
+                          <div key={msg.id}>
+                            {showDateSeparator && (
+                              <div className="flex items-center justify-center my-4">
+                                <div className="bg-muted px-3 py-1 rounded-full">
+                                  <span className="text-xs text-muted-foreground font-medium">
+                                    {formatMessageDate(new Date(msg.created_at))}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            <div
+                              className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                            >
+                              <div
+                                className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                                  msg.sender_id === user?.id
+                                    ? 'bg-accent text-accent-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                <p>{msg.content}</p>
+                                <p className="text-xs opacity-70 mt-1">
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </ScrollArea>
 
