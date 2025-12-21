@@ -182,35 +182,25 @@ const CountyArtists = () => {
                       <CarouselNext className="right-0" />
                     </Carousel>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
                       {categoryArtists.map((artist) => {
                         const isPremium = artist.plan === 'Premium';
-                        const borderColor = isPremium ? "border-accent" : "border-burgundy";
+                        const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
+                        const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
+                        const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
+                        const avatarBorderColor = isPremium ? "border-accent" : "border-burgundy";
                         
                         return (
-                          <Link 
-                            key={artist.id} 
-                            to={`/artist/${artist.id}`}
-                            className="group"
-                          >
-                            <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
-                              {artist.avatar_url ? (
-                                <img 
-                                  src={artist.avatar_url} 
-                                  alt={artist.stage_name} 
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                                  <User className="h-16 w-16 text-accent" />
-                                </div>
-                              )}
-                              
-                              <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
-                                <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
-                                  {artist.stage_name}
-                                </h3>
+                          <Link key={artist.id} to={`/artist/${artist.id}`}>
+                            <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
+                              <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
+                                {artist.avatar_url ? (
+                                  <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
+                                )}
                               </div>
+                              <p className="text-lg font-semibold text-foreground">{artist.stage_name}</p>
                             </div>
                           </Link>
                         );
