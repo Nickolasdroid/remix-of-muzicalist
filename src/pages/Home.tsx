@@ -6,6 +6,7 @@ import ArtistSearchBar from "@/components/ArtistSearchBar";
 import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import Footer from "@/components/Footer";
 import singerIcon from "@/assets/singer-silhouette.png";
 import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
 import djIcon from "@/assets/dj-silhouette.png";
@@ -181,6 +182,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
