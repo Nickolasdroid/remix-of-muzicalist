@@ -1,41 +1,78 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Mic2, Guitar, Music, Users } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import ArtistSearchBar from "@/components/ArtistSearchBar";
 import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import singerIcon from "@/assets/singer-silhouette.png";
+import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
+import djIcon from "@/assets/dj-silhouette.png";
+import bandIcon from "@/assets/band-silhouette.png";
 
 const Home = () => {
+  const [counts, setCounts] = useState({
+    Singer: 0,
+    Instrumentalist: 0,
+    DJ: 0,
+    Band: 0,
+  });
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("specialization");
+
+      if (data) {
+        const newCounts = {
+          Singer: 0,
+          Instrumentalist: 0,
+          DJ: 0,
+          Band: 0,
+        };
+        data.forEach((profile) => {
+          if (profile.specialization && newCounts[profile.specialization as keyof typeof newCounts] !== undefined) {
+            newCounts[profile.specialization as keyof typeof newCounts]++;
+          }
+        });
+        setCounts(newCounts);
+      }
+    };
+
+    fetchCounts();
+  }, []);
+
   const categories = [
     {
-      title: "Singers",
+      iconImage: singerIcon,
+      title: "Singer",
       description: "Professional vocalists for any event",
-      icon: Mic2,
-      href: "/categories/singers",
-      count: 156
+      count: counts.Singer,
+      href: "/categories/Singers",
     },
     {
-      title: "Instrumentalists",
-      description: "Master musicians across all instruments",
-      icon: Guitar,
-      href: "/categories/instrumentalists",
-      count: 89
+      iconImage: instrumentalistIcon,
+      title: "Instrumentalist",
+      description: "Skilled musicians with various instruments",
+      count: counts.Instrumentalist,
+      href: "/categories/Instrumentalists",
     },
     {
-      title: "DJs",
-      description: "Create the perfect atmosphere",
-      icon: Music,
-      href: "/categories/djs",
-      count: 67
+      iconImage: djIcon,
+      title: "DJ",
+      description: "Expert DJs for parties and events",
+      count: counts.DJ,
+      href: "/categories/DJs",
     },
     {
-      title: "Bands",
-      description: "Complete musical ensembles",
-      icon: Users,
-      href: "/categories/bands",
-      count: 43
-    }
+      iconImage: bandIcon,
+      title: "Band",
+      description: "Complete musical groups for your events",
+      count: counts.Band,
+      href: "/categories/Bands",
+    },
   ];
 
   return (
