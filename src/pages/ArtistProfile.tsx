@@ -393,9 +393,20 @@ const ArtistProfile = () => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between flex-wrap gap-4">
                     <div>
-                      <h1 className="text-4xl font-display font-bold text-foreground mb-2">
-                        {artist.stage_name}
-                      </h1>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h1 className="text-4xl font-display font-bold text-foreground">
+                          {artist.stage_name}
+                        </h1>
+                        <Badge 
+                          className={`px-4 py-1.5 text-sm font-semibold ${
+                            isPremium 
+                              ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' 
+                              : 'bg-muted text-muted-foreground border border-border'
+                          }`}
+                        >
+                          {isPremium ? '★ Premium' : 'Standard'}
+                        </Badge>
+                      </div>
                       
                       <div className="flex flex-wrap gap-3 mb-4">
                         {artist.specialization && (
