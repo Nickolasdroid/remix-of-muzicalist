@@ -1480,22 +1480,6 @@ const Dashboard = () => {
                                         className="hidden"
                                       />
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <Separator className="flex-1" />
-                                      <span className="text-xs text-muted-foreground">or add URL</span>
-                                      <Separator className="flex-1" />
-                                    </div>
-                                    <div>
-                                      <Label>YouTube/Video URL</Label>
-                                      <Input
-                                        value={videoUrl}
-                                        onChange={(e) => setVideoUrl(e.target.value)}
-                                        placeholder="https://www.youtube.com/embed/..."
-                                      />
-                                    </div>
-                                    <Button onClick={handleAddVideo} disabled={isSaving || !videoUrl} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Adding..." : "Add Video URL"}
-                                    </Button>
                                   </TabsContent>
                                 </Tabs>
                               </div>
