@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +25,8 @@ import {
   Images,
   Play,
   DollarSign,
-  Megaphone
+  Megaphone,
+  MessageCircle
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,7 @@ interface Review {
 
 const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -112,7 +114,16 @@ const ArtistProfile = () => {
     rating: 5,
     comment: ""
   });
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setCurrentUserId(session?.user?.id || null);
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const fetchArtistData = async () => {
@@ -432,12 +443,23 @@ const ArtistProfile = () => {
 
                   {/* Contact Buttons */}
                   <div className="flex flex-wrap gap-3 mt-6">
-                    <a href={`mailto:${artist.email}`}>
-                      <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                        <Mail className="mr-2 h-4 w-4" />
+                    {currentUserId && currentUserId !== artist.id ? (
+                      <Button 
+                        className="bg-accent text-accent-foreground hover:bg-accent/90"
+                        onClick={() => navigate(`/messages?artistId=${artist.id}`)}
+                      >
+                        <MessageCircle className="mr-2 h-4 w-4" />
                         Contact
                       </Button>
-                    </a>
+                    ) : !currentUserId ? (
+                      <Button 
+                        className="bg-accent text-accent-foreground hover:bg-accent/90"
+                        onClick={() => navigate('/login')}
+                      >
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Login to Contact
+                      </Button>
+                    ) : null}
                     <a href={`tel:${artist.phone}`}>
                       <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                         <Phone className="mr-2 h-4 w-4" />
