@@ -57,9 +57,9 @@ const ArtistCard = ({
           )}
         </Link>
 
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex items-center">
           <Link to={`/artist/${id}`}>
-            <h3 className="text-2xl font-display font-bold text-foreground mb-2 group-hover:text-accent transition-colors truncate cursor-pointer">
+            <h3 className="text-2xl font-display font-bold text-foreground group-hover:text-accent transition-colors truncate cursor-pointer">
               {stageName}
             </h3>
           </Link>
