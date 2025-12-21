@@ -124,15 +124,25 @@ const Messages = () => {
     const conversationsWithProfiles = await Promise.all(
       (data || []).map(async (conv) => {
         const otherUserId = conv.artist_id === user.id ? conv.participant_id : conv.artist_id;
-        const { data: profile } = await supabase
+        
+        // Fetch other user's profile
+        const { data: otherProfile } = await supabase
           .from('profiles')
           .select('stage_name, avatar_url, plan, specialization')
           .eq('id', otherUserId)
           .maybeSingle();
         
+        // Fetch artist's profile for specialization
+        const { data: artistProfile } = await supabase
+          .from('profiles')
+          .select('stage_name, avatar_url, plan, specialization')
+          .eq('id', conv.artist_id)
+          .maybeSingle();
+        
         return {
           ...conv,
-          other_profile: profile
+          other_profile: otherProfile,
+          artist_profile: artistProfile
         };
       })
     );
@@ -153,14 +163,14 @@ const Messages = () => {
       .maybeSingle();
 
     if (existing) {
-      // Fetch profile for existing conversation
-      const { data: profile } = await supabase
+      // Fetch artist profile for existing conversation
+      const { data: artistProfile } = await supabase
         .from('profiles')
         .select('stage_name, avatar_url, plan, specialization')
         .eq('id', artistId)
         .maybeSingle();
       
-      setSelectedConversation({ ...existing, other_profile: profile } as any);
+      setSelectedConversation({ ...existing, other_profile: artistProfile, artist_profile: artistProfile } as any);
       return;
     }
 
@@ -190,7 +200,7 @@ const Messages = () => {
       .eq('id', artistId)
       .maybeSingle();
 
-    const convWithProfile = { ...newConv, other_profile: profile };
+    const convWithProfile = { ...newConv, other_profile: profile, artist_profile: profile };
     setConversations(prev => [convWithProfile, ...prev]);
     setSelectedConversation(convWithProfile as any);
   };
@@ -339,7 +349,7 @@ const Messages = () => {
                         {getOtherProfile(selectedConversation).stage_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {getOtherProfile(selectedConversation).specialization || 'Artist'}
+                        {(selectedConversation as any).artist_profile?.specialization || getOtherProfile(selectedConversation).specialization || 'Artist'}
                       </span>
                     </div>
                   </div>
