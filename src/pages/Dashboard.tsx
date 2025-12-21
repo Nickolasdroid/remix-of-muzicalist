@@ -2179,8 +2179,8 @@ const Dashboard = () => {
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
-                cropShape="round"
-                showGrid={false}
+                cropShape="rect"
+                showGrid={true}
               />
             </div>
             
