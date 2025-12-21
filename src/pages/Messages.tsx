@@ -248,8 +248,23 @@ const Messages = () => {
     setSending(false);
   };
 
-  const getOtherProfile = (conv: any) => {
-    return conv.other_profile || { stage_name: 'Unknown', avatar_url: null, plan: 'Free', specialization: null };
+  const getOtherProfile = (conv: Conversation | null | undefined) => {
+    return (
+      conv?.other_profile ?? {
+        stage_name: "Unknown",
+        avatar_url: null,
+        plan: "Free",
+        specialization: null,
+      }
+    );
+  };
+
+  const getArtistSpecialization = (conv: Conversation) => {
+    return (
+      conv.artist_profile?.specialization ||
+      getOtherProfile(conv).specialization ||
+      "Artist"
+    );
   };
 
   const getPlanRingColor = (plan?: string) => {
@@ -349,7 +364,7 @@ const Messages = () => {
                         {getOtherProfile(selectedConversation).stage_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {selectedConversation.artist_profile?.specialization || 'Artist'}
+                        {getArtistSpecialization(selectedConversation)}
                       </span>
                     </div>
                   </div>
