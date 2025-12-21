@@ -304,6 +304,9 @@ const Dashboard = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // Allow picking the same file again
+    e.target.value = "";
+
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -358,40 +361,44 @@ const Dashboard = () => {
     try {
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const fileName = `${user.id}/avatar.jpg`;
-      
+
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from("avatars")
         .upload(fileName, croppedBlob, {
-          contentType: 'image/jpeg',
-          upsert: true
+          contentType: "image/jpeg",
+          cacheControl: "0",
+          upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(fileName);
+
+      // Bust browser cache so the new image appears instantly
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
 
       const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
+        .from("profiles")
+        .update({ avatar_url: freshUrl })
+        .eq("id", user.id);
 
       if (updateError) throw updateError;
 
-      setProfile({ ...profile, avatar_url: publicUrl });
+      setProfile((prev: any) => ({ ...(prev ?? {}), avatar_url: freshUrl }));
       setShowCropper(false);
       setImageSrc(null);
 
       toast({
         title: "Success",
-        description: "Profile picture updated successfully!"
+        description: "Profile picture updated successfully!",
       });
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to update profile picture.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
