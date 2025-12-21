@@ -303,10 +303,7 @@ const Messages = () => {
                         </Avatar>
                         <div className="text-left">
                           <p className="font-medium">{profile.stage_name}</p>
-                          {profile.specialization && (
-                            <p className="text-xs text-muted-foreground">{profile.specialization}</p>
-                          )}
-                          <p className="text-xs text-muted-foreground/70">
+                          <p className="text-xs text-muted-foreground">
                             {new Date(conv.updated_at).toLocaleDateString()}
                           </p>
                         </div>
