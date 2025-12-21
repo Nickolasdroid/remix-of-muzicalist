@@ -18,10 +18,20 @@ interface Conversation {
   artist_profile?: {
     stage_name: string;
     avatar_url: string | null;
+    plan?: string;
+    specialization?: string;
   };
   participant_profile?: {
     stage_name: string;
     avatar_url: string | null;
+    plan?: string;
+    specialization?: string;
+  };
+  other_profile?: {
+    stage_name: string;
+    avatar_url: string | null;
+    plan?: string;
+    specialization?: string;
   };
 }
 
@@ -116,7 +126,7 @@ const Messages = () => {
         const otherUserId = conv.artist_id === user.id ? conv.participant_id : conv.artist_id;
         const { data: profile } = await supabase
           .from('profiles')
-          .select('stage_name, avatar_url')
+          .select('stage_name, avatar_url, plan, specialization')
           .eq('id', otherUserId)
           .maybeSingle();
         
@@ -146,7 +156,7 @@ const Messages = () => {
       // Fetch profile for existing conversation
       const { data: profile } = await supabase
         .from('profiles')
-        .select('stage_name, avatar_url')
+        .select('stage_name, avatar_url, plan, specialization')
         .eq('id', artistId)
         .maybeSingle();
       
@@ -176,7 +186,7 @@ const Messages = () => {
     // Fetch artist profile
     const { data: profile } = await supabase
       .from('profiles')
-      .select('stage_name, avatar_url')
+      .select('stage_name, avatar_url, plan, specialization')
       .eq('id', artistId)
       .maybeSingle();
 
@@ -229,7 +239,18 @@ const Messages = () => {
   };
 
   const getOtherProfile = (conv: any) => {
-    return conv.other_profile || { stage_name: 'Unknown', avatar_url: null };
+    return conv.other_profile || { stage_name: 'Unknown', avatar_url: null, plan: 'Free', specialization: null };
+  };
+
+  const getPlanRingColor = (plan?: string) => {
+    switch (plan) {
+      case 'Premium':
+        return 'ring-2 ring-accent ring-offset-2 ring-offset-background';
+      case 'Standard':
+        return 'ring-2 ring-blue-500 ring-offset-2 ring-offset-background';
+      default:
+        return 'ring-2 ring-muted-foreground/30 ring-offset-2 ring-offset-background';
+    }
   };
 
   if (loading && !user) {
@@ -274,7 +295,7 @@ const Messages = () => {
                           selectedConversation?.id === conv.id ? 'bg-accent/10' : ''
                         }`}
                       >
-                        <Avatar className="h-10 w-10">
+                        <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
                           <AvatarImage src={profile.avatar_url || undefined} />
                           <AvatarFallback>
                             <User className="h-5 w-5" />
@@ -282,7 +303,10 @@ const Messages = () => {
                         </Avatar>
                         <div className="text-left">
                           <p className="font-medium">{profile.stage_name}</p>
-                          <p className="text-xs text-muted-foreground">
+                          {profile.specialization && (
+                            <p className="text-xs text-muted-foreground">{profile.specialization}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground/70">
                             {new Date(conv.updated_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -307,15 +331,22 @@ const Messages = () => {
                     >
                       <ArrowLeft className="h-5 w-5" />
                     </Button>
-                    <Avatar className="h-10 w-10">
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
                       <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
                       <AvatarFallback>
                         <User className="h-5 w-5" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-semibold">
-                      {getOtherProfile(selectedConversation).stage_name}
-                    </span>
+                    <div>
+                      <span className="font-semibold block">
+                        {getOtherProfile(selectedConversation).stage_name}
+                      </span>
+                      {getOtherProfile(selectedConversation).specialization && (
+                        <span className="text-xs text-muted-foreground">
+                          {getOtherProfile(selectedConversation).specialization}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Messages */}
