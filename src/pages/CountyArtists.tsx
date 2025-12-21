@@ -1,6 +1,5 @@
 import Navigation from "@/components/Navigation";
-import SimpleArtistCard from "@/components/SimpleArtistCard";
-import { ArrowLeft, Grid, List } from "lucide-react";
+import { ArrowLeft, Grid, List, User } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -146,43 +145,72 @@ const CountyArtists = () => {
                       className="w-full max-w-7xl mx-auto"
                     >
                       <CarouselContent>
-                        {categoryArtists.map((artist) => (
-                          <CarouselItem key={artist.id} className="md:basis-1/2 lg:basis-1/3">
-                            <div className="p-3">
-                              <SimpleArtistCard 
-                                id={artist.id}
-                                name={artist.stage_name}
-                                stageName={artist.stage_name}
-                                isPremium={artist.plan === 'Premium'}
-                                imageUrl={artist.avatar_url || undefined}
-                              />
-                            </div>
-                          </CarouselItem>
-                        ))}
+                        {categoryArtists.map((artist) => {
+                          const isPremium = artist.plan === 'Premium';
+                          const borderColor = isPremium ? "border-accent" : "border-burgundy";
+                          
+                          return (
+                            <CarouselItem key={artist.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                              <div className="p-2">
+                                <Link to={`/artist/${artist.id}`} className="group">
+                                  <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
+                                    {artist.avatar_url ? (
+                                      <img 
+                                        src={artist.avatar_url} 
+                                        alt={artist.stage_name} 
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
+                                        <User className="h-16 w-16 text-accent" />
+                                      </div>
+                                    )}
+                                    
+                                    <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
+                                      <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
+                                        {artist.stage_name}
+                                      </h3>
+                                    </div>
+                                  </div>
+                                </Link>
+                              </div>
+                            </CarouselItem>
+                          );
+                        })}
                       </CarouselContent>
                       <CarouselPrevious className="left-0" />
                       <CarouselNext className="right-0" />
                     </Carousel>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
                       {categoryArtists.map((artist) => {
                         const isPremium = artist.plan === 'Premium';
-                        const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
-                        const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
-                        const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
-                        const avatarBorderColor = isPremium ? "border-accent" : "border-burgundy";
+                        const borderColor = isPremium ? "border-accent" : "border-burgundy";
                         
                         return (
-                          <Link key={artist.id} to={`/artist/${artist.id}`}>
-                            <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
-                              <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
-                                {artist.avatar_url ? (
-                                  <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
-                                )}
+                          <Link 
+                            key={artist.id} 
+                            to={`/artist/${artist.id}`}
+                            className="group"
+                          >
+                            <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
+                              {artist.avatar_url ? (
+                                <img 
+                                  src={artist.avatar_url} 
+                                  alt={artist.stage_name} 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
+                                  <User className="h-16 w-16 text-accent" />
+                                </div>
+                              )}
+                              
+                              <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
+                                <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
+                                  {artist.stage_name}
+                                </h3>
                               </div>
-                              <p className="text-lg font-semibold text-foreground">{artist.stage_name}</p>
                             </div>
                           </Link>
                         );
