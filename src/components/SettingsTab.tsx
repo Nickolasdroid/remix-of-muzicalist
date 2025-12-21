@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,10 +46,16 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
     newPassword: "",
     confirmPassword: ""
   });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const resetPasswordForm = () => {
     setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     setCurrentPasswordVerified(false);
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleVerifyCurrentPassword = async () => {
@@ -203,17 +209,33 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Input
-                      type="password"
-                      value={passwordData.currentPassword}
-                      onChange={(e) => {
-                        setPasswordData({ ...passwordData, currentPassword: e.target.value });
-                        if (currentPasswordVerified) setCurrentPasswordVerified(false);
-                      }}
-                      placeholder="Enter current password"
-                      disabled={currentPasswordVerified}
-                      className={currentPasswordVerified ? 'bg-muted/50' : ''}
-                    />
+                    <div className="relative flex-1">
+                      <Input
+                        type={showCurrentPassword ? "text" : "password"}
+                        value={passwordData.currentPassword}
+                        onChange={(e) => {
+                          setPasswordData({ ...passwordData, currentPassword: e.target.value });
+                          if (currentPasswordVerified) setCurrentPasswordVerified(false);
+                        }}
+                        placeholder="Enter current password"
+                        disabled={currentPasswordVerified}
+                        className={`pr-10 ${currentPasswordVerified ? 'bg-muted/50' : ''}`}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        disabled={currentPasswordVerified}
+                      >
+                        {showCurrentPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
                     <Button 
                       onClick={handleVerifyCurrentPassword}
                       disabled={isVerifying || !passwordData.currentPassword || currentPasswordVerified}
@@ -234,25 +256,57 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                   <div className="space-y-3">
                     <div>
                       <Label className="text-sm text-muted-foreground">New Password</Label>
-                      <Input
-                        type="password"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                        placeholder="Enter new password"
-                        disabled={!currentPasswordVerified}
-                        className="mt-1"
-                      />
+                      <div className="relative mt-1">
+                        <Input
+                          type={showNewPassword ? "text" : "password"}
+                          value={passwordData.newPassword}
+                          onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                          placeholder="Enter new password"
+                          disabled={!currentPasswordVerified}
+                          className="pr-10"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          disabled={!currentPasswordVerified}
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
-                      <Input
-                        type="password"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                        placeholder="Confirm new password"
-                        disabled={!currentPasswordVerified}
-                        className="mt-1"
-                      />
+                      <div className="relative mt-1">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={passwordData.confirmPassword}
+                          onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                          placeholder="Confirm new password"
+                          disabled={!currentPasswordVerified}
+                          className="pr-10"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          disabled={!currentPasswordVerified}
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                     <Button 
                       onClick={handleChangePassword}
