@@ -474,12 +474,11 @@ const ArtistProfile = () => {
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-8">
+                <TabsList className="grid w-full grid-cols-4 mb-8">
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="announcements">Announcements</TabsTrigger>
                   <TabsTrigger value="gallery">Gallery</TabsTrigger>
                   <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                  <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
                 </TabsList>
 
                 {/* Details Tab */}
@@ -752,72 +751,6 @@ const ArtistProfile = () => {
                   </div>
                 </TabsContent>
 
-                {/* Reviews Tab */}
-                <TabsContent value="reviews" className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                      <Star className="h-6 w-6 text-accent" />
-                      Reviews
-                      {getAverageRating() && (
-                        <span className="text-lg font-normal text-muted-foreground ml-2">
-                          (Average: {getAverageRating()} / 5)
-                        </span>
-                      )}
-                    </h2>
-                    <Button 
-                      onClick={() => setReviewDialogOpen(true)}
-                      className="bg-accent text-accent-foreground hover:bg-accent/90"
-                    >
-                      Write a Review
-                    </Button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {reviews.length > 0 ? (
-                      reviews.map((review) => (
-                        <Card key={review.id} className="border-accent/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between gap-4 mb-3">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-10 w-10 border border-accent/30">
-                                  <AvatarFallback className="bg-accent/10 text-accent">
-                                    {review.reviewer_name.charAt(0).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <h4 className="font-semibold text-foreground">{review.reviewer_name}</h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    {new Date(review.created_at).toLocaleDateString('en-US', { 
-                                      month: 'short', 
-                                      day: 'numeric', 
-                                      year: 'numeric' 
-                                    })}
-                                  </p>
-                                </div>
-                              </div>
-                              {renderStars(review.rating)}
-                            </div>
-                            {review.comment && (
-                              <p className="text-muted-foreground leading-relaxed">{review.comment}</p>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-12">
-                        <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                        <p className="text-muted-foreground mb-4">No reviews yet. Be the first to review!</p>
-                        <Button 
-                          onClick={() => setReviewDialogOpen(true)}
-                          variant="outline"
-                          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                        >
-                          Write the First Review
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
               </Tabs>
 
               {/* Review Dialog */}
@@ -1047,6 +980,75 @@ const ArtistProfile = () => {
                   )}
                   {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && (
                     <p className="text-muted-foreground">No social media links available.</p>
+                  )}
+                </div>
+              </div>
+
+              <Separator className="my-8" />
+
+              {/* Reviews Section */}
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                    <Star className="h-5 w-5 text-accent" />
+                    Reviews
+                    {getAverageRating() && (
+                      <span className="text-base font-normal text-muted-foreground ml-2">
+                        ({getAverageRating()} / 5 • {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                      </span>
+                    )}
+                  </h3>
+                  <Button 
+                    onClick={() => setReviewDialogOpen(true)}
+                    className="bg-accent text-accent-foreground hover:bg-accent/90"
+                  >
+                    Write a Review
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {reviews.length > 0 ? (
+                    reviews.map((review) => (
+                      <Card key={review.id} className="border-accent/20 hover:border-accent/40 transition-colors">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10 border border-accent/30">
+                                <AvatarFallback className="bg-accent/10 text-accent">
+                                  {review.reviewer_name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h4 className="font-semibold text-foreground">{review.reviewer_name}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric', 
+                                    year: 'numeric' 
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                            {renderStars(review.rating)}
+                          </div>
+                          {review.comment && (
+                            <p className="text-muted-foreground leading-relaxed">{review.comment}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                      <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                      <p className="text-muted-foreground mb-4">No reviews yet. Be the first to review!</p>
+                      <Button 
+                        onClick={() => setReviewDialogOpen(true)}
+                        variant="outline"
+                        className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Write the First Review
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
