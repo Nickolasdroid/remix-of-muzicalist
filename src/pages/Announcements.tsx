@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -146,7 +146,20 @@ const Announcements = () => {
                   </div>
                 )}
                 
-                {/* Footer removed - date is now in header */}
+                {/* Contact button */}
+                <div className="px-2 py-2">
+                  <div className="flex items-center justify-around">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.location.href = `/artist/${announcement.profile_id}`}
+                      className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      <span className="font-medium">Contact</span>
+                    </Button>
+                  </div>
+                </div>
               </Card>
             ))
           )}
