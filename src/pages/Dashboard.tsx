@@ -126,6 +126,7 @@ const Dashboard = () => {
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
+
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
   const [newPost, setNewPost] = useState({ content: "", mediaUrl: "", mediaType: "" });
@@ -137,6 +138,16 @@ const Dashboard = () => {
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
   const [videoUrl, setVideoUrl] = useState("");
+
+  // Gallery limits for standard subscription
+  const STANDARD_IMAGE_LIMIT = 5;
+  const STANDARD_VIDEO_LIMIT = 3;
+  
+  // Calculate used gallery items
+  const imagesUsed = galleryItems.filter(item => item.type === 'image').length;
+  const videosUsed = galleryItems.filter(item => item.type === 'video').length;
+  const imagesRemaining = STANDARD_IMAGE_LIMIT - imagesUsed;
+  const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
 
   // Calendar state
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
@@ -619,6 +630,16 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    // Check image limit
+    if (imagesUsed >= STANDARD_IMAGE_LIMIT) {
+      toast({ 
+        title: "Limit reached", 
+        description: `You can only add up to ${STANDARD_IMAGE_LIMIT} images with your subscription.`, 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
       const fileName = `${user.id}/gallery/${Date.now()}_${file.name}`;
@@ -655,6 +676,16 @@ const Dashboard = () => {
   const handleGalleryVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+
+    // Check video limit
+    if (videosUsed >= STANDARD_VIDEO_LIMIT) {
+      toast({ 
+        title: "Limit reached", 
+        description: `You can only add up to ${STANDARD_VIDEO_LIMIT} videos with your subscription.`, 
+        variant: "destructive" 
+      });
+      return;
+    }
 
     // Check file size (500 MB limit)
     const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
