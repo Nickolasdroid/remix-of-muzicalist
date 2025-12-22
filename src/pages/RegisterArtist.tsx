@@ -40,8 +40,12 @@ const RegisterArtist = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const romanianCounties = [
-    "București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", 
-    "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
+    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
+    "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin",
+    "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
+    "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
+    "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare",
+    "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"
   ];
 
   const totalSteps = 4;
