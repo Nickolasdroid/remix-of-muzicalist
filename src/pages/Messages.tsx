@@ -155,23 +155,32 @@ const Messages = () => {
   const handleArtistContact = async () => {
     if (!artistId || !user || artistId === user.id) return;
 
-    // Check if conversation already exists
-    const { data: existing } = await supabase
+    // Check if conversation already exists (in either direction)
+    const { data: existingAsParticipant } = await supabase
       .from('conversations')
       .select('*')
       .eq('artist_id', artistId)
       .eq('participant_id', user.id)
       .maybeSingle();
 
+    const { data: existingAsArtist } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('artist_id', user.id)
+      .eq('participant_id', artistId)
+      .maybeSingle();
+
+    const existing = existingAsParticipant || existingAsArtist;
+
     if (existing) {
-      // Fetch artist profile for existing conversation
-      const { data: artistProfile } = await supabase
+      // Fetch the other user's profile
+      const { data: otherProfile } = await supabase
         .from('profiles')
         .select('stage_name, avatar_url, plan, specialization')
         .eq('id', artistId)
         .maybeSingle();
       
-      setSelectedConversation({ ...existing, other_profile: artistProfile, artist_profile: artistProfile } as any);
+      setSelectedConversation({ ...existing, other_profile: otherProfile, artist_profile: otherProfile } as any);
       return;
     }
 
