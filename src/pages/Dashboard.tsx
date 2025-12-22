@@ -1836,9 +1836,12 @@ const Dashboard = () => {
                                 setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
                               }
                             />
-                            <Label htmlFor="premium-ad" className="cursor-pointer font-medium">
-                              Promotion Ad (with photo/video)
-                            </Label>
+                            <div>
+                              <Label htmlFor="premium-ad" className="cursor-pointer font-medium">
+                                Promotion Ad
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-0.5">Optionally add a photo or video</p>
+                            </div>
                           </div>
                           
                           <div>
