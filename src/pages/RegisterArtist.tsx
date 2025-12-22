@@ -266,9 +266,8 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen">
-      <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-12 pb-20 px-4">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
