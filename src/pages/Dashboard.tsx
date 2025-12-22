@@ -1085,7 +1085,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Contact Buttons */}
-                        <div className="flex flex-wrap gap-3 mt-6">
+                        <div className="flex flex-wrap gap-3 mt-2">
                           {editingField === 'contact' ? (
                             <div className="flex items-center gap-2 flex-1">
                               <Input
