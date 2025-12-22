@@ -269,20 +269,19 @@ const RegisterArtist = () => {
       
       <div className="pt-12 pb-20 px-4">
         <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
-              <UserPlus className="h-10 w-10 text-accent-foreground" />
-            </div>
-            <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
-              Register as Artist
-            </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Step {currentStep} of {totalSteps}
-            </p>
-            <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
+                <UserPlus className="h-10 w-10 text-accent-foreground" />
+              </div>
+              <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
+                Register as Artist
+              </h1>
+              <p className="text-xl text-muted-foreground mb-6">
+                Step {currentStep} of {totalSteps}
+              </p>
+              <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
+            </div>
             
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
