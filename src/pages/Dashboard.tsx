@@ -1087,12 +1087,12 @@ const Dashboard = () => {
                         {/* Contact Buttons */}
                         <div className="flex flex-wrap gap-3 mt-2">
                           {editingField === 'contact' ? (
-                            <div className="flex items-center gap-2 flex-1">
+                            <div className="flex items-center gap-2">
                               <Input
                                 value={formData.phone}
                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                 placeholder="Phone Number"
-                                className="flex-1"
+                                className="w-48"
                               />
                               <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
                                 <Save className="h-3 w-3 mr-1" />
