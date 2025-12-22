@@ -507,7 +507,7 @@ const Dashboard = () => {
   };
 
   const handleAddAnnouncement = async () => {
-    if (!user || !newAnnouncement.description) return;
+    if (!user || !newAnnouncement.description || !newAnnouncement.mediaUrl) return;
     
     setIsSaving(true);
     try {
@@ -1853,46 +1853,44 @@ const Dashboard = () => {
                             />
                           </div>
                           
-                          {newAnnouncement.isPremium && (
-                            <div>
-                              <Label htmlFor="announcement-media">Photo/Video</Label>
-                              {newAnnouncement.mediaUrl ? (
-                                <div className="mt-2 relative">
-                                  {newAnnouncement.mediaType === 'video' ? (
-                                    <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" />
-                                  ) : (
-                                    <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />
-                                  )}
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="absolute top-2 right-2"
-                                    onClick={() => setNewAnnouncement({...newAnnouncement, mediaUrl: "", mediaType: ""})}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ) : (
-                                <>
-                                  <Label htmlFor="announcement-media-input" className="cursor-pointer">
-                                    <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                      <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                      <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                    </div>
-                                  </Label>
-                                  <Input
-                                    id="announcement-media-input"
-                                    type="file"
-                                    accept="image/*,video/*"
-                                    onChange={handleAnnouncementMediaUpload}
-                                    className="hidden"
-                                  />
-                                </>
-                              )}
-                            </div>
-                          )}
+                          <div>
+                            <Label htmlFor="announcement-media">Photo/Video <span className="text-destructive">*</span></Label>
+                            {newAnnouncement.mediaUrl ? (
+                              <div className="mt-2 relative">
+                                {newAnnouncement.mediaType === 'video' ? (
+                                  <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" />
+                                ) : (
+                                  <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />
+                                )}
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="absolute top-2 right-2"
+                                  onClick={() => setNewAnnouncement({...newAnnouncement, mediaUrl: "", mediaType: ""})}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <>
+                                <Label htmlFor="announcement-media-input" className="cursor-pointer">
+                                  <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                    <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                    <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                  </div>
+                                </Label>
+                                <Input
+                                  id="announcement-media-input"
+                                  type="file"
+                                  accept="image/*,video/*"
+                                  onChange={handleAnnouncementMediaUpload}
+                                  className="hidden"
+                                />
+                              </>
+                            )}
+                          </div>
                           
-                          <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
+                          <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description || !newAnnouncement.mediaUrl} className="w-full bg-accent text-accent-foreground">
                             {isSaving ? "Adding..." : "Add Announcement"}
                           </Button>
                         </div>
