@@ -27,12 +27,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
-          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
+          <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="Logo" className="h-10 md:h-12 w-auto" />
+              <img src={logo} alt="Logo" className="h-12 w-auto" />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Romania's premier platform connecting talented musicians with clients. 
@@ -96,16 +96,16 @@ const Footer = () => {
               Contact Us
             </h3>
             <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-muted-foreground text-sm">
-                <Mail className="h-5 w-5 text-accent flex-shrink-0" />
-                <span className="break-all">contact@artistplatform.ro</span>
+              <li className="flex items-center gap-3 text-muted-foreground">
+                <Mail className="h-5 w-5 text-accent" />
+                <span>contact@artistplatform.ro</span>
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground text-sm">
-                <Phone className="h-5 w-5 text-accent flex-shrink-0" />
+              <li className="flex items-center gap-3 text-muted-foreground">
+                <Phone className="h-5 w-5 text-accent" />
                 <span>+40 123 456 789</span>
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground text-sm">
-                <MapPin className="h-5 w-5 text-accent flex-shrink-0" />
+              <li className="flex items-center gap-3 text-muted-foreground">
+                <MapPin className="h-5 w-5 text-accent" />
                 <span>București, România</span>
               </li>
             </ul>
@@ -113,11 +113,11 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm text-center sm:text-left">
+        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-muted-foreground text-sm">
             © {currentYear} Artist Platform. All rights reserved.
           </p>
-          <div className="flex gap-4 sm:gap-6 text-sm">
+          <div className="flex gap-6 text-sm">
             <Link to="#" className="text-muted-foreground hover:text-accent transition-colors">
               Privacy Policy
             </Link>
