@@ -488,7 +488,7 @@ const RegisterArtist = () => {
                           onCropChange={setCrop}
                           onZoomChange={setZoom}
                           onCropComplete={onCropComplete}
-                          cropShape="round"
+                          cropShape="rect"
                           showGrid={false}
                         />
                       </div>
