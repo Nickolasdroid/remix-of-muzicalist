@@ -2070,15 +2070,11 @@ const Dashboard = () => {
               {activeTab === "posts" && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                        <FileText className="h-6 w-6 text-accent" />
-                        My Posts
-                      </h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {postsRemaining} of {STANDARD_POST_LIMIT} posts remaining this month
-                      </p>
-                    </div>
+                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                      <FileText className="h-6 w-6 text-accent" />
+                      My Posts
+                      <span className="text-muted-foreground">({monthlyPostsCount}/{STANDARD_POST_LIMIT})</span>
+                    </h2>
                     <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
                       <DialogTrigger asChild>
                         <Button 
