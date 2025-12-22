@@ -998,13 +998,15 @@ const ArtistProfile = () => {
                       </span>
                     )}
                   </h3>
-                  <Button 
-                    onClick={() => setReviewDialogOpen(true)}
-                    size="sm"
-                    className="bg-accent text-accent-foreground hover:bg-accent/90"
-                  >
-                    Write a Review
-                  </Button>
+                  {currentUserId !== id && (
+                    <Button 
+                      onClick={() => setReviewDialogOpen(true)}
+                      size="sm"
+                      className="bg-accent text-accent-foreground hover:bg-accent/90"
+                    >
+                      Write a Review
+                    </Button>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -1041,14 +1043,16 @@ const ArtistProfile = () => {
                     <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                       <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                       <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
-                      <Button 
-                        onClick={() => setReviewDialogOpen(true)}
-                        size="sm"
-                        variant="outline"
-                        className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                      >
-                        Write the First Review
-                      </Button>
+                      {currentUserId !== id && (
+                        <Button 
+                          onClick={() => setReviewDialogOpen(true)}
+                          size="sm"
+                          variant="outline"
+                          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                        >
+                          Write the First Review
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
