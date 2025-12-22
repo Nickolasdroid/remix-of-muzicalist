@@ -95,7 +95,7 @@ const Announcements = () => {
               onClick={() => setFilter('promotion')}
               className={filter === 'promotion' ? 'bg-accent text-accent-foreground' : ''}
             >
-              Promotion
+              Promotions*
             </Button>
             <Button
               variant={filter === 'ads' ? 'default' : 'outline'}
