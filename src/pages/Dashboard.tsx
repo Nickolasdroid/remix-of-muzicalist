@@ -1186,13 +1186,92 @@ const Dashboard = () => {
                               Music Genres
                             </h3>
                             {editingField === 'genres' ? (
-                              <div className="space-y-2">
-                                <Input
-                                  value={formData.musicGenres}
-                                  onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
-                                  placeholder="e.g., Pop, Rock, Jazz"
-                                />
+                              <div className="space-y-3">
+                                {/* Selected genres */}
+                                <div className="flex flex-wrap gap-2 min-h-[32px]">
+                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => (
+                                    <Badge 
+                                      key={genre.trim()} 
+                                      variant="default" 
+                                      className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80"
+                                      onClick={() => {
+                                        const genres = formData.musicGenres.split(',').map(g => g.trim()).filter(g => g);
+                                        const newGenres = genres.filter(g => g !== genre.trim());
+                                        setFormData({...formData, musicGenres: newGenres.join(', ')});
+                                      }}
+                                    >
+                                      {genre.trim()}
+                                      <X className="h-3 w-3 ml-1" />
+                                    </Badge>
+                                  ))}
+                                </div>
+                                
+                                {/* Available genres to add */}
+                                <div className="space-y-2">
+                                  <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
+                                  <div className="flex flex-wrap gap-2">
+                                    {['Pop', 'Rock', 'Jazz', 'Hip Hop', 'R&B', 'Electronic', 'Classical', 'Country', 'Folk', 'Reggae', 'Blues', 'Soul', 'Funk', 'Metal', 'Punk', 'Latin', 'Manele', 'House', 'Disco', 'Trap', 'Indie', 'Alternative']
+                                      .filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre))
+                                      .map(genre => (
+                                        <Badge 
+                                          key={genre} 
+                                          variant="outline" 
+                                          className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors"
+                                          onClick={() => {
+                                            const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                                            if (!currentGenres.includes(genre)) {
+                                              setFormData({...formData, musicGenres: [...currentGenres, genre].join(', ')});
+                                            }
+                                          }}
+                                        >
+                                          <Plus className="h-3 w-3 mr-1" />
+                                          {genre}
+                                        </Badge>
+                                      ))
+                                    }
+                                  </div>
+                                </div>
+                                
+                                {/* Custom genre input */}
                                 <div className="flex gap-2">
+                                  <Input
+                                    placeholder="Add custom genre..."
+                                    className="flex-1"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        const input = e.currentTarget;
+                                        const newGenre = input.value.trim();
+                                        if (newGenre) {
+                                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                                          if (!currentGenres.includes(newGenre)) {
+                                            setFormData({...formData, musicGenres: [...currentGenres, newGenre].join(', ')});
+                                          }
+                                          input.value = '';
+                                        }
+                                      }
+                                    }}
+                                  />
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                                      const newGenre = input.value.trim();
+                                      if (newGenre) {
+                                        const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                                        if (!currentGenres.includes(newGenre)) {
+                                          setFormData({...formData, musicGenres: [...currentGenres, newGenre].join(', ')});
+                                        }
+                                        input.value = '';
+                                      }
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="flex gap-2 pt-2">
                                   <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
                                     Save
@@ -1206,11 +1285,14 @@ const Dashboard = () => {
                             ) : (
                               <div className="group">
                                 <div className="flex flex-wrap gap-2">
-                                  {formData.musicGenres?.split(',').map((genre: string) => (
+                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => (
                                     <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
                                       {genre.trim()}
                                     </Badge>
                                   ))}
+                                  {(!formData.musicGenres || !formData.musicGenres.trim()) && (
+                                    <span className="text-muted-foreground text-sm">No genres added</span>
+                                  )}
                                 </div>
                                 <Button 
                                   size="sm" 
