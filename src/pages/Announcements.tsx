@@ -203,10 +203,10 @@ const Announcements = () => {
                   <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
                 </div>
                 
-                {/* Media for premium announcements - edge to edge */}
+                {/* Media for premium announcements - matching Feed format */}
                 {announcement.is_premium && announcement.media_url && (
                   <div 
-                    className="cursor-pointer bg-muted/30"
+                    className="mt-3 cursor-pointer bg-muted/30"
                     onClick={() => setMediaPreview({
                       url: announcement.media_url!,
                       type: announcement.media_type === "video" ? "video" : "image"
@@ -216,7 +216,7 @@ const Announcements = () => {
                       <div className="relative w-full aspect-video">
                         <video 
                           src={announcement.media_url} 
-                          className="absolute inset-0 w-full h-full object-cover bg-black"
+                          className="absolute inset-0 w-full h-full object-contain bg-black"
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
@@ -225,7 +225,7 @@ const Announcements = () => {
                         <img 
                           src={announcement.media_url} 
                           alt="Announcement media"
-                          className="absolute inset-0 w-full h-full object-cover hover:opacity-95 transition-opacity"
+                          className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity"
                         />
                       </div>
                     )}
