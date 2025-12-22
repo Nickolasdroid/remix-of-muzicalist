@@ -1,6 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -52,8 +52,9 @@ const Counties = () => {
             <Link key={county} to={`/counties/${county}`}>
               <Button
                 variant="outline"
-                className="h-auto py-6 w-full flex items-center justify-center hover:bg-accent/10 hover:border-accent transition-all"
+                className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
               >
+                <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
                 <span className="text-lg font-medium">{county}</span>
               </Button>
             </Link>
