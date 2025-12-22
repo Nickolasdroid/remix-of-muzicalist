@@ -265,31 +265,31 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex items-center justify-center">
       
-      <div className="pt-12 pb-20 px-4">
-        <div className="container mx-auto max-w-3xl">
-          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
-                <UserPlus className="h-10 w-10 text-accent-foreground" />
+      <div className="py-6 px-4 w-full">
+        <div className="container mx-auto max-w-2xl">
+          <form onSubmit={handleSubmit} className="space-y-4 bg-gradient-to-br from-card to-secondary p-6 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent mb-3 shadow-[var(--shadow-gold)]">
+                <UserPlus className="h-6 w-6 text-accent-foreground" />
               </div>
-              <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
+              <h1 className="text-2xl font-display font-bold mb-2 text-foreground">
                 Register as Artist
               </h1>
-              <p className="text-xl text-muted-foreground mb-6">
+              <p className="text-sm text-muted-foreground mb-3">
                 Step {currentStep} of {totalSteps}
               </p>
-              <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
+              <Progress value={progressPercentage} className="w-full max-w-xs mx-auto h-2" />
             </div>
             
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
-              <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Basic Information</h2>
+              <div className="space-y-3 animate-in fade-in duration-500">
+                <h2 className="text-lg font-display font-bold text-foreground">Basic Information</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
                     <Label htmlFor="specialization">Specialization *</Label>
                     <Select value={formData.specialization} onValueChange={(value) => setFormData({...formData, specialization: value})}>
                       <SelectTrigger className="bg-input border-border">
@@ -304,7 +304,7 @@ const RegisterArtist = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="lastName">Last Name *</Label>
                     <Input
                       id="lastName"
@@ -316,8 +316,8 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
                     <Label htmlFor="firstName">First Name *</Label>
                     <Input
                       id="firstName"
@@ -328,7 +328,7 @@ const RegisterArtist = () => {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="stageName">Stage Name *</Label>
                     <Input
                       id="stageName"
@@ -340,8 +340,8 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="space-y-1">
                     <Label htmlFor="email">Email Address *</Label>
                     <Input
                       id="email"
@@ -353,7 +353,7 @@ const RegisterArtist = () => {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="phone">Phone Number *</Label>
                     <Input
                       id="phone"
@@ -366,22 +366,22 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="county">County *</Label>
-                  <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder="Select county" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {romanianCounties.map(county => (
-                        <SelectItem key={county} value={county}>{county}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="county">County *</Label>
+                    <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                      <SelectTrigger className="bg-input border-border">
+                        <SelectValue placeholder="Select county" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {romanianCounties.map(county => (
+                          <SelectItem key={county} value={county}>{county}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="flex justify-end">
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <div className="flex justify-end pt-2">
+                  <Button type="button" onClick={nextStep} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     Next <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -390,23 +390,23 @@ const RegisterArtist = () => {
 
             {/* Step 2: Professional Information */}
             {currentStep === 2 && (
-              <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Professional Information</h2>
+              <div className="space-y-3 animate-in fade-in duration-500">
+                <h2 className="text-lg font-display font-bold text-foreground">Professional Information</h2>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="musicGenres">Music Genres *</Label>
-                  <Input
-                    id="musicGenres"
-                    required
-                    value={formData.musicGenres}
-                    onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
-                    className="bg-input border-border focus:border-accent"
-                    placeholder="e.g., Pop, Rock, Jazz"
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="musicGenres">Music Genres *</Label>
+                    <Input
+                      id="musicGenres"
+                      required
+                      value={formData.musicGenres}
+                      onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                      placeholder="e.g., Pop, Rock, Jazz"
+                    />
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="experienceLevel">Experience Level *</Label>
                     <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
                       <SelectTrigger className="bg-input border-border">
@@ -420,8 +420,10 @@ const RegisterArtist = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
                     <Label htmlFor="numberOfEvents">Number of Events *</Label>
                     <Input
                       id="numberOfEvents"
@@ -433,27 +435,27 @@ const RegisterArtist = () => {
                       className="bg-input border-border focus:border-accent"
                     />
                   </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="careerStartYear">Year of Career Start *</Label>
+                    <Input
+                      id="careerStartYear"
+                      type="number"
+                      required
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      value={formData.careerStartYear}
+                      onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
+                      className="bg-input border-border focus:border-accent"
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="careerStartYear">Year of Career Start *</Label>
-                  <Input
-                    id="careerStartYear"
-                    type="number"
-                    required
-                    min="1900"
-                    max={new Date().getFullYear()}
-                    value={formData.careerStartYear}
-                    onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
-                    className="bg-input border-border focus:border-accent"
-                  />
-                </div>
-
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex justify-between pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     Next <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -462,10 +464,10 @@ const RegisterArtist = () => {
 
             {/* Step 3: Profile Picture */}
             {currentStep === 3 && (
-              <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Profile Picture</h2>
+              <div className="space-y-3 animate-in fade-in duration-500">
+                <h2 className="text-lg font-display font-bold text-foreground">Profile Picture</h2>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <Label htmlFor="profilePic">Upload Profile Picture *</Label>
                   <Input
                     id="profilePic"
@@ -476,8 +478,8 @@ const RegisterArtist = () => {
                   />
 
                   {imageSrc && (
-                    <div className="space-y-4">
-                      <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
+                    <div className="space-y-2">
+                      <div className="relative w-full h-[250px] bg-black rounded-lg overflow-hidden">
                         <Cropper
                           image={imageSrc}
                           crop={crop}
@@ -491,7 +493,7 @@ const RegisterArtist = () => {
                         />
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         <Label htmlFor="zoom">Zoom: {zoom.toFixed(1)}x</Label>
                         <input
                           id="zoom"
@@ -508,11 +510,11 @@ const RegisterArtist = () => {
                   )}
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex justify-between pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     Next <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -521,11 +523,11 @@ const RegisterArtist = () => {
 
             {/* Step 4: Password */}
             {currentStep === 4 && (
-              <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Set Your Password</h2>
+              <div className="space-y-3 animate-in fade-in duration-500">
+                <h2 className="text-lg font-display font-bold text-foreground">Set Your Password</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
                     <Label htmlFor="password">Password *</Label>
                     <div className="relative">
                       <Input
@@ -546,7 +548,7 @@ const RegisterArtist = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="confirmPassword">Confirm Password *</Label>
                     <div className="relative">
                       <Input
@@ -568,15 +570,14 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex justify-between pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
                   <Button 
                     type="submit" 
-                    size="lg"
                     disabled={isSubmitting}
-                    className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300"
                   >
                     {isSubmitting ? "Creating Profile..." : "Create Artist Profile"}
                   </Button>
