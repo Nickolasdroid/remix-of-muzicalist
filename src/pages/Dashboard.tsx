@@ -129,9 +129,14 @@ const Dashboard = () => {
 
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
+  const [monthlyPostsCount, setMonthlyPostsCount] = useState(0);
   const [newPost, setNewPost] = useState({ content: "", mediaUrl: "", mediaType: "" });
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [postMediaType, setPostMediaType] = useState<'text' | 'image' | 'video'>('text');
+  
+  // Post limits for standard subscription
+  const STANDARD_POST_LIMIT = 15;
+  const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -211,7 +216,15 @@ const Dashboard = () => {
       .select('*')
       .eq('profile_id', user.id)
       .order('created_at', { ascending: false });
-    if (data) setPosts(data);
+    if (data) {
+      setPosts(data);
+      
+      // Calculate posts created this month
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const postsThisMonth = data.filter(post => new Date(post.created_at) >= startOfMonth);
+      setMonthlyPostsCount(postsThisMonth.length);
+    }
   };
 
   useEffect(() => {
@@ -560,6 +573,16 @@ const Dashboard = () => {
   // Posts functions
   const handleAddPost = async () => {
     if (!user || !newPost.content) return;
+    
+    // Check monthly post limit
+    if (monthlyPostsCount >= STANDARD_POST_LIMIT) {
+      toast({ 
+        title: "Monthly limit reached", 
+        description: `You can only create ${STANDARD_POST_LIMIT} posts per month with your subscription.`, 
+        variant: "destructive" 
+      });
+      return;
+    }
     
     setIsSaving(true);
     try {
@@ -2047,13 +2070,21 @@ const Dashboard = () => {
               {activeTab === "posts" && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                      <FileText className="h-6 w-6 text-accent" />
-                      My Posts
-                    </h2>
+                    <div>
+                      <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                        <FileText className="h-6 w-6 text-accent" />
+                        My Posts
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {postsRemaining} of {STANDARD_POST_LIMIT} posts remaining this month
+                      </p>
+                    </div>
                     <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
                       <DialogTrigger asChild>
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Button 
+                          className="bg-accent text-accent-foreground hover:bg-accent/90"
+                          disabled={postsRemaining <= 0}
+                        >
                           <Plus className="h-4 w-4 mr-2" />
                           Create Post
                         </Button>
