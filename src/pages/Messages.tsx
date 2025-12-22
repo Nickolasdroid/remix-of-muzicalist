@@ -314,14 +314,8 @@ const Messages = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-24 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-display font-bold mb-6 flex items-center gap-2">
-            <MessageCircle className="h-8 w-8 text-accent" />
-            Messages
-          </h1>
-
-          <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-200px)]">
+      <div className="px-4 pt-20 pb-4 h-screen">
+          <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
             {/* Conversations List */}
             <Card className="md:col-span-1 p-0 overflow-hidden">
               <div className="p-4 border-b border-border">
@@ -453,7 +447,6 @@ const Messages = () => {
             </Card>
           </div>
         </div>
-      </div>
     </div>
   );
 };
