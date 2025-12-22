@@ -2006,55 +2006,90 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Compact list of announcements */}
-                  <div className="space-y-2 max-w-md mx-auto">
+                  {/* Announcements list - matching Announcements page style */}
+                  <div className="space-y-4 max-w-[500px] mx-auto">
                     {announcements.map((announcement) => (
-                      <div 
-                        key={announcement.id} 
-                        className="group flex items-start gap-3 p-3 rounded-lg border border-border/50 bg-card/30 hover:bg-card/60 transition-colors"
-                      >
-                        {/* Media thumbnail */}
-                        {announcement.media_url && (
-                          <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-muted">
-                            {announcement.media_type === 'video' ? (
-                              <div className="relative w-full h-full">
-                                <video src={announcement.media_url} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                  <Play className="h-6 w-6 text-white fill-white" />
+                      <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                        {/* Header */}
+                        <div className="p-4 pb-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className={`p-0.5 rounded-full ${
+                                  profile?.plan === 'Premium' 
+                                    ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
+                                    : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+                                }`}
+                              >
+                                <Avatar className="w-10 h-10 border-2 border-background">
+                                  <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
+                                  <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                    {(profile?.stage_name || "A").charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-semibold text-foreground">
+                                    {profile?.stage_name || "Artist"}
+                                  </h3>
+                                  {profile?.plan === 'Premium' && (
+                                    <span className="text-accent text-xs">✓</span>
+                                  )}
+                                  {announcement.is_premium && (
+                                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                      Promotion
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <span>{profile?.specialization || "Artist"}</span>
+                                  <span>·</span>
+                                  <span>{new Date(announcement.date).toLocaleDateString()}</span>
                                 </div>
                               </div>
+                            </div>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 rounded-full"
+                              onClick={() => handleDeleteAnnouncement(announcement.id)}
+                              disabled={isSaving}
+                            >
+                              <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                            </Button>
+                          </div>
+
+                          {/* Content */}
+                          <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                        </div>
+                        
+                        {/* Media for premium announcements */}
+                        {announcement.is_premium && announcement.media_url && (
+                          <div className="mt-3 bg-muted/30">
+                            {announcement.media_type === "video" ? (
+                              <div className="relative w-full aspect-video">
+                                <video 
+                                  src={announcement.media_url} 
+                                  controls
+                                  className="absolute inset-0 w-full h-full object-contain bg-black"
+                                />
+                              </div>
                             ) : (
-                              <img src={announcement.media_url} alt="" className="w-full h-full object-cover" />
+                              <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                                <img 
+                                  src={announcement.media_url} 
+                                  alt="Announcement media"
+                                  className="absolute inset-0 w-full h-full object-contain"
+                                />
+                              </div>
                             )}
                           </div>
                         )}
                         
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            {announcement.is_premium && (
-                              <Badge variant="outline" className="border-accent/50 text-accent text-[10px] px-1.5 py-0">
-                                Promotion
-                              </Badge>
-                            )}
-                            <span className="text-xs text-muted-foreground">
-                              {formatPostDate(announcement.date)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-foreground line-clamp-2">{announcement.description}</p>
-                        </div>
-                        
-                        {/* Delete button */}
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={() => handleDeleteAnnouncement(announcement.id)}
-                          disabled={isSaving}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 flex-shrink-0"
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                        </Button>
-                      </div>
+                        <div className="h-2" />
+                      </Card>
                     ))}
                     {announcements.length === 0 && (
                       <div className="text-center py-12 text-muted-foreground">
