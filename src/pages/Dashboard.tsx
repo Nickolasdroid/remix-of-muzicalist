@@ -1086,6 +1086,10 @@ const Dashboard = () => {
 
                         {/* Contact Buttons */}
                         <div className="flex flex-wrap gap-3 mt-2">
+                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                            <Mail className="mr-2 h-4 w-4" />
+                            {formData.email}
+                          </Button>
                           {editingField === 'contact' ? (
                             <div className="flex items-center gap-2">
                               <Input
@@ -1104,26 +1108,20 @@ const Dashboard = () => {
                               </Button>
                             </div>
                           ) : (
-                            <>
-                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                <Mail className="mr-2 h-4 w-4" />
-                                {formData.email}
+                            <div className="group flex items-center gap-2">
+                              <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                                <Phone className="mr-2 h-4 w-4" />
+                                {formData.phone || 'Add Phone'}
                               </Button>
-                              <div className="group flex items-center gap-2">
-                                <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                                  <Phone className="mr-2 h-4 w-4" />
-                                  {formData.phone || 'Add Phone'}
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
-                                  onClick={() => startEditing('contact')}
-                                >
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                                onClick={() => startEditing('contact')}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           )}
                         </div>
                       </div>
