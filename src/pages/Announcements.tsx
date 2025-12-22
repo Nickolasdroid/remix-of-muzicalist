@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
@@ -26,6 +26,25 @@ const Announcements = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'promotion' | 'ads'>('all');
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id ?? null);
+    });
+  }, []);
+
+  const handleDeleteAnnouncement = async (announcementId: string) => {
+    try {
+      const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
+      if (error) throw error;
+      setAnnouncements(items => items.filter(item => item.id !== announcementId));
+      toast({ title: "Announcement deleted", description: "Your announcement has been deleted." });
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -167,6 +186,15 @@ const Announcements = () => {
                           <Flag className="h-4 w-4 mr-2" />
                           Report Problem
                         </DropdownMenuItem>
+                        {currentUserId === announcement.profile_id && (
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteAnnouncement(announcement.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

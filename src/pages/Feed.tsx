@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,13 @@ const Feed = () => {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id ?? null);
+    });
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -125,6 +132,18 @@ const Feed = () => {
 
   const handleContact = (profileId: string) => {
     navigate(`/artist/${profileId}`);
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
+      if (error) throw error;
+      setFeedItems(items => items.filter(item => item.id !== postId));
+      toast({ title: "Post deleted", description: "Your post has been deleted." });
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast({ title: "Error", description: "Failed to delete post.", variant: "destructive" });
+    }
   };
 
   const getSpecializationLabel = (specialization: string | null) => {
@@ -249,6 +268,15 @@ const Feed = () => {
                           <Flag className="h-4 w-4 mr-2" />
                           Report Problem
                         </DropdownMenuItem>
+                        {currentUserId === item.profile_id && (
+                          <DropdownMenuItem 
+                            onClick={() => handleDeletePost(item.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
