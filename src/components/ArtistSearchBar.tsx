@@ -31,15 +31,15 @@ const ArtistSearchBar = () => {
   const experienceLevels = ["Beginner", "Intermediate", "Advanced"];
 
   return (
-    <div className="bg-card rounded-3xl p-8 border-2 border-border shadow-[var(--shadow-elegant)]">
-      <div className="flex items-center gap-3 mb-6">
-        <Search className="h-6 w-6 text-accent" />
-        <h3 className="text-2xl font-display font-bold text-foreground">
+    <div className="bg-card rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border-2 border-border shadow-[var(--shadow-elegant)]">
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
+        <Search className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+        <h3 className="text-xl md:text-2xl font-display font-bold text-foreground">
           Search Artists
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Category */}
         <div className="space-y-2">
           <Label htmlFor="category">Category</Label>
@@ -143,23 +143,23 @@ const ArtistSearchBar = () => {
         </div>
 
         {/* Price Range */}
-        <div className="space-y-4 md:col-span-2">
+        <div className="space-y-4 sm:col-span-2 lg:col-span-2">
           <Label>Price Range (RON)</Label>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap sm:flex-nowrap">
             <Input
               type="number"
               placeholder="From"
               value={priceRange[0]}
               onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
-              className="w-32"
+              className="w-full sm:w-32"
             />
-            <span className="text-muted-foreground">-</span>
+            <span className="text-muted-foreground hidden sm:block">-</span>
             <Input
               type="number"
               placeholder="To"
               value={priceRange[1]}
               onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 10000])}
-              className="w-32"
+              className="w-full sm:w-32"
             />
           </div>
           <Slider
@@ -176,10 +176,10 @@ const ArtistSearchBar = () => {
         </div>
       </div>
 
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-6 md:mt-8">
         <Button 
           size="lg"
-          className="bg-accent text-accent-foreground hover:bg-accent/90 px-12"
+          className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90 px-8 md:px-12"
         >
           <Search className="mr-2 h-5 w-5" />
           Search Artists

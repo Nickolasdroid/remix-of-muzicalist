@@ -980,11 +980,11 @@ const Dashboard = () => {
     <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-20 md:pt-32 pb-12 md:pb-20 px-3 md:px-4">
         <div className="container mx-auto max-w-6xl">
           {activeTab !== "profile" && (
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-display font-bold text-foreground">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
                 {activeTab === "messages" && "My Messages"}
                 {activeTab === "announcements" && "My Announcements"}
                 {activeTab === "posts" && "My Posts"}
@@ -994,19 +994,19 @@ const Dashboard = () => {
           )}
               {/* Profile Tab */}
               {activeTab === "profile" && (
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-8">
                     {/* Header Section */}
-                    <div className="flex flex-col md:flex-row gap-8 mb-8">
-                      <div className="flex-shrink-0 relative group cursor-pointer">
-                        <Avatar className="w-40 h-40 border-4 border-accent shadow-lg">
+                    <div className="flex flex-col gap-4 md:gap-8 mb-6 md:mb-8">
+                      <div className="flex-shrink-0 relative group cursor-pointer mx-auto md:mx-0">
+                        <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-accent shadow-lg">
                           <AvatarImage src={profile?.avatar_url} />
                           <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                            <User className="h-20 w-20 text-accent" />
+                            <User className="h-14 w-14 md:h-20 md:w-20 text-accent" />
                           </AvatarFallback>
                         </Avatar>
                         <label 
                           htmlFor="avatar-upload" 
-                          className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                          className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity cursor-pointer z-10"
                         >
                           <Camera className="h-8 w-8 text-white" />
                         </label>
@@ -1019,17 +1019,17 @@ const Dashboard = () => {
                         />
                       </div>
 
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between flex-wrap gap-4">
+                      <div className="flex-1 text-center md:text-left">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                         <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h1 className="text-4xl font-display font-bold text-foreground">
+                            <div className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-3 mb-2">
+                              <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
                               </h1>
                               <Badge 
-                                className={`px-4 py-1.5 text-sm font-semibold ${
+                                className={`px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm font-semibold ${
                                   profile?.plan === 'Premium' 
-                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' 
+                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30'
                                     : 'bg-muted text-muted-foreground border border-border'
                                 }`}
                               >
@@ -1037,15 +1037,15 @@ const Dashboard = () => {
                               </Badge>
                             </div>
                             
-                            <div className="flex flex-wrap gap-3 mb-4">
-                              <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3 mb-4">
+                              <Badge className="bg-accent text-accent-foreground px-3 md:px-4 py-1.5 md:py-2 text-sm md:text-base">
                                 {formData.specialization}
                               </Badge>
                               
                               {editingField === 'location' ? (
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
                                   <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger className="w-[160px] md:w-[180px]">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1062,13 +1062,13 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="group flex items-center gap-2 text-muted-foreground">
-                                  <MapPin className="h-5 w-5" />
-                                  <span className="text-base">{formData.county}</span>
+                                <div className="group flex items-center justify-center md:justify-start gap-2 text-muted-foreground">
+                                  <MapPin className="h-4 w-4 md:h-5 md:w-5" />
+                                  <span className="text-sm md:text-base">{formData.county}</span>
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                                    className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
                                     onClick={() => startEditing('location')}
                                   >
                                     <Edit2 className="h-3 w-3" />
@@ -1078,45 +1078,45 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-6 w-6 fill-current" />
-                            <span className="text-2xl font-bold">New</span>
+                          <div className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl bg-accent text-accent-foreground shadow-lg mx-auto md:mx-0">
+                            <Star className="h-5 w-5 md:h-6 md:w-6 fill-current" />
+                            <span className="text-xl md:text-2xl font-bold">New</span>
                           </div>
                         </div>
 
                         {/* Contact Buttons */}
-                        <div className="flex flex-wrap gap-3 mt-2">
-                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3 mt-4">
+                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs md:text-sm px-3 md:px-4">
                             <Mail className="mr-2 h-4 w-4" />
                             {formData.email}
                           </Button>
                           {editingField === 'contact' ? (
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
                               <Input
                                 value={formData.phone}
                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                 placeholder="Phone Number"
-                                className="w-48"
+                                className="w-40 md:w-48"
                               />
                               <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
                                 <Save className="h-3 w-3 mr-1" />
-                                Save
+                                <span className="hidden sm:inline">Save</span>
                               </Button>
                               <Button size="sm" variant="outline" onClick={cancelEditing}>
                                 <X className="h-3 w-3 mr-1" />
-                                Cancel
+                                <span className="hidden sm:inline">Cancel</span>
                               </Button>
                             </div>
                           ) : (
                             <div className="group flex items-center gap-2">
-                              <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                                <Phone className="mr-2 h-4 w-4" />
+                              <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs md:text-sm px-3 md:px-4">
+                                <Phone className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
                                 {formData.phone || 'Add Phone'}
                               </Button>
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                                className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
                                 onClick={() => startEditing('contact')}
                               >
                                 <Edit2 className="h-4 w-4" />
@@ -1131,10 +1131,10 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 mb-8">
-                        <TabsTrigger value="details">Details</TabsTrigger>
-                        <TabsTrigger value="gallery">Gallery</TabsTrigger>
-                        <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-3 mb-6 md:mb-8">
+                        <TabsTrigger value="details" className="text-xs sm:text-sm">Details</TabsTrigger>
+                        <TabsTrigger value="gallery" className="text-xs sm:text-sm">Gallery</TabsTrigger>
+                        <TabsTrigger value="calendar" className="text-xs sm:text-sm">Calendar</TabsTrigger>
                       </TabsList>
 
                       {/* Details Tab */}
