@@ -265,9 +265,11 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
-      <div className="max-w-md w-full bg-card rounded-2xl shadow-xl border-2 border-accent/20 p-8">
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex items-center justify-center">
+      
+      <div className="py-6 px-4 w-full">
+        <div className="container mx-auto max-w-2xl">
+          <form onSubmit={handleSubmit} className="space-y-4 bg-gradient-to-br from-card to-secondary p-6 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
             <div className="text-center mb-4">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent mb-3 shadow-[var(--shadow-gold)]">
                 <UserPlus className="h-6 w-6 text-accent-foreground" />
@@ -585,7 +587,8 @@ const RegisterArtist = () => {
           </form>
         </div>
       </div>
-    );
+    </div>
+  );
 };
 
 export default RegisterArtist;
