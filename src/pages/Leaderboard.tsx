@@ -23,16 +23,27 @@ const Leaderboard = () => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const regions = ["All Regions", "Transylvania", "Banat", "Moldova", "Oltenia", "Muntenia"];
-  const counties = [
-    "All Counties",
-    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
-    "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași",
-    "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
-    "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
-    "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj",
-    "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
-  ];
+  const regionCountyMap: Record<string, string[]> = {
+    "Transilvania": ["Alba", "Bihor", "Bistrița-Năsăud", "Brașov", "Cluj", "Covasna", "Harghita", "Hunedoara", "Maramureș", "Mureș", "Sălaj", "Satu Mare", "Sibiu"],
+    "Banat": ["Timiș", "Caraș-Severin"],
+    "Moldova": ["Bacău", "Botoșani", "Galați", "Iași", "Neamț", "Suceava", "Vaslui", "Vrancea"],
+    "Muntenia": ["Argeș", "Brăila", "București", "Buzău", "Călărași", "Constanța", "Dâmbovița", "Giurgiu", "Ialomița", "Ilfov", "Prahova", "Teleorman", "Tulcea"],
+    "Oltenia": ["Dolj", "Gorj", "Mehedinți", "Olt", "Vâlcea"]
+  };
+
+  const regions = ["All Regions", ...Object.keys(regionCountyMap)];
+  
+  const getAvailableCounties = () => {
+    if (selectedRegion === "All Regions") {
+      return ["All Counties", ...Object.values(regionCountyMap).flat().sort()];
+    }
+    return ["All Counties", ...regionCountyMap[selectedRegion]];
+  };
+
+  useEffect(() => {
+    // Reset county when region changes
+    setSelectedCounty("All Counties");
+  }, [selectedRegion]);
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -57,6 +68,13 @@ const Leaderboard = () => {
       artist.specialization?.toLowerCase() === specialization.toLowerCase()
     );
 
+    // Filter by region
+    if (selectedRegion !== "All Regions") {
+      const regionCounties = regionCountyMap[selectedRegion];
+      filtered = filtered.filter(artist => regionCounties.includes(artist.county));
+    }
+
+    // Filter by county
     if (selectedCounty !== "All Counties") {
       filtered = filtered.filter(artist => artist.county === selectedCounty);
     }
@@ -117,7 +135,7 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {counties.map((county) => (
+                  {getAvailableCounties().map((county) => (
                     <DropdownMenuItem
                       key={county}
                       onClick={() => setSelectedCounty(county)}
