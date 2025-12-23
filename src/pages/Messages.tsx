@@ -83,6 +83,11 @@ const Messages = () => {
     if (!user) return;
     fetchConversations();
     fetchUnreadCounts();
+  }, [user]);
+
+  // Separate effect for realtime subscription to handle selectedConversation changes
+  useEffect(() => {
+    if (!user) return;
     
     // Subscribe to new messages across all conversations for notifications
     const channel = supabase
@@ -96,8 +101,8 @@ const Messages = () => {
         },
         (payload) => {
           const newMsg = payload.new as Message;
-          // Only count as unread if not from current user and not in selected conversation
-          if (newMsg.sender_id !== user.id) {
+          // Only count as unread if not from current user and not in currently selected conversation
+          if (newMsg.sender_id !== user.id && newMsg.conversation_id !== selectedConversation?.id) {
             setUnreadCounts(prev => ({
               ...prev,
               [newMsg.conversation_id]: (prev[newMsg.conversation_id] || 0) + 1
@@ -110,7 +115,7 @@ const Messages = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, selectedConversation?.id]);
 
   useEffect(() => {
     if (!user || !artistId) return;
