@@ -7,9 +7,15 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, MoreVertical, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Conversation {
   id: string;
@@ -290,6 +296,52 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
 
+  const deleteConversation = async (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // First delete all messages in the conversation
+    const { error: messagesError } = await supabase
+      .from('messages')
+      .delete()
+      .eq('conversation_id', conversationId);
+
+    if (messagesError) {
+      toast({
+        title: "Error",
+        description: "Could not delete messages",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Then delete the conversation
+    const { error: convError } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', conversationId);
+
+    if (convError) {
+      toast({
+        title: "Error",
+        description: "Could not delete conversation",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Update local state
+    setConversations(prev => prev.filter(c => c.id !== conversationId));
+    if (selectedConversation?.id === conversationId) {
+      setSelectedConversation(null);
+      setMessages([]);
+    }
+
+    toast({
+      title: "Deleted",
+      description: "Conversation deleted successfully"
+    });
+  };
+
   const getPlanRingColor = (plan?: string) => {
     switch (plan) {
       case 'Premium':
@@ -330,12 +382,12 @@ const Messages = () => {
                   conversations.map((conv) => {
                     const profile = getOtherProfile(conv);
                     return (
-                      <button
+                      <div
                         key={conv.id}
-                        onClick={() => setSelectedConversation(conv)}
-                        className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 ${
+                        className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${
                           selectedConversation?.id === conv.id ? 'bg-accent/10' : ''
                         }`}
+                        onClick={() => setSelectedConversation(conv)}
                       >
                         <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
                           <AvatarImage src={profile.avatar_url || undefined} />
@@ -343,13 +395,29 @@ const Messages = () => {
                             <User className="h-5 w-5" />
                           </AvatarFallback>
                         </Avatar>
-                        <div className="text-left">
+                        <div className="text-left flex-1">
                           <p className="font-medium">{profile.stage_name}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(conv.updated_at).toLocaleDateString()}
                           </p>
                         </div>
-                      </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-background border border-border z-50">
+                            <DropdownMenuItem
+                              onClick={(e) => deleteConversation(conv.id, e)}
+                              className="text-destructive focus:text-destructive cursor-pointer"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete conversation
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     );
                   })
                 )}
