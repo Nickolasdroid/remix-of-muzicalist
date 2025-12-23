@@ -8,19 +8,35 @@ import { Link } from "react-router-dom";
 const Counties = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const romanianCounties = [
-    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud",
-    "Botoșani", "Brăila", "Brașov", "București", "Buzău", "Călărași",
-    "Caraș-Severin", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj",
-    "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița",
-    "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț",
-    "Olt", "Prahova", "Sălaj", "Satu Mare", "Sibiu", "Suceava",
-    "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"
+  const regions = [
+    {
+      name: "Transilvania",
+      counties: ["Alba", "Bihor", "Bistrița-Năsăud", "Brașov", "Cluj", "Covasna", "Harghita", "Hunedoara", "Maramureș", "Mureș", "Sălaj", "Satu Mare", "Sibiu"]
+    },
+    {
+      name: "Banat",
+      counties: ["Timiș", "Caraș-Severin"]
+    },
+    {
+      name: "Moldova",
+      counties: ["Bacău", "Botoșani", "Galați", "Iași", "Neamț", "Suceava", "Vaslui", "Vrancea"]
+    },
+    {
+      name: "Muntenia",
+      counties: ["Argeș", "Brăila", "București", "Buzău", "Călărași", "Constanța", "Dâmbovița", "Giurgiu", "Ialomița", "Ilfov", "Prahova", "Teleorman", "Tulcea"]
+    },
+    {
+      name: "Oltenia",
+      counties: ["Dolj", "Gorj", "Mehedinți", "Olt", "Vâlcea"]
+    }
   ];
 
-  const filteredCounties = romanianCounties.filter(county =>
-    county.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRegions = regions.map(region => ({
+    ...region,
+    counties: region.counties.filter(county =>
+      county.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })).filter(region => region.counties.length > 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-accent/5">
@@ -47,21 +63,28 @@ const Counties = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-          {filteredCounties.map((county) => (
-            <Link key={county} to={`/counties/${county}`}>
-              <Button
-                variant="outline"
-                className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
-              >
-                <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
-                <span className="text-lg font-medium">{county}</span>
-              </Button>
-            </Link>
+        <div className="space-y-12 max-w-7xl mx-auto">
+          {filteredRegions.map((region) => (
+            <div key={region.name}>
+              <h2 className="text-2xl font-display font-semibold text-foreground mb-6">{region.name}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {region.counties.map((county) => (
+                  <Link key={county} to={`/counties/${county}`}>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
+                    >
+                      <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
+                      <span className="text-lg font-medium">{county}</span>
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
-        {filteredCounties.length === 0 && (
+        {filteredRegions.length === 0 && (
           <div className="text-center mt-12">
             <p className="text-muted-foreground text-lg">No counties found matching "{searchTerm}"</p>
           </div>
