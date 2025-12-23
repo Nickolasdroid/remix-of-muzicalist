@@ -63,6 +63,7 @@ const Messages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
 
   const artistId = searchParams.get("artistId");
 
@@ -81,6 +82,34 @@ const Messages = () => {
   useEffect(() => {
     if (!user) return;
     fetchConversations();
+    fetchUnreadCounts();
+    
+    // Subscribe to new messages across all conversations for notifications
+    const channel = supabase
+      .channel('all-messages-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages'
+        },
+        (payload) => {
+          const newMsg = payload.new as Message;
+          // Only count as unread if not from current user and not in selected conversation
+          if (newMsg.sender_id !== user.id) {
+            setUnreadCounts(prev => ({
+              ...prev,
+              [newMsg.conversation_id]: (prev[newMsg.conversation_id] || 0) + 1
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   useEffect(() => {
@@ -89,8 +118,16 @@ const Messages = () => {
   }, [user, artistId]);
 
   useEffect(() => {
-    if (!selectedConversation) return;
+    if (!selectedConversation || !user) return;
     fetchMessages(selectedConversation.id);
+    markMessagesAsRead(selectedConversation.id);
+    
+    // Clear unread count for selected conversation
+    setUnreadCounts(prev => {
+      const updated = { ...prev };
+      delete updated[selectedConversation.id];
+      return updated;
+    });
 
     // Subscribe to new messages
     const channel = supabase
@@ -104,7 +141,12 @@ const Messages = () => {
           filter: `conversation_id=eq.${selectedConversation.id}`
         },
         (payload) => {
-          setMessages(prev => [...prev, payload.new as Message]);
+          const newMsg = payload.new as Message;
+          setMessages(prev => [...prev, newMsg]);
+          // Mark as read immediately if it's from the other user
+          if (newMsg.sender_id !== user.id) {
+            markMessagesAsRead(selectedConversation.id);
+          }
         }
       )
       .subscribe();
@@ -112,7 +154,7 @@ const Messages = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedConversation]);
+  }, [selectedConversation, user]);
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -156,6 +198,40 @@ const Messages = () => {
 
     setConversations(conversationsWithProfiles);
     setLoading(false);
+  };
+
+  const fetchUnreadCounts = async () => {
+    if (!user) return;
+    
+    // Get all unread messages (not sent by current user and not read)
+    const { data: unreadMessages, error } = await supabase
+      .from('messages')
+      .select('conversation_id')
+      .neq('sender_id', user.id)
+      .is('read_at', null);
+
+    if (error) {
+      console.error('Error fetching unread counts:', error);
+      return;
+    }
+
+    // Count unread messages per conversation
+    const counts: Record<string, number> = {};
+    (unreadMessages || []).forEach(msg => {
+      counts[msg.conversation_id] = (counts[msg.conversation_id] || 0) + 1;
+    });
+    setUnreadCounts(counts);
+  };
+
+  const markMessagesAsRead = async (conversationId: string) => {
+    if (!user) return;
+    
+    await supabase
+      .from('messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('conversation_id', conversationId)
+      .neq('sender_id', user.id)
+      .is('read_at', null);
   };
 
   const handleArtistContact = async () => {
@@ -395,8 +471,15 @@ const Messages = () => {
                             <User className="h-5 w-5" />
                           </AvatarFallback>
                         </Avatar>
-                        <div className="text-left flex-1">
-                          <p className="font-medium">{profile.stage_name}</p>
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium truncate">{profile.stage_name}</p>
+                            {unreadCounts[conv.id] > 0 && (
+                              <span className="flex-shrink-0 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                                {unreadCounts[conv.id]}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground">
                             {new Date(conv.updated_at).toLocaleDateString()}
                           </p>
