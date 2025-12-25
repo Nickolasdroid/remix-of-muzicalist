@@ -52,10 +52,10 @@ const Counties = () => {
               <Link key={county} to={`/counties/${county}`}>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 px-4 w-full flex items-center justify-start gap-2 hover:bg-accent/10 hover:border-accent transition-all group whitespace-nowrap"
+                  className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
                 >
-                  <MapPin className="h-4 w-4 text-accent group-hover:scale-110 transition-transform flex-shrink-0" />
-                  <span className="font-medium truncate">{county}</span>
+                  <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
+                  <span className="text-lg font-medium">{county}</span>
                 </Button>
               </Link>
             ))}
