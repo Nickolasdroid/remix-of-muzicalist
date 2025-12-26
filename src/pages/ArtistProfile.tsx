@@ -9,6 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { 
   User, 
   MapPin, 
@@ -1009,53 +1016,59 @@ const ArtistProfile = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  {reviews.length > 0 ? (
-                    reviews.map((review) => (
-                      <div key={review.id} className="flex items-start gap-3 p-3 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50">
-                        <Avatar className="h-8 w-8 border border-accent/30 flex-shrink-0">
-                          <AvatarFallback className="bg-accent/10 text-accent text-xs">
-                            {review.reviewer_name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-medium text-sm text-foreground">{review.reviewer_name}</span>
+                {reviews.length > 0 ? (
+                  <Carousel className="w-full">
+                    <CarouselContent>
+                      {reviews.map((review) => (
+                        <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                          <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                <AvatarFallback className="bg-accent/10 text-accent text-sm">
+                                  {review.reviewer_name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                            </div>
                             <div className="flex gap-0.5">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                   key={star}
-                                  className={`h-3 w-3 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
+                                  className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
                                 />
                               ))}
                             </div>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </span>
+                            {review.comment && (
+                              <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
+                            )}
                           </div>
-                          {review.comment && (
-                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{review.comment}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
-                      <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
-                      {currentUserId !== id && (
-                        <Button 
-                          onClick={() => setReviewDialogOpen(true)}
-                          size="sm"
-                          variant="outline"
-                          className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                        >
-                          Write the First Review
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-0 -translate-x-1/2" />
+                    <CarouselNext className="right-0 translate-x-1/2" />
+                  </Carousel>
+                ) : (
+                  <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                    <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
+                    {currentUserId !== id && (
+                      <Button 
+                        onClick={() => setReviewDialogOpen(true)}
+                        size="sm"
+                        variant="outline"
+                        className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Write the First Review
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
