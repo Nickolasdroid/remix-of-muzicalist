@@ -65,10 +65,14 @@ const CategoryArtists = () => {
     fetchArtists();
   }, [category]);
 
-  const counties = useMemo(() => {
-    const uniqueCounties = [...new Set(artists.map(a => a.county))];
-    return uniqueCounties.sort();
-  }, [artists]);
+  const counties = [
+    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
+    "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin",
+    "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
+    "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
+    "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare",
+    "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"
+  ];
 
   const filteredArtists = useMemo(() => {
     let result = [...artists];
