@@ -5,13 +5,10 @@ import { ArrowLeft, User, Filter } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -106,22 +103,20 @@ const CategoryArtists = () => {
             </Button>
           </Link>
 
-          <Sheet>
-            <SheetTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button variant="outline" className="gap-2">
                 <Filter className="h-4 w-4" />
                 Filter
               </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Filter Artists</SheetTitle>
-                <SheetDescription>
-                  Apply filters to find the perfect artist
-                </SheetDescription>
-              </SheetHeader>
-              
-              <div className="grid gap-6 py-6">
+            </PopoverTrigger>
+            <PopoverContent className="w-80 bg-card border border-border z-50">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-foreground mb-1">Filter Artists</h4>
+                  <p className="text-sm text-muted-foreground">Apply filters to find the perfect artist</p>
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="county">County</Label>
                   <Select value={filterCounty} onValueChange={setFilterCounty}>
@@ -179,8 +174,8 @@ const CategoryArtists = () => {
                   Clear All Filters
                 </Button>
               </div>
-            </SheetContent>
-          </Sheet>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="text-center mb-16">
