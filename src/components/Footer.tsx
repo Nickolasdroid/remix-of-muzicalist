@@ -115,7 +115,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © {currentYear} Artist Platform. All rights reserved.
+            © {currentYear} Muzicalist. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
             <Link to="#" className="text-muted-foreground hover:text-accent transition-colors">
