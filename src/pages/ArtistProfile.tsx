@@ -33,7 +33,8 @@ import {
   Play,
   DollarSign,
   Megaphone,
-  MessageCircle
+  MessageCircle,
+  Trash2
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,7 @@ interface Review {
   rating: number;
   comment: string | null;
   created_at: string;
+  reviewer_user_id: string | null;
 }
 
 const ArtistProfile = () => {
@@ -178,7 +180,7 @@ const ArtistProfile = () => {
       // Fetch reviews
       const { data: reviewsData } = await supabase
         .from('reviews')
-        .select('id, reviewer_name, rating, comment, created_at')
+        .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
         .eq('profile_id', id)
         .order('created_at', { ascending: false });
 
@@ -298,7 +300,8 @@ const ArtistProfile = () => {
         reviewer_name: reviewForm.name.trim(),
         reviewer_email: reviewForm.email.trim(),
         rating: reviewForm.rating,
-        comment: reviewForm.comment.trim() || null
+        comment: reviewForm.comment.trim() || null,
+        reviewer_user_id: currentUserId
       });
 
       if (error) throw error;
@@ -306,7 +309,7 @@ const ArtistProfile = () => {
       // Refetch reviews
       const { data: reviewsData } = await supabase
         .from('reviews')
-        .select('id, reviewer_name, rating, comment, created_at')
+        .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
         .eq('profile_id', id)
         .order('created_at', { ascending: false });
 
@@ -328,6 +331,41 @@ const ArtistProfile = () => {
     } finally {
       setSubmittingReview(false);
     }
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', reviewId);
+
+      if (error) throw error;
+
+      setReviews(reviews.filter(r => r.id !== reviewId));
+
+      toast({
+        title: "Review Deleted",
+        description: "The review has been successfully deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete review. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const canDeleteReview = (review: Review) => {
+    if (!currentUserId) return false;
+    // Artist can delete reviews on their profile
+    if (currentUserId === id) return true;
+    // Reviewer can delete their own review
+    if (currentUserId === review.reviewer_user_id) return true;
+    return false;
   };
 
   const renderStars = (rating: number, interactive = false, onRate?: (r: number) => void) => {
@@ -1021,7 +1059,16 @@ const ArtistProfile = () => {
                     <CarouselContent>
                       {reviews.map((review) => (
                         <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                          <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full">
+                          <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
+                            {canDeleteReview(review) && (
+                              <button
+                                onClick={() => handleDeleteReview(review.id)}
+                                className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                title="Delete review"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
                             <div className="flex items-center gap-3">
                               <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
                                 <AvatarFallback className="bg-accent/10 text-accent text-sm">

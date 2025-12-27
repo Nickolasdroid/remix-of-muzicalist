@@ -383,6 +383,7 @@ export type Database = {
           rating: number
           reviewer_email: string
           reviewer_name: string
+          reviewer_user_id: string | null
         }
         Insert: {
           comment?: string | null
@@ -392,6 +393,7 @@ export type Database = {
           rating: number
           reviewer_email: string
           reviewer_name: string
+          reviewer_user_id?: string | null
         }
         Update: {
           comment?: string | null
@@ -401,6 +403,7 @@ export type Database = {
           rating?: number
           reviewer_email?: string
           reviewer_name?: string
+          reviewer_user_id?: string | null
         }
         Relationships: [
           {
