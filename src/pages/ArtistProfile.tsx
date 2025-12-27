@@ -1000,8 +1000,8 @@ const ArtistProfile = () => {
                     <Star className="h-4 w-4 text-accent" />
                     Reviews
                     {getAverageRating() && (
-                      <span className="text-lg font-display font-bold text-foreground flex items-center gap-2">
-                        ({getAverageRating()} <span className="w-px h-4 bg-border"></span> {reviews.length})
+                      <span className="text-lg font-display font-bold text-foreground">
+                        ({getAverageRating()} • {reviews.length})
                       </span>
                     )}
                   </h3>
