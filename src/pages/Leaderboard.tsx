@@ -73,13 +73,15 @@ const Leaderboard = () => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const romanianCounties = [
-    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila",
-    "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița",
-    "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov",
-    "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu",
-    "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
-  ];
+  // Get unique counties from artists based on selected country
+  const getAvailableCounties = () => {
+    let filteredArtists = artists;
+    if (selectedCountry) {
+      filteredArtists = artists.filter(artist => artist.country === selectedCountry);
+    }
+    const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
+    return counties;
+  };
 
   useEffect(() => {
     // Reset county when country changes
@@ -175,7 +177,7 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {["All Counties", ...romanianCounties].map((county) => (
+                  {["All Counties", ...getAvailableCounties()].map((county) => (
                     <DropdownMenuItem
                       key={county}
                       onClick={() => setSelectedCounty(county)}
