@@ -163,6 +163,9 @@ const Dashboard = () => {
   // Booking requests state
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
 
+  // Reviews state
+  const [reviews, setReviews] = useState<any[]>([]);
+
   const romanianCounties = [
     "București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", 
     "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
@@ -227,6 +230,49 @@ const Dashboard = () => {
     }
   };
 
+  const loadReviews = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('reviews')
+      .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
+      .eq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setReviews(data);
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', reviewId);
+
+      if (error) throw error;
+
+      setReviews(reviews.filter(r => r.id !== reviewId));
+      toast({
+        title: "Review Deleted",
+        description: "The review has been successfully deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete review. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getAverageRating = () => {
+    if (reviews.length === 0) return null;
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews.length).toFixed(1);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -238,6 +284,7 @@ const Dashboard = () => {
       loadCalendarEvents();
       loadBookingRequests();
       loadPosts();
+      loadReviews();
     }
   }, [user]);
 
@@ -1131,8 +1178,9 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 mb-8">
+                      <TabsList className="grid w-full grid-cols-4 mb-8">
                         <TabsTrigger value="details">Details</TabsTrigger>
+                        <TabsTrigger value="reviews">Reviews</TabsTrigger>
                         <TabsTrigger value="gallery">Gallery</TabsTrigger>
                         <TabsTrigger value="calendar">Calendar</TabsTrigger>
                       </TabsList>
@@ -1577,6 +1625,71 @@ const Dashboard = () => {
                             </div>
                           )}
                          </div>
+                      </TabsContent>
+
+                      {/* Reviews Tab */}
+                      <TabsContent value="reviews">
+                        <div>
+                          <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                            <Star className="h-6 w-6 text-accent" />
+                            My Reviews
+                            {getAverageRating() && (
+                              <span className="text-lg font-display font-bold text-foreground">
+                                ({getAverageRating()} • {reviews.length})
+                              </span>
+                            )}
+                          </h2>
+                          
+                          {reviews.length > 0 ? (
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                              {reviews.map((review) => (
+                                <div 
+                                  key={review.id} 
+                                  className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative"
+                                >
+                                  <button
+                                    onClick={() => handleDeleteReview(review.id)}
+                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                    title="Delete review"
+                                    disabled={isSaving}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                  <div className="flex items-center gap-3">
+                                    <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                      <AvatarFallback className="bg-accent/10 text-accent text-sm">
+                                        {review.reviewer_name.charAt(0).toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                      <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-0.5">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star
+                                        key={star}
+                                        className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
+                                      />
+                                    ))}
+                                  </div>
+                                  {review.comment && (
+                                    <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                              <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                              <p className="text-muted-foreground">No reviews yet</p>
+                              <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
+                            </div>
+                          )}
+                        </div>
                       </TabsContent>
 
                       {/* Gallery Tab */}
