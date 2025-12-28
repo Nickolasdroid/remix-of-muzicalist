@@ -445,43 +445,18 @@ const ArtistProfile = () => {
                   </div>
                 </div>
 
-                {/* Contact Buttons */}
-                <div className="flex flex-wrap gap-3 mt-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                        <Phone className="mr-2 h-4 w-4" />
-                        Contact
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Contact {artist.stage_name}</DialogTitle>
-                        <DialogDescription>Get in touch with the artist using the contact details below.</DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <Mail className="h-5 w-5 text-accent" />
-                          <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
-                            {artist.email}
-                          </a>
-                        </div>
-                        {artist.phone && (
-                          <div className="flex items-center gap-3">
-                            <Phone className="h-5 w-5 text-accent" />
-                            <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
-                              {artist.phone}
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  {currentUserId && currentUserId !== artist.id && <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground" onClick={() => navigate(`/messages?artistId=${artist.id}`)}>
+                {/* Contact Button - Only for logged in users */}
+                {currentUserId && currentUserId !== artist.id && (
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    <Button 
+                      className="bg-accent text-accent-foreground hover:bg-accent/90"
+                      onClick={() => navigate(`/messages?artistId=${artist.id}`)}
+                    >
                       <MessageCircle className="mr-2 h-4 w-4" />
-                      Message
-                    </Button>}
-                </div>
+                      Contact
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
