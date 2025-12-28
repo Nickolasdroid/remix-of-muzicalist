@@ -425,10 +425,16 @@ const RegisterArtist = () => {
                       type="number"
                       required
                       min="0"
+                      max="999999"
                       value={formData.numberOfEvents}
-                      onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
+                      onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value.replace(/\D/g, '').slice(0, 6)})}
+                      onKeyDown={(e) => {
+                        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                       className="bg-input border-border focus:border-accent"
-                      placeholder="e.g., 50 events performed"
+                      placeholder="e.g., 50"
                     />
                   </div>
                 </div>
