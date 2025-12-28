@@ -107,6 +107,7 @@ const ArtistProfile = () => {
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserProfile, setCurrentUserProfile] = useState<{ first_name: string; last_name: string; email: string } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -131,6 +132,30 @@ const ArtistProfile = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setCurrentUserId(session?.user?.id || null);
+      
+      if (session?.user?.id) {
+        // Try to fetch user's profile for pre-filling review form
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, email')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        if (profileData) {
+          setCurrentUserProfile(profileData);
+          setReviewForm(prev => ({
+            ...prev,
+            name: `${profileData.first_name} ${profileData.last_name}`.trim(),
+            email: profileData.email
+          }));
+        } else {
+          // Fallback to auth email if no profile exists
+          setReviewForm(prev => ({
+            ...prev,
+            email: session.user.email || ''
+          }));
+        }
+      }
     };
     checkAuth();
   }, []);
@@ -818,6 +843,8 @@ const ArtistProfile = () => {
                         onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
                         required
                         maxLength={100}
+                        readOnly={!!currentUserProfile}
+                        className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""}
                       />
                     </div>
                     <div className="space-y-2">
@@ -830,6 +857,8 @@ const ArtistProfile = () => {
                         onChange={(e) => setReviewForm({ ...reviewForm, email: e.target.value })}
                         required
                         maxLength={255}
+                        readOnly={!!currentUserProfile || !!currentUserId}
+                        className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""}
                       />
                     </div>
                     <div className="space-y-2">
