@@ -313,14 +313,17 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[220px] p-0 bg-card border-border">
-                  <div className="p-2 border-b border-border">
+                  <div className="p-2 border-b border-border" onKeyDown={(e) => e.stopPropagation()}>
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         placeholder="Search country..."
                         value={countrySearch}
                         onChange={(e) => setCountrySearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
                         className="pl-8 h-8 bg-input"
+                        autoComplete="off"
                       />
                     </div>
                   </div>
