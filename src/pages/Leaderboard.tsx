@@ -7,206 +7,595 @@ import { Trophy, ChevronDown, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-
-const allCountries = [
-  { name: "Afghanistan", code: "AF" },
-  { name: "Albania", code: "AL" },
-  { name: "Algeria", code: "DZ" },
-  { name: "Andorra", code: "AD" },
-  { name: "Angola", code: "AO" },
-  { name: "Antigua and Barbuda", code: "AG" },
-  { name: "Argentina", code: "AR" },
-  { name: "Armenia", code: "AM" },
-  { name: "Australia", code: "AU" },
-  { name: "Austria", code: "AT" },
-  { name: "Azerbaijan", code: "AZ" },
-  { name: "Bahamas", code: "BS" },
-  { name: "Bahrain", code: "BH" },
-  { name: "Bangladesh", code: "BD" },
-  { name: "Barbados", code: "BB" },
-  { name: "Belarus", code: "BY" },
-  { name: "Belgium", code: "BE" },
-  { name: "Belize", code: "BZ" },
-  { name: "Benin", code: "BJ" },
-  { name: "Bhutan", code: "BT" },
-  { name: "Bolivia", code: "BO" },
-  { name: "Bosnia and Herzegovina", code: "BA" },
-  { name: "Botswana", code: "BW" },
-  { name: "Brazil", code: "BR" },
-  { name: "Brunei", code: "BN" },
-  { name: "Bulgaria", code: "BG" },
-  { name: "Burkina Faso", code: "BF" },
-  { name: "Burundi", code: "BI" },
-  { name: "Cabo Verde", code: "CV" },
-  { name: "Cambodia", code: "KH" },
-  { name: "Cameroon", code: "CM" },
-  { name: "Canada", code: "CA" },
-  { name: "Central African Republic", code: "CF" },
-  { name: "Chad", code: "TD" },
-  { name: "Chile", code: "CL" },
-  { name: "China", code: "CN" },
-  { name: "Colombia", code: "CO" },
-  { name: "Comoros", code: "KM" },
-  { name: "Congo", code: "CG" },
-  { name: "Costa Rica", code: "CR" },
-  { name: "Croatia", code: "HR" },
-  { name: "Cuba", code: "CU" },
-  { name: "Cyprus", code: "CY" },
-  { name: "Czech Republic", code: "CZ" },
-  { name: "Denmark", code: "DK" },
-  { name: "Djibouti", code: "DJ" },
-  { name: "Dominica", code: "DM" },
-  { name: "Dominican Republic", code: "DO" },
-  { name: "Ecuador", code: "EC" },
-  { name: "Egypt", code: "EG" },
-  { name: "El Salvador", code: "SV" },
-  { name: "Equatorial Guinea", code: "GQ" },
-  { name: "Eritrea", code: "ER" },
-  { name: "Estonia", code: "EE" },
-  { name: "Eswatini", code: "SZ" },
-  { name: "Ethiopia", code: "ET" },
-  { name: "Fiji", code: "FJ" },
-  { name: "Finland", code: "FI" },
-  { name: "France", code: "FR" },
-  { name: "Gabon", code: "GA" },
-  { name: "Gambia", code: "GM" },
-  { name: "Georgia", code: "GE" },
-  { name: "Germany", code: "DE" },
-  { name: "Ghana", code: "GH" },
-  { name: "Greece", code: "GR" },
-  { name: "Grenada", code: "GD" },
-  { name: "Guatemala", code: "GT" },
-  { name: "Guinea", code: "GN" },
-  { name: "Guinea-Bissau", code: "GW" },
-  { name: "Guyana", code: "GY" },
-  { name: "Haiti", code: "HT" },
-  { name: "Honduras", code: "HN" },
-  { name: "Hungary", code: "HU" },
-  { name: "Iceland", code: "IS" },
-  { name: "India", code: "IN" },
-  { name: "Indonesia", code: "ID" },
-  { name: "Iran", code: "IR" },
-  { name: "Iraq", code: "IQ" },
-  { name: "Ireland", code: "IE" },
-  { name: "Israel", code: "IL" },
-  { name: "Italy", code: "IT" },
-  { name: "Ivory Coast", code: "CI" },
-  { name: "Jamaica", code: "JM" },
-  { name: "Japan", code: "JP" },
-  { name: "Jordan", code: "JO" },
-  { name: "Kazakhstan", code: "KZ" },
-  { name: "Kenya", code: "KE" },
-  { name: "Kiribati", code: "KI" },
-  { name: "Kosovo", code: "XK" },
-  { name: "Kuwait", code: "KW" },
-  { name: "Kyrgyzstan", code: "KG" },
-  { name: "Laos", code: "LA" },
-  { name: "Latvia", code: "LV" },
-  { name: "Lebanon", code: "LB" },
-  { name: "Lesotho", code: "LS" },
-  { name: "Liberia", code: "LR" },
-  { name: "Libya", code: "LY" },
-  { name: "Liechtenstein", code: "LI" },
-  { name: "Lithuania", code: "LT" },
-  { name: "Luxembourg", code: "LU" },
-  { name: "Madagascar", code: "MG" },
-  { name: "Malawi", code: "MW" },
-  { name: "Malaysia", code: "MY" },
-  { name: "Maldives", code: "MV" },
-  { name: "Mali", code: "ML" },
-  { name: "Malta", code: "MT" },
-  { name: "Marshall Islands", code: "MH" },
-  { name: "Mauritania", code: "MR" },
-  { name: "Mauritius", code: "MU" },
-  { name: "Mexico", code: "MX" },
-  { name: "Micronesia", code: "FM" },
-  { name: "Moldova", code: "MD" },
-  { name: "Monaco", code: "MC" },
-  { name: "Mongolia", code: "MN" },
-  { name: "Montenegro", code: "ME" },
-  { name: "Morocco", code: "MA" },
-  { name: "Mozambique", code: "MZ" },
-  { name: "Myanmar", code: "MM" },
-  { name: "Namibia", code: "NA" },
-  { name: "Nauru", code: "NR" },
-  { name: "Nepal", code: "NP" },
-  { name: "Netherlands", code: "NL" },
-  { name: "New Zealand", code: "NZ" },
-  { name: "Nicaragua", code: "NI" },
-  { name: "Niger", code: "NE" },
-  { name: "Nigeria", code: "NG" },
-  { name: "North Korea", code: "KP" },
-  { name: "North Macedonia", code: "MK" },
-  { name: "Norway", code: "NO" },
-  { name: "Oman", code: "OM" },
-  { name: "Pakistan", code: "PK" },
-  { name: "Palau", code: "PW" },
-  { name: "Palestine", code: "PS" },
-  { name: "Panama", code: "PA" },
-  { name: "Papua New Guinea", code: "PG" },
-  { name: "Paraguay", code: "PY" },
-  { name: "Peru", code: "PE" },
-  { name: "Philippines", code: "PH" },
-  { name: "Poland", code: "PL" },
-  { name: "Portugal", code: "PT" },
-  { name: "Qatar", code: "QA" },
-  { name: "Romania", code: "RO" },
-  { name: "Russia", code: "RU" },
-  { name: "Rwanda", code: "RW" },
-  { name: "Saint Kitts and Nevis", code: "KN" },
-  { name: "Saint Lucia", code: "LC" },
-  { name: "Saint Vincent and the Grenadines", code: "VC" },
-  { name: "Samoa", code: "WS" },
-  { name: "San Marino", code: "SM" },
-  { name: "Sao Tome and Principe", code: "ST" },
-  { name: "Saudi Arabia", code: "SA" },
-  { name: "Senegal", code: "SN" },
-  { name: "Serbia", code: "RS" },
-  { name: "Seychelles", code: "SC" },
-  { name: "Sierra Leone", code: "SL" },
-  { name: "Singapore", code: "SG" },
-  { name: "Slovakia", code: "SK" },
-  { name: "Slovenia", code: "SI" },
-  { name: "Solomon Islands", code: "SB" },
-  { name: "Somalia", code: "SO" },
-  { name: "South Africa", code: "ZA" },
-  { name: "South Korea", code: "KR" },
-  { name: "South Sudan", code: "SS" },
-  { name: "Spain", code: "ES" },
-  { name: "Sri Lanka", code: "LK" },
-  { name: "Sudan", code: "SD" },
-  { name: "Suriname", code: "SR" },
-  { name: "Sweden", code: "SE" },
-  { name: "Switzerland", code: "CH" },
-  { name: "Syria", code: "SY" },
-  { name: "Taiwan", code: "TW" },
-  { name: "Tajikistan", code: "TJ" },
-  { name: "Tanzania", code: "TZ" },
-  { name: "Thailand", code: "TH" },
-  { name: "Timor-Leste", code: "TL" },
-  { name: "Togo", code: "TG" },
-  { name: "Tonga", code: "TO" },
-  { name: "Trinidad and Tobago", code: "TT" },
-  { name: "Tunisia", code: "TN" },
-  { name: "Turkey", code: "TR" },
-  { name: "Turkmenistan", code: "TM" },
-  { name: "Tuvalu", code: "TV" },
-  { name: "Uganda", code: "UG" },
-  { name: "Ukraine", code: "UA" },
-  { name: "United Arab Emirates", code: "AE" },
-  { name: "United Kingdom", code: "GB" },
-  { name: "United States", code: "US" },
-  { name: "Uruguay", code: "UY" },
-  { name: "Uzbekistan", code: "UZ" },
-  { name: "Vanuatu", code: "VU" },
-  { name: "Vatican City", code: "VA" },
-  { name: "Venezuela", code: "VE" },
-  { name: "Vietnam", code: "VN" },
-  { name: "Yemen", code: "YE" },
-  { name: "Zambia", code: "ZM" },
-  { name: "Zimbabwe", code: "ZW" },
-];
-
+const allCountries = [{
+  name: "Afghanistan",
+  code: "AF"
+}, {
+  name: "Albania",
+  code: "AL"
+}, {
+  name: "Algeria",
+  code: "DZ"
+}, {
+  name: "Andorra",
+  code: "AD"
+}, {
+  name: "Angola",
+  code: "AO"
+}, {
+  name: "Antigua and Barbuda",
+  code: "AG"
+}, {
+  name: "Argentina",
+  code: "AR"
+}, {
+  name: "Armenia",
+  code: "AM"
+}, {
+  name: "Australia",
+  code: "AU"
+}, {
+  name: "Austria",
+  code: "AT"
+}, {
+  name: "Azerbaijan",
+  code: "AZ"
+}, {
+  name: "Bahamas",
+  code: "BS"
+}, {
+  name: "Bahrain",
+  code: "BH"
+}, {
+  name: "Bangladesh",
+  code: "BD"
+}, {
+  name: "Barbados",
+  code: "BB"
+}, {
+  name: "Belarus",
+  code: "BY"
+}, {
+  name: "Belgium",
+  code: "BE"
+}, {
+  name: "Belize",
+  code: "BZ"
+}, {
+  name: "Benin",
+  code: "BJ"
+}, {
+  name: "Bhutan",
+  code: "BT"
+}, {
+  name: "Bolivia",
+  code: "BO"
+}, {
+  name: "Bosnia and Herzegovina",
+  code: "BA"
+}, {
+  name: "Botswana",
+  code: "BW"
+}, {
+  name: "Brazil",
+  code: "BR"
+}, {
+  name: "Brunei",
+  code: "BN"
+}, {
+  name: "Bulgaria",
+  code: "BG"
+}, {
+  name: "Burkina Faso",
+  code: "BF"
+}, {
+  name: "Burundi",
+  code: "BI"
+}, {
+  name: "Cabo Verde",
+  code: "CV"
+}, {
+  name: "Cambodia",
+  code: "KH"
+}, {
+  name: "Cameroon",
+  code: "CM"
+}, {
+  name: "Canada",
+  code: "CA"
+}, {
+  name: "Central African Republic",
+  code: "CF"
+}, {
+  name: "Chad",
+  code: "TD"
+}, {
+  name: "Chile",
+  code: "CL"
+}, {
+  name: "China",
+  code: "CN"
+}, {
+  name: "Colombia",
+  code: "CO"
+}, {
+  name: "Comoros",
+  code: "KM"
+}, {
+  name: "Congo",
+  code: "CG"
+}, {
+  name: "Costa Rica",
+  code: "CR"
+}, {
+  name: "Croatia",
+  code: "HR"
+}, {
+  name: "Cuba",
+  code: "CU"
+}, {
+  name: "Cyprus",
+  code: "CY"
+}, {
+  name: "Czech Republic",
+  code: "CZ"
+}, {
+  name: "Denmark",
+  code: "DK"
+}, {
+  name: "Djibouti",
+  code: "DJ"
+}, {
+  name: "Dominica",
+  code: "DM"
+}, {
+  name: "Dominican Republic",
+  code: "DO"
+}, {
+  name: "Ecuador",
+  code: "EC"
+}, {
+  name: "Egypt",
+  code: "EG"
+}, {
+  name: "El Salvador",
+  code: "SV"
+}, {
+  name: "Equatorial Guinea",
+  code: "GQ"
+}, {
+  name: "Eritrea",
+  code: "ER"
+}, {
+  name: "Estonia",
+  code: "EE"
+}, {
+  name: "Eswatini",
+  code: "SZ"
+}, {
+  name: "Ethiopia",
+  code: "ET"
+}, {
+  name: "Fiji",
+  code: "FJ"
+}, {
+  name: "Finland",
+  code: "FI"
+}, {
+  name: "France",
+  code: "FR"
+}, {
+  name: "Gabon",
+  code: "GA"
+}, {
+  name: "Gambia",
+  code: "GM"
+}, {
+  name: "Georgia",
+  code: "GE"
+}, {
+  name: "Germany",
+  code: "DE"
+}, {
+  name: "Ghana",
+  code: "GH"
+}, {
+  name: "Greece",
+  code: "GR"
+}, {
+  name: "Grenada",
+  code: "GD"
+}, {
+  name: "Guatemala",
+  code: "GT"
+}, {
+  name: "Guinea",
+  code: "GN"
+}, {
+  name: "Guinea-Bissau",
+  code: "GW"
+}, {
+  name: "Guyana",
+  code: "GY"
+}, {
+  name: "Haiti",
+  code: "HT"
+}, {
+  name: "Honduras",
+  code: "HN"
+}, {
+  name: "Hungary",
+  code: "HU"
+}, {
+  name: "Iceland",
+  code: "IS"
+}, {
+  name: "India",
+  code: "IN"
+}, {
+  name: "Indonesia",
+  code: "ID"
+}, {
+  name: "Iran",
+  code: "IR"
+}, {
+  name: "Iraq",
+  code: "IQ"
+}, {
+  name: "Ireland",
+  code: "IE"
+}, {
+  name: "Israel",
+  code: "IL"
+}, {
+  name: "Italy",
+  code: "IT"
+}, {
+  name: "Ivory Coast",
+  code: "CI"
+}, {
+  name: "Jamaica",
+  code: "JM"
+}, {
+  name: "Japan",
+  code: "JP"
+}, {
+  name: "Jordan",
+  code: "JO"
+}, {
+  name: "Kazakhstan",
+  code: "KZ"
+}, {
+  name: "Kenya",
+  code: "KE"
+}, {
+  name: "Kiribati",
+  code: "KI"
+}, {
+  name: "Kosovo",
+  code: "XK"
+}, {
+  name: "Kuwait",
+  code: "KW"
+}, {
+  name: "Kyrgyzstan",
+  code: "KG"
+}, {
+  name: "Laos",
+  code: "LA"
+}, {
+  name: "Latvia",
+  code: "LV"
+}, {
+  name: "Lebanon",
+  code: "LB"
+}, {
+  name: "Lesotho",
+  code: "LS"
+}, {
+  name: "Liberia",
+  code: "LR"
+}, {
+  name: "Libya",
+  code: "LY"
+}, {
+  name: "Liechtenstein",
+  code: "LI"
+}, {
+  name: "Lithuania",
+  code: "LT"
+}, {
+  name: "Luxembourg",
+  code: "LU"
+}, {
+  name: "Madagascar",
+  code: "MG"
+}, {
+  name: "Malawi",
+  code: "MW"
+}, {
+  name: "Malaysia",
+  code: "MY"
+}, {
+  name: "Maldives",
+  code: "MV"
+}, {
+  name: "Mali",
+  code: "ML"
+}, {
+  name: "Malta",
+  code: "MT"
+}, {
+  name: "Marshall Islands",
+  code: "MH"
+}, {
+  name: "Mauritania",
+  code: "MR"
+}, {
+  name: "Mauritius",
+  code: "MU"
+}, {
+  name: "Mexico",
+  code: "MX"
+}, {
+  name: "Micronesia",
+  code: "FM"
+}, {
+  name: "Moldova",
+  code: "MD"
+}, {
+  name: "Monaco",
+  code: "MC"
+}, {
+  name: "Mongolia",
+  code: "MN"
+}, {
+  name: "Montenegro",
+  code: "ME"
+}, {
+  name: "Morocco",
+  code: "MA"
+}, {
+  name: "Mozambique",
+  code: "MZ"
+}, {
+  name: "Myanmar",
+  code: "MM"
+}, {
+  name: "Namibia",
+  code: "NA"
+}, {
+  name: "Nauru",
+  code: "NR"
+}, {
+  name: "Nepal",
+  code: "NP"
+}, {
+  name: "Netherlands",
+  code: "NL"
+}, {
+  name: "New Zealand",
+  code: "NZ"
+}, {
+  name: "Nicaragua",
+  code: "NI"
+}, {
+  name: "Niger",
+  code: "NE"
+}, {
+  name: "Nigeria",
+  code: "NG"
+}, {
+  name: "North Korea",
+  code: "KP"
+}, {
+  name: "North Macedonia",
+  code: "MK"
+}, {
+  name: "Norway",
+  code: "NO"
+}, {
+  name: "Oman",
+  code: "OM"
+}, {
+  name: "Pakistan",
+  code: "PK"
+}, {
+  name: "Palau",
+  code: "PW"
+}, {
+  name: "Palestine",
+  code: "PS"
+}, {
+  name: "Panama",
+  code: "PA"
+}, {
+  name: "Papua New Guinea",
+  code: "PG"
+}, {
+  name: "Paraguay",
+  code: "PY"
+}, {
+  name: "Peru",
+  code: "PE"
+}, {
+  name: "Philippines",
+  code: "PH"
+}, {
+  name: "Poland",
+  code: "PL"
+}, {
+  name: "Portugal",
+  code: "PT"
+}, {
+  name: "Qatar",
+  code: "QA"
+}, {
+  name: "Romania",
+  code: "RO"
+}, {
+  name: "Russia",
+  code: "RU"
+}, {
+  name: "Rwanda",
+  code: "RW"
+}, {
+  name: "Saint Kitts and Nevis",
+  code: "KN"
+}, {
+  name: "Saint Lucia",
+  code: "LC"
+}, {
+  name: "Saint Vincent and the Grenadines",
+  code: "VC"
+}, {
+  name: "Samoa",
+  code: "WS"
+}, {
+  name: "San Marino",
+  code: "SM"
+}, {
+  name: "Sao Tome and Principe",
+  code: "ST"
+}, {
+  name: "Saudi Arabia",
+  code: "SA"
+}, {
+  name: "Senegal",
+  code: "SN"
+}, {
+  name: "Serbia",
+  code: "RS"
+}, {
+  name: "Seychelles",
+  code: "SC"
+}, {
+  name: "Sierra Leone",
+  code: "SL"
+}, {
+  name: "Singapore",
+  code: "SG"
+}, {
+  name: "Slovakia",
+  code: "SK"
+}, {
+  name: "Slovenia",
+  code: "SI"
+}, {
+  name: "Solomon Islands",
+  code: "SB"
+}, {
+  name: "Somalia",
+  code: "SO"
+}, {
+  name: "South Africa",
+  code: "ZA"
+}, {
+  name: "South Korea",
+  code: "KR"
+}, {
+  name: "South Sudan",
+  code: "SS"
+}, {
+  name: "Spain",
+  code: "ES"
+}, {
+  name: "Sri Lanka",
+  code: "LK"
+}, {
+  name: "Sudan",
+  code: "SD"
+}, {
+  name: "Suriname",
+  code: "SR"
+}, {
+  name: "Sweden",
+  code: "SE"
+}, {
+  name: "Switzerland",
+  code: "CH"
+}, {
+  name: "Syria",
+  code: "SY"
+}, {
+  name: "Taiwan",
+  code: "TW"
+}, {
+  name: "Tajikistan",
+  code: "TJ"
+}, {
+  name: "Tanzania",
+  code: "TZ"
+}, {
+  name: "Thailand",
+  code: "TH"
+}, {
+  name: "Timor-Leste",
+  code: "TL"
+}, {
+  name: "Togo",
+  code: "TG"
+}, {
+  name: "Tonga",
+  code: "TO"
+}, {
+  name: "Trinidad and Tobago",
+  code: "TT"
+}, {
+  name: "Tunisia",
+  code: "TN"
+}, {
+  name: "Turkey",
+  code: "TR"
+}, {
+  name: "Turkmenistan",
+  code: "TM"
+}, {
+  name: "Tuvalu",
+  code: "TV"
+}, {
+  name: "Uganda",
+  code: "UG"
+}, {
+  name: "Ukraine",
+  code: "UA"
+}, {
+  name: "United Arab Emirates",
+  code: "AE"
+}, {
+  name: "United Kingdom",
+  code: "GB"
+}, {
+  name: "United States",
+  code: "US"
+}, {
+  name: "Uruguay",
+  code: "UY"
+}, {
+  name: "Uzbekistan",
+  code: "UZ"
+}, {
+  name: "Vanuatu",
+  code: "VU"
+}, {
+  name: "Vatican City",
+  code: "VA"
+}, {
+  name: "Venezuela",
+  code: "VE"
+}, {
+  name: "Vietnam",
+  code: "VN"
+}, {
+  name: "Yemen",
+  code: "YE"
+}, {
+  name: "Zambia",
+  code: "ZM"
+}, {
+  name: "Zimbabwe",
+  code: "ZW"
+}];
 interface Artist {
   id: string;
   stage_name: string;
@@ -217,43 +606,36 @@ interface Artist {
   avatar_url: string | null;
   number_of_events: number;
 }
-
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
-
-  const filteredCountries = allCountries.filter(country =>
-    country.name.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  const filteredCountries = allCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
 
   // Get unique counties from artists based on selected country
   const getAvailableCounties = () => {
     let filteredArtists = artists;
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filteredArtists = artists.filter(artist => 
-        artist.country === selectedCountry || artist.country === countryName
-      );
+      filteredArtists = artists.filter(artist => artist.country === selectedCountry || artist.country === countryName);
     }
     const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
     return counties;
   };
-
   useEffect(() => {
     // Reset county when country changes
     setSelectedCounty("All Counties");
   }, [selectedCountry]);
-
   useEffect(() => {
     const fetchArtists = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
-        .order('number_of_events', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from('profiles').select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events').order('number_of_events', {
+        ascending: false
+      });
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
@@ -261,40 +643,30 @@ const Leaderboard = () => {
       }
       setLoading(false);
     };
-
     fetchArtists();
   }, []);
-
   const getArtistsBySpecialization = (specialization: string) => {
-    let filtered = artists.filter(artist => 
-      artist.specialization?.toLowerCase() === specialization.toLowerCase()
-    );
+    let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
     // Filter by country (handle both code and name)
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filtered = filtered.filter(artist => 
-        artist.country === selectedCountry || artist.country === countryName
-      );
+      filtered = filtered.filter(artist => artist.country === selectedCountry || artist.country === countryName);
     }
 
     // Filter by county
     if (selectedCounty !== "All Counties") {
       filtered = filtered.filter(artist => artist.county === selectedCounty);
     }
-
     return filtered;
   };
-
   const categories = {
     singers: getArtistsBySpecialization('Singer'),
     instrumentalists: getArtistsBySpecialization('Instrumentalist'),
     djs: getArtistsBySpecialization('DJ'),
     bands: getArtistsBySpecialization('Band')
   };
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Navigation />
       
       <div className="pt-32 pb-20 px-4">
@@ -306,12 +678,10 @@ const Leaderboard = () => {
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 text-foreground">
               Top Artists
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Discover the highest-rated musical talents on our platform
-            </p>
+            
 
             <div className="flex gap-4 justify-center mt-8 items-center">
-              <DropdownMenu onOpenChange={(open) => !open && setCountrySearch("")}>
+              <DropdownMenu onOpenChange={open => !open && setCountrySearch("")}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="min-w-[180px] justify-between">
                     {selectedCountry ? allCountries.find(c => c.code === selectedCountry)?.name : "Select Country"}
@@ -319,39 +689,21 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[220px] p-0 bg-card border-border">
-                  <div className="p-2 border-b border-border" onKeyDown={(e) => e.stopPropagation()}>
+                  <div className="p-2 border-b border-border" onKeyDown={e => e.stopPropagation()}>
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search country..."
-                        value={countrySearch}
-                        onChange={(e) => setCountrySearch(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        className="pl-8 h-8 bg-input"
-                        autoComplete="off"
-                      />
+                      <Input placeholder="Search country..." value={countrySearch} onChange={e => setCountrySearch(e.target.value)} onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()} className="pl-8 h-8 bg-input" autoComplete="off" />
                     </div>
                   </div>
                   <div className="max-h-[250px] overflow-y-auto">
-                    {filteredCountries.length > 0 ? (
-                      filteredCountries.map((country) => (
-                        <DropdownMenuItem
-                          key={country.code}
-                          onClick={() => {
-                            setSelectedCountry(country.code);
-                            setCountrySearch("");
-                          }}
-                          className="cursor-pointer"
-                        >
+                    {filteredCountries.length > 0 ? filteredCountries.map(country => <DropdownMenuItem key={country.code} onClick={() => {
+                    setSelectedCountry(country.code);
+                    setCountrySearch("");
+                  }} className="cursor-pointer">
                           {country.name}
-                        </DropdownMenuItem>
-                      ))
-                    ) : (
-                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        </DropdownMenuItem>) : <div className="p-2 text-sm text-muted-foreground text-center">
                         No countries found
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -364,15 +716,9 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {["All Counties", ...getAvailableCounties()].map((county) => (
-                    <DropdownMenuItem
-                      key={county}
-                      onClick={() => setSelectedCounty(county)}
-                      className="cursor-pointer"
-                    >
+                  {["All Counties", ...getAvailableCounties()].map(county => <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
                       {county}
-                    </DropdownMenuItem>
-                  ))}
+                    </DropdownMenuItem>)}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -380,68 +726,32 @@ const Leaderboard = () => {
 
           <Tabs defaultValue="singers" className="w-full">
             <TabsList className="flex w-full max-w-2xl mx-auto mb-12 bg-card/50 p-2 rounded-xl border-2 border-accent/30">
-              <TabsTrigger 
-                value="singers"
-                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
-              >
+              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
                 Singers
               </TabsTrigger>
-              <TabsTrigger 
-                value="instrumentalists"
-                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
-              >
+              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
                 Instrumentalists
               </TabsTrigger>
-              <TabsTrigger 
-                value="djs"
-                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
-              >
+              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
                 DJs
               </TabsTrigger>
-              <TabsTrigger 
-                value="bands"
-                className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300"
-              >
+              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
                 Bands
               </TabsTrigger>
             </TabsList>
 
-            {loading ? (
-              <div className="text-center py-16">
+            {loading ? <div className="text-center py-16">
                 <p className="text-xl text-muted-foreground">Loading artists...</p>
-              </div>
-            ) : (
-              Object.entries(categories).map(([key, categoryArtists]) => (
-                <TabsContent key={key} value={key} className="space-y-6">
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
                   <div className="grid gap-6 max-w-2xl mx-auto">
-                    {categoryArtists.length > 0 ? (
-                      categoryArtists.map((artist, index) => (
-                        <ArtistCard 
-                          key={artist.id} 
-                          id={artist.id}
-                          name={artist.stage_name}
-                          stageName={artist.stage_name}
-                          specialization={artist.specialization || ''}
-                          county={artist.county}
-                          isPremium={artist.plan === 'Premium'}
-                          imageUrl={artist.avatar_url || undefined}
-                          rank={index + 1} 
-                        />
-                      ))
-                    ) : (
-                      <div className="text-center py-16">
+                    {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} />) : <div className="text-center py-16">
                         <p className="text-xl text-muted-foreground">No artists found in this category</p>
-                      </div>
-                    )}
+                      </div>}
                   </div>
-                </TabsContent>
-              ))
-            )}
+                </TabsContent>)}
           </Tabs>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Leaderboard;
