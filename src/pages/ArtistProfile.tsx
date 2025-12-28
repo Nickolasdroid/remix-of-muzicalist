@@ -428,7 +428,7 @@ const ArtistProfile = () => {
                     </div>
                     
                     <div className="flex flex-wrap gap-3 mb-4">
-                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-sm font-semibold">
+                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
                         </Badge>}
                       <div className="flex items-center gap-2 text-muted-foreground">
