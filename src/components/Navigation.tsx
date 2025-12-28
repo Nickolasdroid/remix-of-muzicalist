@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, FileText, Settings, LogOut } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, Settings, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -152,20 +152,6 @@ const Navigation = () => {
                     >
                       <MessageSquare className="h-5 w-5" />
                       <span>My Messages</span>
-                    </button>
-                    <button
-                      onClick={() => navigate('/dashboard?tab=announcements')}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
-                    >
-                      <Megaphone className="h-5 w-5" />
-                      <span>My Announcements</span>
-                    </button>
-                    <button
-                      onClick={() => navigate('/dashboard?tab=posts')}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
-                    >
-                      <FileText className="h-5 w-5" />
-                      <span>My Posts</span>
                     </button>
                     <div className="h-px bg-accent/20 my-2" />
                     <button
