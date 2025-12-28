@@ -92,6 +92,7 @@ const Dashboard = () => {
     email: "",
     phone: "",
     county: "",
+    country: "",
     specialization: "",
     musicGenres: "",
     experienceLevel: "",
@@ -315,6 +316,7 @@ const Dashboard = () => {
         email: profileData.email || "",
         phone: profileData.phone || "",
         county: profileData.county || "",
+        country: profileData.country || "",
         specialization: profileData.specialization || "",
         musicGenres: profileData.music_genres || "",
         experienceLevel: profileData.experience_level || "",
@@ -1109,9 +1111,9 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="group flex items-center gap-2 text-muted-foreground">
+                              <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
-                                  <span className="text-base">{formData.county}</span>
+                                  <span className="text-base">{formData.county}{formData.country ? `, ${formData.country}` : ''}</span>
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
