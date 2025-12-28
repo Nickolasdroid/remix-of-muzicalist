@@ -62,9 +62,10 @@ interface CountrySelectorProps {
   value?: string;
   onChange?: (value: string) => void;
   showLabel?: boolean;
+  variant?: "icon" | "list";
 }
 
-const CountrySelector = ({ value, onChange, showLabel = false }: CountrySelectorProps) => {
+const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon" }: CountrySelectorProps) => {
   const [open, setOpen] = useState(false);
   
   // Auto-detect user's country on mount
@@ -90,6 +91,58 @@ const CountrySelector = ({ value, onChange, showLabel = false }: CountrySelector
     onChange?.(country.code);
     setOpen(false);
   };
+
+  if (variant === "list") {
+    return (
+      <div className="space-y-2">
+        {showLabel && <Label>Country *</Label>}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button 
+              type="button"
+              variant="outline" 
+              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3"
+            >
+              {selectedCountry ? (
+                <span className="flex items-center gap-2">
+                  <span className="text-xl">{selectedCountry.flag}</span>
+                  <span>{selectedCountry.name}</span>
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Select country</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
+            <ScrollArea className="h-96">
+              <div className="p-2">
+                <div className="space-y-1">
+                  {europeanCountries.map((country) => (
+                    <button
+                      key={country.code}
+                      type="button"
+                      onClick={() => handleSelectCountry(country)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                        selectedCountry?.code === country.code
+                          ? "bg-accent/20 text-accent"
+                          : "text-foreground"
+                      }`}
+                    >
+                      <span className="text-2xl">{country.flag}</span>
+                      <span className="flex-1 text-left">{country.name}</span>
+                      {selectedCountry?.code === country.code && (
+                        <Check className="h-4 w-4 text-accent" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">

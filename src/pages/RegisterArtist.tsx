@@ -374,6 +374,7 @@ const RegisterArtist = () => {
                     value={formData.country}
                     onChange={(value) => setFormData({...formData, country: value})}
                     showLabel
+                    variant="list"
                   />
 
                   <div className="space-y-2">
