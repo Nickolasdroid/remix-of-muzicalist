@@ -1178,9 +1178,8 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-4 mb-8">
+                      <TabsList className="grid w-full grid-cols-3 mb-8">
                         <TabsTrigger value="details">Details</TabsTrigger>
-                        <TabsTrigger value="reviews">Reviews</TabsTrigger>
                         <TabsTrigger value="gallery">Gallery</TabsTrigger>
                         <TabsTrigger value="calendar">Calendar</TabsTrigger>
                       </TabsList>
@@ -1625,10 +1624,10 @@ const Dashboard = () => {
                             </div>
                           )}
                          </div>
-                      </TabsContent>
 
-                      {/* Reviews Tab */}
-                      <TabsContent value="reviews">
+                        <Separator className="my-8" />
+
+                        {/* Reviews Section */}
                         <div>
                           <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                             <Star className="h-6 w-6 text-accent" />
