@@ -499,8 +499,8 @@ const ArtistProfile = () => {
     <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
-        <div className="container mx-auto max-w-6xl">
+      <div className="pt-32 pb-20 px-4 sm:px-8 lg:px-12">
+        <div className="w-full">
           <Link to="/leaderboard">
             <Button variant="ghost" className="mb-6 hover:text-accent">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -508,8 +508,8 @@ const ArtistProfile = () => {
             </Button>
           </Link>
 
-          <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-            <CardContent className="p-8">
+          <div className="w-full">
+            <div className="p-6 sm:p-8 lg:p-10">
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 mb-8">
                 <div className="flex-shrink-0">
@@ -1420,8 +1420,8 @@ const ArtistProfile = () => {
                   </form>
                 </DialogContent>
               </Dialog>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
