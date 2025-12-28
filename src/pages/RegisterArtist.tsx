@@ -428,6 +428,7 @@ const RegisterArtist = () => {
                       value={formData.numberOfEvents}
                       onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
                       className="bg-input border-border focus:border-accent"
+                      placeholder="e.g., 50 events performed"
                     />
                   </div>
                 </div>
