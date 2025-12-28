@@ -4,12 +4,10 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -118,8 +116,8 @@ const Navigation = () => {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <Sheet>
-                <SheetTrigger asChild>
+              <Popover>
+                <PopoverTrigger asChild>
                   <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
                     <Avatar className="h-8 w-8 ring-2 ring-accent/30">
                       <AvatarImage src={profile?.avatar_url} />
@@ -128,49 +126,49 @@ const Navigation = () => {
                       </AvatarFallback>
                     </Avatar>
                   </button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-80 bg-card border-accent/20">
-                  <SheetHeader>
-                    <SheetTitle className="text-accent">My Account</SheetTitle>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-64 bg-card border-accent/20 p-0">
+                  <div className="p-4 border-b border-accent/20">
+                    <p className="font-semibold text-accent">My Account</p>
                     {profile?.plan && (
-                      <div className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Plan: <span className="font-semibold text-accent">{profile.plan}</span>
-                      </div>
+                      </p>
                     )}
-                  </SheetHeader>
-                  <div className="mt-6 space-y-2">
+                  </div>
+                  <div className="p-2 space-y-1">
                     <button
                       onClick={() => navigate('/dashboard?tab=profile')}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                     >
-                      <User className="h-5 w-5" />
+                      <User className="h-4 w-4" />
                       <span>My Profile</span>
                     </button>
                     <button
                       onClick={() => navigate('/messages')}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                     >
-                      <MessageSquare className="h-5 w-5" />
+                      <MessageSquare className="h-4 w-4" />
                       <span>My Messages</span>
                     </button>
-                    <div className="h-px bg-accent/20 my-2" />
+                    <div className="h-px bg-accent/20 my-1" />
                     <button
                       onClick={() => navigate('/dashboard?tab=settings')}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                     >
-                      <Settings className="h-5 w-5" />
+                      <Settings className="h-4 w-4" />
                       <span>Settings</span>
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-destructive/10 text-destructive transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
                     >
-                      <LogOut className="h-5 w-5" />
+                      <LogOut className="h-4 w-4" />
                       <span>Logout</span>
                     </button>
                   </div>
-                </SheetContent>
-              </Sheet>
+                </PopoverContent>
+              </Popover>
             ) : (
               <>
                 <Link to="/login">
