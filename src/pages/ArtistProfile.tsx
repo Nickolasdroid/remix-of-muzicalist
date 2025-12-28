@@ -622,6 +622,191 @@ const ArtistProfile = () => {
                       </div>
                     </div>
                   </div>
+
+                  <Separator />
+
+                  {/* Contact Information */}
+                  <div>
+                    <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                        <Mail className="h-5 w-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Email</p>
+                          <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
+                            {artist.email}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                        <Phone className="h-5 w-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Phone</p>
+                          <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
+                            {artist.phone}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Social Media */}
+                  <div>
+                    <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {artist.facebook_url && (
+                        <a 
+                          href={artist.facebook_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                        >
+                          <Facebook className="h-5 w-5 text-accent" />
+                          <span className="text-sm">Facebook</span>
+                        </a>
+                      )}
+                      {artist.instagram_url && (
+                        <a 
+                          href={artist.instagram_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                        >
+                          <Instagram className="h-5 w-5 text-accent" />
+                          <span className="text-sm">Instagram</span>
+                        </a>
+                      )}
+                      {artist.youtube_url && (
+                        <a 
+                          href={artist.youtube_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                        >
+                          <Youtube className="h-5 w-5 text-accent" />
+                          <span className="text-sm">YouTube</span>
+                        </a>
+                      )}
+                      {artist.tiktok_url && (
+                        <a 
+                          href={artist.tiktok_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                        >
+                          <Music className="h-5 w-5 text-accent" />
+                          <span className="text-sm">TikTok</span>
+                        </a>
+                      )}
+                      {artist.spotify_url && (
+                        <a 
+                          href={artist.spotify_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
+                        >
+                          <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                          </svg>
+                          <span className="text-sm">Spotify</span>
+                        </a>
+                      )}
+                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && (
+                        <p className="text-muted-foreground">No social media links available.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Reviews Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-display font-bold flex items-center gap-2">
+                        <Star className="h-4 w-4 text-accent" />
+                        Reviews
+                        {getAverageRating() && (
+                          <span className="text-lg font-display font-bold text-foreground">
+                            ({getAverageRating()} • {reviews.length})
+                          </span>
+                        )}
+                      </h3>
+                      {currentUserId !== id && (
+                        <Button 
+                          onClick={() => setReviewDialogOpen(true)}
+                          size="sm"
+                          className="bg-accent text-accent-foreground hover:bg-accent/90"
+                        >
+                          Write a Review
+                        </Button>
+                      )}
+                    </div>
+
+                    {reviews.length > 0 ? (
+                      <Carousel className="w-full">
+                        <CarouselContent>
+                          {reviews.map((review) => (
+                            <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                              <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
+                                {canDeleteReview(review) && (
+                                  <button
+                                    onClick={() => handleDeleteReview(review.id)}
+                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                    title="Delete review"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                )}
+                                <div className="flex items-center gap-3">
+                                  <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                    <AvatarFallback className="bg-accent/10 text-accent text-sm">
+                                      {review.reviewer_name.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-1 min-w-0">
+                                    <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex gap-0.5">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                      key={star}
+                                      className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
+                                    />
+                                  ))}
+                                </div>
+                                {review.comment && (
+                                  <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
+                                )}
+                              </div>
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="left-0 -translate-x-1/2" />
+                        <CarouselNext className="right-0 translate-x-1/2" />
+                      </Carousel>
+                    ) : (
+                      <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                        <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
+                        {currentUserId !== id && (
+                          <Button 
+                            onClick={() => setReviewDialogOpen(true)}
+                            size="sm"
+                            variant="outline"
+                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                          >
+                            Write the First Review
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </TabsContent>
 
                 {/* Announcements Tab */}
@@ -889,8 +1074,6 @@ const ArtistProfile = () => {
                 </DialogContent>
               </Dialog>
 
-              <Separator className="my-8" />
-
               {/* Booking Dialog */}
               <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
@@ -964,189 +1147,6 @@ const ArtistProfile = () => {
                   </form>
                 </DialogContent>
               </Dialog>
-
-              {/* Contact Information */}
-              <div className="mb-8">
-                <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                    <Mail className="h-5 w-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Email</p>
-                      <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
-                        {artist.email}
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                    <Phone className="h-5 w-5 text-accent" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Phone</p>
-                      <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
-                        {artist.phone}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="my-8" />
-
-              {/* Social Media */}
-              <div>
-                <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
-                <div className="flex flex-wrap gap-3">
-                  {artist.facebook_url && (
-                    <a 
-                      href={artist.facebook_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                    >
-                      <Facebook className="h-5 w-5 text-accent" />
-                      <span className="text-sm">Facebook</span>
-                    </a>
-                  )}
-                  {artist.instagram_url && (
-                    <a 
-                      href={artist.instagram_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                    >
-                      <Instagram className="h-5 w-5 text-accent" />
-                      <span className="text-sm">Instagram</span>
-                    </a>
-                  )}
-                  {artist.youtube_url && (
-                    <a 
-                      href={artist.youtube_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                    >
-                      <Youtube className="h-5 w-5 text-accent" />
-                      <span className="text-sm">YouTube</span>
-                    </a>
-                  )}
-                  {artist.tiktok_url && (
-                    <a 
-                      href={artist.tiktok_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                    >
-                      <Music className="h-5 w-5 text-accent" />
-                      <span className="text-sm">TikTok</span>
-                    </a>
-                  )}
-                  {artist.spotify_url && (
-                    <a 
-                      href={artist.spotify_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                    >
-                      <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                      </svg>
-                      <span className="text-sm">Spotify</span>
-                    </a>
-                  )}
-                  {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && (
-                    <p className="text-muted-foreground">No social media links available.</p>
-                  )}
-                </div>
-              </div>
-
-              <Separator className="my-8" />
-
-              {/* Reviews Section */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-display font-bold flex items-center gap-2">
-                    <Star className="h-4 w-4 text-accent" />
-                    Reviews
-                    {getAverageRating() && (
-                      <span className="text-lg font-display font-bold text-foreground">
-                        ({getAverageRating()} • {reviews.length})
-                      </span>
-                    )}
-                  </h3>
-                  {currentUserId !== id && (
-                    <Button 
-                      onClick={() => setReviewDialogOpen(true)}
-                      size="sm"
-                      className="bg-accent text-accent-foreground hover:bg-accent/90"
-                    >
-                      Write a Review
-                    </Button>
-                  )}
-                </div>
-
-                {reviews.length > 0 ? (
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {reviews.map((review) => (
-                        <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                          <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
-                            {canDeleteReview(review) && (
-                              <button
-                                onClick={() => handleDeleteReview(review.id)}
-                                className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                title="Delete review"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            )}
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                <AvatarFallback className="bg-accent/10 text-accent text-sm">
-                                  {review.reviewer_name.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 min-w-0">
-                                <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex gap-0.5">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                  key={star}
-                                  className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
-                                />
-                              ))}
-                            </div>
-                            {review.comment && (
-                              <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
-                            )}
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="left-0 -translate-x-1/2" />
-                    <CarouselNext className="right-0 translate-x-1/2" />
-                  </Carousel>
-                ) : (
-                  <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
-                    <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
-                    {currentUserId !== id && (
-                      <Button 
-                        onClick={() => setReviewDialogOpen(true)}
-                        size="sm"
-                        variant="outline"
-                        className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                      >
-                        Write the First Review
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
             </CardContent>
           </Card>
         </div>
