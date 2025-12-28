@@ -50,6 +50,7 @@ interface Profile {
   email: string;
   phone: string;
   county: string;
+  country: string | null;
   specialization: string | null;
   music_genres: string | null;
   career_start_year: number | null;
@@ -472,7 +473,7 @@ const ArtistProfile = () => {
                         )}
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <MapPin className="h-5 w-5" />
-                          <span className="text-base">{artist.county}</span>
+                          <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
                         </div>
                       </div>
                     </div>

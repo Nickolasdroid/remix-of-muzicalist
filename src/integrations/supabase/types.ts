@@ -289,6 +289,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           career_start_year: number | null
+          country: string | null
           county: string
           created_at: string | null
           email: string
@@ -318,6 +319,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           career_start_year?: number | null
+          country?: string | null
           county: string
           created_at?: string | null
           email: string
@@ -347,6 +349,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           career_start_year?: number | null
+          country?: string | null
           county?: string
           created_at?: string | null
           email?: string
