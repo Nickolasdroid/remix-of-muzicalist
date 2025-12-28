@@ -589,11 +589,26 @@ const ArtistProfile = () => {
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
                 <TabsList className="grid w-full grid-cols-5 mb-8">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="posts">Posts</TabsTrigger>
-                  <TabsTrigger value="announcements">Announcements</TabsTrigger>
-                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
-                  <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                  <TabsTrigger value="details" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger value="posts" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Posts
+                  </TabsTrigger>
+                  <TabsTrigger value="announcements" className="flex items-center gap-2">
+                    <Megaphone className="h-4 w-4" />
+                    Announcements
+                  </TabsTrigger>
+                  <TabsTrigger value="gallery" className="flex items-center gap-2">
+                    <Images className="h-4 w-4" />
+                    Gallery
+                  </TabsTrigger>
+                  <TabsTrigger value="calendar" className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    Calendar
+                  </TabsTrigger>
                 </TabsList>
 
                 {/* Details Tab */}
