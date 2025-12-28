@@ -1106,10 +1106,10 @@ const Dashboard = () => {
                       <TabsContent value="details" className="space-y-8">
                         {/* Bio/Description */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                            <User className="h-5 w-5 text-accent" />
+                          <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
+                            <User className="h-6 w-6 text-accent" />
                             About Me
-                          </h3>
+                          </h2>
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={e => {
                     if (e.target.value.length <= 200) {
@@ -1135,7 +1135,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                             </div> : <div className="group">
-                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-lg">
                                   {formData.bio}
                                 </p> : <p className="text-muted-foreground italic">No description added yet</p>}
                               <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('bio')}>
