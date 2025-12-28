@@ -598,14 +598,14 @@ const ArtistProfile = () => {
 
                 {/* Details Tab */}
                 <TabsContent value="details" className="space-y-8">
-                  {/* Description */}
+                  {/* Bio/Description */}
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
-                      <User className="h-6 w-6 text-accent" />
-                      About
-                    </h2>
-                    <p className="text-muted-foreground leading-relaxed text-lg">
-                      {artist.bio || "No bio available."}
+                    <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5 text-accent" />
+                      About Me
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {artist.bio || "No description added yet"}
                     </p>
                   </div>
 
@@ -627,7 +627,7 @@ const ArtistProfile = () => {
                             </Badge>
                           ))
                         ) : (
-                          <p className="text-muted-foreground">No genres specified</p>
+                          <span className="text-muted-foreground text-sm">No genres added</span>
                         )}
                       </div>
                     </div>
@@ -640,12 +640,17 @@ const ArtistProfile = () => {
                       </h3>
                       <div className="space-y-2">
                         <p className="text-muted-foreground">
-                          <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
+                          Experience Level: <span className="font-semibold text-foreground">{artist.career_start_year ? `${getExperienceYears()} years` : 'Not specified'}</span>
                         </p>
                         <p className="text-muted-foreground flex items-center gap-2">
                           <Award className="h-4 w-4 text-accent" />
                           <span className="font-semibold text-foreground">{artist.number_of_events}+</span> events performed
                         </p>
+                        {artist.career_start_year && (
+                          <p className="text-muted-foreground">
+                            Career started in <span className="font-semibold text-foreground">{artist.career_start_year}</span>
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -657,11 +662,11 @@ const ArtistProfile = () => {
                       </h3>
                       <div className="space-y-2">
                         {artist.estimated_price ? (
-                          <Badge variant="outline" className="border-accent/50 text-accent text-sm px-3 py-1">
-                            {artist.estimated_price}
-                          </Badge>
+                          <p className="text-muted-foreground">
+                            <span className="font-semibold text-foreground text-lg">{artist.estimated_price}</span>
+                          </p>
                         ) : (
-                          <p className="text-muted-foreground">Contact for pricing</p>
+                          <p className="text-muted-foreground italic">No price range added yet</p>
                         )}
                       </div>
                     </div>
@@ -696,9 +701,12 @@ const ArtistProfile = () => {
 
                   <Separator />
 
-                  {/* Social Media */}
+                  {/* Social Networks */}
                   <div>
-                    <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
+                    <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                      <Globe className="h-5 w-5 text-accent" />
+                      Social Networks
+                    </h3>
                     <div className="flex flex-wrap gap-3">
                       {artist.facebook_url && (
                         <a 
@@ -758,7 +766,7 @@ const ArtistProfile = () => {
                         </a>
                       )}
                       {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && (
-                        <p className="text-muted-foreground">No social media links available.</p>
+                        <p className="text-muted-foreground italic">No social networks added yet</p>
                       )}
                     </div>
                   </div>
@@ -767,16 +775,16 @@ const ArtistProfile = () => {
 
                   {/* Reviews Section */}
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-display font-bold flex items-center gap-2">
-                        <Star className="h-4 w-4 text-accent" />
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-2xl font-display font-bold flex items-center gap-2">
+                        <Star className="h-6 w-6 text-accent" />
                         Reviews
                         {getAverageRating() && (
                           <span className="text-lg font-display font-bold text-foreground">
                             ({getAverageRating()} • {reviews.length})
                           </span>
                         )}
-                      </h3>
+                      </h2>
                       {currentUserId !== id && (
                         <Button 
                           onClick={() => setReviewDialogOpen(true)}
@@ -789,51 +797,45 @@ const ArtistProfile = () => {
                     </div>
 
                     {reviews.length > 0 ? (
-                      <Carousel className="w-full">
-                        <CarouselContent>
-                          {reviews.map((review) => (
-                            <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                              <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
-                                {canDeleteReview(review) && (
-                                  <button
-                                    onClick={() => handleDeleteReview(review.id)}
-                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                    title="Delete review"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                )}
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                    <AvatarFallback className="bg-accent/10 text-accent text-sm">
-                                      {review.reviewer_name.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 min-w-0">
-                                    <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                      {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="flex gap-0.5">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <Star
-                                      key={star}
-                                      className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
-                                    />
-                                  ))}
-                                </div>
-                                {review.comment && (
-                                  <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
-                                )}
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {reviews.map((review) => (
+                          <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
+                            {canDeleteReview(review) && (
+                              <button
+                                onClick={() => handleDeleteReview(review.id)}
+                                className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                title="Delete review"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                <AvatarFallback className="bg-accent/10 text-accent text-sm">
+                                  {review.reviewer_name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
                               </div>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="left-0 -translate-x-1/2" />
-                        <CarouselNext className="right-0 translate-x-1/2" />
-                      </Carousel>
+                            </div>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
+                                />
+                              ))}
+                            </div>
+                            {review.comment && (
+                              <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
