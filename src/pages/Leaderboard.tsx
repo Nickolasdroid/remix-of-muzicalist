@@ -233,7 +233,10 @@ const Leaderboard = () => {
   const getAvailableCounties = () => {
     let filteredArtists = artists;
     if (selectedCountry) {
-      filteredArtists = artists.filter(artist => artist.country === selectedCountry);
+      const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
+      filteredArtists = artists.filter(artist => 
+        artist.country === selectedCountry || artist.country === countryName
+      );
     }
     const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
     return counties;
@@ -267,9 +270,12 @@ const Leaderboard = () => {
       artist.specialization?.toLowerCase() === specialization.toLowerCase()
     );
 
-    // Filter by country
+    // Filter by country (handle both code and name)
     if (selectedCountry) {
-      filtered = filtered.filter(artist => artist.country === selectedCountry);
+      const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
+      filtered = filtered.filter(artist => 
+        artist.country === selectedCountry || artist.country === countryName
+      );
     }
 
     // Filter by county
