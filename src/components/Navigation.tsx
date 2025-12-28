@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, FileText, Settings, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -17,8 +17,11 @@ import CountrySelector from "./CountrySelector";
 
 const Navigation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -71,31 +74,31 @@ const Navigation = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/feed" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/feed" className={`flex items-center gap-2 transition-colors ${isActive('/feed') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Home className="h-4 w-4" />
               Home
             </Link>
-            <Link to="/announcements" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/announcements" className={`flex items-center gap-2 transition-colors ${isActive('/announcements') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Megaphone className="h-4 w-4" />
               Announcements
             </Link>
-            <Link to="/categories" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/categories" className={`flex items-center gap-2 transition-colors ${isActive('/categories') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Users className="h-4 w-4" />
               Categories
             </Link>
-            <Link to="/leaderboard" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/leaderboard" className={`flex items-center gap-2 transition-colors ${isActive('/leaderboard') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Trophy className="h-4 w-4" />
               Leaderboard
             </Link>
-            <Link to="/counties" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/counties" className={`flex items-center gap-2 transition-colors ${isActive('/counties') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <MapPin className="h-4 w-4" />
               Counties
             </Link>
-            <Link to="/about" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/about" className={`flex items-center gap-2 transition-colors ${isActive('/about') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Info className="h-4 w-4" />
               About
             </Link>
-            <Link to="/contact" className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors">
+            <Link to="/contact" className={`flex items-center gap-2 transition-colors ${isActive('/contact') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
               <Mail className="h-4 w-4" />
               Contact
             </Link>
