@@ -443,7 +443,7 @@ const RegisterArtist = () => {
                   <Label htmlFor="careerStartYear">Year of Career Start *</Label>
                   <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({...formData, careerStartYear: value})}>
                     <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder="e.g., 2020" />
+                      <SelectValue placeholder="2020" />
                     </SelectTrigger>
                     <SelectContent>
                       {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map(year => (
