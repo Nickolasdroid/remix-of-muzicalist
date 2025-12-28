@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import ArtistCard from "@/components/ArtistCard";
+import CountrySelector from "@/components/CountrySelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -12,44 +13,36 @@ interface Artist {
   stage_name: string;
   specialization: string | null;
   county: string;
+  country: string | null;
   plan: string;
   avatar_url: string | null;
   number_of_events: number;
 }
 
 const Leaderboard = () => {
-  const [selectedRegion, setSelectedRegion] = useState<string>("All Regions");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const regionCountyMap: Record<string, string[]> = {
-    "Transilvania": ["Alba", "Bihor", "Bistrița-Năsăud", "Brașov", "Cluj", "Covasna", "Harghita", "Hunedoara", "Maramureș", "Mureș", "Sălaj", "Satu Mare", "Sibiu"],
-    "Banat": ["Timiș", "Caraș-Severin"],
-    "Moldova": ["Bacău", "Botoșani", "Galați", "Iași", "Neamț", "Suceava", "Vaslui", "Vrancea"],
-    "Muntenia": ["Argeș", "Brăila", "București", "Buzău", "Călărași", "Constanța", "Dâmbovița", "Giurgiu", "Ialomița", "Ilfov", "Prahova", "Teleorman", "Tulcea"],
-    "Oltenia": ["Dolj", "Gorj", "Mehedinți", "Olt", "Vâlcea"]
-  };
-
-  const regions = ["All Regions", ...Object.keys(regionCountyMap)];
-  
-  const getAvailableCounties = () => {
-    if (selectedRegion === "All Regions") {
-      return ["All Counties", ...Object.values(regionCountyMap).flat().sort()];
-    }
-    return ["All Counties", ...regionCountyMap[selectedRegion]];
-  };
+  const romanianCounties = [
+    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila",
+    "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița",
+    "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov",
+    "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu",
+    "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
+  ];
 
   useEffect(() => {
-    // Reset county when region changes
+    // Reset county when country changes
     setSelectedCounty("All Counties");
-  }, [selectedRegion]);
+  }, [selectedCountry]);
 
   useEffect(() => {
     const fetchArtists = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, stage_name, specialization, county, plan, avatar_url, number_of_events')
+        .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
         .order('number_of_events', { ascending: false });
 
       if (error) {
@@ -68,10 +61,9 @@ const Leaderboard = () => {
       artist.specialization?.toLowerCase() === specialization.toLowerCase()
     );
 
-    // Filter by region
-    if (selectedRegion !== "All Regions") {
-      const regionCounties = regionCountyMap[selectedRegion];
-      filtered = filtered.filter(artist => regionCounties.includes(artist.county));
+    // Filter by country
+    if (selectedCountry) {
+      filtered = filtered.filter(artist => artist.country === selectedCountry);
     }
 
     // Filter by county
@@ -106,26 +98,11 @@ const Leaderboard = () => {
               Discover the highest-rated musical talents on our platform
             </p>
 
-            <div className="flex gap-4 justify-center mt-8">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="min-w-[180px] justify-between">
-                    {selectedRegion}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {regions.map((region) => (
-                    <DropdownMenuItem
-                      key={region}
-                      onClick={() => setSelectedRegion(region)}
-                      className="cursor-pointer"
-                    >
-                      {region}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex gap-4 justify-center mt-8 items-center">
+              <CountrySelector 
+                value={selectedCountry} 
+                onChange={(value) => setSelectedCountry(value)} 
+              />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -135,7 +112,7 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {getAvailableCounties().map((county) => (
+                  {["All Counties", ...romanianCounties].map((county) => (
                     <DropdownMenuItem
                       key={county}
                       onClick={() => setSelectedCounty(county)}
