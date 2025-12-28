@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 const MUSIC_GENRES = [
   "Pop",
@@ -63,6 +64,11 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
     onChange(newGenres.join(", "));
   };
 
+  const handleRemove = (genre: string) => {
+    const newGenres = selectedGenres.filter((g) => g !== genre);
+    onChange(newGenres.join(", "));
+  };
+
   const handleAddCustom = () => {
     if (inputValue && !selectedGenres.includes(inputValue)) {
       onChange([...selectedGenres, inputValue].join(", "));
@@ -80,75 +86,98 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
     !selectedGenres.includes(inputValue);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between bg-input border-border hover:bg-input/80 text-left font-normal"
-        >
-          <span className="truncate">
-            {selectedGenres.length > 0
-              ? selectedGenres.join(", ")
-              : "Selectează genuri muzicale..."}
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
-        <Command className="bg-popover">
-          <CommandInput
-            placeholder="Caută sau scrie un gen..."
-            value={inputValue}
-            onValueChange={setInputValue}
-          />
-          <CommandList>
-            <CommandEmpty>
-              {showAddCustom ? (
-                <button
-                  type="button"
-                  className="w-full px-4 py-2 text-left text-sm hover:bg-accent/50 cursor-pointer"
-                  onClick={handleAddCustom}
-                >
-                  Adaugă "{inputValue}"
-                </button>
-              ) : (
-                "Niciun gen găsit."
-              )}
-            </CommandEmpty>
-            <CommandGroup>
-              {filteredGenres.map((genre) => (
-                <CommandItem
-                  key={genre}
-                  value={genre}
-                  onSelect={() => handleSelect(genre)}
-                  className="cursor-pointer"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedGenres.includes(genre) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {genre}
-                </CommandItem>
-              ))}
-              {showAddCustom && filteredGenres.length > 0 && (
-                <CommandItem
-                  value={`add-${inputValue}`}
-                  onSelect={handleAddCustom}
-                  className="cursor-pointer border-t border-border"
-                >
-                  <span className="text-muted-foreground">Adaugă "</span>
-                  {inputValue}
-                  <span className="text-muted-foreground">"</span>
-                </CommandItem>
-              )}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div className="space-y-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between bg-input border-border hover:bg-input/80 text-left font-normal"
+          >
+            <span className="truncate">
+              {selectedGenres.length > 0
+                ? `${selectedGenres.length} genuri selectate`
+                : "Selectează genuri muzicale..."}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
+          <Command className="bg-popover">
+            <CommandInput
+              placeholder="Caută sau scrie un gen..."
+              value={inputValue}
+              onValueChange={setInputValue}
+            />
+            <CommandList>
+              <CommandEmpty>
+                {showAddCustom ? (
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-accent/50 cursor-pointer"
+                    onClick={handleAddCustom}
+                  >
+                    Adaugă "{inputValue}"
+                  </button>
+                ) : (
+                  "Niciun gen găsit."
+                )}
+              </CommandEmpty>
+              <CommandGroup>
+                {filteredGenres.map((genre) => (
+                  <CommandItem
+                    key={genre}
+                    value={genre}
+                    onSelect={() => handleSelect(genre)}
+                    className="cursor-pointer"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedGenres.includes(genre) ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {genre}
+                  </CommandItem>
+                ))}
+                {showAddCustom && filteredGenres.length > 0 && (
+                  <CommandItem
+                    value={`add-${inputValue}`}
+                    onSelect={handleAddCustom}
+                    className="cursor-pointer border-t border-border"
+                  >
+                    <span className="text-muted-foreground">Adaugă "</span>
+                    {inputValue}
+                    <span className="text-muted-foreground">"</span>
+                  </CommandItem>
+                )}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+
+      {selectedGenres.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {selectedGenres.map((genre) => (
+            <Badge
+              key={genre}
+              variant="secondary"
+              className="flex items-center gap-1 pr-1"
+            >
+              {genre}
+              <button
+                type="button"
+                onClick={() => handleRemove(genre)}
+                className="ml-1 rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
