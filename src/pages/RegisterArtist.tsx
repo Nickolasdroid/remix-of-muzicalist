@@ -441,17 +441,16 @@ const RegisterArtist = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="careerStartYear">Year of Career Start *</Label>
-                  <Input
-                    id="careerStartYear"
-                    type="number"
-                    required
-                    min="1900"
-                    max={new Date().getFullYear()}
-                    value={formData.careerStartYear}
-                    onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
-                    className="bg-input border-border focus:border-accent"
-                    placeholder="e.g., 2020"
-                  />
+                  <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({...formData, careerStartYear: value})}>
+                    <SelectTrigger className="bg-input border-border">
+                      <SelectValue placeholder="e.g., 2020" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex justify-between">
