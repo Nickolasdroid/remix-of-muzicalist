@@ -1096,7 +1096,7 @@ const Dashboard = () => {
                     <Tabs defaultValue="details" className="w-full">
                       <TabsList className="grid w-full grid-cols-5 mb-8">
                         <TabsTrigger value="details">Details</TabsTrigger>
-                        <TabsTrigger value="posts">Posts</TabsTrigger>
+                        <TabsTrigger value="posts">My posts</TabsTrigger>
                         <TabsTrigger value="announcements">Announcements</TabsTrigger>
                         <TabsTrigger value="gallery">Gallery</TabsTrigger>
                         <TabsTrigger value="calendar">Calendar</TabsTrigger>
