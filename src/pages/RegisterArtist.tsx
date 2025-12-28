@@ -12,6 +12,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
+import CountrySelector from "@/components/CountrySelector";
 
 const RegisterArtist = () => {
   const { toast } = useToast();
@@ -24,6 +25,7 @@ const RegisterArtist = () => {
     stageName: "",
     email: "",
     phone: "",
+    country: "",
     county: "",
     specialization: "",
     musicGenres: "",
@@ -70,7 +72,7 @@ const RegisterArtist = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!formData.specialization || !formData.lastName || !formData.firstName || !formData.stageName || !formData.email || !formData.phone || !formData.county) {
+        if (!formData.specialization || !formData.lastName || !formData.firstName || !formData.stageName || !formData.email || !formData.phone || !formData.country || !formData.county) {
           toast({
             title: "Error",
             description: "Please complete all fields in Step 1",
@@ -367,18 +369,26 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="county">County *</Label>
-                  <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder="Select county" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {romanianCounties.map(county => (
-                        <SelectItem key={county} value={county}>{county}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <CountrySelector
+                    value={formData.country}
+                    onChange={(value) => setFormData({...formData, country: value})}
+                    showLabel
+                  />
+
+                  <div className="space-y-2">
+                    <Label htmlFor="county">County *</Label>
+                    <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                      <SelectTrigger className="bg-input border-border">
+                        <SelectValue placeholder="Select county" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {romanianCounties.map(county => (
+                          <SelectItem key={county} value={county}>{county}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="flex justify-end">

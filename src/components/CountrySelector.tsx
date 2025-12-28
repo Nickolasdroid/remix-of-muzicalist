@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Globe } from "lucide-react";
+import { Globe, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Popover,
@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
+import { Label } from "./ui/label";
 
 const europeanCountries = [
   { name: "Albania", flag: "🇦🇱", code: "AL" },
@@ -57,53 +58,74 @@ const europeanCountries = [
   { name: "Vatican City", flag: "🇻🇦", code: "VA" },
 ];
 
-const CountrySelector = () => {
-  const [selectedCountry, setSelectedCountry] = useState(europeanCountries[34]); // Romania as default
+interface CountrySelectorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  showLabel?: boolean;
+}
+
+const CountrySelector = ({ value, onChange, showLabel = false }: CountrySelectorProps) => {
   const [open, setOpen] = useState(false);
+  
+  const selectedCountry = europeanCountries.find(c => c.code === value) || null;
 
   const handleSelectCountry = (country: typeof europeanCountries[0]) => {
-    setSelectedCountry(country);
+    onChange?.(country.code);
     setOpen(false);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-accent/20 hover:bg-accent/10 hover:border-accent gap-2"
-        >
-          <span className="text-xl">{selectedCountry.flag}</span>
-          <Globe className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-card border-accent/20" align="end">
-        <ScrollArea className="h-96">
-          <div className="p-2">
-            <div className="text-sm font-semibold text-accent px-2 py-2">
-              Select Country
+    <div className="space-y-2">
+      {showLabel && <Label>Country *</Label>}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            type="button"
+            variant="outline" 
+            className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent"
+          >
+            {selectedCountry ? (
+              <span className="flex items-center gap-2">
+                <span className="text-xl">{selectedCountry.flag}</span>
+                <span>{selectedCountry.name}</span>
+              </span>
+            ) : (
+              <span className="text-muted-foreground">Select country</span>
+            )}
+            <Globe className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
+          <ScrollArea className="h-96">
+            <div className="p-2">
+              <div className="text-sm font-semibold text-accent px-2 py-2">
+                Select Country
+              </div>
+              <div className="space-y-1">
+                {europeanCountries.map((country) => (
+                  <button
+                    key={country.code}
+                    type="button"
+                    onClick={() => handleSelectCountry(country)}
+                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                      selectedCountry?.code === country.code
+                        ? "bg-accent/20 text-accent"
+                        : "text-foreground"
+                    }`}
+                  >
+                    <span className="text-2xl">{country.flag}</span>
+                    <span className="flex-1 text-left">{country.name}</span>
+                    {selectedCountry?.code === country.code && (
+                      <Check className="h-4 w-4 text-accent" />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="space-y-1">
-              {europeanCountries.map((country) => (
-                <button
-                  key={country.code}
-                  onClick={() => handleSelectCountry(country)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
-                    selectedCountry.code === country.code
-                      ? "bg-accent/20 text-accent"
-                      : "text-foreground"
-                  }`}
-                >
-                  <span className="text-2xl">{country.flag}</span>
-                  <span>{country.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </ScrollArea>
-      </PopoverContent>
-    </Popover>
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 
