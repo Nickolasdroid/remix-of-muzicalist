@@ -14,54 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  LogOut, 
-  Camera, 
-  Save, 
-  User, 
-  MapPin, 
-  Star, 
-  Music, 
-  Calendar as CalendarIcon, 
-  Award,
-  Phone,
-  Mail,
-  Edit2,
-  X,
-  Megaphone,
-  Plus,
-  Trash2,
-  Images,
-  Play,
-  Upload,
-  MessageSquare,
-  FileText,
-  Settings as SettingsIcon,
-  DollarSign,
-  Facebook,
-  Instagram,
-  Youtube,
-  Link as LinkIcon
-} from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
-
 const Dashboard = () => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
@@ -78,13 +41,14 @@ const Dashboard = () => {
       setActiveTab(tab);
     }
   }, [searchParams]);
-  
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0
+  });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showCropper, setShowCropper] = useState(false);
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -109,32 +73,35 @@ const Dashboard = () => {
 
   // Announcements state
   const [announcements, setAnnouncements] = useState<any[]>([]);
-  const [newAnnouncement, setNewAnnouncement] = useState({ 
-    description: "", 
-    isPremium: false, 
-    mediaUrl: "", 
-    mediaType: "" 
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    description: "",
+    isPremium: false,
+    mediaUrl: "",
+    mediaType: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
-  
+
   // Ad limits
   const STANDARD_AD_LIMIT = 5;
   const PREMIUM_AD_LIMIT = 2;
-  
+
   // Calculate used ads
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
-
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
   const [monthlyPostsCount, setMonthlyPostsCount] = useState(0);
-  const [newPost, setNewPost] = useState({ content: "", mediaUrl: "", mediaType: "" });
+  const [newPost, setNewPost] = useState({
+    content: "",
+    mediaUrl: "",
+    mediaType: ""
+  });
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [postMediaType, setPostMediaType] = useState<'text' | 'image' | 'video'>('text');
-  
+
   // Post limits for standard subscription
   const STANDARD_POST_LIMIT = 15;
   const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
@@ -148,7 +115,7 @@ const Dashboard = () => {
   // Gallery limits for standard subscription
   const STANDARD_IMAGE_LIMIT = 5;
   const STANDARD_VIDEO_LIMIT = 3;
-  
+
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter(item => item.type === 'image').length;
   const videosUsed = galleryItems.filter(item => item.type === 'video').length;
@@ -166,63 +133,53 @@ const Dashboard = () => {
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
-
-  const romanianCounties = [
-    "București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", 
-    "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"
-  ];
+  const romanianCounties = ["București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"];
 
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('announcements')
-      .select('*')
-      .eq('profile_id', user.id)
-      .order('date', { ascending: false });
+    const {
+      data
+    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('date', {
+      ascending: false
+    });
     if (data) setAnnouncements(data);
   };
-
   const loadGalleryItems = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('gallery_items')
-      .select('*')
-      .eq('profile_id', user.id)
-      .order('created_at', { ascending: false });
+    const {
+      data
+    } = await supabase.from('gallery_items').select('*').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
     if (data) setGalleryItems(data);
   };
-
   const loadCalendarEvents = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('calendar_events')
-      .select('*')
-      .eq('profile_id', user.id);
+    const {
+      data
+    } = await supabase.from('calendar_events').select('*').eq('profile_id', user.id);
     if (data) setCalendarEvents(data);
   };
-
   const loadBookingRequests = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('booking_requests')
-      .select('*')
-      .eq('profile_id', user.id)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+    const {
+      data
+    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).eq('status', 'pending').order('created_at', {
+      ascending: false
+    });
     if (data) setBookingRequests(data);
   };
-
   const loadPosts = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('profile_id', user.id)
-      .order('created_at', { ascending: false });
+    const {
+      data
+    } = await supabase.from('posts').select('*').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
     if (data) {
       setPosts(data);
-      
+
       // Calculate posts created this month
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -230,32 +187,27 @@ const Dashboard = () => {
       setMonthlyPostsCount(postsThisMonth.length);
     }
   };
-
   const loadReviews = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('reviews')
-      .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
-      .eq('profile_id', user.id)
-      .order('created_at', { ascending: false });
+    const {
+      data
+    } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
     if (data) setReviews(data);
   };
-
   const handleDeleteReview = async (reviewId: string) => {
     if (!user) return;
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('reviews')
-        .delete()
-        .eq('id', reviewId);
-
+      const {
+        error
+      } = await supabase.from('reviews').delete().eq('id', reviewId);
       if (error) throw error;
-
       setReviews(reviews.filter(r => r.id !== reviewId));
       toast({
         title: "Review Deleted",
-        description: "The review has been successfully deleted.",
+        description: "The review has been successfully deleted."
       });
     } catch (error) {
       toast({
@@ -267,17 +219,14 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return (sum / reviews.length).toFixed(1);
   };
-
   useEffect(() => {
     checkAuth();
   }, []);
-
   useEffect(() => {
     if (user) {
       loadAnnouncements();
@@ -288,26 +237,23 @@ const Dashboard = () => {
       loadReviews();
     }
   }, [user]);
-
   const checkAuth = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate('/login');
         return;
       }
-
       setUser(session.user);
-
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
+      const {
+        data: profileData,
+        error
+      } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
       if (error) throw error;
-
       setProfile(profileData);
       setFormData({
         firstName: profileData.first_name || "",
@@ -341,34 +287,28 @@ const Dashboard = () => {
       setIsLoading(false);
     }
   };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
-
   const formatPostDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
     if (diffHours < 1) return "Just now";
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
   };
-
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     // Allow picking the same file again
     e.target.value = "";
-
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -378,112 +318,87 @@ const Dashboard = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
     const image = new Image();
     image.src = imageSrc;
-    
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       image.onload = resolve;
     });
-
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     if (!ctx) {
       throw new Error('Failed to get canvas context');
     }
-
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
-
-    ctx.drawImage(
-      image,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
-      0,
-      0,
-      pixelCrop.width,
-      pixelCrop.height
-    );
-
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return new Promise(resolve => {
+      canvas.toBlob(blob => {
         if (blob) resolve(blob);
       }, 'image/jpeg', 0.95);
     });
   };
-
   const handleSaveAvatar = async () => {
     if (!imageSrc || !croppedAreaPixels || !user) return;
-
     setIsSaving(true);
     try {
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       const fileName = `${user.id}/avatar.jpg`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(fileName, croppedBlob, {
-          contentType: "image/jpeg",
-          cacheControl: "0",
-          upsert: true,
-        });
-
-      if (uploadError) throw uploadError;
-
       const {
-        data: { publicUrl },
+        error: uploadError
+      } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
+        contentType: "image/jpeg",
+        cacheControl: "0",
+        upsert: true
+      });
+      if (uploadError) throw uploadError;
+      const {
+        data: {
+          publicUrl
+        }
       } = supabase.storage.from("avatars").getPublicUrl(fileName);
 
       // Bust browser cache so the new image appears instantly
       const freshUrl = `${publicUrl}?v=${Date.now()}`;
-
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: freshUrl })
-        .eq("id", user.id);
-
+      const {
+        error: updateError
+      } = await supabase.from("profiles").update({
+        avatar_url: freshUrl
+      }).eq("id", user.id);
       if (updateError) throw updateError;
-
-      setProfile((prev: any) => ({ ...(prev ?? {}), avatar_url: freshUrl }));
+      setProfile((prev: any) => ({
+        ...(prev ?? {}),
+        avatar_url: freshUrl
+      }));
       setShowCropper(false);
       setImageSrc(null);
-
       toast({
         title: "Success",
-        description: "Profile picture updated successfully!",
+        description: "Profile picture updated successfully!"
       });
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to update profile picture.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSaving(false);
     }
   };
-
   const startEditing = (field: string) => {
     setEditingField(field);
   };
-
   const cancelEditing = () => {
     setEditingField(null);
     checkAuth();
   };
-
   const saveField = async (field: string) => {
     if (!user) return;
-
     setIsSaving(true);
     try {
       const updateData: any = {};
-      
-      switch(field) {
+      switch (field) {
         case 'names':
           updateData.stage_name = formData.stageName;
           break;
@@ -514,17 +429,12 @@ const Dashboard = () => {
           updateData.spotify_url = formData.spotifyUrl;
           break;
       }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
+      const {
+        error
+      } = await supabase.from('profiles').update(updateData).eq('id', user.id);
       if (error) throw error;
-
       await checkAuth();
       setEditingField(null);
-
       toast({
         title: "Success",
         description: "Profile updated successfully!"
@@ -544,76 +454,95 @@ const Dashboard = () => {
   const handleAnnouncementMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-
     setIsSaving(true);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file);
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-      setNewAnnouncement({ ...newAnnouncement, mediaUrl: publicUrl, mediaType });
-      toast({ title: "Success", description: "Media uploaded!" });
+      setNewAnnouncement({
+        ...newAnnouncement,
+        mediaUrl: publicUrl,
+        mediaType
+      });
+      toast({
+        title: "Success",
+        description: "Media uploaded!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
-    
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const { error } = await supabase
-        .from('announcements')
-        .insert({
-          profile_id: user.id,
-          title: "Announcement",
-          date: todayDate,
-          description: newAnnouncement.description,
-          is_premium: newAnnouncement.isPremium,
-          media_url: newAnnouncement.mediaUrl || null,
-          media_type: newAnnouncement.mediaType || null
-        });
-
+      const {
+        error
+      } = await supabase.from('announcements').insert({
+        profile_id: user.id,
+        title: "Announcement",
+        date: todayDate,
+        description: newAnnouncement.description,
+        is_premium: newAnnouncement.isPremium,
+        media_url: newAnnouncement.mediaUrl || null,
+        media_type: newAnnouncement.mediaType || null
+      });
       if (error) throw error;
-
       await loadAnnouncements();
-      setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "" });
+      setNewAnnouncement({
+        description: "",
+        isPremium: false,
+        mediaUrl: "",
+        mediaType: ""
+      });
       setShowAnnouncementDialog(false);
-
-      toast({ title: "Success", description: "Announcement added!" });
+      toast({
+        title: "Success",
+        description: "Announcement added!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeleteAnnouncement = async (id: string) => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('announcements')
-        .delete()
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
-
       await loadAnnouncements();
-      toast({ title: "Success", description: "Announcement deleted!" });
+      toast({
+        title: "Success",
+        description: "Announcement deleted!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
@@ -622,83 +551,101 @@ const Dashboard = () => {
   // Posts functions
   const handleAddPost = async () => {
     if (!user || !newPost.content) return;
-    
+
     // Check monthly post limit
     if (monthlyPostsCount >= STANDARD_POST_LIMIT) {
-      toast({ 
-        title: "Monthly limit reached", 
-        description: `You can only create ${STANDARD_POST_LIMIT} posts per month with your subscription.`, 
-        variant: "destructive" 
+      toast({
+        title: "Monthly limit reached",
+        description: `You can only create ${STANDARD_POST_LIMIT} posts per month with your subscription.`,
+        variant: "destructive"
       });
       return;
     }
-    
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('posts')
-        .insert({
-          profile_id: user.id,
-          content: newPost.content,
-          media_url: newPost.mediaUrl || null,
-          media_type: newPost.mediaType || null
-        });
-
+      const {
+        error
+      } = await supabase.from('posts').insert({
+        profile_id: user.id,
+        content: newPost.content,
+        media_url: newPost.mediaUrl || null,
+        media_type: newPost.mediaType || null
+      });
       if (error) throw error;
-
       await loadPosts();
-      setNewPost({ content: "", mediaUrl: "", mediaType: "" });
+      setNewPost({
+        content: "",
+        mediaUrl: "",
+        mediaType: ""
+      });
       setShowPostDialog(false);
       setPostMediaType('text');
-
-      toast({ title: "Success", description: "Post created!" });
+      toast({
+        title: "Success",
+        description: "Post created!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeletePost = async (id: string) => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
-
       await loadPosts();
-      toast({ title: "Success", description: "Post deleted!" });
+      toast({
+        title: "Success",
+        description: "Post deleted!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-
     setIsSaving(true);
     try {
       const fileName = `${user.id}/posts/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file);
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      setNewPost({ ...newPost, mediaUrl: publicUrl, mediaType: 'image' });
-      toast({ title: "Success", description: "Image uploaded!" });
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      setNewPost({
+        ...newPost,
+        mediaUrl: publicUrl,
+        mediaType: 'image'
+      });
+      toast({
+        title: "Success",
+        description: "Image uploaded!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
@@ -711,57 +658,59 @@ const Dashboard = () => {
 
     // Check image limit
     if (imagesUsed >= STANDARD_IMAGE_LIMIT) {
-      toast({ 
-        title: "Limit reached", 
-        description: `You can only add up to ${STANDARD_IMAGE_LIMIT} images with your subscription.`, 
-        variant: "destructive" 
+      toast({
+        title: "Limit reached",
+        description: `You can only add up to ${STANDARD_IMAGE_LIMIT} images with your subscription.`,
+        variant: "destructive"
       });
       return;
     }
-
     setIsSaving(true);
     try {
       const fileName = `${user.id}/gallery/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file);
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      const { error: insertError } = await supabase
-        .from('gallery_items')
-        .insert({
-          profile_id: user.id,
-          type: 'image',
-          url: publicUrl
-        });
-
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const {
+        error: insertError
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'image',
+        url: publicUrl
+      });
       if (insertError) throw insertError;
-
       await loadGalleryItems();
       setShowGalleryDialog(false);
-      toast({ title: "Success", description: "Image uploaded!" });
+      toast({
+        title: "Success",
+        description: "Image uploaded!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleGalleryVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
     // Check video limit
     if (videosUsed >= STANDARD_VIDEO_LIMIT) {
-      toast({ 
-        title: "Limit reached", 
-        description: `You can only add up to ${STANDARD_VIDEO_LIMIT} videos with your subscription.`, 
-        variant: "destructive" 
+      toast({
+        title: "Limit reached",
+        description: `You can only add up to ${STANDARD_VIDEO_LIMIT} videos with your subscription.`,
+        variant: "destructive"
       });
       return;
     }
@@ -769,73 +718,78 @@ const Dashboard = () => {
     // Check file size (500 MB limit)
     const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
     if (file.size > maxSize) {
-      toast({ 
-        title: "Error", 
-        description: "Video file size must not exceed 500 MB.", 
-        variant: "destructive" 
+      toast({
+        title: "Error",
+        description: "Video file size must not exceed 500 MB.",
+        variant: "destructive"
       });
       return;
     }
-
     setIsSaving(true);
     try {
       const fileName = `${user.id}/gallery/videos/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file);
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      const { error: insertError } = await supabase
-        .from('gallery_items')
-        .insert({
-          profile_id: user.id,
-          type: 'video',
-          url: publicUrl
-        });
-
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const {
+        error: insertError
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'video',
+        url: publicUrl
+      });
       if (insertError) throw insertError;
-
       await loadGalleryItems();
       setShowGalleryDialog(false);
-      toast({ title: "Success", description: "Video uploaded!" });
+      toast({
+        title: "Success",
+        description: "Video uploaded!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleAddVideo = async () => {
     if (!user || !videoUrl) return;
-
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('gallery_items')
-        .insert({
-          profile_id: user.id,
-          type: 'video',
-          url: videoUrl
-        });
-
+      const {
+        error
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'video',
+        url: videoUrl
+      });
       if (error) throw error;
-
       await loadGalleryItems();
       setVideoUrl("");
       setShowGalleryDialog(false);
-      toast({ title: "Success", description: "Video added!" });
+      toast({
+        title: "Success",
+        description: "Video added!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeleteGalleryItem = async (id: string, url: string, type: string) => {
     setIsSaving(true);
     try {
@@ -844,18 +798,21 @@ const Dashboard = () => {
         const filePath = url.split('/').slice(-4).join('/');
         await supabase.storage.from('avatars').remove([filePath]);
       }
-
-      const { error } = await supabase
-        .from('gallery_items')
-        .delete()
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('gallery_items').delete().eq('id', id);
       if (error) throw error;
-
       await loadGalleryItems();
-      toast({ title: "Success", description: "Item deleted!" });
+      toast({
+        title: "Success",
+        description: "Item deleted!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
@@ -864,61 +821,63 @@ const Dashboard = () => {
   // Calendar functions
   const handleSaveCalendarEvent = async () => {
     if (!user || !selectedDate) return;
-
     setIsSaving(true);
     try {
       // Use local date to avoid timezone issues
       const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-      
-      const { error } = await supabase
-        .from('calendar_events')
-        .upsert({
-          profile_id: user.id,
-          event_date: dateStr,
-          status: eventStatus,
-          notes: eventNotes
-        }, {
-          onConflict: 'profile_id,event_date'
-        });
-
+      const {
+        error
+      } = await supabase.from('calendar_events').upsert({
+        profile_id: user.id,
+        event_date: dateStr,
+        status: eventStatus,
+        notes: eventNotes
+      }, {
+        onConflict: 'profile_id,event_date'
+      });
       if (error) throw error;
-
       await loadCalendarEvents();
       setEventNotes("");
-      toast({ title: "Success", description: "Calendar updated!" });
+      toast({
+        title: "Success",
+        description: "Calendar updated!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeleteCalendarEvent = async () => {
     if (!user || !selectedDate) return;
-
     setIsSaving(true);
     try {
       // Use local date to avoid timezone issues
       const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-      
-      const { error } = await supabase
-        .from('calendar_events')
-        .delete()
-        .eq('profile_id', user.id)
-        .eq('event_date', dateStr);
-
+      const {
+        error
+      } = await supabase.from('calendar_events').delete().eq('profile_id', user.id).eq('event_date', dateStr);
       if (error) throw error;
-
       await loadCalendarEvents();
       setSelectedDate(undefined);
-      toast({ title: "Success", description: "Event deleted!" });
+      toast({
+        title: "Success",
+        description: "Event deleted!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const getEventForDate = (date: Date) => {
     // Use local date to avoid timezone issues
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -930,78 +889,82 @@ const Dashboard = () => {
     setIsSaving(true);
     try {
       // Update the booking request status to accepted
-      const { error: updateError } = await supabase
-        .from('booking_requests')
-        .update({ status: 'accepted' })
-        .eq('id', request.id);
-
+      const {
+        error: updateError
+      } = await supabase.from('booking_requests').update({
+        status: 'accepted'
+      }).eq('id', request.id);
       if (updateError) throw updateError;
 
       // Add the event to the calendar
-      const { error: calendarError } = await supabase
-        .from('calendar_events')
-        .upsert({
-          profile_id: user!.id,
-          event_date: request.event_date,
-          status: 'busy',
-          notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}`
-        }, {
-          onConflict: 'profile_id,event_date'
-        });
-
+      const {
+        error: calendarError
+      } = await supabase.from('calendar_events').upsert({
+        profile_id: user!.id,
+        event_date: request.event_date,
+        status: 'busy',
+        notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}`
+      }, {
+        onConflict: 'profile_id,event_date'
+      });
       if (calendarError) throw calendarError;
-
       await loadBookingRequests();
       await loadCalendarEvents();
-      toast({ title: "Success", description: "Booking accepted and added to calendar!" });
+      toast({
+        title: "Success",
+        description: "Booking accepted and added to calendar!"
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeclineBooking = async (requestId: string) => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('booking_requests')
-        .delete()
-        .eq('id', requestId);
-
+      const {
+        error
+      } = await supabase.from('booking_requests').delete().eq('id', requestId);
       if (error) throw error;
-
       await loadBookingRequests();
-      toast({ title: "Success", description: "Booking request declined." });
+      toast({
+        title: "Success",
+        description: "Booking request declined."
+      });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     } finally {
       setIsSaving(false);
     }
   };
-
   const handleDeleteAccount = async () => {
     if (!user) return;
-
     setIsSaving(true);
     try {
       // Delete user's data from tables
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', user.id);
-
+      const {
+        error: profileError
+      } = await supabase.from('profiles').delete().eq('id', user.id);
       if (profileError) throw profileError;
 
       // Sign out and delete auth user
-      const { error: authError } = await supabase.auth.signOut();
+      const {
+        error: authError
+      } = await supabase.auth.signOut();
       if (authError) throw authError;
-
       toast({
         title: "Account Deleted",
-        description: "Your account has been permanently deleted.",
+        description: "Your account has been permanently deleted."
       });
-
       navigate('/');
     } catch (error: any) {
       toast({
@@ -1013,37 +976,22 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Navigation />
       
       <div className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
-          {activeTab !== "profile" && (
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-display font-bold text-foreground">
-                {activeTab === "messages" && "My Messages"}
-                {activeTab === "announcements" && "My Announcements"}
-                {activeTab === "posts" && "My Posts"}
-                {activeTab === "settings" && "Settings"}
-              </h1>
-            </div>
-          )}
+          {activeTab !== "profile"}
               {/* Profile Tab */}
-              {activeTab === "profile" && (
-                <div className="space-y-8">
+              {activeTab === "profile" && <div className="space-y-8">
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
@@ -1053,19 +1001,10 @@ const Dashboard = () => {
                             <User className="h-20 w-20 text-accent" />
                           </AvatarFallback>
                         </Avatar>
-                        <label 
-                          htmlFor="avatar-upload" 
-                          className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
-                        >
+                        <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
                           <Camera className="h-8 w-8 text-white" />
                         </label>
-                        <input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
+                        <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                       </div>
 
                       <div className="flex-1">
@@ -1075,13 +1014,7 @@ const Dashboard = () => {
                               <h1 className="text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
                               </h1>
-                              <Badge 
-                                className={`px-4 py-1.5 text-sm font-semibold ${
-                                  profile?.plan === 'Premium' 
-                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' 
-                                    : 'bg-muted text-muted-foreground border border-border'
-                                }`}
-                              >
+                              <Badge className={`px-4 py-1.5 text-sm font-semibold ${profile?.plan === 'Premium' ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' : 'bg-muted text-muted-foreground border border-border'}`}>
                                 {profile?.plan === 'Premium' ? '★ Premium' : 'Standard'}
                               </Badge>
                             </div>
@@ -1091,16 +1024,16 @@ const Dashboard = () => {
                                 {formData.specialization}
                               </Badge>
                               
-                              {editingField === 'location' ? (
-                                <div className="flex items-center gap-2">
-                                  <Select value={formData.county} onValueChange={(value) => setFormData({...formData, county: value})}>
+                              {editingField === 'location' ? <div className="flex items-center gap-2">
+                                  <Select value={formData.county} onValueChange={value => setFormData({
+                        ...formData,
+                        county: value
+                      })}>
                                     <SelectTrigger className="w-[180px]">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      {romanianCounties.map(county => (
-                                        <SelectItem key={county} value={county}>{county}</SelectItem>
-                                      ))}
+                                      {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
                                     </SelectContent>
                                   </Select>
                                   <Button size="sm" onClick={() => saveField('location')} disabled={isSaving}>
@@ -1109,21 +1042,13 @@ const Dashboard = () => {
                                   <Button size="sm" variant="outline" onClick={cancelEditing}>
                                     <X className="h-3 w-3" />
                                   </Button>
-                                </div>
-                              ) : (
-                              <div className="group flex items-center gap-2 text-muted-foreground">
+                                </div> : <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
                                   <span className="text-base">{formData.county}{formData.country ? `, ${formData.country}` : ''}</span>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                                    onClick={() => startEditing('location')}
-                                  >
+                                  <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
                                     <Edit2 className="h-3 w-3" />
                                   </Button>
-                                </div>
-                              )}
+                                </div>}
                             </div>
                           </div>
 
@@ -1139,14 +1064,11 @@ const Dashboard = () => {
                             <Mail className="mr-2 h-4 w-4" />
                             {formData.email}
                           </Button>
-                          {editingField === 'contact' ? (
-                            <div className="flex items-center gap-2">
-                              <Input
-                                value={formData.phone}
-                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                placeholder="Phone Number"
-                                className="w-48"
-                              />
+                          {editingField === 'contact' ? <div className="flex items-center gap-2">
+                              <Input value={formData.phone} onChange={e => setFormData({
+                    ...formData,
+                    phone: e.target.value
+                  })} placeholder="Phone Number" className="w-48" />
                               <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
                                 <Save className="h-3 w-3 mr-1" />
                                 Save
@@ -1155,23 +1077,15 @@ const Dashboard = () => {
                                 <X className="h-3 w-3 mr-1" />
                                 Cancel
                               </Button>
-                            </div>
-                          ) : (
-                            <div className="group flex items-center gap-2">
+                            </div> : <div className="group flex items-center gap-2">
                               <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                                 <Phone className="mr-2 h-4 w-4" />
                                 {formData.phone || 'Add Phone'}
                               </Button>
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
-                                onClick={() => startEditing('contact')}
-                              >
+                              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0" onClick={() => startEditing('contact')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </div>
                     </div>
@@ -1194,19 +1108,15 @@ const Dashboard = () => {
                             <User className="h-5 w-5 text-accent" />
                             About Me
                           </h3>
-                          {editingField === 'bio' ? (
-                            <div className="space-y-2">
-                              <Textarea
-                                value={formData.bio}
-                                onChange={(e) => {
-                                  if (e.target.value.length <= 200) {
-                                    setFormData({...formData, bio: e.target.value});
-                                  }
-                                }}
-                                placeholder="Tell us about yourself, your musical journey, your style..."
-                                className="min-h-[120px]"
-                                maxLength={200}
-                              />
+                          {editingField === 'bio' ? <div className="space-y-2">
+                              <Textarea value={formData.bio} onChange={e => {
+                    if (e.target.value.length <= 200) {
+                      setFormData({
+                        ...formData,
+                        bio: e.target.value
+                      });
+                    }
+                  }} placeholder="Tell us about yourself, your musical journey, your style..." className="min-h-[120px]" maxLength={200} />
                               <div className="flex items-center justify-between">
                                 <span className={`text-xs ${formData.bio.length >= 200 ? 'text-destructive' : 'text-muted-foreground'}`}>
                                   {formData.bio.length}/200 characters
@@ -1222,27 +1132,15 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               </div>
-                            </div>
-                          ) : (
-                            <div className="group">
-                              {formData.bio ? (
-                                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            </div> : <div className="group">
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                   {formData.bio}
-                                </p>
-                              ) : (
-                                <p className="text-muted-foreground italic">No description added yet</p>
-                              )}
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                onClick={() => startEditing('bio')}
-                              >
+                                </p> : <p className="text-muted-foreground italic">No description added yet</p>}
+                              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4 mr-2" />
                                 {formData.bio ? 'Edit Description' : 'Add Description'}
                               </Button>
-                            </div>
-                          )}
+                            </div>}
                         </div>
 
                         <Separator />
@@ -1255,88 +1153,74 @@ const Dashboard = () => {
                               <Music className="h-5 w-5 text-accent" />
                               Music Genres
                             </h3>
-                            {editingField === 'genres' ? (
-                              <div className="space-y-3">
+                            {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
-                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => (
-                                    <Badge 
-                                      key={genre.trim()} 
-                                      variant="default" 
-                                      className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80"
-                                      onClick={() => {
-                                        const genres = formData.musicGenres.split(',').map(g => g.trim()).filter(g => g);
-                                        const newGenres = genres.filter(g => g !== genre.trim());
-                                        setFormData({...formData, musicGenres: newGenres.join(', ')});
-                                      }}
-                                    >
+                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80" onClick={() => {
+                        const genres = formData.musicGenres.split(',').map(g => g.trim()).filter(g => g);
+                        const newGenres = genres.filter(g => g !== genre.trim());
+                        setFormData({
+                          ...formData,
+                          musicGenres: newGenres.join(', ')
+                        });
+                      }}>
                                       {genre.trim()}
                                       <X className="h-3 w-3 ml-1" />
-                                    </Badge>
-                                  ))}
+                                    </Badge>)}
                                 </div>
                                 
                                 {/* Available genres to add */}
                                 <div className="space-y-2">
                                   <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
                                   <div className="flex flex-wrap gap-2">
-                                    {['Pop', 'Rock', 'Jazz', 'Hip Hop', 'R&B', 'Electronic', 'Classical', 'Country', 'Folk', 'Reggae', 'Blues', 'Soul', 'Funk', 'Metal', 'Punk', 'Latin', 'Manele', 'House', 'Disco', 'Trap', 'Indie', 'Alternative']
-                                      .filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre))
-                                      .map(genre => (
-                                        <Badge 
-                                          key={genre} 
-                                          variant="outline" 
-                                          className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors"
-                                          onClick={() => {
-                                            const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                                            if (!currentGenres.includes(genre)) {
-                                              setFormData({...formData, musicGenres: [...currentGenres, genre].join(', ')});
-                                            }
-                                          }}
-                                        >
+                                    {['Pop', 'Rock', 'Jazz', 'Hip Hop', 'R&B', 'Electronic', 'Classical', 'Country', 'Folk', 'Reggae', 'Blues', 'Soul', 'Funk', 'Metal', 'Punk', 'Latin', 'Manele', 'House', 'Disco', 'Trap', 'Indie', 'Alternative'].filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre)).map(genre => <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                          if (!currentGenres.includes(genre)) {
+                            setFormData({
+                              ...formData,
+                              musicGenres: [...currentGenres, genre].join(', ')
+                            });
+                          }
+                        }}>
                                           <Plus className="h-3 w-3 mr-1" />
                                           {genre}
-                                        </Badge>
-                                      ))
-                                    }
+                                        </Badge>)}
                                   </div>
                                 </div>
                                 
                                 {/* Custom genre input */}
                                 <div className="flex gap-2">
-                                  <Input
-                                    placeholder="Add custom genre..."
-                                    className="flex-1"
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        const input = e.currentTarget;
-                                        const newGenre = input.value.trim();
-                                        if (newGenre) {
-                                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                                          if (!currentGenres.includes(newGenre)) {
-                                            setFormData({...formData, musicGenres: [...currentGenres, newGenre].join(', ')});
-                                          }
-                                          input.value = '';
-                                        }
-                                      }
-                                    }}
-                                  />
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={(e) => {
-                                      const input = (e.currentTarget.previousSibling as HTMLInputElement);
-                                      const newGenre = input.value.trim();
-                                      if (newGenre) {
-                                        const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                                        if (!currentGenres.includes(newGenre)) {
-                                          setFormData({...formData, musicGenres: [...currentGenres, newGenre].join(', ')});
-                                        }
-                                        input.value = '';
-                                      }
-                                    }}
-                                  >
+                                  <Input placeholder="Add custom genre..." className="flex-1" onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = e.currentTarget;
+                          const newGenre = input.value.trim();
+                          if (newGenre) {
+                            const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                            if (!currentGenres.includes(newGenre)) {
+                              setFormData({
+                                ...formData,
+                                musicGenres: [...currentGenres, newGenre].join(', ')
+                              });
+                            }
+                            input.value = '';
+                          }
+                        }
+                      }} />
+                                  <Button size="sm" variant="outline" onClick={e => {
+                        const input = e.currentTarget.previousSibling as HTMLInputElement;
+                        const newGenre = input.value.trim();
+                        if (newGenre) {
+                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                          if (!currentGenres.includes(newGenre)) {
+                            setFormData({
+                              ...formData,
+                              musicGenres: [...currentGenres, newGenre].join(', ')
+                            });
+                          }
+                          input.value = '';
+                        }
+                      }}>
                                     <Plus className="h-4 w-4" />
                                   </Button>
                                 </div>
@@ -1351,30 +1235,18 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div>
-                            ) : (
-                              <div className="group">
+                              </div> : <div className="group">
                                 <div className="flex flex-wrap gap-2">
-                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => (
-                                    <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
                                       {genre.trim()}
-                                    </Badge>
-                                  ))}
-                                  {(!formData.musicGenres || !formData.musicGenres.trim()) && (
-                                    <span className="text-muted-foreground text-sm">No genres added</span>
-                                  )}
+                                    </Badge>)}
+                                  {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                  onClick={() => startEditing('genres')}
-                                >
+                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4 mr-2" />
                                   Edit Genres
                                 </Button>
-                              </div>
-                            )}
+                              </div>}
                           </div>
 
                           {/* Experience */}
@@ -1383,9 +1255,11 @@ const Dashboard = () => {
                               <CalendarIcon className="h-5 w-5 text-accent" />
                               Experience
                             </h3>
-                            {editingField === 'experience' ? (
-                              <div className="space-y-3">
-                                <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({...formData, experienceLevel: value})}>
+                            {editingField === 'experience' ? <div className="space-y-3">
+                                <Select value={formData.experienceLevel} onValueChange={value => setFormData({
+                      ...formData,
+                      experienceLevel: value
+                    })}>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Experience Level" />
                                   </SelectTrigger>
@@ -1396,12 +1270,10 @@ const Dashboard = () => {
                                     <SelectItem value="Professional">Professional</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Input
-                                  type="number"
-                                  value={formData.numberOfEvents}
-                                  onChange={(e) => setFormData({...formData, numberOfEvents: e.target.value})}
-                                  placeholder="Number of Events"
-                                />
+                                <Input type="number" value={formData.numberOfEvents} onChange={e => setFormData({
+                      ...formData,
+                      numberOfEvents: e.target.value
+                    })} placeholder="Number of Events" />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
@@ -1412,9 +1284,7 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div>
-                            ) : (
-                              <div className="group">
+                              </div> : <div className="group">
                                 <div className="space-y-2">
                                   <p className="text-muted-foreground">
                                     Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
@@ -1427,17 +1297,11 @@ const Dashboard = () => {
                                     Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
                                   </p>
                                 </div>
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                  onClick={() => startEditing('experience')}
-                                >
+                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('experience')}>
                                   <Edit2 className="h-4 w-4 mr-2" />
                                   Edit Experience
                                 </Button>
-                              </div>
-                            )}
+                              </div>}
                           </div>
 
                           {/* Estimated Price */}
@@ -1446,13 +1310,11 @@ const Dashboard = () => {
                               <DollarSign className="h-5 w-5 text-accent" />
                               Estimated Price
                             </h3>
-                            {editingField === 'price' ? (
-                              <div className="space-y-2">
-                                <Input
-                                  value={formData.estimatedPrice}
-                                  onChange={(e) => setFormData({...formData, estimatedPrice: e.target.value})}
-                                  placeholder="e.g., 500-1000 RON per event"
-                                />
+                            {editingField === 'price' ? <div className="space-y-2">
+                                <Input value={formData.estimatedPrice} onChange={e => setFormData({
+                      ...formData,
+                      estimatedPrice: e.target.value
+                    })} placeholder="e.g., 500-1000 RON per event" />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
@@ -1463,27 +1325,15 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div>
-                            ) : (
-                              <div className="group">
-                                {formData.estimatedPrice ? (
-                                  <p className="text-muted-foreground">
+                              </div> : <div className="group">
+                                {formData.estimatedPrice ? <p className="text-muted-foreground">
                                     <span className="font-semibold text-foreground text-lg">{formData.estimatedPrice}</span>
-                                  </p>
-                                ) : (
-                                  <p className="text-muted-foreground italic">No price range added yet</p>
-                                )}
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                  onClick={() => startEditing('price')}
-                                >
+                                  </p> : <p className="text-muted-foreground italic">No price range added yet</p>}
+                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('price')}>
                                   <Edit2 className="h-4 w-4 mr-2" />
                                   {formData.estimatedPrice ? 'Edit Price' : 'Add Price'}
                                 </Button>
-                              </div>
-                            )}
+                              </div>}
                           </div>
                         </div>
 
@@ -1495,49 +1345,43 @@ const Dashboard = () => {
                             <LinkIcon className="h-5 w-5 text-accent" />
                             Social Networks
                           </h3>
-                          {editingField === 'social' ? (
-                            <div className="space-y-3">
+                          {editingField === 'social' ? <div className="space-y-3">
                               <div className="flex items-center gap-2">
                                 <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input
-                                  value={formData.facebookUrl}
-                                  onChange={(e) => setFormData({...formData, facebookUrl: e.target.value})}
-                                  placeholder="Facebook profile URL"
-                                />
+                                <Input value={formData.facebookUrl} onChange={e => setFormData({
+                      ...formData,
+                      facebookUrl: e.target.value
+                    })} placeholder="Facebook profile URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input
-                                  value={formData.instagramUrl}
-                                  onChange={(e) => setFormData({...formData, instagramUrl: e.target.value})}
-                                  placeholder="Instagram profile URL"
-                                />
+                                <Input value={formData.instagramUrl} onChange={e => setFormData({
+                      ...formData,
+                      instagramUrl: e.target.value
+                    })} placeholder="Instagram profile URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input
-                                  value={formData.youtubeUrl}
-                                  onChange={(e) => setFormData({...formData, youtubeUrl: e.target.value})}
-                                  placeholder="YouTube channel URL"
-                                />
+                                <Input value={formData.youtubeUrl} onChange={e => setFormData({
+                      ...formData,
+                      youtubeUrl: e.target.value
+                    })} placeholder="YouTube channel URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Music className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input
-                                  value={formData.tiktokUrl}
-                                  onChange={(e) => setFormData({...formData, tiktokUrl: e.target.value})}
-                                  placeholder="TikTok profile URL"
-                                />
+                                <Input value={formData.tiktokUrl} onChange={e => setFormData({
+                      ...formData,
+                      tiktokUrl: e.target.value
+                    })} placeholder="TikTok profile URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <svg className="h-5 w-5 text-accent flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                                 </svg>
-                                <Input
-                                  value={formData.spotifyUrl}
-                                  onChange={(e) => setFormData({...formData, spotifyUrl: e.target.value})}
-                                  placeholder="Spotify artist URL"
-                                />
+                                <Input value={formData.spotifyUrl} onChange={e => setFormData({
+                      ...formData,
+                      spotifyUrl: e.target.value
+                    })} placeholder="Spotify artist URL" />
                               </div>
                               <div className="flex gap-2">
                                 <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
@@ -1549,82 +1393,37 @@ const Dashboard = () => {
                                   Cancel
                                 </Button>
                               </div>
-                            </div>
-                          ) : (
-                            <div className="group">
+                            </div> : <div className="group">
                               <div className="flex flex-wrap gap-3">
-                                {formData.facebookUrl && (
-                                  <a 
-                                    href={formData.facebookUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                                  >
+                                {formData.facebookUrl && <a href={formData.facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                                     <Facebook className="h-5 w-5 text-accent" />
                                     <span className="text-sm">Facebook</span>
-                                  </a>
-                                )}
-                                {formData.instagramUrl && (
-                                  <a 
-                                    href={formData.instagramUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                                  >
+                                  </a>}
+                                {formData.instagramUrl && <a href={formData.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                                     <Instagram className="h-5 w-5 text-accent" />
                                     <span className="text-sm">Instagram</span>
-                                  </a>
-                                )}
-                                {formData.youtubeUrl && (
-                                  <a 
-                                    href={formData.youtubeUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                                  >
+                                  </a>}
+                                {formData.youtubeUrl && <a href={formData.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                                     <Youtube className="h-5 w-5 text-accent" />
                                     <span className="text-sm">YouTube</span>
-                                  </a>
-                                )}
-                                {formData.tiktokUrl && (
-                                  <a 
-                                    href={formData.tiktokUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                                  >
+                                  </a>}
+                                {formData.tiktokUrl && <a href={formData.tiktokUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                                     <Music className="h-5 w-5 text-accent" />
                                     <span className="text-sm">TikTok</span>
-                                  </a>
-                                )}
-                                {formData.spotifyUrl && (
-                                  <a 
-                                    href={formData.spotifyUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors"
-                                  >
+                                  </a>}
+                                {formData.spotifyUrl && <a href={formData.spotifyUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                                     <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                                     </svg>
                                     <span className="text-sm">Spotify</span>
-                                  </a>
-                                )}
-                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && !formData.spotifyUrl && (
-                                  <p className="text-muted-foreground italic">No social networks added yet</p>
-                                )}
+                                  </a>}
+                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && !formData.spotifyUrl && <p className="text-muted-foreground italic">No social networks added yet</p>}
                               </div>
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="opacity-0 group-hover:opacity-100 transition-opacity mt-2"
-                                onClick={() => startEditing('social')}
-                              >
+                              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4 mr-2" />
-                                {(formData.facebookUrl || formData.instagramUrl || formData.youtubeUrl || formData.tiktokUrl || formData.spotifyUrl) ? 'Edit Social Networks' : 'Add Social Networks'}
+                                {formData.facebookUrl || formData.instagramUrl || formData.youtubeUrl || formData.tiktokUrl || formData.spotifyUrl ? 'Edit Social Networks' : 'Add Social Networks'}
                               </Button>
-                            </div>
-                          )}
+                            </div>}
                          </div>
 
                         <Separator className="my-8" />
@@ -1634,26 +1433,14 @@ const Dashboard = () => {
                           <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                             <Star className="h-6 w-6 text-accent" />
                             My Reviews
-                            {getAverageRating() && (
-                              <span className="text-lg font-display font-bold text-foreground">
+                            {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
                                 ({getAverageRating()} • {reviews.length})
-                              </span>
-                            )}
+                              </span>}
                           </h2>
                           
-                          {reviews.length > 0 ? (
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                              {reviews.map((review) => (
-                                <div 
-                                  key={review.id} 
-                                  className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative"
-                                >
-                                  <button
-                                    onClick={() => handleDeleteReview(review.id)}
-                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                    title="Delete review"
-                                    disabled={isSaving}
-                                  >
+                          {reviews.length > 0 ? <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                              {reviews.map(review => <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
+                                  <button onClick={() => handleDeleteReview(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </button>
                                   <div className="flex items-center gap-3">
@@ -1665,31 +1452,24 @@ const Dashboard = () => {
                                     <div className="flex-1 min-w-0">
                                       <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
                                       <span className="text-xs text-muted-foreground">
-                                        {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        {new Date(review.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
                                       </span>
                                     </div>
                                   </div>
                                   <div className="flex gap-0.5">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Star
-                                        key={star}
-                                        className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`}
-                                      />
-                                    ))}
+                                    {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                   </div>
-                                  {review.comment && (
-                                    <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                                  {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
+                                </div>)}
+                            </div> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
                               <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                               <p className="text-muted-foreground">No reviews yet</p>
                               <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </TabsContent>
 
@@ -1712,7 +1492,7 @@ const Dashboard = () => {
                                 <DialogTitle>Add Media</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
-                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
+                                <Tabs value={galleryUploadType} onValueChange={v => setGalleryUploadType(v as 'image' | 'video')}>
                                   <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Image</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
@@ -1724,13 +1504,7 @@ const Dashboard = () => {
                                         <p className="text-sm text-muted-foreground">Click to upload image</p>
                                       </div>
                                     </Label>
-                                    <Input
-                                      id="gallery-upload"
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={handleGalleryImageUpload}
-                                      className="hidden"
-                                    />
+                                    <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
                                   </TabsContent>
                                   <TabsContent value="video" className="space-y-4">
                                     <div>
@@ -1741,13 +1515,7 @@ const Dashboard = () => {
                                           <p className="text-xs text-muted-foreground mt-1">Max 500 MB</p>
                                         </div>
                                       </Label>
-                                      <Input
-                                        id="gallery-video-upload"
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={handleGalleryVideoUpload}
-                                        className="hidden"
-                                      />
+                                      <Input id="gallery-video-upload" type="file" accept="video/*" onChange={handleGalleryVideoUpload} className="hidden" />
                                     </div>
                                   </TabsContent>
                                 </Tabs>
@@ -1764,31 +1532,17 @@ const Dashboard = () => {
                               <span className="text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                              {galleryItems.filter(item => item.type === 'image').map((item) => (
-                                <div key={item.id} className="relative group">
+                              {galleryItems.filter(item => item.type === 'image').map(item => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
-                                    <img 
-                                      src={item.url} 
-                                      alt="Gallery item"
-                                      className="w-full h-full object-cover"
-                                    />
+                                    <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
                                   </div>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
-                                    disabled={isSaving}
-                                  >
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
-                                </div>
-                              ))}
-                              {galleryItems.filter(item => item.type === 'image').length === 0 && (
-                                <div className="col-span-full text-center text-muted-foreground py-8">
+                                </div>)}
+                              {galleryItems.filter(item => item.type === 'image').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No photos yet. Add your first image!
-                                </div>
-                              )}
+                                </div>}
                             </div>
                           </div>
 
@@ -1800,27 +1554,17 @@ const Dashboard = () => {
                               <span className="text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                              {galleryItems.filter(item => item.type === 'video').map((item) => (
-                                <div key={item.id} className="relative group">
+                              {galleryItems.filter(item => item.type === 'video').map(item => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)}
-                                    disabled={isSaving}
-                                  >
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
-                                </div>
-                              ))}
-                              {galleryItems.filter(item => item.type === 'video').length === 0 && (
-                                <div className="col-span-full text-center text-muted-foreground py-8">
+                                </div>)}
+                              {galleryItems.filter(item => item.type === 'video').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No videos yet. Add your first video!
-                                </div>
-                              )}
+                                </div>}
                             </div>
                           </div>
                         </div>
@@ -1835,33 +1579,25 @@ const Dashboard = () => {
                           </h2>
                           <div className="flex flex-col lg:flex-row gap-6">
                             <div className="flex-1">
-                              <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={(date) => {
-                                  setSelectedDate(date);
-                                  if (date) {
-                                    const event = getEventForDate(date);
-                                    if (event) {
-                                      setEventStatus(event.status);
-                                      setEventNotes(event.notes || "");
-                                    } else {
-                                      setEventStatus('busy');
-                                      setEventNotes("");
-                                    }
-                                  }
-                                }}
-                                className="rounded-lg border border-border shadow-sm"
-                                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                                modifiers={{
-                                  busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
-                                  blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
-                                }}
-                                modifiersClassNames={{
-                                  busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                                  blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                                }}
-                              />
+                              <Calendar mode="single" selected={selectedDate} onSelect={date => {
+                      setSelectedDate(date);
+                      if (date) {
+                        const event = getEventForDate(date);
+                        if (event) {
+                          setEventStatus(event.status);
+                          setEventNotes(event.notes || "");
+                        } else {
+                          setEventStatus('busy');
+                          setEventNotes("");
+                        }
+                      }
+                    }} className="rounded-lg border border-border shadow-sm" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
+                      busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
+                      blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                    }} modifiersClassNames={{
+                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                    }} />
                             </div>
                             <div className="lg:w-80 space-y-4">
                               <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
@@ -1879,20 +1615,19 @@ const Dashboard = () => {
                                   <span className="text-sm text-muted-foreground">Available</span>
                                 </div>
                               </div>
-                              {selectedDate && (
-                                <Card className="p-4">
+                              {selectedDate && <Card className="p-4">
                                   <h4 className="font-semibold text-foreground mb-3">
-                                    {selectedDate.toLocaleDateString('en-US', { 
-                                      weekday: 'long', 
-                                      year: 'numeric', 
-                                      month: 'long', 
-                                      day: 'numeric' 
-                                    })}
+                                    {selectedDate.toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                                   </h4>
                                   <div className="space-y-3">
                                     <div>
                                       <Label>Status</Label>
-                                      <Select value={eventStatus} onValueChange={(v) => setEventStatus(v as any)}>
+                                      <Select value={eventStatus} onValueChange={v => setEventStatus(v as any)}>
                                         <SelectTrigger>
                                           <SelectValue />
                                         </SelectTrigger>
@@ -1905,54 +1640,42 @@ const Dashboard = () => {
                                     </div>
                                     <div>
                                       <Label>Notes (optional)</Label>
-                                      <Textarea
-                                        value={eventNotes}
-                                        onChange={(e) => setEventNotes(e.target.value)}
-                                        placeholder="Event details..."
-                                        rows={3}
-                                      />
+                                      <Textarea value={eventNotes} onChange={e => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
                                     </div>
                                     <div className="flex gap-2">
                                       <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
                                         {isSaving ? "Saving..." : "Save"}
                                       </Button>
-                                      {getEventForDate(selectedDate) && (
-                                        <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
                                           <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      )}
+                                        </Button>}
                                     </div>
                                   </div>
-                                </Card>
-                              )}
+                                </Card>}
                             </div>
                           </div>
 
                           {/* Booking Requests Section */}
-                          {bookingRequests.length > 0 && (
-                            <div className="mt-8 pt-8 border-t border-border">
+                          {bookingRequests.length > 0 && <div className="mt-8 pt-8 border-t border-border">
                               <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                                 <CalendarIcon className="h-5 w-5 text-accent" />
                                 Booking Requests
                               </h3>
                               <div className="space-y-4">
-                                {bookingRequests.map((request) => (
-                                  <Card key={request.id} className="border-accent/20">
+                                {bookingRequests.map(request => <Card key={request.id} className="border-accent/20">
                                     <CardContent className="p-4">
                                       <div className="flex items-start justify-between gap-4">
                                         <div className="flex-1 space-y-2">
                                           <div className="flex items-center gap-3">
                                             <Badge variant="outline" className="border-accent/50 text-accent">
-                                              {new Date(request.event_date).toLocaleDateString('en-US', { 
-                                                weekday: 'long', 
-                                                year: 'numeric', 
-                                                month: 'long', 
-                                                day: 'numeric' 
-                                              })}
+                                              {new Date(request.event_date).toLocaleDateString('en-US', {
+                                  weekday: 'long',
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
                                             </Badge>
-                                            {request.event_type && (
-                                              <Badge variant="secondary">{request.event_type}</Badge>
-                                            )}
+                                            {request.event_type && <Badge variant="secondary">{request.event_type}</Badge>}
                                           </div>
                                           <div className="grid gap-1 text-sm">
                                             <p className="font-semibold text-foreground">{request.requester_name}</p>
@@ -1964,45 +1687,29 @@ const Dashboard = () => {
                                               <Phone className="h-3 w-3" />
                                               {request.requester_phone}
                                             </p>
-                                            {request.message && (
-                                              <p className="text-muted-foreground mt-2 italic">"{request.message}"</p>
-                                            )}
+                                            {request.message && <p className="text-muted-foreground mt-2 italic">"{request.message}"</p>}
                                           </div>
                                         </div>
                                         <div className="flex gap-2">
-                                          <Button 
-                                            size="sm"
-                                            onClick={() => handleAcceptBooking(request)}
-                                            disabled={isSaving}
-                                            className="bg-accent text-accent-foreground hover:bg-accent/90"
-                                          >
+                                          <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="bg-accent text-accent-foreground hover:bg-accent/90">
                                             Accept
                                           </Button>
-                                          <Button 
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleDeclineBooking(request.id)}
-                                            disabled={isSaving}
-                                          >
+                                          <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving}>
                                             Decline
                                           </Button>
                                         </div>
                                       </div>
                                     </CardContent>
-                                  </Card>
-                                ))}
+                                  </Card>)}
                               </div>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </TabsContent>
                     </Tabs>
-                </div>
-              )}
+                </div>}
 
               {/* Messages Tab */}
-              {activeTab === "messages" && (
-                <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+              {activeTab === "messages" && <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
                   <CardContent className="p-8">
                     <div className="text-center py-12">
                       <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
@@ -2010,12 +1717,10 @@ const Dashboard = () => {
                       <p className="text-muted-foreground">Coming soon - message system for booking inquiries</p>
                     </div>
                   </CardContent>
-                </Card>
-              )}
+                </Card>}
 
               {/* Announcements Tab */}
-              {activeTab === "announcements" && (
-                <div className="space-y-4">
+              {activeTab === "announcements" && <div className="space-y-4">
                   {/* Header with stats and add button */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
                     <div className="flex items-center gap-6">
@@ -2046,13 +1751,10 @@ const Dashboard = () => {
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
                           <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                            <Checkbox
-                              id="premium-ad"
-                              checked={newAnnouncement.isPremium}
-                              onCheckedChange={(checked) => 
-                                setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
-                              }
-                            />
+                            <Checkbox id="premium-ad" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
+                        ...newAnnouncement,
+                        isPremium: checked as boolean
+                      })} />
                             <Label htmlFor="premium-ad" className="cursor-pointer font-medium">
                               Promotion Ad (with photo/video)
                             </Label>
@@ -2060,54 +1762,33 @@ const Dashboard = () => {
                           
                           <div>
                             <Label htmlFor="announcement-text">Announcement Text</Label>
-                            <Textarea
-                              id="announcement-text"
-                              value={newAnnouncement.description}
-                              onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value })}
-                              placeholder="Write your announcement here..."
-                              rows={4}
-                              className="mt-2"
-                            />
+                            <Textarea id="announcement-text" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
+                        ...newAnnouncement,
+                        description: e.target.value
+                      })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
                           </div>
                           
-                          {newAnnouncement.isPremium && (
-                            <div>
+                          {newAnnouncement.isPremium && <div>
                               <Label htmlFor="announcement-media">Photo/Video</Label>
-                              {newAnnouncement.mediaUrl ? (
-                                <div className="mt-2 relative">
-                                  {newAnnouncement.mediaType === 'video' ? (
-                                    <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" />
-                                  ) : (
-                                    <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />
-                                  )}
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="absolute top-2 right-2"
-                                    onClick={() => setNewAnnouncement({...newAnnouncement, mediaUrl: "", mediaType: ""})}
-                                  >
+                              {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
+                                  {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
+                          ...newAnnouncement,
+                          mediaUrl: "",
+                          mediaType: ""
+                        })}>
                                     <X className="h-4 w-4" />
                                   </Button>
-                                </div>
-                              ) : (
-                                <>
+                                </div> : <>
                                   <Label htmlFor="announcement-media-input" className="cursor-pointer">
                                     <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
                                       <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
                                       <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
                                     </div>
                                   </Label>
-                                  <Input
-                                    id="announcement-media-input"
-                                    type="file"
-                                    accept="image/*,video/*"
-                                    onChange={handleAnnouncementMediaUpload}
-                                    className="hidden"
-                                  />
-                                </>
-                              )}
-                            </div>
-                          )}
+                                  <Input id="announcement-media-input" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
+                                </>}
+                            </div>}
                           
                           <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                             {isSaving ? "Adding..." : "Add Announcement"}
@@ -2120,19 +1801,12 @@ const Dashboard = () => {
                   
                   {/* Announcements list - matching Announcements page style */}
                   <div className="space-y-4 max-w-[500px] mx-auto">
-                    {announcements.map((announcement) => (
-                      <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                    {announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                         {/* Header */}
                         <div className="p-4 pb-0">
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
-                              <div 
-                                className={`p-0.5 rounded-full ${
-                                  profile?.plan === 'Premium' 
-                                    ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
-                                    : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
-                                }`}
-                              >
+                              <div className={`p-0.5 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
                                 <Avatar className="w-10 h-10 border-2 border-background">
                                   <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
                                   <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
@@ -2145,14 +1819,10 @@ const Dashboard = () => {
                                   <h3 className="font-semibold text-foreground">
                                     {profile?.stage_name || "Artist"}
                                   </h3>
-                                  {profile?.plan === 'Premium' && (
-                                    <span className="text-accent text-xs">✓</span>
-                                  )}
-                                  {announcement.is_premium && (
-                                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                  {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+                                  {announcement.is_premium && <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                       Promotion
-                                    </Badge>
-                                  )}
+                                    </Badge>}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <span>{profile?.specialization || "Artist"}</span>
@@ -2162,13 +1832,7 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 rounded-full"
-                              onClick={() => handleDeleteAnnouncement(announcement.id)}
-                              disabled={isSaving}
-                            >
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleDeleteAnnouncement(announcement.id)} disabled={isSaving}>
                               <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                             </Button>
                           </div>
@@ -2178,44 +1842,25 @@ const Dashboard = () => {
                         </div>
                         
                         {/* Media for premium announcements */}
-                        {announcement.is_premium && announcement.media_url && (
-                          <div className="mt-3 bg-muted/30">
-                            {announcement.media_type === "video" ? (
-                              <div className="relative w-full aspect-video">
-                                <video 
-                                  src={announcement.media_url} 
-                                  controls
-                                  className="absolute inset-0 w-full h-full object-contain bg-black"
-                                />
-                              </div>
-                            ) : (
-                              <div className="relative w-full aspect-[4/5] sm:aspect-video">
-                                <img 
-                                  src={announcement.media_url} 
-                                  alt="Announcement media"
-                                  className="absolute inset-0 w-full h-full object-contain"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
+                            {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
+                                <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                              </div> : <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                                <img src={announcement.media_url} alt="Announcement media" className="absolute inset-0 w-full h-full object-contain" />
+                              </div>}
+                          </div>}
                         
                         <div className="h-2" />
-                      </Card>
-                    ))}
-                    {announcements.length === 0 && (
-                      <div className="text-center py-12 text-muted-foreground">
+                      </Card>)}
+                    {announcements.length === 0 && <div className="text-center py-12 text-muted-foreground">
                         <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                         <p className="text-sm">No announcements yet</p>
-                      </div>
-                    )}
+                      </div>}
                   </div>
-                </div>
-              )}
+                </div>}
 
               {/* Posts Tab */}
-              {activeTab === "posts" && (
-                <div className="space-y-6">
+              {activeTab === "posts" && <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-display font-bold flex items-center gap-2">
                       <FileText className="h-6 w-6 text-accent" />
@@ -2224,10 +1869,7 @@ const Dashboard = () => {
                     </h2>
                     <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
                       <DialogTrigger asChild>
-                        <Button 
-                          className="bg-accent text-accent-foreground hover:bg-accent/90"
-                          disabled={postsRemaining <= 0}
-                        >
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={postsRemaining <= 0}>
                           <Plus className="h-4 w-4 mr-2" />
                           Create Post
                         </Button>
@@ -2237,7 +1879,7 @@ const Dashboard = () => {
                           <DialogTitle>Create New Post</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
-                          <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'text' | 'image' | 'video')}>
+                          <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'text' | 'image' | 'video')}>
                             <TabsList className="grid w-full grid-cols-3">
                               <TabsTrigger value="text">Text Only</TabsTrigger>
                               <TabsTrigger value="image">Photo</TabsTrigger>
@@ -2247,89 +1889,64 @@ const Dashboard = () => {
                             <TabsContent value="text" className="space-y-4">
                               <div>
                                 <Label>Post Content</Label>
-                                <Textarea
-                                  value={newPost.content}
-                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                                  placeholder="What's on your mind?"
-                                  rows={6}
-                                  className="mt-2"
-                                />
+                                <Textarea value={newPost.content} onChange={e => setNewPost({
+                          ...newPost,
+                          content: e.target.value
+                        })} placeholder="What's on your mind?" rows={6} className="mt-2" />
                               </div>
                             </TabsContent>
                             
                             <TabsContent value="image" className="space-y-4">
                               <div>
                                 <Label>Post Content</Label>
-                                <Textarea
-                                  value={newPost.content}
-                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                                  placeholder="What's on your mind?"
-                                  rows={4}
-                                  className="mt-2"
-                                />
+                                <Textarea value={newPost.content} onChange={e => setNewPost({
+                          ...newPost,
+                          content: e.target.value
+                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
                               </div>
-                              {newPost.mediaUrl && newPost.mediaType === 'image' && (
-                                <div className="relative">
+                              {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
                                   <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="absolute top-2 right-2"
-                                    onClick={() => setNewPost({...newPost, mediaUrl: "", mediaType: ""})}
-                                  >
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
+                          ...newPost,
+                          mediaUrl: "",
+                          mediaType: ""
+                        })}>
                                     <X className="h-4 w-4" />
                                   </Button>
-                                </div>
-                              )}
-                              {!newPost.mediaUrl && (
-                                <>
+                                </div>}
+                              {!newPost.mediaUrl && <>
                                   <Label htmlFor="post-image" className="cursor-pointer">
                                     <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
                                       <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
                                       <p className="text-sm text-muted-foreground">Click to upload image</p>
                                     </div>
                                   </Label>
-                                  <Input
-                                    id="post-image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handlePostImageUpload}
-                                    className="hidden"
-                                  />
-                                </>
-                              )}
+                                  <Input id="post-image" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                </>}
                             </TabsContent>
                             
                             <TabsContent value="video" className="space-y-4">
                               <div>
                                 <Label>Post Content</Label>
-                                <Textarea
-                                  value={newPost.content}
-                                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                                  placeholder="What's on your mind?"
-                                  rows={4}
-                                  className="mt-2"
-                                />
+                                <Textarea value={newPost.content} onChange={e => setNewPost({
+                          ...newPost,
+                          content: e.target.value
+                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
                               </div>
                               <div>
                                 <Label>Video URL (YouTube/Embed)</Label>
-                                <Input
-                                  value={newPost.mediaUrl}
-                                  onChange={(e) => {
-                                    setNewPost({...newPost, mediaUrl: e.target.value, mediaType: 'video'});
-                                  }}
-                                  placeholder="https://www.youtube.com/embed/..."
-                                  className="mt-2"
-                                />
+                                <Input value={newPost.mediaUrl} onChange={e => {
+                          setNewPost({
+                            ...newPost,
+                            mediaUrl: e.target.value,
+                            mediaType: 'video'
+                          });
+                        }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
                               </div>
                             </TabsContent>
                           </Tabs>
                           
-                          <Button 
-                            onClick={handleAddPost} 
-                            disabled={isSaving || !newPost.content} 
-                            className="w-full bg-accent text-accent-foreground"
-                          >
+                          <Button onClick={handleAddPost} disabled={isSaving || !newPost.content} className="w-full bg-accent text-accent-foreground">
                             {isSaving ? "Creating..." : "Create Post"}
                           </Button>
                         </div>
@@ -2338,8 +1955,7 @@ const Dashboard = () => {
                   </div>
                   
                   <div className="max-w-[500px] mx-auto space-y-4">
-                    {posts.map((post) => (
-                      <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                    {posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                         {/* Header */}
                         <div className="p-4 pb-0">
                           <div className="flex items-start justify-between">
@@ -2355,9 +1971,7 @@ const Dashboard = () => {
                                   <h3 className="font-semibold text-foreground">
                                     {formData.stageName}
                                   </h3>
-                                  {profile?.plan === 'Premium' && (
-                                    <span className="text-accent text-xs">✓</span>
-                                  )}
+                                  {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <span>{formData.specialization || 'Artist'}</span>
@@ -2367,13 +1981,7 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            <Button 
-                              size="icon" 
-                              variant="ghost" 
-                              className="h-8 w-8 rounded-full"
-                              onClick={() => handleDeletePost(post.id)}
-                              disabled={isSaving}
-                            >
+                            <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => handleDeletePost(post.id)} disabled={isSaving}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
@@ -2383,88 +1991,47 @@ const Dashboard = () => {
                         </div>
                         
                         {/* Media - Full width like Facebook */}
-                        {post.media_url && (
-                          <div className="mt-3">
-                            {post.media_type === "video" ? (
-                              <video 
-                                src={post.media_url} 
-                                controls
-                                className="w-full"
-                              />
-                            ) : (
-                              <img 
-                                src={post.media_url} 
-                                alt="Post content"
-                                className="w-full"
-                              />
-                            )}
-                          </div>
-                        )}
+                        {post.media_url && <div className="mt-3">
+                            {post.media_type === "video" ? <video src={post.media_url} controls className="w-full" /> : <img src={post.media_url} alt="Post content" className="w-full" />}
+                          </div>}
 
                         {/* Bottom padding */}
                         <div className="p-4" />
-                      </Card>
-                    ))}
+                      </Card>)}
                     
-                    {posts.length === 0 && (
-                      <Card className="border-2 border-dashed border-accent/30">
+                    {posts.length === 0 && <Card className="border-2 border-dashed border-accent/30">
                         <CardContent className="p-12 text-center">
                           <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                           <p className="text-muted-foreground">No posts yet. Create your first post!</p>
                         </CardContent>
-                      </Card>
-                    )}
+                      </Card>}
                   </div>
-                </div>
-              )}
+                </div>}
 
               {/* Settings Tab */}
-              {activeTab === "settings" && (
-                <SettingsTab 
-                  formData={formData}
-                  handleLogout={handleLogout}
-                  handleDeleteAccount={handleDeleteAccount}
-                  isSaving={isSaving}
-                />
-              )}
+              {activeTab === "settings" && <SettingsTab formData={formData} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} />}
         </div>
       </div>
 
       {/* Image Cropper Modal */}
-      {showCropper && imageSrc && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+      {showCropper && imageSrc && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="bg-card rounded-lg p-6 max-w-2xl w-full">
             <h3 className="text-xl font-bold text-foreground mb-4">Crop Profile Picture</h3>
             
             <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden mb-4">
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                cropShape="rect"
-                showGrid={true}
-              />
+              <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={true} />
             </div>
             
             <div className="space-y-2 mb-4">
               <Label>Zoom: {zoom.toFixed(1)}x</Label>
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={zoom}
-                onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent"
-              />
+              <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={e => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
             </div>
 
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => { setShowCropper(false); setImageSrc(null); }}>
+              <Button variant="outline" onClick={() => {
+            setShowCropper(false);
+            setImageSrc(null);
+          }}>
                 Cancel
               </Button>
               <Button onClick={handleSaveAvatar} disabled={isSaving} className="bg-accent text-accent-foreground">
@@ -2472,10 +2039,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default Dashboard;
