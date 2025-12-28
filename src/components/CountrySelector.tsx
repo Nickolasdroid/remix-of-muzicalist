@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Globe, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Popover,
@@ -67,6 +67,23 @@ interface CountrySelectorProps {
 const CountrySelector = ({ value, onChange, showLabel = false }: CountrySelectorProps) => {
   const [open, setOpen] = useState(false);
   
+  // Auto-detect user's country on mount
+  useEffect(() => {
+    if (!value) {
+      fetch('https://ipapi.co/country_code/')
+        .then(res => res.text())
+        .then(code => {
+          const country = europeanCountries.find(c => c.code === code.trim());
+          if (country) {
+            onChange?.(country.code);
+          }
+        })
+        .catch(() => {
+          // Silently fail, user can select manually
+        });
+    }
+  }, []);
+  
   const selectedCountry = europeanCountries.find(c => c.code === value) || null;
 
   const handleSelectCountry = (country: typeof europeanCountries[0]) => {
@@ -82,25 +99,18 @@ const CountrySelector = ({ value, onChange, showLabel = false }: CountrySelector
           <Button 
             type="button"
             variant="outline" 
-            className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent"
+            className="justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3"
           >
             {selectedCountry ? (
-              <span className="flex items-center gap-2">
-                <span className="text-xl">{selectedCountry.flag}</span>
-                <span>{selectedCountry.name}</span>
-              </span>
+              <span className="text-xl">{selectedCountry.flag}</span>
             ) : (
-              <span className="text-muted-foreground">Select country</span>
+              <span className="text-xl">🌍</span>
             )}
-            <Globe className="h-4 w-4 text-muted-foreground" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
           <ScrollArea className="h-96">
             <div className="p-2">
-              <div className="text-sm font-semibold text-accent px-2 py-2">
-                Select Country
-              </div>
               <div className="space-y-1">
                 {europeanCountries.map((country) => (
                   <button
