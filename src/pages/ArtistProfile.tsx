@@ -508,89 +508,83 @@ const ArtistProfile = () => {
             </Button>
           </Link>
 
-          <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
-            <CardContent className="p-8">
-              {/* Header Section */}
-              <div className="flex flex-col md:flex-row gap-8 mb-8">
-                <div className="flex-shrink-0">
-                  <Avatar className="w-40 h-40 border-4 shadow-lg border-accent">
-                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-start justify-between flex-wrap gap-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-4xl font-display font-bold text-foreground">
-                          {artist.stage_name}
-                        </h1>
-                        <Badge 
-                          className={`px-4 py-1.5 text-sm font-semibold ${
-                            isPremium 
-                              ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' 
-                              : 'bg-muted text-muted-foreground border border-border'
-                          }`}
-                        >
-                          {isPremium ? '★ Premium' : 'Standard'}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-3 mb-4">
-                        {artist.specialization && (
-                          <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
-                            {artist.specialization}
-                          </Badge>
-                        )}
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <MapPin className="h-5 w-5" />
-                          <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                      <Star className="h-6 w-6 fill-current" />
-                      <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
-                      {reviews.length > 0 && (
-                        <span className="text-sm opacity-80">({reviews.length})</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Contact Buttons */}
-                  <div className="flex flex-wrap gap-3 mt-6">
-                    {currentUserId && currentUserId !== artist.id ? (
-                      <Button 
-                        className="bg-accent text-accent-foreground hover:bg-accent/90"
-                        onClick={() => navigate(`/messages?artistId=${artist.id}`)}
-                      >
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Contact
-                      </Button>
-                    ) : !currentUserId ? (
-                      <Button 
-                        className="bg-accent text-accent-foreground hover:bg-accent/90"
-                        onClick={() => navigate('/login')}
-                      >
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Login to Contact
-                      </Button>
-                    ) : null}
-                    <a href={`tel:${artist.phone}`}>
-                      <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call Now
-                      </Button>
-                    </a>
-                  </div>
-                </div>
+          {/* Header Section - matching dashboard profile layout */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row gap-8 mb-8">
+              <div className="flex-shrink-0">
+                <Avatar className="w-40 h-40 border-4 shadow-lg border-accent">
+                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                  <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                    <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                  </AvatarFallback>
+                </Avatar>
               </div>
 
-              <Separator className="my-8" />
+              <div className="flex-1">
+                <div className="flex items-start justify-between flex-wrap gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-display font-bold text-foreground">
+                        {artist.stage_name}
+                      </h1>
+                      <Badge 
+                        className={`px-4 py-1.5 text-sm font-semibold ${
+                          isPremium 
+                            ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' 
+                            : 'bg-muted text-muted-foreground border border-border'
+                        }`}
+                      >
+                        {isPremium ? '★ Premium' : 'Standard'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {artist.specialization && (
+                        <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                          {artist.specialization}
+                        </Badge>
+                      )}
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-5 w-5" />
+                        <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                    <Star className="h-6 w-6 fill-current" />
+                    <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
+                    {reviews.length > 0 && (
+                      <span className="text-sm opacity-80">({reviews.length})</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Contact Buttons */}
+                <div className="flex flex-wrap gap-3 mt-2">
+                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Mail className="mr-2 h-4 w-4" />
+                    {artist.email}
+                  </Button>
+                  <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                    <Phone className="mr-2 h-4 w-4" />
+                    {artist.phone || 'No phone'}
+                  </Button>
+                  {currentUserId && currentUserId !== artist.id && (
+                    <Button 
+                      variant="outline"
+                      className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => navigate(`/messages?artistId=${artist.id}`)}
+                    >
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Message
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-8" />
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
@@ -1420,8 +1414,7 @@ const ArtistProfile = () => {
                   </form>
                 </DialogContent>
               </Dialog>
-            </CardContent>
-          </Card>
+          </div>
         </div>
       </div>
 
