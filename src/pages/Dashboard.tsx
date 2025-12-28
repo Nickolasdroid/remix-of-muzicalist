@@ -1020,7 +1020,7 @@ const Dashboard = () => {
                             </div>
                             
                             <div className="flex flex-wrap gap-3 mb-4">
-                              <Badge className="bg-accent text-accent-foreground px-4 py-2 text-base">
+                              <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
                               
