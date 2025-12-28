@@ -34,8 +34,19 @@ import {
   DollarSign,
   Megaphone,
   MessageCircle,
-  Trash2
+  Trash2,
+  FileText,
+  MoreHorizontal,
+  Flag,
+  ThumbsUp,
+  Globe
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,6 +109,20 @@ interface Review {
   reviewer_user_id: string | null;
 }
 
+interface Post {
+  id: string;
+  profile_id: string;
+  content: string;
+  media_url: string | null;
+  media_type: string | null;
+  created_at: string;
+}
+
+interface MediaPreview {
+  url: string;
+  type: "image" | "video";
+}
+
 const ArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -106,12 +131,14 @@ const ArtistProfile = () => {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserProfile, setCurrentUserProfile] = useState<{ first_name: string; last_name: string; email: string } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "",
     email: "",
@@ -211,6 +238,15 @@ const ArtistProfile = () => {
         .order('created_at', { ascending: false });
 
       setReviews(reviewsData || []);
+
+      // Fetch posts
+      const { data: postsData } = await supabase
+        .from('posts')
+        .select('id, profile_id, content, media_url, media_type, created_at')
+        .eq('profile_id', id)
+        .order('created_at', { ascending: false });
+
+      setPosts(postsData || []);
 
       setLoading(false);
     };
@@ -313,6 +349,19 @@ const ArtistProfile = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return (sum / reviews.length).toFixed(1);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffHours < 1) return "Just now";
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -545,8 +594,9 @@ const ArtistProfile = () => {
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-8">
+                <TabsList className="grid w-full grid-cols-5 mb-8">
                   <TabsTrigger value="details">Details</TabsTrigger>
+                  <TabsTrigger value="posts">Posts</TabsTrigger>
                   <TabsTrigger value="announcements">Announcements</TabsTrigger>
                   <TabsTrigger value="gallery">Gallery</TabsTrigger>
                   <TabsTrigger value="calendar">Calendar</TabsTrigger>
@@ -809,6 +859,144 @@ const ArtistProfile = () => {
                   </div>
                 </TabsContent>
 
+                {/* Posts Tab */}
+                <TabsContent value="posts" className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+                      <FileText className="h-6 w-6 text-accent" />
+                      Posts
+                    </h2>
+                    <div className="max-w-[500px] mx-auto space-y-4">
+                      {posts.length > 0 ? (
+                        posts.map((post) => (
+                          <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                            {/* Header */}
+                            <div className="p-4 pb-0">
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div 
+                                    className={`p-0.5 rounded-full ${
+                                      artist?.plan === 'Premium' 
+                                        ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
+                                        : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+                                    }`}
+                                  >
+                                    <Avatar className="w-10 h-10 border-2 border-background">
+                                      <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
+                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                        {artist?.stage_name?.charAt(0) || 'A'}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold text-foreground">
+                                        {artist?.stage_name}
+                                      </h3>
+                                      {artist?.plan === 'Premium' && (
+                                        <span className="text-accent text-xs">✓</span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <span>{artist?.specialization || "Artist"}</span>
+                                      <span>·</span>
+                                      <span>{formatDate(post.created_at)}</span>
+                                      <span>·</span>
+                                      <Globe className="h-3 w-3" />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                      <MoreHorizontal className="h-5 w-5" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        toast({
+                                          title: "Report submitted",
+                                          description: "Thank you for reporting this problem. We'll review it shortly.",
+                                        });
+                                      }}
+                                    >
+                                      <Flag className="h-4 w-4 mr-2" />
+                                      Report Problem
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+
+                              {/* Content */}
+                              <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
+                            </div>
+                            
+                            {/* Media */}
+                            {post.media_url && (
+                              <div 
+                                className="mt-3 cursor-pointer bg-muted/30"
+                                onClick={() => setMediaPreview({
+                                  url: post.media_url!,
+                                  type: post.media_type === "video" ? "video" : "image"
+                                })}
+                              >
+                                {post.media_type === "video" ? (
+                                  <div className="relative w-full aspect-video">
+                                    <video 
+                                      src={post.media_url} 
+                                      className="absolute inset-0 w-full h-full object-contain bg-black"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                                    <img 
+                                      src={post.media_url} 
+                                      alt="Post content"
+                                      className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="px-2 py-1">
+                              <div className="flex items-center justify-around">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted"
+                                >
+                                  <ThumbsUp className="w-5 h-5" />
+                                  <span className="font-medium">Like</span>
+                                </Button>
+                                
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => navigate(`/artist/${artist?.id}`)}
+                                  className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted"
+                                >
+                                  <MessageCircle className="w-5 h-5" />
+                                  <span className="font-medium">Contact</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        ))
+                      ) : (
+                        <Card className="p-8 text-center">
+                          <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                          <p className="text-muted-foreground">No posts yet.</p>
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+
                 {/* Announcements Tab */}
                 <TabsContent value="announcements" className="space-y-6">
                   <div>
@@ -816,41 +1004,126 @@ const ArtistProfile = () => {
                       <Megaphone className="h-6 w-6 text-accent" />
                       Announcements
                     </h2>
-                    <div className="space-y-3">
+                    <div className="max-w-[500px] mx-auto space-y-4">
                       {announcements.length > 0 ? (
                         announcements.map((announcement) => (
-                          <div 
-                            key={announcement.id} 
-                            className={`flex items-start gap-4 p-4 rounded-lg border transition-colors ${
-                              announcement.is_premium 
-                                ? 'border-accent bg-accent/5' 
-                                : 'border-border bg-card/50'
-                            }`}
-                          >
-                            {announcement.media_url && announcement.media_type === 'image' && (
-                              <img 
-                                src={announcement.media_url} 
-                                alt="" 
-                                className="w-16 h-16 rounded-md object-cover flex-shrink-0"
-                              />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {announcement.is_premium && (
-                                  <Badge className="bg-accent text-accent-foreground text-xs px-2 py-0">
-                                    Promotion
-                                  </Badge>
-                                )}
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </span>
+                          <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                            {/* Header */}
+                            <div className="p-4 pb-0">
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div 
+                                    className={`p-0.5 rounded-full ${
+                                      artist?.plan === 'Premium' 
+                                        ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' 
+                                        : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+                                    }`}
+                                  >
+                                    <Avatar className="w-10 h-10 border-2 border-background">
+                                      <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
+                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                        {artist?.stage_name?.charAt(0) || 'A'}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold text-foreground">
+                                        {artist?.stage_name}
+                                      </h3>
+                                      {artist?.plan === 'Premium' && (
+                                        <span className="text-accent text-xs">✓</span>
+                                      )}
+                                      {announcement.is_premium && (
+                                        <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                          Promotion
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <span>{artist?.specialization || "Artist"}</span>
+                                      <span>·</span>
+                                      <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                      <MoreHorizontal className="h-5 w-5" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        toast({
+                                          title: "Report submitted",
+                                          description: "Thank you for reporting this problem. We'll review it shortly.",
+                                        });
+                                      }}
+                                    >
+                                      <Flag className="h-4 w-4 mr-2" />
+                                      Report Problem
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
                               </div>
-                              <p className="text-sm text-foreground line-clamp-2">{announcement.description}</p>
+
+                              {/* Content */}
+                              <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
                             </div>
-                          </div>
+                            
+                            {/* Media for premium announcements */}
+                            {announcement.is_premium && announcement.media_url && (
+                              <div 
+                                className="mt-3 cursor-pointer bg-muted/30"
+                                onClick={() => setMediaPreview({
+                                  url: announcement.media_url!,
+                                  type: announcement.media_type === "video" ? "video" : "image"
+                                })}
+                              >
+                                {announcement.media_type === "video" ? (
+                                  <div className="relative w-full aspect-video">
+                                    <video 
+                                      src={announcement.media_url} 
+                                      className="absolute inset-0 w-full h-full object-contain bg-black"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="relative w-full aspect-[4/5] sm:aspect-video">
+                                    <img 
+                                      src={announcement.media_url} 
+                                      alt="Announcement media"
+                                      className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
+                            {/* Contact button */}
+                            <div className="px-2 py-2">
+                              <div className="flex items-center justify-around">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => navigate(`/artist/${artist?.id}`)}
+                                  className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted"
+                                >
+                                  <MessageCircle className="w-5 h-5" />
+                                  <span className="font-medium">Contact</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
                         ))
                       ) : (
-                        <p className="text-muted-foreground text-center py-8">No announcements yet.</p>
+                        <Card className="p-8 text-center">
+                          <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                          <p className="text-muted-foreground">No announcements yet.</p>
+                        </Card>
                       )}
                     </div>
                   </div>
@@ -1151,6 +1424,28 @@ const ArtistProfile = () => {
           </Card>
         </div>
       </div>
+
+      {/* Media Preview Dialog */}
+      <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none [&>button]:text-white">
+          <div className="flex items-center justify-center w-full h-full p-4">
+            {mediaPreview?.type === "video" ? (
+              <video 
+                src={mediaPreview.url} 
+                controls
+                autoPlay
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            ) : (
+              <img 
+                src={mediaPreview?.url} 
+                alt="Full size preview"
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
