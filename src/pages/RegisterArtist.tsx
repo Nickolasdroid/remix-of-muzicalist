@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
+import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 
 const RegisterArtist = () => {
   const { toast } = useToast();
@@ -395,13 +396,9 @@ const RegisterArtist = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="musicGenres">Music Genres *</Label>
-                  <Input
-                    id="musicGenres"
-                    required
+                  <MusicGenreCombobox
                     value={formData.musicGenres}
-                    onChange={(e) => setFormData({...formData, musicGenres: e.target.value})}
-                    className="bg-input border-border focus:border-accent"
-                    placeholder="e.g., Pop, Rock, Jazz"
+                    onChange={(value) => setFormData({...formData, musicGenres: value})}
                   />
                 </div>
 
