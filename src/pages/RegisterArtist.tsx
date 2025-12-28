@@ -450,6 +450,7 @@ const RegisterArtist = () => {
                     value={formData.careerStartYear}
                     onChange={(e) => setFormData({...formData, careerStartYear: e.target.value})}
                     className="bg-input border-border focus:border-accent"
+                    placeholder="e.g., 2020"
                   />
                 </div>
 
