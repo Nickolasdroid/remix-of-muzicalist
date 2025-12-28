@@ -3,8 +3,9 @@ import ArtistCard from "@/components/ArtistCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown } from "lucide-react";
+import { Trophy, ChevronDown, Search } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 
 const allCountries = [
@@ -222,6 +223,11 @@ const Leaderboard = () => {
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
+  const [countrySearch, setCountrySearch] = useState<string>("");
+
+  const filteredCountries = allCountries.filter(country =>
+    country.name.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   // Get unique counties from artists based on selected country
   const getAvailableCounties = () => {
@@ -299,23 +305,45 @@ const Leaderboard = () => {
             </p>
 
             <div className="flex gap-4 justify-center mt-8 items-center">
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={(open) => !open && setCountrySearch("")}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="min-w-[180px] justify-between">
                     {selectedCountry ? allCountries.find(c => c.code === selectedCountry)?.name : "Select Country"}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {allCountries.map((country) => (
-                    <DropdownMenuItem
-                      key={country.code}
-                      onClick={() => setSelectedCountry(country.code)}
-                      className="cursor-pointer"
-                    >
-                      {country.name}
-                    </DropdownMenuItem>
-                  ))}
+                <DropdownMenuContent align="center" className="min-w-[220px] p-0 bg-card border-border">
+                  <div className="p-2 border-b border-border">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search country..."
+                        value={countrySearch}
+                        onChange={(e) => setCountrySearch(e.target.value)}
+                        className="pl-8 h-8 bg-input"
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-[250px] overflow-y-auto">
+                    {filteredCountries.length > 0 ? (
+                      filteredCountries.map((country) => (
+                        <DropdownMenuItem
+                          key={country.code}
+                          onClick={() => {
+                            setSelectedCountry(country.code);
+                            setCountrySearch("");
+                          }}
+                          className="cursor-pointer"
+                        >
+                          {country.name}
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        No countries found
+                      </div>
+                    )}
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
 
