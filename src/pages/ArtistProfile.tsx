@@ -447,18 +447,21 @@ const ArtistProfile = () => {
 
                 {/* Contact Buttons */}
                 <div className="flex flex-wrap gap-3 mt-2">
-                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    <Mail className="mr-2 h-4 w-4" />
-                    {artist.email}
-                  </Button>
+                  {currentUserId && currentUserId !== artist.id ? (
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate(`/messages?artistId=${artist.id}`)}>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Contact
+                    </Button>
+                  ) : !currentUserId ? (
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Contact
+                    </Button>
+                  ) : null}
                   <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                     <Phone className="mr-2 h-4 w-4" />
                     {artist.phone || 'No phone'}
                   </Button>
-                  {currentUserId && currentUserId !== artist.id && <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground" onClick={() => navigate(`/messages?artistId=${artist.id}`)}>
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Message
-                    </Button>}
                 </div>
               </div>
             </div>
