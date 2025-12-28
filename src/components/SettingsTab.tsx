@@ -155,8 +155,8 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
   };
 
   return (
-    <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)] max-w-md mx-auto">
-      <CardContent className="p-8">
+    <div className="w-full min-h-screen">
+      <div className="max-w-xl p-8">
         <h3 className="text-xl font-display font-bold mb-4">Account Settings</h3>
         <div className="space-y-4">
           <div>
@@ -372,8 +372,8 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
             </AlertDialog>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
