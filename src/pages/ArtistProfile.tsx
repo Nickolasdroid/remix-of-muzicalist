@@ -434,7 +434,7 @@ const ArtistProfile = () => {
                         </Badge>}
                       
                       {/* Display instruments for instrumentalists */}
-                      {artist.specialization === 'instrumentalist' && artist.instruments && (
+                      {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
                         artist.instruments.split(',').map(instrument => (
                           <Badge 
                             key={instrument.trim()} 
