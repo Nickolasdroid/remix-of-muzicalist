@@ -211,7 +211,8 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                   <Input
                     value={formData.email}
                     disabled
-                    className="max-w-md bg-muted/50"
+                    className="bg-muted/50"
+                    style={{ width: `${Math.max(formData.email.length + 2, 20)}ch` }}
                   />
                   <p className="text-xs text-muted-foreground">Email cannot be changed</p>
                 </div>
