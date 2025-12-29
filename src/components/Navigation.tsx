@@ -74,7 +74,7 @@ const Navigation = () => {
   return (
     <>
       {/* Top Header Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/50 border-b border-accent/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-accent/20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo + Menu Toggle + Search */}
@@ -210,7 +210,7 @@ const Navigation = () => {
 
       {/* Left Sidebar */}
       <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background/50 border-r border-accent/20 z-40 transform transition-transform duration-300 ${
+        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background border-r border-accent/20 z-40 transform transition-transform duration-300 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
