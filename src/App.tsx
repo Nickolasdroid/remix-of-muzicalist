@@ -15,7 +15,6 @@ import Counties from "./pages/Counties";
 import CountyArtists from "./pages/CountyArtists";
 import Announcements from "./pages/Announcements";
 import About from "./pages/About";
-import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ArtistProfile from "./pages/ArtistProfile";
@@ -40,7 +39,6 @@ const App = () => (
           <Route path="/counties/:county" element={<CountyArtists />} />
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/register/artist" element={<RegisterArtist />} />
