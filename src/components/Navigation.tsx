@@ -77,22 +77,19 @@ const Navigation = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/50 border-b border-accent/20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Left: Logo + Menu Toggle + Search */}
+            {/* Left: Logo (opens menu) + Search */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 hover:bg-accent/10 rounded-lg transition-colors"
+                className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors group"
               >
+                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain transition-transform group-hover:scale-110" />
                 {sidebarOpen ? (
                   <X className="h-5 w-5 text-foreground" />
                 ) : (
                   <Menu className="h-5 w-5 text-foreground" />
                 )}
               </button>
-              
-              <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain transition-transform group-hover:scale-110" />
-              </Link>
 
               <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
