@@ -1009,9 +1009,9 @@ const Dashboard = () => {
                         <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                       </div>
 
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between flex-wrap gap-4">
-                        <div className="flex-1">
+                      <div className="flex-1 flex flex-col justify-center h-40">
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                          <div>
                             <div className="flex items-center gap-3 mb-2">
                               <h1 className="text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
@@ -1021,7 +1021,7 @@ const Dashboard = () => {
                               </Badge>
                             </div>
                             
-                            <div className="flex flex-wrap gap-3 mb-4">
+                            <div className="flex flex-wrap items-center gap-3">
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
@@ -1059,7 +1059,6 @@ const Dashboard = () => {
                             <span className="text-2xl font-bold">New</span>
                           </div>
                         </div>
-
                       </div>
                     </div>
 
