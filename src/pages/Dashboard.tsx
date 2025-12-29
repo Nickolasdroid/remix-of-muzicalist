@@ -1523,7 +1523,7 @@ const Dashboard = () => {
                               <DialogTrigger asChild>
                                 <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={postsRemaining <= 0}>
                                   <Plus className="h-4 w-4 mr-1" />
-                                  Create Post
+                                  New Post
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-2xl">
