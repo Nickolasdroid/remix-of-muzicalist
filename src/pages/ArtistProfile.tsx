@@ -416,9 +416,9 @@ const ArtistProfile = () => {
                 </Avatar>
               </div>
 
-              <div className="flex-1">
-                <div className="flex items-start justify-between flex-wrap gap-4">
-                  <div className="flex-1">
+              <div className="flex-1 flex flex-col justify-center h-40">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
                     <div className="flex items-center gap-3 mb-2">
                       <h1 className="text-4xl font-display font-bold text-foreground">
                         {artist.stage_name}
@@ -428,7 +428,7 @@ const ArtistProfile = () => {
                       </Badge>
                     </div>
                     
-                    <div className="flex flex-wrap gap-3 mb-4">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
                       {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
                         </Badge>}
@@ -440,11 +440,26 @@ const ArtistProfile = () => {
                           {artist.instruments.split(',')[0].trim()}
                         </Badge>
                       )}
-                      
+                    </div>
+
+                    {/* Location and Contact on same row */}
+                    <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-5 w-5" />
                         <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
                       </div>
+                      
+                      {currentUserId && currentUserId !== artist.id ? (
+                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Contact
+                        </Button>
+                      ) : !currentUserId ? (
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Contact
+                        </Button>
+                      ) : null}
                     </div>
                   </div>
 
@@ -453,18 +468,6 @@ const ArtistProfile = () => {
                     <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
                     {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
                   </div>
-                </div>
-
-                {/* Contact Buttons */}
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Contact
-                    </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Contact
-                    </Button> : null}
-                  
                 </div>
               </div>
             </div>
