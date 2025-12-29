@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,7 @@ interface Profile {
   youtube_url: string | null;
   tiktok_url: string | null;
   spotify_url: string | null;
+  instruments: string | null;
 }
 interface Announcement {
   id: string;
@@ -431,6 +432,21 @@ const ArtistProfile = () => {
                       {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
                         </Badge>}
+                      
+                      {/* Display instruments for instrumentalists */}
+                      {artist.specialization === 'instrumentalist' && artist.instruments && (
+                        artist.instruments.split(',').map(instrument => (
+                          <Badge 
+                            key={instrument.trim()} 
+                            variant="outline" 
+                            className="border-accent/50 text-accent px-3 py-1.5 text-base"
+                          >
+                            <Music2 className="h-4 w-4 mr-1" />
+                            {instrument.trim()}
+                          </Badge>
+                        ))
+                      )}
+                      
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-5 w-5" />
                         <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>

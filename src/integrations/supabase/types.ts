@@ -301,6 +301,7 @@ export type Database = {
           first_name: string
           id: string
           instagram_url: string | null
+          instruments: string | null
           last_name: string
           music_genres: string | null
           number_of_events: number
@@ -331,6 +332,7 @@ export type Database = {
           first_name: string
           id: string
           instagram_url?: string | null
+          instruments?: string | null
           last_name: string
           music_genres?: string | null
           number_of_events?: number
@@ -361,6 +363,7 @@ export type Database = {
           first_name?: string
           id?: string
           instagram_url?: string | null
+          instruments?: string | null
           last_name?: string
           music_genres?: string | null
           number_of_events?: number
