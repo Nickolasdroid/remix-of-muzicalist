@@ -156,8 +156,6 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
 
   const navItems = [
     { id: "account", label: "Account", icon: User },
-    { id: "security", label: "Security", icon: KeyRound },
-    { id: "danger", label: "Danger Zone", icon: AlertTriangle },
   ];
 
   return (
@@ -204,13 +202,11 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
               <div className="space-y-6">
                 {/* Email */}
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base font-medium">Email address</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Your email address is used for login and notifications
-                      </p>
-                    </div>
+                  <div>
+                    <Label className="text-base font-medium">Email address</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Your email address is used for login and notifications
+                    </p>
                   </div>
                   <Input
                     value={formData.email}
@@ -223,7 +219,7 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                 <Separator />
 
                 {/* Sign Out */}
-                <div className="space-y-2">
+                <div className="flex items-center justify-between">
                   <div>
                     <Label className="text-base font-medium">Sign out</Label>
                     <p className="text-sm text-muted-foreground">
@@ -233,44 +229,28 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                   <Button 
                     variant="outline" 
                     onClick={handleLogout}
-                    className="mt-2"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* Security Section */}
-          {activeSection === "security" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-display font-bold text-foreground">Security</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Manage your password and security preferences
-                </p>
-              </div>
+                <Separator />
 
-              <Separator />
-
-              <div className="space-y-6">
-                {/* Password */}
-                <div className="space-y-2">
+                {/* Change Password */}
+                <div className="flex items-center justify-between">
                   <div>
                     <Label className="text-base font-medium">Password</Label>
                     <p className="text-sm text-muted-foreground">
                       Change your password to keep your account secure
                     </p>
                   </div>
-                  
                   <Dialog open={showPasswordDialog} onOpenChange={(open) => {
                     setShowPasswordDialog(open);
                     if (!open) resetPasswordForm();
                   }}>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="mt-2">
+                      <Button variant="outline">
                         <Lock className="h-4 w-4 mr-2" />
                         Change Password
                       </Button>
@@ -412,69 +392,50 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
                     </DialogContent>
                   </Dialog>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* Danger Zone Section */}
-          {activeSection === "danger" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-display font-bold text-destructive">Danger Zone</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Irreversible and destructive actions
-                </p>
-              </div>
+                <Separator />
 
-              <Separator />
-
-              <div className="space-y-6">
                 {/* Delete Account */}
-                <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/5">
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-base font-medium text-destructive">Delete account</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Permanently delete your account and all associated data. This action cannot be undone.
-                      </p>
-                    </div>
-                    
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="destructive" 
-                          className="mt-2"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete Account
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your
-                            account and remove all your data from our servers including your profile,
-                            announcements, gallery, and calendar events.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={handleDeleteAccount}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            disabled={isSaving}
-                          >
-                            {isSaving ? "Deleting..." : "Delete Account"}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-base font-medium text-destructive">Delete account</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Permanently delete your account and all data
+                    </p>
                   </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete your
+                          account and remove all your data from our servers including your profile,
+                          announcements, gallery, and calendar events.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={isSaving}
+                        >
+                          {isSaving ? "Deleting..." : "Delete Account"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>
