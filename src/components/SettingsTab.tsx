@@ -199,7 +199,7 @@ const SettingsTab = ({ formData, handleLogout, handleDeleteAccount, isSaving }: 
 
               <Separator />
 
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {/* Email */}
                 <div className="space-y-2">
                   <div>
