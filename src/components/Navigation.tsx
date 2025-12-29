@@ -83,7 +83,7 @@ const Navigation = () => {
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors group"
               >
-                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain transition-transform group-hover:scale-110" />
+                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
                 {sidebarOpen ? (
                   <X className="h-5 w-5 text-foreground" />
                 ) : (
