@@ -285,7 +285,7 @@ const Feed = () => {
                   <p className="text-foreground mt-3 whitespace-pre-wrap">{item.content}</p>
                 </div>
                 
-                {/* Media - Standardized aspect ratios */}
+                {/* Media - Natural aspect ratio for landscape images */}
                 {item.media_url && (
                   <div 
                     className="mt-3 cursor-pointer bg-muted/30"
@@ -303,13 +303,11 @@ const Feed = () => {
                         />
                       </div>
                     ) : (
-                      <div className="relative w-full aspect-[4/5] sm:aspect-video">
-                        <img 
-                          src={item.media_url} 
-                          alt="Post content"
-                          className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity"
-                        />
-                      </div>
+                      <img 
+                        src={item.media_url} 
+                        alt="Post content"
+                        className="w-full h-auto object-contain hover:opacity-95 transition-opacity"
+                      />
                     )}
                   </div>
                 )}
