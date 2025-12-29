@@ -14,7 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2 } from "lucide-react";
+import InstrumentSelector from "@/components/InstrumentSelector";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -68,7 +69,8 @@ const Dashboard = () => {
     instagramUrl: "",
     youtubeUrl: "",
     tiktokUrl: "",
-    spotifyUrl: ""
+    spotifyUrl: "",
+    instruments: ""
   });
 
   // Announcements state
@@ -276,7 +278,8 @@ const Dashboard = () => {
         instagramUrl: profileData.instagram_url || "",
         youtubeUrl: profileData.youtube_url || "",
         tiktokUrl: profileData.tiktok_url || "",
-        spotifyUrl: profileData.spotify_url || ""
+        spotifyUrl: profileData.spotify_url || "",
+        instruments: profileData.instruments || ""
       });
     } catch (error: any) {
       console.error('Auth check error:', error);
@@ -429,6 +432,9 @@ const Dashboard = () => {
           updateData.youtube_url = formData.youtubeUrl;
           updateData.tiktok_url = formData.tiktokUrl;
           updateData.spotify_url = formData.spotifyUrl;
+          break;
+        case 'instruments':
+          updateData.instruments = formData.instruments;
           break;
       }
       const {
@@ -1025,6 +1031,22 @@ const Dashboard = () => {
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
+                              
+                              {/* Instrument Selector for Instrumentalists */}
+                              {formData.specialization === 'instrumentalist' && (
+                                <InstrumentSelector
+                                  instruments={formData.instruments}
+                                  onInstrumentsChange={(instruments) => {
+                                    setFormData({ ...formData, instruments });
+                                    // Auto-save instruments
+                                    supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                                      if (!error) {
+                                        toast({ title: "Saved", description: "Instruments updated!" });
+                                      }
+                                    });
+                                  }}
+                                />
+                              )}
                               
                               {editingField === 'location' ? <div className="flex items-center gap-2">
                                   <Select value={formData.county} onValueChange={value => setFormData({
