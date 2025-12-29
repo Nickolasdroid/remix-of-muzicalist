@@ -1513,100 +1513,98 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-6">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                            <FileText className="h-6 w-6 text-accent" />
-                            My Posts
-                            <span className="text-muted-foreground">({monthlyPostsCount}/{STANDARD_POST_LIMIT})</span>
-                          </h2>
-                          <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
-                            <DialogTrigger asChild>
-                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={postsRemaining <= 0}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Create Post
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>Create New Post</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4 mt-4">
-                                <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'text' | 'image' | 'video')}>
-                                  <TabsList className="grid w-full grid-cols-3">
-                                    <TabsTrigger value="text">Text Only</TabsTrigger>
-                                    <TabsTrigger value="image">Photo</TabsTrigger>
-                                    <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList>
-                                  
-                                  <TabsContent value="text" className="space-y-4">
-                                    <div>
-                                      <Label>Post Content</Label>
-                                      <Textarea value={newPost.content} onChange={e => setNewPost({
-                                        ...newPost,
-                                        content: e.target.value
-                                      })} placeholder="What's on your mind?" rows={6} className="mt-2" />
-                                    </div>
-                                  </TabsContent>
-                                  
-                                  <TabsContent value="image" className="space-y-4">
-                                    <div>
-                                      <Label>Post Content</Label>
-                                      <Textarea value={newPost.content} onChange={e => setNewPost({
-                                        ...newPost,
-                                        content: e.target.value
-                                      })} placeholder="What's on your mind?" rows={4} className="mt-2" />
-                                    </div>
-                                    {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
-                                        <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                          ...newPost,
-                                          mediaUrl: "",
-                                          mediaType: ""
-                                        })}>
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>}
-                                    {!newPost.mediaUrl && <>
-                                        <Label htmlFor="post-image-inner" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
-                                      </>}
-                                  </TabsContent>
-                                  
-                                  <TabsContent value="video" className="space-y-4">
-                                    <div>
-                                      <Label>Post Content</Label>
-                                      <Textarea value={newPost.content} onChange={e => setNewPost({
-                                        ...newPost,
-                                        content: e.target.value
-                                      })} placeholder="What's on your mind?" rows={4} className="mt-2" />
-                                    </div>
-                                    <div>
-                                      <Label>Video URL (YouTube/Embed)</Label>
-                                      <Input value={newPost.mediaUrl} onChange={e => {
-                                        setNewPost({
-                                          ...newPost,
-                                          mediaUrl: e.target.value,
-                                          mediaType: 'video'
-                                        });
-                                      }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
-                                    </div>
-                                  </TabsContent>
-                                </Tabs>
-                                
-                                <Button onClick={handleAddPost} disabled={isSaving || !newPost.content} className="w-full bg-accent text-accent-foreground">
-                                  {isSaving ? "Creating..." : "Create Post"}
-                                </Button>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                        
                         <div className="max-w-[500px] mx-auto space-y-4">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-accent" />
+                              <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
+                            </div>
+                            <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
+                              <DialogTrigger asChild>
+                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={postsRemaining <= 0}>
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Create Post
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>Create New Post</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-4">
+                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'text' | 'image' | 'video')}>
+                                    <TabsList className="grid w-full grid-cols-3">
+                                      <TabsTrigger value="text">Text Only</TabsTrigger>
+                                      <TabsTrigger value="image">Photo</TabsTrigger>
+                                      <TabsTrigger value="video">Video</TabsTrigger>
+                                    </TabsList>
+                                    
+                                    <TabsContent value="text" className="space-y-4">
+                                      <div>
+                                        <Label>Post Content</Label>
+                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                          ...newPost,
+                                          content: e.target.value
+                                        })} placeholder="What's on your mind?" rows={6} className="mt-2" />
+                                      </div>
+                                    </TabsContent>
+                                    
+                                    <TabsContent value="image" className="space-y-4">
+                                      <div>
+                                        <Label>Post Content</Label>
+                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                          ...newPost,
+                                          content: e.target.value
+                                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                      </div>
+                                      {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
+                                          <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
+                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
+                                            ...newPost,
+                                            mediaUrl: "",
+                                            mediaType: ""
+                                          })}>
+                                            <X className="h-4 w-4" />
+                                          </Button>
+                                        </div>}
+                                      {!newPost.mediaUrl && <>
+                                          <Label htmlFor="post-image-inner" className="cursor-pointer">
+                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                              <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                            </div>
+                                          </Label>
+                                          <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                        </>}
+                                    </TabsContent>
+                                    
+                                    <TabsContent value="video" className="space-y-4">
+                                      <div>
+                                        <Label>Post Content</Label>
+                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                          ...newPost,
+                                          content: e.target.value
+                                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                      </div>
+                                      <div>
+                                        <Label>Video URL (YouTube/Embed)</Label>
+                                        <Input value={newPost.mediaUrl} onChange={e => {
+                                          setNewPost({
+                                            ...newPost,
+                                            mediaUrl: e.target.value,
+                                            mediaType: 'video'
+                                          });
+                                        }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
+                                      </div>
+                                    </TabsContent>
+                                  </Tabs>
+                                  
+                                  <Button onClick={handleAddPost} disabled={isSaving || !newPost.content} className="w-full bg-accent text-accent-foreground">
+                                    {isSaving ? "Creating..." : "Create Post"}
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
                           {posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                               <div className="p-4 pb-0">
                                 <div className="flex items-start justify-between">
@@ -1658,84 +1656,83 @@ const Dashboard = () => {
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
-                          <div className="flex items-center gap-6">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                        <div className="max-w-[500px] mx-auto space-y-4">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                            <div className="flex items-center gap-6">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                              </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-accent" />
-                              <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                              <DollarSign className="h-4 w-4 mr-1" />
-                              Buy Ads
-                            </Button>
-                            <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  New Ad
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Add New Announcement</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 mt-4">
-                                  <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                                    <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
-                                      ...newAnnouncement,
-                                      isPremium: checked as boolean
-                                    })} />
-                                    <Label htmlFor="premium-ad-inner" className="cursor-pointer font-medium">
-                                      Promotion Ad (with photo/video)
-                                    </Label>
-                                  </div>
-                                  
-                                  <div>
-                                    <Label htmlFor="announcement-text-inner">Announcement Text</Label>
-                                    <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
-                                      ...newAnnouncement,
-                                      description: e.target.value
-                                    })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
-                                  </div>
-                                  
-                                  {newAnnouncement.isPremium && <div>
-                                      <Label htmlFor="announcement-media-inner">Photo/Video</Label>
-                                      {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
-                                          {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                                            ...newAnnouncement,
-                                            mediaUrl: "",
-                                            mediaType: ""
-                                          })}>
-                                            <X className="h-4 w-4" />
-                                          </Button>
-                                        </div> : <>
-                                          <Label htmlFor="announcement-media-input-inner" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                              <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                            </div>
-                                          </Label>
-                                          <Input id="announcement-media-input-inner" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
-                                        </>}
-                                    </div>}
-                                  
-                                  <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
-                                    {isSaving ? "Adding..." : "Add Announcement"}
+                              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                                <DollarSign className="h-4 w-4 mr-1" />
+                                Buy Ads
+                              </Button>
+                              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    New Ad
                                   </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                  <DialogHeader>
+                                    <DialogTitle>Add New Announcement</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4 mt-4">
+                                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
+                                      <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
+                                        ...newAnnouncement,
+                                        isPremium: checked as boolean
+                                      })} />
+                                      <Label htmlFor="premium-ad-inner" className="cursor-pointer font-medium">
+                                        Promotion Ad (with photo/video)
+                                      </Label>
+                                    </div>
+                                    
+                                    <div>
+                                      <Label htmlFor="announcement-text-inner">Announcement Text</Label>
+                                      <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
+                                        ...newAnnouncement,
+                                        description: e.target.value
+                                      })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
+                                    </div>
+                                    
+                                    {newAnnouncement.isPremium && <div>
+                                        <Label htmlFor="announcement-media-inner">Photo/Video</Label>
+                                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
+                                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
+                                              ...newAnnouncement,
+                                              mediaUrl: "",
+                                              mediaType: ""
+                                            })}>
+                                              <X className="h-4 w-4" />
+                                            </Button>
+                                          </div> : <>
+                                            <Label htmlFor="announcement-media-input-inner" className="cursor-pointer">
+                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                              </div>
+                                            </Label>
+                                            <Input id="announcement-media-input-inner" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
+                                          </>}
+                                      </div>}
+                                    
+                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Adding..." : "Add Announcement"}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="space-y-4 max-w-[500px] mx-auto">
                           {announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                               <div className="p-4 pb-0">
                                 <div className="flex items-start justify-between">
