@@ -130,6 +130,8 @@ const Dashboard = () => {
 
   // Booking requests state
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
+  const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
+  const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
@@ -165,7 +167,7 @@ const Dashboard = () => {
     if (!user) return;
     const {
       data
-    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).eq('status', 'pending').order('created_at', {
+    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (data) setBookingRequests(data);
@@ -1950,53 +1952,216 @@ const Dashboard = () => {
                           </div>
 
                           {/* Booking Requests Section */}
-                          {bookingRequests.length > 0 && <div className="mt-8 pt-8 border-t border-border">
-                              <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5 text-accent" />
-                                Booking Requests
-                              </h3>
-                              <div className="space-y-4">
-                                {bookingRequests.map(request => <Card key={request.id} className="border-accent/20">
+                          <div className="mt-8 pt-8 border-t border-border">
+                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                              <CalendarIcon className="h-5 w-5 text-accent" />
+                              Booking Requests
+                            </h3>
+                            
+                            {bookingRequests.length === 0 ? (
+                              <Card className="border-2 border-dashed border-border/50">
+                                <CardContent className="p-8 text-center">
+                                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                                  <p className="text-muted-foreground">No booking requests yet</p>
+                                </CardContent>
+                              </Card>
+                            ) : (
+                              <div className="space-y-3">
+                                {bookingRequests.map(request => (
+                                  <Card 
+                                    key={request.id} 
+                                    className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer"
+                                    onClick={() => {
+                                      setSelectedBookingRequest(request);
+                                      setShowBookingDetailDialog(true);
+                                    }}
+                                  >
                                     <CardContent className="p-4">
-                                      <div className="flex items-start justify-between gap-4">
-                                        <div className="flex-1 space-y-2">
-                                          <div className="flex items-center gap-3">
-                                            <Badge variant="outline" className="border-accent/50 text-accent">
-                                              {new Date(request.event_date).toLocaleDateString('en-US', {
-                                  weekday: 'long',
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                })}
-                                            </Badge>
-                                            {request.event_type && <Badge variant="secondary">{request.event_type}</Badge>}
-                                          </div>
-                                          <div className="grid gap-1 text-sm">
-                                            <p className="font-semibold text-foreground">{request.requester_name}</p>
-                                            <p className="text-muted-foreground flex items-center gap-1">
-                                              <Mail className="h-3 w-3" />
-                                              {request.requester_email}
-                                            </p>
-                                            <p className="text-muted-foreground flex items-center gap-1">
-                                              <Phone className="h-3 w-3" />
-                                              {request.requester_phone}
-                                            </p>
-                                            {request.message && <p className="text-muted-foreground mt-2 italic">"{request.message}"</p>}
+                                      <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                                              <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
+                                              <Badge 
+                                                className={
+                                                  request.status === 'pending' 
+                                                    ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' 
+                                                    : request.status === 'accepted' 
+                                                    ? 'bg-green-500/20 text-green-600 border-green-500/30'
+                                                    : 'bg-destructive/20 text-destructive border-destructive/30'
+                                                }
+                                              >
+                                                {request.status === 'pending' ? 'Pending' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
+                                              </Badge>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                              <span>{new Date(request.event_date).toLocaleDateString('en-US', {
+                                                weekday: 'short',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                              })}</span>
+                                              {request.event_type && (
+                                                <>
+                                                  <span>·</span>
+                                                  <span>{request.event_type}</span>
+                                                </>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                          <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                            Accept
-                                          </Button>
-                                          <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving}>
-                                            Decline
-                                          </Button>
-                                        </div>
+                                        
+                                        {request.status === 'pending' && (
+                                          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                            <Button 
+                                              size="sm" 
+                                              onClick={() => handleAcceptBooking(request)} 
+                                              disabled={isSaving} 
+                                              className="bg-accent text-accent-foreground hover:bg-accent/90"
+                                            >
+                                              Accept
+                                            </Button>
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline" 
+                                              onClick={() => handleDeclineBooking(request.id)} 
+                                              disabled={isSaving}
+                                            >
+                                              Decline
+                                            </Button>
+                                          </div>
+                                        )}
                                       </div>
                                     </CardContent>
-                                  </Card>)}
+                                  </Card>
+                                ))}
                               </div>
-                            </div>}
+                            )}
+                          </div>
+
+                          {/* Booking Request Detail Dialog */}
+                          <Dialog open={showBookingDetailDialog} onOpenChange={setShowBookingDetailDialog}>
+                            <DialogContent className="max-w-md">
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2">
+                                  <CalendarIcon className="h-5 w-5 text-accent" />
+                                  Booking Request Details
+                                </DialogTitle>
+                              </DialogHeader>
+                              {selectedBookingRequest && (
+                                <div className="space-y-4 mt-2">
+                                  <div className="flex items-center gap-2">
+                                    <Badge 
+                                      className={
+                                        selectedBookingRequest.status === 'pending' 
+                                          ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' 
+                                          : selectedBookingRequest.status === 'accepted' 
+                                          ? 'bg-green-500/20 text-green-600 border-green-500/30'
+                                          : 'bg-destructive/20 text-destructive border-destructive/30'
+                                      }
+                                    >
+                                      {selectedBookingRequest.status === 'pending' ? 'Pending' : selectedBookingRequest.status === 'accepted' ? 'Accepted' : 'Declined'}
+                                    </Badge>
+                                  </div>
+
+                                  <Separator />
+
+                                  <div className="space-y-3">
+                                    <div>
+                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Requester</Label>
+                                      <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Email</Label>
+                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
+                                          <Mail className="h-3 w-3 text-muted-foreground" />
+                                          {selectedBookingRequest.requester_email}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Phone</Label>
+                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
+                                          <Phone className="h-3 w-3 text-muted-foreground" />
+                                          {selectedBookingRequest.requester_phone}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Date</Label>
+                                      <p className="text-foreground mt-1 flex items-center gap-2">
+                                        <CalendarIcon className="h-4 w-4 text-accent" />
+                                        {new Date(selectedBookingRequest.event_date).toLocaleDateString('en-US', {
+                                          weekday: 'long',
+                                          year: 'numeric',
+                                          month: 'long',
+                                          day: 'numeric'
+                                        })}
+                                      </p>
+                                    </div>
+
+                                    {selectedBookingRequest.event_type && (
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Type</Label>
+                                        <p className="text-foreground mt-1">{selectedBookingRequest.event_type}</p>
+                                      </div>
+                                    )}
+
+                                    {selectedBookingRequest.message && (
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Message</Label>
+                                        <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">"{selectedBookingRequest.message}"</p>
+                                      </div>
+                                    )}
+
+                                    <div>
+                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Received</Label>
+                                      <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(selectedBookingRequest.created_at).toLocaleDateString('en-US', {
+                                          year: 'numeric',
+                                          month: 'long',
+                                          day: 'numeric',
+                                          hour: '2-digit',
+                                          minute: '2-digit'
+                                        })}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {selectedBookingRequest.status === 'pending' && (
+                                    <>
+                                      <Separator />
+                                      <div className="flex gap-2">
+                                        <Button 
+                                          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                                          onClick={() => {
+                                            handleAcceptBooking(selectedBookingRequest);
+                                            setShowBookingDetailDialog(false);
+                                          }}
+                                          disabled={isSaving}
+                                        >
+                                          Accept
+                                        </Button>
+                                        <Button 
+                                          variant="outline" 
+                                          className="flex-1"
+                                          onClick={() => {
+                                            handleDeclineBooking(selectedBookingRequest.id);
+                                            setShowBookingDetailDialog(false);
+                                          }}
+                                          disabled={isSaving}
+                                        >
+                                          Decline
+                                        </Button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </TabsContent>
                     </Tabs>
