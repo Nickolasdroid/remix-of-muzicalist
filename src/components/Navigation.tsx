@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react";
+import ReportDialog from "./ReportDialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -19,6 +20,7 @@ const Navigation = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -68,7 +70,6 @@ const Navigation = () => {
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/counties', icon: MapPin, label: 'Counties' },
     { to: '/about', icon: Info, label: 'About' },
-    { to: '/contact', icon: Mail, label: 'Contact' },
   ];
 
   return (
@@ -227,6 +228,18 @@ const Navigation = () => {
               <span className="font-medium">{link.label}</span>
             </Link>
           ))}
+          
+          {/* Report button */}
+          <button
+            onClick={() => {
+              setSidebarOpen(false);
+              setReportDialogOpen(true);
+            }}
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+          >
+            <Flag className="h-5 w-5" />
+            <span className="font-medium">Report</span>
+          </button>
         </div>
       </aside>
 
@@ -237,6 +250,8 @@ const Navigation = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      <ReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </>
   );
 };
