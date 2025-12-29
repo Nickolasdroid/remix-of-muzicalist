@@ -433,18 +433,12 @@ const ArtistProfile = () => {
                           {artist.specialization}
                         </Badge>}
                       
-                      {/* Display instruments for instrumentalists */}
+                      {/* Display instrument for instrumentalists */}
                       {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
-                        artist.instruments.split(',').map(instrument => (
-                          <Badge 
-                            key={instrument.trim()} 
-                            variant="outline" 
-                            className="border-accent/50 text-accent px-3 py-1.5 text-base"
-                          >
-                            <Music2 className="h-4 w-4 mr-1" />
-                            {instrument.trim()}
-                          </Badge>
-                        ))
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          <Music2 className="h-4 w-4 mr-1.5" />
+                          {artist.instruments.split(',')[0].trim()}
+                        </Badge>
                       )}
                       
                       <div className="flex items-center gap-2 text-muted-foreground">

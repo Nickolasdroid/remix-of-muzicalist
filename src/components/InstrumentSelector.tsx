@@ -33,132 +33,114 @@ const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const selectedInstruments = instruments ? instruments.split(',').map(i => i.trim()).filter(i => i) : [];
+  // Only use first instrument (single selection)
+  const selectedInstrument = instruments ? instruments.split(',')[0].trim() : "";
 
   const filteredInstruments = INSTRUMENTS.filter(
     instrument => 
-      instrument.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !selectedInstruments.includes(instrument)
+      instrument.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddInstrument = (instrument: string) => {
-    const newInstruments = [...selectedInstruments, instrument];
-    onInstrumentsChange(newInstruments.join(', '));
+  const handleSelectInstrument = (instrument: string) => {
+    onInstrumentsChange(instrument);
+    setOpen(false);
+    setSearchQuery("");
   };
 
-  const handleRemoveInstrument = (instrument: string) => {
-    const newInstruments = selectedInstruments.filter(i => i !== instrument);
-    onInstrumentsChange(newInstruments.join(', '));
+  const handleRemoveInstrument = () => {
+    onInstrumentsChange("");
   };
 
   const handleAddCustom = () => {
-    if (searchQuery.trim() && !selectedInstruments.includes(searchQuery.trim())) {
-      handleAddInstrument(searchQuery.trim());
-      setSearchQuery("");
+    if (searchQuery.trim()) {
+      handleSelectInstrument(searchQuery.trim());
     }
   };
 
   if (readOnly) {
-    return (
-      <div className="flex flex-wrap gap-2">
-        {selectedInstruments.length > 0 ? (
-          selectedInstruments.map(instrument => (
-            <Badge 
-              key={instrument} 
-              variant="outline" 
-              className="border-accent/50 text-accent px-3 py-1"
-            >
-              <Music2 className="h-3 w-3 mr-1" />
-              {instrument}
-            </Badge>
-          ))
-        ) : (
-          <p className="text-muted-foreground">No instruments specified</p>
-        )}
-      </div>
-    );
+    return selectedInstrument ? (
+      <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+        <Music2 className="h-4 w-4 mr-1.5" />
+        {selectedInstrument}
+      </Badge>
+    ) : null;
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {selectedInstruments.map(instrument => (
+    <div className="flex items-center gap-2">
+      {selectedInstrument ? (
         <Badge 
-          key={instrument} 
-          variant="default" 
-          className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80"
-          onClick={() => handleRemoveInstrument(instrument)}
+          className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group"
+          onClick={handleRemoveInstrument}
         >
-          <Music2 className="h-3 w-3 mr-1" />
-          {instrument}
-          <X className="h-3 w-3 ml-1" />
+          <Music2 className="h-4 w-4 mr-1.5" />
+          {selectedInstrument}
+          <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Badge>
-      ))}
-      
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button size="sm" variant="outline" className="gap-1 border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-            <Plus className="h-4 w-4" />
-            Add Instrument
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Music2 className="h-5 w-5 text-accent" />
-              Select Instruments
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search or add custom instrument..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddCustom();
-                  }
-                }}
-              />
-            </div>
-
-            {searchQuery && !INSTRUMENTS.some(i => i.toLowerCase() === searchQuery.toLowerCase()) && (
-              <Button 
-                variant="outline" 
-                className="w-full justify-start gap-2 border-dashed"
-                onClick={handleAddCustom}
-              >
-                <Plus className="h-4 w-4" />
-                Add "{searchQuery}" as custom instrument
-              </Button>
-            )}
-
-            <ScrollArea className="h-64">
-              <div className="grid grid-cols-2 gap-2">
-                {filteredInstruments.map(instrument => (
-                  <Button
-                    key={instrument}
-                    variant="outline"
-                    size="sm"
-                    className="justify-start text-left h-auto py-2 px-3"
-                    onClick={() => {
-                      handleAddInstrument(instrument);
-                      setSearchQuery("");
-                    }}
-                  >
-                    <Music2 className="h-3 w-3 mr-2 flex-shrink-0" />
-                    <span className="truncate">{instrument}</span>
-                  </Button>
-                ))}
+      ) : (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline" className="gap-1.5 border-accent/30 text-muted-foreground hover:bg-accent/10 hover:text-accent hover:border-accent/50">
+              <Plus className="h-4 w-4" />
+              Add Instrument
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Music2 className="h-5 w-5 text-accent" />
+                Select Your Instrument
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search or add custom instrument..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustom();
+                    }
+                  }}
+                />
               </div>
-            </ScrollArea>
-          </div>
-        </DialogContent>
-      </Dialog>
+
+              {searchQuery && !INSTRUMENTS.some(i => i.toLowerCase() === searchQuery.toLowerCase()) && (
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-2 border-dashed"
+                  onClick={handleAddCustom}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add "{searchQuery}" as custom instrument
+                </Button>
+              )}
+
+              <ScrollArea className="h-64">
+                <div className="grid grid-cols-2 gap-2">
+                  {filteredInstruments.map(instrument => (
+                    <Button
+                      key={instrument}
+                      variant="outline"
+                      size="sm"
+                      className="justify-start text-left h-auto py-2 px-3"
+                      onClick={() => handleSelectInstrument(instrument)}
+                    >
+                      <Music2 className="h-3 w-3 mr-2 flex-shrink-0" />
+                      <span className="truncate">{instrument}</span>
+                    </Button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
