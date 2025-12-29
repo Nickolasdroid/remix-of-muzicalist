@@ -306,7 +306,7 @@ const Feed = () => {
                       <img 
                         src={item.media_url} 
                         alt="Post content"
-                        className="w-full h-auto object-contain hover:opacity-95 transition-opacity"
+                        className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity"
                       />
                     )}
                   </div>
