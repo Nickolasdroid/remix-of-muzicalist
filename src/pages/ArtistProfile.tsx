@@ -442,13 +442,8 @@ const ArtistProfile = () => {
                       )}
                     </div>
 
-                    {/* Location and Contact on same row */}
+                    {/* Contact and Location on same row */}
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-5 w-5" />
-                        <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
-                      </div>
-                      
                       {currentUserId && currentUserId !== artist.id ? (
                         <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
                           <MessageCircle className="mr-2 h-4 w-4" />
@@ -460,6 +455,11 @@ const ArtistProfile = () => {
                           Contact
                         </Button>
                       ) : null}
+                      
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-5 w-5" />
+                        <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
+                      </div>
                     </div>
                   </div>
 
