@@ -1620,8 +1620,10 @@ const Dashboard = () => {
                                 <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
                               </div>
                               
-                              {post.media_url && <div className="mt-3">
-                                  {post.media_type === "video" ? <video src={post.media_url} controls className="w-full" /> : <img src={post.media_url} alt="Post content" className="w-full" />}
+                              {post.media_url && <div className="mt-3 bg-muted/30">
+                                  {post.media_type === "video" ? <div className="relative w-full aspect-video">
+                                      <video src={post.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               <div className="p-4" />
                             </Card>)}
@@ -1755,9 +1757,7 @@ const Dashboard = () => {
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
                                   {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
                                       <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                    </div> : <div className="relative w-full aspect-[4/5] sm:aspect-video">
-                                      <img src={announcement.media_url} alt="Announcement media" className="absolute inset-0 w-full h-full object-contain" />
-                                    </div>}
+                                    </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
                               <div className="h-2" />

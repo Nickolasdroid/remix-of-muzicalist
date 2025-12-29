@@ -742,9 +742,7 @@ const ArtistProfile = () => {
                     })}>
                                 {post.media_type === "video" ? <div className="relative w-full aspect-video">
                                     <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                                  </div> : <div className="relative w-full aspect-[4/5] sm:aspect-video">
-                                    <img src={post.media_url} alt="Post content" className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity" />
-                                  </div>}
+                                  </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                               </div>}
 
                             {/* Actions */}
@@ -839,9 +837,7 @@ const ArtistProfile = () => {
                     })}>
                                 {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
                                     <video src={announcement.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                                  </div> : <div className="relative w-full aspect-[4/5] sm:aspect-video">
-                                    <img src={announcement.media_url} alt="Announcement media" className="absolute inset-0 w-full h-full object-contain hover:opacity-95 transition-opacity" />
-                                  </div>}
+                                  </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                               </div>}
                             
                             {/* Contact button */}
