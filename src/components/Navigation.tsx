@@ -210,7 +210,7 @@ const Navigation = () => {
 
       {/* Left Sidebar */}
       <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black border-r border-accent/20 z-40 transform transition-transform duration-300 ${
+        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background/50 border-r border-accent/20 z-40 transform transition-transform duration-300 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
