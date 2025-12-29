@@ -298,6 +298,7 @@ const Feed = () => {
                       <div className="relative w-full aspect-video">
                         <video 
                           src={item.media_url} 
+                          controls
                           className="absolute inset-0 w-full h-full object-contain bg-black"
                           onClick={(e) => e.stopPropagation()}
                         />
