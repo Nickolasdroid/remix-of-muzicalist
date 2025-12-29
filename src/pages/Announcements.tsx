@@ -184,7 +184,7 @@ const Announcements = () => {
                           }}
                         >
                           <Flag className="h-4 w-4 mr-2" />
-                          Report Problem
+                          Report
                         </DropdownMenuItem>
                         {currentUserId === announcement.profile_id && (
                           <DropdownMenuItem 
