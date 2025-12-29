@@ -675,9 +675,7 @@ const Leaderboard = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
               <Trophy className="h-10 w-10 text-accent-foreground" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 text-foreground">
-              Top Artists
-            </h1>
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
             
 
             <div className="flex gap-4 justify-center mt-8 items-center">
