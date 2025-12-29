@@ -1033,7 +1033,7 @@ const Dashboard = () => {
                               </Badge>
                               
                               {/* Instrument Selector for Instrumentalists */}
-                              {formData.specialization === 'instrumentalist' && (
+                              {formData.specialization?.toLowerCase() === 'instrumentalist' && (
                                 <InstrumentSelector
                                   instruments={formData.instruments}
                                   onInstrumentsChange={(instruments) => {
