@@ -1911,52 +1911,41 @@ const Dashboard = () => {
                             <CalendarIcon className="h-6 w-6 text-accent" />
                             My Calendar
                           </h2>
-                          <div className="flex flex-col lg:flex-row gap-6">
-                            <div className="flex-1">
+                          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                            {/* Calendar */}
+                            <div className="flex-shrink-0">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
-                      setSelectedDate(date);
-                      if (date) {
-                        const event = getEventForDate(date);
-                        if (event) {
-                          setEventStatus(event.status);
-                          setEventNotes(event.notes || "");
-                        } else {
-                          setEventStatus('busy');
-                          setEventNotes("");
-                        }
-                      }
-                    }} className="rounded-lg border border-border shadow-sm" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
-                      busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
-                      blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
-                    }} modifiersClassNames={{
-                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                    }} />
+                                setSelectedDate(date);
+                                if (date) {
+                                  const event = getEventForDate(date);
+                                  if (event) {
+                                    setEventStatus(event.status);
+                                    setEventNotes(event.notes || "");
+                                  } else {
+                                    setEventStatus('busy');
+                                    setEventNotes("");
+                                  }
+                                }
+                              }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
+                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
+                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                              }} modifiersClassNames={{
+                                busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                                blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                              }} />
                             </div>
-                            <div className="lg:w-80 space-y-4">
-                              <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
-                                <h4 className="font-semibold text-foreground">Legend</h4>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                                  <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-muted/80"></div>
-                                  <span className="text-sm text-muted-foreground">Unavailable</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-accent"></div>
-                                  <span className="text-sm text-muted-foreground">Available</span>
-                                </div>
-                              </div>
-                              {selectedDate && <Card className="p-4">
+                            
+                            {/* Date Details Form */}
+                            <div className="min-w-0">
+                              {selectedDate ? (
+                                <Card className="p-4 h-full">
                                   <h4 className="font-semibold text-foreground mb-3">
                                     {selectedDate.toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
+                                    })}
                                   </h4>
                                   <div className="space-y-3">
                                     <div>
@@ -1981,11 +1970,33 @@ const Dashboard = () => {
                                         {isSaving ? "Saving..." : "Save"}
                                       </Button>
                                       {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>}
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>}
                                     </div>
                                   </div>
-                                </Card>}
+                                </Card>
+                              ) : (
+                                <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                  <p className="text-sm text-center">Select a date to set availability</p>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="p-4 rounded-lg bg-secondary/50 space-y-3 flex-shrink-0 w-full lg:w-48">
+                              <h4 className="font-semibold text-foreground">Legend</h4>
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                                <span className="text-sm text-muted-foreground">Busy / Booked</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded bg-muted/80"></div>
+                                <span className="text-sm text-muted-foreground">Unavailable</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded bg-accent"></div>
+                                <span className="text-sm text-muted-foreground">Available</span>
+                              </div>
                             </div>
                           </div>
 
