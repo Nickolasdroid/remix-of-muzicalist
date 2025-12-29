@@ -1027,7 +1027,7 @@ const Dashboard = () => {
                               </Badge>
                             </div>
                             
-                            <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
@@ -1047,12 +1047,16 @@ const Dashboard = () => {
                                   }}
                                 />
                               )}
-                              
-                              {editingField === 'location' ? <div className="flex items-center gap-2">
+                            </div>
+
+                            {/* Location row */}
+                            <div className="flex flex-wrap items-center gap-3">
+                              {editingField === 'location' ? (
+                                <div className="flex items-center gap-2">
                                   <Select value={formData.county} onValueChange={value => setFormData({
-                        ...formData,
-                        county: value
-                      })}>
+                                    ...formData,
+                                    county: value
+                                  })}>
                                     <SelectTrigger className="w-[180px]">
                                       <SelectValue />
                                     </SelectTrigger>
@@ -1066,13 +1070,16 @@ const Dashboard = () => {
                                   <Button size="sm" variant="outline" onClick={cancelEditing}>
                                     <X className="h-3 w-3" />
                                   </Button>
-                                </div> : <div className="group flex items-center gap-2 text-muted-foreground">
+                                </div>
+                              ) : (
+                                <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
                                   <span className="text-base">{formData.county}{formData.country ? `, ${formData.country}` : ''}</span>
                                   <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
                                     <Edit2 className="h-3 w-3" />
                                   </Button>
-                                </div>}
+                                </div>
+                              )}
                             </div>
                           </div>
 
