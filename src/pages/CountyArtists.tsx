@@ -98,7 +98,7 @@ const CountyArtists = () => {
         <Link to="/counties">
           <Button variant="outline" className="mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Counties
+            Back
           </Button>
         </Link>
 
