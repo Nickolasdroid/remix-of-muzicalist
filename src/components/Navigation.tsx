@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, Settings, LogOut } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Mail, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -18,6 +18,7 @@ const Navigation = () => {
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -27,7 +28,6 @@ const Navigation = () => {
   };
 
   useEffect(() => {
-    // Check current session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
@@ -44,7 +44,6 @@ const Navigation = () => {
 
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       
@@ -63,131 +62,185 @@ const Navigation = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const sidebarLinks = [
+    ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'My Profile' }] : []),
+    { to: '/categories', icon: Users, label: 'Categories' },
+    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+    { to: '/counties', icon: MapPin, label: 'Counties' },
+    { to: '/about', icon: Info, label: 'About' },
+    { to: '/contact', icon: Mail, label: 'Contact' },
+  ];
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-accent/20">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-            <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain transition-transform group-hover:scale-110" />
-          </Link>
+    <>
+      {/* Top Header Bar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-accent/20">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Left: Logo + Menu Toggle + Search */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 hover:bg-accent/10 rounded-lg transition-colors"
+              >
+                {sidebarOpen ? (
+                  <X className="h-5 w-5 text-foreground" />
+                ) : (
+                  <Menu className="h-5 w-5 text-foreground" />
+                )}
+              </button>
+              
+              <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain transition-transform group-hover:scale-110" />
+              </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/feed" className={`flex items-center gap-2 transition-colors ${isActive('/feed') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Home className="h-4 w-4" />
-              Home
-            </Link>
-            <Link to="/announcements" className={`flex items-center gap-2 transition-colors ${isActive('/announcements') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Megaphone className="h-4 w-4" />
-              Announcements
-            </Link>
-            <Link to="/categories" className={`flex items-center gap-2 transition-colors ${isActive('/categories') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Users className="h-4 w-4" />
-              Categories
-            </Link>
-            <Link to="/leaderboard" className={`flex items-center gap-2 transition-colors ${isActive('/leaderboard') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Trophy className="h-4 w-4" />
-              Leaderboard
-            </Link>
-            <Link to="/counties" className={`flex items-center gap-2 transition-colors ${isActive('/counties') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <MapPin className="h-4 w-4" />
-              Counties
-            </Link>
-            <Link to="/about" className={`flex items-center gap-2 transition-colors ${isActive('/about') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Info className="h-4 w-4" />
-              About
-            </Link>
-            <Link to="/contact" className={`flex items-center gap-2 transition-colors ${isActive('/contact') ? 'text-accent' : 'text-foreground/80 hover:text-accent'}`}>
-              <Mail className="h-4 w-4" />
-              Contact
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search"
-                className="pl-9 w-40 bg-background/50 border-accent/20 focus:border-accent"
-              />
+              <div className="relative hidden md:block">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search"
+                  className="pl-9 w-40 bg-background/50 border-accent/20 focus:border-accent"
+                />
+              </div>
             </div>
-            <CountrySelector />
-          </div>
 
-          <div className="flex items-center gap-4">
-            {user ? (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
-                    <Avatar className="h-8 w-8 ring-2 ring-accent/30">
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback className="bg-accent text-accent-foreground text-xs">
-                        {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-64 bg-card border-accent/20 p-0">
-                  <div className="p-4 border-b border-accent/20">
-                    <p className="font-semibold text-accent">My Account</p>
-                    {profile?.plan && (
-                      <p className="text-sm text-muted-foreground">
-                        Plan: <span className="font-semibold text-accent">{profile.plan}</span>
-                      </p>
-                    )}
-                  </div>
-                  <div className="p-2 space-y-1">
-                    <button
-                      onClick={() => navigate('/dashboard?tab=profile')}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>My Profile</span>
+            {/* Center: Feed & Ads */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                to="/feed"
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+                  isActive('/feed')
+                    ? 'bg-accent/20 text-accent'
+                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                }`}
+              >
+                <Home className="h-5 w-5" />
+                <span className="font-medium">Feed</span>
+              </Link>
+              <Link
+                to="/announcements"
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+                  isActive('/announcements')
+                    ? 'bg-accent/20 text-accent'
+                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                }`}
+              >
+                <Megaphone className="h-5 w-5" />
+                <span className="font-medium">Ads</span>
+              </Link>
+            </div>
+
+            {/* Right: Country Selector + User */}
+            <div className="flex items-center gap-4">
+              <CountrySelector />
+              
+              {user ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
+                      <Avatar className="h-8 w-8 ring-2 ring-accent/30">
+                        <AvatarImage src={profile?.avatar_url} />
+                        <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+                          {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </button>
-                    <button
-                      onClick={() => navigate('/messages')}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                      <span>My Messages</span>
-                    </button>
-                    <div className="h-px bg-accent/20 my-1" />
-                    <button
-                      onClick={() => navigate('/dashboard?tab=settings')}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Settings</span>
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                    Register
-                  </Button>
-                </Link>
-              </>
-            )}
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-64 bg-card border-accent/20 p-0">
+                    <div className="p-4 border-b border-accent/20">
+                      <p className="font-semibold text-accent">My Account</p>
+                      {profile?.plan && (
+                        <p className="text-sm text-muted-foreground">
+                          Plan: <span className="font-semibold text-accent">{profile.plan}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="p-2 space-y-1">
+                      <button
+                        onClick={() => navigate('/dashboard?tab=profile')}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                      >
+                        <User className="h-4 w-4" />
+                        <span>My Profile</span>
+                      </button>
+                      <button
+                        onClick={() => navigate('/messages')}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        <span>My Messages</span>
+                      </button>
+                      <div className="h-px bg-accent/20 my-1" />
+                      <button
+                        onClick={() => navigate('/dashboard?tab=settings')}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span>Settings</span>
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+                      Register
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Left Sidebar */}
+      <aside
+        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-black border-r border-accent/20 z-40 transform transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-4 space-y-1">
+          {sidebarLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                isActive(link.to.split('?')[0])
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
+              <link.icon className="h-5 w-5" />
+              <span className="font-medium">{link.label}</span>
+            </Link>
+          ))}
+        </div>
+      </aside>
+
+      {/* Overlay when sidebar is open */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 top-16"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
