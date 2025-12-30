@@ -108,7 +108,7 @@ const Announcements = () => {
           </div>
         </div>
 
-        <div className="max-w-[500px] mx-auto space-y-4">
+        <div className="max-w-[500px] mx-auto space-y-1">
           {loading ? (
             <div className="text-center text-muted-foreground">Loading announcements...</div>
           ) : (() => {
