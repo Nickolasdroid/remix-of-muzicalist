@@ -423,9 +423,6 @@ const ArtistProfile = () => {
                       <h1 className="text-4xl font-display font-bold text-foreground">
                         {artist.stage_name}
                       </h1>
-                      <Badge className={`px-4 py-1.5 text-sm font-semibold ${isPremium ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' : 'bg-muted text-muted-foreground border border-border'}`}>
-                        {isPremium ? '★ Premium' : 'Standard'}
-                      </Badge>
                     </div>
                     
                     <div className="flex flex-wrap items-center gap-3 mb-2">
