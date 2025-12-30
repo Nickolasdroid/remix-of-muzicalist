@@ -995,7 +995,7 @@ const Dashboard = () => {
   return <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           {activeTab !== "profile"}
               {/* Profile Tab */}
