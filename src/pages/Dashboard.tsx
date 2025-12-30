@@ -1555,7 +1555,7 @@ const Dashboard = () => {
                                   New Post
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
+                              <DialogContent className="max-w-md">
                                 <DialogHeader>
                                   <DialogTitle>Create New Post</DialogTitle>
                                 </DialogHeader>
