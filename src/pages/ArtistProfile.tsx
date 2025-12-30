@@ -371,7 +371,7 @@ const ArtistProfile = () => {
   if (loading) {
     return <div className="min-h-screen">
         <Navigation />
-        <div className="pt-32 pb-20 px-4">
+        <div className="pt-24 pb-20 px-4">
           <div className="container mx-auto text-center">
             <p className="text-xl text-muted-foreground">Loading artist profile...</p>
           </div>
@@ -381,7 +381,7 @@ const ArtistProfile = () => {
   if (!artist) {
     return <div className="min-h-screen">
         <Navigation />
-        <div className="pt-32 pb-20 px-4">
+        <div className="pt-24 pb-20 px-4">
           <div className="container mx-auto text-center">
             <h1 className="text-4xl font-display font-bold mb-4">Artist Not Found</h1>
             <Link to="/">
@@ -398,7 +398,7 @@ const ArtistProfile = () => {
   return <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <Link to="/leaderboard">
             
