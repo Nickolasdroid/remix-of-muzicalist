@@ -77,7 +77,7 @@ const Announcements = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-24 pb-20">
+      <div className="container mx-auto px-4 pt-16 pb-20">
         {/* Filter buttons */}
         <div className="max-w-[500px] mx-auto mb-4">
           <div className="flex gap-2">
