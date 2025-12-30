@@ -1022,9 +1022,6 @@ const Dashboard = () => {
                               <h1 className="text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
                               </h1>
-                              <Badge className={`px-4 py-1.5 text-sm font-semibold ${profile?.plan === 'Premium' ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-black border-0 shadow-lg shadow-amber-500/30' : 'bg-muted text-muted-foreground border border-border'}`}>
-                                {profile?.plan === 'Premium' ? '★ Premium' : 'Standard'}
-                              </Badge>
                             </div>
                             
                             <div className="flex flex-wrap items-center gap-3 mb-2">
