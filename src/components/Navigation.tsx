@@ -68,7 +68,7 @@ const Navigation = () => {
     ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'My Profile' }] : []),
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-    { to: '/counties', icon: MapPin, label: 'Counties' },
+    { to: '/counties', icon: MapPin, label: 'Regions' },
     { to: '/about', icon: Info, label: 'About' },
   ];
 
