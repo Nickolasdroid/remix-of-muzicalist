@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
-import singerIcon from "@/assets/singer-silhouette.png";
-import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
-import djIcon from "@/assets/dj-silhouette.png";
-import bandIcon from "@/assets/band-silhouette.png";
+import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
 const Categories = () => {
   const [counts, setCounts] = useState({
     Singer: 0,
@@ -36,25 +34,25 @@ const Categories = () => {
     fetchCounts();
   }, []);
   const categories = [{
-    iconImage: singerIcon,
+    icon: Mic,
     title: "Singer",
     description: "Professional vocalists for any event",
     count: counts.Singer,
     href: "/categories/Singers"
   }, {
-    iconImage: instrumentalistIcon,
+    icon: Guitar,
     title: "Instrumentalist",
     description: "Skilled musicians with various instruments",
     count: counts.Instrumentalist,
     href: "/categories/Instrumentalists"
   }, {
-    iconImage: djIcon,
+    icon: Headphones,
     title: "DJ",
     description: "Expert DJs for parties and events",
     count: counts.DJ,
     href: "/categories/DJs"
   }, {
-    iconImage: bandIcon,
+    icon: Users,
     title: "Band",
     description: "Complete musical groups for your events",
     count: counts.Band,
