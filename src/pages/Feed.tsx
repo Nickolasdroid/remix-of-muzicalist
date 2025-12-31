@@ -198,7 +198,7 @@ const Feed = () => {
       <Navigation />
       
       <div className="container mx-auto px-0 sm:px-4 pt-20">
-        <div className="max-w-[500px] mx-auto space-y-4">
+        <div className="max-w-[500px] mx-auto space-y-1">
           
           {feedItems.length === 0 ? (
             <Card className="p-8 text-center">
