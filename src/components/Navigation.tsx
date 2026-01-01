@@ -65,7 +65,7 @@ const Navigation = () => {
   }, []);
 
   const sidebarLinks = [
-    ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'My Profile' }] : []),
+    ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'Profile' }] : []),
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   ];
@@ -161,14 +161,14 @@ const Navigation = () => {
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                       >
                         <User className="h-4 w-4" />
-                        <span>My Profile</span>
+                        <span>Profile</span>
                       </button>
                       <button
                         onClick={() => navigate('/messages')}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                       >
                         <MessageSquare className="h-4 w-4" />
-                        <span>My Messages</span>
+                        <span>Messages</span>
                       </button>
                       <div className="h-px bg-accent/20 my-1" />
                       <button
