@@ -68,6 +68,9 @@ const Navigation = () => {
     ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'My Profile' }] : []),
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+  ];
+
+  const sidebarLinksAfterCountry = [
     { to: '/counties', icon: MapPin, label: 'Regions' },
     { to: '/about', icon: Info, label: 'About' },
   ];
@@ -128,9 +131,8 @@ const Navigation = () => {
               </Link>
             </div>
 
-            {/* Right: Country Selector + User */}
+            {/* Right: User */}
             <div className="flex items-center gap-4">
-              <CountrySelector />
               
               {user ? (
                 <Popover>
@@ -214,6 +216,27 @@ const Navigation = () => {
       >
         <div className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                isActive(link.to.split('?')[0])
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
+              <link.icon className="h-5 w-5" />
+              <span className="font-medium">{link.label}</span>
+            </Link>
+          ))}
+          
+          {/* Country Selector */}
+          <div className="px-3 py-3">
+            <CountrySelector variant="list" />
+          </div>
+          
+          {sidebarLinksAfterCountry.map((link) => (
             <Link
               key={link.to}
               to={link.to}
