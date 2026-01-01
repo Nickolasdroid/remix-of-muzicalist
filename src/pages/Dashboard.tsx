@@ -827,19 +827,45 @@ const Dashboard = () => {
   };
 
   // Calendar functions
+  const getBookingRequestForDate = (date: Date) => {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return bookingRequests.find(req => req.event_date === dateStr && req.status === 'accepted');
+  };
+
+  const [showBookingWarningDialog, setShowBookingWarningDialog] = useState(false);
+  const [pendingCalendarSave, setPendingCalendarSave] = useState<{ dateStr: string; status: string; notes: string } | null>(null);
+
   const handleSaveCalendarEvent = async () => {
     if (!user || !selectedDate) return;
+    
+    // Use local date to avoid timezone issues
+    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+    
+    // Check if there's an accepted booking for this date
+    const existingBooking = getBookingRequestForDate(selectedDate);
+    const currentEvent = getEventForDate(selectedDate);
+    
+    // If there's an accepted booking and we're changing from busy to something else, warn the user
+    if (existingBooking && currentEvent?.status === 'busy' && eventStatus !== 'busy') {
+      setPendingCalendarSave({ dateStr, status: eventStatus, notes: eventNotes });
+      setShowBookingWarningDialog(true);
+      return;
+    }
+    
+    await saveCalendarEventDirect(dateStr, eventStatus, eventNotes);
+  };
+
+  const saveCalendarEventDirect = async (dateStr: string, status: string, notes: string) => {
+    if (!user) return;
     setIsSaving(true);
     try {
-      // Use local date to avoid timezone issues
-      const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
       const {
         error
       } = await supabase.from('calendar_events').upsert({
         profile_id: user.id,
         event_date: dateStr,
-        status: eventStatus,
-        notes: eventNotes
+        status: status,
+        notes: notes
       }, {
         onConflict: 'profile_id,event_date'
       });
@@ -857,6 +883,43 @@ const Dashboard = () => {
         variant: "destructive"
       });
     } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleConfirmBookingOverwrite = async () => {
+    if (!user || !pendingCalendarSave || !selectedDate) return;
+    setIsSaving(true);
+    try {
+      // Delete the accepted booking request for this date
+      const existingBooking = getBookingRequestForDate(selectedDate);
+      if (existingBooking) {
+        const { error: deleteError } = await supabase
+          .from('booking_requests')
+          .delete()
+          .eq('id', existingBooking.id);
+        if (deleteError) throw deleteError;
+      }
+      
+      // Save the calendar event
+      await saveCalendarEventDirect(pendingCalendarSave.dateStr, pendingCalendarSave.status, pendingCalendarSave.notes);
+      
+      // Reload booking requests
+      await loadBookingRequests();
+      
+      setShowBookingWarningDialog(false);
+      setPendingCalendarSave(null);
+      
+      toast({
+        title: "Updated",
+        description: "Calendar updated and booking request removed."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
       setIsSaving(false);
     }
   };
@@ -2264,6 +2327,33 @@ const Dashboard = () => {
             </div>
           </div>
         </div>}
+
+      {/* Booking Overwrite Warning Dialog */}
+      <AlertDialog open={showBookingWarningDialog} onOpenChange={setShowBookingWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change Booking Status?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This date has an accepted booking request. Changing the status will remove the booking request permanently. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowBookingWarningDialog(false);
+              setPendingCalendarSave(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmBookingOverwrite}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isSaving}
+            >
+              {isSaving ? "Updating..." : "Yes, Change Status"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default Dashboard;
