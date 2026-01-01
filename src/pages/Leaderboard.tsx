@@ -606,10 +606,15 @@ interface Artist {
   avatar_url: string | null;
   number_of_events: number;
 }
+interface ArtistRating {
+  [key: string]: number;
+}
+
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
   const [artists, setArtists] = useState<Artist[]>([]);
+  const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
   const filteredCountries = allCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
@@ -645,6 +650,39 @@ const Leaderboard = () => {
     };
     fetchArtists();
   }, []);
+
+  // Fetch reviews and calculate average ratings for all artists
+  useEffect(() => {
+    const fetchRatings = async () => {
+      const { data: reviews, error } = await supabase
+        .from('reviews')
+        .select('profile_id, rating');
+      
+      if (error) {
+        console.error('Error fetching reviews:', error);
+        return;
+      }
+
+      // Calculate average rating per artist
+      const ratingsMap: { [key: string]: number[] } = {};
+      reviews?.forEach(review => {
+        if (!ratingsMap[review.profile_id]) {
+          ratingsMap[review.profile_id] = [];
+        }
+        ratingsMap[review.profile_id].push(review.rating);
+      });
+
+      const averageRatings: ArtistRating = {};
+      Object.entries(ratingsMap).forEach(([profileId, ratings]) => {
+        averageRatings[profileId] = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+      });
+
+      setArtistRatings(averageRatings);
+    };
+
+    fetchRatings();
+  }, []);
+
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
@@ -742,7 +780,7 @@ const Leaderboard = () => {
                 <p className="text-xl text-muted-foreground">Loading artists...</p>
               </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
                   <div className="grid gap-6 max-w-2xl mx-auto">
-                    {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} />) : <div className="text-center py-16">
+                    {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
                         <p className="text-xl text-muted-foreground">No artists found in this category</p>
                       </div>}
                   </div>
