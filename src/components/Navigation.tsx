@@ -267,7 +267,7 @@ const Navigation = () => {
       <aside className="fixed top-0 left-0 h-screen w-64 bg-card border-r border-border z-40">
         {/* Logo and Search at top of sidebar */}
         <div className="p-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 p-2 rounded-lg mb-3">
+          <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg mb-3">
             <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
