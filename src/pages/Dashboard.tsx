@@ -1117,7 +1117,7 @@ const Dashboard = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen ml-64">
+  return <div className="min-h-screen ml-64 bg-destructive">
       <Navigation />
       
       <div className="pt-24 pb-20 px-4">
