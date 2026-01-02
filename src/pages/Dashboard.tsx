@@ -2334,9 +2334,15 @@ const Dashboard = () => {
       <AlertDialog open={showBookingWarningDialog} onOpenChange={setShowBookingWarningDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Change Booking Status?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {pendingCalendarSave?.status === 'available' 
+                ? 'Mark as Available?' 
+                : 'Mark as Unavailable?'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This date has an accepted booking request. Changing the status will remove the booking request permanently. Are you sure you want to continue?
+              {pendingCalendarSave?.status === 'available' 
+                ? 'This date has an accepted booking. Marking it as available will reject the booking request. The requester may need to be notified separately.'
+                : 'This date has an accepted booking. Marking it as unavailable will reject the booking request. The requester may need to be notified separately.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -2351,7 +2357,7 @@ const Dashboard = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isSaving}
             >
-              {isSaving ? "Updating..." : "Yes, Change Status"}
+              {isSaving ? "Updating..." : pendingCalendarSave?.status === 'available' ? "Yes, Mark Available" : "Yes, Mark Unavailable"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
