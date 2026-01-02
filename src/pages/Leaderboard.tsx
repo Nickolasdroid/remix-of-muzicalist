@@ -707,10 +707,15 @@ const Leaderboard = () => {
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
-    // Filter by country (handle both code and name)
+    // Filter by country (handle both code, name, and diacritics)
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filtered = filtered.filter(artist => artist.country === selectedCountry || artist.country === countryName);
+      filtered = filtered.filter(artist => 
+        artist.country === selectedCountry || 
+        artist.country === countryName ||
+        artist.country?.toLowerCase() === countryName?.toLowerCase() ||
+        artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase()
+      );
     }
 
     // Filter by county
