@@ -127,7 +127,7 @@ const Dashboard = () => {
   // Calendar state
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [eventStatus, setEventStatus] = useState<'busy' | 'blocked' | 'available'>('available');
+  const [eventStatus, setEventStatus] = useState<'blocked' | 'available'>('available');
   const [eventNotes, setEventNotes] = useState("");
 
   // Booking requests state
@@ -846,8 +846,9 @@ const Dashboard = () => {
     const existingBooking = getBookingRequestForDate(selectedDate);
     const currentEvent = getEventForDate(selectedDate);
     
-    // If there's an accepted booking and we're changing from busy to something else, warn the user
-    if (existingBooking && currentEvent?.status === 'busy' && eventStatus !== 'busy') {
+    // If there's an accepted booking and we're changing the status, warn the user
+    const isBookedStatus = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+    if (existingBooking && isBookedStatus) {
       setPendingCalendarSave({ dateStr, status: eventStatus, notes: eventNotes });
       setShowBookingWarningDialog(true);
       return;
@@ -2077,7 +2078,6 @@ const Dashboard = () => {
                                         </SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="available">Available</SelectItem>
-                                          <SelectItem value="busy">Busy / Booked</SelectItem>
                                           <SelectItem value="blocked">Unavailable</SelectItem>
                                         </SelectContent>
                                       </Select>
