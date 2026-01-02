@@ -513,7 +513,7 @@ const Messages = () => {
             </Card>
 
             {/* Messages Area */}
-            <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-background">
+            <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
               {selectedConversation ? (
                 <>
                   {/* Header */}
