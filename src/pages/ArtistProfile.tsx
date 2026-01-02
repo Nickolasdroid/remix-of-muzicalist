@@ -109,6 +109,8 @@ const ArtistProfile = () => {
     name: "",
     email: "",
     phone: "",
+    startTime: "",
+    endTime: "",
     eventType: "",
     message: ""
   });
@@ -234,6 +236,12 @@ const ArtistProfile = () => {
     e.preventDefault();
     if (!selectedDate || !id) return;
     try {
+      // Include time interval in the message
+      const timeInfo = bookingForm.startTime && bookingForm.endTime 
+        ? `Time: ${bookingForm.startTime} - ${bookingForm.endTime}\n` 
+        : '';
+      const fullMessage = timeInfo + (bookingForm.message || '');
+      
       const {
         error
       } = await supabase.from('booking_requests').insert({
@@ -243,7 +251,7 @@ const ArtistProfile = () => {
         requester_phone: bookingForm.phone,
         event_date: selectedDate.toISOString().split('T')[0],
         event_type: bookingForm.eventType,
-        message: bookingForm.message,
+        message: fullMessage.trim(),
         status: 'pending'
       });
       if (error) throw error;
@@ -256,6 +264,8 @@ const ArtistProfile = () => {
         name: "",
         email: "",
         phone: "",
+        startTime: "",
+        endTime: "",
         eventType: "",
         message: ""
       });
@@ -1052,6 +1062,36 @@ const ArtistProfile = () => {
                     ...bookingForm,
                     phone: e.target.value
                   })} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Time Interval</Label>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <Input 
+                            id="startTime" 
+                            type="time" 
+                            value={bookingForm.startTime} 
+                            onChange={e => setBookingForm({
+                              ...bookingForm,
+                              startTime: e.target.value
+                            })} 
+                            required 
+                          />
+                        </div>
+                        <span className="text-muted-foreground">to</span>
+                        <div className="flex-1">
+                          <Input 
+                            id="endTime" 
+                            type="time" 
+                            value={bookingForm.endTime} 
+                            onChange={e => setBookingForm({
+                              ...bookingForm,
+                              endTime: e.target.value
+                            })} 
+                            required 
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="eventType">Event Type</Label>
