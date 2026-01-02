@@ -79,7 +79,7 @@ const Announcements = () => {
       
       <div className="container mx-auto px-4 pt-16 pb-20">
         {/* Filter buttons */}
-        <div className="max-w-[500px] mx-auto mb-4">
+        <div className="max-w-[500px] mx-auto mb-1">
           <div className="flex gap-2">
             <Button
               variant={filter === 'all' ? 'default' : 'outline'}
