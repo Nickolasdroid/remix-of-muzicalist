@@ -221,7 +221,10 @@ const ArtistProfile = () => {
   const isBlockedDate = (date: Date) => {
     return getBlockedDates().some((blockedDate: Date) => blockedDate.getDate() === date.getDate() && blockedDate.getMonth() === date.getMonth() && blockedDate.getFullYear() === date.getFullYear());
   };
+  const isOwnProfile = currentUserId === id;
+
   const handleDateSelect = (date: Date | undefined) => {
+    if (isOwnProfile) return; // Artists cannot book themselves
     setSelectedDate(date);
     if (date && !isBusyDate(date) && !isBlockedDate(date)) {
       setBookingDialogOpen(true);
