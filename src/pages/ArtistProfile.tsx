@@ -227,8 +227,16 @@ const ArtistProfile = () => {
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    // Only open booking dialog if not own profile and date is available
+    // Only open booking dialog if logged in, not own profile, and date is available
     if (!isOwnProfile && date && !isBusyDate(date) && !isBlockedDate(date)) {
+      if (!currentUserId) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in or create an account to make a booking request.",
+        });
+        navigate('/login');
+        return;
+      }
       setBookingDialogOpen(true);
     }
   };
