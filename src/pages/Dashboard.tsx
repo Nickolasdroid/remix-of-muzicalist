@@ -82,6 +82,7 @@ const Dashboard = () => {
     mediaType: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
   // Ad limits
   const STANDARD_AD_LIMIT = 5;
@@ -103,6 +104,7 @@ const Dashboard = () => {
   });
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [postMediaType, setPostMediaType] = useState<'text' | 'image' | 'video'>('text');
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   // Post limits for standard subscription
   const STANDARD_POST_LIMIT = 15;
@@ -113,6 +115,7 @@ const Dashboard = () => {
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
   const [videoUrl, setVideoUrl] = useState("");
+  const [deleteGalleryItem, setDeleteGalleryItem] = useState<{ id: string; url: string; type: string } | null>(null);
 
   // Gallery limits for standard subscription
   const STANDARD_IMAGE_LIMIT = 5;
@@ -556,6 +559,7 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setDeleteAnnouncementId(null);
     }
   };
 
@@ -625,6 +629,7 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setDeletePostId(null);
     }
   };
   const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -826,6 +831,7 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setDeleteGalleryItem(null);
     }
   };
 
@@ -1777,7 +1783,7 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => handleDeletePost(post.id)} disabled={isSaving}>
+                                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => setDeletePostId(post.id)} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                   </Button>
                                 </div>
@@ -1910,7 +1916,7 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleDeleteAnnouncement(announcement.id)} disabled={isSaving}>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(announcement.id)} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                                   </Button>
                                 </div>
@@ -1995,7 +2001,7 @@ const Dashboard = () => {
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
                                     <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)} disabled={isSaving}>
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({ id: item.id, url: item.url, type: item.type })} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
@@ -2017,7 +2023,7 @@ const Dashboard = () => {
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDeleteGalleryItem(item.id, item.url, item.type)} disabled={isSaving}>
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({ id: item.id, url: item.url, type: item.type })} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
@@ -2514,6 +2520,69 @@ const Dashboard = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Post Confirmation Dialog */}
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deletePostId && handleDeletePost(deletePostId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Announcement Confirmation Dialog */}
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this announcement? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Gallery Item Confirmation Dialog */}
+      <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleteGalleryItem?.type === 'video' ? 'Video' : 'Photo'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this {deleteGalleryItem?.type === 'video' ? 'video' : 'photo'}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteGalleryItem && handleDeleteGalleryItem(deleteGalleryItem.id, deleteGalleryItem.url, deleteGalleryItem.type)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
