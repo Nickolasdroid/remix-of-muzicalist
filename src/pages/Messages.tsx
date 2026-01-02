@@ -480,7 +480,7 @@ const Messages = () => {
                           <div className="flex items-center gap-2">
                             <p className="font-medium truncate">{profile.stage_name}</p>
                             {unreadCounts[conv.id] > 0 && (
-                              <span className="flex-shrink-0 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                              <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                                 {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                               </span>
                             )}
