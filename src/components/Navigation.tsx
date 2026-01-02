@@ -19,7 +19,7 @@ const Navigation = () => {
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  // Sidebar is always visible
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
@@ -37,10 +37,15 @@ const Navigation = () => {
       if (session?.user) {
         const { data } = await supabase
           .from('profiles')
-          .select('avatar_url, stage_name, plan')
+          .select('avatar_url, stage_name, plan, country')
           .eq('id', session.user.id)
           .single();
         setProfile(data);
+        
+        // Set country from profile
+        if (data?.country) {
+          setSelectedCountry(data.country);
+        }
       }
     };
 
@@ -52,10 +57,15 @@ const Navigation = () => {
       if (session?.user) {
         supabase
           .from('profiles')
-          .select('avatar_url, stage_name, plan')
+          .select('avatar_url, stage_name, plan, country')
           .eq('id', session.user.id)
           .single()
-          .then(({ data }) => setProfile(data));
+          .then(({ data }) => {
+            setProfile(data);
+            if (data?.country) {
+              setSelectedCountry(data.country);
+            }
+          });
       } else {
         setProfile(null);
       }
@@ -68,9 +78,6 @@ const Navigation = () => {
     ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'Profile' }] : []),
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-  ];
-
-  const sidebarLinksAfterCountry = [
     { to: '/counties', icon: MapPin, label: 'Regions' },
     { to: '/about', icon: Info, label: 'About' },
   ];
@@ -107,8 +114,15 @@ const Navigation = () => {
               </Link>
             </div>
 
-            {/* Right: User */}
-            <div className="flex items-center gap-4">
+            {/* Right: Country Selector & User */}
+            <div className="flex items-center gap-2">
+              {/* Country Selector */}
+              <CountrySelector 
+                variant="navigation" 
+                value={selectedCountry}
+                onChange={setSelectedCountry}
+                userCountry={profile?.country}
+              />
               
               {user ? (
                 <Popover>
@@ -204,26 +218,6 @@ const Navigation = () => {
         
         <div className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                isActive(link.to.split('?')[0])
-                  ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-              }`}
-            >
-              <link.icon className="h-5 w-5" />
-              <span className="font-medium">{link.label}</span>
-            </Link>
-          ))}
-          
-          {/* Country Selector */}
-          <div className="px-3 py-3">
-            <CountrySelector variant="list" />
-          </div>
-          
-          {sidebarLinksAfterCountry.map((link) => (
             <Link
               key={link.to}
               to={link.to}
