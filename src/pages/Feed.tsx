@@ -197,7 +197,7 @@ const Feed = () => {
     <div className="min-h-screen ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-0 sm:px-4 pt-20">
+      <div className="container mx-auto px-0 sm:px-4 pt-[68px]">
         <div className="max-w-[500px] mx-auto space-y-1">
           
           {feedItems.length === 0 ? (
