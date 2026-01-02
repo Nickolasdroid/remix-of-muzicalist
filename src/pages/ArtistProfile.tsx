@@ -411,12 +411,14 @@ const ArtistProfile = () => {
           <div className="space-y-8">
             <div className="flex flex-col md:flex-row gap-8 mb-8">
               <div className="flex-shrink-0">
-                <Avatar className="w-40 h-40 border-4 shadow-lg border-accent">
-                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                  <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                    <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
-                  </AvatarFallback>
-                </Avatar>
+                <div className={`p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                  <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
+                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
               </div>
 
               <div className="flex-1 flex flex-col justify-center h-40">
