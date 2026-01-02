@@ -268,7 +268,7 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+    <div className="min-h-screen bg-background">
       
       <div className="pt-12 pb-20 px-4">
         <div className="container mx-auto max-w-3xl">
