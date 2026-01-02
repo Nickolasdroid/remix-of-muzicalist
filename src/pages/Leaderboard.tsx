@@ -640,7 +640,12 @@ const Leaderboard = () => {
     let filteredArtists = artists;
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filteredArtists = artists.filter(artist => artist.country === selectedCountry || artist.country === countryName);
+      filteredArtists = artists.filter(artist => 
+        artist.country === selectedCountry || 
+        artist.country === countryName ||
+        artist.country?.toLowerCase() === countryName?.toLowerCase() ||
+        artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase()
+      );
     }
     const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
     return counties;
