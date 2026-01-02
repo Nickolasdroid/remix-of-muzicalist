@@ -127,7 +127,7 @@ const Dashboard = () => {
   // Calendar state
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [eventStatus, setEventStatus] = useState<'busy' | 'blocked' | 'available'>('busy');
+  const [eventStatus, setEventStatus] = useState<'busy' | 'blocked' | 'available'>('available');
   const [eventNotes, setEventNotes] = useState("");
 
   // Booking requests state
@@ -1989,7 +1989,7 @@ const Dashboard = () => {
                                     setEventStatus(event.status);
                                     setEventNotes(event.notes || "");
                                   } else {
-                                    setEventStatus('busy');
+                                    setEventStatus('available');
                                     setEventNotes("");
                                   }
                                 }
