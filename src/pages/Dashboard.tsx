@@ -2272,6 +2272,17 @@ const Dashboard = () => {
                                       </p>
                                     </div>
 
+                                    {/* Parse and display time interval separately */}
+                                    {selectedBookingRequest.message && selectedBookingRequest.message.startsWith('Time:') && (
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Time Interval</Label>
+                                        <p className="text-foreground mt-1 flex items-center gap-2">
+                                          <CalendarIcon className="h-4 w-4 text-accent" />
+                                          {selectedBookingRequest.message.split('\n')[0].replace('Time: ', '')}
+                                        </p>
+                                      </div>
+                                    )}
+
                                     {selectedBookingRequest.event_type && (
                                       <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Type</Label>
@@ -2282,7 +2293,11 @@ const Dashboard = () => {
                                     {selectedBookingRequest.message && (
                                       <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Message</Label>
-                                        <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">"{selectedBookingRequest.message}"</p>
+                                        <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">
+                                          "{selectedBookingRequest.message.startsWith('Time:') 
+                                            ? selectedBookingRequest.message.split('\n').slice(1).join('\n').trim() || 'No additional message'
+                                            : selectedBookingRequest.message}"
+                                        </p>
                                       </div>
                                     )}
 
