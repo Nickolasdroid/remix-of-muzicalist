@@ -224,9 +224,9 @@ const ArtistProfile = () => {
   const isOwnProfile = currentUserId === id;
 
   const handleDateSelect = (date: Date | undefined) => {
-    if (isOwnProfile) return; // Artists cannot book themselves
     setSelectedDate(date);
-    if (date && !isBusyDate(date) && !isBlockedDate(date)) {
+    // Only open booking dialog if not own profile and date is available
+    if (!isOwnProfile && date && !isBusyDate(date) && !isBlockedDate(date)) {
       setBookingDialogOpen(true);
     }
   };
