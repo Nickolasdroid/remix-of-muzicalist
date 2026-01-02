@@ -786,7 +786,7 @@ const Leaderboard = () => {
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
+                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
                   {["All Regions", ...getAvailableCounties()].map(county => <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
                       {county}
                     </DropdownMenuItem>)}
