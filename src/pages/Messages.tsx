@@ -450,7 +450,7 @@ const Messages = () => {
       <div className="px-4 pt-20 pb-4 h-screen">
           <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
             {/* Conversations List */}
-            <Card className="md:col-span-1 p-0 overflow-hidden">
+            <Card className="md:col-span-1 p-0 overflow-hidden bg-background">
               <div className="p-4 border-b border-border">
                 <h2 className="font-semibold">Conversations</h2>
               </div>
@@ -513,7 +513,7 @@ const Messages = () => {
             </Card>
 
             {/* Messages Area */}
-            <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col">
+            <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-background">
               {selectedConversation ? (
                 <>
                   {/* Header */}
