@@ -380,25 +380,21 @@ const Messages = () => {
   const deleteConversation = async (conversationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // First delete all messages in the conversation
-    const { error: messagesError } = await supabase
-      .from('messages')
-      .delete()
-      .eq('conversation_id', conversationId);
+    // Find the conversation to determine which column to update
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (!conversation) return;
 
-    if (messagesError) {
-      toast({
-        title: "Error",
-        description: "Could not delete messages",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Determine if current user is the artist or participant
+    const isArtist = user.id === conversation.artist_id;
+    
+    // Soft delete: mark as deleted for this user only
+    const updateData = isArtist 
+      ? { deleted_by_artist: true } 
+      : { deleted_by_participant: true };
 
-    // Then delete the conversation
     const { error: convError } = await supabase
       .from('conversations')
-      .delete()
+      .update(updateData)
       .eq('id', conversationId);
 
     if (convError) {
