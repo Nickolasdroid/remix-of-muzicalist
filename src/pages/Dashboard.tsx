@@ -2085,7 +2085,7 @@ const Dashboard = () => {
                                               }
                                             }}
                                           >
-                                            <SelectTrigger>
+                                            <SelectTrigger className={isBooked ? "text-destructive" : ""}>
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
