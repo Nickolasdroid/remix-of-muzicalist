@@ -34,7 +34,7 @@ const ArtistCard = ({
       <div className="relative z-10">
         {rank && (
           <div className="absolute -top-1 -left-1 w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
-            <span className="text-sm font-display font-bold text-accent-foreground">#{rank}</span>
+            <span className="text-base font-display font-bold text-accent-foreground">#{rank}</span>
           </div>
         )}
         
