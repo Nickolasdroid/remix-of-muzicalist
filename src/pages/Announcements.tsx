@@ -5,6 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,6 +37,7 @@ const Announcements = () => {
   const [filter, setFilter] = useState<'all' | 'promotion' | 'ads'>('all');
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,6 +54,8 @@ const Announcements = () => {
     } catch (error) {
       console.error('Error deleting announcement:', error);
       toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+    } finally {
+      setDeleteAnnouncementId(null);
     }
   };
 
@@ -188,7 +201,7 @@ const Announcements = () => {
                         </DropdownMenuItem>
                         {currentUserId === announcement.profile_id && (
                           <DropdownMenuItem 
-                            onClick={() => handleDeleteAnnouncement(announcement.id)}
+                            onClick={() => setDeleteAnnouncementId(announcement.id)}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -273,6 +286,27 @@ const Announcements = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Announcement Confirmation Dialog */}
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this announcement? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

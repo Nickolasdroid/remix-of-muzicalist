@@ -13,6 +13,16 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -121,6 +131,7 @@ const ArtistProfile = () => {
     comment: ""
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const {
     toast
   } = useToast();
@@ -392,6 +403,8 @@ const ArtistProfile = () => {
         description: "Failed to delete review. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setDeleteReviewId(null);
     }
   };
   const canDeleteReview = (review: Review) => {
@@ -678,7 +691,7 @@ const ArtistProfile = () => {
                         <CarouselContent>
                           {reviews.map(review => <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
-                                {canDeleteReview(review) && <button onClick={() => handleDeleteReview(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
+                                {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
                                     <Trash2 className="h-4 w-4" />
                                   </button>}
                                 <div className="flex items-center gap-3">
@@ -1151,6 +1164,27 @@ const ArtistProfile = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Review Confirmation Dialog */}
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Review</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this review? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default ArtistProfile;

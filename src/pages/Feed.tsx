@@ -15,6 +15,16 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,6 +58,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -143,6 +154,8 @@ const Feed = () => {
     } catch (error) {
       console.error('Error deleting post:', error);
       toast({ title: "Error", description: "Failed to delete post.", variant: "destructive" });
+    } finally {
+      setDeletePostId(null);
     }
   };
 
@@ -270,7 +283,7 @@ const Feed = () => {
                         </DropdownMenuItem>
                         {currentUserId === item.profile_id && (
                           <DropdownMenuItem 
-                            onClick={() => handleDeletePost(item.id)}
+                            onClick={() => setDeletePostId(item.id)}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -378,6 +391,27 @@ const Feed = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Post Confirmation Dialog */}
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deletePostId && handleDeletePost(deletePostId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
