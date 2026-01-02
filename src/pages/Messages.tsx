@@ -571,9 +571,16 @@ const Messages = () => {
                                 }`}
                               >
                                 <p>{msg.content}</p>
-                                <p className="text-xs opacity-70 mt-1">
-                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
+                                <div className="flex items-center justify-end gap-1 mt-1">
+                                  <span className="text-xs opacity-70">
+                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                  {msg.sender_id === user?.id && (
+                                    <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
+                                      {msg.read_at ? '✓✓' : '✓'}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
