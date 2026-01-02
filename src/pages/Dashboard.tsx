@@ -2038,22 +2038,35 @@ const Dashboard = () => {
                             {/* Calendar */}
                             <div className="flex-shrink-0">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
+                                if (!date) {
+                                  setSelectedDate(undefined);
+                                  setUserChangedStatus(false);
+                                  setEventStatus('available');
+                                  setEventNotes("");
+                                  return;
+                                }
+
+                                if (selectedDate) {
+                                  const currentDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                                  const nextDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                  if (currentDateStr === nextDateStr) return;
+                                }
+
                                 setSelectedDate(date);
                                 setUserChangedStatus(false);
-                                if (date) {
-                                  const event = getEventForDate(date);
-                                  if (event) {
-                                    const status = event.status;
-                                    if (status === 'busy' || status === 'booked') {
-                                      setEventStatus('available');
-                                    } else {
-                                      setEventStatus(status);
-                                    }
-                                    setEventNotes(event.notes || "");
-                                  } else {
+
+                                const event = getEventForDate(date);
+                                if (event) {
+                                  const status = event.status;
+                                  if (status === 'busy' || status === 'booked') {
                                     setEventStatus('available');
-                                    setEventNotes("");
+                                  } else {
+                                    setEventStatus(status);
                                   }
+                                  setEventNotes(event.notes || "");
+                                } else {
+                                  setEventStatus('available');
+                                  setEventNotes("");
                                 }
                               }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
                                 busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
@@ -2092,6 +2105,9 @@ const Dashboard = () => {
                                               if (v !== 'busy') {
                                                 setEventStatus(v as 'available' | 'blocked');
                                                 setUserChangedStatus(true);
+                                                if (isBooked) {
+                                                  setEventNotes("");
+                                                }
                                               }
                                             }}
                                           >
