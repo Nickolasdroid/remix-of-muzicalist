@@ -78,7 +78,7 @@ const Navigation = () => {
   return (
     <>
       {/* Top Header Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/50 border-b border-accent/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo + Search */}
@@ -201,7 +201,7 @@ const Navigation = () => {
       </nav>
 
       {/* Left Sidebar - Always visible */}
-      <aside className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background/50 border-r border-accent/20 z-40">
+      <aside className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-card border-r border-border z-40">
         <div className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
             <Link
