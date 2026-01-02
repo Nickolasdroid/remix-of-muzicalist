@@ -833,6 +833,7 @@ const Dashboard = () => {
   };
 
   const [showBookingWarningDialog, setShowBookingWarningDialog] = useState(false);
+  const [showDeleteWarningDialog, setShowDeleteWarningDialog] = useState(false);
   const [pendingCalendarSave, setPendingCalendarSave] = useState<{ dateStr: string; status: string; notes: string } | null>(null);
 
   const handleSaveCalendarEvent = async () => {
@@ -925,6 +926,19 @@ const Dashboard = () => {
   };
   const handleDeleteCalendarEvent = async () => {
     if (!user || !selectedDate) return;
+    
+    // Check if there's an accepted booking for this date
+    const existingBooking = getBookingRequestForDate(selectedDate);
+    if (existingBooking) {
+      setShowDeleteWarningDialog(true);
+      return;
+    }
+    
+    await deleteCalendarEventDirect();
+  };
+
+  const deleteCalendarEventDirect = async () => {
+    if (!user || !selectedDate) return;
     setIsSaving(true);
     try {
       // Use local date to avoid timezone issues
@@ -949,6 +963,44 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+
+  const handleConfirmDeleteWithBooking = async () => {
+    if (!user || !selectedDate) return;
+    setIsSaving(true);
+    try {
+      // Update the booking request to rejected
+      const existingBooking = getBookingRequestForDate(selectedDate);
+      if (existingBooking) {
+        const { error: updateError } = await supabase
+          .from('booking_requests')
+          .update({ status: 'rejected' })
+          .eq('id', existingBooking.id);
+        if (updateError) throw updateError;
+      }
+      
+      // Delete the calendar event
+      await deleteCalendarEventDirect();
+      
+      // Reload booking requests
+      await loadBookingRequests();
+      
+      setShowDeleteWarningDialog(false);
+      
+      toast({
+        title: "Deleted",
+        description: "Calendar event deleted and booking request marked as rejected."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const getEventForDate = (date: Date) => {
     // Use local date to avoid timezone issues
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -2358,6 +2410,30 @@ const Dashboard = () => {
               disabled={isSaving}
             >
               {isSaving ? "Updating..." : pendingCalendarSave?.status === 'available' ? "Yes, Mark Available" : "Yes, Mark Unavailable"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete with Booking Warning Dialog */}
+      <AlertDialog open={showDeleteWarningDialog} onOpenChange={setShowDeleteWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Date with Accepted Booking?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This date has an accepted booking request. Deleting this calendar entry will mark the booking as rejected. The requester may need to be notified separately. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteWarningDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDeleteWithBooking}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isSaving}
+            >
+              {isSaving ? "Deleting..." : "Yes, Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
