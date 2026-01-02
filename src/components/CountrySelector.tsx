@@ -151,13 +151,17 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
     setSearchTerm("");
   };
 
+  // Normalize string for diacritic-insensitive comparison
+  const normalizeString = (str: string) => 
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
   // Get available countries based on variant
   const getAvailableCountries = () => {
     if (variant === "navigation") {
-      // Only show countries that have registered artists
+      // Only show countries that have registered artists (diacritic-insensitive)
       return allCountries.filter(country => 
         countriesWithArtists.some(c => 
-          c === country.name || c === country.code
+          normalizeString(c) === normalizeString(country.name) || c === country.code
         )
       );
     }
