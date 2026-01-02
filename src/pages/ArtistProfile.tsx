@@ -398,140 +398,14 @@ const ArtistProfile = () => {
   return <div className="min-h-screen">
       <Navigation />
       
-      <div className="pt-20 md:pt-24 pb-20 px-3 md:px-4">
+      <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <Link to="/leaderboard">
             
           </Link>
 
-          {/* Mobile Instagram-style Header */}
-          <div className="md:hidden">
-            {/* Profile Row */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className={`p-0.5 rounded-full flex-shrink-0 ${isPremium ? 'bg-gradient-to-tr from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-tr from-primary via-primary to-accent'}`}>
-                <Avatar className="w-20 h-20 border-2 border-background">
-                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                  <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                    <User className="h-10 w-10 text-accent" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              
-              {/* Stats Row */}
-              <div className="flex-1 flex justify-around text-center">
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold text-foreground">{posts.length}</span>
-                  <span className="text-xs text-muted-foreground">Posts</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold text-foreground">{artist.number_of_events}+</span>
-                  <span className="text-xs text-muted-foreground">Events</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-accent fill-accent" />
-                    <span className="text-lg font-bold text-foreground">{getAverageRating() || '-'}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{reviews.length} reviews</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Name & Bio Section */}
-            <div className="mb-4">
-              <h1 className="text-lg font-bold text-foreground">{artist.stage_name}</h1>
-              
-              <div className="flex flex-wrap items-center gap-2 mt-1 mb-2">
-                {artist.specialization && (
-                  <span className="text-sm text-muted-foreground font-medium">{artist.specialization}</span>
-                )}
-                {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
-                  <>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-sm text-accent flex items-center gap-1">
-                      <Music2 className="h-3 w-3" />
-                      {artist.instruments.split(',')[0].trim()}
-                    </span>
-                  </>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-                <MapPin className="h-3.5 w-3.5" />
-                <span>{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
-              </div>
-
-              {artist.bio && (
-                <p className="text-sm text-foreground/90 leading-relaxed line-clamp-3">{artist.bio}</p>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2 mb-4">
-              {currentUserId && currentUserId !== artist.id ? (
-                <Button 
-                  onClick={() => navigate(`/messages?artistId=${artist.id}`)} 
-                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 h-9 text-sm font-semibold"
-                >
-                  <MessageCircle className="mr-1.5 h-4 w-4" />
-                  Message
-                </Button>
-              ) : !currentUserId ? (
-                <Button 
-                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 h-9 text-sm font-semibold" 
-                  onClick={() => navigate('/login')}
-                >
-                  <MessageCircle className="mr-1.5 h-4 w-4" />
-                  Message
-                </Button>
-              ) : null}
-              
-              <Button 
-                variant="outline" 
-                className="flex-1 border-border h-9 text-sm font-semibold"
-                onClick={() => setReviewDialogOpen(true)}
-              >
-                <Star className="mr-1.5 h-4 w-4" />
-                Review
-              </Button>
-            </div>
-
-            {/* Social Links Row */}
-            {(artist.facebook_url || artist.instagram_url || artist.youtube_url || artist.tiktok_url || artist.spotify_url) && (
-              <div className="flex justify-center gap-4 py-3 border-y border-border/50 mb-4">
-                {artist.instagram_url && (
-                  <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
-                    <Instagram className="h-5 w-5" />
-                  </a>
-                )}
-                {artist.facebook_url && (
-                  <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
-                    <Facebook className="h-5 w-5" />
-                  </a>
-                )}
-                {artist.youtube_url && (
-                  <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
-                    <Youtube className="h-5 w-5" />
-                  </a>
-                )}
-                {artist.tiktok_url && (
-                  <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
-                    <Music className="h-5 w-5" />
-                  </a>
-                )}
-                {artist.spotify_url && (
-                  <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                    </svg>
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Desktop Header Section */}
-          <div className="hidden md:block space-y-8">
+          {/* Header Section - matching dashboard profile layout */}
+          <div className="space-y-8">
             <div className="flex flex-col md:flex-row gap-8 mb-8">
               <div className="flex-shrink-0">
                 <Avatar className="w-40 h-40 border-4 shadow-lg border-accent">
@@ -596,57 +470,36 @@ const ArtistProfile = () => {
             </div>
 
             <Separator className="my-8" />
-          </div>
 
-          {/* Tabs Section */}
-          <Tabs defaultValue="details" className="w-full">
-            {/* Mobile Tabs - Icon only, horizontally scrollable */}
-            <TabsList className="md:hidden flex w-full justify-around border-y border-border/50 rounded-none bg-transparent h-12 p-0 mb-0">
-              <TabsTrigger value="details" className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent">
-                <User className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="posts" className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent">
-                <FileText className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="announcements" className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent">
-                <Megaphone className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="gallery" className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent">
-                <Images className="h-5 w-5" />
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex-1 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent">
-                <CalendarIcon className="h-5 w-5" />
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Desktop Tabs */}
-            <TabsList className="hidden md:grid w-full grid-cols-5 mb-8">
-              <TabsTrigger value="details" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Details
-              </TabsTrigger>
-              <TabsTrigger value="posts" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Posts
-              </TabsTrigger>
-              <TabsTrigger value="announcements" className="flex items-center gap-2">
-                <Megaphone className="h-4 w-4" />
-                Announcements
-              </TabsTrigger>
-              <TabsTrigger value="gallery" className="flex items-center gap-2">
-                <Images className="h-4 w-4" />
-                Gallery
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4" />
-                Calendar
-              </TabsTrigger>
-            </TabsList>
+              {/* Tabs Section */}
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-5 mb-8">
+                  <TabsTrigger value="details" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger value="posts" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Posts
+                  </TabsTrigger>
+                  <TabsTrigger value="announcements" className="flex items-center gap-2">
+                    <Megaphone className="h-4 w-4" />
+                    Announcements
+                  </TabsTrigger>
+                  <TabsTrigger value="gallery" className="flex items-center gap-2">
+                    <Images className="h-4 w-4" />
+                    Gallery
+                  </TabsTrigger>
+                  <TabsTrigger value="calendar" className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    Calendar
+                  </TabsTrigger>
+                </TabsList>
 
                 {/* Details Tab */}
-                <TabsContent value="details" className="space-y-6 md:space-y-8 pt-4 md:pt-0">
-                  {/* Description - Hidden on mobile since bio is in header */}
-                  <div className="hidden md:block">
+                <TabsContent value="details" className="space-y-8">
+                  {/* Description */}
+                  <div>
                     <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
                       <User className="h-6 w-6 text-accent" />
                       About
@@ -656,46 +509,50 @@ const ArtistProfile = () => {
                     </p>
                   </div>
 
-                  <Separator className="hidden md:block" />
+                  <Separator />
 
                   {/* Details Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+                  <div className="grid md:grid-cols-3 gap-8">
                     {/* Music Genres */}
-                    <div className="col-span-2 md:col-span-1">
-                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
-                        <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <div>
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <Music className="h-5 w-5 text-accent" />
                         Music Genres
                       </h3>
-                      <div className="flex flex-wrap gap-1.5 md:gap-2">
-                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm">
+                      <div className="flex flex-wrap gap-2">
+                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
                               {genre}
-                            </Badge>) : <p className="text-muted-foreground text-sm">No genres specified</p>}
+                            </Badge>) : <p className="text-muted-foreground">No genres specified</p>}
                       </div>
                     </div>
 
                     {/* Experience */}
                     <div>
-                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <CalendarIcon className="h-5 w-5 text-accent" />
                         Experience
                       </h3>
-                      <div className="space-y-1 md:space-y-2">
-                        <p className="text-muted-foreground text-sm md:text-base">
-                          <span className="font-semibold text-foreground">{getExperienceYears()} yrs</span>
+                      <div className="space-y-2">
+                        <p className="text-muted-foreground">
+                          <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
+                        </p>
+                        <p className="text-muted-foreground flex items-center gap-2">
+                          <Award className="h-4 w-4 text-accent" />
+                          <span className="font-semibold text-foreground">{artist.number_of_events}+</span> events performed
                         </p>
                       </div>
                     </div>
 
                     {/* Estimated Prices */}
                     <div>
-                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                        Price
+                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-accent" />
+                        Estimated Price
                       </h3>
                       <div className="space-y-2">
-                        {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1">
+                        {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-sm px-3 py-1">
                             {artist.estimated_price}
-                          </Badge> : <p className="text-muted-foreground text-sm">Contact</p>}
+                          </Badge> : <p className="text-muted-foreground">Contact for pricing</p>}
                       </div>
                     </div>
                   </div>
@@ -704,22 +561,22 @@ const ArtistProfile = () => {
 
                   {/* Contact Information */}
                   <div>
-                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4">Contact Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                      <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                        <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent flex-shrink-0" />
-                        <div className="min-w-0">
-                          <p className="text-xs md:text-sm text-muted-foreground">Email</p>
-                          <a href={`mailto:${artist.email}`} className="text-sm md:text-base text-foreground hover:text-accent transition-colors truncate block">
+                    <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                        <Mail className="h-5 w-5 text-accent" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Email</p>
+                          <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
                             {artist.email}
                           </a>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                        <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent flex-shrink-0" />
+                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                        <Phone className="h-5 w-5 text-accent" />
                         <div>
-                          <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
-                          <a href={`tel:${artist.phone}`} className="text-sm md:text-base text-foreground hover:text-accent transition-colors">
+                          <p className="text-sm text-muted-foreground">Phone</p>
+                          <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
                             {artist.phone}
                           </a>
                         </div>
@@ -729,8 +586,8 @@ const ArtistProfile = () => {
 
                   <Separator />
 
-                  {/* Social Media - Hidden on mobile since it's in header */}
-                  <div className="hidden md:block">
+                  {/* Social Media */}
+                  <div>
                     <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
                     <div className="flex flex-wrap gap-3">
                       {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
@@ -759,26 +616,26 @@ const ArtistProfile = () => {
                     </div>
                   </div>
 
-                  <Separator className="hidden md:block" />
+                  <Separator />
 
                   {/* Reviews Section */}
                   <div>
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-display font-bold flex items-center gap-2">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
-                        {getAverageRating() && <span className="text-sm md:text-lg font-display font-bold text-foreground">
+                        {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
                             ({getAverageRating()} • {reviews.length})
                           </span>}
                       </h3>
-                      {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs md:text-sm h-8 md:h-9">
-                          Write Review
+                      {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                          Write a Review
                         </Button>}
                     </div>
 
                     {reviews.length > 0 ? <Carousel className="w-full">
-                        <CarouselContent className="-ml-2 md:-ml-4">
-                          {reviews.map(review => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] md:basis-1/2 lg:basis-1/3">
+                        <CarouselContent>
+                          {reviews.map(review => <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
                                 {canDeleteReview(review) && <button onClick={() => handleDeleteReview(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
                                     <Trash2 className="h-4 w-4" />
@@ -807,10 +664,10 @@ const ArtistProfile = () => {
                               </div>
                             </CarouselItem>)}
                         </CarouselContent>
-                        <CarouselPrevious className="left-0 -translate-x-1/2 hidden md:flex" />
-                        <CarouselNext className="right-0 translate-x-1/2 hidden md:flex" />
-                      </Carousel> : <div className="text-center py-6 md:py-8 border border-dashed border-accent/30 rounded-lg">
-                        <Star className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground/50 mx-auto mb-2" />
+                        <CarouselPrevious className="left-0 -translate-x-1/2" />
+                        <CarouselNext className="right-0 translate-x-1/2" />
+                      </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                        <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
                         {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                             Write the First Review
@@ -820,13 +677,13 @@ const ArtistProfile = () => {
                 </TabsContent>
 
                 {/* Posts Tab */}
-                <TabsContent value="posts" className="space-y-4 md:space-y-6 pt-4 md:pt-0">
+                <TabsContent value="posts" className="space-y-6">
                   <div>
-                    <h2 className="hidden md:flex text-2xl font-display font-bold mb-6 items-center gap-2">
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                       <FileText className="h-6 w-6 text-accent" />
                       Posts
                     </h2>
-                    <div className="max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                    <div className="max-w-[500px] mx-auto space-y-4">
                       {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
                             <div className="p-4 pb-0">
@@ -914,37 +771,37 @@ const ArtistProfile = () => {
                 </TabsContent>
 
                 {/* Announcements Tab */}
-                <TabsContent value="announcements" className="space-y-4 md:space-y-6 pt-4 md:pt-0">
+                <TabsContent value="announcements" className="space-y-6">
                   <div>
-                    <h2 className="hidden md:flex text-2xl font-display font-bold mb-6 items-center gap-2">
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                       <Megaphone className="h-6 w-6 text-accent" />
                       Announcements
                     </h2>
-                    <div className="max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                    <div className="max-w-[500px] mx-auto space-y-4">
                       {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
-                            <div className="p-3 md:p-4 pb-0">
+                            <div className="p-4 pb-0">
                               <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-2 md:gap-3">
+                                <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
-                                    <Avatar className="w-8 h-8 md:w-10 md:h-10 border-2 border-background">
+                                    <Avatar className="w-10 h-10 border-2 border-background">
                                       <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
-                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold text-xs md:text-sm">
+                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
                                         {artist?.stage_name?.charAt(0) || 'A'}
                                       </AvatarFallback>
                                     </Avatar>
                                   </div>
                                   <div>
-                                    <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                                      <h3 className="font-semibold text-foreground text-sm md:text-base">
+                                    <div className="flex items-center gap-2">
+                                      <h3 className="font-semibold text-foreground">
                                         {artist?.stage_name}
                                       </h3>
                                       {artist?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                                      {announcement.is_premium && <Badge className="bg-accent/10 text-accent border-accent/30 text-[10px] md:text-xs px-1.5 py-0">
-                                          Promo
+                                      {announcement.is_premium && <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                          Promotion
                                         </Badge>}
                                     </div>
-                                    <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-muted-foreground">
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <span>{artist?.specialization || "Artist"}</span>
                                       <span>·</span>
                                       <span>{new Date(announcement.date).toLocaleDateString()}</span>
@@ -954,8 +811,8 @@ const ArtistProfile = () => {
                                 
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8 rounded-full">
-                                      <MoreHorizontal className="h-4 w-4 md:h-5 md:w-5" />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                      <MoreHorizontal className="h-5 w-5" />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
@@ -973,56 +830,56 @@ const ArtistProfile = () => {
                               </div>
 
                               {/* Content */}
-                              <p className="text-foreground text-sm md:text-base mt-2 md:mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                              <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
                             </div>
                             
                             {/* Media for premium announcements */}
-                            {announcement.is_premium && announcement.media_url && <div className="mt-2 md:mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                            {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
                       url: announcement.media_url!,
                       type: announcement.media_type === "video" ? "video" : "image"
                     })}>
                                 {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
                                     <video src={announcement.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                                  </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[300px] md:max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                                  </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                               </div>}
                             
                             {/* Contact button */}
-                            <div className="px-2 py-1.5 md:py-2">
+                            <div className="px-2 py-2">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-1.5 md:gap-2 rounded-md text-muted-foreground hover:bg-muted h-8 md:h-9">
-                                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
-                                  <span className="font-medium text-xs md:text-sm">Contact</span>
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                                  <MessageCircle className="w-5 h-5" />
+                                  <span className="font-medium">Contact</span>
                                 </Button>
                               </div>
                             </div>
-                          </Card>) : <Card className="p-6 md:p-8 text-center">
-                          <Megaphone className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 text-muted-foreground" />
-                          <p className="text-muted-foreground text-sm">No announcements yet.</p>
+                          </Card>) : <Card className="p-8 text-center">
+                          <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                          <p className="text-muted-foreground">No announcements yet.</p>
                         </Card>}
                     </div>
                   </div>
                 </TabsContent>
 
                 {/* Gallery Tab */}
-                <TabsContent value="gallery" className="pt-4 md:pt-0">
-                  <div className="space-y-6 md:space-y-8">
+                <TabsContent value="gallery">
+                  <div className="space-y-8">
                     {/* Photos Section */}
                     <div>
-                      <h2 className="hidden md:flex text-2xl font-display font-bold mb-6 items-center gap-2">
+                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                         <Images className="h-6 w-6 text-accent" />
                         Photos
                       </h2>
-                      <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1 md:gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {getImages().length > 0 ? getImages().map((image, index) => <Dialog key={image.id}>
                               <DialogTrigger asChild>
-                                <div className="aspect-square rounded-none md:rounded-lg overflow-hidden cursor-pointer border-0 md:border-2 border-accent/20 hover:border-accent transition-colors">
-                                  <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
+                                  <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
                                 </div>
                               </DialogTrigger>
                               <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-2 flex items-center justify-center">
                                 <img src={image.url} alt={`Gallery image ${index + 1}`} className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg" />
                               </DialogContent>
-                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-6 md:py-8 text-sm">
+                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No photos available yet.
                           </div>}
                       </div>
@@ -1030,15 +887,15 @@ const ArtistProfile = () => {
 
                     {/* Videos Section */}
                     <div>
-                      <h2 className="hidden md:flex text-2xl font-display font-bold mb-6 items-center gap-2">
+                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                         <Play className="h-6 w-6 text-accent" />
                         Videos
                       </h2>
-                      <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1 md:gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {getVideos().length > 0 ? getVideos().map((video, index) => <Dialog key={video.id}>
                               <DialogTrigger asChild>
-                                <div className="aspect-square rounded-none md:rounded-lg overflow-hidden cursor-pointer border-0 md:border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                                  <Play className="h-8 w-8 md:h-12 md:w-12 text-accent" />
+                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
+                                  <Play className="h-12 w-12 text-accent" />
                                 </div>
                               </DialogTrigger>
                               <DialogContent className="max-w-4xl">
@@ -1046,7 +903,7 @@ const ArtistProfile = () => {
                                   <iframe src={video.url} className="w-full h-full rounded-lg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                                 </div>
                               </DialogContent>
-                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-6 md:py-8 text-sm">
+                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No videos available yet.
                           </div>}
                       </div>
@@ -1055,9 +912,9 @@ const ArtistProfile = () => {
                 </TabsContent>
 
                 {/* Calendar Tab */}
-                <TabsContent value="calendar" className="pt-4 md:pt-0">
+                <TabsContent value="calendar">
                   <div>
-                    <h2 className="hidden md:flex text-2xl font-display font-bold mb-6 items-center gap-2">
+                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                       <CalendarIcon className="h-6 w-6 text-accent" />
                       Availability Calendar
                     </h2>
@@ -1211,6 +1068,7 @@ const ArtistProfile = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+          </div>
         </div>
       </div>
 
