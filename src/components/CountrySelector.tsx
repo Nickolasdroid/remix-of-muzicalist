@@ -48,7 +48,6 @@ const allCountries = [
   { name: "Poland", flag: "🇵🇱", code: "PL" },
   { name: "Portugal", flag: "🇵🇹", code: "PT" },
   { name: "Romania", flag: "🇷🇴", code: "RO" },
-  { name: "România", flag: "🇷🇴", code: "RO" },
   { name: "Russia", flag: "🇷🇺", code: "RU" },
   { name: "San Marino", flag: "🇸🇲", code: "SM" },
   { name: "Serbia", flag: "🇷🇸", code: "RS" },
