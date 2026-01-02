@@ -248,11 +248,11 @@ const RegisterArtist = () => {
 
       toast({
         title: "Registration Successful!",
-        description: "Your artist profile has been created. Redirecting to home...",
+        description: "Your artist profile has been created. Redirecting to your profile...",
       });
 
       setTimeout(() => {
-        navigate('/');
+        navigate(`/artist/${authData.user.id}`);
       }, 2000);
 
     } catch (error: any) {
