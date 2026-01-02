@@ -622,7 +622,13 @@ const Leaderboard = () => {
   const getAvailableCountries = () => {
     const artistCountries = [...new Set(artists.map(artist => artist.country).filter(Boolean))];
     return allCountries.filter(country => 
-      artistCountries.some(ac => ac === country.code || ac === country.name)
+      artistCountries.some(ac => 
+        ac === country.code || 
+        ac === country.name || 
+        ac?.toLowerCase() === country.name.toLowerCase() ||
+        // Handle diacritics variations (e.g., România vs Romania)
+        ac?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === country.name.toLowerCase()
+      )
     );
   };
   
