@@ -267,7 +267,7 @@ const Navigation = () => {
       <aside className="fixed top-0 left-0 h-screen w-64 bg-card border-r border-border z-40">
         {/* Logo and Search at top of sidebar */}
         <div className="p-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors mb-3">
+          <Link to="/" className="flex items-center gap-2 p-2 rounded-lg mb-3">
             <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
@@ -286,10 +286,10 @@ const Navigation = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg ${
                 isActive(link.to.split('?')[0])
                   ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  : 'text-foreground/80'
               }`}
             >
               <link.icon className="h-5 w-5" />
@@ -297,10 +297,9 @@ const Navigation = () => {
             </Link>
           ))}
           
-          {/* Report button */}
           <button
             onClick={() => setReportDialogOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80"
           >
             <Flag className="h-5 w-5" />
             <span className="font-medium">Report</span>
