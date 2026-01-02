@@ -369,7 +369,7 @@ const ArtistProfile = () => {
       </div>;
   };
   if (loading) {
-    return <div className="min-h-screen">
+    return <div className="min-h-screen ml-64">
         <Navigation />
         <div className="pt-24 pb-20 px-4">
           <div className="container mx-auto text-center">
@@ -379,7 +379,7 @@ const ArtistProfile = () => {
       </div>;
   }
   if (!artist) {
-    return <div className="min-h-screen">
+    return <div className="min-h-screen ml-64">
         <Navigation />
         <div className="pt-24 pb-20 px-4">
           <div className="container mx-auto text-center">
@@ -395,7 +395,7 @@ const ArtistProfile = () => {
       </div>;
   }
   const isPremium = artist.plan === 'Premium';
-  return <div className="min-h-screen">
+  return <div className="min-h-screen ml-64">
       <Navigation />
       
       <div className="pt-24 pb-20 px-4">

@@ -704,7 +704,7 @@ const Leaderboard = () => {
     djs: getArtistsBySpecialization('DJ'),
     bands: getArtistsBySpecialization('Band')
   };
-  return <div className="min-h-screen">
+  return <div className="min-h-screen ml-64">
       <Navigation />
       
       <div className="pt-32 pb-20 px-4">

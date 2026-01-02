@@ -95,7 +95,7 @@ const CategoryArtists = () => {
   }, [artists, filterCounty, filterExperience, sortOrder]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-accent/5">
+    <div className="min-h-screen ml-64 bg-gradient-to-b from-background via-background to-accent/5">
       <Navigation />
       
       <div className="container mx-auto px-4 pt-32 pb-20">
