@@ -235,6 +235,24 @@ const ArtistProfile = () => {
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !id) return;
+    
+    // Validate that end time is after start time
+    if (bookingForm.startTime && bookingForm.endTime) {
+      const [startHour, startMin] = bookingForm.startTime.split(':').map(Number);
+      const [endHour, endMin] = bookingForm.endTime.split(':').map(Number);
+      const startMinutes = startHour * 60 + startMin;
+      const endMinutes = endHour * 60 + endMin;
+      
+      if (endMinutes <= startMinutes) {
+        toast({
+          title: "Invalid Time",
+          description: "End time must be after start time.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
     try {
       // Include time interval in the message
       const timeInfo = bookingForm.startTime && bookingForm.endTime 
