@@ -2099,7 +2099,7 @@ const Dashboard = () => {
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                              {isBooked && (
+                                              {isBooked && !userChangedStatus && (
                                                 <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
                                                   Busy / Booked
                                                 </SelectItem>
