@@ -395,7 +395,7 @@ const ArtistProfile = () => {
       </div>;
   }
   const isPremium = artist.plan === 'Premium';
-  return <div className="min-h-screen ml-64">
+  return <div className="min-h-screen ml-64 bg-background">
       <Navigation />
       
       <div className="pt-24 pb-20 px-4">
