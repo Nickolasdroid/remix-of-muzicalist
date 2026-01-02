@@ -21,6 +21,7 @@ const Navigation = () => {
   const [profile, setProfile] = useState<any>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -73,6 +74,61 @@ const Navigation = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch unread messages count
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (!user) {
+        setUnreadCount(0);
+        return;
+      }
+
+      // Get all conversations where user is participant
+      const { data: conversations } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`artist_id.eq.${user.id},participant_id.eq.${user.id}`);
+
+      if (!conversations || conversations.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const conversationIds = conversations.map(c => c.id);
+
+      // Count unread messages (not sent by current user and not read)
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .in('conversation_id', conversationIds)
+        .neq('sender_id', user.id)
+        .is('read_at', null);
+
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    // Subscribe to new messages for real-time updates
+    const channel = supabase
+      .channel('nav-unread-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const sidebarLinks = [
     ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'Profile' }] : []),
@@ -155,10 +211,17 @@ const Navigation = () => {
                       </button>
                       <button
                         onClick={() => navigate('/messages')}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                       >
-                        <MessageSquare className="h-4 w-4" />
-                        <span>Messages</span>
+                        <div className="flex items-center gap-3">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>Messages</span>
+                        </div>
+                        {unreadCount > 0 && (
+                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        )}
                       </button>
                       <div className="h-px bg-accent/20 my-1" />
                       <button
