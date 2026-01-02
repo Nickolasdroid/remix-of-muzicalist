@@ -436,7 +436,7 @@ const Messages = () => {
 
   if (loading && !user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen ml-64 bg-background">
         <Navigation />
         <div className="pt-32 text-center text-muted-foreground">Loading...</div>
       </div>
@@ -444,7 +444,7 @@ const Messages = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen ml-64 bg-background">
       <Navigation />
       
       <div className="px-4 pt-20 pb-4 h-screen">

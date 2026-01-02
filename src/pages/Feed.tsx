@@ -166,7 +166,7 @@ const Feed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen ml-64 bg-background">
         <Navigation />
         <div className="container mx-auto px-4 pt-24 pb-12">
           <div className="max-w-2xl mx-auto">
@@ -194,7 +194,7 @@ const Feed = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen ml-64 bg-background">
       <Navigation />
       
       <div className="container mx-auto px-0 sm:px-4 pt-20">
