@@ -7,12 +7,8 @@ import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
-import { Music2, Users, Target, Heart } from "lucide-react";
+import { Music2, Users, Target, Heart, Mic, Guitar, Headphones } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import singerIcon from "@/assets/singer-silhouette.png";
-import instrumentalistIcon from "@/assets/instrumentalist-silhouette.png";
-import djIcon from "@/assets/dj-silhouette.png";
-import bandIcon from "@/assets/band-silhouette.png";
 
 const About = () => {
   const [counts, setCounts] = useState({
@@ -49,28 +45,28 @@ const About = () => {
 
   const categories = [
     {
-      iconImage: singerIcon,
+      icon: Mic,
       title: "Singer",
       description: "Professional vocalists for any event",
       count: counts.Singer,
       href: "/categories/Singers",
     },
     {
-      iconImage: instrumentalistIcon,
+      icon: Guitar,
       title: "Instrumentalist",
       description: "Skilled musicians with various instruments",
       count: counts.Instrumentalist,
       href: "/categories/Instrumentalists",
     },
     {
-      iconImage: djIcon,
+      icon: Headphones,
       title: "DJ",
       description: "Expert DJs for parties and events",
       count: counts.DJ,
       href: "/categories/DJs",
     },
     {
-      iconImage: bandIcon,
+      icon: Users,
       title: "Band",
       description: "Complete musical groups for your events",
       count: counts.Band,
