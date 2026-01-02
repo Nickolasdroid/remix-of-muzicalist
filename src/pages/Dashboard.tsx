@@ -1219,7 +1219,7 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-5 mb-8 bg-background border border-border">
+                      <TabsList className="grid w-full grid-cols-5 mb-8">
                         <TabsTrigger value="details" className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           Details
