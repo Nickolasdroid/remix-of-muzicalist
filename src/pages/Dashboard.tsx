@@ -2072,15 +2072,41 @@ const Dashboard = () => {
                                   <div className="space-y-3">
                                     <div>
                                       <Label>Status</Label>
-                                      <Select value={eventStatus} onValueChange={v => setEventStatus(v as any)}>
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="available">Available</SelectItem>
-                                          <SelectItem value="blocked">Unavailable</SelectItem>
-                                        </SelectContent>
-                                      </Select>
+                                      {(() => {
+                                        const currentEvent = getEventForDate(selectedDate);
+                                        const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                                        
+                                        if (isBooked) {
+                                          return (
+                                            <div className="space-y-2">
+                                              <div className="p-2 rounded-md bg-destructive/20 border border-destructive/30 text-destructive font-medium text-sm">
+                                                Current: Busy / Booked
+                                              </div>
+                                              <Select value={eventStatus} onValueChange={v => setEventStatus(v as any)}>
+                                                <SelectTrigger>
+                                                  <SelectValue placeholder="Change to..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value="available">Available</SelectItem>
+                                                  <SelectItem value="blocked">Unavailable</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          );
+                                        }
+                                        
+                                        return (
+                                          <Select value={eventStatus} onValueChange={v => setEventStatus(v as any)}>
+                                            <SelectTrigger>
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              <SelectItem value="available">Available</SelectItem>
+                                              <SelectItem value="blocked">Unavailable</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        );
+                                      })()}
                                     </div>
                                     <div>
                                       <Label>Notes (optional)</Label>
