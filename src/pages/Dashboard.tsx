@@ -2090,7 +2090,7 @@ const Dashboard = () => {
                                             </SelectTrigger>
                                             <SelectContent>
                                               {isBooked && (
-                                                <SelectItem value="busy" disabled className="text-destructive cursor-not-allowed">
+                                                <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed">
                                                   Busy / Booked
                                                 </SelectItem>
                                               )}
