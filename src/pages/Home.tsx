@@ -77,7 +77,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ml-64">
       <Navigation />
       
       {/* Hero Section */}
