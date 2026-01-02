@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut } from "lucide-react";
 import ReportDialog from "./ReportDialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -19,7 +19,7 @@ const Navigation = () => {
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Sidebar is always visible
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
@@ -81,19 +81,11 @@ const Navigation = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/50 border-b border-accent/20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Left: Logo (opens menu) + Search */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors group"
-              >
+            {/* Left: Logo + Search */}
+            <div className="flex items-center gap-3 ml-64">
+              <Link to="/" className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors">
                 <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
-                {sidebarOpen ? (
-                  <X className="h-5 w-5 text-foreground" />
-                ) : (
-                  <Menu className="h-5 w-5 text-foreground" />
-                )}
-              </button>
+              </Link>
 
               <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -208,18 +200,13 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Left Sidebar */}
-      <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background/50 border-r border-accent/20 z-40 transform transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
+      {/* Left Sidebar - Always visible */}
+      <aside className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-background/50 border-r border-accent/20 z-40">
         <div className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                 isActive(link.to.split('?')[0])
                   ? 'bg-accent/20 text-accent'
@@ -240,7 +227,6 @@ const Navigation = () => {
             <Link
               key={link.to}
               to={link.to}
-              onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                 isActive(link.to.split('?')[0])
                   ? 'bg-accent/20 text-accent'
@@ -254,10 +240,7 @@ const Navigation = () => {
           
           {/* Report button */}
           <button
-            onClick={() => {
-              setSidebarOpen(false);
-              setReportDialogOpen(true);
-            }}
+            onClick={() => setReportDialogOpen(true)}
             className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
           >
             <Flag className="h-5 w-5" />
@@ -266,13 +249,6 @@ const Navigation = () => {
         </div>
       </aside>
 
-      {/* Overlay when sidebar is open */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 top-16"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
 
       <ReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </>
