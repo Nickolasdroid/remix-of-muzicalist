@@ -617,7 +617,17 @@ const Leaderboard = () => {
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
-  const filteredCountries = allCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
+  
+  // Get countries with registered artists
+  const getAvailableCountries = () => {
+    const artistCountries = [...new Set(artists.map(artist => artist.country).filter(Boolean))];
+    return allCountries.filter(country => 
+      artistCountries.some(ac => ac === country.code || ac === country.name)
+    );
+  };
+  
+  const availableCountries = getAvailableCountries();
+  const filteredCountries = availableCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
 
   // Get unique counties from artists based on selected country
   const getAvailableCounties = () => {
@@ -720,7 +730,7 @@ const Leaderboard = () => {
               <DropdownMenu onOpenChange={open => !open && setCountrySearch("")}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="min-w-[180px] justify-between">
-                    {selectedCountry ? allCountries.find(c => c.code === selectedCountry)?.name : "Select Country"}
+                    {selectedCountry ? availableCountries.find(c => c.code === selectedCountry)?.name : "All Countries"}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -732,6 +742,15 @@ const Leaderboard = () => {
                     </div>
                   </div>
                   <div className="max-h-[250px] overflow-y-auto">
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setSelectedCountry("");
+                        setCountrySearch("");
+                      }} 
+                      className="cursor-pointer font-medium"
+                    >
+                      All Countries
+                    </DropdownMenuItem>
                     {filteredCountries.length > 0 ? filteredCountries.map(country => <DropdownMenuItem key={country.code} onClick={() => {
                     setSelectedCountry(country.code);
                     setCountrySearch("");
