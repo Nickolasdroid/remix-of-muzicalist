@@ -891,14 +891,14 @@ const Dashboard = () => {
     if (!user || !pendingCalendarSave || !selectedDate) return;
     setIsSaving(true);
     try {
-      // Delete the accepted booking request for this date
+      // Update the accepted booking request to rejected status
       const existingBooking = getBookingRequestForDate(selectedDate);
       if (existingBooking) {
-        const { error: deleteError } = await supabase
+        const { error: updateError } = await supabase
           .from('booking_requests')
-          .delete()
+          .update({ status: 'rejected' })
           .eq('id', existingBooking.id);
-        if (deleteError) throw deleteError;
+        if (updateError) throw updateError;
       }
       
       // Save the calendar event
@@ -912,7 +912,7 @@ const Dashboard = () => {
       
       toast({
         title: "Updated",
-        description: "Calendar updated and booking request removed."
+        description: "Calendar updated and booking request marked as rejected."
       });
     } catch (error: any) {
       toast({
