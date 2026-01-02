@@ -612,7 +612,7 @@ interface ArtistRating {
 
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedCounty, setSelectedCounty] = useState<string>("All Counties");
+  const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [loading, setLoading] = useState(true);
@@ -631,7 +631,7 @@ const Leaderboard = () => {
   };
   useEffect(() => {
     // Reset county when country changes
-    setSelectedCounty("All Counties");
+    setSelectedCounty("All Regions");
   }, [selectedCountry]);
   useEffect(() => {
     const fetchArtists = async () => {
@@ -693,7 +693,7 @@ const Leaderboard = () => {
     }
 
     // Filter by county
-    if (selectedCounty !== "All Counties") {
+    if (selectedCounty !== "All Regions") {
       filtered = filtered.filter(artist => artist.county === selectedCounty);
     }
     return filtered;
@@ -752,7 +752,7 @@ const Leaderboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto">
-                  {["All Counties", ...getAvailableCounties()].map(county => <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
+                  {["All Regions", ...getAvailableCounties()].map(county => <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
                       {county}
                     </DropdownMenuItem>)}
                 </DropdownMenuContent>
