@@ -138,6 +138,7 @@ const Dashboard = () => {
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
+  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const romanianCounties = ["București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"];
 
   // Data loading functions (defined early to avoid hoisting issues)
@@ -222,6 +223,7 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setDeleteReviewId(null);
     }
   };
   const getAverageRating = () => {
@@ -1623,7 +1625,7 @@ const Dashboard = () => {
                           
                           {reviews.length > 0 ? <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                               {reviews.map(review => <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
-                                  <button onClick={() => handleDeleteReview(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
+                                  <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </button>
                                   <div className="flex items-center gap-3">
@@ -2494,6 +2496,27 @@ const Dashboard = () => {
               disabled={isSaving}
             >
               {isSaving ? "Deleting..." : "Yes, Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Review Confirmation Dialog */}
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Review</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this review? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
