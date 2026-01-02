@@ -1052,12 +1052,12 @@ const Dashboard = () => {
     try {
       const {
         error
-      } = await supabase.from('booking_requests').delete().eq('id', requestId);
+      } = await supabase.from('booking_requests').update({ status: 'rejected' }).eq('id', requestId);
       if (error) throw error;
       await loadBookingRequests();
       toast({
         title: "Success",
-        description: "Booking request declined."
+        description: "Booking request rejected."
       });
     } catch (error: any) {
       toast({
