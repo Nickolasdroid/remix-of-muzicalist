@@ -143,7 +143,7 @@ const Navigation = () => {
   return (
     <>
       {/* Top Header Bar */}
-      <nav className="fixed top-0 left-64 right-0 z-50 bg-card border-b border-border">
+      <nav className="fixed top-0 left-64 right-0 z-50 bg-background border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Center: Feed & Ads */}
@@ -264,7 +264,7 @@ const Navigation = () => {
       </nav>
 
       {/* Left Sidebar - Always visible */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-card border-r border-border z-40">
+      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40">
         {/* Logo and Search at top of sidebar */}
         <div className="p-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg mb-3">
