@@ -75,9 +75,9 @@ const Navigation = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch unread messages count
+  // Fetch count of conversations with unread messages
   useEffect(() => {
-    const fetchUnreadCount = async () => {
+    const fetchUnreadConversationsCount = async () => {
       if (!user) {
         setUnreadCount(0);
         return;
@@ -96,18 +96,20 @@ const Navigation = () => {
 
       const conversationIds = conversations.map(c => c.id);
 
-      // Count unread messages (not sent by current user and not read)
-      const { count } = await supabase
+      // Get unread messages grouped by conversation
+      const { data: unreadMessages } = await supabase
         .from('messages')
-        .select('*', { count: 'exact', head: true })
+        .select('conversation_id')
         .in('conversation_id', conversationIds)
         .neq('sender_id', user.id)
         .is('read_at', null);
 
-      setUnreadCount(count || 0);
+      // Count unique conversations with unread messages
+      const uniqueConversations = new Set((unreadMessages || []).map(m => m.conversation_id));
+      setUnreadCount(uniqueConversations.size);
     };
 
-    fetchUnreadCount();
+    fetchUnreadConversationsCount();
 
     // Subscribe to new messages for real-time updates
     const channel = supabase
@@ -120,7 +122,7 @@ const Navigation = () => {
           table: 'messages'
         },
         () => {
-          fetchUnreadCount();
+          fetchUnreadConversationsCount();
         }
       )
       .subscribe();
