@@ -133,7 +133,6 @@ const Navigation = () => {
   }, [user]);
 
   const sidebarLinks = [
-    ...(user ? [{ to: '/dashboard?tab=profile', icon: User, label: 'Profile' }] : []),
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/counties', icon: MapPin, label: 'Regions' },
