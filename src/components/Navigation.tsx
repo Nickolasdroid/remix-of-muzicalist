@@ -81,22 +81,6 @@ const Navigation = () => {
       <nav className="fixed top-0 left-64 right-0 z-50 bg-card border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Left: Logo + Search */}
-            <div className="flex items-center gap-3">
-              <Link to="/" className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors">
-                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
-              </Link>
-
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search"
-                  className="pl-9 w-40 bg-background/50 border-accent/20 focus:border-accent"
-                />
-              </div>
-            </div>
-
             {/* Center: Feed & Ads */}
             <div className="hidden md:flex items-center gap-2">
               <Link
@@ -201,7 +185,23 @@ const Navigation = () => {
       </nav>
 
       {/* Left Sidebar - Always visible */}
-      <aside className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-card border-r border-border z-40">
+      <aside className="fixed top-0 left-0 h-screen w-64 bg-card border-r border-border z-40">
+        {/* Logo and Search at top of sidebar */}
+        <div className="p-4 border-b border-border">
+          <Link to="/" className="flex items-center gap-2 p-2 hover:bg-accent/10 rounded-lg transition-colors mb-3">
+            <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
+            <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+          </Link>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search"
+              className="pl-9 w-full bg-background/50 border-border focus:border-accent"
+            />
+          </div>
+        </div>
+        
         <div className="p-4 space-y-1">
           {sidebarLinks.map((link) => (
             <Link
