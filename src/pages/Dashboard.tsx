@@ -128,6 +128,7 @@ const Dashboard = () => {
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [eventStatus, setEventStatus] = useState<'blocked' | 'available'>('available');
+  const [userChangedStatus, setUserChangedStatus] = useState(false);
   const [eventNotes, setEventNotes] = useState("");
 
   // Booking requests state
@@ -2038,10 +2039,16 @@ const Dashboard = () => {
                             <div className="flex-shrink-0">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
                                 setSelectedDate(date);
+                                setUserChangedStatus(false);
                                 if (date) {
                                   const event = getEventForDate(date);
                                   if (event) {
-                                    setEventStatus(event.status);
+                                    const status = event.status;
+                                    if (status === 'busy' || status === 'booked') {
+                                      setEventStatus('available');
+                                    } else {
+                                      setEventStatus(status);
+                                    }
                                     setEventNotes(event.notes || "");
                                   } else {
                                     setEventStatus('available');
@@ -2076,16 +2083,19 @@ const Dashboard = () => {
                                         const currentEvent = getEventForDate(selectedDate);
                                         const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
                                         
+                                        const showAsBooked = isBooked && !userChangedStatus;
+                                        
                                         return (
                                           <Select 
-                                            value={isBooked ? 'busy' : eventStatus} 
+                                            value={showAsBooked ? 'busy' : eventStatus} 
                                             onValueChange={v => {
                                               if (v !== 'busy') {
-                                                setEventStatus(v as any);
+                                                setEventStatus(v as 'available' | 'blocked');
+                                                setUserChangedStatus(true);
                                               }
                                             }}
                                           >
-                                            <SelectTrigger className={isBooked ? "text-destructive" : ""}>
+                                            <SelectTrigger className={showAsBooked ? "text-destructive" : ""}>
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
