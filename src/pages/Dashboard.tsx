@@ -1029,14 +1029,24 @@ const Dashboard = () => {
       }).eq('id', request.id);
       if (updateError) throw updateError;
 
-      // Calculate all dates between start and end date
-      const startDate = new Date(request.event_date);
-      const endDate = request.event_end_date ? new Date(request.event_end_date) : startDate;
-      const datesToBook: string[] = [];
+      // Calculate all dates between start and end date - parse as local time
+      const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
+      const startDate = new Date(startYear, startMonth - 1, startDay);
       
+      let endDate = startDate;
+      if (request.event_end_date) {
+        const [endYear, endMonth, endDay] = request.event_end_date.split('-').map(Number);
+        endDate = new Date(endYear, endMonth - 1, endDay);
+      }
+      
+      const datesToBook: string[] = [];
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
-        datesToBook.push(currentDate.toISOString().split('T')[0]);
+        // Format as YYYY-MM-DD using local date components
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        datesToBook.push(`${year}-${month}-${day}`);
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
@@ -1044,12 +1054,12 @@ const Dashboard = () => {
       const timeMatch = request.message?.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
       const timeInfo = timeMatch ? `Time: ${timeMatch[1]} - ${timeMatch[2]}` : '';
 
-      // Add all dates to the calendar
+      // Add all dates to the calendar with requester details
       const calendarEntries = datesToBook.map(date => ({
         profile_id: user!.id,
         event_date: date,
         status: 'busy',
-        notes: `${timeInfo ? timeInfo + '\n' : ''}Booking: ${request.requester_name} - ${request.event_type || 'Event'}${datesToBook.length > 1 ? ` (${datesToBook.length} days)` : ''}`
+        notes: `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${datesToBook.length > 1 ? `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})` : ''}`
       }));
 
       for (const entry of calendarEntries) {
