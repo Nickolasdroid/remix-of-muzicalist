@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2, Clock } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2, Clock, Lock } from "lucide-react";
 import TimeSelector from "@/components/TimeSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -701,57 +701,67 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   {/* Contact Information */}
                   <div>
                     <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                    {currentUserId ? (
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                          <Mail className="h-5 w-5 text-accent" />
-                          <div>
-                            <p className="text-sm text-muted-foreground">Email</p>
-                            <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
-                              {artist.email}
-                            </a>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {currentUserId ? (
+                        <>
+                          <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                            <Mail className="h-5 w-5 text-accent" />
+                            <div>
+                              <p className="text-sm text-muted-foreground">Email</p>
+                              <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
+                                {artist.email}
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                          <Phone className="h-5 w-5 text-accent" />
-                          <div>
-                            <p className="text-sm text-muted-foreground">Phone</p>
-                            <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
-                              {artist.phone}
-                            </a>
+                          <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                            <Phone className="h-5 w-5 text-accent" />
+                            <div>
+                              <p className="text-sm text-muted-foreground">Phone</p>
+                              <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
+                                {artist.phone}
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-6 rounded-lg bg-secondary/50 border border-accent/20 text-center">
-                        <div className="flex justify-center gap-4 mb-4">
-                          <div className="p-3 rounded-full bg-accent/10">
-                            <Mail className="h-6 w-6 text-accent" />
-                          </div>
-                          <div className="p-3 rounded-full bg-accent/10">
-                            <Phone className="h-6 w-6 text-accent" />
-                          </div>
-                        </div>
-                        <p className="text-muted-foreground mb-4">
-                          Log in or create an account to view contact information
-                        </p>
-                        <div className="flex justify-center gap-3">
-                          <Button 
-                            onClick={() => navigate('/login')} 
-                            variant="outline" 
-                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              toast({
+                                title: "Login Required",
+                                description: "Please log in or create an account to view contact information.",
+                              });
+                              navigate('/login');
+                            }}
+                            className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left"
                           >
-                            Log In
-                          </Button>
-                          <Button 
-                            onClick={() => navigate('/register')} 
-                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                            <Mail className="h-5 w-5 text-accent" />
+                            <div className="flex-1">
+                              <p className="text-sm text-muted-foreground">Email</p>
+                              <p className="text-foreground">••••••••@••••.com</p>
+                            </div>
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              toast({
+                                title: "Login Required",
+                                description: "Please log in or create an account to view contact information.",
+                              });
+                              navigate('/login');
+                            }}
+                            className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left"
                           >
-                            Create Account
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                            <Phone className="h-5 w-5 text-accent" />
+                            <div className="flex-1">
+                              <p className="text-sm text-muted-foreground">Phone</p>
+                              <p className="text-foreground">+•• ••• ••• •••</p>
+                            </div>
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <Separator />
