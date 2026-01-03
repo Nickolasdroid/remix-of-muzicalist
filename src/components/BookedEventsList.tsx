@@ -3,9 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Clock, User, Mail, Phone, Calendar, Edit2, Save, X, Trash2 } from "lucide-react";
+import { Clock, User, Mail, Phone, Calendar, Edit2, Save, X } from "lucide-react";
 
 interface BookedEvent {
   timeSlot?: string;
@@ -83,7 +83,6 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
   const [selectedEvent, setSelectedEvent] = useState<BookedEvent | null>(null);
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(-1);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editForm, setEditForm] = useState({
     timeSlot: '',
     bookedBy: '',
@@ -122,16 +121,6 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
     
     const newNotes = serializeBookedEvents(updatedEvents);
     await onUpdateNotes(newNotes);
-    setShowEditDialog(false);
-  };
-
-  const handleDeleteEvent = async () => {
-    if (selectedEventIndex < 0) return;
-    
-    const updatedEvents = events.filter((_, index) => index !== selectedEventIndex);
-    const newNotes = updatedEvents.length > 0 ? serializeBookedEvents(updatedEvents) : '';
-    await onUpdateNotes(newNotes);
-    setShowDeleteConfirm(false);
     setShowEditDialog(false);
   };
 
@@ -253,16 +242,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
             </div>
           </div>
           
-          <DialogFooter className="mt-6 flex-col sm:flex-row gap-2">
-            <Button 
-              variant="destructive" 
-              onClick={() => setShowDeleteConfirm(true)} 
-              disabled={isSaving}
-              className="w-full sm:w-auto sm:mr-auto"
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              Delete Event
-            </Button>
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setShowEditDialog(false)} disabled={isSaving}>
               <X className="h-4 w-4 mr-1" />
               Cancel
@@ -274,28 +254,6 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this event?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove the booking for "{selectedEvent?.bookedBy || 'this client'}" from this day. 
-              {events.length > 1 ? " Other bookings on this day will remain." : " The day will become available again."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeleteEvent} 
-              disabled={isSaving}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isSaving ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
