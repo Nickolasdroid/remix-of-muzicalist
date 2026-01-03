@@ -2236,12 +2236,15 @@ const Dashboard = () => {
                                               </Badge>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                              <span>{new Date(request.event_date).toLocaleDateString('en-US', {
-                                                weekday: 'short',
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric'
-                                              })}</span>
+                                              <span>{(() => {
+                                                const [year, month, day] = request.event_date.split('-').map(Number);
+                                                return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                                  weekday: 'short',
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  year: 'numeric'
+                                                });
+                                              })()}</span>
                                               {request.event_type && (
                                                 <>
                                                   <span>·</span>
@@ -2334,12 +2337,15 @@ const Dashboard = () => {
                                       <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Date</Label>
                                       <p className="text-foreground mt-1 flex items-center gap-2">
                                         <CalendarIcon className="h-4 w-4 text-accent" />
-                                        {new Date(selectedBookingRequest.event_date).toLocaleDateString('en-US', {
-                                          weekday: 'long',
-                                          year: 'numeric',
-                                          month: 'long',
-                                          day: 'numeric'
-                                        })}
+                                        {(() => {
+                                          const [year, month, day] = selectedBookingRequest.event_date.split('-').map(Number);
+                                          return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                          });
+                                        })()}
                                       </p>
                                     </div>
 
