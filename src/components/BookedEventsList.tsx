@@ -275,16 +275,10 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowEditDialog(false)} disabled={isSaving}>
-                <X className="h-4 w-4 mr-1" />
-                Cancel
-              </Button>
-              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-accent text-accent-foreground">
-                <Save className="h-4 w-4 mr-1" />
-                {isSaving ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
+            <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-accent text-accent-foreground">
+              <Save className="h-4 w-4 mr-1" />
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
