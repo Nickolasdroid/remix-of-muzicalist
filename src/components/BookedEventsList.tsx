@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Clock, User, Mail, Phone, Calendar, Edit2, Save, X } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Clock, User, Mail, Phone, Calendar, Edit2, Save, X, Trash2 } from "lucide-react";
 
 interface BookedEvent {
   timeSlot?: string;
@@ -120,6 +121,15 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
     };
     
     const newNotes = serializeBookedEvents(updatedEvents);
+    await onUpdateNotes(newNotes);
+    setShowEditDialog(false);
+  };
+
+  const handleDeleteEvent = async () => {
+    if (selectedEventIndex < 0) return;
+    
+    const updatedEvents = events.filter((_, index) => index !== selectedEventIndex);
+    const newNotes = updatedEvents.length > 0 ? serializeBookedEvents(updatedEvents) : '';
     await onUpdateNotes(newNotes);
     setShowEditDialog(false);
   };
@@ -242,15 +252,39 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
             </div>
           </div>
           
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowEditDialog(false)} disabled={isSaving}>
-              <X className="h-4 w-4 mr-1" />
-              Cancel
-            </Button>
-            <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-accent text-accent-foreground">
-              <Save className="h-4 w-4 mr-1" />
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
+          <DialogFooter className="mt-6 flex justify-between w-full">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={isSaving}>
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this event?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove this booking from your calendar. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteEvent} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowEditDialog(false)} disabled={isSaving}>
+                <X className="h-4 w-4 mr-1" />
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-accent text-accent-foreground">
+                <Save className="h-4 w-4 mr-1" />
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
