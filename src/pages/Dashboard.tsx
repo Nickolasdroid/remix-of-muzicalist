@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { parseYMDToLocalDate } from "@/lib/date";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2 } from "lucide-react";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { Calendar } from "@/components/ui/calendar";
@@ -2124,8 +2125,8 @@ const Dashboard = () => {
                                   setEventNotes("");
                                 }
                               }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
-                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
-                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => parseYMDToLocalDate(e.event_date)),
+                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => parseYMDToLocalDate(e.event_date))
                               }} modifiersClassNames={{
                                 busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                                 blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
