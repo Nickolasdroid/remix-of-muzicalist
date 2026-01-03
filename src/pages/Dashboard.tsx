@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2 } from "lucide-react";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { Calendar } from "@/components/ui/calendar";
+import BookedEventsList from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -2182,10 +2183,54 @@ const Dashboard = () => {
                                         );
                                       })()}
                                     </div>
-                                    <div>
-                                      <Label>Notes (optional)</Label>
-                                      <Textarea value={eventNotes} onChange={e => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
-                                    </div>
+                                    
+                                    {/* Show booked events list if date has bookings */}
+                                    {(() => {
+                                      const currentEvent = getEventForDate(selectedDate);
+                                      const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                                      
+                                      if (isBooked && currentEvent?.notes && !userChangedStatus) {
+                                        return (
+                                          <BookedEventsList
+                                            notes={currentEvent.notes}
+                                            isSaving={isSaving}
+                                            onUpdateNotes={async (newNotes: string) => {
+                                              setIsSaving(true);
+                                              try {
+                                                const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                                                const { error } = await supabase
+                                                  .from('calendar_events')
+                                                  .update({ notes: newNotes })
+                                                  .eq('profile_id', user!.id)
+                                                  .eq('event_date', dateStr);
+                                                if (error) throw error;
+                                                await loadCalendarEvents();
+                                                setEventNotes(newNotes);
+                                                toast({
+                                                  title: "Success",
+                                                  description: "Event details updated."
+                                                });
+                                              } catch (error: any) {
+                                                toast({
+                                                  title: "Error",
+                                                  description: error.message,
+                                                  variant: "destructive"
+                                                });
+                                              } finally {
+                                                setIsSaving(false);
+                                              }
+                                            }}
+                                          />
+                                        );
+                                      }
+                                      
+                                      return (
+                                        <div>
+                                          <Label>Notes (optional)</Label>
+                                          <Textarea value={eventNotes} onChange={e => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
+                                        </div>
+                                      );
+                                    })()}
                                     <div className="flex gap-2">
                                       <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
                                         {isSaving ? "Saving..." : "Save"}
