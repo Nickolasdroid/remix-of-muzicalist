@@ -7,7 +7,23 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 
@@ -58,6 +74,8 @@ const Messages = () => {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
 
   const artistId = searchParams.get("artistId");
 
@@ -366,6 +384,41 @@ const Messages = () => {
     }
   };
 
+  const handleDeleteConversation = async () => {
+    if (!conversationToDelete) return;
+
+    const { error } = await supabase.rpc('soft_delete_conversation', {
+      _conversation_id: conversationToDelete
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Could not delete conversation",
+        variant: "destructive"
+      });
+    } else {
+      // Remove from local state
+      setConversations(prev => prev.filter(c => c.id !== conversationToDelete));
+      if (selectedConversation?.id === conversationToDelete) {
+        setSelectedConversation(null);
+        setMessages([]);
+      }
+      toast({
+        title: "Deleted",
+        description: "Conversation deleted"
+      });
+    }
+
+    setDeleteDialogOpen(false);
+    setConversationToDelete(null);
+  };
+
+  const openDeleteDialog = (conversationId: string) => {
+    setConversationToDelete(conversationId);
+    setDeleteDialogOpen(true);
+  };
+
   if (loading && !user) {
     return (
       <div className="min-h-screen ml-64 bg-background">
@@ -448,7 +501,7 @@ const Messages = () => {
                         <User className="h-5 w-5" />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col flex-1">
                       <span className="font-semibold">
                         {getOtherProfile(selectedConversation).stage_name}
                       </span>
@@ -456,6 +509,22 @@ const Messages = () => {
                         {getArtistSpecialization(selectedConversation)}
                       </span>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => openDeleteDialog(selectedConversation.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete conversation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
                   {/* Messages */}
@@ -526,6 +595,26 @@ const Messages = () => {
             </Card>
           </div>
         </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete conversation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the conversation from your inbox. The other person will still be able to see it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
