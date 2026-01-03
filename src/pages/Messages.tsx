@@ -335,21 +335,41 @@ const Messages = () => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedConversation || !user) return;
 
-    setSending(true);
-    const { error } = await supabase.from('messages').insert({
+    const messageContent = newMessage.trim();
+    const tempId = `temp-${Date.now()}`;
+    
+    // Optimistic update - add message immediately to UI
+    const optimisticMessage: Message = {
+      id: tempId,
       conversation_id: selectedConversation.id,
       sender_id: user.id,
-      content: newMessage.trim()
-    });
+      content: messageContent,
+      created_at: new Date().toISOString(),
+      read_at: null
+    };
+    
+    setMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage("");
+    setSending(true);
+
+    const { data, error } = await supabase.from('messages').insert({
+      conversation_id: selectedConversation.id,
+      sender_id: user.id,
+      content: messageContent
+    }).select().single();
 
     if (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== tempId));
+      setNewMessage(messageContent);
       toast({
         title: "Error",
         description: "Could not send message",
         variant: "destructive"
       });
     } else {
-      setNewMessage("");
+      // Replace optimistic message with real one (to avoid duplicates from realtime)
+      setMessages(prev => prev.map(m => m.id === tempId ? data : m));
       // Update conversation's updated_at
       await supabase
         .from('conversations')
