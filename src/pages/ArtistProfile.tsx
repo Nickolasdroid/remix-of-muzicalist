@@ -280,6 +280,20 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
       setBookingDialogOpen(true);
     }
   };
+  // Check if two time slots overlap
+  const doTimeSlotsOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(':').map(Number);
+      return h * 60 + m;
+    };
+    const s1 = toMinutes(start1);
+    const e1 = toMinutes(end1);
+    const s2 = toMinutes(start2);
+    const e2 = toMinutes(end2);
+    // Overlap if one starts before the other ends and ends after the other starts
+    return s1 < e2 && e1 > s2;
+  };
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !id) return;
@@ -301,6 +315,33 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
           variant: "destructive"
         });
         return;
+      }
+    }
+    
+    // Check for time slot conflicts on busy dates
+    if (bookingForm.startTime && bookingForm.endTime) {
+      const event = getEventForDate(selectedDate);
+      if (event && (event.status === 'busy' || event.status === 'booked')) {
+        const existingTime = extractTimeFromNotes(event.notes);
+        if (existingTime) {
+          // Check if requested time overlaps with existing busy time
+          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, existingTime.startTime, existingTime.endTime)) {
+            toast({
+              title: "Time Slot Conflict",
+              description: `This time slot overlaps with an existing booking (${existingTime.startTime} - ${existingTime.endTime}). Please select a different time.`,
+              variant: "destructive"
+            });
+            return;
+          }
+        } else {
+          // No specific time in notes means the entire day is booked
+          toast({
+            title: "Date Unavailable",
+            description: "This date is fully booked. Please select a different date.",
+            variant: "destructive"
+          });
+          return;
+        }
       }
     }
     
