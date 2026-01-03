@@ -7,15 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, MoreVertical, Trash2 } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface Conversation {
   id: string;
@@ -377,35 +371,6 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
 
-  const deleteConversation = async (conversationId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    // Use secure backend function for soft delete
-    const { error: convError } = await supabase.rpc('soft_delete_conversation', {
-      _conversation_id: conversationId
-    });
-
-    if (convError) {
-      toast({
-        title: "Error",
-        description: "Could not delete conversation",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Update local state
-    setConversations(prev => prev.filter(c => c.id !== conversationId));
-    if (selectedConversation?.id === conversationId) {
-      setSelectedConversation(null);
-      setMessages([]);
-    }
-
-    toast({
-      title: "Deleted",
-      description: "Conversation deleted successfully"
-    });
-  };
 
   const getPlanRingColor = (plan?: string) => {
     switch (plan) {
@@ -473,22 +438,6 @@ const Messages = () => {
                             {new Date(conv.updated_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-background border border-border z-50">
-                            <DropdownMenuItem
-                              onClick={(e) => deleteConversation(conv.id, e)}
-                              className="text-destructive focus:text-destructive cursor-pointer"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete conversation
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </div>
                     );
                   })
