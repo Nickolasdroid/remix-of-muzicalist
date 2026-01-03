@@ -32,6 +32,8 @@ interface Conversation {
   artist_id: string;
   participant_id: string;
   updated_at: string;
+  deleted_at_by_artist?: string | null;
+  deleted_at_by_participant?: string | null;
   artist_profile?: {
     stage_name: string;
     avatar_url: string | null;
@@ -177,7 +179,7 @@ const Messages = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('conversations')
-      .select('*')
+      .select('*, deleted_at_by_artist, deleted_at_by_participant')
       .order('updated_at', { ascending: false });
 
     if (error) {
@@ -298,11 +300,28 @@ const Messages = () => {
   };
 
   const fetchMessages = async (conversationId: string) => {
-    const { data, error } = await supabase
+    // Get the conversation to check deletion timestamp
+    const conversation = conversations.find(c => c.id === conversationId) || selectedConversation;
+    
+    let query = supabase
       .from('messages')
       .select('*')
-      .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: true });
+      .eq('conversation_id', conversationId);
+    
+    // Filter messages by deletion timestamp if applicable
+    if (conversation && user) {
+      const isArtist = conversation.artist_id === user.id;
+      const deletedAt = isArtist 
+        ? conversation.deleted_at_by_artist 
+        : conversation.deleted_at_by_participant;
+      
+      if (deletedAt) {
+        // Only show messages created after the deletion timestamp
+        query = query.gt('created_at', deletedAt);
+      }
+    }
+    
+    const { data, error } = await query.order('created_at', { ascending: true });
 
     if (error) {
       console.error('Error fetching messages:', error);

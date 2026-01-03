@@ -151,6 +151,8 @@ export type Database = {
         Row: {
           artist_id: string
           created_at: string
+          deleted_at_by_artist: string | null
+          deleted_at_by_participant: string | null
           deleted_by_artist: boolean
           deleted_by_participant: boolean
           id: string
@@ -160,6 +162,8 @@ export type Database = {
         Insert: {
           artist_id: string
           created_at?: string
+          deleted_at_by_artist?: string | null
+          deleted_at_by_participant?: string | null
           deleted_by_artist?: boolean
           deleted_by_participant?: boolean
           id?: string
@@ -169,6 +173,8 @@ export type Database = {
         Update: {
           artist_id?: string
           created_at?: string
+          deleted_at_by_artist?: string | null
+          deleted_at_by_participant?: string | null
           deleted_by_artist?: boolean
           deleted_by_participant?: boolean
           id?: string
