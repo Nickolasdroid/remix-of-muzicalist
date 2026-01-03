@@ -335,13 +335,12 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
       }
     }
     
-    // Check for time slot conflicts on busy dates - only block if there's an actual overlap
+    // Check for time slot conflicts on busy dates
     if (bookingForm.startTime && bookingForm.endTime) {
       const event = getEventForDate(selectedDate);
       if (event && (event.status === 'busy' || event.status === 'booked')) {
         const existingSlots = extractTimeSlotsFromNotes(event.notes);
 
-        // Only check for conflicts if there are specific time slots
         if (existingSlots.length > 0) {
           const conflict = existingSlots.find(slot =>
             doTimeSlotsOverlap(
@@ -360,8 +359,15 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
             });
             return;
           }
+        } else {
+          // No specific times means the entire day is booked
+          toast({
+            title: "Date Unavailable",
+            description: "This date is fully booked. Please select a different date.",
+            variant: "destructive"
+          });
+          return;
         }
-        // If no specific time slots exist, still allow the request - artist can decide
       }
     }
     
@@ -1195,13 +1201,11 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                           </div>
                         )}
 
-                        {/* Request Different Time Button - for all busy dates */}
-                        {isBusy && !isOwnProfile && (
+                        {/* Request Different Time Button - only for busy dates with specific time slots */}
+                        {isBusy && hasTimeSlots && !isOwnProfile && (
                           <div className="pt-2">
                             <p className="text-xs text-muted-foreground text-center mb-3">
-                              {hasTimeSlots 
-                                ? "You can still request a different time slot on this day."
-                                : "You can request a specific time slot on this day."}
+                              You can still request a different time slot on this day.
                             </p>
                             <Button 
                               className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
@@ -1219,7 +1223,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                               }}
                             >
                               <CalendarIcon className="h-4 w-4 mr-2" />
-                              {hasTimeSlots ? "Request Different Time" : "Request Time Slot"}
+                              Request Different Time
                             </Button>
                           </div>
                         )}
