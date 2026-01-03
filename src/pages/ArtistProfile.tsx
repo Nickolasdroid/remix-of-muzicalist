@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2, Clock } from "lucide-react";
+import TimeSelector from "@/components/TimeSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -1292,15 +1293,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                           {selectedDate?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                         <div className="flex-1">
-                          <Input 
-                            id="startTime" 
-                            type="time" 
-                            value={bookingForm.startTime} 
-                            onChange={e => setBookingForm({
+                          <TimeSelector
+                            id="startTime"
+                            value={bookingForm.startTime}
+                            onChange={(value) => setBookingForm({
                               ...bookingForm,
-                              startTime: e.target.value
-                            })} 
-                            required 
+                              startTime: value
+                            })}
+                            placeholder="Start time"
                           />
                         </div>
                       </div>
@@ -1335,15 +1335,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                           </PopoverContent>
                         </Popover>
                         <div className="flex-1">
-                          <Input 
-                            id="endTime" 
-                            type="time" 
-                            value={bookingForm.endTime} 
-                            onChange={e => setBookingForm({
+                          <TimeSelector
+                            id="endTime"
+                            value={bookingForm.endTime}
+                            onChange={(value) => setBookingForm({
                               ...bookingForm,
-                              endTime: e.target.value
-                            })} 
-                            required 
+                              endTime: value
+                            })}
+                            placeholder="End time"
                           />
                         </div>
                       </div>
