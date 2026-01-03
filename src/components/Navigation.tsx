@@ -22,6 +22,7 @@ const Navigation = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -141,6 +142,46 @@ const Navigation = () => {
     };
   }, [user]);
 
+  // Fetch count of unread notifications
+  useEffect(() => {
+    const fetchUnreadNotificationsCount = async () => {
+      if (!user) {
+        setUnreadNotifications(0);
+        return;
+      }
+
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .is('read_at', null);
+
+      setUnreadNotifications(count || 0);
+    };
+
+    fetchUnreadNotificationsCount();
+
+    // Subscribe to new notifications for real-time updates
+    const channel = supabase
+      .channel('nav-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications'
+        },
+        () => {
+          fetchUnreadNotificationsCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const sidebarLinks = [
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
@@ -221,10 +262,17 @@ const Navigation = () => {
                       </button>
                       <button
                         onClick={() => navigate('/notifications')}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
                       >
-                        <Bell className="h-4 w-4" />
-                        <span>Notifications</span>
+                        <div className="flex items-center gap-3">
+                          <Bell className="h-4 w-4" />
+                          <span>Notifications</span>
+                        </div>
+                        {unreadNotifications > 0 && (
+                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                          </span>
+                        )}
                       </button>
                       <button
                         onClick={() => navigate('/messages')}
