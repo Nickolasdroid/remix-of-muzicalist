@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell } from "lucide-react";
 import ReportDialog from "./ReportDialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -218,6 +218,13 @@ const Navigation = () => {
                       >
                         <User className="h-4 w-4" />
                         <span>Profile</span>
+                      </button>
+                      <button
+                        onClick={() => navigate('/notifications')}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
+                      >
+                        <Bell className="h-4 w-4" />
+                        <span>Notifications</span>
                       </button>
                       <button
                         onClick={() => navigate('/messages')}
