@@ -1067,7 +1067,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   <DialogHeader>
                     <DialogTitle className="text-xl font-display flex items-center gap-2">
                       <CalendarIcon className="h-5 w-5 text-accent" />
-                      Date Details
+                      Date Availability
                     </DialogTitle>
                     <DialogDescription>
                       {selectedDate?.toLocaleDateString('en-US', {
@@ -1086,57 +1086,73 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     
                     return (
                       <div className="space-y-4 mt-2">
-                        {/* Status Badge */}
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-muted-foreground">Status:</span>
-                          <Badge className={isBlocked ? "bg-muted text-muted-foreground" : isBusy ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
-                            {isBlocked ? "Unavailable" : isBusy ? "Busy / Booked" : "Available"}
-                          </Badge>
-                        </div>
-
-                        {/* Time Information */}
-                        {timeInfo && (
-                          <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                        {/* Busy Time Slot */}
+                        {isBusy && timeInfo && (
+                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 space-y-3">
                             <h4 className="font-semibold text-foreground flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-accent" />
-                              Booking Hours
+                              <Clock className="h-4 w-4 text-destructive" />
+                              Busy Time Slot
                             </h4>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between px-4">
                               <div className="text-center">
-                                <p className="text-xs text-muted-foreground">Start</p>
-                                <p className="text-lg font-semibold text-foreground">{timeInfo.startTime}</p>
+                                <p className="text-xs text-muted-foreground">From</p>
+                                <p className="text-xl font-bold text-destructive">{timeInfo.startTime}</p>
                               </div>
-                              <div className="text-muted-foreground">→</div>
+                              <div className="text-muted-foreground text-lg">—</div>
                               <div className="text-center">
-                                <p className="text-xs text-muted-foreground">End</p>
-                                <p className="text-lg font-semibold text-foreground">{timeInfo.endTime}</p>
+                                <p className="text-xs text-muted-foreground">Until</p>
+                                <p className="text-xl font-bold text-destructive">{timeInfo.endTime}</p>
                               </div>
                             </div>
                           </div>
                         )}
 
-                        {/* Event Type from Notes */}
-                        {event?.notes && !timeInfo && (
-                          <div className="p-4 rounded-lg bg-secondary/50">
-                            <h4 className="font-semibold text-foreground mb-2">Details</h4>
-                            <p className="text-sm text-muted-foreground">{event.notes}</p>
-                          </div>
-                        )}
-
-                        {/* No specific time info */}
-                        {isBusy && !timeInfo && !event?.notes && (
-                          <div className="p-4 rounded-lg bg-secondary/50 text-center">
-                            <p className="text-sm text-muted-foreground">
-                              The artist is booked for this entire day.
+                        {/* No specific time - booked all day */}
+                        {isBusy && !timeInfo && (
+                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
+                            <Clock className="h-6 w-6 text-destructive mx-auto mb-2" />
+                            <p className="text-sm font-medium text-foreground">
+                              Booked for the entire day
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              00:00 — 23:59
                             </p>
                           </div>
                         )}
 
+                        {/* Unavailable day */}
                         {isBlocked && (
-                          <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                          <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
                             <p className="text-sm text-muted-foreground">
                               The artist has marked this day as unavailable.
                             </p>
+                          </div>
+                        )}
+
+                        {/* Request Different Time Button - only for busy dates with specific time slots */}
+                        {isBusy && timeInfo && !isOwnProfile && (
+                          <div className="pt-2">
+                            <p className="text-xs text-muted-foreground text-center mb-3">
+                              You can still request a different time slot on this day.
+                            </p>
+                            <Button 
+                              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                              onClick={() => {
+                                if (!currentUserId) {
+                                  toast({
+                                    title: "Authentication Required",
+                                    description: "Please log in or create an account to make a booking request.",
+                                  });
+                                  navigate('/login');
+                                  return;
+                                }
+                                setDateDetailDialogOpen(false);
+                                setBookingDialogOpen(true);
+                              }}
+                            >
+                              <CalendarIcon className="h-4 w-4 mr-2" />
+                              Request Different Time
+                            </Button>
                           </div>
                         )}
                       </div>
