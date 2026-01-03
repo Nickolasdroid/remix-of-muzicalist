@@ -1366,7 +1366,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   })} rows={4} />
                     </div>
                     <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                      Send
+                      Send Booking Request
                     </Button>
                   </form>
                 </DialogContent>
