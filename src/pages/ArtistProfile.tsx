@@ -300,6 +300,7 @@ const ArtistProfile = () => {
         requester_email: bookingForm.email,
         requester_phone: bookingForm.phone,
         event_date: selectedDate.toISOString().split('T')[0],
+        event_end_date: endDate.toISOString().split('T')[0],
         event_type: bookingForm.eventType,
         message: fullMessage.trim(),
         status: 'pending'
