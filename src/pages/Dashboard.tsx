@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
+import { parseYMDToLocalDate } from "@/lib/utils";
 const Dashboard = () => {
   const {
     toast
@@ -2125,8 +2126,8 @@ const Dashboard = () => {
                                   setEventNotes("");
                                 }
                               }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
-                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => new Date(e.event_date)),
-                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => new Date(e.event_date))
+                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => parseYMDToLocalDate(e.event_date)),
+                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => parseYMDToLocalDate(e.event_date))
                               }} modifiersClassNames={{
                                 busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                                 blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
