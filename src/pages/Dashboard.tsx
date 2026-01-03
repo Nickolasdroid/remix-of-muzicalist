@@ -1040,12 +1040,16 @@ const Dashboard = () => {
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
+      // Extract time info from the request message
+      const timeMatch = request.message?.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+      const timeInfo = timeMatch ? `Time: ${timeMatch[1]} - ${timeMatch[2]}` : '';
+
       // Add all dates to the calendar
       const calendarEntries = datesToBook.map(date => ({
         profile_id: user!.id,
         event_date: date,
         status: 'busy',
-        notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}${datesToBook.length > 1 ? ` (${datesToBook.length} days)` : ''}`
+        notes: `${timeInfo ? timeInfo + '\n' : ''}Booking: ${request.requester_name} - ${request.event_type || 'Event'}${datesToBook.length > 1 ? ` (${datesToBook.length} days)` : ''}`
       }));
 
       for (const entry of calendarEntries) {
