@@ -1054,18 +1054,37 @@ const Dashboard = () => {
       const timeMatch = request.message?.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
       const timeInfo = timeMatch ? `Time: ${timeMatch[1]} - ${timeMatch[2]}` : '';
 
-      // Add all dates to the calendar with requester details
-      const calendarEntries = datesToBook.map(date => ({
-        profile_id: user!.id,
-        event_date: date,
-        status: 'busy',
-        notes: `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${datesToBook.length > 1 ? `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})` : ''}`
-      }));
+      // Build the new booking entry text
+      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}`;
 
-      for (const entry of calendarEntries) {
+      // Add all dates to the calendar, appending to existing entries if present
+      for (const date of datesToBook) {
+        // Check if there's an existing calendar event for this date
+        const { data: existingEvent } = await supabase
+          .from('calendar_events')
+          .select('*')
+          .eq('profile_id', user!.id)
+          .eq('event_date', date)
+          .maybeSingle();
+
+        let updatedNotes = newBookingEntry;
+        if (datesToBook.length > 1) {
+          updatedNotes += `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})`;
+        }
+
+        if (existingEvent && existingEvent.status === 'busy' && existingEvent.notes) {
+          // Append to existing notes with a separator
+          updatedNotes = existingEvent.notes + '\n\n---\n\n' + updatedNotes;
+        }
+
         const { error: calendarError } = await supabase
           .from('calendar_events')
-          .upsert(entry, { onConflict: 'profile_id,event_date' });
+          .upsert({
+            profile_id: user!.id,
+            event_date: date,
+            status: 'busy',
+            notes: updatedNotes
+          }, { onConflict: 'profile_id,event_date' });
         if (calendarError) throw calendarError;
       }
 
