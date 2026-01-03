@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2 } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2, Clock } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -71,6 +71,7 @@ interface CalendarEvent {
   id: string;
   event_date: string;
   status: string;
+  notes: string | null;
 }
 interface Review {
   id: string;
@@ -133,7 +134,8 @@ const ArtistProfile = () => {
     comment: ""
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const {
     toast
   } = useToast();
@@ -202,7 +204,7 @@ const ArtistProfile = () => {
       // Fetch calendar events
       const {
         data: calendarData
-      } = await supabase.from('calendar_events').select('id, event_date, status').eq('profile_id', id);
+      } = await supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id);
       setCalendarEvents(calendarData || []);
 
       // Fetch reviews
@@ -236,12 +238,37 @@ const ArtistProfile = () => {
   const isBlockedDate = (date: Date) => {
     return getBlockedDates().some((blockedDate: Date) => blockedDate.getDate() === date.getDate() && blockedDate.getMonth() === date.getMonth() && blockedDate.getFullYear() === date.getFullYear());
   };
+  const getEventForDate = (date: Date) => {
+    return calendarEvents.find(event => {
+      const eventDate = new Date(event.event_date);
+      return eventDate.getDate() === date.getDate() && 
+             eventDate.getMonth() === date.getMonth() && 
+             eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+  const extractTimeFromNotes = (notes: string | null) => {
+    if (!notes) return null;
+    // Try to extract time pattern like "Time: 12:00 - 18:00" or "19:00 - Jan 18, 2026 13:15"
+    const timeMatch = notes.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+    if (timeMatch) {
+      return { startTime: timeMatch[1], endTime: timeMatch[2] };
+    }
+    return null;
+  };
   const isOwnProfile = currentUserId === id;
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
+    if (!date) return;
+    
+    // If date is busy or blocked, open detail dialog to show hours
+    if (isBusyDate(date) || isBlockedDate(date)) {
+      setDateDetailDialogOpen(true);
+      return;
+    }
+    
     // Only open booking dialog if logged in, not own profile, and date is available
-    if (!isOwnProfile && date && !isBusyDate(date) && !isBlockedDate(date)) {
+    if (!isOwnProfile) {
       if (!currentUserId) {
         toast({
           title: "Authentication Required",
@@ -1034,7 +1061,90 @@ const ArtistProfile = () => {
 
               </Tabs>
 
-              {/* Review Dialog */}
+              {/* Date Availability Detail Dialog */}
+              <Dialog open={dateDetailDialogOpen} onOpenChange={setDateDetailDialogOpen}>
+                <DialogContent className="sm:max-w-[400px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-display flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5 text-accent" />
+                      Date Details
+                    </DialogTitle>
+                    <DialogDescription>
+                      {selectedDate?.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </DialogDescription>
+                  </DialogHeader>
+                  {selectedDate && (() => {
+                    const event = getEventForDate(selectedDate);
+                    const timeInfo = event?.notes ? extractTimeFromNotes(event.notes) : null;
+                    const isBusy = isBusyDate(selectedDate);
+                    const isBlocked = isBlockedDate(selectedDate);
+                    
+                    return (
+                      <div className="space-y-4 mt-2">
+                        {/* Status Badge */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-muted-foreground">Status:</span>
+                          <Badge className={isBlocked ? "bg-muted text-muted-foreground" : isBusy ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
+                            {isBlocked ? "Unavailable" : isBusy ? "Busy / Booked" : "Available"}
+                          </Badge>
+                        </div>
+
+                        {/* Time Information */}
+                        {timeInfo && (
+                          <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
+                            <h4 className="font-semibold text-foreground flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-accent" />
+                              Booking Hours
+                            </h4>
+                            <div className="flex items-center justify-between">
+                              <div className="text-center">
+                                <p className="text-xs text-muted-foreground">Start</p>
+                                <p className="text-lg font-semibold text-foreground">{timeInfo.startTime}</p>
+                              </div>
+                              <div className="text-muted-foreground">→</div>
+                              <div className="text-center">
+                                <p className="text-xs text-muted-foreground">End</p>
+                                <p className="text-lg font-semibold text-foreground">{timeInfo.endTime}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Event Type from Notes */}
+                        {event?.notes && !timeInfo && (
+                          <div className="p-4 rounded-lg bg-secondary/50">
+                            <h4 className="font-semibold text-foreground mb-2">Details</h4>
+                            <p className="text-sm text-muted-foreground">{event.notes}</p>
+                          </div>
+                        )}
+
+                        {/* No specific time info */}
+                        {isBusy && !timeInfo && !event?.notes && (
+                          <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                            <p className="text-sm text-muted-foreground">
+                              The artist is booked for this entire day.
+                            </p>
+                          </div>
+                        )}
+
+                        {isBlocked && (
+                          <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                            <p className="text-sm text-muted-foreground">
+                              The artist has marked this day as unavailable.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </DialogContent>
+              </Dialog>
+
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
