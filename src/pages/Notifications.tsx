@@ -4,7 +4,16 @@ import { Bell, Star, Heart, Calendar, Check, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
 import Navigation from "@/components/Navigation";
 
@@ -26,6 +35,7 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [deleteNotificationId, setDeleteNotificationId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -103,13 +113,16 @@ const Notifications = () => {
     );
   };
 
-  const deleteNotification = async (notificationId: string) => {
+  const deleteNotification = async () => {
+    if (!deleteNotificationId) return;
+    
     await supabase
       .from('notifications')
       .delete()
-      .eq('id', notificationId);
+      .eq('id', deleteNotificationId);
 
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    setNotifications(prev => prev.filter(n => n.id !== deleteNotificationId));
+    setDeleteNotificationId(null);
   };
 
   const getNotificationIcon = (type: string) => {
@@ -218,7 +231,7 @@ const Notifications = () => {
                           className="h-8 w-8 flex-shrink-0"
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteNotification(notification.id);
+                            setDeleteNotificationId(notification.id);
                           }}
                         >
                           <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
@@ -235,6 +248,27 @@ const Notifications = () => {
           )}
         </div>
       </main>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteNotificationId} onOpenChange={(open) => !open && setDeleteNotificationId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Notification</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this notification? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={deleteNotification}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
