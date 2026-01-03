@@ -34,7 +34,6 @@ const Dashboard = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [userType, setUserType] = useState<'artist' | 'user' | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
 
@@ -243,16 +242,13 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       loadAnnouncements();
-      // Only load artist-specific data if user is an artist
-      if (userType === 'artist') {
-        loadGalleryItems();
-        loadCalendarEvents();
-        loadBookingRequests();
-        loadPosts();
-        loadReviews();
-      }
+      loadGalleryItems();
+      loadCalendarEvents();
+      loadBookingRequests();
+      loadPosts();
+      loadReviews();
     }
-  }, [user, userType]);
+  }, [user]);
   const checkAuth = async () => {
     try {
       const {
@@ -265,48 +261,34 @@ const Dashboard = () => {
         return;
       }
       setUser(session.user);
-
-      // Fetch user role to determine user type
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('user_type')
-        .eq('user_id', session.user.id)
-        .single();
-      
-      const type = roleData?.user_type || 'user';
-      setUserType(type);
-
-      // Only fetch profile for artists
-      if (type === 'artist') {
-        const {
-          data: profileData,
-          error
-        } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-        if (error) throw error;
-        setProfile(profileData);
-        setFormData({
-          firstName: profileData.first_name || "",
-          lastName: profileData.last_name || "",
-          stageName: profileData.stage_name || "",
-          email: profileData.email || "",
-          phone: profileData.phone || "",
-          county: profileData.county || "",
-          country: profileData.country || "",
-          specialization: profileData.specialization || "",
-          musicGenres: profileData.music_genres || "",
-          experienceLevel: profileData.experience_level || "",
-          numberOfEvents: profileData.number_of_events?.toString() || "",
-          careerStartYear: profileData.career_start_year?.toString() || "",
-          bio: profileData.bio || "",
-          estimatedPrice: profileData.estimated_price || "",
-          facebookUrl: profileData.facebook_url || "",
-          instagramUrl: profileData.instagram_url || "",
-          youtubeUrl: profileData.youtube_url || "",
-          tiktokUrl: profileData.tiktok_url || "",
-          spotifyUrl: profileData.spotify_url || "",
-          instruments: profileData.instruments || ""
-        });
-      }
+      const {
+        data: profileData,
+        error
+      } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+      if (error) throw error;
+      setProfile(profileData);
+      setFormData({
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        stageName: profileData.stage_name || "",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        county: profileData.county || "",
+        country: profileData.country || "",
+        specialization: profileData.specialization || "",
+        musicGenres: profileData.music_genres || "",
+        experienceLevel: profileData.experience_level || "",
+        numberOfEvents: profileData.number_of_events?.toString() || "",
+        careerStartYear: profileData.career_start_year?.toString() || "",
+        bio: profileData.bio || "",
+        estimatedPrice: profileData.estimated_price || "",
+        facebookUrl: profileData.facebook_url || "",
+        instagramUrl: profileData.instagram_url || "",
+        youtubeUrl: profileData.youtube_url || "",
+        tiktokUrl: profileData.tiktok_url || "",
+        spotifyUrl: profileData.spotify_url || "",
+        instruments: profileData.instruments || ""
+      });
     } catch (error: any) {
       console.error('Auth check error:', error);
       toast({
@@ -1200,93 +1182,6 @@ const Dashboard = () => {
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-8">
-                    {/* User Dashboard (Non-Artist) */}
-                    {userType === 'user' && (
-                      <div className="space-y-6">
-                        <div className="text-center mb-8">
-                          <h1 className="text-3xl font-display font-bold text-foreground mb-2">
-                            My Dashboard
-                          </h1>
-                          <p className="text-muted-foreground">
-                            Manage your announcements
-                          </p>
-                        </div>
-
-                        {/* User Announcements Section */}
-                        <div className="max-w-[500px] mx-auto space-y-1">
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-accent" />
-                              <span className="text-sm text-muted-foreground">Standard Ads: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
-                            </div>
-                            <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={standardAdsRemaining <= 0}>
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  New Announcement
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Create Announcement</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 mt-4">
-                                  <div>
-                                    <Label>Description</Label>
-                                    <Textarea 
-                                      value={newAnnouncement.description} 
-                                      onChange={e => setNewAnnouncement({...newAnnouncement, description: e.target.value})} 
-                                      placeholder="Write your announcement..." 
-                                      rows={4} 
-                                      className="mt-2" 
-                                    />
-                                  </div>
-                                  <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
-                                    {isSaving ? "Creating..." : "Create Announcement"}
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                          
-                          {announcements.map(announcement => (
-                            <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
-                              <div className="p-4">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <Avatar className="w-10 h-10 border border-accent/30">
-                                      <AvatarFallback className="bg-accent/10 text-accent">
-                                        <User className="h-5 w-5" />
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                      <span className="text-xs text-muted-foreground">
-                                        {new Date(announcement.date).toLocaleDateString()}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(announcement.id)} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                  </Button>
-                                </div>
-                                <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
-                              </div>
-                            </Card>
-                          ))}
-                          
-                          {announcements.length === 0 && (
-                            <div className="text-center py-12 text-muted-foreground">
-                              <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                              <p className="text-sm">No announcements yet</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Artist Dashboard */}
-                    {userType === 'artist' && (
-                      <>
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
@@ -2615,8 +2510,6 @@ const Dashboard = () => {
                         </div>
                       </TabsContent>
                     </Tabs>
-                      </>
-                    )}
                 </div>}
 
               {/* Messages Tab */}
