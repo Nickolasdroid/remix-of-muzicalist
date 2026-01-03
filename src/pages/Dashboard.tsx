@@ -1056,8 +1056,16 @@ const Dashboard = () => {
       const timeMatch = request.message?.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
       const timeInfo = timeMatch ? `Time: ${timeMatch[1]} - ${timeMatch[2]}` : '';
 
+      // Extract additional details from the message (remove the time line)
+      let additionalDetails = '';
+      if (request.message) {
+        additionalDetails = request.message
+          .replace(/Time:\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}\s*-\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}/i, '')
+          .trim();
+      }
+
       // Build the new booking entry text
-      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}`;
+      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
 
       // Add all dates to the calendar, appending to existing entries if present
       for (const date of datesToBook) {
