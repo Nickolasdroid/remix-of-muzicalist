@@ -3,7 +3,7 @@ import ArtistCard from "@/components/ArtistCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown, Search } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -797,16 +797,20 @@ const Leaderboard = () => {
 
           <Tabs defaultValue="singers" className="w-full">
             <TabsList className="flex w-full max-w-2xl mx-auto mb-12 bg-card/50 p-2 rounded-xl border-2 border-accent/30">
-              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
+              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
+                <Mic className="h-4 w-4" />
                 Singers
               </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
+              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
+                <Guitar className="h-4 w-4" />
                 Instrumentalists
               </TabsTrigger>
-              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
+              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
+                <Headphones className="h-4 w-4" />
                 DJs
               </TabsTrigger>
-              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300">
+              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
+                <Users className="h-4 w-4" />
                 Bands
               </TabsTrigger>
             </TabsList>
