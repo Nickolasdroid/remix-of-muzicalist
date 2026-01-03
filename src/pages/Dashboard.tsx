@@ -1029,23 +1029,37 @@ const Dashboard = () => {
       }).eq('id', request.id);
       if (updateError) throw updateError;
 
-      // Add the event to the calendar
-      const {
-        error: calendarError
-      } = await supabase.from('calendar_events').upsert({
+      // Calculate all dates between start and end date
+      const startDate = new Date(request.event_date);
+      const endDate = request.event_end_date ? new Date(request.event_end_date) : startDate;
+      const datesToBook: string[] = [];
+      
+      const currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        datesToBook.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      // Add all dates to the calendar
+      const calendarEntries = datesToBook.map(date => ({
         profile_id: user!.id,
-        event_date: request.event_date,
+        event_date: date,
         status: 'busy',
-        notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}`
-      }, {
-        onConflict: 'profile_id,event_date'
-      });
-      if (calendarError) throw calendarError;
+        notes: `Booking: ${request.requester_name} - ${request.event_type || 'Event'}${datesToBook.length > 1 ? ` (${datesToBook.length} days)` : ''}`
+      }));
+
+      for (const entry of calendarEntries) {
+        const { error: calendarError } = await supabase
+          .from('calendar_events')
+          .upsert(entry, { onConflict: 'profile_id,event_date' });
+        if (calendarError) throw calendarError;
+      }
+
       await loadBookingRequests();
       await loadCalendarEvents();
       toast({
         title: "Success",
-        description: "Booking accepted and added to calendar!"
+        description: `Booking accepted and ${datesToBook.length > 1 ? datesToBook.length + ' days' : '1 day'} added to calendar!`
       });
     } catch (error: any) {
       toast({
