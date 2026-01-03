@@ -236,46 +236,13 @@ const Messages = () => {
   const handleArtistContact = async () => {
     if (!artistId || !user || artistId === user.id) return;
 
-    // Check if conversation already exists (in either direction)
-    const { data: existingAsParticipant } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('artist_id', artistId)
-      .eq('participant_id', user.id)
-      .maybeSingle();
+    // Use backend function to get or restore/create conversation
+    const { data: conversationId, error: rpcError } = await supabase.rpc('get_or_create_conversation', {
+      _artist_id: artistId,
+      _participant_id: user.id
+    });
 
-    const { data: existingAsArtist } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('artist_id', user.id)
-      .eq('participant_id', artistId)
-      .maybeSingle();
-
-    const existing = existingAsParticipant || existingAsArtist;
-
-    if (existing) {
-      // Fetch the other user's profile
-      const { data: otherProfile } = await supabase
-        .from('profiles')
-        .select('stage_name, avatar_url, plan, specialization')
-        .eq('id', artistId)
-        .maybeSingle();
-      
-      setSelectedConversation({ ...existing, other_profile: otherProfile, artist_profile: otherProfile } as any);
-      return;
-    }
-
-    // Create new conversation
-    const { data: newConv, error } = await supabase
-      .from('conversations')
-      .insert({
-        artist_id: artistId,
-        participant_id: user.id
-      })
-      .select()
-      .single();
-
-    if (error) {
+    if (rpcError || !conversationId) {
       toast({
         title: "Error",
         description: "Could not start conversation",
@@ -284,6 +251,13 @@ const Messages = () => {
       return;
     }
 
+    // Fetch the conversation
+    const { data: conv } = await supabase
+      .from('conversations')
+      .select('*')
+      .eq('id', conversationId)
+      .single();
+
     // Fetch artist profile
     const { data: profile } = await supabase
       .from('profiles')
@@ -291,8 +265,17 @@ const Messages = () => {
       .eq('id', artistId)
       .maybeSingle();
 
-    const convWithProfile = { ...newConv, other_profile: profile, artist_profile: profile };
-    setConversations(prev => [convWithProfile, ...prev]);
+    const convWithProfile = { ...conv, other_profile: profile, artist_profile: profile };
+    
+    // Update conversations list
+    setConversations(prev => {
+      const exists = prev.some(c => c.id === conversationId);
+      if (exists) {
+        return prev;
+      }
+      return [convWithProfile, ...prev];
+    });
+    
     setSelectedConversation(convWithProfile as any);
   };
 
