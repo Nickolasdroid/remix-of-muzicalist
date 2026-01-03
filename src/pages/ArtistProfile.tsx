@@ -701,26 +701,57 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   {/* Contact Information */}
                   <div>
                     <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                        <Mail className="h-5 w-5 text-accent" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Email</p>
-                          <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
-                            {artist.email}
-                          </a>
+                    {currentUserId ? (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                          <Mail className="h-5 w-5 text-accent" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Email</p>
+                            <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
+                              {artist.email}
+                            </a>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                          <Phone className="h-5 w-5 text-accent" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Phone</p>
+                            <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
+                              {artist.phone}
+                            </a>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                        <Phone className="h-5 w-5 text-accent" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Phone</p>
-                          <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
-                            {artist.phone}
-                          </a>
+                    ) : (
+                      <div className="p-6 rounded-lg bg-secondary/50 border border-accent/20 text-center">
+                        <div className="flex justify-center gap-4 mb-4">
+                          <div className="p-3 rounded-full bg-accent/10">
+                            <Mail className="h-6 w-6 text-accent" />
+                          </div>
+                          <div className="p-3 rounded-full bg-accent/10">
+                            <Phone className="h-6 w-6 text-accent" />
+                          </div>
+                        </div>
+                        <p className="text-muted-foreground mb-4">
+                          Log in or create an account to view contact information
+                        </p>
+                        <div className="flex justify-center gap-3">
+                          <Button 
+                            onClick={() => navigate('/login')} 
+                            variant="outline" 
+                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                          >
+                            Log In
+                          </Button>
+                          <Button 
+                            onClick={() => navigate('/register')} 
+                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                          >
+                            Create Account
+                          </Button>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <Separator />
