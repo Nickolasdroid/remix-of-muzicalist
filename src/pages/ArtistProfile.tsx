@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 interface Profile {
   id: string;
   first_name: string;
@@ -227,10 +228,10 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
     fetchArtistData();
   }, [id]);
   const getBusyDates = () => {
-    return calendarEvents.filter(event => event.status === 'busy' || event.status === 'booked').map(event => new Date(event.event_date));
+    return calendarEvents.filter(event => event.status === 'busy' || event.status === 'booked').map(event => parseYMDToLocalDate(event.event_date));
   };
   const getBlockedDates = () => {
-    return calendarEvents.filter(event => event.status === 'blocked' || event.status === 'unavailable').map(event => new Date(event.event_date));
+    return calendarEvents.filter(event => event.status === 'blocked' || event.status === 'unavailable').map(event => parseYMDToLocalDate(event.event_date));
   };
   const isBusyDate = (date: Date) => {
     return getBusyDates().some((busyDate: Date) => busyDate.getDate() === date.getDate() && busyDate.getMonth() === date.getMonth() && busyDate.getFullYear() === date.getFullYear());
@@ -240,7 +241,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   };
   const getEventForDate = (date: Date) => {
     return calendarEvents.find(event => {
-      const eventDate = new Date(event.event_date);
+      const eventDate = parseYMDToLocalDate(event.event_date);
       return eventDate.getDate() === date.getDate() && 
              eventDate.getMonth() === date.getMonth() && 
              eventDate.getFullYear() === date.getFullYear();
@@ -367,8 +368,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
         requester_name: bookingForm.name,
         requester_email: bookingForm.email,
         requester_phone: bookingForm.phone,
-        event_date: selectedDate.toISOString().split('T')[0],
-        event_end_date: endDate.toISOString().split('T')[0],
+        event_date: formatLocalDateToYMD(selectedDate),
+        event_end_date: formatLocalDateToYMD(endDate),
         event_type: bookingForm.eventType,
         message: fullMessage.trim(),
         status: 'pending'
