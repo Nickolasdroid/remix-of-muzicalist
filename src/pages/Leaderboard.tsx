@@ -707,6 +707,9 @@ const Leaderboard = () => {
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
+    // Only include artists who have at least one review (rating > 0)
+    filtered = filtered.filter(artist => artistRatings[artist.id] && artistRatings[artist.id] > 0);
+
     // Filter by country (handle both code, name, and diacritics)
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
