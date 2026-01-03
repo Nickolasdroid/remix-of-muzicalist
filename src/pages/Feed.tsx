@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, MoreHorizontal, Flag, Globe, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -83,26 +83,40 @@ const Feed = () => {
 
         if (error) throw error;
 
-        // Fetch profiles for each post
+        // Fetch profiles and likes for each post
         const postsWithProfiles = await Promise.all(
           (posts || []).map(async (post) => {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('stage_name, avatar_url, specialization, plan')
-              .eq('id', post.profile_id)
-              .maybeSingle();
+            const [profileResult, likesResult, userLikeResult] = await Promise.all([
+              supabase
+                .from('profiles')
+                .select('stage_name, avatar_url, specialization, plan')
+                .eq('id', post.profile_id)
+                .maybeSingle(),
+              supabase
+                .from('post_likes')
+                .select('id', { count: 'exact' })
+                .eq('post_id', post.id),
+              currentUserId 
+                ? supabase
+                    .from('post_likes')
+                    .select('id')
+                    .eq('post_id', post.id)
+                    .eq('user_id', currentUserId)
+                    .maybeSingle()
+                : Promise.resolve({ data: null })
+            ]);
 
             return {
               ...post,
-              profile: profile || {
+              profile: profileResult.data || {
                 stage_name: 'Unknown Artist',
                 avatar_url: null,
                 specialization: null,
                 plan: 'Free'
               },
-              isLiked: false,
+              isLiked: !!userLikeResult.data,
               isSaved: false,
-              likes: Math.floor(Math.random() * 100) // Placeholder until we add likes table
+              likes: likesResult.count || 0
             };
           })
         );
@@ -121,16 +135,55 @@ const Feed = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [currentUserId]);
 
-  const handleLike = (id: string) => {
+  const handleLike = async (id: string) => {
+    if (!currentUserId) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like posts.",
+      });
+      navigate('/login');
+      return;
+    }
+
+    const item = feedItems.find(i => i.id === id);
+    if (!item) return;
+
+    // Optimistic update
     setFeedItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 }
-          : item
+      items.map(i =>
+        i.id === id
+          ? { ...i, isLiked: !i.isLiked, likes: i.isLiked ? i.likes - 1 : i.likes + 1 }
+          : i
       )
     );
+
+    try {
+      if (item.isLiked) {
+        // Unlike
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', id)
+          .eq('user_id', currentUserId);
+      } else {
+        // Like
+        await supabase
+          .from('post_likes')
+          .insert({ post_id: id, user_id: currentUserId });
+      }
+    } catch (error) {
+      // Revert on error
+      setFeedItems(items =>
+        items.map(i =>
+          i.id === id
+            ? { ...i, isLiked: item.isLiked, likes: item.likes }
+            : i
+        )
+      );
+      console.error('Error toggling like:', error);
+    }
   };
 
   const handleSave = (id: string) => {
@@ -331,8 +384,8 @@ const Feed = () => {
                   <div className="flex items-center gap-1">
                     {item.likes > 0 && (
                       <>
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs">
-                          <ThumbsUp className="h-3 w-3" />
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs">
+                          <Heart className="h-3 w-3 fill-current" />
                         </span>
                         <span>{item.likes}</span>
                       </>
@@ -347,9 +400,9 @@ const Feed = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleLike(item.id)}
-                      className={`flex-1 gap-2 rounded-md ${item.isLiked ? "text-primary" : "text-muted-foreground hover:bg-muted"}`}
+                      className={`flex-1 gap-2 rounded-md ${item.isLiked ? "text-red-500" : "text-muted-foreground hover:bg-muted"}`}
                     >
-                      <ThumbsUp className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
                       <span className="font-medium">Like</span>
                     </Button>
                     
