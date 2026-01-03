@@ -301,11 +301,7 @@ const Dashboard = () => {
     }
   };
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await supabase.auth.signOut();
     navigate('/');
   };
   const formatPostDate = (dateString: string) => {

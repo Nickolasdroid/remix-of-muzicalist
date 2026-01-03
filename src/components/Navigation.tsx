@@ -26,14 +26,7 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-    // Always clear local state and redirect, even if signOut fails
-    setUser(null);
-    setProfile(null);
+    await supabase.auth.signOut();
     navigate('/');
   };
 
