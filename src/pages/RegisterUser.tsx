@@ -51,7 +51,7 @@ const RegisterUser = () => {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Insert user role
+        // Insert user role only - no artist profile needed for regular users
         const { error: roleError } = await supabase
           .from("user_roles")
           .insert({
@@ -60,21 +60,6 @@ const RegisterUser = () => {
           });
 
         if (roleError) throw roleError;
-
-        // Create basic profile
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: authData.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            stage_name: `${formData.firstName} ${formData.lastName}`,
-            county: "",
-          });
-
-        if (profileError) throw profileError;
 
         toast.success("Registration successful! Please check your email to verify your account.");
         navigate("/login");
