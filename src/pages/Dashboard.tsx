@@ -264,15 +264,7 @@ const Dashboard = () => {
       const {
         data: profileData,
         error
-      } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-      
-      // If no profile exists, sign out and redirect to login
-      if (!profileData) {
-        await supabase.auth.signOut({ scope: 'local' });
-        navigate('/login');
-        return;
-      }
-      
+      } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
       if (error) throw error;
       setProfile(profileData);
       setFormData({
