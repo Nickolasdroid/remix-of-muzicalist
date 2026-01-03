@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, ThumbsUp, Globe, Music2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
@@ -121,6 +122,7 @@ const ArtistProfile = () => {
     phone: "",
     startTime: "",
     endTime: "",
+    endDate: null as Date | null,
     eventType: "",
     message: ""
   });
@@ -255,8 +257,11 @@ const ArtistProfile = () => {
     e.preventDefault();
     if (!selectedDate || !id) return;
     
-    // Validate that end time is after start time
-    if (bookingForm.startTime && bookingForm.endTime) {
+    const endDate = bookingForm.endDate || selectedDate;
+    const isSameDay = endDate.toDateString() === selectedDate.toDateString();
+    
+    // Validate that end time is after start time (only if same day)
+    if (bookingForm.startTime && bookingForm.endTime && isSameDay) {
       const [startHour, startMin] = bookingForm.startTime.split(':').map(Number);
       const [endHour, endMin] = bookingForm.endTime.split(':').map(Number);
       const startMinutes = startHour * 60 + startMin;
@@ -273,10 +278,18 @@ const ArtistProfile = () => {
     }
     
     try {
-      // Include time interval in the message
-      const timeInfo = bookingForm.startTime && bookingForm.endTime 
-        ? `Time: ${bookingForm.startTime} - ${bookingForm.endTime}\n` 
-        : '';
+      // Include time interval and end date in the message
+      const startDateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const endDateStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      let timeInfo = '';
+      if (bookingForm.startTime && bookingForm.endTime) {
+        if (isSameDay) {
+          timeInfo = `Time: ${bookingForm.startTime} - ${bookingForm.endTime}\n`;
+        } else {
+          timeInfo = `Time: ${startDateStr} ${bookingForm.startTime} - ${endDateStr} ${bookingForm.endTime}\n`;
+        }
+      }
       const fullMessage = timeInfo + (bookingForm.message || '');
       
       const {
@@ -303,6 +316,7 @@ const ArtistProfile = () => {
         phone: "",
         startTime: "",
         endTime: "",
+        endDate: null,
         eventType: "",
         message: ""
       });
@@ -1103,8 +1117,11 @@ const ArtistProfile = () => {
                   })} required />
                     </div>
                     <div className="space-y-2">
-                      <Label>Time Interval</Label>
+                      <Label>Start Time</Label>
                       <div className="flex items-center gap-2">
+                        <div className="flex-1 text-sm text-muted-foreground">
+                          {selectedDate?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </div>
                         <div className="flex-1">
                           <Input 
                             id="startTime" 
@@ -1117,7 +1134,37 @@ const ArtistProfile = () => {
                             required 
                           />
                         </div>
-                        <span className="text-muted-foreground">to</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>End Time</Label>
+                      <div className="flex items-center gap-2">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="flex-1 justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {bookingForm.endDate 
+                                ? bookingForm.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                : selectedDate?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={bookingForm.endDate || selectedDate}
+                              onSelect={(date) => setBookingForm({
+                                ...bookingForm,
+                                endDate: date || null
+                              })}
+                              disabled={(date) => date < (selectedDate || new Date())}
+                              initialFocus
+                              className="p-3 pointer-events-auto"
+                            />
+                          </PopoverContent>
+                        </Popover>
                         <div className="flex-1">
                           <Input 
                             id="endTime" 
@@ -1131,6 +1178,9 @@ const ArtistProfile = () => {
                           />
                         </div>
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        Select a different date if the event extends to the next day
+                      </p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="eventType">Event Type</Label>
