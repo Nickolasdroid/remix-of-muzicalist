@@ -457,6 +457,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      soft_delete_conversation: {
+        Args: { _conversation_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"

@@ -380,22 +380,10 @@ const Messages = () => {
   const deleteConversation = async (conversationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Find the conversation to determine which column to update
-    const conversation = conversations.find(c => c.id === conversationId);
-    if (!conversation) return;
-
-    // Determine if current user is the artist or participant
-    const isArtist = user.id === conversation.artist_id;
-    
-    // Soft delete: mark as deleted for this user only
-    const updateData = isArtist 
-      ? { deleted_by_artist: true } 
-      : { deleted_by_participant: true };
-
-    const { error: convError } = await supabase
-      .from('conversations')
-      .update(updateData)
-      .eq('id', conversationId);
+    // Use secure backend function for soft delete
+    const { error: convError } = await supabase.rpc('soft_delete_conversation', {
+      _conversation_id: conversationId
+    });
 
     if (convError) {
       toast({
