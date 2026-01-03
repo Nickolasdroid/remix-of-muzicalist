@@ -26,7 +26,16 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      // Clear local state first
+      setUser(null);
+      setProfile(null);
+      // Sign out from Supabase (ignore errors if session already invalid)
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (error) {
+      // Ignore errors - session might already be invalid
+      console.log('Logout completed');
+    }
     navigate('/');
   };
 
