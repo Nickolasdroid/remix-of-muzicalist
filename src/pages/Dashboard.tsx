@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart } from "lucide-react";
 import InstrumentSelector from "@/components/InstrumentSelector";
+import EditableField from "@/components/EditableField";
 import { Calendar } from "@/components/ui/calendar";
 import BookedEventsList from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
@@ -1229,11 +1230,37 @@ const Dashboard = () => {
                           <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
 
-                        {/* Name */}
-                        <div className="flex-1 min-w-0">
-                          <h1 className="text-lg font-display font-bold text-foreground truncate">
-                            {formData.stageName}
-                          </h1>
+                        {/* Name with edit icon */}
+                        <div className="flex-1 min-w-0 flex items-center gap-1">
+                          {editingField === 'names' ? (
+                            <div className="flex items-center gap-1 flex-1">
+                              <Input 
+                                value={formData.stageName} 
+                                onChange={e => setFormData({...formData, stageName: e.target.value})}
+                                className="h-7 text-sm flex-1"
+                              />
+                              <Button size="sm" onClick={() => saveField('names')} disabled={isSaving} className="h-6 w-6 p-0">
+                                <Save className="h-3 w-3" />
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={cancelEditing} className="h-6 w-6 p-0">
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <>
+                              <h1 className="text-lg font-display font-bold text-foreground truncate">
+                                {formData.stageName}
+                              </h1>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 flex-shrink-0 text-muted-foreground hover:text-accent"
+                                onClick={() => startEditing('names')}
+                              >
+                                <Edit2 className="h-3 w-3" />
+                              </Button>
+                            </>
+                          )}
                         </div>
 
                         {/* Rating badge */}
@@ -1273,11 +1300,14 @@ const Dashboard = () => {
                               </Button>
                             </div>
                           ) : (
-                            <div className="group flex items-center gap-1 text-muted-foreground min-w-0" onClick={() => startEditing('location')}>
+                            <button 
+                              className="flex items-center gap-1 text-muted-foreground min-w-0 hover:text-accent transition-colors" 
+                              onClick={() => startEditing('location')}
+                            >
                               <MapPin className="h-3 w-3 flex-shrink-0" />
                               <span className="text-xs truncate">{formData.county}</span>
-                              <Edit2 className="h-2.5 w-2.5 opacity-50" />
-                            </div>
+                              <Edit2 className="h-3 w-3 flex-shrink-0" />
+                            </button>
                           )}
                         </div>
                       </div>
@@ -1404,11 +1434,23 @@ const Dashboard = () => {
                       {/* Details Tab */}
                       <TabsContent value="details" className="space-y-4 md:space-y-8">
                         {/* Bio/Description */}
-                        <div>
-                          <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
-                            <User className="h-6 w-6 text-accent" />
-                            About Me
-                          </h2>
+                        <div className="group">
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl md:text-2xl font-display font-bold flex items-center gap-2">
+                              <User className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                              About Me
+                            </h2>
+                            {editingField !== 'bio' && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                onClick={() => startEditing('bio')}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={e => {
                     if (e.target.value.length <= 200) {
@@ -1433,14 +1475,10 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               </div>
-                            </div> : <div className="group">
-                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-lg">
+                            </div> : <div>
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
                                   {formData.bio}
-                                </p> : <p className="text-muted-foreground italic">No description added yet</p>}
-                              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('bio')}>
-                                <Edit2 className="h-4 w-4 mr-2" />
-                                {formData.bio ? 'Edit Description' : 'Add Description'}
-                              </Button>
+                                </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
                             </div>}
                         </div>
 
@@ -1449,11 +1487,23 @@ const Dashboard = () => {
                         {/* Details Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
-                          <div>
-                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                              <Music className="h-5 w-5 text-accent" />
-                              Music Genres
-                            </h3>
+                          <div className="group">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
+                                <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                Music Genres
+                              </h3>
+                              {editingField !== 'genres' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                  onClick={() => startEditing('genres')}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
@@ -1536,26 +1586,34 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div> : <div className="group">
+                              </div> : <div>
                                 <div className="flex flex-wrap gap-2">
-                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
                                       {genre.trim()}
                                     </Badge>)}
                                   {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}
                                 </div>
-                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('genres')}>
-                                  <Edit2 className="h-4 w-4 mr-2" />
-                                  Edit Genres
-                                </Button>
                               </div>}
                           </div>
 
                           {/* Experience */}
-                          <div>
-                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                              <CalendarIcon className="h-5 w-5 text-accent" />
-                              Experience
-                            </h3>
+                          <div className="group">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
+                                <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                Experience
+                              </h3>
+                              {editingField !== 'experience' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                  onClick={() => startEditing('experience')}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                             {editingField === 'experience' ? <div className="space-y-3">
                                 <Select value={formData.experienceLevel} onValueChange={value => setFormData({
                       ...formData,
@@ -1585,8 +1643,8 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div> : <div className="group">
-                                <div className="space-y-2">
+                              </div> : <div>
+                                <div className="space-y-2 text-sm md:text-base">
                                   <p className="text-muted-foreground">
                                     Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
                                   </p>
@@ -1598,19 +1656,27 @@ const Dashboard = () => {
                                     Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
                                   </p>
                                 </div>
-                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('experience')}>
-                                  <Edit2 className="h-4 w-4 mr-2" />
-                                  Edit Experience
-                                </Button>
                               </div>}
                           </div>
 
                           {/* Estimated Price */}
-                          <div>
-                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                              <DollarSign className="h-5 w-5 text-accent" />
-                              Estimated Price
-                            </h3>
+                          <div className="group">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
+                                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                Estimated Price
+                              </h3>
+                              {editingField !== 'price' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                  onClick={() => startEditing('price')}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                             {editingField === 'price' ? <div className="space-y-2">
                                 <Input value={formData.estimatedPrice} onChange={e => setFormData({
                       ...formData,
@@ -1626,14 +1692,10 @@ const Dashboard = () => {
                                     Cancel
                                   </Button>
                                 </div>
-                              </div> : <div className="group">
+                              </div> : <div>
                                 {formData.estimatedPrice ? <p className="text-muted-foreground">
-                                    <span className="font-semibold text-foreground text-lg">{formData.estimatedPrice}</span>
-                                  </p> : <p className="text-muted-foreground italic">No price range added yet</p>}
-                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('price')}>
-                                  <Edit2 className="h-4 w-4 mr-2" />
-                                  {formData.estimatedPrice ? 'Edit Price' : 'Add Price'}
-                                </Button>
+                                    <span className="font-semibold text-foreground text-base md:text-lg">{formData.estimatedPrice}</span>
+                                  </p> : <p className="text-muted-foreground italic text-sm">No price range added yet</p>}
                               </div>}
                           </div>
                         </div>
@@ -1673,13 +1735,13 @@ const Dashboard = () => {
                                 </div>
                               </div>
                             ) : (
-                              <div className="group flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                                <Phone className="h-5 w-5 text-accent" />
-                                <div className="flex-1">
-                                  <p className="text-sm text-muted-foreground">Phone</p>
-                                  <span className="text-foreground">{formData.phone || 'Not set'}</span>
+                              <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                                <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                <div className="flex-1 text-left">
+                                  <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
+                                  <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
                                 </div>
-                                <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0" onClick={() => startEditing('contact')}>
+                                <Button size="sm" variant="ghost" className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-muted-foreground hover:text-accent" onClick={() => startEditing('contact')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -1690,11 +1752,23 @@ const Dashboard = () => {
                         <Separator />
 
                         {/* Social Networks */}
-                        <div>
-                          <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2 text-left">
-                            <LinkIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                            Social Networks
-                          </h3>
+                        <div className="group">
+                          <div className="flex items-center justify-between mb-3 md:mb-4">
+                            <h3 className="text-base md:text-xl font-display font-bold flex items-center gap-2 text-left">
+                              <LinkIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              Social Networks
+                            </h3>
+                            {editingField !== 'social' && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                onClick={() => startEditing('social')}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                           {editingField === 'social' ? <div className="space-y-3">
                               <div className="flex items-center gap-2">
                                 <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
@@ -1743,36 +1817,32 @@ const Dashboard = () => {
                                   Cancel
                                 </Button>
                               </div>
-                            </div> : <div className="group">
-                              <div className="flex flex-wrap gap-3">
-                                {formData.facebookUrl && <a href={formData.facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                                    <Facebook className="h-5 w-5 text-accent" />
-                                    <span className="text-sm">Facebook</span>
+                            </div> : <div>
+                              <div className="flex flex-wrap gap-2 md:gap-3">
+                                {formData.facebookUrl && <a href={formData.facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                                    <Facebook className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                    <span className="text-xs md:text-sm">Facebook</span>
                                   </a>}
-                                {formData.instagramUrl && <a href={formData.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                                    <Instagram className="h-5 w-5 text-accent" />
-                                    <span className="text-sm">Instagram</span>
+                                {formData.instagramUrl && <a href={formData.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                                    <Instagram className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                    <span className="text-xs md:text-sm">Instagram</span>
                                   </a>}
-                                {formData.youtubeUrl && <a href={formData.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                                    <Youtube className="h-5 w-5 text-accent" />
-                                    <span className="text-sm">YouTube</span>
+                                {formData.youtubeUrl && <a href={formData.youtubeUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                                    <Youtube className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                    <span className="text-xs md:text-sm">YouTube</span>
                                   </a>}
-                                {formData.tiktokUrl && <a href={formData.tiktokUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                                    <Music className="h-5 w-5 text-accent" />
-                                    <span className="text-sm">TikTok</span>
+                                {formData.tiktokUrl && <a href={formData.tiktokUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                                    <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                    <span className="text-xs md:text-sm">TikTok</span>
                                   </a>}
-                                {formData.spotifyUrl && <a href={formData.spotifyUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                                    <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
+                                {formData.spotifyUrl && <a href={formData.spotifyUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                                    <svg className="h-4 w-4 md:h-5 md:w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
                                       <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                                     </svg>
-                                    <span className="text-sm">Spotify</span>
+                                    <span className="text-xs md:text-sm">Spotify</span>
                                   </a>}
-                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && !formData.spotifyUrl && <p className="text-muted-foreground italic">No social networks added yet</p>}
+                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && !formData.spotifyUrl && <p className="text-muted-foreground italic text-sm">No social networks added yet</p>}
                               </div>
-                              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity mt-2" onClick={() => startEditing('social')}>
-                                <Edit2 className="h-4 w-4 mr-2" />
-                                {formData.facebookUrl || formData.instagramUrl || formData.youtubeUrl || formData.tiktokUrl || formData.spotifyUrl ? 'Edit Social Networks' : 'Add Social Networks'}
-                              </Button>
                             </div>}
                          </div>
 
