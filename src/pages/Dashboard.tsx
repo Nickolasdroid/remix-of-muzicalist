@@ -1254,10 +1254,10 @@ const Dashboard = () => {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0 flex-shrink-0 text-muted-foreground hover:text-accent touch-manipulation"
+                                className="h-6 w-6 p-0 flex-shrink-0 text-muted-foreground hover:text-accent"
                                 onClick={() => startEditing('names')}
                               >
-                                <Edit2 className="h-4 w-4" />
+                                <Edit2 className="h-3 w-3" />
                               </Button>
                             </>
                           )}
