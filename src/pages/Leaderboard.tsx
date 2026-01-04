@@ -820,8 +820,8 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
-                  <div className="grid gap-4 md:gap-6 max-w-2xl mx-auto">
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-3 md:space-y-6 -mx-4 md:mx-0">
+                  <div className="grid gap-2 md:gap-6 md:max-w-2xl md:mx-auto px-0 md:px-0">
                     {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
                         <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
                       </div>}
