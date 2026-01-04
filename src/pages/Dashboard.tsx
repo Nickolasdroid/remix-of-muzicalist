@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2 } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart } from "lucide-react";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { Calendar } from "@/components/ui/calendar";
 import BookedEventsList from "@/components/BookedEventsList";
@@ -189,7 +189,17 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) {
-      setPosts(data);
+      // Fetch likes count for each post
+      const postsWithLikes = await Promise.all(
+        data.map(async (post) => {
+          const { count } = await supabase
+            .from('post_likes')
+            .select('id', { count: 'exact', head: true })
+            .eq('post_id', post.id);
+          return { ...post, likes: count || 0 };
+        })
+      );
+      setPosts(postsWithLikes);
 
       // Calculate posts created this month
       const now = new Date();
@@ -1861,6 +1871,14 @@ const Dashboard = () => {
                                       <video src={post.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
+                              
+                              {/* Likes count */}
+                              {post.likes > 0 && (
+                                <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
+                                  <Heart className="h-4 w-4" />
+                                  <span>{post.likes}</span>
+                                </div>
+                              )}
                               <div className="p-4" />
                             </Card>)}
                           
