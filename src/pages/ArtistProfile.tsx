@@ -1243,7 +1243,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                                   key={index} 
                                   className="p-3 rounded-lg bg-destructive/10 border border-destructive/20"
                                 >
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center justify-center gap-3">
                                     <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
                                     <span className="text-muted-foreground">—</span>
                                     <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
