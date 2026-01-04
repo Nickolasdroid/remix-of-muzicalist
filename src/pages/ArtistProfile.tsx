@@ -1231,10 +1231,10 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                       <CalendarIcon className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Availability Calendar
                     </h2>
-                    <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
-                      {/* Calendar - full width on mobile, centered */}
-                      <div className="flex-1 flex justify-center">
-                        <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm w-full max-w-[350px]" modifiers={{
+                    <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr] gap-4 items-start">
+                      {/* Calendar */}
+                      <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
+                        <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
                       busy: getBusyDates(),
                       blocked: getBlockedDates()
                     }} modifiersClassNames={{
@@ -1242,8 +1242,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                       blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                     }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                       </div>
-                      {/* Legend and selected date - horizontal on mobile, vertical on desktop */}
-                      <div className="w-full lg:w-64 space-y-3 md:space-y-4">
+                      {/* Legend and selected date */}
+                      <div className="min-w-0 space-y-3 md:space-y-4">
                         <div className="p-3 md:p-4 rounded-lg bg-secondary/50">
                           <h4 className="font-semibold text-foreground mb-2 md:mb-3 text-sm md:text-base">Legend</h4>
                           <div className="flex flex-wrap md:flex-col gap-3 md:gap-3">
