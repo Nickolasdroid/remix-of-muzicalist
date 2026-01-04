@@ -91,19 +91,19 @@ const CountyArtists = () => {
   ];
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
+      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <Link to="/counties">
-          <Button variant="outline" className="mb-8">
+          <Button variant="outline" className="mb-6 md:mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
         </Link>
 
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-foreground">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground">
             {county}
           </h1>
         </div>
@@ -111,23 +111,23 @@ const CountyArtists = () => {
         {loading ? (
           <div className="text-center text-muted-foreground">Loading artists...</div>
         ) : (
-          <div className="space-y-16 max-w-7xl mx-auto">
+          <div className="space-y-10 md:space-y-16 max-w-7xl mx-auto">
             {categories.map((category) => {
               const categoryArtists = getArtistsBySpecialization(category.key);
               
               if (categoryArtists.length === 0) return null;
               
               return (
-                <div key={category.key} className="space-y-8">
-                  <div className="flex items-center justify-center gap-4">
-                    <h2 className="text-3xl md:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
+                <div key={category.key} className="space-y-4 md:space-y-8">
+                  <div className="flex items-center justify-center gap-3 md:gap-4">
+                    <h2 className="text-xl md:text-3xl lg:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
                       {category.displayTitle} ({categoryArtists.length})
                     </h2>
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => toggleViewMode(category.key)}
-                      className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                      className="border-accent text-accent hover:bg-accent hover:text-accent-foreground h-8 w-8 md:h-10 md:w-10"
                     >
                       {viewModes[category.key] === 'carousel' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
                     </Button>

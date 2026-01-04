@@ -63,3 +63,16 @@ All colors MUST be HSL.
     @apply font-display;
   }
 }
+
+/* Mobile safe area support */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Mobile content spacing */
+@media (max-width: 767px) {
+  .mobile-content {
+    padding-top: 3.5rem; /* Height of mobile top nav */
+    padding-bottom: 4.5rem; /* Height of mobile bottom nav + safe area */
+  }
+}

@@ -98,25 +98,25 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen ml-64">
+    <div className="min-h-screen md:ml-64">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-20 md:pt-32 pb-12 md:pb-20 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-6xl md:text-7xl font-display font-bold mb-6 text-foreground">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-foreground">
             Find Your Perfect
             <span className="text-accent block mt-2">Musical Artist</span>
           </h1>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed">
             Romania's premier platform connecting talented musicians with clients. 
             Search, discover, and book professional artists for your events.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
             <Link to="/register">
-              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
+              <Button size="lg" className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 py-5 md:py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
                 Create Account
               </Button>
             </Link>
@@ -124,7 +124,7 @@ const About = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground text-lg px-8 py-6 hover:scale-105 transition-all duration-300"
+                className="w-full sm:w-auto border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground text-base md:text-lg px-6 md:px-8 py-5 md:py-6 hover:scale-105 transition-all duration-300"
               >
                 Find Artists
               </Button>

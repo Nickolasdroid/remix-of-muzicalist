@@ -156,8 +156,8 @@ const Notifications = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="ml-64 pt-16">
-        <div className="max-w-3xl mx-auto p-6">
+      <main className="md:ml-64 pt-16 md:pt-16 pb-20 md:pb-4">
+        <div className="max-w-3xl mx-auto p-4 md:p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Bell className="h-6 w-6 text-accent" />

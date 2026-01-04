@@ -95,14 +95,14 @@ const CategoryArtists = () => {
   }, [artists, filterCounty, filterExperience, sortOrder]);
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
+        <div className="flex items-center justify-between mb-6 md:mb-8">
           <Link to="/categories">
-            <Button variant="outline">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button variant="outline" size="sm" className="text-xs md:text-sm">
+              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
             </Button>
           </Link>

@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X } from "lucide-react";
 import ReportDialog from "./ReportDialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -23,18 +24,16 @@ const Navigation = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const handleLogout = async () => {
     try {
-      // Clear local state first
       setUser(null);
       setProfile(null);
-      // Sign out from Supabase (ignore errors if session already invalid)
       await supabase.auth.signOut({ scope: 'local' });
     } catch (error) {
-      // Ignore errors - session might already be invalid
       console.log('Logout completed');
     }
     navigate('/');
@@ -53,7 +52,6 @@ const Navigation = () => {
           .single();
         setProfile(data);
         
-        // Set country from profile
         if (data?.country) {
           setSelectedCountry(data.country);
         }
@@ -93,7 +91,6 @@ const Navigation = () => {
         return;
       }
 
-      // Get all conversations where user is participant
       const { data: conversations } = await supabase
         .from('conversations')
         .select('id')
@@ -106,7 +103,6 @@ const Navigation = () => {
 
       const conversationIds = conversations.map(c => c.id);
 
-      // Get unread messages grouped by conversation
       const { data: unreadMessages } = await supabase
         .from('messages')
         .select('conversation_id')
@@ -114,14 +110,12 @@ const Navigation = () => {
         .neq('sender_id', user.id)
         .is('read_at', null);
 
-      // Count unique conversations with unread messages
       const uniqueConversations = new Set((unreadMessages || []).map(m => m.conversation_id));
       setUnreadCount(uniqueConversations.size);
     };
 
     fetchUnreadConversationsCount();
 
-    // Subscribe to new messages for real-time updates
     const channel = supabase
       .channel('nav-unread-messages')
       .on(
@@ -161,7 +155,6 @@ const Navigation = () => {
 
     fetchUnreadNotificationsCount();
 
-    // Subscribe to new notifications for real-time updates
     const channel = supabase
       .channel('nav-notifications')
       .on(
@@ -189,14 +182,22 @@ const Navigation = () => {
     { to: '/about', icon: Info, label: 'About' },
   ];
 
+  // Mobile bottom nav items (right to left: Feed - Ads - Search - Profile)
+  const mobileBottomNav = [
+    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile' },
+    { to: '/categories', icon: Search, label: 'Search' },
+    { to: '/announcements', icon: Megaphone, label: 'Ads' },
+    { to: '/feed', icon: Home, label: 'Feed' },
+  ];
+
   return (
     <>
-      {/* Top Header Bar */}
-      <nav className="fixed top-0 left-64 right-0 z-50 bg-background border-b border-border">
+      {/* Desktop: Top Header Bar */}
+      <nav className="fixed top-0 left-64 right-0 z-50 bg-background border-b border-border hidden md:block">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Center: Feed & Ads */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Link
                 to="/feed"
                 className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
@@ -223,7 +224,6 @@ const Navigation = () => {
 
             {/* Right: Country Selector & User */}
             <div className="flex items-center gap-2">
-              {/* Country Selector */}
               <CountrySelector 
                 variant="navigation" 
                 value={selectedCountry}
@@ -326,8 +326,211 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Left Sidebar - Always visible */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40">
+      {/* Mobile: Top Header Bar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
+        <div className="flex items-center justify-between h-14 px-4">
+          {/* Left: Menu Button */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
+                <Menu className="h-6 w-6" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 bg-background border-r border-border p-0">
+              {/* Logo */}
+              <div className="p-4 border-b border-border">
+                <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                  <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
+                  <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+                </Link>
+              </div>
+
+              {/* Search */}
+              <div className="p-4 border-b border-border">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search"
+                    className="pl-9 w-full bg-background/50 border-border focus:border-accent"
+                  />
+                </div>
+              </div>
+
+              {/* User Section (if logged in) */}
+              {user && profile && (
+                <div className="p-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12 ring-2 ring-accent/30">
+                      <AvatarImage src={profile?.avatar_url} />
+                      <AvatarFallback className="bg-accent text-accent-foreground">
+                        {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">{profile?.stage_name || 'User'}</p>
+                      <p className="text-sm text-muted-foreground">{profile?.plan || 'Free'} Plan</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Links */}
+              <div className="p-4 space-y-1">
+                {sidebarLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                      isActive(link.to.split('?')[0])
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10'
+                    }`}
+                  >
+                    <link.icon className="h-5 w-5" />
+                    <span className="font-medium">{link.label}</span>
+                  </Link>
+                ))}
+
+                {/* User-specific links */}
+                {user && (
+                  <>
+                    <div className="h-px bg-border my-2" />
+                    <Link
+                      to="/notifications"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                        isActive('/notifications')
+                          ? 'bg-accent/20 text-accent'
+                          : 'text-foreground/80 hover:bg-accent/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Bell className="h-5 w-5" />
+                        <span className="font-medium">Notifications</span>
+                      </div>
+                      {unreadNotifications > 0 && (
+                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                          {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                        </span>
+                      )}
+                    </Link>
+                    <Link
+                      to="/messages"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                        isActive('/messages')
+                          ? 'bg-accent/20 text-accent'
+                          : 'text-foreground/80 hover:bg-accent/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <MessageSquare className="h-5 w-5" />
+                        <span className="font-medium">Messages</span>
+                      </div>
+                      {unreadCount > 0 && (
+                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
+                    </Link>
+                    <Link
+                      to="/dashboard?tab=settings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                        location.search.includes('tab=settings')
+                          ? 'bg-accent/20 text-accent'
+                          : 'text-foreground/80 hover:bg-accent/10'
+                      }`}
+                    >
+                      <Settings className="h-5 w-5" />
+                      <span className="font-medium">Settings</span>
+                    </Link>
+                  </>
+                )}
+
+                <div className="h-px bg-border my-2" />
+                
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setReportDialogOpen(true);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80 hover:bg-accent/10 transition-colors"
+                >
+                  <Flag className="h-5 w-5" />
+                  <span className="font-medium">Report</span>
+                </button>
+
+                {user ? (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span className="font-medium">Logout</span>
+                  </button>
+                ) : (
+                  <div className="space-y-2 pt-2">
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Login
+                      </Button>
+                    </Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                        Register
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Center: Logo */}
+          <Link to="/feed" className="flex items-center gap-2">
+            <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+            <span className="font-display font-bold text-foreground">Muzicalist</span>
+          </Link>
+
+          {/* Right: Country Selector */}
+          <CountrySelector 
+            variant="navigation" 
+            value={selectedCountry}
+            onChange={setSelectedCountry}
+            userCountry={profile?.country}
+          />
+        </div>
+      </nav>
+
+      {/* Mobile: Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+        <div className="flex items-center justify-around h-16 px-2">
+          {mobileBottomNav.map((item) => (
+            <Link
+              key={item.label}
+              to={item.to}
+              className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors ${
+                isActive(item.to.split('?')[0])
+                  ? 'text-accent'
+                  : 'text-foreground/60 hover:text-accent'
+              }`}
+            >
+              <item.icon className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
+
+      {/* Desktop: Left Sidebar - Always visible */}
+      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:block">
         {/* Logo and Search at top of sidebar */}
         <div className="p-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg mb-3">
@@ -369,7 +572,6 @@ const Navigation = () => {
           </button>
         </div>
       </aside>
-
 
       <ReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </>

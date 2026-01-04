@@ -58,18 +58,18 @@ const Categories = () => {
     count: counts.Band,
     href: "/categories/Bands"
   }];
-  return <div className="min-h-screen ml-64 bg-background">
+  return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-foreground mb-6">Categories</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Browse through our diverse collection of talented artists across different specializations
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
           {categories.map(category => <CategoryCard key={category.title} {...category} />)}
         </div>
       </div>

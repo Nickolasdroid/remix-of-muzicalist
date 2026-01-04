@@ -70,22 +70,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
+      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-4">
               Welcome Back
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm md:text-base text-muted-foreground">
               Login to your Muzicalist account
             </p>
           </div>
 
-          <Card className="p-8 bg-card/50 backdrop-blur border-accent/20">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className="p-6 md:p-8 bg-card/50 backdrop-blur border-accent/20">
+            <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <Input

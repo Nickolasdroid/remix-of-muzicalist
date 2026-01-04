@@ -1192,23 +1192,23 @@ const Dashboard = () => {
     }
   };
   if (isLoading) {
-    return <div className="min-h-screen ml-64 bg-card flex items-center justify-center">
+    return <div className="min-h-screen md:ml-64 bg-card flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>;
   }
-  return <div className="min-h-screen ml-64 bg-card">
+  return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       
-      <div className="pt-24 pb-20 px-4">
+      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           {activeTab !== "profile"}
               {/* Profile Tab */}
-              {activeTab === "profile" && <div className="space-y-8">
+              {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
                     {/* Header Section */}
-                    <div className="flex flex-col md:flex-row gap-8 mb-8">
+                    <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-6 md:mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
                         <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                           <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
