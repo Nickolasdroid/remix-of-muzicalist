@@ -471,7 +471,7 @@ const Messages = () => {
     <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="px-4 pt-16 md:pt-20 pb-20 md:pb-4 h-screen">
+      <div className="px-0 md:px-4 pt-14 md:pt-20 pb-16 md:pb-4 h-screen">
         {/* Desktop: Grid layout */}
         <div className="hidden md:grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
           {/* Conversations List */}
@@ -628,8 +628,8 @@ const Messages = () => {
         </div>
 
         {/* Mobile: Full-width conversation list */}
-        <div className="md:hidden h-[calc(100vh-140px)]">
-          <Card className="p-0 overflow-hidden bg-card h-full">
+        <div className="md:hidden h-full">
+          <div className="p-0 overflow-hidden bg-card h-full border-t border-border">
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Conversations</h2>
             </div>
@@ -673,7 +673,7 @@ const Messages = () => {
                 })
               )}
             </ScrollArea>
-          </Card>
+          </div>
 
           {/* Mobile: Chat overlay */}
           {selectedConversation && (
