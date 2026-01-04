@@ -144,7 +144,13 @@ const Dashboard = () => {
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
-  const romanianCounties = ["București", "Cluj", "Timiș", "Iași", "Constanța", "Brașov", "Prahova", "Dolj", "Galați", "Argeș", "Sibiu", "Bacău"];
+  const romanianCounties = [
+    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", 
+    "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", 
+    "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", 
+    "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", 
+    "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
+  ];
 
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
