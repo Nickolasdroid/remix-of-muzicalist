@@ -1243,27 +1243,11 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                                   key={index} 
                                   className="p-3 rounded-lg bg-destructive/10 border border-destructive/20"
                                 >
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div className="text-center">
-                                        <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
-                                      </div>
-                                      <span className="text-muted-foreground">—</span>
-                                      <div className="text-center">
-                                        <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
-                                      </div>
-                                    </div>
-                                    {slot.eventType && (
-                                      <Badge variant="outline" className="text-xs">
-                                        {slot.eventType}
-                                      </Badge>
-                                    )}
+                                  <div className="flex items-center gap-3">
+                                    <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
+                                    <span className="text-muted-foreground">—</span>
+                                    <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
                                   </div>
-                                  {slot.bookedBy && (
-                                    <p className="text-xs text-muted-foreground mt-1.5">
-                                      Booked by: {slot.bookedBy}
-                                    </p>
-                                  )}
                                 </div>
                               ))}
                             </div>
