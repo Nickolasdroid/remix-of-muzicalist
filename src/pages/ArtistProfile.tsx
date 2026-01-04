@@ -1244,9 +1244,9 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                                   className="py-2 px-3 rounded-lg bg-destructive/10 border border-destructive/20"
                                 >
                                   <div className="flex items-center justify-center gap-3">
-                                    <p className="text-base font-bold text-destructive">{slot.startTime}</p>
+                                    <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
                                     <span className="text-muted-foreground">—</span>
-                                    <p className="text-base font-bold text-destructive">{slot.endTime}</p>
+                                    <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
                                   </div>
                                 </div>
                               ))}
