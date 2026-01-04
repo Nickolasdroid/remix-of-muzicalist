@@ -182,12 +182,13 @@ const Navigation = () => {
     { to: '/about', icon: Info, label: 'About' },
   ];
 
-  // Mobile bottom nav items (right to left: Feed - Ads - Search - Profile)
+  // Mobile bottom nav items (right to left: Feed - Ads - Messages - Search - Profile)
   const mobileBottomNav = [
-    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile' },
-    { to: '/categories', icon: Search, label: 'Search' },
-    { to: '/announcements', icon: Megaphone, label: 'Ads' },
-    { to: '/feed', icon: Home, label: 'Feed' },
+    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile', showBadge: false },
+    { to: '/categories', icon: Search, label: 'Search', showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
+    { to: '/announcements', icon: Megaphone, label: 'Ads', showBadge: false },
+    { to: '/feed', icon: Home, label: 'Feed', showBadge: false },
   ];
 
   return (
@@ -511,19 +512,26 @@ const Navigation = () => {
 
       {/* Mobile: Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
-        <div className="flex items-center justify-around h-16 px-2">
+        <div className="flex items-center justify-around h-16 px-1">
           {mobileBottomNav.map((item) => (
             <Link
               key={item.label}
               to={item.to}
-              className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors ${
+              className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
                 isActive(item.to.split('?')[0])
                   ? 'text-accent'
                   : 'text-foreground/60 hover:text-accent'
               }`}
             >
-              <item.icon className="h-5 w-5 mb-1" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <div className="relative">
+                <item.icon className="h-5 w-5 mb-1" />
+                {item.showBadge && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] font-medium">{item.label}</span>
             </Link>
           ))}
         </div>
