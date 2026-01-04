@@ -553,21 +553,21 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
       </div>;
   };
   if (loading) {
-    return <div className="min-h-screen ml-64">
+    return <div className="min-h-screen md:ml-64">
         <Navigation />
-        <div className="pt-24 pb-20 px-4">
+        <div className="pt-20 md:pt-24 pb-24 md:pb-20 px-4">
           <div className="container mx-auto text-center">
-            <p className="text-xl text-muted-foreground">Loading artist profile...</p>
+            <p className="text-lg md:text-xl text-muted-foreground">Loading artist profile...</p>
           </div>
         </div>
       </div>;
   }
   if (!artist) {
-    return <div className="min-h-screen ml-64">
+    return <div className="min-h-screen md:ml-64">
         <Navigation />
-        <div className="pt-24 pb-20 px-4">
+        <div className="pt-20 md:pt-24 pb-24 md:pb-20 px-4">
           <div className="container mx-auto text-center">
-            <h1 className="text-4xl font-display font-bold mb-4">Artist Not Found</h1>
+            <h1 className="text-2xl md:text-4xl font-display font-bold mb-4">Artist Not Found</h1>
             <Link to="/">
               <Button variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -579,10 +579,10 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
       </div>;
   }
   const isPremium = artist.plan === 'Premium';
-  return <div className="min-h-screen ml-64 bg-card">
+  return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       
-      <div className="pt-24 pb-20 px-4">
+      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <Link to="/leaderboard">
             

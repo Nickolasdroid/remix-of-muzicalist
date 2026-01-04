@@ -22,15 +22,15 @@ const Counties = () => {
   );
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-32 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-foreground mb-6">
+      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">
             Find Artists by Region
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-8">
             Discover talented artists in your area across all Romanian regions
           </p>
 
@@ -41,21 +41,21 @@ const Counties = () => {
               placeholder="Search for a region..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-14 text-lg bg-card/50 backdrop-blur border-accent/20"
+              className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card/50 backdrop-blur border-accent/20"
             />
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {filteredCounties.map((county) => (
               <Link key={county} to={`/counties/${county}`}>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 w-full flex items-center justify-start gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
+                  className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-2 md:gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
                 >
-                  <MapPin className="h-5 w-5 text-accent group-hover:scale-110 transition-transform" />
-                  <span className="text-lg font-medium">{county}</span>
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5 text-accent group-hover:scale-110 transition-transform" />
+                  <span className="text-sm md:text-lg font-medium truncate">{county}</span>
                 </Button>
               </Link>
             ))}
@@ -64,7 +64,7 @@ const Counties = () => {
 
         {filteredCounties.length === 0 && (
           <div className="text-center mt-12">
-            <p className="text-muted-foreground text-lg">No regions found matching "{searchTerm}"</p>
+            <p className="text-muted-foreground text-base md:text-lg">No regions found matching "{searchTerm}"</p>
           </div>
         )}
       </div>

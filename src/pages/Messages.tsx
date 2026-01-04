@@ -460,19 +460,19 @@ const Messages = () => {
 
   if (loading && !user) {
     return (
-      <div className="min-h-screen ml-64 bg-background">
+      <div className="min-h-screen md:ml-64 bg-background">
         <Navigation />
-        <div className="pt-32 text-center text-muted-foreground">Loading...</div>
+        <div className="pt-20 md:pt-32 text-center text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="px-4 pt-20 pb-4 h-screen">
-          <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
+      <div className="px-4 pt-16 md:pt-20 pb-20 md:pb-4 h-screen">
+          <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-140px)] md:h-[calc(100vh-96px)]">
             {/* Conversations List */}
             <Card className="md:col-span-1 p-0 overflow-hidden bg-card">
               <div className="p-4 border-b border-border">

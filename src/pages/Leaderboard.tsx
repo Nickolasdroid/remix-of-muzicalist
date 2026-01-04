@@ -733,22 +733,22 @@ const Leaderboard = () => {
     djs: getArtistsBySpecialization('DJ'),
     bands: getArtistsBySpecialization('Band')
   };
-  return <div className="min-h-screen ml-64 bg-background">
+  return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-4">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
-              <Trophy className="h-10 w-10 text-accent-foreground" />
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
+              <Trophy className="h-8 w-8 md:h-10 md:w-10 text-accent-foreground" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
             
 
-            <div className="flex gap-4 justify-center mt-8 items-center">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center">
               <DropdownMenu onOpenChange={open => !open && setCountrySearch("")}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="min-w-[180px] justify-between">
+                  <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">
                     {selectedCountry ? availableCountries.find(c => c.code === selectedCountry)?.name : "All Countries"}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -784,7 +784,7 @@ const Leaderboard = () => {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="min-w-[180px] justify-between">
+                  <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">
                     {selectedCounty}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -799,31 +799,35 @@ const Leaderboard = () => {
           </div>
 
           <Tabs defaultValue="singers" className="w-full">
-            <TabsList className="flex w-full max-w-2xl mx-auto mb-12 bg-card/50 p-2 rounded-xl border-2 border-accent/30">
-              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
-                <Mic className="h-4 w-4" />
-                Singers
+            <TabsList className="flex w-full max-w-2xl mx-auto mb-8 md:mb-12 bg-card/50 p-1 md:p-2 rounded-xl border-2 border-accent/30 overflow-x-auto">
+              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
+                <Mic className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Singers</span>
+                <span className="sm:hidden">Sing</span>
               </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
-                <Guitar className="h-4 w-4" />
-                Instrumentalists
+              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
+                <Guitar className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Instrumentalists</span>
+                <span className="sm:hidden">Inst</span>
               </TabsTrigger>
-              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
-                <Headphones className="h-4 w-4" />
-                DJs
+              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
+                <Headphones className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">DJs</span>
+                <span className="sm:hidden">DJ</span>
               </TabsTrigger>
-              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-2">
-                <Users className="h-4 w-4" />
-                Bands
+              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
+                <Users className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Bands</span>
+                <span className="sm:hidden">Band</span>
               </TabsTrigger>
             </TabsList>
 
             {loading ? <div className="text-center py-16">
-                <p className="text-xl text-muted-foreground">Loading artists...</p>
+                <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
               </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
-                  <div className="grid gap-6 max-w-2xl mx-auto">
+                  <div className="grid gap-4 md:gap-6 max-w-2xl mx-auto">
                     {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
-                        <p className="text-xl text-muted-foreground">No artists found in this category</p>
+                        <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
                       </div>}
                   </div>
                 </TabsContent>)}

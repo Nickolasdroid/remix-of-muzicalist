@@ -232,9 +232,9 @@ const Feed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen ml-64 bg-background">
+      <div className="min-h-screen md:ml-64 bg-background">
         <Navigation />
-        <div className="container mx-auto px-4 pt-24 pb-12">
+        <div className="container mx-auto px-4 pt-20 md:pt-24 pb-20 md:pb-12">
           <div className="max-w-2xl mx-auto">
             <h1 className="text-4xl font-display font-bold text-foreground mb-8">Feed</h1>
             <div className="space-y-6">
@@ -260,10 +260,10 @@ const Feed = () => {
   }
 
   return (
-    <div className="min-h-screen ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-0 sm:px-4 pt-[68px]">
+      <div className="container mx-auto px-0 sm:px-4 pt-16 md:pt-[68px] pb-20 md:pb-4">
         <div className="max-w-[500px] mx-auto space-y-1">
           
           {feedItems.length === 0 ? (
