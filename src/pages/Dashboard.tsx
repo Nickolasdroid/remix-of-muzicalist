@@ -1230,37 +1230,11 @@ const Dashboard = () => {
                           <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
 
-                        {/* Name with edit icon */}
-                        <div className="flex-1 min-w-0 flex items-center gap-1">
-                          {editingField === 'names' ? (
-                            <div className="flex items-center gap-1 flex-1">
-                              <Input 
-                                value={formData.stageName} 
-                                onChange={e => setFormData({...formData, stageName: e.target.value})}
-                                className="h-7 text-sm flex-1"
-                              />
-                              <Button size="sm" onClick={() => saveField('names')} disabled={isSaving} className="h-6 w-6 p-0">
-                                <Save className="h-3 w-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={cancelEditing} className="h-6 w-6 p-0">
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ) : (
-                            <>
-                              <h1 className="text-lg font-display font-bold text-foreground truncate">
-                                {formData.stageName}
-                              </h1>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 flex-shrink-0 text-muted-foreground hover:text-accent"
-                                onClick={() => startEditing('names')}
-                              >
-                                <Edit2 className="h-3 w-3" />
-                              </Button>
-                            </>
-                          )}
+                        {/* Name (not editable on mobile) */}
+                        <div className="flex-1 min-w-0">
+                          <h1 className="text-lg font-display font-bold text-foreground truncate">
+                            {formData.stageName}
+                          </h1>
                         </div>
 
                         {/* Rating badge */}
