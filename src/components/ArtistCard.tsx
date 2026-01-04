@@ -28,7 +28,7 @@ const ArtistCard = ({
   const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
   
   return (
-    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
+    <div className={`group relative overflow-hidden rounded-none md:rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-0 md:border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)] border-b border-border/30 md:border-b-0`}>
       <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10">
