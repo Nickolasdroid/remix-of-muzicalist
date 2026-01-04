@@ -472,168 +472,319 @@ const Messages = () => {
       <Navigation />
       
       <div className="px-4 pt-16 md:pt-20 pb-20 md:pb-4 h-screen">
-          <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-140px)] md:h-[calc(100vh-96px)]">
-            {/* Conversations List */}
-            <Card className="md:col-span-1 p-0 overflow-hidden bg-card">
-              <div className="p-4 border-b border-border">
-                <h2 className="font-semibold">Conversations</h2>
-              </div>
-              <ScrollArea className="h-[calc(100%-60px)]">
-                {conversations.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground">
-                    No conversations yet
-                  </div>
-                ) : (
-                  conversations.map((conv) => {
-                    const profile = getOtherProfile(conv);
-                    return (
-                      <div
-                        key={conv.id}
-                        className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${
-                          selectedConversation?.id === conv.id ? 'bg-accent/10' : ''
-                        }`}
-                        onClick={() => setSelectedConversation(conv)}
-                      >
-                        <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
-                          <AvatarImage src={profile.avatar_url || undefined} />
-                          <AvatarFallback>
-                            <User className="h-5 w-5" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="text-left flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">{profile.stage_name}</p>
-                            {unreadCounts[conv.id] > 0 && (
-                              <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                                {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(conv.updated_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </ScrollArea>
-            </Card>
-
-            {/* Messages Area */}
-            <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
-              {selectedConversation ? (
-                <>
-                  {/* Header */}
-                  <div className="p-4 border-b border-border flex items-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="md:hidden"
-                      onClick={() => setSelectedConversation(null)}
+        {/* Desktop: Grid layout */}
+        <div className="hidden md:grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
+          {/* Conversations List */}
+          <Card className="md:col-span-1 p-0 overflow-hidden bg-card">
+            <div className="p-4 border-b border-border">
+              <h2 className="font-semibold">Conversations</h2>
+            </div>
+            <ScrollArea className="h-[calc(100%-60px)]">
+              {conversations.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  No conversations yet
+                </div>
+              ) : (
+                conversations.map((conv) => {
+                  const profile = getOtherProfile(conv);
+                  return (
+                    <div
+                      key={conv.id}
+                      className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${
+                        selectedConversation?.id === conv.id ? 'bg-accent/10' : ''
+                      }`}
+                      onClick={() => setSelectedConversation(conv)}
                     >
-                      <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <Avatar className={`h-10 w-10 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
-                      <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col flex-1">
-                      <span className="font-semibold">
-                        {getOtherProfile(selectedConversation).stage_name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {getArtistSpecialization(selectedConversation)}
-                      </span>
+                      <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                        <AvatarImage src={profile.avatar_url || undefined} />
+                        <AvatarFallback>
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium truncate">{profile.stage_name}</p>
+                          {unreadCounts[conv.id] > 0 && (
+                            <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(conv.updated_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => openDeleteDialog(selectedConversation.id)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete conversation
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  );
+                })
+              )}
+            </ScrollArea>
+          </Card>
 
-                  {/* Messages */}
-                  <ScrollArea className="flex-1 p-4">
-                    <div className="space-y-4">
-                      {messages.map((msg, index) => {
-                        const prevMsg = index > 0 ? messages[index - 1] : null;
-                        const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
-                        
-                        return (
-                          <div key={msg.id}>
-                            {showDateSeparator && (
-                              <div className="flex items-center justify-center my-4">
-                                <div className="bg-muted px-3 py-1 rounded-full">
-                                  <span className="text-xs text-muted-foreground font-medium">
-                                    {formatMessageDate(new Date(msg.created_at))}
-                                  </span>
-                                </div>
+          {/* Messages Area */}
+          <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
+            {selectedConversation ? (
+              <>
+                {/* Header */}
+                <div className="p-4 border-b border-border flex items-center gap-3">
+                  <Avatar className={`h-10 w-10 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
+                    <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
+                    <AvatarFallback>
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col flex-1">
+                    <span className="font-semibold">
+                      {getOtherProfile(selectedConversation).stage_name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {getArtistSpecialization(selectedConversation)}
+                    </span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => openDeleteDialog(selectedConversation.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete conversation
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Messages */}
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    {messages.map((msg, index) => {
+                      const prevMsg = index > 0 ? messages[index - 1] : null;
+                      const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
+                      
+                      return (
+                        <div key={msg.id}>
+                          {showDateSeparator && (
+                            <div className="flex items-center justify-center my-4">
+                              <div className="bg-muted px-3 py-1 rounded-full">
+                                <span className="text-xs text-muted-foreground font-medium">
+                                  {formatMessageDate(new Date(msg.created_at))}
+                                </span>
                               </div>
-                            )}
+                            </div>
+                          )}
+                          <div
+                            className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                          >
                             <div
-                              className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                              className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                                msg.sender_id === user?.id
+                                  ? 'bg-accent text-accent-foreground'
+                                  : 'bg-muted'
+                              }`}
                             >
-                              <div
-                                className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                                  msg.sender_id === user?.id
-                                    ? 'bg-accent text-accent-foreground'
-                                    : 'bg-muted'
-                                }`}
-                              >
-                                <p>{msg.content}</p>
-                                <div className="flex items-center justify-end gap-1 mt-1">
-                                  <span className="text-xs opacity-70">
-                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              <p>{msg.content}</p>
+                              <div className="flex items-center justify-end gap-1 mt-1">
+                                <span className="text-xs opacity-70">
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {msg.sender_id === user?.id && (
+                                  <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
+                                    {msg.read_at ? '✓✓' : '✓'}
                                   </span>
-                                  {msg.sender_id === user?.id && (
-                                    <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
-                                      {msg.read_at ? '✓✓' : '✓'}
-                                    </span>
-                                  )}
-                                </div>
+                                )}
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </ScrollArea>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
 
-                  {/* Input */}
-                  <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
-                    <Input
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type a message..."
-                      disabled={sending}
-                    />
-                    <Button type="submit" disabled={sending || !newMessage.trim()}>
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                  Select a conversation to start messaging
-                </div>
-              )}
-            </Card>
-          </div>
+                {/* Input */}
+                <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type a message..."
+                    disabled={sending}
+                  />
+                  <Button type="submit" disabled={sending || !newMessage.trim()}>
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-muted-foreground">
+                Select a conversation to start messaging
+              </div>
+            )}
+          </Card>
         </div>
+
+        {/* Mobile: Full-width conversation list */}
+        <div className="md:hidden h-[calc(100vh-140px)]">
+          <Card className="p-0 overflow-hidden bg-card h-full">
+            <div className="p-4 border-b border-border">
+              <h2 className="font-semibold">Conversations</h2>
+            </div>
+            <ScrollArea className="h-[calc(100%-60px)]">
+              {conversations.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  No conversations yet
+                </div>
+              ) : (
+                conversations.map((conv) => {
+                  const profile = getOtherProfile(conv);
+                  return (
+                    <div
+                      key={conv.id}
+                      className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${
+                        selectedConversation?.id === conv.id ? 'bg-accent/10' : ''
+                      }`}
+                      onClick={() => setSelectedConversation(conv)}
+                    >
+                      <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                        <AvatarImage src={profile.avatar_url || undefined} />
+                        <AvatarFallback>
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium truncate">{profile.stage_name}</p>
+                          {unreadCounts[conv.id] > 0 && (
+                            <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(conv.updated_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </ScrollArea>
+          </Card>
+
+          {/* Mobile: Chat overlay */}
+          {selectedConversation && (
+            <div className="fixed inset-0 z-50 bg-background pt-14 pb-16">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="p-3 border-b border-border flex items-center gap-3 bg-card">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedConversation(null)}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <Avatar className={`h-9 w-9 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
+                    <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="font-semibold text-sm truncate">
+                      {getOtherProfile(selectedConversation).stage_name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {getArtistSpecialization(selectedConversation)}
+                    </span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => openDeleteDialog(selectedConversation.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete conversation
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Messages */}
+                <ScrollArea className="flex-1 p-4 bg-background">
+                  <div className="space-y-4">
+                    {messages.map((msg, index) => {
+                      const prevMsg = index > 0 ? messages[index - 1] : null;
+                      const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
+                      
+                      return (
+                        <div key={msg.id}>
+                          {showDateSeparator && (
+                            <div className="flex items-center justify-center my-4">
+                              <div className="bg-muted px-3 py-1 rounded-full">
+                                <span className="text-xs text-muted-foreground font-medium">
+                                  {formatMessageDate(new Date(msg.created_at))}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                          <div
+                            className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div
+                              className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                                msg.sender_id === user?.id
+                                  ? 'bg-accent text-accent-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              <p className="text-sm">{msg.content}</p>
+                              <div className="flex items-center justify-end gap-1 mt-1">
+                                <span className="text-xs opacity-70">
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                {msg.sender_id === user?.id && (
+                                  <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
+                                    {msg.read_at ? '✓✓' : '✓'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+
+                {/* Input */}
+                <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-card">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type a message..."
+                    disabled={sending}
+                    className="text-base"
+                  />
+                  <Button type="submit" disabled={sending || !newMessage.trim()} size="icon">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
