@@ -677,7 +677,7 @@ const Messages = () => {
 
           {/* Mobile: Chat overlay */}
           {selectedConversation && (
-            <div className="fixed inset-0 z-50 bg-background pt-14 pb-16">
+            <div className="fixed top-14 bottom-16 left-0 right-0 z-40 bg-background">
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="p-3 border-b border-border flex items-center gap-3 bg-card">
