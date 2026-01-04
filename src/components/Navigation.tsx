@@ -560,10 +560,10 @@ const Navigation = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                 isActive(link.to.split('?')[0])
                   ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
               }`}
             >
               <link.icon className="h-5 w-5" />
@@ -573,7 +573,7 @@ const Navigation = () => {
           
           <button
             onClick={() => setReportDialogOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80"
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80 transition-colors hover:bg-accent/10 hover:text-accent"
           >
             <Flag className="h-5 w-5" />
             <span className="font-medium">Report</span>
