@@ -1208,32 +1208,32 @@ const Dashboard = () => {
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
                     {/* Header Section */}
-                    <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-6 md:mb-8">
+                    <div className="flex flex-col items-center md:items-start md:flex-row gap-4 md:gap-8 mb-6 md:mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
                         <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                          <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
+                          <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                              <User className="h-20 w-20 text-accent" />
+                              <User className="h-14 w-14 md:h-20 md:w-20 text-accent" />
                             </AvatarFallback>
                           </Avatar>
                           <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                            <Camera className="h-8 w-8 text-white" />
+                            <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
                           </label>
                         </div>
                         <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                       </div>
 
-                      <div className="flex-1 flex flex-col justify-center h-40">
-                        <div className="flex items-center justify-between flex-wrap gap-4">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <h1 className="text-4xl font-display font-bold text-foreground">
+                      <div className="flex-1 flex flex-col justify-center md:h-40 text-center md:text-left w-full">
+                        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                          <div className="w-full md:w-auto">
+                            <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                              <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
                               </h1>
                             </div>
                             
-                            <div className="flex flex-wrap items-center gap-3 mb-2">
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 mb-2">
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
@@ -1256,7 +1256,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Location row */}
-                            <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3">
                               {editingField === 'location' ? (
                                 <div className="flex items-center gap-2">
                                   <Select value={formData.county} onValueChange={value => setFormData({
@@ -1289,9 +1289,9 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-6 w-6 fill-current" />
-                            <span className="text-2xl font-bold">New</span>
+                          <div className="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                            <Star className="h-5 w-5 md:h-6 md:w-6 fill-current" />
+                            <span className="text-lg md:text-2xl font-bold">New</span>
                           </div>
                         </div>
                       </div>
@@ -1301,26 +1301,26 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-5 mb-8">
-                        <TabsTrigger value="details" className="flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          Details
+                      <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8">
+                        <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <User className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Details</span>
                         </TabsTrigger>
-                        <TabsTrigger value="posts" className="flex items-center gap-2">
-                          <FileText className="h-4 w-4" />
-                          Posts
+                        <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <FileText className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Posts</span>
                         </TabsTrigger>
-                        <TabsTrigger value="announcements" className="flex items-center gap-2">
-                          <Megaphone className="h-4 w-4" />
-                          Announcements
+                        <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Announcements</span>
                         </TabsTrigger>
-                        <TabsTrigger value="gallery" className="flex items-center gap-2">
-                          <Images className="h-4 w-4" />
-                          Gallery
+                        <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <Images className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Gallery</span>
                         </TabsTrigger>
-                        <TabsTrigger value="calendar" className="flex items-center gap-2">
-                          <CalendarIcon className="h-4 w-4" />
-                          Calendar
+                        <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Calendar</span>
                         </TabsTrigger>
                       </TabsList>
 
@@ -1370,7 +1370,7 @@ const Dashboard = () => {
                         <Separator />
 
                         {/* Details Grid */}
-                        <div className="grid md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                           {/* Music Genres */}
                           <div>
                             <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
@@ -1566,7 +1566,7 @@ const Dashboard = () => {
                         {/* Contact Information */}
                         <div>
                           <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                          <div className="grid md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                             <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-5 w-5 text-accent" />
                               <div>
@@ -1711,7 +1711,7 @@ const Dashboard = () => {
                               </span>}
                           </h2>
                           
-                          {reviews.length > 0 ? <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                          {reviews.length > 0 ? <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                               {reviews.map(review => <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
                                   <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
@@ -2086,7 +2086,7 @@ const Dashboard = () => {
                               Photos
                               <span className="text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
                             </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter(item => item.type === 'image').map(item => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
                                     <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
@@ -2108,7 +2108,7 @@ const Dashboard = () => {
                               Videos
                               <span className="text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
                             </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter(item => item.type === 'video').map(item => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
                                     <Play className="h-12 w-12 text-accent" />
@@ -2132,9 +2132,9 @@ const Dashboard = () => {
                             <CalendarIcon className="h-6 w-6 text-accent" />
                             My Calendar
                           </h2>
-                          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                          <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                             {/* Calendar */}
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
                                 if (!date) {
                                   setSelectedDate(undefined);
@@ -2291,19 +2291,21 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Legend */}
-                            <div className="p-4 rounded-lg bg-secondary/50 space-y-3 flex-shrink-0 w-full lg:w-48">
-                              <h4 className="font-semibold text-foreground">Legend</h4>
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                                <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-muted/80"></div>
-                                <span className="text-sm text-muted-foreground">Unavailable</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-accent"></div>
-                                <span className="text-sm text-muted-foreground">Available</span>
+                            <div className="p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-full lg:w-48">
+                              <h4 className="font-semibold text-foreground mb-2 md:mb-3">Legend</h4>
+                              <div className="flex flex-wrap lg:flex-col gap-3 lg:gap-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
+                                  <span className="text-xs md:text-sm text-muted-foreground">Busy / Booked</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
+                                  <span className="text-xs md:text-sm text-muted-foreground">Unavailable</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-accent"></div>
+                                  <span className="text-xs md:text-sm text-muted-foreground">Available</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -2334,8 +2336,8 @@ const Dashboard = () => {
                                     }}
                                   >
                                     <CardContent className="p-4">
-                                      <div className="flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+                                        <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                                           <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap mb-1">
                                               <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
@@ -2372,12 +2374,12 @@ const Dashboard = () => {
                                         </div>
                                         
                                         {request.status === 'pending' && (
-                                          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                          <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
                                             <Button 
                                               size="sm" 
                                               onClick={() => handleAcceptBooking(request)} 
                                               disabled={isSaving} 
-                                              className="bg-accent text-accent-foreground hover:bg-accent/90"
+                                              className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90"
                                             >
                                               Accept
                                             </Button>
@@ -2386,6 +2388,7 @@ const Dashboard = () => {
                                               variant="outline" 
                                               onClick={() => handleDeclineBooking(request.id)} 
                                               disabled={isSaving}
+                                              className="flex-1 md:flex-none"
                                             >
                                               Decline
                                             </Button>
