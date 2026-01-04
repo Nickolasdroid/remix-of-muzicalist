@@ -590,67 +590,132 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
-            <div className="flex flex-col items-center md:items-start md:flex-row gap-4 md:gap-8 mb-6 md:mb-8">
-              {/* Avatar - centered on mobile */}
+            {/* Mobile Header Layout */}
+            <div className="flex md:hidden flex-col gap-2 mb-4">
+              {/* Row 1: Avatar + Name + Rating */}
+              <div className="flex items-start gap-3">
+                {/* Small Avatar - top left */}
+                <div className="flex-shrink-0">
+                  <div className={`p-0.5 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                    <Avatar className="w-14 h-14 border-2 border-background shadow-md">
+                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                      <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                        <User className={`h-7 w-7 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
+
+                {/* Name */}
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-lg font-display font-bold text-foreground truncate">
+                    {artist.stage_name}
+                  </h1>
+                </div>
+
+                {/* Rating badge */}
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent text-accent-foreground shadow-md flex-shrink-0">
+                  <Star className="h-4 w-4 fill-current" />
+                  <span className="text-sm font-bold">{getAverageRating() || 'N/A'}</span>
+                  {reviews.length > 0 && <span className="text-[10px] opacity-80">({reviews.length})</span>}
+                </div>
+              </div>
+
+              {/* Row 2: Category + Location + Contact Button */}
+              <div className="flex items-center gap-2 pl-[68px]">
+                {/* Category and Location */}
+                <div className="flex-1 flex items-center gap-2 min-w-0">
+                  {artist.specialization && (
+                    <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
+                      {artist.specialization}
+                    </Badge>
+                  )}
+                  <div className="flex items-center gap-1 text-muted-foreground min-w-0">
+                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                    <span className="text-xs truncate">{artist.county}</span>
+                  </div>
+                </div>
+
+                {/* Contact button */}
+                {currentUserId && currentUserId !== artist.id ? (
+                  <Button 
+                    onClick={() => navigate(`/messages?artistId=${artist.id}`)} 
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0"
+                    size="sm"
+                  >
+                    <MessageCircle className="mr-1 h-3 w-3" />
+                    Contact
+                  </Button>
+                ) : !currentUserId ? (
+                  <Button 
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" 
+                    onClick={() => navigate('/login')}
+                    size="sm"
+                  >
+                    <MessageCircle className="mr-1 h-3 w-3" />
+                    Contact
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Desktop Header Layout */}
+            <div className="hidden md:flex flex-row gap-8 mb-8">
+              {/* Avatar */}
               <div className="flex-shrink-0">
                 <div className={`p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                  <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-background shadow-lg">
+                  <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className={`h-14 w-14 md:h-20 md:w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
               </div>
 
-              {/* Info section - centered text on mobile */}
-              <div className="flex-1 flex flex-col justify-center md:h-40 text-center md:text-left w-full">
-                <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-4">
-                  <div className="w-full md:w-auto">
+              {/* Info section */}
+              <div className="flex-1 flex flex-col justify-center h-40">
+                <div className="flex flex-row items-start justify-between gap-4">
+                  <div>
                     {/* Stage name */}
-                    <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                      <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-display font-bold text-foreground">
                         {artist.stage_name}
                       </h1>
                     </div>
                     
-                    {/* Badges - centered on mobile */}
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-2">
-                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-semibold">
+                    {/* Badges */}
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      {artist.specialization && (
+                        <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
-                        </Badge>}
+                        </Badge>
+                      )}
                       
                       {/* Display instrument for instrumentalists */}
                       {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
-                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-medium">
-                          <Music2 className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1" />
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          <Music2 className="h-4 w-4 mr-1" />
                           {artist.instruments.split(',')[0].trim()}
                         </Badge>
                       )}
                     </div>
 
-                    {/* Rating - shown inline on mobile, hidden here on desktop (shown separately) */}
-                    <div className="flex md:hidden items-center justify-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg mb-3 mx-auto w-fit">
-                      <Star className="h-5 w-5 fill-current" />
-                      <span className="text-xl font-bold">{getAverageRating() || 'N/A'}</span>
-                      {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
-                    </div>
-
                     {/* Location */}
-                    <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground mb-3 md:mb-0">
-                      <MapPin className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="text-sm md:text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-5 w-5" />
+                      <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
                     </div>
 
-                    {/* Contact button - full width on mobile */}
-                    <div className="flex justify-center md:justify-start mt-3 md:mt-3">
+                    {/* Contact button */}
+                    <div className="flex mt-3">
                       {currentUserId && currentUserId !== artist.id ? (
-                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto">
+                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
                         </Button>
                       ) : !currentUserId ? (
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto" onClick={() => navigate('/login')}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
                         </Button>
@@ -658,8 +723,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     </div>
                   </div>
 
-                  {/* Rating badge - desktop only */}
-                  <div className="hidden md:flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                  {/* Rating badge */}
+                  <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                     <Star className="h-6 w-6 fill-current" />
                     <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
                     {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
