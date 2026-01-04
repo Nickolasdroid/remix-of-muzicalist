@@ -28,37 +28,75 @@ const ArtistCard = ({
   const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
   
   return (
-    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
+    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
       <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10">
         {rank && (
-          <div className="absolute -top-1 -left-1 w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
-            <span className="text-base font-display font-bold text-accent-foreground">#{rank}</span>
+          <div className="absolute -top-0.5 -left-0.5 md:-top-1 md:-left-1 w-7 h-7 md:w-9 md:h-9 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
+            <span className="text-xs md:text-base font-display font-bold text-accent-foreground">#{rank}</span>
           </div>
         )}
         
-        <Link to={`/artist/${id}`} className="flex items-center gap-4">
-          <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
-            {imageUrl ? (
-              <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
-                <User className="h-12 w-12 text-accent" />
+        <Link to={`/artist/${id}`} className="block">
+          {/* Mobile Layout */}
+          <div className="flex md:hidden items-start gap-3">
+            <div className={`w-14 h-14 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-burgundy/50"} flex-shrink-0`}>
+              {imageUrl ? (
+                <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
+                  <User className="h-6 w-6 text-accent" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-display font-bold text-foreground truncate">
+                  {stageName}
+                </h3>
+                {rating > 0 && (
+                  <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-sm font-bold shadow-lg flex-shrink-0">
+                    <Star className="h-3 w-3 fill-current" />
+                    <span>{rating.toFixed(1)}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                <span className="truncate">{specialization}</span>
+                <span>•</span>
+                <div className="flex items-center gap-1 truncate">
+                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{county}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden md:flex items-center gap-4">
+            <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
+              {imageUrl ? (
+                <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
+                  <User className="h-12 w-12 text-accent" />
+                </div>
+              )}
+            </div>
+            
+            <h3 className="text-2xl font-display font-bold text-foreground group-hover:text-accent transition-colors truncate">
+              {stageName}
+            </h3>
+            
+            {rating > 0 && (
+              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-accent text-accent-foreground font-bold shadow-lg ml-auto">
+                <Star className="h-4 w-4 fill-current" />
+                <span>{rating.toFixed(1)}</span>
               </div>
             )}
           </div>
-          
-          <h3 className="text-2xl font-display font-bold text-foreground group-hover:text-accent transition-colors truncate">
-            {stageName}
-          </h3>
-          
-          {rating > 0 && (
-            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-accent text-accent-foreground font-bold shadow-lg ml-auto">
-              <Star className="h-4 w-4 fill-current" />
-              <span>{rating.toFixed(1)}</span>
-            </div>
-          )}
         </Link>
       </div>
     </div>

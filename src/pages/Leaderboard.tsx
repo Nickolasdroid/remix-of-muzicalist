@@ -799,21 +799,21 @@ const Leaderboard = () => {
           </div>
 
           <Tabs defaultValue="singers" className="w-full">
-            <TabsList className="flex w-full max-w-2xl mx-auto mb-8 md:mb-12 bg-card/50 p-1 md:p-2 rounded-xl border-2 border-accent/30 overflow-x-auto">
-              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Mic className="h-5 w-5 md:h-4 md:w-4" />
+            <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-6 md:mb-12 p-1 rounded-none md:rounded-xl -mx-4 md:mx-auto w-[calc(100%+2rem)] md:w-full md:bg-card/50 md:border-2 md:border-accent/30">
+              <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
+                <Mic className="h-4 w-4" />
                 <span className="hidden md:inline">Singers</span>
               </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Guitar className="h-5 w-5 md:h-4 md:w-4" />
+              <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
+                <Guitar className="h-4 w-4" />
                 <span className="hidden md:inline">Instrumentalists</span>
               </TabsTrigger>
-              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Headphones className="h-5 w-5 md:h-4 md:w-4" />
+              <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
+                <Headphones className="h-4 w-4" />
                 <span className="hidden md:inline">DJs</span>
               </TabsTrigger>
-              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Users className="h-5 w-5 md:h-4 md:w-4" />
+              <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
+                <Users className="h-4 w-4" />
                 <span className="hidden md:inline">Bands</span>
               </TabsTrigger>
             </TabsList>
