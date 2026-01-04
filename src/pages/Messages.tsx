@@ -471,11 +471,11 @@ const Messages = () => {
     <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="px-0 md:px-4 pt-14 md:pt-20 pb-16 md:pb-4 h-screen">
+      <div className="px-0 pt-14 md:pt-16 pb-16 md:pb-0 h-screen">
         {/* Desktop: Grid layout */}
-        <div className="hidden md:grid md:grid-cols-3 gap-4 h-[calc(100vh-96px)]">
+        <div className="hidden md:grid md:grid-cols-3 h-[calc(100vh-64px)]">
           {/* Conversations List */}
-          <Card className="md:col-span-1 p-0 overflow-hidden bg-card">
+          <div className="md:col-span-1 p-0 overflow-hidden bg-card border-r border-border">
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Conversations</h2>
             </div>
@@ -519,10 +519,10 @@ const Messages = () => {
                 })
               )}
             </ScrollArea>
-          </Card>
+          </div>
 
           {/* Messages Area */}
-          <Card className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
+          <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
             {selectedConversation ? (
               <>
                 {/* Header */}
@@ -624,7 +624,7 @@ const Messages = () => {
                 Select a conversation to start messaging
               </div>
             )}
-          </Card>
+          </div>
         </div>
 
         {/* Mobile: Full-width conversation list */}
