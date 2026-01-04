@@ -671,8 +671,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
             <Separator className="my-8" />
 
               {/* Tabs Section */}
-              <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-6 md:mb-8 p-1">
+              <Tabs defaultValue="details" className="w-full -mx-4 md:mx-0 px-4 md:px-0">
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg">
                   <TabsTrigger value="details" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
                     <User className="h-4 w-4 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Details</span>
@@ -696,14 +696,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsList>
 
                 {/* Details Tab */}
-                <TabsContent value="details" className="space-y-8">
+                <TabsContent value="details" className="space-y-4 md:space-y-8">
                   {/* Description */}
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
-                      <User className="h-6 w-6 text-accent" />
+                    <h2 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       About
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed text-lg">
+                    <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
                       {artist.bio || "No bio available."}
                     </p>
                   </div>
@@ -711,27 +711,27 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   <Separator />
 
                   {/* Details Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                     {/* Music Genres */}
-                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
-                        <Music className="h-5 w-5 text-accent" />
+                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                        <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Music Genres
                       </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1 text-sm">
+                      <div className="flex flex-wrap gap-1.5 md:gap-2 justify-start">
+                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm">
                               {genre}
-                            </Badge>) : <p className="text-muted-foreground text-sm">No genres specified</p>}
+                            </Badge>) : <p className="text-muted-foreground text-sm text-left">No genres specified</p>}
                       </div>
                     </div>
 
                     {/* Experience */}
-                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
-                        <CalendarIcon className="h-5 w-5 text-accent" />
+                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Experience
                       </h3>
-                      <div className="space-y-2">
+                      <div className="space-y-1 md:space-y-2 text-left">
                         <p className="text-muted-foreground text-sm md:text-base">
                           <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
                         </p>
@@ -743,13 +743,13 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     </div>
 
                     {/* Estimated Prices */}
-                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-accent" />
+                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Estimated Price
                       </h3>
-                      <div className="space-y-2">
-                        {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-sm px-3 py-1">
+                      <div className="space-y-1 md:space-y-2 text-left">
+                        {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1">
                             {artist.estimated_price}
                           </Badge> : <p className="text-muted-foreground text-sm">Contact for pricing</p>}
                       </div>
@@ -760,24 +760,24 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Contact Information */}
                   <div>
-                    <h3 className="text-lg md:text-xl font-display font-bold mb-4">Contact Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Contact Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {currentUserId ? (
                         <>
-                          <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                            <Mail className="h-5 w-5 text-accent" />
-                            <div>
-                              <p className="text-sm text-muted-foreground">Email</p>
-                              <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors">
+                          <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                            <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                            <div className="text-left">
+                              <p className="text-xs md:text-sm text-muted-foreground">Email</p>
+                              <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors text-sm md:text-base">
                                 {artist.email}
                               </a>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                            <Phone className="h-5 w-5 text-accent" />
-                            <div>
-                              <p className="text-sm text-muted-foreground">Phone</p>
-                              <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors">
+                          <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                            <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                            <div className="text-left">
+                              <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
+                              <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors text-sm md:text-base">
                                 {artist.phone}
                               </a>
                             </div>
@@ -828,29 +828,29 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-lg md:text-xl font-display font-bold mb-4">Follow on Social Media</h3>
-                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3">
-                      {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                          <Facebook className="h-5 w-5 text-accent" />
-                          <span className="text-sm">Facebook</span>
+                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Follow on Social Media</h3>
+                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5 md:gap-3">
+                      {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                          <Facebook className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          <span className="text-xs md:text-sm">Facebook</span>
                         </a>}
-                      {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                          <Instagram className="h-5 w-5 text-accent" />
-                          <span className="text-sm">Instagram</span>
+                      {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                          <Instagram className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          <span className="text-xs md:text-sm">Instagram</span>
                         </a>}
-                      {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                          <Youtube className="h-5 w-5 text-accent" />
-                          <span className="text-sm">YouTube</span>
+                      {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                          <Youtube className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          <span className="text-xs md:text-sm">YouTube</span>
                         </a>}
-                      {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                          <Music className="h-5 w-5 text-accent" />
-                          <span className="text-sm">TikTok</span>
+                      {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                          <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          <span className="text-xs md:text-sm">TikTok</span>
                         </a>}
-                      {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
-                          <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
+                      {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                          <svg className="h-4 w-4 md:h-5 md:w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                           </svg>
-                          <span className="text-sm">Spotify</span>
+                          <span className="text-xs md:text-sm">Spotify</span>
                         </a>}
                       {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
                     </div>
@@ -860,8 +860,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Reviews Section */}
                   <div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                      <h3 className="text-lg font-display font-bold flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2 text-left">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">

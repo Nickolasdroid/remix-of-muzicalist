@@ -1300,8 +1300,8 @@ const Dashboard = () => {
                     <Separator className="my-8" />
 
                     {/* Tabs Section */}
-                    <Tabs defaultValue="details" className="w-full">
-                      <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8">
+                    <Tabs defaultValue="details" className="w-full -mx-4 md:mx-0 px-4 md:px-0">
+                      <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg">
                         <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <User className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Details</span>
@@ -1325,7 +1325,7 @@ const Dashboard = () => {
                       </TabsList>
 
                       {/* Details Tab */}
-                      <TabsContent value="details" className="space-y-8">
+                      <TabsContent value="details" className="space-y-4 md:space-y-8">
                         {/* Bio/Description */}
                         <div>
                           <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
@@ -1370,7 +1370,7 @@ const Dashboard = () => {
                         <Separator />
 
                         {/* Details Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
                           <div>
                             <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
@@ -1565,13 +1565,13 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                              <Mail className="h-5 w-5 text-accent" />
-                              <div>
-                                <p className="text-sm text-muted-foreground">Email</p>
-                                <span className="text-foreground">{formData.email}</span>
+                          <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Contact Information</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+                            <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                              <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <div className="text-left">
+                                <p className="text-xs md:text-sm text-muted-foreground">Email</p>
+                                <span className="text-foreground text-sm md:text-base">{formData.email}</span>
                               </div>
                             </div>
                             {editingField === 'contact' ? (
@@ -1614,8 +1614,8 @@ const Dashboard = () => {
 
                         {/* Social Networks */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                            <LinkIcon className="h-5 w-5 text-accent" />
+                          <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2 text-left">
+                            <LinkIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             Social Networks
                           </h3>
                           {editingField === 'social' ? <div className="space-y-3">
@@ -1703,15 +1703,15 @@ const Dashboard = () => {
 
                         {/* Reviews Section */}
                         <div>
-                          <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                            <Star className="h-6 w-6 text-accent" />
+                          <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2 text-left">
+                            <Star className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                             My Reviews
-                            {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
+                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
                                 ({getAverageRating()} • {reviews.length})
                               </span>}
                           </h2>
                           
-                          {reviews.length > 0 ? <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                          {reviews.length > 0 ? <div className="grid gap-2 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                               {reviews.map(review => <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
                                   <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
