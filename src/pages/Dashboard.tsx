@@ -1208,32 +1208,108 @@ const Dashboard = () => {
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
                     {/* Header Section */}
-                    <div className="flex flex-col items-center md:items-start md:flex-row gap-4 md:gap-8 mb-6 md:mb-8">
+                    
+                    {/* Mobile Header Layout */}
+                    <div className="flex md:hidden flex-col gap-2 mb-4">
+                      {/* Row 1: Avatar + Name + Rating */}
+                      <div className="flex items-start gap-3">
+                        {/* Small Avatar - top left */}
+                        <div className="flex-shrink-0 relative group cursor-pointer">
+                          <div className={`p-0.5 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                            <Avatar className="w-14 h-14 border-2 border-background shadow-md">
+                              <AvatarImage src={profile?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                                <User className="h-7 w-7 text-accent" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <label htmlFor="avatar-upload-mobile" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
+                              <Camera className="h-4 w-4 text-white" />
+                            </label>
+                          </div>
+                          <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        </div>
+
+                        {/* Name */}
+                        <div className="flex-1 min-w-0">
+                          <h1 className="text-lg font-display font-bold text-foreground truncate">
+                            {formData.stageName}
+                          </h1>
+                        </div>
+
+                        {/* Rating badge */}
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent text-accent-foreground shadow-md flex-shrink-0">
+                          <Star className="h-4 w-4 fill-current" />
+                          <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
+                          {reviews.length > 0 && <span className="text-[10px] opacity-80">({reviews.length})</span>}
+                        </div>
+                      </div>
+
+                      {/* Row 2: Category + Location */}
+                      <div className="flex items-center gap-2 pl-[68px]">
+                        <div className="flex-1 flex items-center gap-2 min-w-0">
+                          {formData.specialization && (
+                            <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
+                              {formData.specialization}
+                            </Badge>
+                          )}
+                          {editingField === 'location' ? (
+                            <div className="flex items-center gap-1">
+                              <Select value={formData.county} onValueChange={value => setFormData({
+                                ...formData,
+                                county: value
+                              })}>
+                                <SelectTrigger className="h-7 w-[120px] text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                              <Button size="sm" onClick={() => saveField('location')} disabled={isSaving} className="h-6 w-6 p-0">
+                                <Save className="h-3 w-3" />
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={cancelEditing} className="h-6 w-6 p-0">
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="group flex items-center gap-1 text-muted-foreground min-w-0" onClick={() => startEditing('location')}>
+                              <MapPin className="h-3 w-3 flex-shrink-0" />
+                              <span className="text-xs truncate">{formData.county}</span>
+                              <Edit2 className="h-2.5 w-2.5 opacity-50" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Desktop Header Layout */}
+                    <div className="hidden md:flex flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
                         <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                          <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-background shadow-lg">
+                          <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                              <User className="h-14 w-14 md:h-20 md:w-20 text-accent" />
+                              <User className="h-20 w-20 text-accent" />
                             </AvatarFallback>
                           </Avatar>
                           <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                            <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                            <Camera className="h-8 w-8 text-white" />
                           </label>
                         </div>
                         <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                       </div>
 
-                      <div className="flex-1 flex flex-col justify-center md:h-40 text-center md:text-left w-full">
-                        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-                          <div className="w-full md:w-auto">
-                            <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                              <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground">
+                      <div className="flex-1 flex flex-col justify-center h-40">
+                        <div className="flex flex-row items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <h1 className="text-4xl font-display font-bold text-foreground">
                                 {formData.stageName}
                               </h1>
                             </div>
                             
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 mb-2">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
@@ -1256,7 +1332,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Location row */}
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3">
+                            <div className="flex flex-wrap items-center gap-3">
                               {editingField === 'location' ? (
                                 <div className="flex items-center gap-2">
                                   <Select value={formData.county} onValueChange={value => setFormData({
@@ -1289,9 +1365,10 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-5 w-5 md:h-6 md:w-6 fill-current" />
-                            <span className="text-lg md:text-2xl font-bold">New</span>
+                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                            <Star className="h-6 w-6 fill-current" />
+                            <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
+                            {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
                           </div>
                         </div>
                       </div>
