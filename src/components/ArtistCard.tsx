@@ -28,50 +28,39 @@ const ArtistCard = ({
   const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
   
   return (
-    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)]`}>
+    <div className={`group relative overflow-hidden rounded-none md:rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-0 md:border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)] border-b border-border/30 md:border-b-0`}>
       <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <div className="relative z-10">
         {rank && (
-          <div className="absolute -top-0.5 -left-0.5 md:-top-1 md:-left-1 w-7 h-7 md:w-9 md:h-9 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 md:-top-1 md:-left-1 md:translate-y-0 w-6 h-6 md:w-9 md:h-9 rounded-full bg-accent flex items-center justify-center shadow-lg z-20">
             <span className="text-xs md:text-base font-display font-bold text-accent-foreground">#{rank}</span>
           </div>
         )}
         
         <Link to={`/artist/${id}`} className="block">
           {/* Mobile Layout */}
-          <div className="flex md:hidden items-start gap-3">
-            <div className={`w-14 h-14 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-burgundy/50"} flex-shrink-0`}>
+          <div className="flex md:hidden items-center gap-3 pl-7">
+            <div className={`w-12 h-12 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-burgundy/50"} flex-shrink-0`}>
               {imageUrl ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
-                  <User className="h-6 w-6 text-accent" />
+                  <User className="h-5 w-5 text-accent" />
                 </div>
               )}
             </div>
             
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-display font-bold text-foreground truncate">
-                  {stageName}
-                </h3>
-                {rating > 0 && (
-                  <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-sm font-bold shadow-lg flex-shrink-0">
-                    <Star className="h-3 w-3 fill-current" />
-                    <span>{rating.toFixed(1)}</span>
-                  </div>
-                )}
+            <h3 className="text-base font-display font-bold text-foreground truncate flex-1">
+              {stageName}
+            </h3>
+            
+            {rating > 0 && (
+              <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-sm font-bold shadow-lg flex-shrink-0">
+                <Star className="h-3 w-3 fill-current" />
+                <span>{rating.toFixed(1)}</span>
               </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                <span className="truncate">{specialization}</span>
-                <span>•</span>
-                <div className="flex items-center gap-1 truncate">
-                  <MapPin className="h-3 w-3 flex-shrink-0" />
-                  <span className="truncate">{county}</span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Desktop Layout */}
