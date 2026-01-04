@@ -798,40 +798,53 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="singers" className="w-full">
-            <TabsList className="flex w-full max-w-2xl mx-auto mb-8 md:mb-12 bg-card/50 p-1 md:p-2 rounded-xl border-2 border-accent/30 overflow-x-auto">
-              <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Mic className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Singers</span>
-                <span className="sm:hidden">Sing</span>
-              </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Guitar className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Instrumentalists</span>
-                <span className="sm:hidden">Inst</span>
-              </TabsTrigger>
-              <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Headphones className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">DJs</span>
-                <span className="sm:hidden">DJ</span>
-              </TabsTrigger>
-              <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Users className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Bands</span>
-                <span className="sm:hidden">Band</span>
-              </TabsTrigger>
-            </TabsList>
+          {/* Define tab items with their artist counts */}
+          {(() => {
+            const tabItems = [
+              { value: "singers", icon: Mic, label: "Singers", shortLabel: "Sing", count: categories.singers.length },
+              { value: "instrumentalists", icon: Guitar, label: "Instrumentalists", shortLabel: "Inst", count: categories.instrumentalists.length },
+              { value: "djs", icon: Headphones, label: "DJs", shortLabel: "DJ", count: categories.djs.length },
+              { value: "bands", icon: Users, label: "Bands", shortLabel: "Band", count: categories.bands.length },
+            ];
+            
+            // Find the first category with artists to set as default
+            const firstWithArtists = tabItems.find(item => item.count > 0);
+            const defaultTab = firstWithArtists?.value || "singers";
+            
+            return (
+              <Tabs defaultValue={defaultTab} className="w-full">
+                <TabsList className="flex w-full max-w-2xl mx-auto mb-8 md:mb-12 bg-card/50 p-1 md:p-2 rounded-xl border-2 border-accent/30 overflow-x-auto">
+                  {tabItems.map(item => {
+                    const Icon = item.icon;
+                    // On mobile, only show tabs with artists. On desktop, show all.
+                    const shouldShow = item.count > 0 ? true : false;
+                    
+                    return (
+                      <TabsTrigger 
+                        key={item.value}
+                        value={item.value} 
+                        className={`flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4 ${!shouldShow ? 'hidden md:flex' : 'flex'}`}
+                      >
+                        <Icon className="h-3 w-3 md:h-4 md:w-4" />
+                        <span className="hidden sm:inline">{item.label}</span>
+                        <span className="sm:hidden">{item.shortLabel}</span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
 
-            {loading ? <div className="text-center py-16">
-                <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
-                  <div className="grid gap-4 md:gap-6 max-w-2xl mx-auto">
-                    {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
-                        <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-                      </div>}
-                  </div>
-                </TabsContent>)}
-          </Tabs>
+                {loading ? <div className="text-center py-16">
+                    <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
+                  </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-6">
+                      <div className="grid gap-4 md:gap-6 max-w-2xl mx-auto">
+                        {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
+                            <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
+                          </div>}
+                      </div>
+                    </TabsContent>)}
+              </Tabs>
+            );
+          })()}
         </div>
       </div>
     </div>;
