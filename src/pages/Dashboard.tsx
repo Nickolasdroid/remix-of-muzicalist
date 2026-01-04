@@ -1300,7 +1300,7 @@ const Dashboard = () => {
                     <Separator className="my-8" />
 
                     {/* Tabs Section */}
-                    <Tabs defaultValue="details" className="w-full -mx-4 md:mx-0 px-4 md:px-0">
+                    <Tabs defaultValue="details" className="w-full -mx-4 md:mx-0">
                       <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg">
                         <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <User className="h-5 w-5 md:h-4 md:w-4" />
@@ -1325,7 +1325,7 @@ const Dashboard = () => {
                       </TabsList>
 
                       {/* Details Tab */}
-                      <TabsContent value="details" className="space-y-4 md:space-y-8">
+                      <TabsContent value="details" className="space-y-4 md:space-y-8 px-4 md:px-0">
                         {/* Bio/Description */}
                         <div>
                           <h2 className="text-2xl font-display font-bold mb-4 flex items-center gap-2">
@@ -1747,7 +1747,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Posts Tab */}
-                      <TabsContent value="posts" className="space-y-6">
+                      <TabsContent value="posts" className="space-y-6 px-4 md:px-0">
                         <div className="max-w-[500px] mx-auto space-y-1">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
                             <div className="flex items-center gap-2">
@@ -1898,7 +1898,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Announcements Tab */}
-                      <TabsContent value="announcements" className="space-y-4">
+                      <TabsContent value="announcements" className="space-y-4 px-4 md:px-0">
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
                             <div className="flex items-center gap-6">
@@ -2029,7 +2029,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Gallery Tab */}
-                      <TabsContent value="gallery">
+                      <TabsContent value="gallery" className="px-4 md:px-0">
                         <div className="flex items-center justify-between mb-4">
                           <h2 className="text-2xl font-display font-bold flex items-center gap-2">
                             <Images className="h-6 w-6 text-accent" />
@@ -2126,7 +2126,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Calendar Tab */}
-                      <TabsContent value="calendar">
+                      <TabsContent value="calendar" className="px-4 md:px-0">
                         <div>
                           <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
                             <CalendarIcon className="h-6 w-6 text-accent" />
