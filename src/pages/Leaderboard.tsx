@@ -801,24 +801,20 @@ const Leaderboard = () => {
           <Tabs defaultValue="singers" className="w-full">
             <TabsList className="flex w-full max-w-2xl mx-auto mb-8 md:mb-12 bg-card/50 p-1 md:p-2 rounded-xl border-2 border-accent/30 overflow-x-auto">
               <TabsTrigger value="singers" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Mic className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Singers</span>
-                <span className="sm:hidden">Sing</span>
+                <Mic className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Singers</span>
               </TabsTrigger>
               <TabsTrigger value="instrumentalists" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Guitar className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Instrumentalists</span>
-                <span className="sm:hidden">Inst</span>
+                <Guitar className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Instrumentalists</span>
               </TabsTrigger>
               <TabsTrigger value="djs" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Headphones className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">DJs</span>
-                <span className="sm:hidden">DJ</span>
+                <Headphones className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">DJs</span>
               </TabsTrigger>
               <TabsTrigger value="bands" className="flex-1 text-center data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg transition-all duration-300 gap-1 md:gap-2 text-xs md:text-base px-2 md:px-4">
-                <Users className="h-3 w-3 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Bands</span>
-                <span className="sm:hidden">Band</span>
+                <Users className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Bands</span>
               </TabsTrigger>
             </TabsList>
 
