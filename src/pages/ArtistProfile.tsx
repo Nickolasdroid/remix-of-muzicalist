@@ -582,8 +582,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       
-      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-4">
-        <div className="container mx-auto max-w-6xl">
+      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4">
+        <div className="container mx-auto max-w-6xl px-4 md:px-0">
           <Link to="/leaderboard">
             
           </Link>
@@ -671,8 +671,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
             <Separator className="my-8" />
 
               {/* Tabs Section */}
-              <Tabs defaultValue="details" className="w-full -mx-4 md:mx-0">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg">
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <TabsTrigger value="details" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
                     <User className="h-4 w-4 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Details</span>
@@ -696,7 +696,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsList>
 
                 {/* Details Tab */}
-                <TabsContent value="details" className="space-y-4 md:space-y-8 px-4 md:px-0">
+                <TabsContent value="details" className="space-y-4 md:space-y-8">
                   {/* Description */}
                   <div>
                     <h2 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
@@ -917,7 +917,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Posts Tab */}
-                <TabsContent value="posts" className="space-y-4 md:space-y-6 px-4 md:px-0">
+                <TabsContent value="posts" className="space-y-4 md:space-y-6">
                   <div>
                     <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
                       <FileText className="h-5 w-5 md:h-6 md:w-6 text-accent" />
@@ -1019,7 +1019,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Announcements Tab */}
-                <TabsContent value="announcements" className="space-y-4 md:space-y-6 px-4 md:px-0">
+                <TabsContent value="announcements" className="space-y-4 md:space-y-6">
                   <div>
                     <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
                       <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
@@ -1109,7 +1109,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Gallery Tab */}
-                <TabsContent value="gallery" className="px-4 md:px-0">
+                <TabsContent value="gallery">
                   <div className="space-y-6 md:space-y-8">
                     {/* Photos Section */}
                     <div>
@@ -1160,7 +1160,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Calendar Tab */}
-                <TabsContent value="calendar" className="px-4 md:px-0">
+                <TabsContent value="calendar">
                   <div>
                     <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
                       <CalendarIcon className="h-5 w-5 md:h-6 md:w-6 text-accent" />
