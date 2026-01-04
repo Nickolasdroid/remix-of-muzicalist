@@ -589,64 +589,77 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
           </Link>
 
           {/* Header Section - matching dashboard profile layout */}
-          <div className="space-y-8">
-            <div className="flex flex-col md:flex-row gap-8 mb-8">
+          <div className="space-y-6 md:space-y-8">
+            <div className="flex flex-col items-center md:items-start md:flex-row gap-4 md:gap-8 mb-6 md:mb-8">
+              {/* Avatar - centered on mobile */}
               <div className="flex-shrink-0">
                 <div className={`p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                  <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
+                  <Avatar className="w-28 h-28 md:w-40 md:h-40 border-4 border-background shadow-lg">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                      <User className={`h-14 w-14 md:h-20 md:w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col justify-center h-40">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-display font-bold text-foreground">
+              {/* Info section - centered text on mobile */}
+              <div className="flex-1 flex flex-col justify-center md:h-40 text-center md:text-left w-full">
+                <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-4">
+                  <div className="w-full md:w-auto">
+                    {/* Stage name */}
+                    <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                      <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground">
                         {artist.stage_name}
                       </h1>
                     </div>
                     
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
+                    {/* Badges - centered on mobile */}
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-2">
+                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-semibold">
                           {artist.specialization}
                         </Badge>}
                       
                       {/* Display instrument for instrumentalists */}
                       {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
-                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-                          <Music2 className="h-4 w-4 mr-1.5" />
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-3 md:px-4 py-1 md:py-1.5 text-sm md:text-base font-medium">
+                          <Music2 className="h-3.5 w-3.5 md:h-4 md:w-4 mr-1" />
                           {artist.instruments.split(',')[0].trim()}
                         </Badge>
                       )}
                     </div>
 
-                    {/* Contact and Location on same row */}
-                    <div className="flex flex-wrap items-center gap-3">
+                    {/* Rating - shown inline on mobile, hidden here on desktop (shown separately) */}
+                    <div className="flex md:hidden items-center justify-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg mb-3 mx-auto w-fit">
+                      <Star className="h-5 w-5 fill-current" />
+                      <span className="text-xl font-bold">{getAverageRating() || 'N/A'}</span>
+                      {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                    </div>
+
+                    {/* Location */}
+                    <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground mb-3 md:mb-0">
+                      <MapPin className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-sm md:text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
+                    </div>
+
+                    {/* Contact button - full width on mobile */}
+                    <div className="flex justify-center md:justify-start mt-3 md:mt-3">
                       {currentUserId && currentUserId !== artist.id ? (
-                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
                         </Button>
                       ) : !currentUserId ? (
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto" onClick={() => navigate('/login')}>
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
                         </Button>
                       ) : null}
-                      
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-5 w-5" />
-                        <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
-                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                  {/* Rating badge - desktop only */}
+                  <div className="hidden md:flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                     <Star className="h-6 w-6 fill-current" />
                     <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
                     {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
@@ -659,26 +672,26 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
               {/* Tabs Section */}
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-8">
-                  <TabsTrigger value="details" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Details
+                <TabsList className="grid w-full grid-cols-5 mb-6 md:mb-8 p-1">
+                  <TabsTrigger value="details" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
+                    <User className="h-4 w-4 md:h-4 md:w-4" />
+                    <span className="hidden md:inline">Details</span>
                   </TabsTrigger>
-                  <TabsTrigger value="posts" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Posts
+                  <TabsTrigger value="posts" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
+                    <FileText className="h-4 w-4 md:h-4 md:w-4" />
+                    <span className="hidden md:inline">Posts</span>
                   </TabsTrigger>
-                  <TabsTrigger value="announcements" className="flex items-center gap-2">
-                    <Megaphone className="h-4 w-4" />
-                    Announcements
+                  <TabsTrigger value="announcements" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
+                    <Megaphone className="h-4 w-4 md:h-4 md:w-4" />
+                    <span className="hidden md:inline">Announcements</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gallery" className="flex items-center gap-2">
-                    <Images className="h-4 w-4" />
-                    Gallery
+                  <TabsTrigger value="gallery" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
+                    <Images className="h-4 w-4 md:h-4 md:w-4" />
+                    <span className="hidden md:inline">Gallery</span>
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4" />
-                    Calendar
+                  <TabsTrigger value="calendar" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-3 text-xs md:text-sm">
+                    <CalendarIcon className="h-4 w-4 md:h-4 md:w-4" />
+                    <span className="hidden md:inline">Calendar</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -698,31 +711,31 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                   <Separator />
 
                   {/* Details Grid */}
-                  <div className="grid md:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                     {/* Music Genres */}
-                    <div>
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
                         <Music className="h-5 w-5 text-accent" />
                         Music Genres
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1">
+                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-3 py-1 text-sm">
                               {genre}
-                            </Badge>) : <p className="text-muted-foreground">No genres specified</p>}
+                            </Badge>) : <p className="text-muted-foreground text-sm">No genres specified</p>}
                       </div>
                     </div>
 
                     {/* Experience */}
-                    <div>
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
                         <CalendarIcon className="h-5 w-5 text-accent" />
                         Experience
                       </h3>
                       <div className="space-y-2">
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground text-sm md:text-base">
                           <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
                         </p>
-                        <p className="text-muted-foreground flex items-center gap-2">
+                        <p className="text-muted-foreground flex items-center gap-2 text-sm md:text-base">
                           <Award className="h-4 w-4 text-accent" />
                           <span className="font-semibold text-foreground">{artist.number_of_events}+</span> events performed
                         </p>
@@ -730,15 +743,15 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     </div>
 
                     {/* Estimated Prices */}
-                    <div>
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+                    <div className="p-4 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
+                      <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 flex items-center gap-2">
                         <DollarSign className="h-5 w-5 text-accent" />
                         Estimated Price
                       </h3>
                       <div className="space-y-2">
                         {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-sm px-3 py-1">
                             {artist.estimated_price}
-                          </Badge> : <p className="text-muted-foreground">Contact for pricing</p>}
+                          </Badge> : <p className="text-muted-foreground text-sm">Contact for pricing</p>}
                       </div>
                     </div>
                   </div>
@@ -747,8 +760,8 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Contact Information */}
                   <div>
-                    <h3 className="text-xl font-display font-bold mb-4">Contact Information</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <h3 className="text-lg md:text-xl font-display font-bold mb-4">Contact Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                       {currentUserId ? (
                         <>
                           <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
@@ -815,25 +828,25 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-xl font-display font-bold mb-4">Follow on Social Media</h3>
-                    <div className="flex flex-wrap gap-3">
-                      {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                    <h3 className="text-lg md:text-xl font-display font-bold mb-4">Follow on Social Media</h3>
+                    <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3">
+                      {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Facebook className="h-5 w-5 text-accent" />
                           <span className="text-sm">Facebook</span>
                         </a>}
-                      {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                      {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Instagram className="h-5 w-5 text-accent" />
                           <span className="text-sm">Instagram</span>
                         </a>}
-                      {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                      {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Youtube className="h-5 w-5 text-accent" />
                           <span className="text-sm">YouTube</span>
                         </a>}
-                      {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                      {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Music className="h-5 w-5 text-accent" />
                           <span className="text-sm">TikTok</span>
                         </a>}
-                      {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
+                      {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2.5 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                           </svg>
@@ -847,7 +860,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                   {/* Reviews Section */}
                   <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                       <h3 className="text-lg font-display font-bold flex items-center gap-2">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
@@ -855,14 +868,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                             ({getAverageRating()} • {reviews.length})
                           </span>}
                       </h3>
-                      {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto">
                           Write a Review
                         </Button>}
                     </div>
 
                     {reviews.length > 0 ? <Carousel className="w-full">
-                        <CarouselContent>
-                          {reviews.map(review => <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
+                        <CarouselContent className="-ml-2 md:-ml-4">
+                          {reviews.map(review => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
                                 {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
                                     <Trash2 className="h-4 w-4" />
@@ -891,12 +904,12 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                               </div>
                             </CarouselItem>)}
                         </CarouselContent>
-                        <CarouselPrevious className="left-0 -translate-x-1/2" />
-                        <CarouselNext className="right-0 translate-x-1/2" />
+                        <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
+                        <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
                       </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
-                        {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                        {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground w-full sm:w-auto">
                             Write the First Review
                           </Button>}
                       </div>}
@@ -904,13 +917,13 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Posts Tab */}
-                <TabsContent value="posts" className="space-y-6">
+                <TabsContent value="posts" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                      <FileText className="h-6 w-6 text-accent" />
+                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
+                      <FileText className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Posts
                     </h2>
-                    <div className="max-w-[500px] mx-auto space-y-4">
+                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
                             <div className="p-4 pb-0">
@@ -1006,13 +1019,13 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 </TabsContent>
 
                 {/* Announcements Tab */}
-                <TabsContent value="announcements" className="space-y-6">
+                <TabsContent value="announcements" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                      <Megaphone className="h-6 w-6 text-accent" />
+                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
+                      <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Announcements
                     </h2>
-                    <div className="max-w-[500px] mx-auto space-y-4">
+                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
                             <div className="p-4 pb-0">
@@ -1097,14 +1110,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                 {/* Gallery Tab */}
                 <TabsContent value="gallery">
-                  <div className="space-y-8">
+                  <div className="space-y-6 md:space-y-8">
                     {/* Photos Section */}
                     <div>
-                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                        <Images className="h-6 w-6 text-accent" />
+                      <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
+                        <Images className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                         Photos
                       </h2>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                         {getImages().length > 0 ? getImages().map((image, index) => <Dialog key={image.id}>
                               <DialogTrigger asChild>
                                 <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
@@ -1122,18 +1135,18 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
 
                     {/* Videos Section */}
                     <div>
-                      <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                        <Play className="h-6 w-6 text-accent" />
+                      <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
+                        <Play className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                         Videos
                       </h2>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                         {getVideos().length > 0 ? getVideos().map((video, index) => <Dialog key={video.id}>
                               <DialogTrigger asChild>
                                 <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                                  <Play className="h-12 w-12 text-accent" />
+                                  <Play className="h-10 w-10 md:h-12 md:w-12 text-accent" />
                                 </div>
                               </DialogTrigger>
-                              <DialogContent className="max-w-4xl">
+                              <DialogContent className="max-w-[95vw] md:max-w-4xl p-2 md:p-6">
                                 <div className="aspect-video">
                                   <iframe src={video.url} className="w-full h-full rounded-lg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                                 </div>
@@ -1149,13 +1162,14 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                 {/* Calendar Tab */}
                 <TabsContent value="calendar">
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                      <CalendarIcon className="h-6 w-6 text-accent" />
+                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Availability Calendar
                     </h2>
-                    <div className="flex flex-col lg:flex-row gap-6">
-                      <div className="flex-1">
-                        <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm" modifiers={{
+                    <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+                      {/* Calendar - full width on mobile, centered */}
+                      <div className="flex-1 flex justify-center">
+                        <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm w-full max-w-[350px]" modifiers={{
                       busy: getBusyDates(),
                       blocked: getBlockedDates()
                     }} modifiersClassNames={{
@@ -1163,25 +1177,28 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                       blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                     }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                       </div>
-                      <div className="lg:w-64 space-y-4">
-                        <div className="p-4 rounded-lg bg-secondary/50 space-y-3">
-                          <h4 className="font-semibold text-foreground">Legend</h4>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                            <span className="text-sm text-muted-foreground">Busy / Booked</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-muted/80"></div>
-                            <span className="text-sm text-muted-foreground">Unavailable</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded bg-accent"></div>
-                            <span className="text-sm text-muted-foreground">Available</span>
+                      {/* Legend and selected date - horizontal on mobile, vertical on desktop */}
+                      <div className="w-full lg:w-64 space-y-3 md:space-y-4">
+                        <div className="p-3 md:p-4 rounded-lg bg-secondary/50">
+                          <h4 className="font-semibold text-foreground mb-2 md:mb-3 text-sm md:text-base">Legend</h4>
+                          <div className="flex flex-wrap md:flex-col gap-3 md:gap-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
+                              <span className="text-xs md:text-sm text-muted-foreground">Busy / Booked</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
+                              <span className="text-xs md:text-sm text-muted-foreground">Unavailable</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-accent"></div>
+                              <span className="text-xs md:text-sm text-muted-foreground">Available</span>
+                            </div>
                           </div>
                         </div>
-                        {selectedDate && <div className="p-4 rounded-lg border border-border bg-card">
-                            <h4 className="font-semibold text-foreground mb-2">Selected Date</h4>
-                            <p className="text-sm text-muted-foreground mb-3">
+                        {selectedDate && <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
+                            <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
+                            <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
                               {selectedDate.toLocaleDateString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
