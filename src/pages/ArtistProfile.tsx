@@ -260,6 +260,16 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
              eventDate.getFullYear() === date.getFullYear();
     });
   };
+
+  const getEventsForDate = (date: Date) => {
+    return calendarEvents.filter(event => {
+      const eventDate = parseYMDToLocalDate(event.event_date);
+      return eventDate.getDate() === date.getDate() && 
+             eventDate.getMonth() === date.getMonth() && 
+             eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+
   const extractTimeFromNotes = (notes: string | null) => {
     if (!notes) return null;
     // Try to extract time pattern like "Time: 12:00 - 18:00" or "19:00 - Jan 18, 2026 13:15"
@@ -268,6 +278,31 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
       return { startTime: timeMatch[1], endTime: timeMatch[2] };
     }
     return null;
+  };
+
+  // Parse all time slots from notes that can contain multiple events separated by ---
+  const extractAllTimeSlotsFromNotes = (notes: string | null): { startTime: string; endTime: string; bookedBy?: string; eventType?: string }[] => {
+    if (!notes) return [];
+    
+    const entries = notes.split(/\n\n---\n\n/);
+    const slots: { startTime: string; endTime: string; bookedBy?: string; eventType?: string }[] = [];
+    
+    for (const entry of entries) {
+      const timeMatch = entry.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+      const bookedByMatch = entry.match(/Booked by:\s*(.+)/i);
+      const eventTypeMatch = entry.match(/Event:\s*(.+)/i);
+      
+      if (timeMatch) {
+        slots.push({
+          startTime: timeMatch[1],
+          endTime: timeMatch[2],
+          bookedBy: bookedByMatch?.[1]?.trim(),
+          eventType: eventTypeMatch?.[1]?.trim()
+        });
+      }
+    }
+    
+    return slots;
   };
   const isOwnProfile = currentUserId === id;
 
@@ -1183,36 +1218,60 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     </DialogDescription>
                   </DialogHeader>
                   {selectedDate && (() => {
-                    const event = getEventForDate(selectedDate);
-                    const timeInfo = event?.notes ? extractTimeFromNotes(event.notes) : null;
+                    const events = getEventsForDate(selectedDate);
                     const isBusy = isBusyDate(selectedDate);
                     const isBlocked = isBlockedDate(selectedDate);
                     
+                    // Collect all time slots from all events on this date
+                    const allTimeSlots = events.flatMap(event => 
+                      extractAllTimeSlotsFromNotes(event.notes)
+                    );
+                    const hasTimeSlots = allTimeSlots.length > 0;
+                    
                     return (
                       <div className="space-y-4 mt-2">
-                        {/* Busy Time Slot */}
-                        {isBusy && timeInfo && (
-                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 space-y-3">
+                        {/* Busy Time Slots */}
+                        {isBusy && hasTimeSlots && (
+                          <div className="space-y-3">
                             <h4 className="font-semibold text-foreground flex items-center gap-2">
                               <Clock className="h-4 w-4 text-destructive" />
-                              Busy Time Slot
+                              Booked Time Slots ({allTimeSlots.length})
                             </h4>
-                            <div className="flex items-center justify-between px-4">
-                              <div className="text-center">
-                                <p className="text-xs text-muted-foreground">From</p>
-                                <p className="text-xl font-bold text-destructive">{timeInfo.startTime}</p>
-                              </div>
-                              <div className="text-muted-foreground text-lg">—</div>
-                              <div className="text-center">
-                                <p className="text-xs text-muted-foreground">Until</p>
-                                <p className="text-xl font-bold text-destructive">{timeInfo.endTime}</p>
-                              </div>
+                            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                              {allTimeSlots.map((slot, index) => (
+                                <div 
+                                  key={index} 
+                                  className="p-3 rounded-lg bg-destructive/10 border border-destructive/20"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className="text-center">
+                                        <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
+                                      </div>
+                                      <span className="text-muted-foreground">—</span>
+                                      <div className="text-center">
+                                        <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
+                                      </div>
+                                    </div>
+                                    {slot.eventType && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {slot.eventType}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {slot.bookedBy && (
+                                    <p className="text-xs text-muted-foreground mt-1.5">
+                                      Booked by: {slot.bookedBy}
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         )}
 
                         {/* No specific time - booked all day */}
-                        {isBusy && !timeInfo && (
+                        {isBusy && !hasTimeSlots && (
                           <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
                             <Clock className="h-6 w-6 text-destructive mx-auto mb-2" />
                             <p className="text-sm font-medium text-foreground">
@@ -1234,7 +1293,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                         )}
 
                         {/* Request Different Time Button - only for busy dates with specific time slots */}
-                        {isBusy && timeInfo && !isOwnProfile && (
+                        {isBusy && hasTimeSlots && !isOwnProfile && (
                           <div className="pt-2">
                             <p className="text-xs text-muted-foreground text-center mb-3">
                               You can still request a different time slot on this day.
