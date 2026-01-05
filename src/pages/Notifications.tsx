@@ -4,19 +4,9 @@ import { Bell, Star, Heart, Calendar, Check, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatDistanceToNow } from "date-fns";
 import Navigation from "@/components/Navigation";
-
 interface Notification {
   id: string;
   type: string;
@@ -29,17 +19,19 @@ interface Notification {
   read_at: string | null;
   created_at: string;
 }
-
 const Notifications = () => {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [deleteNotificationId, setDeleteNotificationId] = useState<string | null>(null);
-
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate('/login');
         return;
@@ -47,84 +39,61 @@ const Notifications = () => {
       setUser(session.user);
       loadNotifications(session.user.id);
     };
-
     checkAuth();
   }, [navigate]);
-
   useEffect(() => {
     if (!user) return;
 
     // Subscribe to real-time notifications
-    const channel = supabase
-      .channel('notifications-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          setNotifications(prev => [payload.new as Notification, ...prev]);
-        }
-      )
-      .subscribe();
-
+    const channel = supabase.channel('notifications-realtime').on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'notifications',
+      filter: `user_id=eq.${user.id}`
+    }, payload => {
+      setNotifications(prev => [payload.new as Notification, ...prev]);
+    }).subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
   }, [user]);
-
   const loadNotifications = async (userId: string) => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
+    const {
+      data,
+      error
+    } = await supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', {
+      ascending: false
+    });
     if (!error && data) {
       setNotifications(data);
     }
     setLoading(false);
   };
-
   const markAsRead = async (notificationId: string) => {
-    await supabase
-      .from('notifications')
-      .update({ read_at: new Date().toISOString() })
-      .eq('id', notificationId);
-
-    setNotifications(prev =>
-      prev.map(n => n.id === notificationId ? { ...n, read_at: new Date().toISOString() } : n)
-    );
+    await supabase.from('notifications').update({
+      read_at: new Date().toISOString()
+    }).eq('id', notificationId);
+    setNotifications(prev => prev.map(n => n.id === notificationId ? {
+      ...n,
+      read_at: new Date().toISOString()
+    } : n));
   };
-
   const markAllAsRead = async () => {
-    await supabase
-      .from('notifications')
-      .update({ read_at: new Date().toISOString() })
-      .eq('user_id', user.id)
-      .is('read_at', null);
-
-    setNotifications(prev =>
-      prev.map(n => ({ ...n, read_at: n.read_at || new Date().toISOString() }))
-    );
+    await supabase.from('notifications').update({
+      read_at: new Date().toISOString()
+    }).eq('user_id', user.id).is('read_at', null);
+    setNotifications(prev => prev.map(n => ({
+      ...n,
+      read_at: n.read_at || new Date().toISOString()
+    })));
   };
-
   const deleteNotification = async () => {
     if (!deleteNotificationId) return;
-    
-    await supabase
-      .from('notifications')
-      .delete()
-      .eq('id', deleteNotificationId);
-
+    await supabase.from('notifications').delete().eq('id', deleteNotificationId);
     setNotifications(prev => prev.filter(n => n.id !== deleteNotificationId));
     setDeleteNotificationId(null);
   };
-
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'review':
@@ -137,10 +106,8 @@ const Notifications = () => {
         return <Bell className="h-5 w-5 text-muted-foreground" />;
     }
   };
-
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
-    
     if (notification.reference_type === 'review' || notification.reference_type === 'profile') {
       navigate('/dashboard?tab=details');
     } else if (notification.reference_type === 'post') {
@@ -149,37 +116,28 @@ const Notifications = () => {
       navigate('/dashboard?tab=calendar');
     }
   };
-
   const unreadCount = notifications.filter(n => !n.read_at).length;
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="md:ml-64 pt-16 md:pt-16 pb-20 md:pb-4">
-        <div className="max-w-3xl mx-auto p-4 md:p-6">
+        <div className="max-w-3xl mx-auto p-4 md:p-6 px-0 py-0">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Bell className="h-6 w-6 text-accent" />
               <h1 className="text-2xl font-bold">Notifications</h1>
-              {unreadCount > 0 && (
-                <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-destructive text-destructive-foreground text-sm font-semibold rounded-full">
+              {unreadCount > 0 && <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-destructive text-destructive-foreground text-sm font-semibold rounded-full">
                   {unreadCount}
-                </span>
-              )}
+                </span>}
             </div>
-            {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead}>
+            {unreadCount > 0 && <Button variant="outline" size="sm" onClick={markAllAsRead}>
                 <Check className="h-4 w-4 mr-2" />
                 Mark all as read
-              </Button>
-            )}
+              </Button>}
           </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="p-4 animate-pulse">
+          {loading ? <div className="space-y-4">
+              {[1, 2, 3].map(i => <Card key={i} className="p-4 animate-pulse">
                   <div className="flex items-start gap-4">
                     <div className="h-10 w-10 rounded-full bg-muted" />
                     <div className="flex-1 space-y-2">
@@ -187,27 +145,15 @@ const Notifications = () => {
                       <div className="h-3 bg-muted rounded w-2/3" />
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-          ) : notifications.length === 0 ? (
-            <Card className="p-12 text-center">
+                </Card>)}
+            </div> : notifications.length === 0 ? <Card className="p-12 text-center">
               <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
               <p className="text-muted-foreground">
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {notifications.map(notification => (
-                <Card
-                  key={notification.id}
-                  className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 ${
-                    !notification.read_at ? 'bg-accent/10 border-accent/30' : ''
-                  }`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
+            </Card> : <div className="space-y-3">
+              {notifications.map(notification => <Card key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 ${!notification.read_at ? 'bg-accent/10 border-accent/30' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
                       {getNotificationIcon(notification.type)}
@@ -222,35 +168,28 @@ const Notifications = () => {
                             {notification.message}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(notification.created_at), {
+                        addSuffix: true
+                      })}
                           </p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 flex-shrink-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteNotificationId(notification.id);
-                          }}
-                        >
+                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={e => {
+                    e.stopPropagation();
+                    setDeleteNotificationId(notification.id);
+                  }}>
                           <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
                     </div>
-                    {!notification.read_at && (
-                      <div className="h-2 w-2 rounded-full bg-accent flex-shrink-0 mt-2" />
-                    )}
+                    {!notification.read_at && <div className="h-2 w-2 rounded-full bg-accent flex-shrink-0 mt-2" />}
                   </div>
-                </Card>
-              ))}
-            </div>
-          )}
+                </Card>)}
+            </div>}
         </div>
       </main>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteNotificationId} onOpenChange={(open) => !open && setDeleteNotificationId(null)}>
+      <AlertDialog open={!!deleteNotificationId} onOpenChange={open => !open && setDeleteNotificationId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Notification</AlertDialogTitle>
@@ -260,17 +199,12 @@ const Notifications = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={deleteNotification}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={deleteNotification} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
+    </div>;
 };
-
 export default Notifications;
