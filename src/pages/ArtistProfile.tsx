@@ -15,7 +15,16 @@ import TimeSelector from "@/components/TimeSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -128,7 +137,7 @@ const ArtistProfile = () => {
     comment: ""
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const {
     toast
@@ -215,20 +224,17 @@ const ArtistProfile = () => {
       } = await supabase.from('posts').select('id, profile_id, content, media_url, media_type, created_at').eq('profile_id', id).order('created_at', {
         ascending: false
       });
-
+      
       // Fetch likes count for each post
-      const postsWithLikes = await Promise.all((postsData || []).map(async post => {
-        const {
-          count
-        } = await supabase.from('post_likes').select('id', {
-          count: 'exact',
-          head: true
-        }).eq('post_id', post.id);
-        return {
-          ...post,
-          likes: count || 0
-        };
-      }));
+      const postsWithLikes = await Promise.all(
+        (postsData || []).map(async (post) => {
+          const { count } = await supabase
+            .from('post_likes')
+            .select('id', { count: 'exact', head: true })
+            .eq('post_id', post.id);
+          return { ...post, likes: count || 0 };
+        })
+      );
       setPosts(postsWithLikes);
       setLoading(false);
     };
@@ -249,47 +255,43 @@ const ArtistProfile = () => {
   const getEventForDate = (date: Date) => {
     return calendarEvents.find(event => {
       const eventDate = parseYMDToLocalDate(event.event_date);
-      return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
+      return eventDate.getDate() === date.getDate() && 
+             eventDate.getMonth() === date.getMonth() && 
+             eventDate.getFullYear() === date.getFullYear();
     });
   };
+
   const getEventsForDate = (date: Date) => {
     return calendarEvents.filter(event => {
       const eventDate = parseYMDToLocalDate(event.event_date);
-      return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
+      return eventDate.getDate() === date.getDate() && 
+             eventDate.getMonth() === date.getMonth() && 
+             eventDate.getFullYear() === date.getFullYear();
     });
   };
+
   const extractTimeFromNotes = (notes: string | null) => {
     if (!notes) return null;
     // Try to extract time pattern like "Time: 12:00 - 18:00" or "19:00 - Jan 18, 2026 13:15"
     const timeMatch = notes.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
     if (timeMatch) {
-      return {
-        startTime: timeMatch[1],
-        endTime: timeMatch[2]
-      };
+      return { startTime: timeMatch[1], endTime: timeMatch[2] };
     }
     return null;
   };
 
   // Parse all time slots from notes that can contain multiple events separated by ---
-  const extractAllTimeSlotsFromNotes = (notes: string | null): {
-    startTime: string;
-    endTime: string;
-    bookedBy?: string;
-    eventType?: string;
-  }[] => {
+  const extractAllTimeSlotsFromNotes = (notes: string | null): { startTime: string; endTime: string; bookedBy?: string; eventType?: string }[] => {
     if (!notes) return [];
+    
     const entries = notes.split(/\n\n---\n\n/);
-    const slots: {
-      startTime: string;
-      endTime: string;
-      bookedBy?: string;
-      eventType?: string;
-    }[] = [];
+    const slots: { startTime: string; endTime: string; bookedBy?: string; eventType?: string }[] = [];
+    
     for (const entry of entries) {
       const timeMatch = entry.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
       const bookedByMatch = entry.match(/Booked by:\s*(.+)/i);
       const eventTypeMatch = entry.match(/Event:\s*(.+)/i);
+      
       if (timeMatch) {
         slots.push({
           startTime: timeMatch[1],
@@ -299,25 +301,27 @@ const ArtistProfile = () => {
         });
       }
     }
+    
     return slots;
   };
   const isOwnProfile = currentUserId === id;
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (!date) return;
-
+    
     // If date is busy or blocked, open detail dialog to show hours
     if (isBusyDate(date) || isBlockedDate(date)) {
       setDateDetailDialogOpen(true);
       return;
     }
-
+    
     // Only open booking dialog if logged in, not own profile, and date is available
     if (!isOwnProfile) {
       if (!currentUserId) {
         toast({
           title: "Authentication Required",
-          description: "Please log in or create an account to make a booking request."
+          description: "Please log in or create an account to make a booking request.",
         });
         navigate('/login');
         return;
@@ -338,18 +342,21 @@ const ArtistProfile = () => {
     // Overlap if one starts before the other ends and ends after the other starts
     return s1 < e2 && e1 > s2;
   };
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !id) return;
+    
     const endDate = bookingForm.endDate || selectedDate;
     const isSameDay = endDate.toDateString() === selectedDate.toDateString();
-
+    
     // Validate that end time is after start time (only if same day)
     if (bookingForm.startTime && bookingForm.endTime && isSameDay) {
       const [startHour, startMin] = bookingForm.startTime.split(':').map(Number);
       const [endHour, endMin] = bookingForm.endTime.split(':').map(Number);
       const startMinutes = startHour * 60 + startMin;
       const endMinutes = endHour * 60 + endMin;
+      
       if (endMinutes <= startMinutes) {
         toast({
           title: "Invalid Time",
@@ -359,7 +366,7 @@ const ArtistProfile = () => {
         return;
       }
     }
-
+    
     // Check for time slot conflicts on busy dates
     if (bookingForm.startTime && bookingForm.endTime) {
       const event = getEventForDate(selectedDate);
@@ -386,18 +393,12 @@ const ArtistProfile = () => {
         }
       }
     }
+    
     try {
       // Include time interval and end date in the message
-      const startDateStr = selectedDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      const endDateStr = endDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
+      const startDateStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const endDateStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
       let timeInfo = '';
       if (bookingForm.startTime && bookingForm.endTime) {
         if (isSameDay) {
@@ -407,6 +408,7 @@ const ArtistProfile = () => {
         }
       }
       const fullMessage = timeInfo + (bookingForm.message || '');
+      
       const {
         error
       } = await supabase.from('booking_requests').insert({
@@ -580,20 +582,20 @@ const ArtistProfile = () => {
   return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       
-      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4 py-[40px]">
-        <div className="container mx-auto max-w-6xl md:px-0 px-0">
+      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4">
+        <div className="container mx-auto max-w-6xl px-4 md:px-0">
           <Link to="/leaderboard">
             
           </Link>
 
           {/* Header Section - matching dashboard profile layout */}
-          <div className="space-y-6 md:space-y-8 px-0">
+          <div className="space-y-6 md:space-y-8">
             {/* Mobile Header Layout */}
             <div className="flex md:hidden flex-col gap-2 mb-4">
               {/* Row 1: Avatar + Name + Rating */}
               <div className="flex items-start gap-3">
                 {/* Small Avatar - top left */}
-                <div className="flex-shrink-0 px-[5px]">
+                <div className="flex-shrink-0">
                   <div className={`p-0.5 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                     <Avatar className="w-14 h-14 border-2 border-background shadow-md">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
@@ -623,9 +625,11 @@ const ArtistProfile = () => {
               <div className="flex items-center gap-2 pl-[68px]">
                 {/* Category and Location */}
                 <div className="flex-1 flex items-center gap-2 min-w-0">
-                  {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
+                  {artist.specialization && (
+                    <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
                       {artist.specialization}
-                    </Badge>}
+                    </Badge>
+                  )}
                   <div className="flex items-center gap-1 text-muted-foreground min-w-0">
                     <MapPin className="h-3 w-3 flex-shrink-0" />
                     <span className="text-xs truncate">{artist.county}</span>
@@ -633,13 +637,25 @@ const ArtistProfile = () => {
                 </div>
 
                 {/* Contact button */}
-                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" size="sm">
+                {currentUserId && currentUserId !== artist.id ? (
+                  <Button 
+                    onClick={() => navigate(`/messages?artistId=${artist.id}`)} 
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0"
+                    size="sm"
+                  >
                     <MessageCircle className="mr-1 h-3 w-3" />
                     Contact
-                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" onClick={() => navigate('/login')} size="sm">
+                  </Button>
+                ) : !currentUserId ? (
+                  <Button 
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" 
+                    onClick={() => navigate('/login')}
+                    size="sm"
+                  >
                     <MessageCircle className="mr-1 h-3 w-3" />
                     Contact
-                  </Button> : null}
+                  </Button>
+                ) : null}
               </div>
             </div>
 
@@ -670,15 +686,19 @@ const ArtistProfile = () => {
                     
                     {/* Badges */}
                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
+                      {artist.specialization && (
+                        <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
-                        </Badge>}
+                        </Badge>
+                      )}
                       
                       {/* Display instrument for instrumentalists */}
-                      {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                      {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
                           <Music2 className="h-4 w-4 mr-1" />
                           {artist.instruments.split(',')[0].trim()}
-                        </Badge>}
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Location */}
@@ -689,13 +709,17 @@ const ArtistProfile = () => {
 
                     {/* Contact button */}
                     <div className="flex mt-3">
-                      {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      {currentUserId && currentUserId !== artist.id ? (
+                        <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
-                        </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
+                        </Button>
+                      ) : !currentUserId ? (
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
-                        </Button> : null}
+                        </Button>
+                      ) : null}
                     </div>
                   </div>
 
@@ -803,7 +827,8 @@ const ArtistProfile = () => {
                   <div>
                     <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Contact Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-                      {currentUserId ? <>
+                      {currentUserId ? (
+                        <>
                           <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                             <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             <div className="text-left">
@@ -822,14 +847,19 @@ const ArtistProfile = () => {
                               </a>
                             </div>
                           </div>
-                        </> : <>
-                          <button onClick={() => {
-                      toast({
-                        title: "Login Required",
-                        description: "Please log in or create an account to view contact information."
-                      });
-                      navigate('/login');
-                    }} className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left">
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              toast({
+                                title: "Login Required",
+                                description: "Please log in or create an account to view contact information.",
+                              });
+                              navigate('/login');
+                            }}
+                            className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left"
+                          >
                             <Mail className="h-5 w-5 text-accent" />
                             <div className="flex-1">
                               <p className="text-sm text-muted-foreground">Email</p>
@@ -837,13 +867,16 @@ const ArtistProfile = () => {
                             </div>
                             <Lock className="h-4 w-4 text-muted-foreground" />
                           </button>
-                          <button onClick={() => {
-                      toast({
-                        title: "Login Required",
-                        description: "Please log in or create an account to view contact information."
-                      });
-                      navigate('/login');
-                    }} className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left">
+                          <button
+                            onClick={() => {
+                              toast({
+                                title: "Login Required",
+                                description: "Please log in or create an account to view contact information.",
+                              });
+                              navigate('/login');
+                            }}
+                            className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left"
+                          >
                             <Phone className="h-5 w-5 text-accent" />
                             <div className="flex-1">
                               <p className="text-sm text-muted-foreground">Phone</p>
@@ -851,7 +884,8 @@ const ArtistProfile = () => {
                             </div>
                             <Lock className="h-4 w-4 text-muted-foreground" />
                           </button>
-                        </>}
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -859,7 +893,7 @@ const ArtistProfile = () => {
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left px-[5px]">Follow on Social Media</h3>
+                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Follow on Social Media</h3>
                     <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5 md:gap-3">
                       {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Facebook className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -883,7 +917,7 @@ const ArtistProfile = () => {
                           </svg>
                           <span className="text-xs md:text-sm">Spotify</span>
                         </a>}
-                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground py-0 px-[5px]">No social media links available.</p>}
+                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
                     </div>
                   </div>
 
@@ -892,7 +926,7 @@ const ArtistProfile = () => {
                   {/* Reviews Section */}
                   <div>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2 text-left px-[5px]">
+                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2 text-left">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
@@ -955,9 +989,9 @@ const ArtistProfile = () => {
                       Posts
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-none">
+                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
-                            <div className="p-4 pb-0 px-[5px] py-[5px]">
+                            <div className="p-4 pb-0">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -1020,10 +1054,12 @@ const ArtistProfile = () => {
                               </div>}
 
                             {/* Likes count */}
-                            {post.likes > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-b border-border/40">
+                            {post.likes > 0 && (
+                              <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-b border-border/40">
                                 <Heart className="h-4 w-4" />
                                 <span>{post.likes}</span>
-                              </div>}
+                              </div>
+                            )}
 
                             {/* Actions */}
                             <div className="px-2 py-1">
@@ -1055,9 +1091,9 @@ const ArtistProfile = () => {
                       Announcements
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-none">
+                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                             {/* Header */}
-                            <div className="p-4 pb-0 px-[5px] py-[5px]">
+                            <div className="p-4 pb-0">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -1265,11 +1301,11 @@ const ArtistProfile = () => {
                         <h4 className="font-semibold text-foreground mb-2 text-sm">Selected Date</h4>
                         <p className="text-xs text-muted-foreground mb-2">
                           {selectedDate.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
                         </p>
                         <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
                           {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
@@ -1291,41 +1327,53 @@ const ArtistProfile = () => {
                     </DialogTitle>
                     <DialogDescription>
                       {selectedDate?.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
                     </DialogDescription>
                   </DialogHeader>
                   {selectedDate && (() => {
-                const events = getEventsForDate(selectedDate);
-                const isBusy = isBusyDate(selectedDate);
-                const isBlocked = isBlockedDate(selectedDate);
-
-                // Collect all time slots from all events on this date
-                const allTimeSlots = events.flatMap(event => extractAllTimeSlotsFromNotes(event.notes));
-                const hasTimeSlots = allTimeSlots.length > 0;
-                return <div className="space-y-4 mt-2">
+                    const events = getEventsForDate(selectedDate);
+                    const isBusy = isBusyDate(selectedDate);
+                    const isBlocked = isBlockedDate(selectedDate);
+                    
+                    // Collect all time slots from all events on this date
+                    const allTimeSlots = events.flatMap(event => 
+                      extractAllTimeSlotsFromNotes(event.notes)
+                    );
+                    const hasTimeSlots = allTimeSlots.length > 0;
+                    
+                    return (
+                      <div className="space-y-4 mt-2">
                         {/* Busy Time Slots */}
-                        {isBusy && hasTimeSlots && <div className="space-y-3">
+                        {isBusy && hasTimeSlots && (
+                          <div className="space-y-3">
                             <h4 className="font-semibold text-foreground flex items-center gap-2">
                               <Clock className="h-4 w-4 text-destructive" />
                               Booked Time Slots ({allTimeSlots.length})
                             </h4>
                             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                              {allTimeSlots.map((slot, index) => <div key={index} className="py-2 px-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                              {allTimeSlots.map((slot, index) => (
+                                <div 
+                                  key={index} 
+                                  className="py-2 px-3 rounded-lg bg-destructive/10 border border-destructive/20"
+                                >
                                   <div className="flex items-center justify-center gap-3">
                                     <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
                                     <span className="text-muted-foreground">—</span>
                                     <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
                                   </div>
-                                </div>)}
+                                </div>
+                              ))}
                             </div>
-                          </div>}
+                          </div>
+                        )}
 
                         {/* No specific time - booked all day */}
-                        {isBusy && !hasTimeSlots && <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
+                        {isBusy && !hasTimeSlots && (
+                          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
                             <Clock className="h-6 w-6 text-destructive mx-auto mb-2" />
                             <p className="text-sm font-medium text-foreground">
                               Booked for the entire day
@@ -1333,38 +1381,47 @@ const ArtistProfile = () => {
                             <p className="text-xs text-muted-foreground mt-1">
                               00:00 — 23:59
                             </p>
-                          </div>}
+                          </div>
+                        )}
 
                         {/* Unavailable day */}
-                        {isBlocked && <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                        {isBlocked && (
+                          <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
                             <p className="text-sm text-muted-foreground">
                               The artist has marked this day as unavailable.
                             </p>
-                          </div>}
+                          </div>
+                        )}
 
                         {/* Request Different Time Button - only for busy dates with specific time slots */}
-                        {isBusy && hasTimeSlots && !isOwnProfile && <div className="pt-2">
+                        {isBusy && hasTimeSlots && !isOwnProfile && (
+                          <div className="pt-2">
                             <p className="text-xs text-muted-foreground text-center mb-3">
                               You can still request a different time slot on this day.
                             </p>
-                            <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
-                      if (!currentUserId) {
-                        toast({
-                          title: "Authentication Required",
-                          description: "Please log in or create an account to make a booking request."
-                        });
-                        navigate('/login');
-                        return;
-                      }
-                      setDateDetailDialogOpen(false);
-                      setBookingDialogOpen(true);
-                    }}>
+                            <Button 
+                              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                              onClick={() => {
+                                if (!currentUserId) {
+                                  toast({
+                                    title: "Authentication Required",
+                                    description: "Please log in or create an account to make a booking request.",
+                                  });
+                                  navigate('/login');
+                                  return;
+                                }
+                                setDateDetailDialogOpen(false);
+                                setBookingDialogOpen(true);
+                              }}
+                            >
                               <CalendarIcon className="h-4 w-4 mr-2" />
                               Request Different Time
                             </Button>
-                          </div>}
-                      </div>;
-              })()}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </DialogContent>
               </Dialog>
 
@@ -1454,16 +1511,18 @@ const ArtistProfile = () => {
                       <Label>Start Time</Label>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 text-sm text-muted-foreground">
-                          {selectedDate?.toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      })}
+                          {selectedDate?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                         <div className="flex-1">
-                          <TimeSelector id="startTime" value={bookingForm.startTime} onChange={value => setBookingForm({
-                        ...bookingForm,
-                        startTime: value
-                      })} placeholder="Start time" />
+                          <TimeSelector
+                            id="startTime"
+                            value={bookingForm.startTime}
+                            onChange={(value) => setBookingForm({
+                              ...bookingForm,
+                              startTime: value
+                            })}
+                            placeholder="Start time"
+                          />
                         </div>
                       </div>
                     </div>
@@ -1472,29 +1531,40 @@ const ArtistProfile = () => {
                       <div className="flex items-center gap-2">
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+                            <Button
+                              variant="outline"
+                              className="flex-1 justify-start text-left font-normal"
+                            >
                               <CalendarIcon className="mr-2 h-4 w-4" />
-                              {bookingForm.endDate ? bookingForm.endDate.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          }) : selectedDate?.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                              {bookingForm.endDate 
+                                ? bookingForm.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                : selectedDate?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={bookingForm.endDate || selectedDate} onSelect={date => setBookingForm({
-                          ...bookingForm,
-                          endDate: date || null
-                        })} disabled={date => date < (selectedDate || new Date())} initialFocus className="p-3 pointer-events-auto" />
+                            <Calendar
+                              mode="single"
+                              selected={bookingForm.endDate || selectedDate}
+                              onSelect={(date) => setBookingForm({
+                                ...bookingForm,
+                                endDate: date || null
+                              })}
+                              disabled={(date) => date < (selectedDate || new Date())}
+                              initialFocus
+                              className="p-3 pointer-events-auto"
+                            />
                           </PopoverContent>
                         </Popover>
                         <div className="flex-1">
-                          <TimeSelector id="endTime" value={bookingForm.endTime} onChange={value => setBookingForm({
-                        ...bookingForm,
-                        endTime: value
-                      })} placeholder="End time" />
+                          <TimeSelector
+                            id="endTime"
+                            value={bookingForm.endTime}
+                            onChange={(value) => setBookingForm({
+                              ...bookingForm,
+                              endTime: value
+                            })}
+                            placeholder="End time"
+                          />
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
@@ -1535,7 +1605,7 @@ const ArtistProfile = () => {
       </Dialog>
 
       {/* Delete Review Confirmation Dialog */}
-      <AlertDialog open={!!deleteReviewId} onOpenChange={open => !open && setDeleteReviewId(null)}>
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Review</AlertDialogTitle>
@@ -1545,7 +1615,10 @@ const ArtistProfile = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction 
+              onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
