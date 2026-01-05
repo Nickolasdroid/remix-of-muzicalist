@@ -580,20 +580,20 @@ const ArtistProfile = () => {
   return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       
-      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4">
-        <div className="container mx-auto max-w-6xl md:px-0 px-[15px]">
+      <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4 py-[40px]">
+        <div className="container mx-auto max-w-6xl md:px-0 px-0">
           <Link to="/leaderboard">
             
           </Link>
 
           {/* Header Section - matching dashboard profile layout */}
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-6 md:space-y-8 px-0">
             {/* Mobile Header Layout */}
             <div className="flex md:hidden flex-col gap-2 mb-4">
               {/* Row 1: Avatar + Name + Rating */}
               <div className="flex items-start gap-3">
                 {/* Small Avatar - top left */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 px-[5px]">
                   <div className={`p-0.5 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                     <Avatar className="w-14 h-14 border-2 border-background shadow-md">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
