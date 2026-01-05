@@ -166,7 +166,7 @@ const Announcements = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mt-3 whitespace-pre-wrap mx-[4px] my-[14px] text-justify">{announcement.description}</p>
+                  <p className="text-foreground mt-3 whitespace-pre-wrap mx-[4px] my-[14px] text-left">{announcement.description}</p>
                 </div>
                 
                 {/* Media for premium announcements - Natural aspect ratio for landscape images */}
