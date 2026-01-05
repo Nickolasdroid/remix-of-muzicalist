@@ -98,7 +98,7 @@ const Announcements = () => {
           </div>
         </div>
 
-        <div className="max-w-[500px] mx-auto space-y-1 px-0">
+        <div className="max-w-[500px] mx-auto space-y-1">
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const filteredAnnouncements = announcements.filter(a => {
             if (filter === 'all') return true;
@@ -108,8 +108,8 @@ const Announcements = () => {
           });
           return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header - matching Feed layout */}
-                <div className="p-4 pb-0 px-0 py-[5px]">
-                  <div className="flex items-start justify-between px-[5px]">
+                <div className="p-4 pb-0 px-0 py-[15px]">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Link to={`/artist/${announcement.profile_id}`}>
                         <div className={`p-0.5 rounded-full ${announcement.profiles?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -166,7 +166,7 @@ const Announcements = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                  <p className="text-foreground mt-3 whitespace-pre-wrap my-0 mx-[4px]">{announcement.description}</p>
                 </div>
                 
                 {/* Media for premium announcements - Natural aspect ratio for landscape images */}
