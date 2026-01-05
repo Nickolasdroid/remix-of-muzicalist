@@ -106,7 +106,7 @@ const Announcements = () => {
             if (filter === 'ads') return a.is_premium === false;
             return true;
           });
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header - matching Feed layout */}
                 <div className="p-4 pb-0 px-0 py-[5px]">
                   <div className="flex items-start justify-between px-[5px]">
