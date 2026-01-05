@@ -108,7 +108,7 @@ const Announcements = () => {
           });
           return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header - matching Feed layout */}
-                <div className="p-4 pb-0">
+                <div className="p-4 pb-0 px-0 py-[5px]">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Link to={`/artist/${announcement.profile_id}`}>
