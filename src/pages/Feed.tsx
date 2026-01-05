@@ -212,7 +212,7 @@ const Feed = () => {
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-0 sm:px-4 pt-16 md:pt-[68px] pb-20 md:pb-4">
+      <div className="container mx-auto sm:px-4 pt-16 md:pt-[68px] pb-20 md:pb-4 px-0">
         <div className="max-w-[500px] mx-auto space-y-1">
           
           {feedItems.length === 0 ? <Card className="p-8 text-center">
