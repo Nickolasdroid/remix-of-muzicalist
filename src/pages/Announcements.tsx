@@ -85,7 +85,7 @@ const Announcements = () => {
       <div className="container mx-auto pt-16 md:pt-[68px] pb-24 md:pb-20 px-0">
         {/* Filter buttons */}
         <div className="max-w-[500px] mx-auto mb-1">
-          <div className="flex gap-2">
+          <div className="flex gap-2 rounded-none border-none">
             <Button variant={filter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('all')} className={filter === 'all' ? 'bg-accent text-accent-foreground' : ''}>
               All
             </Button>
@@ -106,9 +106,9 @@ const Announcements = () => {
             if (filter === 'ads') return a.is_premium === false;
             return true;
           });
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
                 {/* Header - matching Feed layout */}
-                <div className="p-4 pb-0 px-0 py-[15px]">
+                <div className="p-4 pb-0 px-0 py-[15px] rounded-none">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Link to={`/artist/${announcement.profile_id}`}>
