@@ -859,7 +859,7 @@ const ArtistProfile = () => {
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Follow on Social Media</h3>
+                    <h3 className="text-base md:text-xl font-display font-bold mb-3 md:mb-4 text-left px-[5px]">Follow on Social Media</h3>
                     <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1.5 md:gap-3">
                       {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-start gap-2 px-2.5 md:px-4 py-2 md:py-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors">
                           <Facebook className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -883,7 +883,7 @@ const ArtistProfile = () => {
                           </svg>
                           <span className="text-xs md:text-sm">Spotify</span>
                         </a>}
-                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
+                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground py-0 px-[5px]">No social media links available.</p>}
                     </div>
                   </div>
 
@@ -892,7 +892,7 @@ const ArtistProfile = () => {
                   {/* Reviews Section */}
                   <div>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2 text-left">
+                      <h3 className="text-base md:text-lg font-display font-bold flex items-center gap-2 text-left px-[5px]">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
