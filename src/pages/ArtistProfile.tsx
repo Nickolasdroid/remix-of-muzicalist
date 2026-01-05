@@ -1243,10 +1243,10 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                     }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                       </div>
                       {/* Legend and selected date */}
-                      <div className="min-w-0 space-y-3 md:space-y-4">
+                      <div className="min-w-0 w-full lg:w-auto grid grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
                         <div className="p-3 md:p-4 rounded-lg bg-secondary/50">
                           <h4 className="font-semibold text-foreground mb-2 md:mb-3 text-sm md:text-base">Legend</h4>
-                          <div className="flex flex-wrap md:flex-col gap-3 md:gap-3">
+                          <div className="flex flex-col gap-2 md:gap-3">
                             <div className="flex items-center gap-2">
                               <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
                               <span className="text-xs md:text-sm text-muted-foreground">Booked</span>
@@ -1261,20 +1261,27 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                             </div>
                           </div>
                         </div>
-                        {selectedDate && <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
+                        {selectedDate ? (
+                          <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
                             <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
                             <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
                               {selectedDate.toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
                             </p>
                             <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
                               {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                             </Badge>
-                          </div>}
+                          </div>
+                        ) : (
+                          <div className="p-3 md:p-4 rounded-lg border border-border bg-card opacity-50">
+                            <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
+                            <p className="text-xs md:text-sm text-muted-foreground">Select a date to view details</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
