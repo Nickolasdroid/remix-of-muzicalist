@@ -1232,6 +1232,26 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                       Availability Calendar
                     </h2>
                     <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr] gap-4 items-start">
+                      {/* Legend - above calendar on mobile */}
+                      <div className="w-full lg:hidden">
+                        <div className="p-3 rounded-lg bg-secondary/50">
+                          <h4 className="font-semibold text-foreground mb-2 text-sm">Legend</h4>
+                          <div className="flex justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded bg-destructive/70"></div>
+                              <span className="text-xs text-muted-foreground">Booked</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded bg-muted/80"></div>
+                              <span className="text-xs text-muted-foreground">Unavailable</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded bg-accent"></div>
+                              <span className="text-xs text-muted-foreground">Available</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       {/* Calendar */}
                       <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
                         <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
@@ -1242,22 +1262,22 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                       blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                     }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                       </div>
-                      {/* Legend and selected date */}
-                      <div className="min-w-0 space-y-3 md:space-y-4">
+                      {/* Legend and selected date - desktop only */}
+                      <div className="hidden lg:block min-w-0 space-y-3 md:space-y-4">
                         <div className="p-3 md:p-4 rounded-lg bg-secondary/50">
                           <h4 className="font-semibold text-foreground mb-2 md:mb-3 text-sm md:text-base">Legend</h4>
-                          <div className="flex flex-wrap md:flex-col gap-3 md:gap-3">
+                          <div className="flex flex-col gap-3">
                             <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
-                              <span className="text-xs md:text-sm text-muted-foreground">Booked</span>
+                              <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                              <span className="text-sm text-muted-foreground">Booked</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
-                              <span className="text-xs md:text-sm text-muted-foreground">Unavailable</span>
+                              <div className="w-6 h-6 rounded bg-muted/80"></div>
+                              <span className="text-sm text-muted-foreground">Unavailable</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-accent"></div>
-                              <span className="text-xs md:text-sm text-muted-foreground">Available</span>
+                              <div className="w-6 h-6 rounded bg-accent"></div>
+                              <span className="text-sm text-muted-foreground">Available</span>
                             </div>
                           </div>
                         </div>
@@ -1276,6 +1296,21 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                             </Badge>
                           </div>}
                       </div>
+                      {/* Selected date - mobile only */}
+                      {selectedDate && <div className="w-full lg:hidden p-3 rounded-lg border border-border bg-card">
+                        <h4 className="font-semibold text-foreground mb-2 text-sm">Selected Date</h4>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {selectedDate.toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                        <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
+                          {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
+                        </Badge>
+                      </div>}
                     </div>
                   </div>
                 </TabsContent>
