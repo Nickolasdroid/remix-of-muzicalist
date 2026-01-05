@@ -2335,8 +2335,8 @@ const Dashboard = () => {
                                             </SelectTrigger>
                                             <SelectContent>
                                               {isBooked && !userChangedStatus && (
-                                                <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
-                                                  Busy / Booked
+                                              <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
+                                                  Booked
                                                 </SelectItem>
                                               )}
                                               <SelectItem value="available">Available</SelectItem>
@@ -2417,7 +2417,7 @@ const Dashboard = () => {
                               <div className="flex flex-wrap lg:flex-col gap-3 lg:gap-3">
                                 <div className="flex items-center gap-2">
                                   <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
-                                  <span className="text-xs md:text-sm text-muted-foreground">Busy / Booked</span>
+                                  <span className="text-xs md:text-sm text-muted-foreground">Booked</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
