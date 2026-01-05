@@ -2254,6 +2254,26 @@ const Dashboard = () => {
                             My Calendar
                           </h2>
                           <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                            {/* Legend - above calendar on mobile */}
+                            <div className="w-full lg:hidden">
+                              <div className="p-3 rounded-lg bg-secondary/50">
+                                <h4 className="font-semibold text-foreground mb-2 text-sm">Legend</h4>
+                                <div className="flex justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-destructive/70"></div>
+                                    <span className="text-xs text-muted-foreground">Booked</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-muted/80"></div>
+                                    <span className="text-xs text-muted-foreground">Unavailable</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-accent"></div>
+                                    <span className="text-xs text-muted-foreground">Available</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                             {/* Calendar */}
                             <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
@@ -2411,21 +2431,21 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                            {/* Legend */}
-                            <div className="p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-full lg:w-48">
+                            {/* Legend - desktop only */}
+                            <div className="hidden lg:block p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-48">
                               <h4 className="font-semibold text-foreground mb-2 md:mb-3">Legend</h4>
-                              <div className="flex flex-wrap lg:flex-col gap-3 lg:gap-3">
+                              <div className="flex flex-col gap-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
-                                  <span className="text-xs md:text-sm text-muted-foreground">Booked</span>
+                                  <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                                  <span className="text-sm text-muted-foreground">Booked</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
-                                  <span className="text-xs md:text-sm text-muted-foreground">Unavailable</span>
+                                  <div className="w-6 h-6 rounded bg-muted/80"></div>
+                                  <span className="text-sm text-muted-foreground">Unavailable</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-accent"></div>
-                                  <span className="text-xs md:text-sm text-muted-foreground">Available</span>
+                                  <div className="w-6 h-6 rounded bg-accent"></div>
+                                  <span className="text-sm text-muted-foreground">Available</span>
                                 </div>
                               </div>
                             </div>
