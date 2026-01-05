@@ -1249,7 +1249,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                           <div className="flex flex-wrap md:flex-col gap-3 md:gap-3">
                             <div className="flex items-center gap-2">
                               <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-destructive/70"></div>
-                              <span className="text-xs md:text-sm text-muted-foreground">Busy / Booked</span>
+                              <span className="text-xs md:text-sm text-muted-foreground">Booked</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-muted/80"></div>
@@ -1272,7 +1272,7 @@ const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
                         })}
                             </p>
                             <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
-                              {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Busy" : "Available"}
+                              {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                             </Badge>
                           </div>}
                       </div>
