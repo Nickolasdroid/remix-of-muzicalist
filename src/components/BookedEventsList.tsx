@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Clock, User, Mail, Phone, Calendar, Edit2, Save, Trash2, FileText } from "lucide-react";
 
-interface BookedEvent {
+export interface BookedEvent {
   timeSlot?: string;
   bookedBy: string;
   eventType: string;
@@ -25,7 +25,7 @@ interface BookedEventsListProps {
   isSaving: boolean;
 }
 
-const parseBookedEvents = (notes: string): BookedEvent[] => {
+export const parseBookedEvents = (notes: string): BookedEvent[] => {
   if (!notes || !notes.trim()) return [];
   
   const entries = notes.split(/\n\n---\n\n/);

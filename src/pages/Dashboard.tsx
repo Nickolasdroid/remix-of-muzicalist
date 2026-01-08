@@ -18,7 +18,7 @@ import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIc
 import InstrumentSelector from "@/components/InstrumentSelector";
 import EditableField from "@/components/EditableField";
 import { Calendar } from "@/components/ui/calendar";
-import BookedEventsList from "@/components/BookedEventsList";
+import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -869,6 +869,81 @@ const Dashboard = () => {
     return bookingRequests.find(req => req.event_date === dateStr && req.status === 'accepted');
   };
 
+  const getBookedEventKey = (event: BookedEvent) => {
+    return [
+      event.timeSlot?.trim() ?? "",
+      event.bookedBy?.trim() ?? "",
+      event.contact?.trim() ?? "",
+      event.phone?.trim() ?? "",
+      event.eventType?.trim() ?? "",
+    ].join("|");
+  };
+
+  const extractTimeFromTimeSlotText = (timeSlot?: string) => {
+    if (!timeSlot) return null;
+    const match = timeSlot.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+    if (!match) return null;
+    return { startTime: match[1], endTime: match[2] };
+  };
+
+  const extractTimesFromRequestMessage = (message?: string | null) => {
+    if (!message) return null;
+    const match = message.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+    if (!match) return null;
+    return { startTime: match[1], endTime: match[2] };
+  };
+
+  const doesRequestCoverDate = (request: any, dateStr: string) => {
+    const start = request.event_date as string | undefined;
+    const end = (request.event_end_date as string | null | undefined) || start;
+    if (!start || !end) return false;
+    // ISO date strings are safe for lexicographic comparison
+    return dateStr >= start && dateStr <= end;
+  };
+
+  const rejectAcceptedBookingRequestsForBookedEvents = async (dateStr: string, removedEvents: BookedEvent[]) => {
+    if (!user || removedEvents.length === 0) return 0;
+
+    const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
+
+    const acceptedCandidates = bookingRequests.filter(req => {
+      return req.profile_id === user.id && req.status === 'accepted' && doesRequestCoverDate(req, dateStr);
+    });
+
+    const idsToReject = new Set<string>();
+
+    for (const removedEvent of removedEvents) {
+      const wantedEmail = normalize(removedEvent.contact);
+      const wantedName = (removedEvent.bookedBy ?? "").trim();
+      const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
+
+      const match = acceptedCandidates.find(req => {
+        if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
+        if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
+
+        if (wantedTimes) {
+          const reqTimes = extractTimesFromRequestMessage(req.message);
+          if (!reqTimes) return false;
+          return reqTimes.startTime === wantedTimes.startTime && reqTimes.endTime === wantedTimes.endTime;
+        }
+
+        return true;
+      });
+
+      if (match?.id) idsToReject.add(match.id);
+    }
+
+    if (idsToReject.size === 0) return 0;
+
+    const { error } = await supabase
+      .from('booking_requests')
+      .update({ status: 'rejected' })
+      .in('id', Array.from(idsToReject));
+
+    if (error) throw error;
+
+    return idsToReject.size;
+  };
   const [showBookingWarningDialog, setShowBookingWarningDialog] = useState(false);
   const [showDeleteWarningDialog, setShowDeleteWarningDialog] = useState(false);
   const [pendingCalendarSave, setPendingCalendarSave] = useState<{ dateStr: string; status: string; notes: string } | null>(null);
@@ -2381,17 +2456,35 @@ const Dashboard = () => {
                                               setIsSaving(true);
                                               try {
                                                 const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+                                                const oldNotes = currentEvent.notes ?? "";
+                                                const oldEvents = parseBookedEvents(oldNotes);
+                                                const newEvents = parseBookedEvents(newNotes);
+                                                const newKeys = new Set(newEvents.map(getBookedEventKey));
+                                                const removedEvents = oldEvents.filter(e => !newKeys.has(getBookedEventKey(e)));
+
+                                                // First, update the calendar notes
                                                 const { error } = await supabase
                                                   .from('calendar_events')
                                                   .update({ notes: newNotes })
                                                   .eq('profile_id', user!.id)
                                                   .eq('event_date', dateStr);
                                                 if (error) throw error;
+
+                                                // If a booked time slot was deleted, mark the matching accepted request as rejected
+                                                const rejectedCount = await rejectAcceptedBookingRequestsForBookedEvents(dateStr, removedEvents);
+
                                                 await loadCalendarEvents();
+                                                if (rejectedCount > 0) {
+                                                  await loadBookingRequests();
+                                                }
+
                                                 setEventNotes(newNotes);
                                                 toast({
                                                   title: "Success",
-                                                  description: "Event details updated."
+                                                  description: rejectedCount > 0
+                                                    ? "Event updated and the related request was marked as rejected."
+                                                    : "Event details updated."
                                                 });
                                               } catch (error: any) {
                                                 toast({
