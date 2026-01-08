@@ -41,6 +41,7 @@ const MUSIC_GENRES = [
   "Muzică Populară",
   "Muzică de Petrecere",
   "Muzică Ușoară",
+  "Tradițional",
   "Etno",
   "Trap",
   "Disco",
