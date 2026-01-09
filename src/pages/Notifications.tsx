@@ -107,20 +107,9 @@ const Notifications = () => {
     }
   };
   const handleNotificationClick = async (notification: Notification) => {
+    // Only mark as read on tap (no navigation)
+    if (notification.read_at) return;
     await markAsRead(notification.id);
-    
-    if (notification.reference_type === 'review' || notification.reference_type === 'profile') {
-      navigate('/dashboard?tab=details');
-    } else if (notification.reference_type === 'post') {
-      navigate('/feed');
-    } else if (notification.reference_type === 'booking_request') {
-      navigate('/dashboard?tab=calendar');
-    } else if (notification.reference_type === 'message') {
-      navigate('/messages');
-    } else {
-      // Default navigation for other notification types
-      navigate('/dashboard');
-    }
   };
   const unreadCount = notifications.filter(n => !n.read_at).length;
   return <div className="min-h-screen bg-background">
