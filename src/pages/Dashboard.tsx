@@ -118,7 +118,11 @@ const Dashboard = () => {
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
   const [videoUrl, setVideoUrl] = useState("");
-  const [deleteGalleryItem, setDeleteGalleryItem] = useState<{ id: string; url: string; type: string } | null>(null);
+  const [deleteGalleryItem, setDeleteGalleryItem] = useState<{
+    id: string;
+    url: string;
+    type: string;
+  } | null>(null);
 
   // Gallery limits for standard subscription
   const STANDARD_IMAGE_LIMIT = 5;
@@ -145,13 +149,7 @@ const Dashboard = () => {
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
-  const romanianCounties = [
-    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", 
-    "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", 
-    "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", 
-    "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", 
-    "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
-  ];
+  const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
 
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
@@ -197,15 +195,18 @@ const Dashboard = () => {
     });
     if (data) {
       // Fetch likes count for each post
-      const postsWithLikes = await Promise.all(
-        data.map(async (post) => {
-          const { count } = await supabase
-            .from('post_likes')
-            .select('id', { count: 'exact', head: true })
-            .eq('post_id', post.id);
-          return { ...post, likes: count || 0 };
-        })
-      );
+      const postsWithLikes = await Promise.all(data.map(async post => {
+        const {
+          count
+        } = await supabase.from('post_likes').select('id', {
+          count: 'exact',
+          head: true
+        }).eq('post_id', post.id);
+        return {
+          ...post,
+          likes: count || 0
+        };
+      }));
       setPosts(postsWithLikes);
 
       // Calculate posts created this month
@@ -323,7 +324,9 @@ const Dashboard = () => {
       setUser(null);
       setProfile(null);
       // Sign out from Supabase (ignore errors if session already invalid)
-      await supabase.auth.signOut({ scope: 'local' });
+      await supabase.auth.signOut({
+        scope: 'local'
+      });
     } catch (error) {
       // Ignore errors - session might already be invalid
       console.log('Logout completed');
@@ -868,107 +871,96 @@ const Dashboard = () => {
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     return bookingRequests.find(req => req.event_date === dateStr && req.status === 'accepted');
   };
-
   const getBookedEventKey = (event: BookedEvent) => {
-    return [
-      event.timeSlot?.trim() ?? "",
-      event.bookedBy?.trim() ?? "",
-      event.contact?.trim() ?? "",
-      event.phone?.trim() ?? "",
-      event.eventType?.trim() ?? "",
-    ].join("|");
+    return [event.timeSlot?.trim() ?? "", event.bookedBy?.trim() ?? "", event.contact?.trim() ?? "", event.phone?.trim() ?? "", event.eventType?.trim() ?? ""].join("|");
   };
-
   const extractTimeFromTimeSlotText = (timeSlot?: string) => {
     if (!timeSlot) return null;
     const match = timeSlot.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
     if (!match) return null;
-    return { startTime: match[1], endTime: match[2] };
+    return {
+      startTime: match[1],
+      endTime: match[2]
+    };
   };
-
   const extractTimesFromRequestMessage = (message?: string | null) => {
     if (!message) return null;
     const match = message.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
     if (!match) return null;
-    return { startTime: match[1], endTime: match[2] };
+    return {
+      startTime: match[1],
+      endTime: match[2]
+    };
   };
-
   const doesRequestCoverDate = (request: any, dateStr: string) => {
     const start = request.event_date as string | undefined;
-    const end = (request.event_end_date as string | null | undefined) || start;
+    const end = request.event_end_date as string | null | undefined || start;
     if (!start || !end) return false;
     // ISO date strings are safe for lexicographic comparison
     return dateStr >= start && dateStr <= end;
   };
-
   const rejectAcceptedBookingRequestsForBookedEvents = async (dateStr: string, removedEvents: BookedEvent[]) => {
     if (!user || removedEvents.length === 0) return 0;
-
     const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
-
     const acceptedCandidates = bookingRequests.filter(req => {
       return req.profile_id === user.id && req.status === 'accepted' && doesRequestCoverDate(req, dateStr);
     });
-
     const idsToReject = new Set<string>();
-
     for (const removedEvent of removedEvents) {
       const wantedEmail = normalize(removedEvent.contact);
       const wantedName = (removedEvent.bookedBy ?? "").trim();
       const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
-
       const match = acceptedCandidates.find(req => {
         if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
         if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
-
         if (wantedTimes) {
           const reqTimes = extractTimesFromRequestMessage(req.message);
           if (!reqTimes) return false;
           return reqTimes.startTime === wantedTimes.startTime && reqTimes.endTime === wantedTimes.endTime;
         }
-
         return true;
       });
-
       if (match?.id) idsToReject.add(match.id);
     }
-
     if (idsToReject.size === 0) return 0;
-
-    const { error } = await supabase
-      .from('booking_requests')
-      .update({ status: 'rejected' })
-      .in('id', Array.from(idsToReject));
-
+    const {
+      error
+    } = await supabase.from('booking_requests').update({
+      status: 'rejected'
+    }).in('id', Array.from(idsToReject));
     if (error) throw error;
-
     return idsToReject.size;
   };
   const [showBookingWarningDialog, setShowBookingWarningDialog] = useState(false);
   const [showDeleteWarningDialog, setShowDeleteWarningDialog] = useState(false);
-  const [pendingCalendarSave, setPendingCalendarSave] = useState<{ dateStr: string; status: string; notes: string } | null>(null);
-
+  const [pendingCalendarSave, setPendingCalendarSave] = useState<{
+    dateStr: string;
+    status: string;
+    notes: string;
+  } | null>(null);
   const handleSaveCalendarEvent = async () => {
     if (!user || !selectedDate) return;
-    
+
     // Use local date to avoid timezone issues
     const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-    
+
     // Check if there's an accepted booking for this date
     const existingBooking = getBookingRequestForDate(selectedDate);
     const currentEvent = getEventForDate(selectedDate);
-    
+
     // If there's an accepted booking and we're changing the status, warn the user
     const isBookedStatus = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
     if (existingBooking && isBookedStatus) {
-      setPendingCalendarSave({ dateStr, status: eventStatus, notes: eventNotes });
+      setPendingCalendarSave({
+        dateStr,
+        status: eventStatus,
+        notes: eventNotes
+      });
       setShowBookingWarningDialog(true);
       return;
     }
-    
     await saveCalendarEventDirect(dateStr, eventStatus, eventNotes);
   };
-
   const saveCalendarEventDirect = async (dateStr: string, status: string, notes: string) => {
     if (!user) return;
     setIsSaving(true);
@@ -1000,7 +992,6 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-
   const handleConfirmBookingOverwrite = async () => {
     if (!user || !pendingCalendarSave || !selectedDate) return;
     setIsSaving(true);
@@ -1008,22 +999,21 @@ const Dashboard = () => {
       // Update the accepted booking request to rejected status
       const existingBooking = getBookingRequestForDate(selectedDate);
       if (existingBooking) {
-        const { error: updateError } = await supabase
-          .from('booking_requests')
-          .update({ status: 'rejected' })
-          .eq('id', existingBooking.id);
+        const {
+          error: updateError
+        } = await supabase.from('booking_requests').update({
+          status: 'rejected'
+        }).eq('id', existingBooking.id);
         if (updateError) throw updateError;
       }
-      
+
       // Save the calendar event
       await saveCalendarEventDirect(pendingCalendarSave.dateStr, pendingCalendarSave.status, pendingCalendarSave.notes);
-      
+
       // Reload booking requests
       await loadBookingRequests();
-      
       setShowBookingWarningDialog(false);
       setPendingCalendarSave(null);
-      
       toast({
         title: "Updated",
         description: "Calendar updated and booking request marked as rejected."
@@ -1039,17 +1029,15 @@ const Dashboard = () => {
   };
   const handleDeleteCalendarEvent = async () => {
     if (!user || !selectedDate) return;
-    
+
     // Check if there's an accepted booking for this date
     const existingBooking = getBookingRequestForDate(selectedDate);
     if (existingBooking) {
       setShowDeleteWarningDialog(true);
       return;
     }
-    
     await deleteCalendarEventDirect();
   };
-
   const deleteCalendarEventDirect = async () => {
     if (!user || !selectedDate) return;
     setIsSaving(true);
@@ -1076,7 +1064,6 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-
   const handleConfirmDeleteWithBooking = async () => {
     if (!user || !selectedDate) return;
     setIsSaving(true);
@@ -1084,21 +1071,20 @@ const Dashboard = () => {
       // Update the booking request to rejected
       const existingBooking = getBookingRequestForDate(selectedDate);
       if (existingBooking) {
-        const { error: updateError } = await supabase
-          .from('booking_requests')
-          .update({ status: 'rejected' })
-          .eq('id', existingBooking.id);
+        const {
+          error: updateError
+        } = await supabase.from('booking_requests').update({
+          status: 'rejected'
+        }).eq('id', existingBooking.id);
         if (updateError) throw updateError;
       }
-      
+
       // Delete the calendar event
       await deleteCalendarEventDirect();
-      
+
       // Reload booking requests
       await loadBookingRequests();
-      
       setShowDeleteWarningDialog(false);
-      
       toast({
         title: "Deleted",
         description: "Calendar event deleted and booking request marked as rejected."
@@ -1113,7 +1099,6 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-
   const getEventForDate = (date: Date) => {
     // Use local date to avoid timezone issues
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -1135,13 +1120,11 @@ const Dashboard = () => {
       // Calculate all dates between start and end date - parse as local time
       const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
       const startDate = new Date(startYear, startMonth - 1, startDay);
-      
       let endDate = startDate;
       if (request.event_end_date) {
         const [endYear, endMonth, endDay] = request.event_end_date.split('-').map(Number);
         endDate = new Date(endYear, endMonth - 1, endDay);
       }
-      
       const datesToBook: string[] = [];
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
@@ -1160,9 +1143,7 @@ const Dashboard = () => {
       // Extract additional details from the message (remove the time line)
       let additionalDetails = '';
       if (request.message) {
-        additionalDetails = request.message
-          .replace(/Time:\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}\s*-\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}/i, '')
-          .trim();
+        additionalDetails = request.message.replace(/Time:\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}\s*-\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}/i, '').trim();
       }
 
       // Build the new booking entry text
@@ -1171,34 +1152,29 @@ const Dashboard = () => {
       // Add all dates to the calendar, appending to existing entries if present
       for (const date of datesToBook) {
         // Check if there's an existing calendar event for this date
-        const { data: existingEvent } = await supabase
-          .from('calendar_events')
-          .select('*')
-          .eq('profile_id', user!.id)
-          .eq('event_date', date)
-          .maybeSingle();
-
+        const {
+          data: existingEvent
+        } = await supabase.from('calendar_events').select('*').eq('profile_id', user!.id).eq('event_date', date).maybeSingle();
         let updatedNotes = newBookingEntry;
         if (datesToBook.length > 1) {
           updatedNotes += `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})`;
         }
-
         if (existingEvent && existingEvent.status === 'busy' && existingEvent.notes) {
           // Append to existing notes with a separator
           updatedNotes = existingEvent.notes + '\n\n---\n\n' + updatedNotes;
         }
-
-        const { error: calendarError } = await supabase
-          .from('calendar_events')
-          .upsert({
-            profile_id: user!.id,
-            event_date: date,
-            status: 'busy',
-            notes: updatedNotes
-          }, { onConflict: 'profile_id,event_date' });
+        const {
+          error: calendarError
+        } = await supabase.from('calendar_events').upsert({
+          profile_id: user!.id,
+          event_date: date,
+          status: 'busy',
+          notes: updatedNotes
+        }, {
+          onConflict: 'profile_id,event_date'
+        });
         if (calendarError) throw calendarError;
       }
-
       await loadBookingRequests();
       await loadCalendarEvents();
       toast({
@@ -1220,7 +1196,9 @@ const Dashboard = () => {
     try {
       const {
         error
-      } = await supabase.from('booking_requests').update({ status: 'rejected' }).eq('id', requestId);
+      } = await supabase.from('booking_requests').update({
+        status: 'rejected'
+      }).eq('id', requestId);
       if (error) throw error;
       await loadBookingRequests();
       toast({
@@ -1323,17 +1301,14 @@ const Dashboard = () => {
                       {/* Row 2: Category + Location */}
                       <div className="flex items-center gap-2 pl-[68px]">
                         <div className="flex-1 flex items-center gap-2 min-w-0">
-                          {formData.specialization && (
-                            <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
+                          {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
                               {formData.specialization}
-                            </Badge>
-                          )}
-                          {editingField === 'location' ? (
-                            <div className="flex items-center gap-1">
+                            </Badge>}
+                          {editingField === 'location' ? <div className="flex items-center gap-1">
                               <Select value={formData.county} onValueChange={value => setFormData({
-                                ...formData,
-                                county: value
-                              })}>
+                    ...formData,
+                    county: value
+                  })}>
                                 <SelectTrigger className="h-7 w-[120px] text-xs">
                                   <SelectValue />
                                 </SelectTrigger>
@@ -1347,17 +1322,11 @@ const Dashboard = () => {
                               <Button size="sm" variant="outline" onClick={cancelEditing} className="h-6 w-6 p-0">
                                 <X className="h-3 w-3" />
                               </Button>
-                            </div>
-                          ) : (
-                            <button 
-                              className="flex items-center gap-1 text-muted-foreground min-w-0 hover:text-accent transition-colors" 
-                              onClick={() => startEditing('location')}
-                            >
+                            </div> : <button className="flex items-center gap-1 text-muted-foreground min-w-0 hover:text-accent transition-colors" onClick={() => startEditing('location')}>
                               <MapPin className="h-3 w-3 flex-shrink-0" />
                               <span className="text-xs truncate">{formData.county}</span>
                               <Edit2 className="h-3 w-3 flex-shrink-0" />
-                            </button>
-                          )}
+                            </button>}
                         </div>
                       </div>
                     </div>
@@ -1394,30 +1363,34 @@ const Dashboard = () => {
                               </Badge>
                               
                               {/* Instrument Selector for Instrumentalists */}
-                              {formData.specialization?.toLowerCase() === 'instrumentalist' && (
-                                <InstrumentSelector
-                                  instruments={formData.instruments}
-                                  onInstrumentsChange={(instruments) => {
-                                    setFormData({ ...formData, instruments });
-                                    // Auto-save instruments
-                                    supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
-                                      if (!error) {
-                                        toast({ title: "Saved", description: "Instruments updated!" });
-                                      }
-                                    });
-                                  }}
-                                />
-                              )}
+                              {formData.specialization?.toLowerCase() === 'instrumentalist' && <InstrumentSelector instruments={formData.instruments} onInstrumentsChange={instruments => {
+                      setFormData({
+                        ...formData,
+                        instruments
+                      });
+                      // Auto-save instruments
+                      supabase.from('profiles').update({
+                        instruments
+                      }).eq('id', user?.id).then(({
+                        error
+                      }) => {
+                        if (!error) {
+                          toast({
+                            title: "Saved",
+                            description: "Instruments updated!"
+                          });
+                        }
+                      });
+                    }} />}
                             </div>
 
                             {/* Location row */}
                             <div className="flex flex-wrap items-center gap-3">
-                              {editingField === 'location' ? (
-                                <div className="flex items-center gap-2">
+                              {editingField === 'location' ? <div className="flex items-center gap-2">
                                   <Select value={formData.county} onValueChange={value => setFormData({
-                                    ...formData,
-                                    county: value
-                                  })}>
+                        ...formData,
+                        county: value
+                      })}>
                                     <SelectTrigger className="w-[180px]">
                                       <SelectValue />
                                     </SelectTrigger>
@@ -1431,16 +1404,13 @@ const Dashboard = () => {
                                   <Button size="sm" variant="outline" onClick={cancelEditing}>
                                     <X className="h-3 w-3" />
                                   </Button>
-                                </div>
-                              ) : (
-                                <div className="group flex items-center gap-2 text-muted-foreground">
+                                </div> : <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
                                   <span className="text-base">{formData.county}{formData.country ? `, ${formData.country}` : ''}</span>
                                   <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
                                     <Edit2 className="h-3 w-3" />
                                   </Button>
-                                </div>
-                              )}
+                                </div>}
                             </div>
                           </div>
 
@@ -1489,16 +1459,9 @@ const Dashboard = () => {
                               <User className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                               About Me
                             </h2>
-                            {editingField !== 'bio' && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                onClick={() => startEditing('bio')}
-                              >
+                            {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                              </Button>}
                           </div>
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={e => {
@@ -1542,16 +1505,9 @@ const Dashboard = () => {
                                 <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Music Genres
                               </h3>
-                              {editingField !== 'genres' && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                  onClick={() => startEditing('genres')}
-                                >
+                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
-                                </Button>
-                              )}
+                                </Button>}
                             </div>
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
@@ -1652,16 +1608,9 @@ const Dashboard = () => {
                                 <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Experience
                               </h3>
-                              {editingField !== 'experience' && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                  onClick={() => startEditing('experience')}
-                                >
+                              {editingField !== 'experience' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('experience')}>
                                   <Edit2 className="h-4 w-4" />
-                                </Button>
-                              )}
+                                </Button>}
                             </div>
                             {editingField === 'experience' ? <div className="space-y-3">
                                 <Select value={formData.experienceLevel} onValueChange={value => setFormData({
@@ -1715,16 +1664,9 @@ const Dashboard = () => {
                                 <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Estimated Price
                               </h3>
-                              {editingField !== 'price' && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                  onClick={() => startEditing('price')}
-                                >
+                              {editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
                                   <Edit2 className="h-4 w-4" />
-                                </Button>
-                              )}
+                                </Button>}
                             </div>
                             {editingField === 'price' ? <div className="space-y-2">
                                 <Input value={formData.estimatedPrice} onChange={e => setFormData({
@@ -1762,18 +1704,15 @@ const Dashboard = () => {
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
                               </div>
                             </div>
-                            {editingField === 'contact' ? (
-                              <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
+                            {editingField === 'contact' ? <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
                                 <Phone className="h-5 w-5 text-accent" />
                                 <div className="flex-1">
                                   <p className="text-sm text-muted-foreground">Phone</p>
                                   <div className="flex items-center gap-2 mt-1">
-                                    <Input 
-                                      value={formData.phone} 
-                                      onChange={e => setFormData({...formData, phone: e.target.value})} 
-                                      placeholder="Phone Number" 
-                                      className="h-8" 
-                                    />
+                                    <Input value={formData.phone} onChange={e => setFormData({
+                          ...formData,
+                          phone: e.target.value
+                        })} placeholder="Phone Number" className="h-8" />
                                     <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
                                       <Save className="h-3 w-3" />
                                     </Button>
@@ -1782,9 +1721,7 @@ const Dashboard = () => {
                                     </Button>
                                   </div>
                                 </div>
-                              </div>
-                            ) : (
-                              <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                              </div> : <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                                 <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 <div className="flex-1 text-left">
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
@@ -1793,8 +1730,7 @@ const Dashboard = () => {
                                 <Button size="sm" variant="ghost" className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-muted-foreground hover:text-accent" onClick={() => startEditing('contact')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
-                              </div>
-                            )}
+                              </div>}
                           </div>
                         </div>
 
@@ -1807,16 +1743,9 @@ const Dashboard = () => {
                               <LinkIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               Social Networks
                             </h3>
-                            {editingField !== 'social' && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                onClick={() => startEditing('social')}
-                              >
+                            {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                              </Button>}
                           </div>
                           {editingField === 'social' ? <div className="space-y-3">
                               <div className="flex items-center gap-2">
@@ -1973,9 +1902,9 @@ const Dashboard = () => {
                                       <div>
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
-                                          ...newPost,
-                                          content: e.target.value
-                                        })} placeholder="What's on your mind?" rows={6} className="mt-2" />
+                                ...newPost,
+                                content: e.target.value
+                              })} placeholder="What's on your mind?" rows={6} className="mt-2" />
                                       </div>
                                     </TabsContent>
                                     
@@ -1983,17 +1912,17 @@ const Dashboard = () => {
                                       <div>
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
-                                          ...newPost,
-                                          content: e.target.value
-                                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                ...newPost,
+                                content: e.target.value
+                              })} placeholder="What's on your mind?" rows={4} className="mt-2" />
                                       </div>
                                       {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
                                           <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
                                           <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                            ...newPost,
-                                            mediaUrl: "",
-                                            mediaType: ""
-                                          })}>
+                                ...newPost,
+                                mediaUrl: "",
+                                mediaType: ""
+                              })}>
                                             <X className="h-4 w-4" />
                                           </Button>
                                         </div>}
@@ -2012,19 +1941,19 @@ const Dashboard = () => {
                                       <div>
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
-                                          ...newPost,
-                                          content: e.target.value
-                                        })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                ...newPost,
+                                content: e.target.value
+                              })} placeholder="What's on your mind?" rows={4} className="mt-2" />
                                       </div>
                                       <div>
                                         <Label>Video URL (YouTube/Embed)</Label>
                                         <Input value={newPost.mediaUrl} onChange={e => {
-                                          setNewPost({
-                                            ...newPost,
-                                            mediaUrl: e.target.value,
-                                            mediaType: 'video'
-                                          });
-                                        }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
+                                setNewPost({
+                                  ...newPost,
+                                  mediaUrl: e.target.value,
+                                  mediaType: 'video'
+                                });
+                              }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
                                       </div>
                                     </TabsContent>
                                   </Tabs>
@@ -2075,12 +2004,10 @@ const Dashboard = () => {
                                 </div>}
                               
                               {/* Likes count */}
-                              {post.likes > 0 && (
-                                <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
+                              {post.likes > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
                                   <Heart className="h-4 w-4" />
                                   <span>{post.likes}</span>
-                                </div>
-                              )}
+                                </div>}
                               <div className="p-4" />
                             </Card>)}
                           
@@ -2126,9 +2053,9 @@ const Dashboard = () => {
                                   <div className="space-y-4 mt-4">
                                     <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
                                       <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
-                                        ...newAnnouncement,
-                                        isPremium: checked as boolean
-                                      })} />
+                              ...newAnnouncement,
+                              isPremium: checked as boolean
+                            })} />
                                       <Label htmlFor="premium-ad-inner" className="cursor-pointer font-medium">
                                         Promotion Ad (with photo/video)
                                       </Label>
@@ -2137,9 +2064,9 @@ const Dashboard = () => {
                                     <div>
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
                                       <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
-                                        ...newAnnouncement,
-                                        description: e.target.value
-                                      })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
+                              ...newAnnouncement,
+                              description: e.target.value
+                            })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
                                     </div>
                                     
                                     {newAnnouncement.isPremium && <div>
@@ -2147,10 +2074,10 @@ const Dashboard = () => {
                                         {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
                                             {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
                                             <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                                              ...newAnnouncement,
-                                              mediaUrl: "",
-                                              mediaType: ""
-                                            })}>
+                                ...newAnnouncement,
+                                mediaUrl: "",
+                                mediaType: ""
+                              })}>
                                               <X className="h-4 w-4" />
                                             </Button>
                                           </div> : <>
@@ -2226,14 +2153,11 @@ const Dashboard = () => {
 
                       {/* Gallery Tab */}
                       <TabsContent value="gallery">
-                        <div className="flex items-center justify-between mb-4">
-                          <h2 className="text-2xl font-display font-bold flex items-center gap-2">
-                            <Images className="h-6 w-6 text-accent" />
-                            My Gallery
-                          </h2>
+                        <div className="mb-4 items-center justify-between flex flex-col">
+                          
                           <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
                             <DialogTrigger asChild>
-                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90 text-center">
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Media
                               </Button>
@@ -2287,7 +2211,11 @@ const Dashboard = () => {
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
                                     <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({ id: item.id, url: item.url, type: item.type })} disabled={isSaving}>
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({
+                        id: item.id,
+                        url: item.url,
+                        type: item.type
+                      })} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
@@ -2309,7 +2237,11 @@ const Dashboard = () => {
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({ id: item.id, url: item.url, type: item.type })} disabled={isSaving}>
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({
+                        id: item.id,
+                        url: item.url,
+                        type: item.type
+                      })} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
@@ -2352,161 +2284,133 @@ const Dashboard = () => {
                             {/* Calendar */}
                             <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
                               <Calendar mode="single" selected={selectedDate} onSelect={date => {
-                                if (!date) {
-                                  setSelectedDate(undefined);
-                                  setUserChangedStatus(false);
-                                  setEventStatus('available');
-                                  setEventNotes("");
-                                  return;
-                                }
-
-                                if (selectedDate) {
-                                  const currentDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-                                  const nextDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                                  if (currentDateStr === nextDateStr) return;
-                                }
-
-                                setSelectedDate(date);
-                                setUserChangedStatus(false);
-
-                                const event = getEventForDate(date);
-                                if (event) {
-                                  const status = event.status;
-                                  if (status === 'busy' || status === 'booked') {
-                                    setEventStatus('available');
-                                  } else {
-                                    setEventStatus(status);
-                                  }
-                                  setEventNotes(event.notes || "");
-                                } else {
-                                  setEventStatus('available');
-                                  setEventNotes("");
-                                }
-                              }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
-                                busy: calendarEvents.filter(e => e.status === 'busy').map(e => parseYMDToLocalDate(e.event_date)),
-                                blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => parseYMDToLocalDate(e.event_date))
-                              }} modifiersClassNames={{
-                                busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                                blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                              }} />
+                      if (!date) {
+                        setSelectedDate(undefined);
+                        setUserChangedStatus(false);
+                        setEventStatus('available');
+                        setEventNotes("");
+                        return;
+                      }
+                      if (selectedDate) {
+                        const currentDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                        const nextDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        if (currentDateStr === nextDateStr) return;
+                      }
+                      setSelectedDate(date);
+                      setUserChangedStatus(false);
+                      const event = getEventForDate(date);
+                      if (event) {
+                        const status = event.status;
+                        if (status === 'busy' || status === 'booked') {
+                          setEventStatus('available');
+                        } else {
+                          setEventStatus(status);
+                        }
+                        setEventNotes(event.notes || "");
+                      } else {
+                        setEventStatus('available');
+                        setEventNotes("");
+                      }
+                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
+                      busy: calendarEvents.filter(e => e.status === 'busy').map(e => parseYMDToLocalDate(e.event_date)),
+                      blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => parseYMDToLocalDate(e.event_date))
+                    }} modifiersClassNames={{
+                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                    }} />
                             </div>
                             
                             {/* Date Details Form */}
                             <div className="min-w-0">
-                              {selectedDate ? (
-                                <Card className="p-4 h-full">
+                              {selectedDate ? <Card className="p-4 h-full">
                                   <h4 className="font-semibold text-foreground mb-3">
                                     {selectedDate.toLocaleDateString('en-US', {
-                                      weekday: 'long',
-                                      year: 'numeric',
-                                      month: 'long',
-                                      day: 'numeric'
-                                    })}
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                                   </h4>
                                   <div className="space-y-3">
                                     <div>
                                       <Label>Status</Label>
                                       {(() => {
-                                        const currentEvent = getEventForDate(selectedDate);
-                                        const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
-                                        
-                                        const showAsBooked = isBooked && !userChangedStatus;
-                                        
-                                        return (
-                                          <Select 
-                                            value={showAsBooked ? 'busy' : eventStatus} 
-                                            onValueChange={v => {
-                                              if (v !== 'busy') {
-                                                setEventStatus(v as 'available' | 'blocked');
-                                                setUserChangedStatus(true);
-                                                if (isBooked) {
-                                                  setEventNotes("");
-                                                }
-                                              }
-                                            }}
-                                          >
+                            const currentEvent = getEventForDate(selectedDate);
+                            const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                            const showAsBooked = isBooked && !userChangedStatus;
+                            return <Select value={showAsBooked ? 'busy' : eventStatus} onValueChange={v => {
+                              if (v !== 'busy') {
+                                setEventStatus(v as 'available' | 'blocked');
+                                setUserChangedStatus(true);
+                                if (isBooked) {
+                                  setEventNotes("");
+                                }
+                              }
+                            }}>
                                             <SelectTrigger className={showAsBooked ? "text-destructive" : ""}>
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                              {isBooked && !userChangedStatus && (
-                                              <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
+                                              {isBooked && !userChangedStatus && <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
                                                   Booked
-                                                </SelectItem>
-                                              )}
+                                                </SelectItem>}
                                               <SelectItem value="available">Available</SelectItem>
                                               <SelectItem value="blocked">Unavailable</SelectItem>
                                             </SelectContent>
-                                          </Select>
-                                        );
-                                      })()}
+                                          </Select>;
+                          })()}
                                     </div>
                                     
                                     {/* Show booked events list if date has bookings */}
                                     {(() => {
-                                      const currentEvent = getEventForDate(selectedDate);
-                                      const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
-                                      
-                                      if (isBooked && currentEvent?.notes && !userChangedStatus) {
-                                        return (
-                                          <BookedEventsList
-                                            notes={currentEvent.notes}
-                                            isSaving={isSaving}
-                                            onUpdateNotes={async (newNotes: string) => {
-                                              setIsSaving(true);
-                                              try {
-                                                const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                          const currentEvent = getEventForDate(selectedDate);
+                          const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                          if (isBooked && currentEvent?.notes && !userChangedStatus) {
+                            return <BookedEventsList notes={currentEvent.notes} isSaving={isSaving} onUpdateNotes={async (newNotes: string) => {
+                              setIsSaving(true);
+                              try {
+                                const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                                const oldNotes = currentEvent.notes ?? "";
+                                const oldEvents = parseBookedEvents(oldNotes);
+                                const newEvents = parseBookedEvents(newNotes);
+                                const newKeys = new Set(newEvents.map(getBookedEventKey));
+                                const removedEvents = oldEvents.filter(e => !newKeys.has(getBookedEventKey(e)));
 
-                                                const oldNotes = currentEvent.notes ?? "";
-                                                const oldEvents = parseBookedEvents(oldNotes);
-                                                const newEvents = parseBookedEvents(newNotes);
-                                                const newKeys = new Set(newEvents.map(getBookedEventKey));
-                                                const removedEvents = oldEvents.filter(e => !newKeys.has(getBookedEventKey(e)));
+                                // First, update the calendar notes
+                                const {
+                                  error
+                                } = await supabase.from('calendar_events').update({
+                                  notes: newNotes
+                                }).eq('profile_id', user!.id).eq('event_date', dateStr);
+                                if (error) throw error;
 
-                                                // First, update the calendar notes
-                                                const { error } = await supabase
-                                                  .from('calendar_events')
-                                                  .update({ notes: newNotes })
-                                                  .eq('profile_id', user!.id)
-                                                  .eq('event_date', dateStr);
-                                                if (error) throw error;
-
-                                                // If a booked time slot was deleted, mark the matching accepted request as rejected
-                                                const rejectedCount = await rejectAcceptedBookingRequestsForBookedEvents(dateStr, removedEvents);
-
-                                                await loadCalendarEvents();
-                                                if (rejectedCount > 0) {
-                                                  await loadBookingRequests();
-                                                }
-
-                                                setEventNotes(newNotes);
-                                                toast({
-                                                  title: "Success",
-                                                  description: rejectedCount > 0
-                                                    ? "Event updated and the related request was marked as rejected."
-                                                    : "Event details updated."
-                                                });
-                                              } catch (error: any) {
-                                                toast({
-                                                  title: "Error",
-                                                  description: error.message,
-                                                  variant: "destructive"
-                                                });
-                                              } finally {
-                                                setIsSaving(false);
-                                              }
-                                            }}
-                                          />
-                                        );
-                                      }
-                                      
-                                      return (
-                                        <div>
+                                // If a booked time slot was deleted, mark the matching accepted request as rejected
+                                const rejectedCount = await rejectAcceptedBookingRequestsForBookedEvents(dateStr, removedEvents);
+                                await loadCalendarEvents();
+                                if (rejectedCount > 0) {
+                                  await loadBookingRequests();
+                                }
+                                setEventNotes(newNotes);
+                                toast({
+                                  title: "Success",
+                                  description: rejectedCount > 0 ? "Event updated and the related request was marked as rejected." : "Event details updated."
+                                });
+                              } catch (error: any) {
+                                toast({
+                                  title: "Error",
+                                  description: error.message,
+                                  variant: "destructive"
+                                });
+                              } finally {
+                                setIsSaving(false);
+                              }
+                            }} />;
+                          }
+                          return <div>
                                           <Label>Notes (optional)</Label>
                                           <Textarea value={eventNotes} onChange={e => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
-                                        </div>
-                                      );
-                                    })()}
+                                        </div>;
+                        })()}
                                     <div className="flex gap-2">
                                       <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
                                         {isSaving ? "Saving..." : "Save"}
@@ -2516,12 +2420,9 @@ const Dashboard = () => {
                                       </Button>}
                                     </div>
                                   </div>
-                                </Card>
-                              ) : (
-                                <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
                                   <p className="text-sm text-center">Select a date to set availability</p>
-                                </div>
-                              )}
+                                </div>}
                             </div>
                             
                             {/* Legend - desktop only */}
@@ -2551,89 +2452,56 @@ const Dashboard = () => {
                               Booking Requests
                             </h3>
                             
-                            {bookingRequests.length === 0 ? (
-                              <Card className="border-2 border-dashed border-border/50">
+                            {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
                                 <CardContent className="p-8 text-center">
                                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
-                              </Card>
-                            ) : (
-                              <div className="space-y-3">
-                                {bookingRequests.map(request => (
-                                  <Card 
-                                    key={request.id} 
-                                    className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer"
-                                    onClick={() => {
-                                      setSelectedBookingRequest(request);
-                                      setShowBookingDetailDialog(true);
-                                    }}
-                                  >
+                              </Card> : <div className="space-y-3">
+                                {bookingRequests.map(request => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
+                      setSelectedBookingRequest(request);
+                      setShowBookingDetailDialog(true);
+                    }}>
                                     <CardContent className="p-4">
                                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
                                         <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                                           <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap mb-1">
                                               <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
-                                              <Badge 
-                                                className={
-                                                  request.status === 'pending' 
-                                                    ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' 
-                                                    : request.status === 'accepted' 
-                                                    ? 'bg-green-500/20 text-green-600 border-green-500/30'
-                                                    : 'bg-destructive/20 text-destructive border-destructive/30'
-                                                }
-                                              >
+                                              <Badge className={request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : request.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
                                                 {request.status === 'pending' ? 'Pending' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
                                               </Badge>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                               <span>{(() => {
-                                                const [year, month, day] = request.event_date.split('-').map(Number);
-                                                return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-                                                  weekday: 'short',
-                                                  month: 'short',
-                                                  day: 'numeric',
-                                                  year: 'numeric'
-                                                });
-                                              })()}</span>
-                                              {request.event_type && (
-                                                <>
+                                    const [year, month, day] = request.event_date.split('-').map(Number);
+                                    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                      weekday: 'short',
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    });
+                                  })()}</span>
+                                              {request.event_type && <>
                                                   <span>·</span>
                                                   <span>{request.event_type}</span>
-                                                </>
-                                              )}
+                                                </>}
                                             </div>
                                           </div>
                                         </div>
                                         
-                                        {request.status === 'pending' && (
-                                          <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
-                                            <Button 
-                                              size="sm" 
-                                              onClick={() => handleAcceptBooking(request)} 
-                                              disabled={isSaving} 
-                                              className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90"
-                                            >
+                                        {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={e => e.stopPropagation()}>
+                                            <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90">
                                               Accept
                                             </Button>
-                                            <Button 
-                                              size="sm" 
-                                              variant="outline" 
-                                              onClick={() => handleDeclineBooking(request.id)} 
-                                              disabled={isSaving}
-                                              className="flex-1 md:flex-none"
-                                            >
+                                            <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1 md:flex-none">
                                               Decline
                                             </Button>
-                                          </div>
-                                        )}
+                                          </div>}
                                       </div>
                                     </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            )}
+                                  </Card>)}
+                              </div>}
                           </div>
 
                           {/* Booking Request Detail Dialog */}
@@ -2645,18 +2513,9 @@ const Dashboard = () => {
                                   Booking Request Details
                                 </DialogTitle>
                               </DialogHeader>
-                              {selectedBookingRequest && (
-                                <div className="space-y-4 mt-2">
+                              {selectedBookingRequest && <div className="space-y-4 mt-2">
                                   <div className="flex items-center gap-2">
-                                    <Badge 
-                                      className={
-                                        selectedBookingRequest.status === 'pending' 
-                                          ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' 
-                                          : selectedBookingRequest.status === 'accepted' 
-                                          ? 'bg-green-500/20 text-green-600 border-green-500/30'
-                                          : 'bg-destructive/20 text-destructive border-destructive/30'
-                                      }
-                                    >
+                                    <Badge className={selectedBookingRequest.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : selectedBookingRequest.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
                                       {selectedBookingRequest.status === 'pending' ? 'Pending' : selectedBookingRequest.status === 'accepted' ? 'Accepted' : 'Declined'}
                                     </Badge>
                                   </div>
@@ -2691,90 +2550,70 @@ const Dashboard = () => {
                                       <p className="text-foreground mt-1 flex items-center gap-2">
                                         <CalendarIcon className="h-4 w-4 text-accent" />
                                         {(() => {
-                                          const [year, month, day] = selectedBookingRequest.event_date.split('-').map(Number);
-                                          return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric'
-                                          });
-                                        })()}
+                              const [year, month, day] = selectedBookingRequest.event_date.split('-').map(Number);
+                              return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              });
+                            })()}
                                       </p>
                                     </div>
 
                                     {/* Parse and display time interval separately */}
-                                    {selectedBookingRequest.message && selectedBookingRequest.message.startsWith('Time:') && (
-                                      <div>
+                                    {selectedBookingRequest.message && selectedBookingRequest.message.startsWith('Time:') && <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Time Interval</Label>
                                         <p className="text-foreground mt-1 flex items-center gap-2">
                                           <CalendarIcon className="h-4 w-4 text-accent" />
                                           {selectedBookingRequest.message.split('\n')[0].replace('Time: ', '')}
                                         </p>
-                                      </div>
-                                    )}
+                                      </div>}
 
-                                    {selectedBookingRequest.event_type && (
-                                      <div>
+                                    {selectedBookingRequest.event_type && <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Type</Label>
                                         <p className="text-foreground mt-1">{selectedBookingRequest.event_type}</p>
-                                      </div>
-                                    )}
+                                      </div>}
 
-                                    {selectedBookingRequest.message && (
-                                      <div>
+                                    {selectedBookingRequest.message && <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Message</Label>
                                         <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">
-                                          "{selectedBookingRequest.message.startsWith('Time:') 
-                                            ? selectedBookingRequest.message.split('\n').slice(1).join('\n').trim() || 'No additional message'
-                                            : selectedBookingRequest.message}"
+                                          "{selectedBookingRequest.message.startsWith('Time:') ? selectedBookingRequest.message.split('\n').slice(1).join('\n').trim() || 'No additional message' : selectedBookingRequest.message}"
                                         </p>
-                                      </div>
-                                    )}
+                                      </div>}
 
                                     <div>
                                       <Label className="text-xs text-muted-foreground uppercase tracking-wide">Received</Label>
                                       <p className="text-sm text-muted-foreground mt-1">
                                         {new Date(selectedBookingRequest.created_at).toLocaleDateString('en-US', {
-                                          year: 'numeric',
-                                          month: 'long',
-                                          day: 'numeric',
-                                          hour: '2-digit',
-                                          minute: '2-digit'
-                                        })}
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                                       </p>
                                     </div>
                                   </div>
 
-                                  {selectedBookingRequest.status === 'pending' && (
-                                    <>
+                                  {selectedBookingRequest.status === 'pending' && <>
                                       <Separator />
                                       <div className="flex gap-2">
-                                        <Button 
-                                          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
-                                          onClick={() => {
-                                            handleAcceptBooking(selectedBookingRequest);
-                                            setShowBookingDetailDialog(false);
-                                          }}
-                                          disabled={isSaving}
-                                        >
+                                        <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
+                            handleAcceptBooking(selectedBookingRequest);
+                            setShowBookingDetailDialog(false);
+                          }} disabled={isSaving}>
                                           Accept
                                         </Button>
-                                        <Button 
-                                          variant="outline" 
-                                          className="flex-1"
-                                          onClick={() => {
-                                            handleDeclineBooking(selectedBookingRequest.id);
-                                            setShowBookingDetailDialog(false);
-                                          }}
-                                          disabled={isSaving}
-                                        >
+                                        <Button variant="outline" className="flex-1" onClick={() => {
+                            handleDeclineBooking(selectedBookingRequest.id);
+                            setShowBookingDetailDialog(false);
+                          }} disabled={isSaving}>
                                           Decline
                                         </Button>
                                       </div>
-                                    </>
-                                  )}
-                                </div>
-                              )}
+                                    </>}
+                                </div>}
                             </DialogContent>
                           </Dialog>
                         </div>
@@ -2832,28 +2671,20 @@ const Dashboard = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {pendingCalendarSave?.status === 'available' 
-                ? 'Mark as Available?' 
-                : 'Mark as Unavailable?'}
+              {pendingCalendarSave?.status === 'available' ? 'Mark as Available?' : 'Mark as Unavailable?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingCalendarSave?.status === 'available' 
-                ? 'This date has an accepted booking. Marking it as available will reject the booking request. The requester may need to be notified separately.'
-                : 'This date has an accepted booking. Marking it as unavailable will reject the booking request. The requester may need to be notified separately.'}
+              {pendingCalendarSave?.status === 'available' ? 'This date has an accepted booking. Marking it as available will reject the booking request. The requester may need to be notified separately.' : 'This date has an accepted booking. Marking it as unavailable will reject the booking request. The requester may need to be notified separately.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => {
-              setShowBookingWarningDialog(false);
-              setPendingCalendarSave(null);
-            }}>
+            setShowBookingWarningDialog(false);
+            setPendingCalendarSave(null);
+          }}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmBookingOverwrite}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isSaving}
-            >
+            <AlertDialogAction onClick={handleConfirmBookingOverwrite} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
               {isSaving ? "Updating..." : pendingCalendarSave?.status === 'available' ? "Yes, Mark Available" : "Yes, Mark Unavailable"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2873,11 +2704,7 @@ const Dashboard = () => {
             <AlertDialogCancel onClick={() => setShowDeleteWarningDialog(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDeleteWithBooking}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isSaving}
-            >
+            <AlertDialogAction onClick={handleConfirmDeleteWithBooking} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
               {isSaving ? "Deleting..." : "Yes, Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2885,7 +2712,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Review Confirmation Dialog */}
-      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
+      <AlertDialog open={!!deleteReviewId} onOpenChange={open => !open && setDeleteReviewId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Review</AlertDialogTitle>
@@ -2895,10 +2722,7 @@ const Dashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2906,7 +2730,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Post Confirmation Dialog */}
-      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+      <AlertDialog open={!!deletePostId} onOpenChange={open => !open && setDeletePostId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Post</AlertDialogTitle>
@@ -2916,10 +2740,7 @@ const Dashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deletePostId && handleDeletePost(deletePostId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => deletePostId && handleDeletePost(deletePostId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2927,7 +2748,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Announcement Confirmation Dialog */}
-      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={open => !open && setDeleteAnnouncementId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
@@ -2937,10 +2758,7 @@ const Dashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2948,7 +2766,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Gallery Item Confirmation Dialog */}
-      <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
+      <AlertDialog open={!!deleteGalleryItem} onOpenChange={open => !open && setDeleteGalleryItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete {deleteGalleryItem?.type === 'video' ? 'Video' : 'Photo'}</AlertDialogTitle>
@@ -2958,10 +2776,7 @@ const Dashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deleteGalleryItem && handleDeleteGalleryItem(deleteGalleryItem.id, deleteGalleryItem.url, deleteGalleryItem.type)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={() => deleteGalleryItem && handleDeleteGalleryItem(deleteGalleryItem.id, deleteGalleryItem.url, deleteGalleryItem.type)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
