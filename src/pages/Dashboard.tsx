@@ -1573,7 +1573,7 @@ const Dashboard = () => {
                                 <div className="space-y-2">
                                   <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
                                   <div className="flex flex-wrap gap-2">
-                                    {['Pop', 'Rock', 'Jazz', 'Hip Hop', 'R&B', 'Electronic', 'Classical', 'Country', 'Folk', 'Reggae', 'Blues', 'Soul', 'Funk', 'Metal', 'Punk', 'Latin', 'Manele', 'House', 'Disco', 'Trap', 'Indie', 'Alternative'].filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre)).map(genre => <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                                    {['Pop', 'Rock', 'Jazz', 'Hip Hop', 'R&B', 'Electronic', 'Classical', 'Country', 'Folk', 'Traditional', 'Reggae', 'Blues', 'Soul', 'Funk', 'Metal', 'Punk', 'Latin', 'Manele', 'House', 'Disco', 'Trap', 'Indie', 'Alternative'].filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre)).map(genre => <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
                           const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
                           if (!currentGenres.includes(genre)) {
                             setFormData({
