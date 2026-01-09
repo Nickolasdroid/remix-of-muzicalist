@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 interface FeedItem {
   id: string;
   profile_id: string;
@@ -314,13 +314,7 @@ const Feed = () => {
       </div>
 
       {/* Media Preview Dialog */}
-      <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none [&>button]:text-white">
-          <div className="flex items-center justify-center w-full h-full p-4">
-            {mediaPreview?.type === "video" ? <video src={mediaPreview.url} controls autoPlay className="max-w-full max-h-[85vh] object-contain" /> : <img src={mediaPreview?.url} alt="Full size preview" className="max-w-full max-h-[85vh] object-contain" />}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
       {/* Delete Post Confirmation Dialog */}
       <AlertDialog open={!!deletePostId} onOpenChange={open => !open && setDeletePostId(null)}>

@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2 } from "lucide-react";
@@ -11,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 interface MediaPreview {
   url: string;
   type: "image" | "video";
@@ -194,13 +194,7 @@ const Announcements = () => {
       </div>
 
       {/* Media Preview Dialog */}
-      <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none [&>button]:text-white">
-          <div className="flex items-center justify-center w-full h-full p-4">
-            {mediaPreview?.type === "video" ? <video src={mediaPreview.url} controls autoPlay className="max-w-full max-h-[85vh] object-contain" /> : <img src={mediaPreview?.url} alt="Full size preview" className="max-w-full max-h-[85vh] object-contain" />}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
       {/* Delete Announcement Confirmation Dialog */}
       <AlertDialog open={!!deleteAnnouncementId} onOpenChange={open => !open && setDeleteAnnouncementId(null)}>
