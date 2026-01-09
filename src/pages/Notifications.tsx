@@ -106,14 +106,20 @@ const Notifications = () => {
         return <Bell className="h-5 w-5 text-muted-foreground" />;
     }
   };
-  const handleNotificationClick = (notification: Notification) => {
-    markAsRead(notification.id);
+  const handleNotificationClick = async (notification: Notification) => {
+    await markAsRead(notification.id);
+    
     if (notification.reference_type === 'review' || notification.reference_type === 'profile') {
       navigate('/dashboard?tab=details');
     } else if (notification.reference_type === 'post') {
       navigate('/feed');
     } else if (notification.reference_type === 'booking_request') {
       navigate('/dashboard?tab=calendar');
+    } else if (notification.reference_type === 'message') {
+      navigate('/messages');
+    } else {
+      // Default navigation for other notification types
+      navigate('/dashboard');
     }
   };
   const unreadCount = notifications.filter(n => !n.read_at).length;
