@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2 } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
@@ -138,14 +138,14 @@ const Announcements = () => {
             if (filter === 'ads') return a.is_premium === false;
             return true;
           });
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
-                {/* Header - matching Feed layout */}
-                <div className="p-4 pb-0 px-0 py-[15px] rounded-none">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                {/* Header */}
+                <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Link to={`/artist/${announcement.profile_id}`}>
                         <div className={`p-0.5 rounded-full ${announcement.profiles?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
-                          <Avatar className="w-10 h-10 border-2 border-background">
+                          <Avatar className="w-10 h-10 cursor-pointer border-2 border-background">
                             <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
                             <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
                               {(announcement.profiles?.stage_name || "A").charAt(0)}
@@ -156,7 +156,7 @@ const Announcements = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Link to={`/artist/${announcement.profile_id}`}>
-                            <h3 className="font-semibold text-foreground hover:underline">
+                            <h3 className="font-semibold text-foreground cursor-pointer hover:underline">
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>
@@ -169,6 +169,8 @@ const Announcements = () => {
                           <span>{announcement.profiles?.specialization || "Artist"}</span>
                           <span>·</span>
                           <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                          <span>·</span>
+                          <Globe className="h-3 w-3" />
                         </div>
                       </div>
                     </div>
@@ -198,7 +200,7 @@ const Announcements = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mt-3 whitespace-pre-wrap mx-[4px] my-[14px] text-left">{announcement.description}</p>
+                  <p className="text-foreground mt-3 whitespace-pre-wrap my-[5px]">{announcement.description}</p>
                 </div>
                 
                 {/* Media for premium announcements - Natural aspect ratio for landscape images */}
@@ -208,11 +210,11 @@ const Announcements = () => {
             })}>
                     {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
                         <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                      </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                 
                 {/* Contact button */}
-                <div className="px-2 py-2">
+                <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
                     <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
                       <MessageCircle className="w-5 h-5" />
