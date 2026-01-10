@@ -5,12 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2 } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+
+const ANNOUNCEMENTS_PER_PAGE = 10;
+
 interface MediaPreview {
   url: string;
   type: "image" | "video";
@@ -22,6 +26,8 @@ const Announcements = () => {
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   useEffect(() => {
     supabase.auth.getSession().then(({
       data: {
@@ -53,8 +59,11 @@ const Announcements = () => {
       setDeleteAnnouncementId(null);
     }
   };
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
+  const fetchAnnouncements = useCallback(async (pageNum: number, append: boolean = false) => {
+    try {
+      const from = pageNum * ANNOUNCEMENTS_PER_PAGE;
+      const to = from + ANNOUNCEMENTS_PER_PAGE - 1;
+      
       const {
         data,
         error
@@ -69,16 +78,39 @@ const Announcements = () => {
           )
         `).order("created_at", {
         ascending: false
-      });
+      }).range(from, to);
+      
       if (error) {
         console.error("Error fetching announcements:", error);
+        return;
+      }
+      
+      // Check if there are more announcements
+      if (!data || data.length < ANNOUNCEMENTS_PER_PAGE) {
+        setHasMore(false);
+      }
+      
+      if (append) {
+        setAnnouncements(prev => [...prev, ...(data || [])]);
       } else {
         setAnnouncements(data || []);
       }
+    } finally {
       setLoading(false);
-    };
-    fetchAnnouncements();
+    }
   }, []);
+
+  useEffect(() => {
+    fetchAnnouncements(0);
+  }, [fetchAnnouncements]);
+
+  const loadMoreAnnouncements = useCallback(async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    await fetchAnnouncements(nextPage, true);
+  }, [page, fetchAnnouncements]);
+
+  const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
@@ -190,6 +222,19 @@ const Announcements = () => {
                 </div>
               </Card>);
         })()}
+          
+          {/* Infinite scroll trigger */}
+          <div ref={loadMoreRef} className="py-4 flex justify-center">
+            {isLoadingMore && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Loading more announcements...</span>
+              </div>
+            )}
+            {!hasMore && announcements.length > 0 && (
+              <p className="text-muted-foreground text-sm">No more announcements to load</p>
+            )}
+          </div>
         </div>
       </div>
 
