@@ -609,7 +609,6 @@ interface Artist {
 interface ArtistRating {
   [key: string]: number;
 }
-
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
@@ -617,21 +616,14 @@ const Leaderboard = () => {
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
-  
+
   // Get countries with registered artists
   const getAvailableCountries = () => {
     const artistCountries = [...new Set(artists.map(artist => artist.country).filter(Boolean))];
-    return allCountries.filter(country => 
-      artistCountries.some(ac => 
-        ac === country.code || 
-        ac === country.name || 
-        ac?.toLowerCase() === country.name.toLowerCase() ||
-        // Handle diacritics variations (e.g., România vs Romania)
-        ac?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === country.name.toLowerCase()
-      )
-    );
+    return allCountries.filter(country => artistCountries.some(ac => ac === country.code || ac === country.name || ac?.toLowerCase() === country.name.toLowerCase() ||
+    // Handle diacritics variations (e.g., România vs Romania)
+    ac?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === country.name.toLowerCase()));
   };
-  
   const availableCountries = getAvailableCountries();
   const filteredCountries = availableCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
 
@@ -640,12 +632,7 @@ const Leaderboard = () => {
     let filteredArtists = artists;
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filteredArtists = artists.filter(artist => 
-        artist.country === selectedCountry || 
-        artist.country === countryName ||
-        artist.country?.toLowerCase() === countryName?.toLowerCase() ||
-        artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase()
-      );
+      filteredArtists = artists.filter(artist => artist.country === selectedCountry || artist.country === countryName || artist.country?.toLowerCase() === countryName?.toLowerCase() || artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase());
     }
     const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
     return counties;
@@ -675,35 +662,33 @@ const Leaderboard = () => {
   // Fetch reviews and calculate average ratings for all artists
   useEffect(() => {
     const fetchRatings = async () => {
-      const { data: reviews, error } = await supabase
-        .from('reviews')
-        .select('profile_id, rating');
-      
+      const {
+        data: reviews,
+        error
+      } = await supabase.from('reviews').select('profile_id, rating');
       if (error) {
         console.error('Error fetching reviews:', error);
         return;
       }
 
       // Calculate average rating per artist
-      const ratingsMap: { [key: string]: number[] } = {};
+      const ratingsMap: {
+        [key: string]: number[];
+      } = {};
       reviews?.forEach(review => {
         if (!ratingsMap[review.profile_id]) {
           ratingsMap[review.profile_id] = [];
         }
         ratingsMap[review.profile_id].push(review.rating);
       });
-
       const averageRatings: ArtistRating = {};
       Object.entries(ratingsMap).forEach(([profileId, ratings]) => {
         averageRatings[profileId] = ratings.reduce((a, b) => a + b, 0) / ratings.length;
       });
-
       setArtistRatings(averageRatings);
     };
-
     fetchRatings();
   }, []);
-
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
@@ -713,12 +698,7 @@ const Leaderboard = () => {
     // Filter by country (handle both code, name, and diacritics)
     if (selectedCountry) {
       const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filtered = filtered.filter(artist => 
-        artist.country === selectedCountry || 
-        artist.country === countryName ||
-        artist.country?.toLowerCase() === countryName?.toLowerCase() ||
-        artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase()
-      );
+      filtered = filtered.filter(artist => artist.country === selectedCountry || artist.country === countryName || artist.country?.toLowerCase() === countryName?.toLowerCase() || artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase());
     }
 
     // Filter by county
@@ -736,7 +716,7 @@ const Leaderboard = () => {
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-4">
+      <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-0">
         <div className="container mx-auto">
           <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
@@ -761,13 +741,10 @@ const Leaderboard = () => {
                     </div>
                   </div>
                   <div className="max-h-[250px] overflow-y-auto">
-                    <DropdownMenuItem 
-                      onClick={() => {
-                        setSelectedCountry("");
-                        setCountrySearch("");
-                      }} 
-                      className="cursor-pointer font-medium"
-                    >
+                    <DropdownMenuItem onClick={() => {
+                    setSelectedCountry("");
+                    setCountrySearch("");
+                  }} className="cursor-pointer font-medium">
                       All Countries
                     </DropdownMenuItem>
                     {filteredCountries.length > 0 ? filteredCountries.map(country => <DropdownMenuItem key={country.code} onClick={() => {
