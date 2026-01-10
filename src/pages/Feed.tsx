@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+
+const POSTS_PER_PAGE = 10;
+
 interface FeedItem {
   id: string;
   profile_id: string;
@@ -39,6 +43,8 @@ const Feed = () => {
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   useEffect(() => {
     supabase.auth.getSession().then(({
       data: {
@@ -48,58 +54,81 @@ const Feed = () => {
       setCurrentUserId(session?.user?.id ?? null);
     });
   }, []);
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const {
-          data: posts,
-          error
-        } = await supabase.from('posts').select(`
-            id,
-            profile_id,
-            content,
-            media_url,
-            media_type,
-            created_at
-          `).order('created_at', {
-          ascending: false
-        });
-        if (error) throw error;
+  const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
+    try {
+      const from = pageNum * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+      
+      const {
+        data: posts,
+        error
+      } = await supabase.from('posts').select(`
+          id,
+          profile_id,
+          content,
+          media_url,
+          media_type,
+          created_at
+        `).order('created_at', {
+        ascending: false
+      }).range(from, to);
+      
+      if (error) throw error;
 
-        // Fetch profiles and likes for each post
-        const postsWithProfiles = await Promise.all((posts || []).map(async post => {
-          const [profileResult, likesResult, userLikeResult] = await Promise.all([supabase.from('profiles').select('stage_name, avatar_url, specialization, plan').eq('id', post.profile_id).maybeSingle(), supabase.from('post_likes').select('id', {
-            count: 'exact'
-          }).eq('post_id', post.id), currentUserId ? supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({
-            data: null
-          })]);
-          return {
-            ...post,
-            profile: profileResult.data || {
-              stage_name: 'Unknown Artist',
-              avatar_url: null,
-              specialization: null,
-              plan: 'Free'
-            },
-            isLiked: !!userLikeResult.data,
-            isSaved: false,
-            likes: likesResult.count || 0
-          };
-        }));
-        setFeedItems(postsWithProfiles);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load posts. Please try again.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
+      // Check if there are more posts
+      if (!posts || posts.length < POSTS_PER_PAGE) {
+        setHasMore(false);
       }
-    };
-    fetchPosts();
+
+      // Fetch profiles and likes for each post
+      const postsWithProfiles = await Promise.all((posts || []).map(async post => {
+        const [profileResult, likesResult, userLikeResult] = await Promise.all([supabase.from('profiles').select('stage_name, avatar_url, specialization, plan').eq('id', post.profile_id).maybeSingle(), supabase.from('post_likes').select('id', {
+          count: 'exact'
+        }).eq('post_id', post.id), currentUserId ? supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({
+          data: null
+        })]);
+        return {
+          ...post,
+          profile: profileResult.data || {
+            stage_name: 'Unknown Artist',
+            avatar_url: null,
+            specialization: null,
+            plan: 'Free'
+          },
+          isLiked: !!userLikeResult.data,
+          isSaved: false,
+          likes: likesResult.count || 0
+        };
+      }));
+      
+      if (append) {
+        setFeedItems(prev => [...prev, ...postsWithProfiles]);
+      } else {
+        setFeedItems(postsWithProfiles);
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load posts. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   }, [currentUserId]);
+
+  useEffect(() => {
+    fetchPosts(0);
+  }, [fetchPosts]);
+
+  const loadMorePosts = useCallback(async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    await fetchPosts(nextPage, true);
+  }, [page, fetchPosts]);
+
+  const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMorePosts, hasMore);
   const handleLike = async (id: string) => {
     if (!currentUserId) {
       toast({
@@ -310,6 +339,19 @@ const Feed = () => {
                   </div>
                 </div>
               </Card>)}
+          
+          {/* Infinite scroll trigger */}
+          <div ref={loadMoreRef} className="py-4 flex justify-center">
+            {isLoadingMore && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Loading more posts...</span>
+              </div>
+            )}
+            {!hasMore && feedItems.length > 0 && (
+              <p className="text-muted-foreground text-sm">No more posts to load</p>
+            )}
+          </div>
         </div>
       </div>
 
