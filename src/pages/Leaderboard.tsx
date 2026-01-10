@@ -725,7 +725,7 @@ const Leaderboard = () => {
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
             
 
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center">
+            <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
               <DropdownMenu onOpenChange={open => !open && setCountrySearch("")}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">
