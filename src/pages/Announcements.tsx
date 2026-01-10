@@ -82,7 +82,7 @@ const Announcements = () => {
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="container mx-auto pt-16 md:pt-[68px] pb-24 md:pb-20 px-0">
+      <div className="container mx-auto pt-16 md:pt-[68px] pb-0 px-0">
         {/* Filter buttons */}
         <div className="max-w-[500px] mx-auto mb-1">
           <div className="flex gap-2 rounded-none border-none">
