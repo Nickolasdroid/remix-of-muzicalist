@@ -1,12 +1,14 @@
 import Navigation from "@/components/Navigation";
-import ArtistCard from "@/components/ArtistCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const allCountries = [{
   name: "Afghanistan",
   code: "AF"
@@ -797,12 +799,45 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="space-y-3 md:space-y-6 -mx-4 md:mx-0">
-                  <div className="grid gap-2 md:gap-6 md:max-w-2xl md:mx-auto px-0 md:px-0">
-                    {categoryArtists.length > 0 ? categoryArtists.map((artist, index) => <ArtistCard key={artist.id} id={artist.id} name={artist.stage_name} stageName={artist.stage_name} specialization={artist.specialization || ''} county={artist.county} isPremium={artist.plan === 'Premium'} imageUrl={artist.avatar_url || undefined} rank={index + 1} rating={artistRatings[artist.id] || 0} />) : <div className="text-center py-16">
-                        <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-                      </div>}
-                  </div>
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
+                  {categoryArtists.length > 0 ? (
+                    <div className="md:max-w-3xl md:mx-auto overflow-hidden md:rounded-xl md:border border-border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
+                            <TableHead className="w-16 text-center font-semibold text-foreground">Loc</TableHead>
+                            <TableHead className="font-semibold text-foreground">Profil</TableHead>
+                            <TableHead className="hidden sm:table-cell font-semibold text-foreground">Județ</TableHead>
+                            <TableHead className="w-20 text-center font-semibold text-foreground">Recenzii</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {categoryArtists.map((artist, index) => (
+                            <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
+                              <TableCell className="text-center font-bold text-lg text-foreground">{index + 1}</TableCell>
+                              <TableCell>
+                                <Link to={`/artist/${artist.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                  <Avatar className="h-10 w-10 border-2 border-accent/50">
+                                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                                    <AvatarFallback className="bg-muted">
+                                      <User className="h-5 w-5 text-muted-foreground" />
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <span className="font-medium text-foreground hover:text-accent transition-colors">{artist.stage_name}</span>
+                                </Link>
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell text-muted-foreground">{artist.county}</TableCell>
+                              <TableCell className="text-center font-semibold text-accent">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-16">
+                      <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
+                    </div>
+                  )}
                 </TabsContent>)}
           </Tabs>
         </div>
