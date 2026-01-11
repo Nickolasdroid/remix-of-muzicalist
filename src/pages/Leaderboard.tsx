@@ -611,11 +611,16 @@ interface Artist {
 interface ArtistRating {
   [key: string]: number;
 }
+
+interface ArtistReviewCount {
+  [key: string]: number;
+}
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
+  const [artistReviewCounts, setArtistReviewCounts] = useState<ArtistReviewCount>({});
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
 
@@ -673,7 +678,7 @@ const Leaderboard = () => {
         return;
       }
 
-      // Calculate average rating per artist
+      // Calculate average rating and count per artist
       const ratingsMap: {
         [key: string]: number[];
       } = {};
@@ -684,10 +689,13 @@ const Leaderboard = () => {
         ratingsMap[review.profile_id].push(review.rating);
       });
       const averageRatings: ArtistRating = {};
+      const reviewCounts: ArtistReviewCount = {};
       Object.entries(ratingsMap).forEach(([profileId, ratings]) => {
         averageRatings[profileId] = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+        reviewCounts[profileId] = ratings.length;
       });
       setArtistRatings(averageRatings);
+      setArtistReviewCounts(reviewCounts);
     };
     fetchRatings();
   }, []);
@@ -807,7 +815,8 @@ const Leaderboard = () => {
                           <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
                             <TableHead className="w-16 text-center font-semibold text-foreground">Loc</TableHead>
                             <TableHead className="font-semibold text-foreground">Profil</TableHead>
-                            <TableHead className="w-20 text-center font-semibold text-foreground">Recenzii</TableHead>
+                            <TableHead className="w-24 text-center font-semibold text-foreground">Nr. Recenzii</TableHead>
+                            <TableHead className="w-20 text-center font-semibold text-foreground">Notă</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -825,6 +834,7 @@ const Leaderboard = () => {
                                   <span className="font-medium text-foreground hover:text-accent transition-colors">{artist.stage_name}</span>
                                 </Link>
                               </TableCell>
+                              <TableCell className="text-center text-muted-foreground">{artistReviewCounts[artist.id] || 0}</TableCell>
                               <TableCell className="text-center font-semibold text-accent">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
                             </TableRow>
                           ))}
