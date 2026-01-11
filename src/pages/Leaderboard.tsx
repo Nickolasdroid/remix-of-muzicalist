@@ -809,33 +809,33 @@ const Leaderboard = () => {
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
               </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
                   {categoryArtists.length > 0 ? (
-                    <div className="md:max-w-3xl md:mx-auto overflow-hidden md:rounded-xl md:border border-border">
-                      <Table>
+                    <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
+                      <Table className="table-fixed w-full">
                         <TableHeader>
                           <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
-                            <TableHead className="w-16 text-center font-semibold text-foreground">Loc</TableHead>
-                            <TableHead className="font-semibold text-foreground">Profil</TableHead>
-                            <TableHead className="w-24 text-center font-semibold text-foreground">Nr. Recenzii</TableHead>
-                            <TableHead className="w-20 text-center font-semibold text-foreground">Notă</TableHead>
+                            <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Loc</TableHead>
+                            <TableHead className="font-semibold text-foreground px-2 md:px-4">Profil</TableHead>
+                            <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Nr. Rec.</TableHead>
+                            <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Notă</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {categoryArtists.map((artist, index) => (
                             <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
-                              <TableCell className="text-center font-bold text-lg text-foreground">{index + 1}</TableCell>
-                              <TableCell>
-                                <Link to={`/artist/${artist.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                  <Avatar className="h-10 w-10 border-2 border-accent/50">
+                              <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
+                              <TableCell className="px-2 md:px-4">
+                                <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
+                                  <Avatar className="h-8 w-8 md:h-10 md:w-10 border-2 border-accent/50 flex-shrink-0">
                                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                                     <AvatarFallback className="bg-muted">
-                                      <User className="h-5 w-5 text-muted-foreground" />
+                                      <User className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
                                     </AvatarFallback>
                                   </Avatar>
-                                  <span className="font-medium text-foreground hover:text-accent transition-colors">{artist.stage_name}</span>
+                                  <span className="font-medium text-foreground hover:text-accent transition-colors text-sm md:text-base truncate">{artist.stage_name}</span>
                                 </Link>
                               </TableCell>
-                              <TableCell className="text-center text-muted-foreground">{artistReviewCounts[artist.id] || 0}</TableCell>
-                              <TableCell className="text-center font-semibold text-accent">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
+                              <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
+                              <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
