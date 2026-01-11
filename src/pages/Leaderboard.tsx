@@ -807,7 +807,6 @@ const Leaderboard = () => {
                           <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
                             <TableHead className="w-16 text-center font-semibold text-foreground">Loc</TableHead>
                             <TableHead className="font-semibold text-foreground">Profil</TableHead>
-                            <TableHead className="hidden sm:table-cell font-semibold text-foreground">Județ</TableHead>
                             <TableHead className="w-20 text-center font-semibold text-foreground">Recenzii</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -826,7 +825,6 @@ const Leaderboard = () => {
                                   <span className="font-medium text-foreground hover:text-accent transition-colors">{artist.stage_name}</span>
                                 </Link>
                               </TableCell>
-                              <TableCell className="hidden sm:table-cell text-muted-foreground">{artist.county}</TableCell>
                               <TableCell className="text-center font-semibold text-accent">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
                             </TableRow>
                           ))}
