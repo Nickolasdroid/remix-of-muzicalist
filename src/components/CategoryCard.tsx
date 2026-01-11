@@ -13,7 +13,7 @@ interface CategoryCardProps {
 const CategoryCard = ({ title, description, icon: Icon, iconImage, href, count }: CategoryCardProps) => {
   return (
     <Link to={href}>
-      <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary aspect-square border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)] hover:scale-105">
+      <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary aspect-square md:aspect-auto md:p-8 border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)] hover:scale-105">
         <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         <div className="relative z-10 flex flex-col items-center justify-center h-full gap-2 md:gap-4 p-4 md:p-8">
