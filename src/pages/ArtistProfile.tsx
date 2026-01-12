@@ -954,10 +954,10 @@ const ArtistProfile = () => {
                       <FileText className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Posts
                     </h2>
-                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                    <div className="w-full max-w-[500px] mx-auto space-y-1">
+                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
-                            <div className="p-4 pb-0">
+                            <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -999,14 +999,14 @@ const ArtistProfile = () => {
                               });
                             }}>
                                       <Flag className="h-4 w-4 mr-2" />
-                                      Report Problem
+                                      Report
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
 
                               {/* Content */}
-                              <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
+                              <p className="text-foreground mt-3 whitespace-pre-wrap my-[5px]">{post.content}</p>
                             </div>
                             
                             {/* Media */}
@@ -1015,15 +1015,19 @@ const ArtistProfile = () => {
                       type: post.media_type === "video" ? "video" : "image"
                     })}>
                                 {post.media_type === "video" ? <div className="relative w-full aspect-video">
-                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                                  </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                                    <video src={post.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+                                  </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                               </div>}
 
-                            {/* Likes count */}
-                            {post.likes > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-b border-border/40">
-                                <Heart className="h-4 w-4" />
-                                <span>{post.likes}</span>
-                              </div>}
+                            {/* Reactions count */}
+                            <div className="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground border-b border-border/40">
+                              <div className="flex items-center gap-1.5">
+                                {post.likes > 0 && <>
+                                    <Heart className="h-4 w-4" />
+                                    <span>{post.likes}</span>
+                                  </>}
+                              </div>
+                            </div>
 
                             {/* Actions */}
                             <div className="px-2 py-1">
@@ -1033,7 +1037,7 @@ const ArtistProfile = () => {
                                   <span className="font-medium">Like</span>
                                 </Button>
                                 
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/messages?artistId=${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
                                   <MessageCircle className="w-5 h-5" />
                                   <span className="font-medium">Contact</span>
                                 </Button>
@@ -1054,10 +1058,10 @@ const ArtistProfile = () => {
                       <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                       Announcements
                     </h2>
-                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                    <div className="w-full max-w-[500px] mx-auto space-y-1">
+                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
-                            <div className="p-4 pb-0">
+                            <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -1082,6 +1086,8 @@ const ArtistProfile = () => {
                                       <span>{artist?.specialization || "Artist"}</span>
                                       <span>·</span>
                                       <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                      <span>·</span>
+                                      <Globe className="h-3 w-3" />
                                     </div>
                                   </div>
                                 </div>
@@ -1100,14 +1106,14 @@ const ArtistProfile = () => {
                               });
                             }}>
                                       <Flag className="h-4 w-4 mr-2" />
-                                      Report Problem
+                                      Report
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
 
                               {/* Content */}
-                              <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                              <p className="text-foreground mt-3 whitespace-pre-wrap my-[5px]">{announcement.description}</p>
                             </div>
                             
                             {/* Media for premium announcements */}
@@ -1116,14 +1122,14 @@ const ArtistProfile = () => {
                       type: announcement.media_type === "video" ? "video" : "image"
                     })}>
                                 {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                    <video src={announcement.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                                  </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                                    <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+                                  </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                               </div>}
                             
                             {/* Contact button */}
-                            <div className="px-2 py-2">
+                            <div className="px-2 py-1">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/messages?artistId=${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
                                   <MessageCircle className="w-5 h-5" />
                                   <span className="font-medium">Contact</span>
                                 </Button>
