@@ -785,21 +785,21 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="singers" className="w-full -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6 md:mb-12 p-0 md:p-1 rounded-none md:rounded-xl md:max-w-2xl md:mx-auto bg-card/50 md:border-2 md:border-accent/30">
-              <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-2 text-xs md:text-base rounded-none md:rounded-lg data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+          <Tabs defaultValue="singers" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-6 md:mb-12 p-1 rounded-none md:rounded-xl -mx-4 md:mx-auto w-[calc(100%+2rem)] md:w-full md:bg-card/50 md:border-2 md:border-accent/30">
+              <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
                 <Mic className="h-4 w-4" />
                 <span className="hidden md:inline">Singers</span>
               </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-2 text-xs md:text-base rounded-none md:rounded-lg data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+              <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
                 <Guitar className="h-4 w-4" />
                 <span className="hidden md:inline">Instrumentalists</span>
               </TabsTrigger>
-              <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-2 text-xs md:text-base rounded-none md:rounded-lg data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+              <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
                 <Headphones className="h-4 w-4" />
                 <span className="hidden md:inline">DJs</span>
               </TabsTrigger>
-              <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-2 text-xs md:text-base rounded-none md:rounded-lg data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+              <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
                 <Users className="h-4 w-4" />
                 <span className="hidden md:inline">Bands</span>
               </TabsTrigger>
@@ -807,7 +807,7 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="mt-0">
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
                   {categoryArtists.length > 0 ? (
                     <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
                       <Table className="table-fixed w-full">
