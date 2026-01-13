@@ -1417,18 +1417,17 @@ const ArtistProfile = () => {
               {/* Booking Dialog */}
               <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Book {artist.stage_name}</DialogTitle>
-                    <DialogDescription>
-                      {selectedDate && `Selected date: ${selectedDate.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}`}
-                    </DialogDescription>
+                  <DialogHeader className="pb-2">
+                    <DialogTitle className="text-lg font-medium">
+                      {selectedDate && selectedDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleBookingSubmit} className="space-y-4 mt-4">
+                  <form onSubmit={handleBookingSubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
                       <Input id="name" placeholder="Your name" value={bookingForm.name} onChange={e => setBookingForm({
