@@ -1264,70 +1264,63 @@ const Dashboard = () => {
                     {/* Header Section */}
                     
                     {/* Mobile Header Layout */}
-                    <div className="flex md:hidden flex-col gap-2 mb-4">
-                      {/* Row 1: Avatar + Name + Rating */}
-                      <div className="flex items-start gap-3">
-                        {/* Small Avatar - top left */}
-                        <div className="flex-shrink-0 relative group cursor-pointer">
-                          <div className={`p-0.5 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                            <Avatar className="w-14 h-14 border-2 border-background shadow-md">
-                              <AvatarImage src={profile?.avatar_url} />
-                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                                <User className="h-7 w-7 text-accent" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <label htmlFor="avatar-upload-mobile" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                              <Camera className="h-4 w-4 text-white" />
-                            </label>
-                          </div>
-                          <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    <div className="flex md:hidden flex-col items-center gap-4 mb-6">
+                      {/* Centered Avatar */}
+                      <div className="relative group cursor-pointer">
+                        <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                          <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
+                            <AvatarImage src={profile?.avatar_url} />
+                            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                              <User className="h-12 w-12 text-accent" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <label htmlFor="avatar-upload-mobile" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
+                            <Camera className="h-6 w-6 text-white" />
+                          </label>
                         </div>
-
-                        {/* Name (not editable on mobile) */}
-                        <div className="flex-1 min-w-0">
-                          <h1 className="text-lg font-display font-bold text-foreground truncate">
-                            {formData.stageName}
-                          </h1>
-                        </div>
-
-                        {/* Rating badge */}
-                        <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent text-accent-foreground shadow-md flex-shrink-0">
-                          <Star className="h-4 w-4 fill-current" />
-                          <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
-                          {reviews.length > 0 && <span className="text-[10px] opacity-80">({reviews.length})</span>}
-                        </div>
+                        <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                       </div>
 
-                      {/* Row 2: Category + Location */}
-                      <div className="flex items-center gap-2 pl-[68px]">
-                        <div className="flex-1 flex items-center gap-2 min-w-0">
-                          {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
-                              {formData.specialization}
-                            </Badge>}
-                          {editingField === 'location' ? <div className="flex items-center gap-1">
-                              <Select value={formData.county} onValueChange={value => setFormData({
+                      {/* Centered Name */}
+                      <h1 className="text-2xl font-display font-bold text-foreground text-center">
+                        {formData.stageName}
+                      </h1>
+
+                      {/* Centered Rating badge */}
+                      <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                        <Star className="h-5 w-5 fill-current" />
+                        <span className="text-lg font-bold">{getAverageRating() || 'New'}</span>
+                        {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+                      </div>
+
+                      {/* Centered Category + Location */}
+                      <div className="flex flex-wrap items-center justify-center gap-3">
+                        {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
+                            {formData.specialization}
+                          </Badge>}
+                        {editingField === 'location' ? <div className="flex items-center gap-2">
+                            <Select value={formData.county} onValueChange={value => setFormData({
                     ...formData,
                     county: value
                   })}>
-                                <SelectTrigger className="h-7 w-[120px] text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                              <Button size="sm" onClick={() => saveField('location')} disabled={isSaving} className="h-6 w-6 p-0">
-                                <Save className="h-3 w-3" />
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={cancelEditing} className="h-6 w-6 p-0">
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div> : <button className="flex items-center gap-1 text-muted-foreground min-w-0 hover:text-accent transition-colors" onClick={() => startEditing('location')}>
-                              <MapPin className="h-3 w-3 flex-shrink-0" />
-                              <span className="text-xs truncate">{formData.county}</span>
-                              <Edit2 className="h-3 w-3 flex-shrink-0" />
-                            </button>}
-                        </div>
+                              <SelectTrigger className="h-8 w-[140px] text-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                            <Button size="sm" onClick={() => saveField('location')} disabled={isSaving} className="h-7 w-7 p-0">
+                              <Save className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEditing} className="h-7 w-7 p-0">
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div> : <button className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors" onClick={() => startEditing('location')}>
+                            <MapPin className="h-4 w-4 flex-shrink-0" />
+                            <span className="text-sm">{formData.county}</span>
+                            <Edit2 className="h-4 w-4 flex-shrink-0" />
+                          </button>}
                       </div>
                     </div>
 
