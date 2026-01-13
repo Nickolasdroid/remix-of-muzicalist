@@ -2420,7 +2420,7 @@ const Dashboard = () => {
                                       </Button>}
                                     </div>
                                   </div>
-                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground px-[131px]">
+                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground px-[62px]">
                                   <p className="text-sm text-center">Select a date to set availability</p>
                                 </div>}
                             </div>
