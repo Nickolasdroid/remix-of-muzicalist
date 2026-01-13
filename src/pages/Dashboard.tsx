@@ -1874,14 +1874,14 @@ const Dashboard = () => {
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-6">
                         <div className="max-w-[500px] mx-auto space-y-1">
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                          <div className="sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 flex flex-row">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-accent" />
                               <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
                             </div>
                             <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
                               <DialogTrigger asChild>
-                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={postsRemaining <= 0}>
+                                <Button size="sm" disabled={postsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90 text-right">
                                   <Plus className="h-4 w-4 mr-1" />
                                   New Post
                                 </Button>
