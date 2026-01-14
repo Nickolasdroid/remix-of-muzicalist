@@ -611,7 +611,6 @@ interface Artist {
 interface ArtistRating {
   [key: string]: number;
 }
-
 interface ArtistReviewCount {
   [key: string]: number;
 }
@@ -726,9 +725,9 @@ const Leaderboard = () => {
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-0">
+      <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-0 py-[78px]">
         <div className="container mx-auto">
-          <div className="text-center mb-8 md:mb-12">
+          <div className="text-center mb-8 md:mb-12 py-0">
             <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
               <Trophy className="h-8 w-8 md:h-10 md:w-10 text-accent-foreground" />
             </div>
@@ -808,8 +807,7 @@ const Leaderboard = () => {
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
               </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
-                  {categoryArtists.length > 0 ? (
-                    <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
+                  {categoryArtists.length > 0 ? <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
                       <Table className="table-fixed w-full">
                         <TableHeader>
                           <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
@@ -820,8 +818,7 @@ const Leaderboard = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {categoryArtists.map((artist, index) => (
-                            <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
+                          {categoryArtists.map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
                               <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
                               <TableCell className="px-2 md:px-4">
                                 <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
@@ -836,16 +833,12 @@ const Leaderboard = () => {
                               </TableCell>
                               <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
                               <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
-                            </TableRow>
-                          ))}
+                            </TableRow>)}
                         </TableBody>
                       </Table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-16">
+                    </div> : <div className="text-center py-16">
                       <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-                    </div>
-                  )}
+                    </div>}
                 </TabsContent>)}
           </Tabs>
         </div>
