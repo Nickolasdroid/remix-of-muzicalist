@@ -1301,9 +1301,9 @@ const Dashboard = () => {
                           </Badge>}
                         {editingField === 'location' ? <div className="flex items-center gap-2">
                             <Select value={formData.county} onValueChange={value => setFormData({
-                    ...formData,
-                    county: value
-                  })}>
+                  ...formData,
+                  county: value
+                })}>
                               <SelectTrigger className="h-8 w-[140px] text-sm">
                                 <SelectValue />
                               </SelectTrigger>
@@ -1320,9 +1320,7 @@ const Dashboard = () => {
                           </div> : <button className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors" onClick={() => startEditing('location')}>
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
-                            {formData.country && getCountryFlag(formData.country) && (
-                              <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>
-                            )}
+                            {formData.country && getCountryFlag(formData.country) && <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>}
                             <Edit2 className="h-4 w-4 flex-shrink-0" />
                           </button>}
                       </div>
@@ -1404,9 +1402,7 @@ const Dashboard = () => {
                                 </div> : <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
                                   <span className="text-base">{formData.county}</span>
-                                  {formData.country && getCountryFlag(formData.country) && (
-                                    <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>
-                                  )}
+                                  {formData.country && getCountryFlag(formData.country) && <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>}
                                   <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
                                     <Edit2 className="h-3 w-3" />
                                   </Button>
@@ -2264,7 +2260,7 @@ const Dashboard = () => {
                             {/* Legend - above calendar on mobile */}
                             <div className="w-full lg:hidden">
                               <div className="p-3 rounded-lg bg-secondary/50">
-                                <h4 className="font-semibold text-foreground mb-2 text-sm">Legend</h4>
+                                
                                 <div className="flex justify-between">
                                   <div className="flex items-center gap-2">
                                     <div className="w-5 h-5 rounded bg-destructive/70"></div>
