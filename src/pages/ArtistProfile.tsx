@@ -962,9 +962,9 @@ const ArtistProfile = () => {
                       Posts
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                      {posts.length > 0 ? posts.map(post => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
-                            <div className="p-4 pb-0">
+                            <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
@@ -1062,9 +1062,9 @@ const ArtistProfile = () => {
                       Announcements
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden border-border/40 shadow-sm rounded-lg">
+                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
-                            <div className="p-4 pb-0">
+                            <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
