@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import SettingsTab from "@/components/SettingsTab";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import { getCountryFlag } from "@/lib/countryFlags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1319,6 +1320,9 @@ const Dashboard = () => {
                           </div> : <button className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors" onClick={() => startEditing('location')}>
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
+                            {formData.country && getCountryFlag(formData.country) && (
+                              <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>
+                            )}
                             <Edit2 className="h-4 w-4 flex-shrink-0" />
                           </button>}
                       </div>
@@ -1399,7 +1403,10 @@ const Dashboard = () => {
                                   </Button>
                                 </div> : <div className="group flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
-                                  <span className="text-base">{formData.county}{formData.country ? `, ${formData.country}` : ''}</span>
+                                  <span className="text-base">{formData.county}</span>
+                                  {formData.country && getCountryFlag(formData.country) && (
+                                    <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>
+                                  )}
                                   <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
                                     <Edit2 className="h-3 w-3" />
                                   </Button>
