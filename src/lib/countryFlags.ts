@@ -79,6 +79,12 @@ const codeToFlag: Record<string, string> = {
 };
 
 /**
+ * Normalize string for diacritic-insensitive comparison
+ */
+const normalizeString = (str: string) => 
+  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+/**
  * Get flag emoji for a country name or code
  * @param country - Country name or 2-letter code
  * @returns Flag emoji or null if not found
@@ -97,10 +103,10 @@ export const getCountryFlag = (country: string | null | undefined): string | nul
     return codeToFlag[upperCode];
   }
   
-  // Try case-insensitive name match
-  const normalizedCountry = country.toLowerCase();
+  // Try diacritic-insensitive name match
+  const normalizedInput = normalizeString(country);
   for (const [name, flag] of Object.entries(countryFlags)) {
-    if (name.toLowerCase() === normalizedCountry) {
+    if (normalizeString(name) === normalizedInput) {
       return flag;
     }
   }
