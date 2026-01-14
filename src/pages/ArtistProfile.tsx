@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
+import { getCountryFlag } from "@/lib/countryFlags";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -629,6 +630,9 @@ const ArtistProfile = () => {
                   <div className="flex items-center gap-1 text-muted-foreground min-w-0">
                     <MapPin className="h-3 w-3 flex-shrink-0" />
                     <span className="text-xs truncate">{artist.county}</span>
+                    {artist.country && getCountryFlag(artist.country) && (
+                      <span className="text-sm" title={artist.country}>{getCountryFlag(artist.country)}</span>
+                    )}
                   </div>
                 </div>
 
@@ -684,7 +688,10 @@ const ArtistProfile = () => {
                     {/* Location */}
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-5 w-5" />
-                      <span className="text-base">{artist.county}{artist.country ? `, ${artist.country}` : ''}</span>
+                      <span className="text-base">{artist.county}</span>
+                      {artist.country && getCountryFlag(artist.country) && (
+                        <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>
+                      )}
                     </div>
 
                     {/* Contact button */}
