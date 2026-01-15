@@ -161,18 +161,17 @@ const Announcements = () => {
                             </h3>
                           </Link>
                           {announcement.profiles?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                          {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Promotion
-                            </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Ad
-                            </Badge>}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{announcement.profiles?.specialization || "Artist"}</span>
                           <span>·</span>
                           <span>{new Date(announcement.date).toLocaleDateString()}</span>
                           <span>·</span>
-                          <Globe className="h-3 w-3" />
+                          {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                              Promotion
+                            </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                              Ad
+                            </Badge>}
                         </div>
                       </div>
                     </div>
