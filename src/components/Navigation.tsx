@@ -182,13 +182,13 @@ const Navigation = () => {
     { to: '/about', icon: Info, label: 'About' },
   ];
 
-  // Mobile bottom nav items (right to left: Feed - Ads - Messages - Search - Profile)
+  // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
   const mobileBottomNav = [
-    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile', showBadge: false },
-    { to: '/categories', icon: Search, label: 'Search', showBadge: false },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
-    { to: '/announcements', icon: Megaphone, label: 'Ads', showBadge: false },
     { to: '/feed', icon: Home, label: 'Feed', showBadge: false },
+    { to: '/announcements', icon: Megaphone, label: 'Ads', showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
+    { to: '/categories', icon: Search, label: 'Search', showBadge: false },
+    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile', showBadge: false },
   ];
 
   return (
