@@ -1081,14 +1081,17 @@ const ArtistProfile = () => {
                                         {artist?.stage_name}
                                       </h3>
                                       {artist?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                                      {announcement.is_premium && <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                          Promotion
-                                        </Badge>}
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <span>{artist?.specialization || "Artist"}</span>
                                       <span>·</span>
                                       <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                      <span>·</span>
+                                      {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                          Promotion
+                                        </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                          Ad
+                                        </Badge>}
                                     </div>
                                   </div>
                                 </div>
