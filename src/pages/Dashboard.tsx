@@ -1899,8 +1899,9 @@ const Dashboard = () => {
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
                                 ...newPost,
-                                content: e.target.value
-                              })} placeholder="What's on your mind?" rows={6} className="mt-2" />
+                                content: e.target.value.slice(0, 100)
+                              })} placeholder="What's on your mind?" rows={6} maxLength={100} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
                                       </div>
                                     </TabsContent>
                                     
@@ -1909,8 +1910,9 @@ const Dashboard = () => {
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
                                 ...newPost,
-                                content: e.target.value
-                              })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                content: e.target.value.slice(0, 100)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={100} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
                                       </div>
                                       {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
                                           <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
@@ -1938,8 +1940,9 @@ const Dashboard = () => {
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
                                 ...newPost,
-                                content: e.target.value
-                              })} placeholder="What's on your mind?" rows={4} className="mt-2" />
+                                content: e.target.value.slice(0, 100)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={100} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
                                       </div>
                                       <div>
                                         <Label>Video URL (YouTube/Embed)</Label>
@@ -2061,8 +2064,9 @@ const Dashboard = () => {
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
                                       <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
                               ...newAnnouncement,
-                              description: e.target.value
-                            })} placeholder="Write your announcement here..." rows={4} className="mt-2" />
+                              description: e.target.value.slice(0, 100)
+                            })} placeholder="Write your announcement here..." rows={4} maxLength={100} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/100</p>
                                     </div>
                                     
                                     {newAnnouncement.isPremium && <div>
