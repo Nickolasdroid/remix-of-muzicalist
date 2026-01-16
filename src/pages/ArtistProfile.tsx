@@ -906,7 +906,17 @@ const ArtistProfile = () => {
                             ({getAverageRating()} • {reviews.length})
                           </span>}
                       </h3>
-                      {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto">
+                      {currentUserId !== id && <Button onClick={() => {
+                          if (!currentUserId) {
+                            toast({
+                              title: "Login Required",
+                              description: "Please log in or create an account to write a review."
+                            });
+                            navigate('/login');
+                            return;
+                          }
+                          setReviewDialogOpen(true);
+                        }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto">
                           Write a Review
                         </Button>}
                     </div>
@@ -947,7 +957,17 @@ const ArtistProfile = () => {
                       </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
-                        {currentUserId !== id && <Button onClick={() => setReviewDialogOpen(true)} size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground w-full sm:w-auto">
+                        {currentUserId !== id && <Button onClick={() => {
+                            if (!currentUserId) {
+                              toast({
+                                title: "Login Required",
+                                description: "Please log in or create an account to write a review."
+                              });
+                              navigate('/login');
+                              return;
+                            }
+                            setReviewDialogOpen(true);
+                          }} size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground w-full sm:w-auto">
                             Write the First Review
                           </Button>}
                       </div>}
