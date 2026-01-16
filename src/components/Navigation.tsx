@@ -399,25 +399,6 @@ const Navigation = () => {
                   <>
                     <div className="h-px bg-border my-2" />
                     <Link
-                      to="/notifications"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
-                        isActive('/notifications')
-                          ? 'bg-accent/20 text-accent'
-                          : 'text-foreground/80 hover:bg-accent/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Bell className="h-5 w-5" />
-                        <span className="font-medium">Notifications</span>
-                      </div>
-                      {unreadNotifications > 0 && (
-                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                          {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                        </span>
-                      )}
-                    </Link>
-                    <Link
                       to="/messages"
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
