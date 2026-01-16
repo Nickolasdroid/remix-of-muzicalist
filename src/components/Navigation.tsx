@@ -452,6 +452,19 @@ const Navigation = () => {
                 )}
 
                 <div className="h-px bg-border my-2" />
+
+                {/* Country Selector in Menu */}
+                <div className="px-3 py-3">
+                  <p className="text-xs text-muted-foreground mb-2 font-medium">Filter by Country</p>
+                  <CountrySelector 
+                    variant="navigation" 
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    userCountry={profile?.country}
+                  />
+                </div>
+
+                <div className="h-px bg-border my-2" />
                 
                 <button
                   onClick={() => {
@@ -500,13 +513,24 @@ const Navigation = () => {
             <span className="font-display font-bold text-foreground">Muzicalist</span>
           </Link>
 
-          {/* Right: Country Selector */}
-          <CountrySelector 
-            variant="navigation" 
-            value={selectedCountry}
-            onChange={setSelectedCountry}
-            userCountry={profile?.country}
-          />
+          {/* Right: Notifications Button */}
+          <button
+            onClick={() => {
+              if (user) {
+                navigate('/notifications');
+              } else {
+                navigate('/login');
+              }
+            }}
+            className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
+          >
+            <Bell className="h-6 w-6" />
+            {unreadNotifications > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+              </span>
+            )}
+          </button>
         </div>
       </nav>
 
