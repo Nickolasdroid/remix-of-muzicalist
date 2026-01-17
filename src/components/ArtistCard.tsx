@@ -24,8 +24,8 @@ const ArtistCard = ({
   rank,
   isPremium = true
 }: ArtistCardProps) => {
-  const borderColor = isPremium ? "border-accent" : "border-burgundy";
-  const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
+  const borderColor = isPremium ? "border-accent" : "border-muted";
+  const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-muted";
   
   return (
     <div className={`group relative overflow-hidden rounded-none md:rounded-2xl bg-gradient-to-br from-card to-secondary p-3 md:p-6 border-0 md:border-2 border-transparent ${borderColor} ${hoverBorderColor} transition-all duration-500 hover:shadow-[var(--shadow-gold)] border-b border-border/30 md:border-b-0`}>
@@ -41,7 +41,7 @@ const ArtistCard = ({
         <Link to={`/artist/${id}`} className="block">
           {/* Mobile Layout */}
           <div className="flex md:hidden items-center gap-3 pl-7">
-            <div className={`w-12 h-12 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-burgundy/50"} flex-shrink-0`}>
+            <div className={`w-12 h-12 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-muted/50"} flex-shrink-0`}>
               {imageUrl ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
@@ -65,7 +65,7 @@ const ArtistCard = ({
 
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center gap-4">
-            <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-burgundy/50 group-hover:border-burgundy"} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
+            <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-muted/50 group-hover:border-muted"} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
               {imageUrl ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
