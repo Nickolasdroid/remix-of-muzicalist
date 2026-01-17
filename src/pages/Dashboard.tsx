@@ -1299,30 +1299,11 @@ const Dashboard = () => {
                         {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
                             {formData.specialization}
                           </Badge>}
-                        {editingField === 'location' ? <div className="flex items-center gap-2">
-                            <Select value={formData.county} onValueChange={value => setFormData({
-                  ...formData,
-                  county: value
-                })}>
-                              <SelectTrigger className="h-8 w-[140px] text-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
-                              </SelectContent>
-                            </Select>
-                            <Button size="sm" onClick={() => saveField('location')} disabled={isSaving} className="h-7 w-7 p-0">
-                              <Save className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={cancelEditing} className="h-7 w-7 p-0">
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div> : <button className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors" onClick={() => startEditing('location')}>
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
                             {formData.country && getCountryFlag(formData.country) && <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>}
-                            <Edit2 className="h-4 w-4 flex-shrink-0" />
-                          </button>}
+                          </div>
                       </div>
                     </div>
 
@@ -1381,32 +1362,11 @@ const Dashboard = () => {
 
                             {/* Location row */}
                             <div className="flex flex-wrap items-center gap-3">
-                              {editingField === 'location' ? <div className="flex items-center gap-2">
-                                  <Select value={formData.county} onValueChange={value => setFormData({
-                        ...formData,
-                        county: value
-                      })}>
-                                    <SelectTrigger className="w-[180px]">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
-                                    </SelectContent>
-                                  </Select>
-                                  <Button size="sm" onClick={() => saveField('location')} disabled={isSaving}>
-                                    <Save className="h-3 w-3" />
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div> : <div className="group flex items-center gap-2 text-muted-foreground">
+                              <div className="flex items-center gap-2 text-muted-foreground">
                                   <MapPin className="h-5 w-5" />
                                   <span className="text-base">{formData.county}</span>
                                   {formData.country && getCountryFlag(formData.country) && <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>}
-                                  <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0" onClick={() => startEditing('location')}>
-                                    <Edit2 className="h-3 w-3" />
-                                  </Button>
-                                </div>}
+                                </div>
                             </div>
                           </div>
 
