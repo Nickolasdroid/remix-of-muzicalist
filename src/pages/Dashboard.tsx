@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import EditableField from "@/components/EditableField";
 import { Calendar } from "@/components/ui/calendar";
@@ -1792,34 +1793,40 @@ const Dashboard = () => {
                               </span>}
                           </h2>
                           
-                          {reviews.length > 0 ? <div className="grid gap-2 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                              {reviews.map(review => <div key={review.id} className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 relative">
-                                  <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                  <div className="flex items-center gap-3">
-                                    <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                      <AvatarFallback className="bg-accent/10 text-accent text-sm">
-                                        {review.reviewer_name.charAt(0).toUpperCase()}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
-                                      <span className="text-xs text-muted-foreground">
-                                        {new Date(review.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                                      </span>
+                          {reviews.length > 0 ? <Carousel className="w-full">
+                              <CarouselContent className="-ml-2 md:-ml-4">
+                                {reviews.map(review => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                                    <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
+                                      <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
+                                      <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                          <AvatarFallback className="bg-accent/10 text-accent text-sm">
+                                            {review.reviewer_name.charAt(0).toUpperCase()}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1 min-w-0">
+                                          <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                          <span className="text-xs text-muted-foreground">
+                                            {new Date(review.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="flex gap-0.5">
+                                        {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
+                                      </div>
+                                      {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
                                     </div>
-                                  </div>
-                                  <div className="flex gap-0.5">
-                                    {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
-                                  </div>
-                                  {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
-                                </div>)}
-                            </div> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                                  </CarouselItem>)}
+                              </CarouselContent>
+                              <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
+                              <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
+                            </Carousel> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
                               <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                               <p className="text-muted-foreground">No reviews yet</p>
                               <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
