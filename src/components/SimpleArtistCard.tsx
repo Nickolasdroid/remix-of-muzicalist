@@ -9,8 +9,8 @@ interface SimpleArtistCardProps {
 }
 
 const SimpleArtistCard = ({ id, name, stageName, imageUrl, isPremium = true }: SimpleArtistCardProps) => {
-  const borderColor = isPremium ? "border-accent" : "border-burgundy";
-  const hoverBorderColor = isPremium ? "hover:border-accent/80" : "hover:border-burgundy/80";
+  const borderColor = isPremium ? "border-accent" : "border-muted";
+  const hoverBorderColor = isPremium ? "hover:border-accent/80" : "hover:border-muted/80";
   
   return (
     <Link to={`/artist/${id}`}>
