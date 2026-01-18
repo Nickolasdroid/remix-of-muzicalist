@@ -390,12 +390,9 @@ const Messages = () => {
     );
   };
 
-  const getArtistSpecialization = (conv: Conversation) => {
-    return (
-      conv.artist_profile?.specialization ||
-      getOtherProfile(conv).specialization ||
-      "Artist"
-    );
+  const getOtherSpecialization = (conv: Conversation) => {
+    const profile = getOtherProfile(conv);
+    return profile.specialization || "Artist";
   };
 
   const formatMessageDate = (date: Date) => {
@@ -538,7 +535,7 @@ const Messages = () => {
                       {getOtherProfile(selectedConversation).stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {getArtistSpecialization(selectedConversation)}
+                      {getOtherSpecialization(selectedConversation)}
                     </span>
                   </div>
                   <DropdownMenu>
@@ -699,7 +696,7 @@ const Messages = () => {
                       {getOtherProfile(selectedConversation).stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {getArtistSpecialization(selectedConversation)}
+                      {getOtherSpecialization(selectedConversation)}
                     </span>
                   </div>
                   <DropdownMenu>
