@@ -510,8 +510,8 @@ const Messages = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {getArtistSpecialization(conv)}
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(conv.updated_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -664,8 +664,8 @@ const Messages = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {getArtistSpecialization(conv)}
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(conv.updated_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
