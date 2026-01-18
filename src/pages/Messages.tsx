@@ -63,6 +63,14 @@ interface Message {
   read_at: string | null;
 }
 
+interface PendingArtist {
+  id: string;
+  stage_name: string;
+  avatar_url: string | null;
+  plan?: string;
+  specialization?: string;
+}
+
 const Messages = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -72,6 +80,7 @@ const Messages = () => {
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [pendingArtist, setPendingArtist] = useState<PendingArtist | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -256,47 +265,37 @@ const Messages = () => {
   const handleArtistContact = async () => {
     if (!artistId || !user || artistId === user.id) return;
 
-    // Use backend function to get or restore/create conversation
-    const { data: conversationId, error: rpcError } = await supabase.rpc('get_or_create_conversation', {
-      _artist_id: artistId,
-      _participant_id: user.id
-    });
+    // First check if a conversation with messages already exists
+    const existingConv = conversations.find(
+      c => (c.artist_id === artistId && c.participant_id === user.id) ||
+           (c.participant_id === artistId && c.artist_id === user.id)
+    );
 
-    if (rpcError || !conversationId) {
-      toast({
-        title: "Error",
-        description: "Could not start conversation",
-        variant: "destructive"
-      });
+    if (existingConv) {
+      // Conversation exists, select it
+      setSelectedConversation(existingConv);
+      setPendingArtist(null);
       return;
     }
 
-    // Fetch the conversation
-    const { data: conv } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('id', conversationId)
-      .single();
-
-    // Fetch artist profile
+    // No existing conversation - set up pending artist view
     const { data: profile } = await supabase
       .from('profiles')
       .select('stage_name, avatar_url, plan, specialization')
       .eq('id', artistId)
       .maybeSingle();
 
-    const convWithProfile = { ...conv, other_profile: profile, artist_profile: profile };
-    
-    // Update conversations list
-    setConversations(prev => {
-      const exists = prev.some(c => c.id === conversationId);
-      if (exists) {
-        return prev;
-      }
-      return [convWithProfile, ...prev];
-    });
-    
-    setSelectedConversation(convWithProfile as any);
+    if (profile) {
+      setPendingArtist({
+        id: artistId,
+        stage_name: profile.stage_name,
+        avatar_url: profile.avatar_url,
+        plan: profile.plan,
+        specialization: profile.specialization
+      });
+      setSelectedConversation(null);
+      setMessages([]);
+    }
   };
 
   const fetchMessages = async (conversationId: string) => {
@@ -333,7 +332,10 @@ const Messages = () => {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedConversation || !user) return;
+    if (!newMessage.trim() || !user) return;
+    
+    // Check if we have either a selected conversation or a pending artist
+    if (!selectedConversation && !pendingArtist) return;
 
     const messageContent = newMessage.trim();
     const tempId = `temp-${Date.now()}`;
@@ -341,7 +343,7 @@ const Messages = () => {
     // Optimistic update - add message immediately to UI
     const optimisticMessage: Message = {
       id: tempId,
-      conversation_id: selectedConversation.id,
+      conversation_id: selectedConversation?.id || 'pending',
       sender_id: user.id,
       content: messageContent,
       created_at: new Date().toISOString(),
@@ -352,8 +354,59 @@ const Messages = () => {
     setNewMessage("");
     setSending(true);
 
+    let conversationId = selectedConversation?.id;
+
+    // If we have a pending artist, create the conversation first
+    if (pendingArtist && !selectedConversation) {
+      const { data: newConvId, error: rpcError } = await supabase.rpc('get_or_create_conversation', {
+        _artist_id: pendingArtist.id,
+        _participant_id: user.id
+      });
+
+      if (rpcError || !newConvId) {
+        setMessages(prev => prev.filter(m => m.id !== tempId));
+        setNewMessage(messageContent);
+        toast({
+          title: "Error",
+          description: "Could not start conversation",
+          variant: "destructive"
+        });
+        setSending(false);
+        return;
+      }
+
+      conversationId = newConvId;
+
+      // Fetch the new conversation and add to list
+      const { data: conv } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', newConvId)
+        .single();
+
+      const convWithProfile: Conversation = {
+        ...conv,
+        other_profile: {
+          stage_name: pendingArtist.stage_name,
+          avatar_url: pendingArtist.avatar_url,
+          plan: pendingArtist.plan,
+          specialization: pendingArtist.specialization
+        },
+        artist_profile: {
+          stage_name: pendingArtist.stage_name,
+          avatar_url: pendingArtist.avatar_url,
+          plan: pendingArtist.plan,
+          specialization: pendingArtist.specialization
+        }
+      };
+
+      setConversations(prev => [convWithProfile, ...prev]);
+      setSelectedConversation(convWithProfile);
+      setPendingArtist(null);
+    }
+
     const { data, error } = await supabase.from('messages').insert({
-      conversation_id: selectedConversation.id,
+      conversation_id: conversationId,
       sender_id: user.id,
       content: messageContent
     }).select().single();
@@ -374,7 +427,7 @@ const Messages = () => {
       await supabase
         .from('conversations')
         .update({ updated_at: new Date().toISOString() })
-        .eq('id', selectedConversation.id);
+        .eq('id', conversationId);
     }
     setSending(false);
   };
@@ -520,45 +573,62 @@ const Messages = () => {
 
           {/* Messages Area */}
           <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
-            {selectedConversation ? (
+            {(selectedConversation || pendingArtist) ? (
               <>
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center gap-3">
-                  <Avatar className={`h-10 w-10 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
-                    <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
+                  <Avatar className={`h-10 w-10 ${getPlanRingColor(
+                    selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan
+                  )}`}>
+                    <AvatarImage src={
+                      selectedConversation 
+                        ? getOtherProfile(selectedConversation).avatar_url || undefined 
+                        : pendingArtist?.avatar_url || undefined
+                    } />
                     <AvatarFallback>
                       <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col flex-1">
                     <span className="font-semibold">
-                      {getOtherProfile(selectedConversation).stage_name}
+                      {selectedConversation 
+                        ? getOtherProfile(selectedConversation).stage_name 
+                        : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {getOtherSpecialization(selectedConversation)}
+                      {selectedConversation 
+                        ? getOtherSpecialization(selectedConversation) 
+                        : pendingArtist?.specialization || "Artist"}
                     </span>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => openDeleteDialog(selectedConversation.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete conversation
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {selectedConversation && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => openDeleteDialog(selectedConversation.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete conversation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-4">
+                    {messages.length === 0 && pendingArtist && (
+                      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                        Send a message to start the conversation
+                      </div>
+                    )}
                     {messages.map((msg, index) => {
                       const prevMsg = index > 0 ? messages[index - 1] : null;
                       const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
@@ -673,7 +743,7 @@ const Messages = () => {
           </div>
 
           {/* Mobile: Chat overlay */}
-          {selectedConversation && (
+          {(selectedConversation || pendingArtist) && (
             <div className="fixed top-14 bottom-16 left-0 right-0 z-40 bg-background">
               <div className="flex flex-col h-full">
                 {/* Header */}
@@ -681,45 +751,65 @@ const Messages = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setSelectedConversation(null)}
+                    onClick={() => {
+                      setSelectedConversation(null);
+                      setPendingArtist(null);
+                    }}
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
-                  <Avatar className={`h-9 w-9 ${getPlanRingColor(getOtherProfile(selectedConversation).plan)}`}>
-                    <AvatarImage src={getOtherProfile(selectedConversation).avatar_url || undefined} />
+                  <Avatar className={`h-9 w-9 ${getPlanRingColor(
+                    selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan
+                  )}`}>
+                    <AvatarImage src={
+                      selectedConversation 
+                        ? getOtherProfile(selectedConversation).avatar_url || undefined 
+                        : pendingArtist?.avatar_url || undefined
+                    } />
                     <AvatarFallback>
                       <User className="h-4 w-4" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col flex-1 min-w-0">
                     <span className="font-semibold text-sm truncate">
-                      {getOtherProfile(selectedConversation).stage_name}
+                      {selectedConversation 
+                        ? getOtherProfile(selectedConversation).stage_name 
+                        : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {getOtherSpecialization(selectedConversation)}
+                      {selectedConversation 
+                        ? getOtherSpecialization(selectedConversation) 
+                        : pendingArtist?.specialization || "Artist"}
                     </span>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => openDeleteDialog(selectedConversation.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete conversation
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {selectedConversation && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => openDeleteDialog(selectedConversation.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete conversation
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-background">
                   <div className="space-y-4">
+                    {messages.length === 0 && pendingArtist && (
+                      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                        Send a message to start the conversation
+                      </div>
+                    )}
                     {messages.map((msg, index) => {
                       const prevMsg = index > 0 ? messages[index - 1] : null;
                       const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
