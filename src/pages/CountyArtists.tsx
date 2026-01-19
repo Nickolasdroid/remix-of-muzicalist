@@ -121,7 +121,7 @@ const CountyArtists = () => {
               return (
                 <div key={category.key} className="space-y-4 md:space-y-8">
                   <div className="flex items-center justify-center gap-3 md:gap-4">
-                    <h2 className="text-xl md:text-3xl lg:text-4xl font-display font-bold text-accent uppercase border-b-2 border-accent pb-2">
+                    <h2 className="text-xl md:text-3xl lg:text-4xl font-sans font-bold text-accent uppercase border-b-2 border-accent pb-2">
                       {category.displayTitle} ({categoryArtists.length})
                     </h2>
                     <Button
