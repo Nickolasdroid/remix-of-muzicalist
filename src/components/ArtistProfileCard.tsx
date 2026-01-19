@@ -30,7 +30,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl }: ArtistProfileCardProps) 
 
   return (
     <Link to={`/artist/${id}`} className="group block">
-      <div className="overflow-hidden rounded-lg transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105">
+      <div className="overflow-hidden rounded-lg">
         {/* Profile Image */}
         <div className="relative aspect-square overflow-hidden">
           {imageUrl ? (
