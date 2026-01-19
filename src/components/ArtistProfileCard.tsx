@@ -47,11 +47,11 @@ const ArtistProfileCard = ({ id, stageName, imageUrl }: ArtistProfileCardProps) 
         </div>
         
         {/* Info Section */}
-        <div className="bg-card border-t border-border p-3 space-y-1">
-          <h3 className="text-base font-sans font-semibold text-foreground text-center group-hover:text-accent transition-colors truncate">
+        <div className="bg-card border-t border-border p-2 space-y-0.5">
+          <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate">
             {stageName}
           </h3>
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-start gap-1">
             <Star className="h-4 w-4 text-accent fill-accent" />
             <span className="text-sm font-medium text-muted-foreground">
               {rating !== null ? rating.toFixed(1) : '-'}
