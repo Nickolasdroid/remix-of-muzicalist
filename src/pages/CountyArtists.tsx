@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { ArrowLeft, Grid, List, User } from "lucide-react";
+import { ArrowLeft, Grid, List } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -11,6 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import ArtistProfileCard from "@/components/ArtistProfileCard";
 
 interface Artist {
   id: string;
@@ -142,38 +143,17 @@ const CountyArtists = () => {
                       className="w-full max-w-7xl mx-auto"
                     >
                       <CarouselContent>
-                        {categoryArtists.map((artist) => {
-                          const isPremium = artist.plan === 'Premium';
-                          const borderColor = isPremium ? "border-accent" : "border-burgundy";
-                          
-                          return (
-                            <CarouselItem key={artist.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                              <div className="p-2">
-                                <Link to={`/artist/${artist.id}`} className="group">
-                                  <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
-                                    {artist.avatar_url ? (
-                                      <img 
-                                        src={artist.avatar_url} 
-                                        alt={artist.stage_name} 
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                                        <User className="h-16 w-16 text-accent" />
-                                      </div>
-                                    )}
-                                    
-                                    <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
-                                      <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
-                                        {artist.stage_name}
-                                      </h3>
-                                    </div>
-                                  </div>
-                                </Link>
-                              </div>
-                            </CarouselItem>
-                          );
-                        })}
+                        {categoryArtists.map((artist) => (
+                          <CarouselItem key={artist.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                            <div className="p-2">
+                              <ArtistProfileCard
+                                id={artist.id}
+                                stageName={artist.stage_name}
+                                imageUrl={artist.avatar_url}
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
                       </CarouselContent>
                       <CarouselPrevious className="left-0" />
                       <CarouselNext className="right-0" />

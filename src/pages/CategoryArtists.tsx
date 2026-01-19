@@ -1,7 +1,8 @@
 import Navigation from "@/components/Navigation";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Filter } from "lucide-react";
+import { ArrowLeft, Filter } from "lucide-react";
+import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -198,38 +199,14 @@ const CategoryArtists = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
             {filteredArtists.length > 0 ? (
-              filteredArtists.map((artist) => {
-                const isPremium = artist.plan === 'Premium';
-                const borderColor = isPremium ? "border-accent" : "border-burgundy";
-                
-                return (
-                  <Link 
-                    key={artist.id} 
-                    to={`/artist/${artist.id}`}
-                    className="group"
-                  >
-                    <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${borderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)] hover:scale-105`}>
-                      {artist.avatar_url ? (
-                        <img 
-                          src={artist.avatar_url} 
-                          alt={artist.stage_name} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                          <User className="h-16 w-16 text-accent" />
-                        </div>
-                      )}
-                      
-                      <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm p-3">
-                        <h3 className="text-base font-display font-semibold text-foreground text-center group-hover:text-accent transition-colors">
-                          {artist.stage_name}
-                        </h3>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })
+              filteredArtists.map((artist) => (
+                <ArtistProfileCard
+                  key={artist.id}
+                  id={artist.id}
+                  stageName={artist.stage_name}
+                  imageUrl={artist.avatar_url}
+                />
+              ))
             ) : (
               <div className="col-span-full text-center py-16">
                 <p className="text-xl text-muted-foreground">No artists found matching your filters</p>
