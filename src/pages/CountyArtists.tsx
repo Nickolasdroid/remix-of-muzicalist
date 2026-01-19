@@ -142,16 +142,14 @@ const CountyArtists = () => {
                       }}
                       className="w-full max-w-7xl mx-auto"
                     >
-                      <CarouselContent>
+                      <CarouselContent className="-ml-1">
                         {categoryArtists.map((artist) => (
-                          <CarouselItem key={artist.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                            <div className="p-2">
-                              <ArtistProfileCard
-                                id={artist.id}
-                                stageName={artist.stage_name}
-                                imageUrl={artist.avatar_url}
-                              />
-                            </div>
+                          <CarouselItem key={artist.id} className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                            <ArtistProfileCard
+                              id={artist.id}
+                              stageName={artist.stage_name}
+                              imageUrl={artist.avatar_url}
+                            />
                           </CarouselItem>
                         ))}
                       </CarouselContent>
