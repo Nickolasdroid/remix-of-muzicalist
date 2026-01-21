@@ -178,6 +178,7 @@ const Navigation = () => {
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/counties', icon: MapPin, label: 'Regions' },
     { to: '/about', icon: Info, label: 'About' },
+    ...(user ? [{ to: '/dashboard?tab=settings', icon: Settings, label: 'Settings' }] : []),
   ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
