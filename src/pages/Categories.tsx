@@ -3,7 +3,6 @@ import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-
 const Categories = () => {
   const [counts, setCounts] = useState({
     Singer: 0,
@@ -64,9 +63,7 @@ const Categories = () => {
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="text-center mb-8 md:mb-16">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
-          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Browse through our diverse collection of talented artists across different specializations
-          </p>
+          
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
