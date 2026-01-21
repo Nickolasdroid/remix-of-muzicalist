@@ -962,7 +962,7 @@ const ArtistProfile = () => {
 
                   {/* Reviews Section */}
                   <div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
                       <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
@@ -980,7 +980,7 @@ const ArtistProfile = () => {
                             return;
                           }
                           setReviewDialogOpen(true);
-                        }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto">
+                        }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">
                           Write a Review
                         </Button>}
                     </div>
