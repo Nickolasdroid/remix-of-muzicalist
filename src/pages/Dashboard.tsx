@@ -1780,7 +1780,7 @@ const Dashboard = () => {
                             </div>}
                          </div>
 
-                        <Separator className="my-8" />
+                        <Separator />
 
                         {/* Reviews Section */}
                         <div>
@@ -1829,7 +1829,7 @@ const Dashboard = () => {
                               <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
                             </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                               <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">No reviews yet</p>
+                              <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
                             </div>}
                         </div>
                       </TabsContent>
