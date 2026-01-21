@@ -1499,11 +1499,14 @@ const ArtistProfile = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="reviewComment">Your Review (Optional)</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="reviewComment">Your Review (Optional)</Label>
+                        <span className="text-xs text-muted-foreground">{reviewForm.comment.length}/100</span>
+                      </div>
                       <Textarea id="reviewComment" placeholder="Share your experience..." value={reviewForm.comment} onChange={e => setReviewForm({
                     ...reviewForm,
                     comment: e.target.value
-                  })} rows={4} maxLength={1000} />
+                  })} rows={3} maxLength={100} />
                     </div>
                     <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={submittingReview}>
                       {submittingReview ? "Submitting..." : "Submit Review"}
