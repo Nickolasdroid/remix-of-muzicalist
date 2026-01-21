@@ -198,9 +198,9 @@ const Navigation = () => {
 
   // User-specific sidebar links (only shown when logged in)
   const userSidebarLinks = [
-    { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
     { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
     { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+    { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
   ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
