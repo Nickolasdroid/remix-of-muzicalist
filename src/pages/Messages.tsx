@@ -116,9 +116,9 @@ const Messages = () => {
     };
   }, [user, selectedConversation?.id]);
   useEffect(() => {
-    if (!user || !artistId) return;
+    if (!user || !artistId || loading) return;
     handleArtistContact();
-  }, [user, artistId]);
+  }, [user, artistId, loading, conversations]);
   useEffect(() => {
     if (!selectedConversation || !user) return;
     fetchMessages(selectedConversation.id);
