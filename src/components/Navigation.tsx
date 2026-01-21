@@ -363,9 +363,7 @@ const Navigation = () => {
           <div className="flex items-center gap-1">
             <Link
               to="/search"
-              className={`p-2 transition-colors ${
-                isActive('/search') ? 'text-accent' : 'text-foreground/80 hover:text-accent'
-              }`}
+              className="p-2 text-foreground/80 hover:text-accent transition-colors"
             >
               <Search className="h-6 w-6" />
             </Link>
