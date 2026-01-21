@@ -118,13 +118,13 @@ const Announcements = () => {
         {/* Filter buttons */}
         <div className="max-w-[500px] mx-auto mb-1">
           <div className="flex gap-2 rounded-none border-none">
-            <Button variant={filter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('all')} className={`${filter === 'all' ? 'bg-accent text-accent-foreground' : ''} md:hover:bg-accent/10 active:bg-transparent`}>
+            <Button variant={filter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('all')} className={filter === 'all' ? 'bg-accent text-accent-foreground' : ''}>
               All
             </Button>
-            <Button variant={filter === 'promotion' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('promotion')} className={`${filter === 'promotion' ? 'bg-accent text-accent-foreground' : ''} md:hover:bg-accent/10 active:bg-transparent`}>
+            <Button variant={filter === 'promotion' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('promotion')} className={filter === 'promotion' ? 'bg-accent text-accent-foreground' : ''}>
               Promotions
             </Button>
-            <Button variant={filter === 'ads' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ads')} className={`${filter === 'ads' ? 'bg-accent text-accent-foreground' : ''} md:hover:bg-accent/10 active:bg-transparent`}>
+            <Button variant={filter === 'ads' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ads')} className={filter === 'ads' ? 'bg-accent text-accent-foreground' : ''}>
               Ads
             </Button>
           </div>
