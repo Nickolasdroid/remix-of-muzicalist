@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, Star } from "lucide-react";
+import { User, Star, Diamond } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -62,7 +62,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
               </span>
             </div>
             {isFree && (
-              <Star className="h-4 w-4 text-muted-foreground" />
+              <Diamond className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
         </div>
