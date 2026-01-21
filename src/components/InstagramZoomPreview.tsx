@@ -19,16 +19,15 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
       <DialogContent 
         className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 bg-transparent border-none shadow-none [&>button]:hidden"
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 z-50 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
         {/* Media container */}
-        <div className="flex items-center justify-center">
+        <div className="relative flex items-center justify-center">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 z-50 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
           {media.type === "video" ? (
             <video
               src={media.url}
