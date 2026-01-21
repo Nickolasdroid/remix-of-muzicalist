@@ -73,7 +73,7 @@ const CountySpecializationArtists = () => {
             </Button>
           </Link>
           <h1 className="text-xl md:text-2xl font-sans font-bold text-foreground">
-            {title} in {county}
+            {county}
           </h1>
           <div className="w-[76px]" /> {/* Spacer for alignment */}
         </div>
