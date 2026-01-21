@@ -1412,8 +1412,8 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl md:text-2xl font-display font-bold flex items-center gap-2">
-                              <User className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                            <h2 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
+                              <User className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               About Me
                             </h2>
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
