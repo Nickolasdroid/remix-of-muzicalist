@@ -195,7 +195,14 @@ const Navigation = () => {
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/counties', icon: MapPin, label: 'Regions' },
     { to: '/about', icon: Info, label: 'About' },
-    ...(user ? [{ to: '/dashboard?tab=settings', icon: Settings, label: 'Settings' }] : []),
+  ];
+
+  // User-specific sidebar links (only shown when logged in)
+  const userSidebarLinks = [
+    { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+    { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
+    { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+    { to: '/dashboard?tab=settings', icon: Settings, label: 'Settings' },
   ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
@@ -263,49 +270,16 @@ const Navigation = () => {
                   <PopoverContent align="end" className="w-64 bg-card border-accent/20 p-0">
                     <div className="p-4 border-b border-accent/20">
                       <p className="font-semibold text-accent">My Account</p>
+                      {profile?.stage_name && (
+                        <p className="text-sm text-foreground truncate">{profile.stage_name}</p>
+                      )}
                       {profile?.plan && (
                         <p className="text-sm text-muted-foreground">
                           Plan: <span className="font-semibold text-accent">{profile.plan}</span>
                         </p>
                       )}
                     </div>
-                    <div className="p-2 space-y-1">
-                      <button
-                        onClick={() => navigate('/dashboard?tab=profile')}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                      >
-                        <User className="h-4 w-4" />
-                        <span>Profile</span>
-                      </button>
-                      <button
-                        onClick={() => navigate('/notifications')}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Bell className="h-4 w-4" />
-                          <span>Notifications</span>
-                        </div>
-                        {unreadNotifications > 0 && (
-                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                          </span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => navigate('/messages')}
-                        className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                      >
-                        <div className="flex items-center gap-3">
-                          <MessageSquare className="h-4 w-4" />
-                          <span>Messages</span>
-                        </div>
-                        {unreadCount > 0 && (
-                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
-                        )}
-                      </button>
-                      <div className="h-px bg-accent/20 my-1" />
+                    <div className="p-2">
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
@@ -554,6 +528,34 @@ const Navigation = () => {
               <span className="font-medium">{link.label}</span>
             </Link>
           ))}
+
+          {/* User-specific links */}
+          {user && (
+            <>
+              <div className="h-px bg-border my-2" />
+              {userSidebarLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                    isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]))
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <link.icon className="h-5 w-5" />
+                    <span className="font-medium">{link.label}</span>
+                  </div>
+                  {link.badge && link.badge > 0 && (
+                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                      {link.badge > 9 ? '9+' : link.badge}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </>
+          )}
         </div>
       </aside>
 
