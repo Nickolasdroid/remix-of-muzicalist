@@ -458,7 +458,7 @@ const Navigation = () => {
       </nav>
 
       {/* Desktop: Left Sidebar - Always visible */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:block">
+      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
         {/* Logo at top of sidebar */}
         <div className="p-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg">
@@ -467,7 +467,8 @@ const Navigation = () => {
           </Link>
         </div>
         
-        <div className="p-4 space-y-1">
+        {/* Main navigation links */}
+        <div className="flex-1 p-4 space-y-1 overflow-y-auto">
           {/* Search Button */}
           <button
             onClick={() => setSearchDialogOpen(true)}
@@ -519,8 +520,10 @@ const Navigation = () => {
               ))}
             </>
           )}
+        </div>
 
-          {/* More Button with Popover */}
+        {/* More Button at bottom */}
+        <div className="p-4 border-t border-border">
           <Popover>
             <PopoverTrigger asChild>
               <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
@@ -528,41 +531,41 @@ const Navigation = () => {
                 <span className="font-medium">More</span>
               </button>
             </PopoverTrigger>
-            <PopoverContent side="right" align="end" className="w-48 bg-card border-border p-2 z-50">
+            <PopoverContent side="top" align="start" className="w-[calc(16rem-2rem)] bg-card border-border p-2 z-50">
               <div className="space-y-1">
                 {user && (
                   <Link
                     to="/dashboard?tab=settings"
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       location.search.includes('tab=settings')
                         ? 'bg-accent/20 text-accent'
                         : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
-                    <Settings className="h-4 w-4" />
-                    <span className="text-sm font-medium">Settings</span>
+                    <Settings className="h-5 w-5" />
+                    <span className="font-medium">Settings</span>
                   </Link>
                 )}
                 <Link
                   to="/about"
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                     isActive('/about')
                       ? 'bg-accent/20 text-accent'
                       : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
-                  <Info className="h-4 w-4" />
-                  <span className="text-sm font-medium">About</span>
+                  <Info className="h-5 w-5" />
+                  <span className="font-medium">About</span>
                 </Link>
                 {user && (
                   <>
                     <div className="h-px bg-border my-1" />
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                     >
-                      <LogOut className="h-4 w-4" />
-                      <span className="text-sm font-medium">Logout</span>
+                      <LogOut className="h-5 w-5" />
+                      <span className="font-medium">Logout</span>
                     </button>
                   </>
                 )}
