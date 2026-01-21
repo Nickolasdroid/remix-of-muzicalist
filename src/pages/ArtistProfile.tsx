@@ -1613,7 +1613,7 @@ const ArtistProfile = () => {
                       <Textarea id="message" placeholder="Tell us more about your event..." value={bookingForm.message} onChange={e => setBookingForm({
                     ...bookingForm,
                     message: e.target.value
-                  })} rows={4} />
+                  })} rows={1} className="resize-none" />
                     </div>
                     <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                       Send Booking Request
