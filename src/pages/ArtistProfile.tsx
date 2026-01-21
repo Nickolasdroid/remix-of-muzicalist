@@ -1249,16 +1249,15 @@ const ArtistProfile = () => {
                         Photos
                       </h2>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getImages().length > 0 ? getImages().map((image, index) => <Dialog key={image.id}>
-                              <DialogTrigger asChild>
-                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors">
-                                  <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                                </div>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-2 flex items-center justify-center">
-                                <img src={image.url} alt={`Gallery image ${index + 1}`} className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg" />
-                              </DialogContent>
-                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-8">
+                        {getImages().length > 0 ? getImages().map((image, index) => 
+                          <div 
+                            key={image.id}
+                            className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors"
+                            onClick={() => setMediaPreview({ url: image.url, type: "image" })}
+                          >
+                            <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                          </div>
+                        ) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No photos available yet.
                           </div>}
                       </div>
