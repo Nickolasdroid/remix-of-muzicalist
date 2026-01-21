@@ -244,24 +244,13 @@ const Navigation = () => {
       {/* Mobile: Top Header Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
         <div className="flex items-center justify-between h-14 px-4">
-          {/* Left: Search Button */}
-          <Link
-            to="/search"
-            className={`p-2 transition-colors ${
-              isActive('/search') ? 'text-accent' : 'text-foreground/80 hover:text-accent'
-            }`}
-          >
-            <Search className="h-6 w-6" />
-          </Link>
-
-          {/* Center: Menu + Logo */}
-          <div className="flex items-center gap-2">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
-                  <Menu className="h-6 w-6" />
-                </button>
-              </SheetTrigger>
+          {/* Left: Menu Button */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
+                <Menu className="h-6 w-6" />
+              </button>
+            </SheetTrigger>
             <SheetContent side="left" className="w-72 bg-background border-r border-border p-0 flex flex-col">
               {/* Logo */}
               <div className="p-4 border-b border-border">
@@ -369,26 +358,35 @@ const Navigation = () => {
             <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
             <span className="font-display font-bold text-foreground">Muzicalist</span>
           </Link>
-          </div>
 
-          {/* Right: Notifications Button */}
-          <button
-            onClick={() => {
-              if (user) {
-                navigate('/notifications');
-              } else {
-                navigate('/login');
-              }
-            }}
-            className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
-          >
-            <Bell className="h-6 w-6" />
-            {unreadNotifications > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
-                {unreadNotifications > 9 ? '9+' : unreadNotifications}
-              </span>
-            )}
-          </button>
+          {/* Right: Search + Notifications */}
+          <div className="flex items-center gap-1">
+            <Link
+              to="/search"
+              className={`p-2 transition-colors ${
+                isActive('/search') ? 'text-accent' : 'text-foreground/80 hover:text-accent'
+              }`}
+            >
+              <Search className="h-6 w-6" />
+            </Link>
+            <button
+              onClick={() => {
+                if (user) {
+                  navigate('/notifications');
+                } else {
+                  navigate('/login');
+                }
+              }}
+              className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
+            >
+              <Bell className="h-6 w-6" />
+              {unreadNotifications > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </nav>
 
