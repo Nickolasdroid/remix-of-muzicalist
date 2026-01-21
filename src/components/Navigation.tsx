@@ -450,10 +450,10 @@ const Navigation = () => {
 
       {/* Desktop: Left Sidebar - Always visible */}
       <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
-        {/* Logo at top of sidebar */}
-        <div className="p-4 border-b border-border">
-          <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg">
-            <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
+        {/* Logo at top of sidebar - h-16 to align with header */}
+        <div className="h-16 flex items-center px-4 border-b border-border">
+          <Link to="/feed" className="flex items-center gap-2">
+            <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
         </div>
