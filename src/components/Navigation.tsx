@@ -290,13 +290,6 @@ const Navigation = () => {
                       </button>
                       <div className="h-px bg-accent/20 my-1" />
                       <button
-                        onClick={() => navigate('/dashboard?tab=settings')}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/10 transition-colors text-left text-sm"
-                      >
-                        <Settings className="h-4 w-4" />
-                        <span>Settings</span>
-                      </button>
-                      <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
                       >
