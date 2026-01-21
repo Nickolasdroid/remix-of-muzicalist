@@ -84,17 +84,17 @@ const CountyArtists = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
-        <Link to="/counties">
-          <Button variant="outline" className="mb-6 md:mb-8">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </Link>
-
-        <div className="text-center mb-8 md:mb-16">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground">
+        <div className="flex items-center justify-between mb-6 md:mb-8">
+          <Link to="/counties">
+            <Button variant="outline" className="h-9 px-3">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          </Link>
+          <h1 className="text-xl md:text-2xl font-sans font-bold text-foreground">
             {county}
           </h1>
+          <div className="w-[76px]" /> {/* Spacer for alignment */}
         </div>
 
         {loading ? (
