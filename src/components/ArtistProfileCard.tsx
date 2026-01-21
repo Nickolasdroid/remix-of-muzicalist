@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, Star, Medal } from "lucide-react";
+import { User, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,13 +47,6 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
               <User className="h-16 w-16 text-accent" />
             </div>
           )}
-          
-          {/* Subscription tier icon */}
-          {isFree && (
-            <div className="absolute top-2 right-2">
-              <Medal className="h-5 w-5 text-muted-foreground" />
-            </div>
-          )}
         </div>
         
         {/* Info Section */}
@@ -61,11 +54,16 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
           <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate">
             {stageName}
           </h3>
-          <div className="flex items-center justify-start gap-1">
-            <Star className="h-4 w-4 text-accent fill-accent" />
-            <span className="text-sm font-medium text-muted-foreground">
-              {rating !== null ? rating.toFixed(1) : '-'}
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 text-accent fill-accent" />
+              <span className="text-sm font-medium text-muted-foreground">
+                {rating !== null ? rating.toFixed(1) : '-'}
+              </span>
+            </div>
+            {isFree && (
+              <Star className="h-4 w-4 text-muted-foreground" />
+            )}
           </div>
         </div>
       </div>
