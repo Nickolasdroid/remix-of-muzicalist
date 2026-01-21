@@ -114,9 +114,9 @@ const CountyArtists = () => {
                     </h2>
                     <Link to={`/counties/${county}/${category.key}`}>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
-                        className="text-accent hover:bg-accent/10 h-8 w-8 md:h-10 md:w-10"
+                        className="rounded-full border-accent text-accent hover:bg-accent hover:text-accent-foreground h-8 w-8 md:h-10 md:w-10"
                       >
                         <ChevronRight className="h-5 w-5" />
                       </Button>
