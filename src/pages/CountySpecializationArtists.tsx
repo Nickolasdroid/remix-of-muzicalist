@@ -12,6 +12,15 @@ interface Artist {
   plan: string;
 }
 
+type SpecializationType = "Singer" | "Instrumentalist" | "DJ" | "Band";
+
+const specializationMap: Record<string, SpecializationType> = {
+  singer: "Singer",
+  instrumentalist: "Instrumentalist",
+  dj: "DJ",
+  band: "Band",
+};
+
 const specializationTitles: Record<string, string> = {
   singer: "Singers",
   instrumentalist: "Instrumentalists",
@@ -28,12 +37,15 @@ const CountySpecializationArtists = () => {
     const fetchArtists = async () => {
       if (!county || !specialization) return;
       
+      const dbSpecialization = specializationMap[specialization.toLowerCase()];
+      if (!dbSpecialization) return;
+      
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, plan')
         .ilike('county', county)
-        .ilike('specialization', specialization);
+        .eq('specialization', dbSpecialization);
       
       if (error) {
         console.error('Error fetching artists:', error);
