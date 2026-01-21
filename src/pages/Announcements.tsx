@@ -217,7 +217,7 @@ const Announcements = () => {
                 {/* Contact button */}
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                    <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                       <MessageCircle className="w-5 h-5" />
                       <span className="font-medium">Contact</span>
                     </Button>

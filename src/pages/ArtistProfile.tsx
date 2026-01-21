@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 interface Profile {
   id: string;
   first_name: string;
@@ -1626,13 +1627,7 @@ const ArtistProfile = () => {
       </div>
 
       {/* Media Preview Dialog */}
-      <Dialog open={!!mediaPreview} onOpenChange={() => setMediaPreview(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none [&>button]:text-white">
-          <div className="flex items-center justify-center w-full h-full p-4">
-            {mediaPreview?.type === "video" ? <video src={mediaPreview.url} controls autoPlay className="max-w-full max-h-[85vh] object-contain" /> : <img src={mediaPreview?.url} alt="Full size preview" className="max-w-full max-h-[85vh] object-contain" />}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
       {/* Delete Review Confirmation Dialog */}
       <AlertDialog open={!!deleteReviewId} onOpenChange={open => !open && setDeleteReviewId(null)}>
