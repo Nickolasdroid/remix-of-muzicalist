@@ -1,20 +1,13 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X, MoreHorizontal } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -29,8 +22,6 @@ const Navigation = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -181,15 +172,6 @@ const Navigation = () => {
     };
   }, [user]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/categories?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchDialogOpen(false);
-      setSearchQuery("");
-    }
-  };
-
   const sidebarLinks = [
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
@@ -281,17 +263,19 @@ const Navigation = () => {
 
               {/* Main navigation - same order as desktop */}
               <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-                {/* Search Button */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setSearchDialogOpen(true);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+                {/* Search Link */}
+                <Link
+                  to="/search"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                    isActive('/search')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
                 >
                   <Search className="h-5 w-5" />
                   <span className="font-medium">Search</span>
-                </button>
+                </Link>
 
                 {/* Main Links: Categories, Leaderboard, Regions */}
                 {sidebarLinks.map((link) => (
@@ -450,14 +434,18 @@ const Navigation = () => {
         
         {/* Main navigation links */}
         <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {/* Search Button */}
-          <button
-            onClick={() => setSearchDialogOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+          {/* Search Link */}
+          <Link
+            to="/search"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+              isActive('/search')
+                ? 'bg-accent/20 text-accent'
+                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+            }`}
           >
             <Search className="h-5 w-5" />
             <span className="font-medium">Search</span>
-          </button>
+          </Link>
           
           {sidebarLinks.map((link) => (
             <Link
@@ -569,30 +557,6 @@ const Navigation = () => {
         </div>
       </aside>
 
-      {/* Search Dialog */}
-      <Dialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Search Artists</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSearch} className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search for artists, genres..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-full"
-                autoFocus
-              />
-            </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-              Search
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
