@@ -1266,20 +1266,9 @@ const Dashboard = () => {
                     {/* Header Section */}
                     
                     {/* Mobile Header Layout */}
-                    <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
-                      {/* Top row: Rating (left) */}
-                      <div className="absolute top-0 left-0 right-0 flex items-start justify-between z-10">
-                        <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                          <Star className="h-5 w-5 fill-current" />
-                          <span className="text-lg font-bold">{getAverageRating() || 'New'}</span>
-                          {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                        </div>
-                        {/* No action on the right for own profile */}
-                        <div />
-                      </div>
-
-                      {/* Centered Avatar - spaced down to account for absolute top row */}
-                      <div className="relative group cursor-pointer mt-10">
+                    <div className="flex md:hidden flex-col items-center gap-4 mb-6">
+                      {/* Centered Avatar */}
+                      <div className="relative group cursor-pointer">
                         <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                           <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
@@ -1298,6 +1287,13 @@ const Dashboard = () => {
                       <h1 className="text-2xl font-display font-bold text-foreground text-center">
                         {formData.stageName}
                       </h1>
+
+                      {/* Centered Rating badge */}
+                      <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                        <Star className="h-5 w-5 fill-current" />
+                        <span className="text-lg font-bold">{getAverageRating() || 'New'}</span>
+                        {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+                      </div>
 
                       {/* Centered Category + Location */}
                       <div className="flex flex-wrap items-center justify-center gap-3">
@@ -1780,19 +1776,17 @@ const Dashboard = () => {
                             </div>}
                          </div>
 
-                        <Separator />
+                        <Separator className="my-8" />
 
                         {/* Reviews Section */}
                         <div>
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                            <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
-                              <Star className="h-4 w-4 text-accent" />
-                              Reviews
-                              {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
-                                  ({getAverageRating()} • {reviews.length})
-                                </span>}
-                            </h3>
-                          </div>
+                          <h2 className="text-lg md:text-xl font-display mb-4 md:mb-6 flex items-center gap-2 text-left">
+                            <Star className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                            My Reviews
+                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                ({getAverageRating()} • {reviews.length})
+                              </span>}
+                          </h2>
                           
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
@@ -1827,9 +1821,10 @@ const Dashboard = () => {
                               </CarouselContent>
                               <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
                               <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                            </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
-                              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground mb-3">No reviews yet</p>
+                            </Carousel> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                              <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                              <p className="text-muted-foreground">No reviews yet</p>
+                              <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
                             </div>}
                         </div>
                       </TabsContent>
