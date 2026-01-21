@@ -1,32 +1,48 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail, MapPin } from "lucide-react";
 import logo from "@/assets/logo.png";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
-  const quickLinks = [
-    { title: "Home", href: "/" },
-    { title: "Categories", href: "/categories" },
-    { title: "Counties", href: "/counties" },
-    { title: "Leaderboard", href: "/leaderboard" },
-  ];
-
-  const artistLinks = [
-    { title: "Register as Artist", href: "/register" },
-    { title: "Login", href: "/login" },
-    { title: "About Us", href: "/about" },
-    { title: "Contact", href: "/contact" },
-  ];
-
-  const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Youtube, href: "#", label: "YouTube" },
-  ];
-
-  return (
-    <footer className="bg-card border-t border-border">
+  const quickLinks = [{
+    title: "Home",
+    href: "/"
+  }, {
+    title: "Categories",
+    href: "/categories"
+  }, {
+    title: "Counties",
+    href: "/counties"
+  }, {
+    title: "Leaderboard",
+    href: "/leaderboard"
+  }];
+  const artistLinks = [{
+    title: "Register as Artist",
+    href: "/register"
+  }, {
+    title: "Login",
+    href: "/login"
+  }, {
+    title: "About Us",
+    href: "/about"
+  }, {
+    title: "Contact",
+    href: "/contact"
+  }];
+  const socialLinks = [{
+    icon: Facebook,
+    href: "#",
+    label: "Facebook"
+  }, {
+    icon: Instagram,
+    href: "#",
+    label: "Instagram"
+  }, {
+    icon: Youtube,
+    href: "#",
+    label: "YouTube"
+  }];
+  return <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -34,21 +50,11 @@ const Footer = () => {
             <Link to="/" className="flex items-center gap-3">
               <img src={logo} alt="Logo" className="h-12 w-auto" />
             </Link>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Romania's premier platform connecting talented musicians with clients. 
-              Discover and book professional artists for your events.
-            </p>
+            
             <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-                >
+              {socialLinks.map(social => <a key={social.label} href={social.href} aria-label={social.label} className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300">
                   <social.icon className="h-5 w-5" />
-                </a>
-              ))}
+                </a>)}
             </div>
           </div>
 
@@ -58,16 +64,11 @@ const Footer = () => {
               Quick Links
             </h3>
             <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.title}>
-                  <Link
-                    to={link.href}
-                    className="text-muted-foreground hover:text-accent transition-colors duration-300"
-                  >
+              {quickLinks.map(link => <li key={link.title}>
+                  <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
                     {link.title}
                   </Link>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -77,16 +78,11 @@ const Footer = () => {
               For Artists
             </h3>
             <ul className="space-y-2">
-              {artistLinks.map((link) => (
-                <li key={link.title}>
-                  <Link
-                    to={link.href}
-                    className="text-muted-foreground hover:text-accent transition-colors duration-300"
-                  >
+              {artistLinks.map(link => <li key={link.title}>
+                  <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
                     {link.title}
                   </Link>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
 
@@ -101,13 +97,10 @@ const Footer = () => {
                 <span>contact@artistplatform.ro</span>
               </li>
               <li className="flex items-center gap-3 text-muted-foreground">
-                <Phone className="h-5 w-5 text-accent" />
-                <span>+40 123 456 789</span>
+                
+                
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground">
-                <MapPin className="h-5 w-5 text-accent" />
-                <span>București, România</span>
-              </li>
+              
             </ul>
           </div>
         </div>
@@ -127,8 +120,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
