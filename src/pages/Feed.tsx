@@ -261,7 +261,7 @@ const Feed = () => {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground cursor-pointer hover:underline" onClick={() => navigate(`/artist/${item.profile_id}`)}>
+                        <h3 className="font-medium text-foreground cursor-pointer hover:underline" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                             {item.profile.stage_name}
                           </h3>
                           {item.profile.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
