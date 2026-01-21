@@ -399,25 +399,6 @@ const Navigation = () => {
                   <>
                     <div className="h-px bg-border my-2" />
                     <Link
-                      to="/messages"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
-                        isActive('/messages')
-                          ? 'bg-accent/20 text-accent'
-                          : 'text-foreground/80 hover:bg-accent/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <MessageSquare className="h-5 w-5" />
-                        <span className="font-medium">Messages</span>
-                      </div>
-                      {unreadCount > 0 && (
-                        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
-                      )}
-                    </Link>
-                    <Link
                       to="/dashboard?tab=settings"
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
