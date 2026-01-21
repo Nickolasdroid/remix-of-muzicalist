@@ -327,12 +327,12 @@ const Feed = () => {
                 {/* Actions - Facebook style */}
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    <Button variant="ghost" size="sm" onClick={() => handleLike(item.id)} className={`flex-1 gap-2 rounded-md ${item.isLiked ? "text-red-500" : "text-muted-foreground hover:bg-muted"}`}>
+                    <Button variant="ghost" size="sm" onClick={() => handleLike(item.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent ${item.isLiked ? "text-red-500" : "text-muted-foreground"}`}>
                       <Heart className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
                       <span className="font-medium">Like</span>
                     </Button>
                     
-                    <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                    <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent">
                       <MessageCircle className="w-5 h-5" />
                       <span className="font-medium">Contact</span>
                     </Button>
