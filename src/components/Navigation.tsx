@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -194,7 +194,6 @@ const Navigation = () => {
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/counties', icon: MapPin, label: 'Regions' },
-    { to: '/about', icon: Info, label: 'About' },
   ];
 
   // User-specific sidebar links (only shown when logged in)
@@ -202,7 +201,6 @@ const Navigation = () => {
     { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
     { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
     { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-    { to: '/dashboard?tab=settings', icon: Settings, label: 'Settings' },
   ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
@@ -519,15 +517,58 @@ const Navigation = () => {
                   )}
                 </Link>
               ))}
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <LogOut className="h-5 w-5" />
-                <span className="font-medium">Logout</span>
-              </button>
             </>
           )}
+
+          {/* More Button with Popover */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
+                <MoreHorizontal className="h-5 w-5" />
+                <span className="font-medium">More</span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent side="right" align="end" className="w-48 bg-card border-border p-2 z-50">
+              <div className="space-y-1">
+                {user && (
+                  <Link
+                    to="/dashboard?tab=settings"
+                    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                      location.search.includes('tab=settings')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    }`}
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span className="text-sm font-medium">Settings</span>
+                  </Link>
+                )}
+                <Link
+                  to="/about"
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                    isActive('/about')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <Info className="h-4 w-4" />
+                  <span className="text-sm font-medium">About</span>
+                </Link>
+                {user && (
+                  <>
+                    <div className="h-px bg-border my-1" />
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </aside>
 
