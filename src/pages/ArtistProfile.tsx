@@ -144,20 +144,30 @@ const ArtistProfile = () => {
       } = await supabase.auth.getSession();
       setCurrentUserId(session?.user?.id || null);
       if (session?.user?.id) {
-        // Try to fetch user's profile for pre-filling review form
+        // Try to fetch user's profile for pre-filling review and booking forms
         const {
           data: profileData
         } = await supabase.from('profiles').select('first_name, last_name, email').eq('id', session.user.id).maybeSingle();
         if (profileData) {
           setCurrentUserProfile(profileData);
+          const fullName = `${profileData.first_name} ${profileData.last_name}`.trim();
           setReviewForm(prev => ({
             ...prev,
-            name: `${profileData.first_name} ${profileData.last_name}`.trim(),
+            name: fullName,
+            email: profileData.email
+          }));
+          setBookingForm(prev => ({
+            ...prev,
+            name: fullName,
             email: profileData.email
           }));
         } else {
           // Fallback to auth email if no profile exists
           setReviewForm(prev => ({
+            ...prev,
+            email: session.user.email || ''
+          }));
+          setBookingForm(prev => ({
             ...prev,
             email: session.user.email || ''
           }));
@@ -486,16 +496,16 @@ const ArtistProfile = () => {
         description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stage_name}.`
       });
       setBookingDialogOpen(false);
-      setBookingForm({
-        name: "",
-        email: "",
+      setBookingForm(prev => ({
+        name: currentUserProfile ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}`.trim() : "",
+        email: currentUserProfile?.email || "",
         phone: "",
         startTime: "",
         endTime: "",
         endDate: null,
         eventType: "",
         message: ""
-      });
+      }));
     } catch (error) {
       toast({
         title: "Error",
@@ -1522,14 +1532,14 @@ const ArtistProfile = () => {
                       <Input id="name" placeholder="Your name" value={bookingForm.name} onChange={e => setBookingForm({
                     ...bookingForm,
                     name: e.target.value
-                  })} required />
+                  })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
                       <Input id="email" type="email" placeholder="your.email@example.com" value={bookingForm.email} onChange={e => setBookingForm({
                     ...bookingForm,
                     email: e.target.value
-                  })} required />
+                  })} required readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
