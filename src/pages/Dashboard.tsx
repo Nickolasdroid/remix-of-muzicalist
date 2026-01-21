@@ -2286,7 +2286,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Date Details Form */}
-                            <div className="min-w-0">
+                            <div className="w-full lg:min-w-0 lg:w-auto">
                               {selectedDate ? <Card className="p-4 h-full">
                                   <h4 className="font-semibold text-foreground mb-3">
                                     {selectedDate.toLocaleDateString('en-US', {
@@ -2385,7 +2385,7 @@ const Dashboard = () => {
                                       </Button>}
                                     </div>
                                   </div>
-                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground px-[62px]">
+                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
                                   <p className="text-sm text-center">Select a date to set availability</p>
                                 </div>}
                             </div>
