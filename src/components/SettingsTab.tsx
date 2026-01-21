@@ -166,7 +166,7 @@ const SettingsTab = ({
           {/* Account Section */}
           {activeSection === "account" && <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-display font-bold text-foreground">Account</h2>
+                <h2 className="text-xl font-semibold text-foreground">Account</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   Manage your account settings
                 </p>
@@ -178,15 +178,15 @@ const SettingsTab = ({
                 {/* Email */}
                 <div className="space-y-2">
                   <div>
-                    <Label className="text-base font-medium">Email address</Label>
+                    <Label className="text-sm font-medium">Email address</Label>
                     <p className="text-sm text-muted-foreground">
                       Your email address is used for login and notifications
                     </p>
                   </div>
-                  <Input value={formData.email} disabled className="bg-muted/50" style={{
+                  <Input value={formData.email} disabled className="bg-muted/50 text-sm" style={{
                 width: `${Math.max(formData.email.length + 2, 20)}ch`
               }} />
-                  <p className="text-xs text-muted-foreground">Email cannot be changed</p>
+                  <p className="text-sm text-muted-foreground">Email cannot be changed</p>
                 </div>
 
                 <Separator />
@@ -194,12 +194,12 @@ const SettingsTab = ({
                 {/* Sign Out */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-base font-medium">Sign out</Label>
+                    <Label className="text-sm font-medium">Sign out</Label>
                     <p className="text-sm text-muted-foreground">
                       Sign out of your account on this device
                     </p>
                   </div>
-                  <Button variant="outline" onClick={handleLogout}>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
@@ -210,7 +210,7 @@ const SettingsTab = ({
                 {/* Change Password */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-base font-medium">Password</Label>
+                    <Label className="text-sm font-medium">Password</Label>
                     <p className="text-sm text-muted-foreground">
                       Change your password to keep your account secure
                     </p>
@@ -220,7 +220,7 @@ const SettingsTab = ({
                 if (!open) resetPasswordForm();
               }}>
                     <DialogTrigger asChild>
-                      <Button variant="outline">
+                      <Button variant="outline" size="sm">
                         <Lock className="h-4 w-4 mr-2" />
                         Change Password
                       </Button>
@@ -308,14 +308,14 @@ const SettingsTab = ({
                 {/* Delete Account */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-base font-medium text-destructive">Delete account</Label>
+                    <Label className="text-sm font-medium text-destructive">Delete account</Label>
                     <p className="text-sm text-muted-foreground">
                       Permanently delete your account and all data
                     </p>
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive">
+                      <Button variant="destructive" size="sm">
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete Account
                       </Button>
