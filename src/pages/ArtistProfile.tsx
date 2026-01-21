@@ -83,6 +83,7 @@ interface Post {
   media_type: string | null;
   created_at: string;
   likes: number;
+  isLiked: boolean;
 }
 interface MediaPreview {
   url: string;
@@ -217,7 +218,11 @@ const ArtistProfile = () => {
         ascending: false
       });
 
-      // Fetch likes count for each post
+      // Get current user session for checking likes
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+
+      // Fetch likes count and check if current user liked each post
       const postsWithLikes = await Promise.all((postsData || []).map(async post => {
         const {
           count
@@ -225,9 +230,22 @@ const ArtistProfile = () => {
           count: 'exact',
           head: true
         }).eq('post_id', post.id);
+
+        let isLiked = false;
+        if (userId) {
+          const { data: likeData } = await supabase
+            .from('post_likes')
+            .select('id')
+            .eq('post_id', post.id)
+            .eq('user_id', userId)
+            .maybeSingle();
+          isLiked = !!likeData;
+        }
+
         return {
           ...post,
-          likes: count || 0
+          likes: count || 0,
+          isLiked
         };
       }));
       setPosts(postsWithLikes);
@@ -303,6 +321,47 @@ const ArtistProfile = () => {
     return slots;
   };
   const isOwnProfile = currentUserId === id;
+
+  const handlePostLike = async (postId: string) => {
+    if (!currentUserId) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like posts."
+      });
+      navigate('/login');
+      return;
+    }
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    // Optimistic update
+    setPosts(currentPosts => currentPosts.map(p => p.id === postId ? {
+      ...p,
+      isLiked: !p.isLiked,
+      likes: p.isLiked ? p.likes - 1 : p.likes + 1
+    } : p));
+
+    try {
+      if (post.isLiked) {
+        // Unlike
+        await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', currentUserId);
+      } else {
+        // Like
+        await supabase.from('post_likes').insert({
+          post_id: postId,
+          user_id: currentUserId
+        });
+      }
+    } catch (error) {
+      // Revert on error
+      setPosts(currentPosts => currentPosts.map(p => p.id === postId ? {
+        ...p,
+        isLiked: post.isLiked,
+        likes: post.likes
+      } : p));
+      console.error('Error toggling like:', error);
+    }
+  };
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (!date) return;
@@ -1050,8 +1109,13 @@ const ArtistProfile = () => {
                             {/* Actions */}
                             <div className="px-2 py-1">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
-                                  <Heart className="w-5 h-5" />
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => handlePostLike(post.id)}
+                                  className={`flex-1 gap-2 rounded-md hover:bg-muted ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
+                                >
+                                  <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
                                   <span className="font-medium">Like</span>
                                 </Button>
                                 
