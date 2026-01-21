@@ -68,10 +68,6 @@ const Search = () => {
       {/* Main content */}
       <main className="pt-14 pb-20 md:pt-16 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-display font-bold text-foreground mb-6">
-            Search Artists
-          </h1>
-          
           {/* Search Input */}
           <div className="relative mb-6">
             <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
