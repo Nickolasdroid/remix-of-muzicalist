@@ -816,7 +816,7 @@ const ArtistProfile = () => {
                 <TabsContent value="details" className="space-y-4 md:space-y-8">
                   {/* Description */}
                   <div>
-                    <h2 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                    <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
                       <User className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       About
                     </h2>
@@ -831,7 +831,7 @@ const ArtistProfile = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                     {/* Music Genres */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <h3 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
                         <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Music Genres
                       </h3>
@@ -844,7 +844,7 @@ const ArtistProfile = () => {
 
                     {/* Experience */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <h3 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Experience
                       </h3>
@@ -861,7 +861,7 @@ const ArtistProfile = () => {
 
                     {/* Estimated Prices */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <h3 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
                         <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Estimated Price
                       </h3>
@@ -877,7 +877,7 @@ const ArtistProfile = () => {
 
                   {/* Contact Information */}
                   <div>
-                    <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Contact Information</h3>
+                    <h3 className="text-lg md:text-xl font-display mb-3 md:mb-4 text-left">Contact Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {currentUserId ? <>
                           <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
@@ -935,7 +935,7 @@ const ArtistProfile = () => {
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Social Networks</h3>
+                    <h3 className="text-lg md:text-xl font-display mb-3 md:mb-4 text-left">Social Networks</h3>
                     <div className="flex flex-wrap gap-2 md:gap-3">
                       {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Facebook">
                           <Facebook className="h-5 w-5 md:h-6 md:w-6 text-accent" />
@@ -963,7 +963,7 @@ const ArtistProfile = () => {
                   {/* Reviews Section */}
                   <div>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                      <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2 text-left">
+                      <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
                         <Star className="h-4 w-4 text-accent" />
                         Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
