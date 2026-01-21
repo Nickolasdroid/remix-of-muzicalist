@@ -1266,9 +1266,20 @@ const Dashboard = () => {
                     {/* Header Section */}
                     
                     {/* Mobile Header Layout */}
-                    <div className="flex md:hidden flex-col items-center gap-4 mb-6">
-                      {/* Centered Avatar */}
-                      <div className="relative group cursor-pointer">
+                    <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
+                      {/* Top row: Rating (left) */}
+                      <div className="absolute top-0 left-0 right-0 flex items-start justify-between z-10">
+                        <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                          <Star className="h-5 w-5 fill-current" />
+                          <span className="text-lg font-bold">{getAverageRating() || 'New'}</span>
+                          {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+                        </div>
+                        {/* No action on the right for own profile */}
+                        <div />
+                      </div>
+
+                      {/* Centered Avatar - spaced down to account for absolute top row */}
+                      <div className="relative group cursor-pointer mt-10">
                         <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                           <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
@@ -1287,13 +1298,6 @@ const Dashboard = () => {
                       <h1 className="text-2xl font-display font-bold text-foreground text-center">
                         {formData.stageName}
                       </h1>
-
-                      {/* Centered Rating badge */}
-                      <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                        <Star className="h-5 w-5 fill-current" />
-                        <span className="text-lg font-bold">{getAverageRating() || 'New'}</span>
-                        {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                      </div>
 
                       {/* Centered Category + Location */}
                       <div className="flex flex-wrap items-center justify-center gap-3">
