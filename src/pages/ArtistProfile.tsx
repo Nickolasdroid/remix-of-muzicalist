@@ -661,10 +661,33 @@ const ArtistProfile = () => {
 
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
-            {/* Mobile Header Layout - Centered like Dashboard */}
-            <div className="flex md:hidden flex-col items-center gap-4 mb-6">
-              {/* Centered Avatar */}
-              <div className={`p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+            {/* Mobile Header Layout */}
+            <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
+              {/* Top row: Rating (left) and Contact (right) */}
+              <div className="absolute top-0 left-0 right-0 flex items-start justify-between z-10">
+                {/* Rating badge - top left */}
+                <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
+                  <Star className="h-4 w-4 fill-current" />
+                  <span className="text-sm font-bold">{getAverageRating() || 'N/A'}</span>
+                  {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                </div>
+
+                {/* Contact button - top right */}
+                {currentUserId && currentUserId !== artist.id ? (
+                  <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    Contact
+                  </Button>
+                ) : !currentUserId ? (
+                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    Contact
+                  </Button>
+                ) : null}
+              </div>
+
+              {/* Centered Avatar - with top padding to account for absolute positioned elements */}
+              <div className={`mt-10 p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
                 <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                   <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                   <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -677,13 +700,6 @@ const ArtistProfile = () => {
               <h1 className="text-2xl font-display font-bold text-foreground text-center">
                 {artist.stage_name}
               </h1>
-
-              {/* Centered Rating badge */}
-              <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                <Star className="h-5 w-5 fill-current" />
-                <span className="text-lg font-bold">{getAverageRating() || 'N/A'}</span>
-                {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-              </div>
 
               {/* Centered Category + Location */}
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -698,19 +714,6 @@ const ArtistProfile = () => {
                   )}
                 </div>
               </div>
-
-              {/* Centered Contact button */}
-              {currentUserId && currentUserId !== artist.id ? (
-                <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Contact
-                </Button>
-              ) : !currentUserId ? (
-                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Contact
-                </Button>
-              ) : null}
             </div>
 
             {/* Desktop Header Layout */}
