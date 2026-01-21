@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { User, Star, Diamond } from "lucide-react";
+import { User, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import diamondIcon from "@/assets/diamond-icon.png";
 
 interface ArtistProfileCardProps {
   id: string;
@@ -62,7 +63,11 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
               </span>
             </div>
             {isFree && (
-              <Diamond className="h-4 w-4 text-muted-foreground" />
+              <img 
+                src={diamondIcon} 
+                alt="Free tier" 
+                className="h-4 w-4 opacity-50 grayscale"
+              />
             )}
           </div>
         </div>
