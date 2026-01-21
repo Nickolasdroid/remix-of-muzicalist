@@ -107,6 +107,7 @@ const ArtistProfile = () => {
     first_name: string;
     last_name: string;
     email: string;
+    phone: string;
   } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
@@ -147,7 +148,7 @@ const ArtistProfile = () => {
         // Try to fetch user's profile for pre-filling review and booking forms
         const {
           data: profileData
-        } = await supabase.from('profiles').select('first_name, last_name, email').eq('id', session.user.id).maybeSingle();
+        } = await supabase.from('profiles').select('first_name, last_name, email, phone').eq('id', session.user.id).maybeSingle();
         if (profileData) {
           setCurrentUserProfile(profileData);
           const fullName = `${profileData.first_name} ${profileData.last_name}`.trim();
@@ -159,7 +160,8 @@ const ArtistProfile = () => {
           setBookingForm(prev => ({
             ...prev,
             name: fullName,
-            email: profileData.email
+            email: profileData.email,
+            phone: profileData.phone || ''
           }));
         } else {
           // Fallback to auth email if no profile exists
@@ -499,7 +501,7 @@ const ArtistProfile = () => {
       setBookingForm(prev => ({
         name: currentUserProfile ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}`.trim() : "",
         email: currentUserProfile?.email || "",
-        phone: "",
+        phone: currentUserProfile?.phone || "",
         startTime: "",
         endTime: "",
         endDate: null,
@@ -1546,7 +1548,7 @@ const ArtistProfile = () => {
                       <Input id="phone" type="tel" placeholder="+40 712 345 678" value={bookingForm.phone} onChange={e => setBookingForm({
                     ...bookingForm,
                     phone: e.target.value
-                  })} required />
+                  })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label>Start Time</Label>
