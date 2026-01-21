@@ -1051,7 +1051,7 @@ const ArtistProfile = () => {
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <h3 className="font-semibold text-foreground">
+                                      <h3 className="font-medium text-foreground">
                                         {artist?.stage_name}
                                       </h3>
                                       {artist?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
@@ -1156,7 +1156,7 @@ const ArtistProfile = () => {
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <h3 className="font-semibold text-foreground">
+                                      <h3 className="font-medium text-foreground">
                                         {artist?.stage_name}
                                       </h3>
                                       {artist?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
