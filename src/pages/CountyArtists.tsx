@@ -1,10 +1,17 @@
 import Navigation from "@/components/Navigation";
-import { ArrowLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, Grid, List } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import ArtistProfileCard from "@/components/ArtistProfileCard";
 
 interface Artist {
   id: string;
@@ -16,7 +23,12 @@ interface Artist {
 
 const CountyArtists = () => {
   const { county } = useParams<{ county: string }>();
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [viewModes, setViewModes] = useState<Record<string, 'carousel' | 'list'>>({
+    singer: 'carousel',
+    instrumentalist: 'carousel',
+    dj: 'carousel',
+    band: 'carousel',
+  });
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,10 +53,10 @@ const CountyArtists = () => {
     fetchArtists();
   }, [county]);
 
-  const toggleCategory = (categoryKey: string) => {
-    setExpandedCategories(prev => ({
+  const toggleViewMode = (category: string) => {
+    setViewModes(prev => ({
       ...prev,
-      [categoryKey]: !prev[categoryKey]
+      [category]: prev[category] === 'carousel' ? 'list' : 'carousel'
     }));
   };
 
@@ -53,10 +65,30 @@ const CountyArtists = () => {
   };
 
   const categories = [
-    { key: "singer", title: "Singers" },
-    { key: "instrumentalist", title: "Instrumentalists" },
-    { key: "dj", title: "DJs" },
-    { key: "band", title: "Bands" },
+    {
+      key: "singer",
+      title: "Singers",
+      displayTitle: "SINGERS",
+      href: `/counties/${county}/soloists`,
+    },
+    {
+      key: "instrumentalist",
+      title: "Instrumentalists",
+      displayTitle: "INSTRUMENTALISTS",
+      href: `/counties/${county}/instrumentalists`,
+    },
+    {
+      key: "dj",
+      title: "DJs",
+      displayTitle: "DJS",
+      href: `/counties/${county}/djs`,
+    },
+    {
+      key: "band",
+      title: "Bands",
+      displayTitle: "BANDS",
+      href: `/counties/${county}/bands`,
+    },
   ];
 
   return (
@@ -64,70 +96,91 @@ const CountyArtists = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
-        {/* Header with Back button and centered county name */}
-        <div className="flex items-center justify-between mb-8 md:mb-12">
-          <Link to="/counties">
-            <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              Back
-            </Button>
-          </Link>
+        <Link to="/counties">
+          <Button variant="outline" className="mb-6 md:mb-8">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        </Link>
 
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground">
             {county}
           </h1>
-
-          {/* Empty div to balance the flex layout */}
-          <div className="w-[70px] md:w-[80px]" />
         </div>
 
         {loading ? (
           <div className="text-center text-muted-foreground">Loading artists...</div>
         ) : (
-          <div className="space-y-3 max-w-2xl mx-auto">
+          <div className="space-y-10 md:space-y-16 max-w-7xl mx-auto">
             {categories.map((category) => {
               const categoryArtists = getArtistsBySpecialization(category.key);
-              const isExpanded = expandedCategories[category.key];
               
               if (categoryArtists.length === 0) return null;
               
               return (
-                <div key={category.key} className="border border-border rounded-lg overflow-hidden">
-                  {/* Category row */}
-                  <button
-                    onClick={() => toggleCategory(category.key)}
-                    className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
-                  >
-                    <span className="text-base md:text-lg font-semibold text-foreground">
-                      {category.title} ({categoryArtists.length})
-                    </span>
-                    {isExpanded ? (
-                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </button>
-
-                  {/* Expanded artist list */}
-                  {isExpanded && (
-                    <div className="border-t border-border">
-                      {categoryArtists.map((artist) => (
-                        <Link 
-                          key={artist.id} 
-                          to={`/artist/${artist.id}`}
-                          className="flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors border-b border-border last:border-b-0"
-                        >
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                            <AvatarFallback className="bg-accent/20 text-accent text-sm">
-                              {artist.stage_name.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm md:text-base font-medium text-foreground">
-                            {artist.stage_name}
-                          </span>
-                        </Link>
-                      ))}
+                <div key={category.key} className="space-y-4 md:space-y-8">
+                  <div className="flex items-center justify-center gap-3 md:gap-4">
+                    <h2 className="text-xl md:text-3xl lg:text-4xl font-sans font-bold text-accent uppercase border-b-2 border-accent pb-2">
+                      {category.displayTitle} ({categoryArtists.length})
+                    </h2>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => toggleViewMode(category.key)}
+                      className="border-accent text-accent hover:bg-accent hover:text-accent-foreground h-8 w-8 md:h-10 md:w-10"
+                    >
+                      {viewModes[category.key] === 'carousel' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
+                    </Button>
+                  </div>
+                  
+                  {viewModes[category.key] === 'carousel' ? (
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                      className="w-full max-w-7xl mx-auto"
+                    >
+                      <CarouselContent className="-ml-1">
+                        {categoryArtists.map((artist) => (
+                          <CarouselItem key={artist.id} className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                            <ArtistProfileCard
+                              id={artist.id}
+                              stageName={artist.stage_name}
+                              imageUrl={artist.avatar_url}
+                              plan={artist.plan}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-0" />
+                      <CarouselNext className="right-0" />
+                    </Carousel>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
+                      {categoryArtists.map((artist) => {
+                        const isPremium = artist.plan === 'Premium';
+                        const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
+                        const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
+                        const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
+                        const avatarBorderColor = isPremium ? "border-accent" : "border-burgundy";
+                        
+                        return (
+                          <Link key={artist.id} to={`/artist/${artist.id}`}>
+                            <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
+                              <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
+                                {artist.avatar_url ? (
+                                  <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
+                                )}
+                              </div>
+                              <p className="text-lg font-semibold text-foreground">{artist.stage_name}</p>
+                            </div>
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
