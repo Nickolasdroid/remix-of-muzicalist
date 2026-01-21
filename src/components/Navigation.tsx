@@ -270,7 +270,7 @@ const Navigation = () => {
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 bg-background border-r border-border p-0">
+            <SheetContent side="left" className="w-72 bg-background border-r border-border p-0 flex flex-col">
               {/* Logo */}
               <div className="p-4 border-b border-border">
                 <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
@@ -279,8 +279,9 @@ const Navigation = () => {
                 </Link>
               </div>
 
-              {/* Search Button - same as desktop */}
-              <div className="p-4 border-b border-border">
+              {/* Main navigation - same order as desktop */}
+              <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+                {/* Search Button */}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
@@ -291,28 +292,8 @@ const Navigation = () => {
                   <Search className="h-5 w-5" />
                   <span className="font-medium">Search</span>
                 </button>
-              </div>
 
-              {/* User Section (if logged in) */}
-              {user && profile && (
-                <div className="p-4 border-b border-border">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 ring-2 ring-accent/30">
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback className="bg-accent text-accent-foreground">
-                        {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground truncate">{profile?.stage_name || 'User'}</p>
-                      <p className="text-sm text-muted-foreground">{profile?.plan || 'Free'} Plan</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Links */}
-              <div className="p-4 space-y-1">
+                {/* Main Links: Categories, Leaderboard, Regions */}
                 {sidebarLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -321,7 +302,7 @@ const Navigation = () => {
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       isActive(link.to.split('?')[0])
                         ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <link.icon className="h-5 w-5" />
@@ -329,29 +310,70 @@ const Navigation = () => {
                   </Link>
                 ))}
 
-                {/* User-specific links */}
+                {/* User-specific links: Notifications, Messages, Profile */}
                 {user && (
                   <>
                     <div className="h-px bg-border my-2" />
-                    <Link
-                      to="/dashboard?tab=settings"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                        location.search.includes('tab=settings')
-                          ? 'bg-accent/20 text-accent'
-                          : 'text-foreground/80 hover:bg-accent/10'
-                      }`}
-                    >
-                      <Settings className="h-5 w-5" />
-                      <span className="font-medium">Settings</span>
-                    </Link>
+                    {userSidebarLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                          isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]))
+                            ? 'bg-accent/20 text-accent'
+                            : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <link.icon className="h-5 w-5" />
+                          <span className="font-medium">{link.label}</span>
+                        </div>
+                        {link.badge && link.badge > 0 && (
+                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                            {link.badge > 9 ? '9+' : link.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
                   </>
                 )}
+              </div>
 
-                <div className="h-px bg-border my-2" />
+              {/* Bottom section - Settings, About, Country, Logout (like desktop "More") */}
+              <div className="p-4 border-t border-border space-y-1">
+                {user && (
+                  <Link
+                    to="/dashboard?tab=settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                      location.search.includes('tab=settings')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    }`}
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span className="font-medium">Settings</span>
+                  </Link>
+                )}
+                
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                    isActive('/about')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <Info className="h-5 w-5" />
+                  <span className="font-medium">About</span>
+                </Link>
 
-                {/* Country Selector in Menu */}
-                <div className="px-3 py-3">
+                <div className="h-px bg-border my-1" />
+
+                {/* Country Selector */}
+                <div className="px-3 py-2">
                   <p className="text-xs text-muted-foreground mb-2 font-medium">Filter by Country</p>
                   <CountrySelector 
                     variant="navigation" 
@@ -360,7 +382,6 @@ const Navigation = () => {
                     userCountry={profile?.country}
                   />
                 </div>
-
 
                 {user ? (
                   <button
