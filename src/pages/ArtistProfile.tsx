@@ -661,62 +661,56 @@ const ArtistProfile = () => {
 
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
-            {/* Mobile Header Layout */}
-            <div className="flex md:hidden flex-col gap-2 mb-4">
-              {/* Row 1: Avatar + Name + Rating */}
-              <div className="flex items-start gap-3">
-                {/* Small Avatar - top left */}
-                <div className="flex-shrink-0">
-                  <div className={`p-0.5 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
-                    <Avatar className="w-14 h-14 border-2 border-background shadow-md">
-                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                      <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                        <User className={`h-7 w-7 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                </div>
+            {/* Mobile Header Layout - Centered like Dashboard */}
+            <div className="flex md:hidden flex-col items-center gap-4 mb-6">
+              {/* Centered Avatar */}
+              <div className={`p-1 rounded-full bg-gradient-to-br ${isPremium ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
+                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                  <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                    <User className={`h-12 w-12 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                  </AvatarFallback>
+                </Avatar>
+              </div>
 
-                {/* Name */}
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-lg font-display font-bold text-foreground truncate">
-                    {artist.stage_name}
-                  </h1>
-                </div>
+              {/* Centered Name */}
+              <h1 className="text-2xl font-display font-bold text-foreground text-center">
+                {artist.stage_name}
+              </h1>
 
-                {/* Rating badge */}
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent text-accent-foreground shadow-md flex-shrink-0">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-bold">{getAverageRating() || 'N/A'}</span>
-                  {reviews.length > 0 && <span className="text-[10px] opacity-80">({reviews.length})</span>}
+              {/* Centered Rating badge */}
+              <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                <Star className="h-5 w-5 fill-current" />
+                <span className="text-lg font-bold">{getAverageRating() || 'N/A'}</span>
+                {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+              </div>
+
+              {/* Centered Category + Location */}
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
+                    {artist.specialization}
+                  </Badge>}
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{artist.county}</span>
+                  {artist.country && getCountryFlag(artist.country) && (
+                    <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>
+                  )}
                 </div>
               </div>
 
-              {/* Row 2: Category + Location + Contact Button */}
-              <div className="flex items-center gap-2 pl-[68px]">
-                {/* Category and Location */}
-                <div className="flex-1 flex items-center gap-2 min-w-0">
-                  {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-2 py-0.5 text-xs font-semibold flex-shrink-0">
-                      {artist.specialization}
-                    </Badge>}
-                  <div className="flex items-center gap-1 text-muted-foreground min-w-0">
-                    <MapPin className="h-3 w-3 flex-shrink-0" />
-                    <span className="text-xs truncate">{artist.county}</span>
-                    {artist.country && getCountryFlag(artist.country) && (
-                      <span className="text-sm" title={artist.country}>{getCountryFlag(artist.country)}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Contact button */}
-                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" size="sm">
-                    <MessageCircle className="mr-1 h-3 w-3" />
-                    Contact
-                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90 h-7 px-3 text-xs flex-shrink-0" onClick={() => navigate('/login')} size="sm">
-                    <MessageCircle className="mr-1 h-3 w-3" />
-                    Contact
-                  </Button> : null}
-              </div>
+              {/* Centered Contact button */}
+              {currentUserId && currentUserId !== artist.id ? (
+                <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Contact
+                </Button>
+              ) : !currentUserId ? (
+                <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Contact
+                </Button>
+              ) : null}
             </div>
 
             {/* Desktop Header Layout */}
