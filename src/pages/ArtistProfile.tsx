@@ -1125,13 +1125,13 @@ const ArtistProfile = () => {
                                   variant="ghost" 
                                   size="sm" 
                                   onClick={() => handlePostLike(post.id)}
-                                  className={`flex-1 gap-2 rounded-md hover:bg-muted ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
+                                  className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
                                 >
                                   <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
                                   <span className="font-medium">Like</span>
                                 </Button>
                                 
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                                   <MessageCircle className="w-5 h-5" />
                                   <span className="font-medium">Contact</span>
                                 </Button>
@@ -1224,7 +1224,7 @@ const ArtistProfile = () => {
                             {/* Contact button */}
                             <div className="px-2 py-2">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-muted">
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                                   <MessageCircle className="w-5 h-5" />
                                   <span className="font-medium">Contact</span>
                                 </Button>
