@@ -246,7 +246,7 @@ const Navigation = () => {
               </Link>
             </div>
 
-            {/* Right: Country Selector & User */}
+            {/* Right: Country Selector & Login/Register (only when not logged in) */}
             <div className="flex items-center gap-2">
               <CountrySelector 
                 variant="navigation" 
@@ -255,42 +255,7 @@ const Navigation = () => {
                 userCountry={profile?.country}
               />
               
-              {user ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="flex items-center gap-2 text-foreground/80 hover:text-accent transition-colors focus:outline-none">
-                      <Avatar className="h-8 w-8 ring-2 ring-accent/30">
-                        <AvatarImage src={profile?.avatar_url} />
-                        <AvatarFallback className="bg-accent text-accent-foreground text-xs">
-                          {profile?.stage_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="end" className="w-64 bg-card border-accent/20 p-0">
-                    <div className="p-4 border-b border-accent/20">
-                      <p className="font-semibold text-accent">My Account</p>
-                      {profile?.stage_name && (
-                        <p className="text-sm text-foreground truncate">{profile.stage_name}</p>
-                      )}
-                      {profile?.plan && (
-                        <p className="text-sm text-muted-foreground">
-                          Plan: <span className="font-semibold text-accent">{profile.plan}</span>
-                        </p>
-                      )}
-                    </div>
-                    <div className="p-2">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors text-left text-sm"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ) : (
+              {!user && (
                 <>
                   <Link to="/login">
                     <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
@@ -554,6 +519,13 @@ const Navigation = () => {
                   )}
                 </Link>
               ))}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="font-medium">Logout</span>
+              </button>
             </>
           )}
         </div>
