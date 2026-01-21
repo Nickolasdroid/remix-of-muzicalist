@@ -1412,7 +1412,7 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
+                            <h2 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
                               <User className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               About Me
                             </h2>
@@ -1458,7 +1458,7 @@ const Dashboard = () => {
                           {/* Music Genres */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-lg md:text-xl font-display flex items-center gap-2">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
                                 <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Music Genres
                               </h3>
@@ -1561,7 +1561,7 @@ const Dashboard = () => {
                           {/* Experience */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-lg md:text-xl font-display flex items-center gap-2">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
                                 <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Experience
                               </h3>
@@ -1617,7 +1617,7 @@ const Dashboard = () => {
                           {/* Estimated Price */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-lg md:text-xl font-display flex items-center gap-2">
+                              <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2">
                                 <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 Estimated Price
                               </h3>
@@ -1652,7 +1652,7 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-lg md:text-xl font-display mb-3 md:mb-4 text-left">Contact Information</h3>
+                          <h3 className="text-lg md:text-xl font-display font-bold mb-3 md:mb-4 text-left">Contact Information</h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -1696,7 +1696,7 @@ const Dashboard = () => {
                         {/* Social Networks */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-3 md:mb-4">
-                            <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
+                            <h3 className="text-lg md:text-xl font-display font-bold flex items-center gap-2 text-left">
                               <LinkIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               Social Networks
                             </h3>
@@ -1780,7 +1780,7 @@ const Dashboard = () => {
 
                         {/* Reviews Section */}
                         <div>
-                          <h2 className="text-lg md:text-xl font-display mb-4 md:mb-6 flex items-center gap-2 text-left">
+                          <h2 className="text-lg md:text-xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2 text-left">
                             <Star className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                             My Reviews
                             {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
