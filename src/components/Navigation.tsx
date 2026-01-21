@@ -279,16 +279,18 @@ const Navigation = () => {
                 </Link>
               </div>
 
-              {/* Search */}
+              {/* Search Button - same as desktop */}
               <div className="p-4 border-b border-border">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search"
-                    className="pl-9 w-full bg-background/50 border-border focus:border-accent"
-                  />
-                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setSearchDialogOpen(true);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+                >
+                  <Search className="h-5 w-5" />
+                  <span className="font-medium">Search</span>
+                </button>
               </div>
 
               {/* User Section (if logged in) */}
