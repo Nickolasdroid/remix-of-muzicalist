@@ -8,6 +8,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +29,8 @@ const Navigation = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -172,6 +180,15 @@ const Navigation = () => {
       supabase.removeChannel(channel);
     };
   }, [user]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/categories?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchDialogOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   const sidebarLinks = [
     { to: '/categories', icon: Users, label: 'Categories' },
@@ -505,23 +522,24 @@ const Navigation = () => {
 
       {/* Desktop: Left Sidebar - Always visible */}
       <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:block">
-        {/* Logo and Search at top of sidebar */}
+        {/* Logo at top of sidebar */}
         <div className="p-4 border-b border-border">
-          <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg mb-3">
+          <Link to="/feed" className="flex items-center gap-2 p-2 rounded-lg">
             <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search"
-              className="pl-9 w-full bg-background/50 border-border focus:border-accent"
-            />
-          </div>
         </div>
         
         <div className="p-4 space-y-1">
+          {/* Search Button */}
+          <button
+            onClick={() => setSearchDialogOpen(true)}
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent"
+          >
+            <Search className="h-5 w-5" />
+            <span className="font-medium">Search</span>
+          </button>
+          
           {sidebarLinks.map((link) => (
             <Link
               key={link.to}
@@ -538,6 +556,31 @@ const Navigation = () => {
           ))}
         </div>
       </aside>
+
+      {/* Search Dialog */}
+      <Dialog open={searchDialogOpen} onOpenChange={setSearchDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Search Artists</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search for artists, genres..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 w-full"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              Search
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
