@@ -149,6 +149,7 @@ const CountyArtists = () => {
                               id={artist.id}
                               stageName={artist.stage_name}
                               imageUrl={artist.avatar_url}
+                              plan={artist.plan}
                             />
                           </CarouselItem>
                         ))}

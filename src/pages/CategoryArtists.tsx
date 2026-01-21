@@ -200,11 +200,12 @@ const CategoryArtists = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-w-7xl mx-auto">
             {filteredArtists.length > 0 ? (
               filteredArtists.map((artist) => (
-                <ArtistProfileCard
+              <ArtistProfileCard
                   key={artist.id}
                   id={artist.id}
                   stageName={artist.stage_name}
                   imageUrl={artist.avatar_url}
+                  plan={artist.plan}
                 />
               ))
             ) : (
