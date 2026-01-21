@@ -244,31 +244,22 @@ const Navigation = () => {
               </Link>
             </div>
 
-            {/* Right: Country Selector & Login/Register (only when not logged in) */}
-            <div className="flex items-center gap-2">
-              <CountrySelector 
-                variant="navigation" 
-                value={selectedCountry}
-                onChange={setSelectedCountry}
-                userCountry={profile?.country}
-              />
-              
-              {!user && (
-                <>
-                  <Link to="/login">
-                    <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                      Register
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+            {/* Right: Login/Register (only when not logged in) */}
+            {!user && (
+              <div className="flex items-center gap-2">
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -557,6 +548,19 @@ const Navigation = () => {
                   <Info className="h-5 w-5" />
                   <span className="font-medium">About</span>
                 </Link>
+                
+                <div className="h-px bg-border my-1" />
+                
+                {/* Country Selector */}
+                <div className="px-3 py-2">
+                  <CountrySelector 
+                    variant="navigation" 
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    userCountry={profile?.country}
+                  />
+                </div>
+                
                 {user && (
                   <>
                     <div className="h-px bg-border my-1" />
