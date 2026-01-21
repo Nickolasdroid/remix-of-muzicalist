@@ -816,8 +816,8 @@ const ArtistProfile = () => {
                 <TabsContent value="details" className="space-y-4 md:space-y-8">
                   {/* Description */}
                   <div>
-                    <h2 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                    <h2 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <User className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       About
                     </h2>
                     <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
@@ -831,7 +831,7 @@ const ArtistProfile = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                     {/* Music Genres */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-base md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
+                      <h3 className="text-lg md:text-xl font-display font-bold mb-2 md:mb-4 flex items-center gap-2">
                         <Music className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Music Genres
                       </h3>
