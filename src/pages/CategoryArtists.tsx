@@ -100,18 +100,22 @@ const CategoryArtists = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
-        <div className="flex items-center justify-between mb-6 md:mb-8">
+        <div className="flex items-center justify-between mb-8 md:mb-12">
           <Link to="/categories">
-            <Button variant="outline" size="sm" className="text-xs md:text-sm">
+            <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
             </Button>
           </Link>
 
+          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+            {category}
+          </h1>
+
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter className="h-4 w-4" />
+              <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
+                <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                 Filter
               </Button>
             </PopoverTrigger>
@@ -181,15 +185,6 @@ const CategoryArtists = () => {
               </div>
             </PopoverContent>
           </Popover>
-        </div>
-
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-foreground mb-6">
-            {category}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Browse through talented artists in this category
-          </p>
         </div>
 
         {loading ? (
