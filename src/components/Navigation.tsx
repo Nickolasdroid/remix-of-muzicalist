@@ -215,53 +215,49 @@ const Navigation = () => {
   return (
     <>
       {/* Desktop: Top Header Bar */}
-      <nav className="fixed top-0 left-64 right-0 z-50 bg-background border-b border-border hidden md:block">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Center: Feed & Ads */}
-            <div className="flex items-center gap-2">
-              <Link
-                to="/feed"
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                  isActive('/feed')
-                    ? 'bg-accent/20 text-accent'
-                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                }`}
-              >
-                <Home className="h-5 w-5" />
-                <span className="font-medium">Feed</span>
-              </Link>
-              <Link
-                to="/announcements"
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                  isActive('/announcements')
-                    ? 'bg-accent/20 text-accent'
-                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                }`}
-              >
-                <Megaphone className="h-5 w-5" />
-                <span className="font-medium">Ads</span>
-              </Link>
-            </div>
-
-            {/* Right: Login/Register (only when not logged in) */}
-            {!user && (
-              <div className="flex items-center gap-2">
-                <Link to="/login">
-                  <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
+      <nav className="fixed top-0 left-64 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-6">
+        {/* Left: Feed & Ads */}
+        <div className="flex items-center gap-2">
+          <Link
+            to="/feed"
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+              isActive('/feed')
+                ? 'bg-accent/20 text-accent'
+                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+            }`}
+          >
+            <Home className="h-5 w-5" />
+            <span className="font-medium">Feed</span>
+          </Link>
+          <Link
+            to="/announcements"
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+              isActive('/announcements')
+                ? 'bg-accent/20 text-accent'
+                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+            }`}
+          >
+            <Megaphone className="h-5 w-5" />
+            <span className="font-medium">Ads</span>
+          </Link>
         </div>
+
+        {/* Right: Login/Register (only when not logged in) */}
+        {!user && (
+          <div className="flex items-center gap-2">
+            <Link to="/login">
+              <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                <LogIn className="h-4 w-4 mr-2" />
+                Login
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+                Register
+              </Button>
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Mobile: Top Header Bar */}
