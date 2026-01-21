@@ -66,7 +66,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
               <img 
                 src={diamondIcon} 
                 alt="Free tier" 
-                className="h-4 w-4 opacity-50 grayscale"
+                className="h-4 w-4"
               />
             )}
           </div>
