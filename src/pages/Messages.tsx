@@ -632,7 +632,7 @@ const Messages = () => {
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-4 bg-background">
+                <ScrollArea className="flex-1 p-4 bg-card">
                   <div className="space-y-4">
                     {messages.length === 0 && pendingArtist && <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
                         Send a message to start the conversation
