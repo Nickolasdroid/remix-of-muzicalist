@@ -1,6 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, Flag, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X } from "lucide-react";
-import ReportDialog from "./ReportDialog";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -21,7 +20,6 @@ const Navigation = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -426,18 +424,6 @@ const Navigation = () => {
                   />
                 </div>
 
-                <div className="h-px bg-border my-2" />
-                
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setReportDialogOpen(true);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80 hover:bg-accent/10 transition-colors"
-                >
-                  <Flag className="h-5 w-5" />
-                  <span className="font-medium">Report</span>
-                </button>
 
                 {user ? (
                   <button
@@ -556,18 +542,8 @@ const Navigation = () => {
               <span className="font-medium">{link.label}</span>
             </Link>
           ))}
-          
-          <button
-            onClick={() => setReportDialogOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-foreground/80 transition-colors hover:bg-accent/10 hover:text-accent"
-          >
-            <Flag className="h-5 w-5" />
-            <span className="font-medium">Report</span>
-          </button>
         </div>
       </aside>
-
-      <ReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </>
   );
 };

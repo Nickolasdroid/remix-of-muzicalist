@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, KeyRound, AlertTriangle } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 interface SettingsTabProps {
@@ -38,6 +39,11 @@ const SettingsTab = ({
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportMessage, setReportMessage] = useState("");
+  const [reportFile, setReportFile] = useState<File | null>(null);
+  const reportFileInputRef = useRef<HTMLInputElement>(null);
+
   const resetPasswordForm = () => {
     setPasswordData({
       currentPassword: "",
@@ -48,6 +54,32 @@ const SettingsTab = ({
     setShowCurrentPassword(false);
     setShowNewPassword(false);
     setShowConfirmPassword(false);
+  };
+
+  const handleReportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setReportFile(e.target.files[0]);
+    }
+  };
+
+  const handleReportSubmit = () => {
+    if (!reportMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please write your report before sending.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Report Sent!",
+      description: "Thank you for your feedback. We'll review it shortly.",
+    });
+
+    setReportMessage("");
+    setReportFile(null);
+    setShowReportDialog(false);
   };
   const handleVerifyCurrentPassword = async () => {
     if (!passwordData.currentPassword) {
@@ -297,6 +329,74 @@ const SettingsTab = ({
                               {isChangingPassword ? "Updating..." : "Update Password"}
                             </Button>
                           </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                <Separator />
+
+                {/* Report */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Report an issue</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Send us feedback or report a problem
+                    </p>
+                  </div>
+                  <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Flag className="h-4 w-4 mr-2" />
+                        Report
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Flag className="h-5 w-5 text-accent" />
+                          Report
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4 py-4">
+                        <Textarea
+                          value={reportMessage}
+                          onChange={(e) => setReportMessage(e.target.value)}
+                          placeholder="Describe your issue or feedback..."
+                          className="min-h-[150px] resize-none"
+                        />
+                        
+                        {reportFile && (
+                          <p className="text-sm text-muted-foreground">
+                            Attached: {reportFile.name}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between gap-3">
+                          <Button
+                            onClick={handleReportSubmit}
+                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                          >
+                            Send report
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => reportFileInputRef.current?.click()}
+                          >
+                            <Paperclip className="h-4 w-4 mr-2" />
+                            Attach file
+                          </Button>
+                          
+                          <input
+                            ref={reportFileInputRef}
+                            type="file"
+                            onChange={handleReportFileChange}
+                            className="hidden"
+                          />
                         </div>
                       </div>
                     </DialogContent>
