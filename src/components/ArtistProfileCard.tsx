@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, Star } from "lucide-react";
+import { User, Star, Medal } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -7,9 +7,10 @@ interface ArtistProfileCardProps {
   id: string;
   stageName: string;
   imageUrl?: string | null;
+  plan?: string;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
 
   useEffect(() => {
@@ -28,6 +29,8 @@ const ArtistProfileCard = ({ id, stageName, imageUrl }: ArtistProfileCardProps) 
     fetchRating();
   }, [id]);
 
+  const isFree = !plan || plan === 'Free';
+
   return (
     <Link to={`/artist/${id}`} className="group block">
       <div className="overflow-hidden rounded-lg">
@@ -42,6 +45,13 @@ const ArtistProfileCard = ({ id, stageName, imageUrl }: ArtistProfileCardProps) 
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
               <User className="h-16 w-16 text-accent" />
+            </div>
+          )}
+          
+          {/* Subscription tier icon */}
+          {isFree && (
+            <div className="absolute top-2 right-2">
+              <Medal className="h-5 w-5 text-muted-foreground" />
             </div>
           )}
         </div>
