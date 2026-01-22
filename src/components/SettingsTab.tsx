@@ -43,6 +43,7 @@ const SettingsTab = ({
   const [reportMessage, setReportMessage] = useState("");
   const [reportFile, setReportFile] = useState<File | null>(null);
   const reportFileInputRef = useRef<HTMLInputElement>(null);
+
   const resetPasswordForm = () => {
     setPasswordData({
       currentPassword: "",
@@ -54,24 +55,28 @@ const SettingsTab = ({
     setShowNewPassword(false);
     setShowConfirmPassword(false);
   };
+
   const handleReportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setReportFile(e.target.files[0]);
     }
   };
+
   const handleReportSubmit = () => {
     if (!reportMessage.trim()) {
       toast({
         title: "Error",
         description: "Please write your report before sending.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
+
     toast({
       title: "Report Sent!",
-      description: "Thank you for your feedback. We'll review it shortly."
+      description: "Thank you for your feedback. We'll review it shortly.",
     });
+
     setReportMessage("");
     setReportFile(null);
     setShowReportDialog(false);
@@ -191,7 +196,250 @@ const SettingsTab = ({
         {/* Main Content */}
         <div className="flex-1 max-w-2xl">
           {/* Account Section */}
-          {activeSection === "account"}
+          {activeSection === "account" && <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">Account</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage your account settings
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                {/* Email */}
+                <div className="space-y-2">
+                  <div>
+                    <Label className="text-sm font-medium">Email address</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Your email address is used for login and notifications
+                    </p>
+                  </div>
+                  <Input value={formData.email} disabled className="bg-muted/50 text-sm" style={{
+                width: `${Math.max(formData.email.length + 2, 20)}ch`
+              }} />
+                  <p className="text-sm text-muted-foreground">Email cannot be changed</p>
+                </div>
+
+                <Separator />
+
+                {/* Sign Out */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Sign out</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Sign out of your account on this device
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+
+                <Separator />
+
+                {/* Change Password */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Password</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Change your password to keep your account secure
+                    </p>
+                  </div>
+                  <Dialog open={showPasswordDialog} onOpenChange={open => {
+                setShowPasswordDialog(open);
+                if (!open) resetPasswordForm();
+              }}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Change Password
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Lock className="h-5 w-5 text-accent" />
+                          Change Password
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4 py-4">
+                        {/* Step 1: Verify current password */}
+                        <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-green-500/50 bg-green-500/10' : 'border-accent/30'}`}>
+                          <div className="flex items-center justify-between mb-3">
+                            <Label className="flex items-center gap-2">
+                              {currentPasswordVerified ? <CheckCircle className="h-4 w-4 text-green-500" /> : <ShieldCheck className="h-4 w-4 text-muted-foreground" />}
+                              Step 1: Verify Current Password
+                            </Label>
+                            {currentPasswordVerified && <span className="text-xs text-green-500 font-medium">Verified</span>}
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Input type={showCurrentPassword ? "text" : "password"} value={passwordData.currentPassword} onChange={e => {
+                            setPasswordData({
+                              ...passwordData,
+                              currentPassword: e.target.value
+                            });
+                            if (currentPasswordVerified) setCurrentPasswordVerified(false);
+                          }} placeholder="Enter current password" disabled={currentPasswordVerified} className={`pr-10 ${currentPasswordVerified ? 'bg-muted/50' : ''}`} />
+                              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowCurrentPassword(!showCurrentPassword)} disabled={currentPasswordVerified}>
+                                {showCurrentPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                              </Button>
+                            </div>
+                            <Button onClick={handleVerifyCurrentPassword} disabled={isVerifying || !passwordData.currentPassword || currentPasswordVerified} variant={currentPasswordVerified ? "outline" : "default"} className={currentPasswordVerified ? '' : 'bg-accent text-accent-foreground'}>
+                              {isVerifying ? "..." : currentPasswordVerified ? "✓" : "Verify"}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Step 2: Set new password (disabled until verified) */}
+                        <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-accent/30' : 'border-muted/30 opacity-50'}`}>
+                          <Label className="flex items-center gap-2 mb-3">
+                            <Lock className="h-4 w-4 text-muted-foreground" />
+                            Step 2: Set New Password
+                          </Label>
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-sm text-muted-foreground">New Password</Label>
+                              <div className="relative mt-1">
+                                <Input type={showNewPassword ? "text" : "password"} value={passwordData.newPassword} onChange={e => setPasswordData({
+                              ...passwordData,
+                              newPassword: e.target.value
+                            })} placeholder="Enter new password" disabled={!currentPasswordVerified} className="pr-10" />
+                                <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowNewPassword(!showNewPassword)} disabled={!currentPasswordVerified}>
+                                  {showNewPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                </Button>
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
+                              <div className="relative mt-1">
+                                <Input type={showConfirmPassword ? "text" : "password"} value={passwordData.confirmPassword} onChange={e => setPasswordData({
+                              ...passwordData,
+                              confirmPassword: e.target.value
+                            })} placeholder="Confirm new password" disabled={!currentPasswordVerified} className="pr-10" />
+                                <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowConfirmPassword(!showConfirmPassword)} disabled={!currentPasswordVerified}>
+                                  {showConfirmPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                </Button>
+                              </div>
+                            </div>
+                            <Button onClick={handleChangePassword} disabled={isChangingPassword || !currentPasswordVerified || !passwordData.newPassword || !passwordData.confirmPassword} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                              {isChangingPassword ? "Updating..." : "Update Password"}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                <Separator />
+
+                {/* Report */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Report an issue</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Send us feedback or report a problem
+                    </p>
+                  </div>
+                  <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Flag className="h-4 w-4 mr-2" />
+                        Report
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <Flag className="h-5 w-5 text-accent" />
+                          Report
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4 py-4">
+                        <Textarea
+                          value={reportMessage}
+                          onChange={(e) => setReportMessage(e.target.value)}
+                          placeholder="Describe your issue or feedback..."
+                          className="min-h-[150px] resize-none"
+                        />
+                        
+                        {reportFile && (
+                          <p className="text-sm text-muted-foreground">
+                            Attached: {reportFile.name}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between gap-3">
+                          <Button
+                            onClick={handleReportSubmit}
+                            className="bg-accent text-accent-foreground hover:bg-accent/90"
+                          >
+                            Send report
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => reportFileInputRef.current?.click()}
+                          >
+                            <Paperclip className="h-4 w-4 mr-2" />
+                            Attach file
+                          </Button>
+                          
+                          <input
+                            ref={reportFileInputRef}
+                            type="file"
+                            onChange={handleReportFileChange}
+                            className="hidden"
+                          />
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                <Separator />
+
+                {/* Delete Account */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium text-destructive">Delete account</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Permanently delete your account and all data
+                    </p>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete your
+                          account and remove all your data from our servers including your profile,
+                          announcements, gallery, and calendar events.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
+                          {isSaving ? "Deleting..." : "Delete Account"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </div>}
 
         </div>
       </div>
