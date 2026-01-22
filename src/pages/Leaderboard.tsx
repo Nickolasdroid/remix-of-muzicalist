@@ -834,9 +834,9 @@ const Leaderboard = () => {
               </div> : currentArtists.length > 0 ? <Table className="table-fixed w-full">
                   <TableHeader>
                     <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
-                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4 border-r border-border">Rank</TableHead>
-                      <TableHead className="font-semibold text-foreground px-2 md:px-4 border-r border-border">Profile</TableHead>
-                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm border-r border-border">Reviews</TableHead>
+                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
+                      <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
                       <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
                     </TableRow>
                   </TableHeader>
