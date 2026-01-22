@@ -473,7 +473,7 @@ const Navigation = () => {
                     <link.icon className="h-5 w-5" />
                     <span className="font-medium">{link.label}</span>
                   </div>
-                  {link.badge && link.badge > 0 && (
+                  {link.badge !== undefined && link.badge > 0 && (
                     <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
                       {link.badge > 9 ? '9+' : link.badge}
                     </span>
