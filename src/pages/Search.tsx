@@ -77,7 +77,7 @@ const Search = () => {
               placeholder="Type artist name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-12 h-12 text-base rounded-xl border-2 border-border focus:border-accent"
+              className="pl-12 pr-12 h-12 text-base rounded-xl border-2 border-border focus:border-accent hover:border-border"
               autoFocus
             />
             <Dialog>
