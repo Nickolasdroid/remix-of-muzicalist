@@ -809,7 +809,7 @@ const Leaderboard = () => {
 
           <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-b border-border">
+              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
                 <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Mic className="h-4 w-4" />
                   <span className="hidden md:inline">Singers</span>
