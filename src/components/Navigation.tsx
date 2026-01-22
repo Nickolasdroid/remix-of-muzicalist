@@ -463,16 +463,14 @@ const Navigation = () => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                     isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]))
                       ? 'bg-accent/20 text-accent'
                       : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <link.icon className="h-5 w-5" />
-                    <span className="font-medium">{link.label}</span>
-                  </div>
+                  <link.icon className="h-5 w-5" />
+                  <span className="font-medium">{link.label}</span>
                   {link.badge && link.badge > 0 && (
                     <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
                       {link.badge > 9 ? '9+' : link.badge}
