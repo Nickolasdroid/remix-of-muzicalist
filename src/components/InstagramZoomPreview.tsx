@@ -33,14 +33,14 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
               src={media.url}
               controls
               autoPlay
-              className="max-w-[95vw] max-h-[90vh] object-contain rounded-lg"
+              className="max-w-[95vw] max-h-[90vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <img
               src={media.url}
               alt="Full size preview"
-              className="max-w-[95vw] max-h-[90vh] object-contain rounded-lg"
+              className="max-w-[95vw] max-h-[90vh] object-contain"
               draggable={false}
             />
           )}
