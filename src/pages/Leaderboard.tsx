@@ -822,13 +822,13 @@ const Leaderboard = () => {
                               <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
                               <TableCell className="px-2 md:px-4">
                                 <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                                  <Avatar className="h-8 w-8 md:h-10 md:w-10 border-2 border-accent/50 flex-shrink-0">
+                                  <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-accent/50 flex-shrink-0">
                                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                                     <AvatarFallback className="bg-muted">
-                                      <User className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+                                      <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
                                     </AvatarFallback>
                                   </Avatar>
-                                  <span className="font-medium text-foreground hover:text-accent transition-colors text-sm md:text-base truncate">{artist.stage_name}</span>
+                                  <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
                                 </Link>
                               </TableCell>
                               <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
