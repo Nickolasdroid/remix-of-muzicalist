@@ -10,7 +10,7 @@ const Footer = () => {
     title: "Categories",
     href: "/categories"
   }, {
-    title: "Regions",
+    title: "Counties",
     href: "/counties"
   }, {
     title: "Leaderboard",
@@ -78,11 +78,7 @@ const Footer = () => {
               For Artists
             </h3>
             <ul className="space-y-2">
-              {artistLinks.map(link => <li key={link.title}>
-                  <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                    {link.title}
-                  </Link>
-                </li>)}
+              {artistLinks.map(link => {})}
             </ul>
           </div>
 
