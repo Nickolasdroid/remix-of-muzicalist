@@ -110,20 +110,20 @@ const Search = () => {
               <Link
                 key={artist.id}
                 to={`/artist/${artist.id}`}
-                className="flex items-center gap-3 p-2.5 rounded-lg bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
+                className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
               >
-                <Avatar className="h-10 w-10 border border-border">
+                <Avatar className="h-12 w-12 border-2 border-border">
                   <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                   <AvatarFallback className="bg-accent/10 text-accent">
-                    <User className="h-4 w-4" />
+                    <User className="h-5 w-5" />
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm text-foreground truncate">
+                  <h3 className="font-semibold text-foreground truncate">
                     {artist.stage_name}
                   </h3>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     {artist.specialization && (
                       <span>{getSpecializationLabel(artist.specialization)}</span>
                     )}
@@ -133,13 +133,12 @@ const Search = () => {
                     {artist.county && (
                       <span>{artist.county}</span>
                     )}
-                    {artist.music_genres && (
-                      <>
-                        <span>•</span>
-                        <span className="truncate">{artist.music_genres}</span>
-                      </>
-                    )}
                   </div>
+                  {artist.music_genres && (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {artist.music_genres}
+                    </p>
+                  )}
                 </div>
               </Link>
             ))}
