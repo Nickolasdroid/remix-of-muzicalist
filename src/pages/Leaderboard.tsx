@@ -811,10 +811,10 @@ const Leaderboard = () => {
                       <Table className="table-fixed w-full">
                         <TableHeader>
                           <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
-                            <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Loc</TableHead>
-                            <TableHead className="font-semibold text-foreground px-2 md:px-4">Profil</TableHead>
-                            <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Nr. Rec.</TableHead>
-                            <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Notă</TableHead>
+                            <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
+                            <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                            <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
+                            <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
