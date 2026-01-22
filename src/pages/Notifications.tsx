@@ -125,7 +125,7 @@ const Notifications = () => {
                   {unreadCount}
                 </span>}
             </div>
-            {unreadCount > 0 && <Button variant="outline" size="sm" onClick={markAllAsRead}>
+            {unreadCount > 0 && <Button variant="outline" size="sm" className="pl-2" onClick={markAllAsRead}>
                 <Check className="h-4 w-4 mr-1" />
                 Mark all as read
               </Button>}
