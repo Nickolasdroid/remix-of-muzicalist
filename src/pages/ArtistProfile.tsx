@@ -1517,7 +1517,7 @@ const ArtistProfile = () => {
 
               {/* Booking Dialog */}
               <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
-                <DialogContent className="sm:max-w-[500px] rounded-lg">
+                <DialogContent className="sm:max-w-[500px] rounded-lg [&>button]:p-1 [&>button_svg]:h-5 [&>button_svg]:w-5">
                   <DialogHeader className="pb-2">
                     <DialogTitle className="text-lg font-medium">
                       {selectedDate && selectedDate.toLocaleDateString('en-US', {
