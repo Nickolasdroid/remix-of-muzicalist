@@ -806,7 +806,7 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 sm:-mx-6 lg:-mx-8 md:mx-0">
                   {categoryArtists.length > 0 ? <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
                       <Table className="table-fixed w-full">
                         <TableHeader>
