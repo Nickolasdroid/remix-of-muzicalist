@@ -807,31 +807,31 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-6 md:mb-12 p-1 rounded-none md:rounded-xl -mx-4 md:mx-auto w-[calc(100%+2rem)] md:w-full md:bg-card/50 md:border-2 md:border-accent/30">
-              <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
-                <Mic className="h-4 w-4" />
-                <span className="hidden md:inline">Singers</span>
-              </TabsTrigger>
-              <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
-                <Guitar className="h-4 w-4" />
-                <span className="hidden md:inline">Instrumentalists</span>
-              </TabsTrigger>
-              <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
-                <Headphones className="h-4 w-4" />
-                <span className="hidden md:inline">DJs</span>
-              </TabsTrigger>
-              <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
-                <Users className="h-4 w-4" />
-                <span className="hidden md:inline">Bands</span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
+            <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-card/80 border-b border-border">
+                <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                  <Mic className="h-4 w-4" />
+                  <span className="hidden md:inline">Singers</span>
+                </TabsTrigger>
+                <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                  <Guitar className="h-4 w-4" />
+                  <span className="hidden md:inline">Instrumentalists</span>
+                </TabsTrigger>
+                <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                  <Headphones className="h-4 w-4" />
+                  <span className="hidden md:inline">DJs</span>
+                </TabsTrigger>
+                <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden md:inline">Bands</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-          {loading ? <div className="text-center py-16">
-              <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-            </div> : currentArtists.length > 0 ? <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
-                <Table className="table-fixed w-full">
+            {loading ? <div className="text-center py-16">
+                <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
+              </div> : currentArtists.length > 0 ? <Table className="table-fixed w-full">
                   <TableHeader>
                     <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
                       <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
@@ -858,10 +858,10 @@ const Leaderboard = () => {
                         <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
                       </TableRow>)}
                   </TableBody>
-                </Table>
-              </div> : <div className="text-center py-16">
-              <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-            </div>}
+                </Table> : <div className="text-center py-16">
+                <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
+              </div>}
+          </div>
         </div>
       </div>
     </div>;
