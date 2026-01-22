@@ -145,18 +145,18 @@ const Notifications = () => {
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>
             </Card> : <div className="space-y-3">
-              {notifications.map(notification => <Card key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 ${!notification.read_at ? 'bg-accent/10 border-accent/30' : ''}`} onClick={() => handleNotificationClick(notification)}>
+              {notifications.map(notification => <Card key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10 border-accent/30' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className={`font-medium ${!notification.read_at ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-medium line-clamp-1 ${!notification.read_at ? 'text-foreground' : 'text-muted-foreground'}`}>
                             {notification.title}
                           </p>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                             {notification.message}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
