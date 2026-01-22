@@ -726,7 +726,7 @@ const Leaderboard = () => {
       <Navigation />
       
       <div className="pt-20 md:pt-32 pb-24 md:pb-20 px-0 py-[78px]">
-        <div className="container mx-auto">
+        <div className="px-4 md:container md:mx-auto">
           <div className="text-center mb-8 md:mb-12 py-0">
             <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
               <Trophy className="h-8 w-8 md:h-10 md:w-10 text-accent-foreground" />
@@ -806,7 +806,7 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 sm:-mx-6 lg:-mx-8 md:mx-0">
+              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
                   {categoryArtists.length > 0 ? <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
                       <Table className="table-fixed w-full">
                         <TableHeader>
