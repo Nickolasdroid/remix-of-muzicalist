@@ -469,13 +469,15 @@ const Navigation = () => {
                       : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
-                  <link.icon className="h-5 w-5" />
+                  <div className="relative">
+                    <link.icon className="h-5 w-5" />
+                    {link.badge && link.badge > 0 && (
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                        {link.badge > 9 ? '9+' : link.badge}
+                      </span>
+                    )}
+                  </div>
                   <span className="font-medium">{link.label}</span>
-                  {link.badge && link.badge > 0 && (
-                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                      {link.badge > 9 ? '9+' : link.badge}
-                    </span>
-                  )}
                 </Link>
               ))}
             </>
