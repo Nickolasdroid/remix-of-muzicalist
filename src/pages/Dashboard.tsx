@@ -1278,7 +1278,7 @@ const Dashboard = () => {
 
                       {/* Centered Avatar - with top padding to account for absolute positioned elements */}
                       <div className="relative group cursor-pointer mt-10">
-                        <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                        <div className={`p-1 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
                           <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -1313,7 +1313,7 @@ const Dashboard = () => {
                     {/* Desktop Header Layout */}
                     <div className="hidden md:flex flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
-                        <div className={`p-1 rounded-full bg-gradient-to-br ${profile?.plan === 'Premium' ? 'from-yellow-400 via-amber-500 to-yellow-600' : 'from-red-500 via-red-600 to-red-500'}`}>
+                        <div className={`p-1 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
                           <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
