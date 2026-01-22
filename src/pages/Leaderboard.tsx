@@ -809,20 +809,20 @@ const Leaderboard = () => {
 
           <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-card/80 border-b border-border">
-                <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-b border-border">
+                <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Mic className="h-4 w-4" />
                   <span className="hidden md:inline">Singers</span>
                 </TabsTrigger>
-                <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Guitar className="h-4 w-4" />
                   <span className="hidden md:inline">Instrumentalists</span>
                 </TabsTrigger>
-                <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Headphones className="h-4 w-4" />
                   <span className="hidden md:inline">DJs</span>
                 </TabsTrigger>
-                <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-300">
+                <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Users className="h-4 w-4" />
                   <span className="hidden md:inline">Bands</span>
                 </TabsTrigger>
@@ -833,10 +833,10 @@ const Leaderboard = () => {
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
               </div> : currentArtists.length > 0 ? <Table className="table-fixed w-full">
                   <TableHeader>
-                    <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
-                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                      <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
-                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
+                    <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
+                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4 border-r border-border">Rank</TableHead>
+                      <TableHead className="font-semibold text-foreground px-2 md:px-4 border-r border-border">Profile</TableHead>
+                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm border-r border-border">Reviews</TableHead>
                       <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
                     </TableRow>
                   </TableHeader>
