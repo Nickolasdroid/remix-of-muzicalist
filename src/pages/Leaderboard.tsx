@@ -617,6 +617,7 @@ interface ArtistReviewCount {
 const Leaderboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
+  const [selectedCategory, setSelectedCategory] = useState<string>("singers");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [artistReviewCounts, setArtistReviewCounts] = useState<ArtistReviewCount>({});
@@ -698,6 +699,7 @@ const Leaderboard = () => {
     };
     fetchRatings();
   }, []);
+
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
@@ -733,12 +735,16 @@ const Leaderboard = () => {
 
     return filtered;
   };
-  const categories = {
-    singers: getArtistsBySpecialization('Singer'),
-    instrumentalists: getArtistsBySpecialization('Instrumentalist'),
-    djs: getArtistsBySpecialization('DJ'),
-    bands: getArtistsBySpecialization('Band')
+
+  const categoryMap: { [key: string]: string } = {
+    singers: 'Singer',
+    instrumentalists: 'Instrumentalist',
+    djs: 'DJ',
+    bands: 'Band'
   };
+
+  const currentArtists = getArtistsBySpecialization(categoryMap[selectedCategory]);
+
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
@@ -801,7 +807,7 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="singers" className="w-full">
+          <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
             <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-6 md:mb-12 p-1 rounded-none md:rounded-xl -mx-4 md:mx-auto w-[calc(100%+2rem)] md:w-full md:bg-card/50 md:border-2 md:border-accent/30">
               <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 text-xs md:text-base data-[state=active]:bg-accent data-[state=active]:text-accent-foreground md:rounded-lg transition-all duration-300">
                 <Mic className="h-4 w-4" />
@@ -820,44 +826,42 @@ const Leaderboard = () => {
                 <span className="hidden md:inline">Bands</span>
               </TabsTrigger>
             </TabsList>
-
-            {loading ? <div className="text-center py-16">
-                <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : Object.entries(categories).map(([key, categoryArtists]) => <TabsContent key={key} value={key} className="-mx-4 md:mx-0">
-                  {categoryArtists.length > 0 ? <div className="md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
-                      <Table className="table-fixed w-full">
-                        <TableHeader>
-                          <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
-                            <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                            <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
-                            <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
-                            <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {categoryArtists.map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
-                              <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
-                              <TableCell className="px-2 md:px-4">
-                                <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                                  <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-accent/50 flex-shrink-0">
-                                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                                    <AvatarFallback className="bg-muted">
-                                      <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
-                                </Link>
-                              </TableCell>
-                              <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
-                              <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
-                            </TableRow>)}
-                        </TableBody>
-                      </Table>
-                    </div> : <div className="text-center py-16">
-                      <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-                    </div>}
-                </TabsContent>)}
           </Tabs>
+
+          {loading ? <div className="text-center py-16">
+              <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
+            </div> : currentArtists.length > 0 ? <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border">
+                <Table className="table-fixed w-full">
+                  <TableHeader>
+                    <TableRow className="bg-card/80 border-b border-border hover:bg-card/80">
+                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
+                      <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
+                      <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentArtists.map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
+                        <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
+                        <TableCell className="px-2 md:px-4">
+                          <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
+                            <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-accent/50 flex-shrink-0">
+                              <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                              <AvatarFallback className="bg-muted">
+                                <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
+                        <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table>
+              </div> : <div className="text-center py-16">
+              <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
+            </div>}
         </div>
       </div>
     </div>;
