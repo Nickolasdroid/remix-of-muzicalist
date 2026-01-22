@@ -121,9 +121,6 @@ const Notifications = () => {
             <div className="flex items-center gap-3">
               <Bell className="h-6 w-6 text-accent" />
               <h1 className="text-2xl font-bold">Notifications</h1>
-              {unreadCount > 0 && <span className="flex items-center justify-center min-w-[24px] h-6 px-2 bg-destructive text-destructive-foreground text-sm font-semibold rounded-full">
-                  {unreadCount}
-                </span>}
             </div>
             {unreadCount > 0 && <Button variant="outline" size="sm" className="pl-2" onClick={markAllAsRead}>
                 <Check className="h-4 w-4 mr-1" />
