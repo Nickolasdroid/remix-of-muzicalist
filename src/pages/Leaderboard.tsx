@@ -835,7 +835,7 @@ const Leaderboard = () => {
                   <TableHeader>
                     <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
                       <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                      <TableHead className="font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                      <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
                       <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
                       <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
                     </TableRow>
