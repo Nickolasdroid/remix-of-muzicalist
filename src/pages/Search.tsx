@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search as SearchIcon, User } from "lucide-react";
+import { Search as SearchIcon, User, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import AISearchBar from "@/components/AISearchBar";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ArtistProfile {
@@ -76,9 +78,19 @@ const Search = () => {
               placeholder="Type artist name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 text-base rounded-xl border-2 border-border focus:border-accent"
+              className="pl-12 pr-12 h-12 text-base rounded-xl border-2 border-border focus:border-accent"
               autoFocus
             />
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg hover:bg-accent/10 transition-colors">
+                  <Sparkles className="h-5 w-5 text-accent" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <AISearchBar />
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Suggestions List */}
