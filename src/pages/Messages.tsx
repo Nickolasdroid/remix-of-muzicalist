@@ -561,7 +561,7 @@ const Messages = () => {
         <div className="md:hidden h-full">
           <div className="p-0 overflow-hidden bg-card h-full border-t border-border">
             <div className="p-4 border-b border-border">
-              <h2 className="font-semibold">Conversations</h2>
+              <h2 className="font-semibold">Messages</h2>
             </div>
             <ScrollArea className="h-[calc(100%-60px)]">
               {conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
