@@ -9,29 +9,26 @@ import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
 import { Music2, Users, Target, Heart, Mic, Guitar, Headphones } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
 const About = () => {
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
     DJ: 0,
-    Band: 0,
+    Band: 0
   });
-
   useEffect(() => {
     const fetchCounts = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("specialization");
-
+      const {
+        data
+      } = await supabase.from("profiles").select("specialization");
       if (data) {
         const newCounts = {
           Singer: 0,
           Instrumentalist: 0,
           DJ: 0,
-          Band: 0,
+          Band: 0
         };
-        data.forEach((profile) => {
+        data.forEach(profile => {
           if (profile.specialization && newCounts[profile.specialization as keyof typeof newCounts] !== undefined) {
             newCounts[profile.specialization as keyof typeof newCounts]++;
           }
@@ -39,66 +36,51 @@ const About = () => {
         setCounts(newCounts);
       }
     };
-
     fetchCounts();
   }, []);
-
-  const categories = [
-    {
-      icon: Mic,
-      title: "Singer",
-      description: "Professional vocalists for any event",
-      count: counts.Singer,
-      href: "/categories/Singers",
-    },
-    {
-      icon: Guitar,
-      title: "Instrumentalist",
-      description: "Skilled musicians with various instruments",
-      count: counts.Instrumentalist,
-      href: "/categories/Instrumentalists",
-    },
-    {
-      icon: Headphones,
-      title: "DJ",
-      description: "Expert DJs for parties and events",
-      count: counts.DJ,
-      href: "/categories/DJs",
-    },
-    {
-      icon: Users,
-      title: "Band",
-      description: "Complete musical groups for your events",
-      count: counts.Band,
-      href: "/categories/Bands",
-    },
-  ];
-
-  const values = [
-    {
-      icon: Music2,
-      title: "Excellence in Music",
-      description: "We connect clients with the most talented musical artists across Romania, ensuring every event becomes unforgettable.",
-    },
-    {
-      icon: Users,
-      title: "Community First",
-      description: "Building a vibrant community where artists can showcase their talents and clients can easily find the perfect match.",
-    },
-    {
-      icon: Target,
-      title: "Professional Platform",
-      description: "A dedicated space for serious musicians and event organizers to connect and collaborate professionally.",
-    },
-    {
-      icon: Heart,
-      title: "Passion for Music",
-      description: "We're driven by our love for music and our commitment to supporting artists in their careers.",
-    },
-  ];
-
-  return (
-    <div className="min-h-screen md:ml-64">
+  const categories = [{
+    icon: Mic,
+    title: "Singer",
+    description: "Professional vocalists for any event",
+    count: counts.Singer,
+    href: "/categories/Singers"
+  }, {
+    icon: Guitar,
+    title: "Instrumentalist",
+    description: "Skilled musicians with various instruments",
+    count: counts.Instrumentalist,
+    href: "/categories/Instrumentalists"
+  }, {
+    icon: Headphones,
+    title: "DJ",
+    description: "Expert DJs for parties and events",
+    count: counts.DJ,
+    href: "/categories/DJs"
+  }, {
+    icon: Users,
+    title: "Band",
+    description: "Complete musical groups for your events",
+    count: counts.Band,
+    href: "/categories/Bands"
+  }];
+  const values = [{
+    icon: Music2,
+    title: "Excellence in Music",
+    description: "We connect clients with the most talented musical artists across Romania, ensuring every event becomes unforgettable."
+  }, {
+    icon: Users,
+    title: "Community First",
+    description: "Building a vibrant community where artists can showcase their talents and clients can easily find the perfect match."
+  }, {
+    icon: Target,
+    title: "Professional Platform",
+    description: "A dedicated space for serious musicians and event organizers to connect and collaborate professionally."
+  }, {
+    icon: Heart,
+    title: "Passion for Music",
+    description: "We're driven by our love for music and our commitment to supporting artists in their careers."
+  }];
+  return <div className="min-h-screen md:ml-64">
       <Navigation />
       
       {/* Hero Section */}
@@ -121,11 +103,7 @@ const About = () => {
               </Button>
             </Link>
             <Link to="/categories">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="w-full sm:w-auto border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground text-base md:text-lg px-6 md:px-8 py-5 md:py-6 hover:scale-105 transition-all duration-300"
-              >
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground text-base md:text-lg px-6 md:px-8 py-5 md:py-6 hover:scale-105 transition-all duration-300">
                 Find Artists
               </Button>
             </Link>
@@ -134,19 +112,7 @@ const About = () => {
       </section>
 
       {/* AI Search Section */}
-      <section className="py-20 px-4 bg-muted/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4 text-foreground">
-              AI-Powered Smart Search
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Ask anything about artists, opportunities, or events. Our AI will help you find exactly what you're looking for.
-            </p>
-          </div>
-          <AISearchBar />
-        </div>
-      </section>
+      
 
       {/* Advanced Search Section */}
       <section className="py-20 px-4">
@@ -174,9 +140,7 @@ const About = () => {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <CategoryCard key={category.title} {...category} />
-            ))}
+            {categories.map(category => <CategoryCard key={category.title} {...category} />)}
           </div>
         </div>
       </section>
@@ -211,10 +175,9 @@ const About = () => {
           <div className="mb-16">
             <h3 className="text-4xl font-display font-bold text-center text-foreground mb-12">Our Values</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {values.map((value) => {
-                const Icon = value.icon;
-                return (
-                  <Card key={value.title} className="p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
+              {values.map(value => {
+              const Icon = value.icon;
+              return <Card key={value.title} className="p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
                     <Icon className="h-12 w-12 text-accent mb-4" />
                     <h4 className="text-2xl font-display font-bold text-foreground mb-3">
                       {value.title}
@@ -222,9 +185,8 @@ const About = () => {
                     <p className="text-muted-foreground">
                       {value.description}
                     </p>
-                  </Card>
-                );
-              })}
+                  </Card>;
+            })}
             </div>
           </div>
         </div>
@@ -242,10 +204,7 @@ const About = () => {
               Build your profile and grow your career.
             </p>
             <Link to="/register">
-              <Button 
-                size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-10 py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300"
-              >
+              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-10 py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
                 Register as Artist
               </Button>
             </Link>
@@ -254,8 +213,6 @@ const About = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
