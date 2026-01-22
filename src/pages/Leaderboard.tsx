@@ -714,6 +714,23 @@ const Leaderboard = () => {
     if (selectedCounty !== "All Regions") {
       filtered = filtered.filter(artist => artist.county === selectedCounty);
     }
+
+    // Sort by number of reviews (descending), then by rating (descending)
+    filtered.sort((a, b) => {
+      const reviewsA = artistReviewCounts[a.id] || 0;
+      const reviewsB = artistReviewCounts[b.id] || 0;
+      
+      // Primary sort: most reviews first
+      if (reviewsB !== reviewsA) {
+        return reviewsB - reviewsA;
+      }
+      
+      // Secondary sort: highest rating first
+      const ratingA = artistRatings[a.id] || 0;
+      const ratingB = artistRatings[b.id] || 0;
+      return ratingB - ratingA;
+    });
+
     return filtered;
   };
   const categories = {
