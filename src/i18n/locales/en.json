@@ -148,5 +148,32 @@
     "searchPlaceholder": "Search countries...",
     "noCountriesFound": "No countries found",
     "allCountries": "All Countries"
+  },
+  "userRegistration": {
+    "title": "User Registration",
+    "subtitle": "Create your account to get started",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "createAccount": "Create Account",
+    "creatingAccount": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "placeholders": {
+      "firstName": "Your first name",
+      "lastName": "Your family name",
+      "email": "your.email@example.com",
+      "phone": "Your phone number",
+      "password": "Create a strong password",
+      "confirmPassword": "Confirm your password"
+    },
+    "validation": {
+      "passwordMismatch": "Passwords don't match",
+      "passwordTooShort": "Password must be at least 6 characters"
+    },
+    "success": "Registration successful! Please check your email to verify your account."
   }
 }

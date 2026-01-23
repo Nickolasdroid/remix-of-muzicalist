@@ -148,5 +148,32 @@
     "searchPlaceholder": "Caută țări...",
     "noCountriesFound": "Nicio țară găsită",
     "allCountries": "Toate țările"
+  },
+  "userRegistration": {
+    "title": "Înregistrare Utilizator",
+    "subtitle": "Creează-ți contul pentru a începe",
+    "firstName": "Prenume",
+    "lastName": "Nume",
+    "email": "Email",
+    "phone": "Telefon",
+    "password": "Parolă",
+    "confirmPassword": "Confirmă Parola",
+    "createAccount": "Creează Cont",
+    "creatingAccount": "Se creează contul...",
+    "alreadyHaveAccount": "Ai deja un cont?",
+    "signIn": "Conectează-te",
+    "placeholders": {
+      "firstName": "Prenumele tău",
+      "lastName": "Numele de familie",
+      "email": "email@exemplu.com",
+      "phone": "Numărul tău de telefon",
+      "password": "Creează o parolă puternică",
+      "confirmPassword": "Confirmă parola"
+    },
+    "validation": {
+      "passwordMismatch": "Parolele nu se potrivesc",
+      "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere"
+    },
+    "success": "Înregistrare reușită! Verifică-ți emailul pentru a-ți confirma contul."
   }
 }
