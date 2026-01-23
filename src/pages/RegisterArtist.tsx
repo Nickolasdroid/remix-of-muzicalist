@@ -421,7 +421,26 @@ const RegisterArtist = () => {
                 
                 <div className="space-y-4">
                   <Label htmlFor="profilePic">Upload Profile Picture</Label>
-                  <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('profilePic')?.click()}
+                      className="bg-input border-border hover:bg-accent/10"
+                    >
+                      Choose File
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      {imageSrc ? "Image selected" : "No file chosen"}
+                    </span>
+                    <input
+                      id="profilePic"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </div>
 
                   {imageSrc && <div className="space-y-4">
                       <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
