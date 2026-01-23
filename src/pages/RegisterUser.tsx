@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,12 +27,12 @@ const RegisterUser = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords don't match");
+      toast.error(t("userRegistration.validation.passwordMismatch"));
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error(t("userRegistration.validation.passwordTooShort"));
       return;
     }
 
@@ -79,7 +81,7 @@ const RegisterUser = () => {
 
         if (profileError) throw profileError;
 
-        toast.success("Registration successful! Please check your email to verify your account.");
+        toast.success(t("userRegistration.success"));
         navigate("/login");
       }
     } catch (error: any) {
@@ -95,28 +97,30 @@ const RegisterUser = () => {
       <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 bg-card md:rounded-2xl shadow-xl md:border-2 border-accent/20 p-4 md:p-8">
         <div className="text-center mb-4 md:mb-8">
           <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
-            User Registration
+            {t("userRegistration.title")}
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">
-            Create your account to get started
+            {t("userRegistration.subtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div>
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">{t("userRegistration.firstName")}</Label>
               <Input
                 id="firstName"
+                placeholder={t("userRegistration.placeholders.firstName")}
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="lastName">{t("userRegistration.lastName")}</Label>
               <Input
                 id="lastName"
+                placeholder={t("userRegistration.placeholders.lastName")}
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 required
@@ -125,10 +129,11 @@ const RegisterUser = () => {
           </div>
 
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("userRegistration.email")}</Label>
             <Input
               id="email"
               type="email"
+              placeholder={t("userRegistration.placeholders.email")}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
@@ -136,10 +141,11 @@ const RegisterUser = () => {
           </div>
 
           <div>
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{t("userRegistration.phone")}</Label>
             <Input
               id="phone"
               type="tel"
+              placeholder={t("userRegistration.placeholders.phone")}
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               required
@@ -147,11 +153,12 @@ const RegisterUser = () => {
           </div>
 
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("userRegistration.password")}</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
+                placeholder={t("userRegistration.placeholders.password")}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
@@ -168,11 +175,12 @@ const RegisterUser = () => {
           </div>
 
           <div>
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword">{t("userRegistration.confirmPassword")}</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
+                placeholder={t("userRegistration.placeholders.confirmPassword")}
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
@@ -194,18 +202,18 @@ const RegisterUser = () => {
             size="lg"
             disabled={isLoading}
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-muted-foreground text-sm">
-            Already have an account?{" "}
+            {t("userRegistration.alreadyHaveAccount")}{" "}
             <button
               onClick={() => navigate("/login")}
               className="text-accent hover:underline font-semibold"
             >
-              Sign in
+              {t("userRegistration.signIn")}
             </button>
           </p>
         </div>
