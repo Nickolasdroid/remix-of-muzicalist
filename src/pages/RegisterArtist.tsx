@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -14,6 +14,7 @@ import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
+import { getPhonePrefix } from "@/lib/countryPhoneCodes";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -47,6 +48,21 @@ const RegisterArtist = () => {
   const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"];
   const totalSteps = 4;
   const progressPercentage = currentStep / totalSteps * 100;
+
+  // Update phone prefix when country changes
+  useEffect(() => {
+    if (formData.country) {
+      const prefix = getPhonePrefix(formData.country);
+      if (prefix) {
+        // Only update if phone is empty or only contains a prefix
+        const currentPhone = formData.phone;
+        const isOnlyPrefix = currentPhone === "" || Object.values(getPhonePrefix).some(p => currentPhone === p);
+        if (!currentPhone || currentPhone.startsWith("+") && currentPhone.length <= 5) {
+          setFormData(prev => ({ ...prev, phone: prefix }));
+        }
+      }
+    }
+  }, [formData.country]);
 
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
