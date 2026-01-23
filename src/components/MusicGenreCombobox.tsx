@@ -38,11 +38,10 @@ const MUSIC_GENRES = [
   "Funk",
   "Latin",
   "Manele",
-  "Muzică Populară",
-  "Muzică de Petrecere",
-  "Muzică Ușoară",
-  "Tradițional",
-  "Etno",
+  "Traditional",
+  "Party Music",
+  "Easy Listening",
+  "Ethno",
   "Trap",
   "Disco",
 ];
@@ -98,8 +97,8 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
           >
             <span className="truncate">
               {selectedGenres.length > 0
-                ? `${selectedGenres.length} genuri selectate`
-                : "Selectează genuri muzicale..."}
+                ? `${selectedGenres.length} genres selected`
+                : "Select music genres..."}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -107,7 +106,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
         <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
           <Command className="bg-popover">
             <CommandInput
-              placeholder="Caută sau scrie un gen..."
+              placeholder="Search or type a genre..."
               value={inputValue}
               onValueChange={setInputValue}
             />
@@ -119,10 +118,10 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     className="w-full px-4 py-2 text-left text-sm hover:bg-accent/50 cursor-pointer"
                     onClick={handleAddCustom}
                   >
-                    Adaugă "{inputValue}"
+                    Add "{inputValue}"
                   </button>
                 ) : (
-                  "Niciun gen găsit."
+                  "No genre found."
                 )}
               </CommandEmpty>
               <CommandGroup>
@@ -148,7 +147,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     onSelect={handleAddCustom}
                     className="cursor-pointer border-t border-border"
                   >
-                    <span className="text-muted-foreground">Adaugă "</span>
+                    <span className="text-muted-foreground">Add "</span>
                     {inputValue}
                     <span className="text-muted-foreground">"</span>
                   </CommandItem>
