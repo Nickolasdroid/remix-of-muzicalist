@@ -167,8 +167,8 @@
       "lastName": "Numele de familie",
       "email": "email@exemplu.com",
       "phone": "Numărul tău de telefon",
-      "password": "Creează o parolă puternică",
-      "confirmPassword": "Confirmă parola"
+      "password": "••••••••",
+      "confirmPassword": "••••••••"
     },
     "validation": {
       "passwordMismatch": "Parolele nu se potrivesc",
