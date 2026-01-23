@@ -248,17 +248,17 @@ const RegisterArtist = () => {
             </div>
             
             {/* Step 1: Basic Information */}
-            {currentStep === 1 && <div className="space-y-3 md:space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-2xl font-display font-bold text-foreground mb-3 md:mb-6">Basic Information</h2>
+            {currentStep === 1 && <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
+                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">Basic Information</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-                  <div className="space-y-1 md:space-y-2">
-                    <Label htmlFor="specialization">Specialization</Label>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="specialization" className="text-xs md:text-sm">Specialization</Label>
                     <Select value={formData.specialization} onValueChange={value => setFormData({
                   ...formData,
                   specialization: value
                 })}>
-                      <SelectTrigger className="bg-input border-border">
+                      <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
@@ -270,64 +270,64 @@ const RegisterArtist = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" required value={formData.lastName} onChange={e => setFormData({
-                  ...formData,
-                  lastName: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="Your family name" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="firstName" className="text-xs md:text-sm">First Name</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={e => setFormData({
                   ...formData,
                   firstName: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="Your first name" />
+                })} className="bg-input border-border focus:border-accent h-9" placeholder="Your first name" />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="stageName">Stage Name</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="lastName" className="text-xs md:text-sm">Last Name</Label>
+                    <Input id="lastName" required value={formData.lastName} onChange={e => setFormData({
+                  ...formData,
+                  lastName: e.target.value
+                })} className="bg-input border-border focus:border-accent h-9" placeholder="Your family name" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="stageName" className="text-xs md:text-sm">Stage Name</Label>
                     <Input id="stageName" required value={formData.stageName} onChange={e => setFormData({
                   ...formData,
                   stageName: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="Your artist/performer name" />
+                })} className="bg-input border-border focus:border-accent h-9" placeholder="Your artist name" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="space-y-1 md:col-span-2">
+                    <Label htmlFor="email" className="text-xs md:text-sm">Email Address</Label>
                     <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({
                   ...formData,
                   email: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="your.email@example.com" />
+                })} className="bg-input border-border focus:border-accent h-9" placeholder="your.email@example.com" />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label htmlFor="phone" className="text-xs md:text-sm">Phone Number</Label>
                     <Input id="phone" type="tel" required value={formData.phone} onChange={e => setFormData({
                   ...formData,
                   phone: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="Your phone number" />
+                })} className="bg-input border-border focus:border-accent h-9" placeholder="Your phone number" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <CountrySelector value={formData.country} onChange={value => setFormData({
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="md:col-span-2">
+                    <CountrySelector value={formData.country} onChange={value => setFormData({
                 ...formData,
                 country: value
               })} showLabel variant="list" />
+                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="county">County</Label>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label htmlFor="county" className="text-xs md:text-sm">County</Label>
                     <Select value={formData.county} onValueChange={value => setFormData({
                   ...formData,
                   county: value
                 })}>
-                      <SelectTrigger className="bg-input border-border">
+                      <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder="Select your county" />
                       </SelectTrigger>
                       <SelectContent>
@@ -337,33 +337,33 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end">
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <div className="flex justify-end pt-2">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     Next <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>}
 
             {/* Step 2: Professional Information */}
-            {currentStep === 2 && <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Professional Information</h2>
+            {currentStep === 2 && <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
+                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">Professional Information</h2>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="musicGenres">Music Genres</Label>
-                  <MusicGenreCombobox value={formData.musicGenres} onChange={value => setFormData({
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="musicGenres" className="text-xs md:text-sm">Music Genres</Label>
+                    <MusicGenreCombobox value={formData.musicGenres} onChange={value => setFormData({
                 ...formData,
                 musicGenres: value
               })} />
-                </div>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="experienceLevel">Experience Level</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="experienceLevel" className="text-xs md:text-sm">Experience Level</Label>
                     <Select value={formData.experienceLevel} onValueChange={value => setFormData({
                   ...formData,
                   experienceLevel: value
                 })}>
-                      <SelectTrigger className="bg-input border-border">
+                      <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder="Beginner, Advanced..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -374,9 +374,11 @@ const RegisterArtist = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="numberOfEvents">Number of Events</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="numberOfEvents" className="text-xs md:text-sm">Number of Events</Label>
                     <Input id="numberOfEvents" type="number" required min="0" max="999999" value={formData.numberOfEvents} onChange={e => setFormData({
                   ...formData,
                   numberOfEvents: e.target.value.replace(/\D/g, '').slice(0, 6)
@@ -384,29 +386,29 @@ const RegisterArtist = () => {
                   if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                     e.preventDefault();
                   }
-                }} className="bg-input border-border focus:border-accent" placeholder="How many events you've performed" />
+                }} className="bg-input border-border focus:border-accent h-9" placeholder="Events performed" />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="careerStartYear">Year of Career Start</Label>
-                  <Select value={formData.careerStartYear} onValueChange={value => setFormData({
+                  <div className="space-y-1">
+                    <Label htmlFor="careerStartYear" className="text-xs md:text-sm">Year of Career Start</Label>
+                    <Select value={formData.careerStartYear} onValueChange={value => setFormData({
                 ...formData,
                 careerStartYear: value
               })}>
-                    <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder="When did you start?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({
+                      <SelectTrigger className="bg-input border-border h-9">
+                        <SelectValue placeholder="When did you start?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({
                     length: new Date().getFullYear() - 1950 + 1
                   }, (_, i) => new Date().getFullYear() - i).map(year => <SelectItem key={year} value={year.toString()}>{year}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex justify-between pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
                   <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
