@@ -2476,18 +2476,18 @@ const Dashboard = () => {
                                       <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                       <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Email</Label>
-                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                                          <Mail className="h-3 w-3 text-muted-foreground" />
+                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
+                                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                           {selectedBookingRequest.requester_email}
                                         </p>
                                       </div>
                                       <div>
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wide">Phone</Label>
                                         <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                                          <Phone className="h-3 w-3 text-muted-foreground" />
+                                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                                           {selectedBookingRequest.requester_phone}
                                         </p>
                                       </div>
