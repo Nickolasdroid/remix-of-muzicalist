@@ -258,7 +258,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
   if (variant === "list") {
     return (
       <div className="space-y-2">
-        {showLabel && <Label>Country *</Label>}
+        {showLabel && <Label className="text-xs md:text-sm">Country</Label>}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button 
@@ -323,7 +323,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
 
   return (
     <div className="space-y-2">
-      {showLabel && <Label>Country *</Label>}
+      {showLabel && <Label className="text-xs md:text-sm">Country</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button 
