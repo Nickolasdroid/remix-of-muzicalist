@@ -1,0 +1,152 @@
+{
+  "common": {
+    "next": "Înainte",
+    "back": "Înapoi",
+    "create": "Creează",
+    "creating": "Se creează...",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "search": "Caută",
+    "select": "Selectează",
+    "loading": "Se încarcă...",
+    "error": "Eroare",
+    "success": "Succes"
+  },
+  "navigation": {
+    "home": "Acasă",
+    "categories": "Categorii",
+    "counties": "Județe",
+    "feed": "Postări",
+    "dashboard": "Panou",
+    "messages": "Mesaje",
+    "notifications": "Notificări",
+    "announcements": "Anunțuri",
+    "leaderboard": "Clasament",
+    "about": "Despre",
+    "login": "Autentificare",
+    "register": "Înregistrare",
+    "logout": "Deconectare",
+    "profile": "Profil",
+    "settings": "Setări",
+    "more": "Mai mult"
+  },
+  "auth": {
+    "login": {
+      "title": "Bine ai revenit",
+      "subtitle": "Conectează-te la contul tău",
+      "email": "Email",
+      "password": "Parolă",
+      "forgotPassword": "Ai uitat parola?",
+      "noAccount": "Nu ai cont?",
+      "signUp": "Înregistrează-te"
+    },
+    "register": {
+      "asArtist": "Înregistrare ca Artist",
+      "asUser": "Înregistrare ca Utilizator",
+      "step": "Pasul {{current}} din {{total}}",
+      "basicInfo": "Informații de bază",
+      "professionalInfo": "Informații profesionale",
+      "profilePicture": "Poza de profil",
+      "createPassword": "Creează parola"
+    }
+  },
+  "artistRegistration": {
+    "title": "Înregistrare ca Artist",
+    "specialization": "Specializare",
+    "firstName": "Prenume",
+    "lastName": "Nume",
+    "stageName": "Nume de scenă",
+    "email": "Adresă de email",
+    "phone": "Număr de telefon",
+    "country": "Țară",
+    "county": "Județ",
+    "musicGenres": "Genuri muzicale",
+    "experienceLevel": "Nivel de experiență",
+    "numberOfEvents": "Număr de evenimente",
+    "careerStartYear": "Anul începerii carierei",
+    "password": "Parolă",
+    "confirmPassword": "Confirmă parola",
+    "placeholders": {
+      "selectSpecialization": "Selectează",
+      "firstName": "Prenumele tău",
+      "lastName": "Numele de familie",
+      "stageName": "Numele tău de artist",
+      "email": "email@exemplu.com",
+      "phone": "Numărul tău de telefon",
+      "selectCountry": "Selectează țara",
+      "selectCounty": "Selectează județul",
+      "selectGenres": "Selectează genuri muzicale...",
+      "searchGenres": "Caută sau scrie un gen...",
+      "experienceLevel": "Începător, Avansat...",
+      "numberOfEvents": "Evenimente susținute",
+      "careerStart": "Când ai început?",
+      "password": "Creează o parolă puternică",
+      "confirmPassword": "Confirmă parola"
+    },
+    "specializations": {
+      "singer": "Solist vocal",
+      "instrumentalist": "Instrumentist",
+      "dj": "DJ",
+      "band": "Formație"
+    },
+    "experienceLevels": {
+      "beginner": "Începător",
+      "intermediate": "Intermediar",
+      "advanced": "Avansat",
+      "professional": "Profesionist"
+    },
+    "uploadPhoto": "Click sau trage pentru a încărca poza de profil",
+    "adjustPhoto": "Ajustează fotografia",
+    "validation": {
+      "completeStep1": "Te rugăm să completezi toate câmpurile din Pasul 1",
+      "completeStep2": "Te rugăm să completezi toate câmpurile din Pasul 2",
+      "uploadPhoto": "Te rugăm să încarci o poză de profil",
+      "setPassword": "Te rugăm să setezi parola",
+      "passwordMismatch": "Parolele nu se potrivesc"
+    },
+    "success": {
+      "title": "Înregistrare reușită!",
+      "message": "Profilul tău de artist a fost creat. Redirecționare către profil..."
+    },
+    "error": {
+      "title": "Înregistrare eșuată",
+      "message": "A apărut o eroare la crearea contului. Te rugăm să încerci din nou."
+    }
+  },
+  "musicGenres": {
+    "pop": "Pop",
+    "rock": "Rock",
+    "jazz": "Jazz",
+    "classical": "Muzică Clasică",
+    "hiphop": "Hip-Hop",
+    "rnb": "R&B",
+    "electronic": "Electronică",
+    "house": "House",
+    "techno": "Techno",
+    "reggae": "Reggae",
+    "blues": "Blues",
+    "country": "Country",
+    "folk": "Folk",
+    "latin": "Latină",
+    "metal": "Metal",
+    "punk": "Punk",
+    "soul": "Soul",
+    "funk": "Funk",
+    "indie": "Indie",
+    "alternative": "Alternativă",
+    "traditional": "Muzică Populară",
+    "partyMusic": "Muzică de Petrecere",
+    "easyListening": "Muzică Ușoară",
+    "ethno": "Etno",
+    "trap": "Trap",
+    "disco": "Disco",
+    "genresSelected": "{{count}} genuri selectate",
+    "noGenreFound": "Niciun gen găsit.",
+    "addGenre": "Adaugă \"{{genre}}\""
+  },
+  "countries": {
+    "searchPlaceholder": "Caută țări...",
+    "noCountriesFound": "Nicio țară găsită",
+    "allCountries": "Toate țările"
+  }
+}

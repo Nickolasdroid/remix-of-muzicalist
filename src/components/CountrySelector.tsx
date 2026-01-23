@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -85,6 +86,7 @@ interface CountrySelectorProps {
 }
 
 const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon", userCountry }: CountrySelectorProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [countriesWithArtists, setCountriesWithArtists] = useState<string[]>([]);
@@ -195,7 +197,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         <PopoverContent className="w-72 p-0 bg-card border-border z-50" align="end">
           <div className="p-3 border-b border-border">
             <Input
-              placeholder="Search countries..."
+              placeholder={t("countries.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
@@ -215,7 +217,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                 }`}
               >
                 <Globe className="h-5 w-5 text-accent" />
-                <span className="flex-1 text-left font-medium">All Countries</span>
+                <span className="flex-1 text-left font-medium">{t("countries.allCountries")}</span>
                 {value === "all" && (
                   <Check className="h-4 w-4 text-accent" />
                 )}
@@ -244,7 +246,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                 ))}
                 {filteredCountries.length === 0 && (
                   <p className="text-center text-muted-foreground py-4 text-sm">
-                    No countries found
+                    {t("countries.noCountriesFound")}
                   </p>
                 )}
               </div>
@@ -258,7 +260,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
   if (variant === "list") {
     return (
       <div className="space-y-2">
-        {showLabel && <Label className="text-xs md:text-sm">Country</Label>}
+        {showLabel && <Label className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button 
@@ -269,14 +271,14 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               {selectedCountry ? (
                 <span>{selectedCountry.name}</span>
               ) : (
-                <span className="text-muted-foreground">Select country</span>
+                <span className="text-muted-foreground">{t("artistRegistration.placeholders.selectCountry")}</span>
               )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
             <div className="p-3 border-b border-border">
               <Input
-                placeholder="Search countries..."
+                placeholder={t("countries.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
@@ -306,7 +308,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                   ))}
                   {filteredCountries.length === 0 && (
                     <p className="text-center text-muted-foreground py-4 text-sm">
-                      No countries found
+                      {t("countries.noCountriesFound")}
                     </p>
                   )}
                 </div>
@@ -320,7 +322,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
 
   return (
     <div className="space-y-2">
-      {showLabel && <Label className="text-xs md:text-sm">Country</Label>}
+      {showLabel && <Label className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button 
