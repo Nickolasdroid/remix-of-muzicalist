@@ -91,19 +91,19 @@ const RegisterUser = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="max-w-md w-full bg-card rounded-2xl shadow-xl border-2 border-accent/20 p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-display font-bold mb-2 text-foreground">
+    <div className="min-h-screen flex items-center justify-center bg-background p-0 md:p-4">
+      <div className="max-w-md w-full bg-card md:rounded-2xl shadow-xl md:border-2 border-accent/20 p-4 md:p-8">
+        <div className="text-center mb-4 md:mb-8">
+          <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
             User Registration
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Create your account to get started
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div>
               <Label htmlFor="firstName">First Name</Label>
               <Input
