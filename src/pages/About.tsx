@@ -92,7 +92,7 @@ const About = () => {
           </h1>
           
           <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed">
-            Romania's premier platform connecting talented musicians with clients. 
+            The premier platform connecting talented musicians with clients. 
             Search, discover, and book professional artists for your events.
           </p>
 
@@ -153,7 +153,7 @@ const About = () => {
               About Muzicalist
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Romania's premier platform connecting talented musical artists with clients seeking exceptional entertainment
+              The premier platform connecting talented musical artists with clients seeking exceptional entertainment
             </p>
           </div>
 
@@ -161,7 +161,7 @@ const About = () => {
             <Card className="p-8 md:p-12 bg-card/50 backdrop-blur border-accent/20">
               <h3 className="text-3xl font-display font-bold text-foreground mb-6">Our Mission</h3>
               <p className="text-lg text-muted-foreground mb-6">
-                Muzicalist was created to bridge the gap between talented musical artists and clients looking for the perfect entertainment for their events. Whether you're planning a wedding, corporate event, private party, or any special occasion, we make it easy to discover and connect with professional musicians across Romania.
+                Muzicalist was created to bridge the gap between talented musical artists and clients looking for the perfect entertainment for their events. Whether you're planning a wedding, corporate event, private party, or any special occasion, we make it easy to discover and connect with professional musicians.
               </p>
               <p className="text-lg text-muted-foreground mb-6">
                 For artists, we provide a professional platform to showcase your talents, build your reputation, and grow your career. Our ranking system highlights the most talented and reliable artists, helping you stand out in a competitive industry.
