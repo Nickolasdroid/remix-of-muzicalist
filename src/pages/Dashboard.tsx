@@ -1663,33 +1663,13 @@ const Dashboard = () => {
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
                               </div>
                             </div>
-                            {editingField === 'contact' ? <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50">
-                                <Phone className="h-5 w-5 text-accent" />
-                                <div className="flex-1">
-                                  <p className="text-sm text-muted-foreground">Phone</p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Input value={formData.phone} onChange={e => setFormData({
-                          ...formData,
-                          phone: e.target.value
-                        })} placeholder="Phone Number" className="h-8" />
-                                    <Button size="sm" onClick={() => saveField('contact')} disabled={isSaving}>
-                                      <Save className="h-3 w-3" />
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div> : <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                            <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                                 <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 <div className="flex-1 text-left">
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
                                   <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
                                 </div>
-                                <Button size="sm" variant="ghost" className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-muted-foreground hover:text-accent" onClick={() => startEditing('contact')}>
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>
-                              </div>}
+                              </div>
                           </div>
                         </div>
 
