@@ -259,7 +259,7 @@ const RegisterArtist = () => {
                   specialization: value
                 })}>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Singer, DJ, Band..." />
+                        <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Singer">Singer</SelectItem>
@@ -311,7 +311,7 @@ const RegisterArtist = () => {
                     <Input id="phone" type="tel" required value={formData.phone} onChange={e => setFormData({
                   ...formData,
                   phone: e.target.value
-                })} className="bg-input border-border focus:border-accent" placeholder="+40 7XX XXX XXX" />
+                })} className="bg-input border-border focus:border-accent" placeholder="Your phone number" />
                   </div>
                 </div>
 
