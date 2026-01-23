@@ -481,8 +481,8 @@ const RegisterArtist = () => {
                   <Button type="button" onClick={previousStep} variant="outline" size="lg">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                   </Button>
-                  <Button type="submit" size="lg" disabled={isSubmitting} className="bg-accent text-accent-foreground hover:bg-accent/90 text-lg shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
-                    {isSubmitting ? "Creating Profile..." : "Create Artist Profile"}
+                  <Button type="submit" variant="outline" size="lg" disabled={isSubmitting}>
+                    {isSubmitting ? "Creating..." : "Create"}
                   </Button>
                 </div>
               </div>}
