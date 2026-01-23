@@ -333,9 +333,9 @@ const RegisterArtist = () => {
                         if (prefix && !newValue.startsWith(prefix)) {
                           return;
                         }
-                        // Only allow digits after prefix (and spaces for formatting)
+                        // Only allow digits after prefix (no spaces)
                         const afterPrefix = newValue.slice(prefix.length);
-                        if (afterPrefix && !/^[\s\d]*$/.test(afterPrefix)) {
+                        if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
                           return;
                         }
                         // Check max length

@@ -80,8 +80,8 @@ export const getPhonePrefix = (countryCode: string): string => {
 export const getMaxPhoneLength = (countryCode: string): number => {
   const config = countryPhoneCodes[countryCode];
   if (!config) return 15; // Default max
-  // Total length = prefix length + space + max digits
-  return config.prefix.length + 1 + config.maxLength;
+  // Total length = prefix length + max digits (no space)
+  return config.prefix.length + config.maxLength;
 };
 
 export const validatePhoneNumber = (phone: string, countryCode: string): { valid: boolean; message?: string } => {
