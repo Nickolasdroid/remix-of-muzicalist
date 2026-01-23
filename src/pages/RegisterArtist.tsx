@@ -253,13 +253,13 @@ const RegisterArtist = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
                   <div className="space-y-1 md:space-y-2">
-                    <Label htmlFor="specialization">Specialization *</Label>
+                    <Label htmlFor="specialization">Specialization</Label>
                     <Select value={formData.specialization} onValueChange={value => setFormData({
                   ...formData,
                   specialization: value
                 })}>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select specialization" />
+                        <SelectValue placeholder="Singer, DJ, Band..." />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Singer">Singer</SelectItem>
@@ -271,47 +271,47 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name *</Label>
+                    <Label htmlFor="lastName">Last Name</Label>
                     <Input id="lastName" required value={formData.lastName} onChange={e => setFormData({
                   ...formData,
                   lastName: e.target.value
-                })} className="bg-input border-border focus:border-accent" />
+                })} className="bg-input border-border focus:border-accent" placeholder="Your family name" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name *</Label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={e => setFormData({
                   ...formData,
                   firstName: e.target.value
-                })} className="bg-input border-border focus:border-accent" />
+                })} className="bg-input border-border focus:border-accent" placeholder="Your first name" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="stageName">Stage Name *</Label>
+                    <Label htmlFor="stageName">Stage Name</Label>
                     <Input id="stageName" required value={formData.stageName} onChange={e => setFormData({
                   ...formData,
                   stageName: e.target.value
-                })} className="bg-input border-border focus:border-accent" />
+                })} className="bg-input border-border focus:border-accent" placeholder="Your artist/performer name" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">Email Address</Label>
                     <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({
                   ...formData,
                   email: e.target.value
-                })} className="bg-input border-border focus:border-accent" />
+                })} className="bg-input border-border focus:border-accent" placeholder="your.email@example.com" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input id="phone" type="tel" required value={formData.phone} onChange={e => setFormData({
                   ...formData,
                   phone: e.target.value
-                })} className="bg-input border-border focus:border-accent" />
+                })} className="bg-input border-border focus:border-accent" placeholder="+40 7XX XXX XXX" />
                   </div>
                 </div>
 
@@ -322,13 +322,13 @@ const RegisterArtist = () => {
               })} showLabel variant="list" />
 
                   <div className="space-y-2">
-                    <Label htmlFor="county">County *</Label>
+                    <Label htmlFor="county">County</Label>
                     <Select value={formData.county} onValueChange={value => setFormData({
                   ...formData,
                   county: value
                 })}>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select county" />
+                        <SelectValue placeholder="Select your county" />
                       </SelectTrigger>
                       <SelectContent>
                         {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
@@ -349,7 +349,7 @@ const RegisterArtist = () => {
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">Professional Information</h2>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="musicGenres">Music Genres *</Label>
+                  <Label htmlFor="musicGenres">Music Genres</Label>
                   <MusicGenreCombobox value={formData.musicGenres} onChange={value => setFormData({
                 ...formData,
                 musicGenres: value
@@ -358,13 +358,13 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="experienceLevel">Experience Level *</Label>
+                    <Label htmlFor="experienceLevel">Experience Level</Label>
                     <Select value={formData.experienceLevel} onValueChange={value => setFormData({
                   ...formData,
                   experienceLevel: value
                 })}>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select experience level" />
+                        <SelectValue placeholder="Beginner, Advanced..." />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Beginner">Beginner</SelectItem>
@@ -376,7 +376,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="numberOfEvents">Number of Events *</Label>
+                    <Label htmlFor="numberOfEvents">Number of Events</Label>
                     <Input id="numberOfEvents" type="number" required min="0" max="999999" value={formData.numberOfEvents} onChange={e => setFormData({
                   ...formData,
                   numberOfEvents: e.target.value.replace(/\D/g, '').slice(0, 6)
@@ -384,18 +384,18 @@ const RegisterArtist = () => {
                   if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                     e.preventDefault();
                   }
-                }} className="bg-input border-border focus:border-accent" placeholder="e.g., 50" />
+                }} className="bg-input border-border focus:border-accent" placeholder="How many events you've performed" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="careerStartYear">Year of Career Start *</Label>
+                  <Label htmlFor="careerStartYear">Year of Career Start</Label>
                   <Select value={formData.careerStartYear} onValueChange={value => setFormData({
                 ...formData,
                 careerStartYear: value
               })}>
                     <SelectTrigger className="bg-input border-border">
-                      <SelectValue placeholder={new Date().getFullYear().toString()} />
+                      <SelectValue placeholder="When did you start?" />
                     </SelectTrigger>
                     <SelectContent>
                       {Array.from({
@@ -420,7 +420,7 @@ const RegisterArtist = () => {
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">Profile Picture</h2>
                 
                 <div className="space-y-4">
-                  <Label htmlFor="profilePic">Upload Profile Picture *</Label>
+                  <Label htmlFor="profilePic">Upload Profile Picture</Label>
                   <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
 
                   {imageSrc && <div className="space-y-4">
@@ -451,12 +451,12 @@ const RegisterArtist = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password *</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
                       <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={e => setFormData({
                     ...formData,
                     password: e.target.value
-                  })} className="bg-input border-border focus:border-accent pr-10" />
+                  })} className="bg-input border-border focus:border-accent pr-10" placeholder="Min. 6 characters" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -464,12 +464,12 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative">
                       <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={e => setFormData({
                     ...formData,
                     confirmPassword: e.target.value
-                  })} className="bg-input border-border focus:border-accent pr-10" />
+                  })} className="bg-input border-border focus:border-accent pr-10" placeholder="Re-enter your password" />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
