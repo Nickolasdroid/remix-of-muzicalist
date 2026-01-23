@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,7 @@ interface MusicGenreComboboxProps {
 }
 
 export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -97,8 +99,8 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
           >
             <span className="truncate">
               {selectedGenres.length > 0
-                ? `${selectedGenres.length} genres selected`
-                : "Select music genres..."}
+                ? t("musicGenres.genresSelected", { count: selectedGenres.length })
+                : t("artistRegistration.placeholders.selectGenres")}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -106,7 +108,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
         <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
           <Command className="bg-popover">
             <CommandInput
-              placeholder="Search or type a genre..."
+              placeholder={t("artistRegistration.placeholders.searchGenres")}
               value={inputValue}
               onValueChange={setInputValue}
             />
@@ -118,10 +120,10 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     className="w-full px-4 py-2 text-left text-sm hover:bg-accent/50 cursor-pointer"
                     onClick={handleAddCustom}
                   >
-                    Add "{inputValue}"
+                    {t("musicGenres.addGenre", { genre: inputValue })}
                   </button>
                 ) : (
-                  "No genre found."
+                  t("musicGenres.noGenreFound")
                 )}
               </CommandEmpty>
               <CommandGroup>
@@ -147,7 +149,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     onSelect={handleAddCustom}
                     className="cursor-pointer border-t border-border"
                   >
-                    <span className="text-muted-foreground">Add "</span>
+                    <span className="text-muted-foreground">{t("musicGenres.addGenre", { genre: inputValue }).split(`"${inputValue}"`)[0]}"</span>
                     {inputValue}
                     <span className="text-muted-foreground">"</span>
                   </CommandItem>
