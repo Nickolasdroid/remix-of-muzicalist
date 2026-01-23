@@ -231,28 +231,28 @@ const RegisterArtist = () => {
   };
   return <div className="min-h-screen bg-background flex flex-col">
       
-      <div className="flex-1 flex items-center justify-center py-12 px-4">
+      <div className="flex-1 flex items-center justify-center py-6 md:py-12 px-0 md:px-4">
         <div className="w-full max-w-4xl">
-          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 md:p-12 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
-                <UserPlus className="h-10 w-10 text-accent-foreground" />
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-8 bg-gradient-to-br from-card to-secondary p-4 md:p-12 md:rounded-2xl md:border-2 border-accent/30 md:shadow-[var(--shadow-elegant)]">
+            <div className="text-center mb-4 md:mb-8">
+              <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
+                <UserPlus className="h-7 w-7 md:h-10 md:w-10 text-accent-foreground" />
               </div>
-              <h1 className="text-5xl font-display font-bold mb-4 text-foreground">
+              <h1 className="text-2xl md:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
                 Register as Artist
               </h1>
-              <p className="text-xl text-muted-foreground mb-6">
+              <p className="text-sm md:text-xl text-muted-foreground mb-4 md:mb-6">
                 Step {currentStep} of {totalSteps}
               </p>
               <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
             </div>
             
             {/* Step 1: Basic Information */}
-            {currentStep === 1 && <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">Basic Information</h2>
+            {currentStep === 1 && <div className="space-y-3 md:space-y-6 animate-in fade-in duration-500">
+                <h2 className="text-lg md:text-2xl font-display font-bold text-foreground mb-3 md:mb-6">Basic Information</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                  <div className="space-y-1 md:space-y-2">
                     <Label htmlFor="specialization">Specialization *</Label>
                     <Select value={formData.specialization} onValueChange={value => setFormData({
                   ...formData,
