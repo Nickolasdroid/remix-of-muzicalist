@@ -167,8 +167,8 @@
       "lastName": "Your family name",
       "email": "your.email@example.com",
       "phone": "Your phone number",
-      "password": "Create a strong password",
-      "confirmPassword": "Confirm your password"
+      "password": "••••••••",
+      "confirmPassword": "••••••••"
     },
     "validation": {
       "passwordMismatch": "Passwords don't match",
