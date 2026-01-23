@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 interface Profile {
   id: string;
   first_name: string;
@@ -687,7 +688,7 @@ const ArtistProfile = () => {
               </div>
 
               {/* Centered Avatar - with top padding to account for absolute positioned elements */}
-              <div className={`mt-10 p-1 rounded-full ${isPremium ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
+              <div className={`mt-10 p-1 rounded-full ${getAvatarOutlineClassesLarge(isPremium ? 'Premium' : 'Free')}`}>
                 <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                   <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                   <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -720,7 +721,7 @@ const ArtistProfile = () => {
             <div className="hidden md:flex flex-row gap-8 mb-8">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className={`p-1 rounded-full ${isPremium ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
+                <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(isPremium ? 'Premium' : 'Free')}`}>
                   <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -1051,7 +1052,7 @@ const ArtistProfile = () => {
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
+                                  <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
                                     <Avatar className="w-10 h-10 border-2 border-background">
                                       <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
                                       <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
@@ -1156,7 +1157,7 @@ const ArtistProfile = () => {
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className={`p-0.5 rounded-full ${artist?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
+                                  <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
                                     <Avatar className="w-10 h-10 border-2 border-background">
                                       <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
                                       <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
