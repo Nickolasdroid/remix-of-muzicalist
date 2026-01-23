@@ -115,19 +115,7 @@ const About = () => {
       
 
       {/* Advanced Search Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4 text-foreground">
-              Advanced Search
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Filter by category, location, price range, and more
-            </p>
-          </div>
-          <ArtistSearchBar />
-        </div>
-      </section>
+      
 
       {/* Categories Section */}
       <section className="py-20 px-4">
