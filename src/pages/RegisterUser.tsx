@@ -91,7 +91,7 @@ const RegisterUser = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start pt-16 md:justify-center md:pt-0 bg-background p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="max-w-md w-full bg-card rounded-2xl shadow-xl border-2 border-accent/20 p-4 md:p-8">
         <div className="text-center mb-4 md:mb-8">
           <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
