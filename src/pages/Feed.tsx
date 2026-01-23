@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 
 const POSTS_PER_PAGE = 10;
 
@@ -251,7 +252,7 @@ const Feed = () => {
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`p-0.5 rounded-full ${item.profile.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
+                      <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(item.profile.plan)}`}>
                         <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                           <AvatarImage src={item.profile.avatar_url || undefined} alt={item.profile.stage_name} />
                           <AvatarFallback className="bg-muted text-muted-foreground font-semibold">

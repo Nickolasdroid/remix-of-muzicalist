@@ -27,6 +27,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
+import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 const Dashboard = () => {
   const {
     toast
@@ -1278,7 +1279,7 @@ const Dashboard = () => {
 
                       {/* Centered Avatar - with top padding to account for absolute positioned elements */}
                       <div className="relative group cursor-pointer mt-10">
-                        <div className={`p-1 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
+                        <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
                           <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -1313,7 +1314,7 @@ const Dashboard = () => {
                     {/* Desktop Header Layout */}
                     <div className="hidden md:flex flex-row gap-8 mb-8">
                       <div className="flex-shrink-0 relative group cursor-pointer">
-                        <div className={`p-1 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600' : 'bg-muted'}`}>
+                        <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
                           <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                             <AvatarImage src={profile?.avatar_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -2047,7 +2048,7 @@ const Dashboard = () => {
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
-                                    <div className={`p-0.5 rounded-full ${profile?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
+                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
                                       <Avatar className="w-10 h-10 border-2 border-background">
                                         <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
                                         <AvatarFallback className="bg-muted text-muted-foreground font-semibold">

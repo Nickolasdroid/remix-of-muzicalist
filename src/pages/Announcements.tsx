@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
@@ -144,7 +145,7 @@ const Announcements = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <Link to={`/artist/${announcement.profile_id}`}>
-                        <div className={`p-0.5 rounded-full ${announcement.profiles?.plan === 'Premium' ? 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'}`}>
+                        <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(announcement.profiles?.plan)}`}>
                           <Avatar className="w-10 h-10 cursor-pointer border-2 border-background">
                             <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
                             <AvatarFallback className="bg-muted text-muted-foreground font-semibold">

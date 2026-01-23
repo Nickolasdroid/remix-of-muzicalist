@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
+import { getAvatarRingClasses } from "@/lib/subscriptionStyles";
 interface Conversation {
   id: string;
   artist_id: string;
@@ -385,16 +386,7 @@ const Messages = () => {
     const prevDate = new Date(prevMsg.created_at);
     return !isSameDay(currentDate, prevDate);
   };
-  const getPlanRingColor = (plan?: string) => {
-    switch (plan) {
-      case 'Premium':
-        return 'ring-2 ring-accent ring-offset-2 ring-offset-background';
-      case 'Standard':
-        return 'ring-2 ring-blue-500 ring-offset-2 ring-offset-background';
-      default:
-        return 'ring-2 ring-muted-foreground/30 ring-offset-2 ring-offset-background';
-    }
-  };
+  const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
   const handleDeleteConversation = async () => {
     if (!conversationToDelete) return;
     const {
