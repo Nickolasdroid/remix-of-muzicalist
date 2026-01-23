@@ -125,20 +125,24 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
   
   // Auto-detect user's country on mount (for list variant in registration)
   useEffect(() => {
-    if (variant === "list" && !value) {
-      fetch('https://ipapi.co/country_code/')
-        .then(res => res.text())
-        .then(code => {
-          const country = allCountries.find(c => c.code === code.trim());
-          if (country) {
-            onChange?.(country.code);
+    const detectCountry = async () => {
+      if (variant === "list" && !value) {
+        try {
+          const res = await fetch('https://ipapi.co/country_code/');
+          if (res.ok) {
+            const code = await res.text();
+            const country = allCountries.find(c => c.code === code.trim());
+            if (country && onChange) {
+              onChange(country.code);
+            }
           }
-        })
-        .catch(() => {
+        } catch {
           // Silently fail, user can select manually
-        });
-    }
-  }, [variant]);
+        }
+      }
+    };
+    detectCountry();
+  }, [variant, value, onChange]);
   
   const getCountryByValue = (val: string | undefined) => {
     if (!val || val === "all") return null;
