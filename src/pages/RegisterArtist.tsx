@@ -424,8 +424,8 @@ const RegisterArtist = () => {
                   <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
 
                   {imageSrc && <div className="space-y-4">
-                      <div className="relative w-full h-[400px] bg-muted rounded-lg overflow-hidden">
-                        <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} style={{ containerStyle: { background: 'transparent' } }} />
+                      <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
+                        <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} />
                       </div>
                       
                       <div className="space-y-2">
