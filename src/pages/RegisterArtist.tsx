@@ -89,7 +89,7 @@ const RegisterArtist = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!formData.specialization || !formData.lastName || !formData.firstName || !formData.stageName || !formData.email || !formData.phone || !formData.country || !formData.county) {
+        if (!formData.lastName || !formData.firstName || !formData.email || !formData.phone || !formData.country || !formData.county) {
           toast({
             title: t("common.error"),
             description: t("artistRegistration.validation.completeStep1"),
@@ -109,7 +109,7 @@ const RegisterArtist = () => {
         }
         break;
       case 2:
-        if (!formData.musicGenres || !formData.experienceLevel || !formData.numberOfEvents || !formData.careerStartYear) {
+        if (!formData.stageName || !formData.specialization || !formData.experienceLevel || !formData.careerStartYear) {
           toast({
             title: t("common.error"),
             description: t("artistRegistration.validation.completeStep2"),
@@ -279,22 +279,7 @@ const RegisterArtist = () => {
                   {t("auth.register.basicInfo")}
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="specialization" className="text-xs md:text-sm">{t("artistRegistration.specialization")}</Label>
-                    <Select value={formData.specialization} onValueChange={value => setFormData({ ...formData, specialization: value })}>
-                      <SelectTrigger className="bg-input border-border h-9">
-                        <SelectValue placeholder={t("artistRegistration.placeholders.selectSpecialization")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Singer">{t("artistRegistration.specializations.singer")}</SelectItem>
-                        <SelectItem value="Instrumentalist">{t("artistRegistration.specializations.instrumentalist")}</SelectItem>
-                        <SelectItem value="DJ">{t("artistRegistration.specializations.dj")}</SelectItem>
-                        <SelectItem value="Band">{t("artistRegistration.specializations.band")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="firstName" className="text-xs md:text-sm">{t("artistRegistration.firstName")}</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
@@ -303,11 +288,6 @@ const RegisterArtist = () => {
                   <div className="space-y-1">
                     <Label htmlFor="lastName" className="text-xs md:text-sm">{t("artistRegistration.lastName")}</Label>
                     <Input id="lastName" required value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.lastName")} />
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label htmlFor="stageName" className="text-xs md:text-sm">{t("artistRegistration.stageName")}</Label>
-                    <Input id="stageName" required value={formData.stageName} onChange={e => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.stageName")} />
                   </div>
                 </div>
 
@@ -383,10 +363,27 @@ const RegisterArtist = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="musicGenres" className="text-xs md:text-sm">{t("artistRegistration.musicGenres")}</Label>
-                    <MusicGenreCombobox value={formData.musicGenres} onChange={value => setFormData({ ...formData, musicGenres: value })} />
+                    <Label htmlFor="stageName" className="text-xs md:text-sm">{t("artistRegistration.stageName")}</Label>
+                    <Input id="stageName" required value={formData.stageName} onChange={e => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.stageName")} />
                   </div>
 
+                  <div className="space-y-1">
+                    <Label htmlFor="specialization" className="text-xs md:text-sm">{t("artistRegistration.specialization")}</Label>
+                    <Select value={formData.specialization} onValueChange={value => setFormData({ ...formData, specialization: value })}>
+                      <SelectTrigger className="bg-input border-border h-9">
+                        <SelectValue placeholder={t("artistRegistration.placeholders.selectSpecialization")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Singer">{t("artistRegistration.specializations.singer")}</SelectItem>
+                        <SelectItem value="Instrumentalist">{t("artistRegistration.specializations.instrumentalist")}</SelectItem>
+                        <SelectItem value="DJ">{t("artistRegistration.specializations.dj")}</SelectItem>
+                        <SelectItem value="Band">{t("artistRegistration.specializations.band")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="experienceLevel" className="text-xs md:text-sm">{t("artistRegistration.experienceLevel")}</Label>
                     <Select value={formData.experienceLevel} onValueChange={value => setFormData({ ...formData, experienceLevel: value })}>
@@ -400,17 +397,6 @@ const RegisterArtist = () => {
                         <SelectItem value="Professional">{t("artistRegistration.experienceLevels.professional")}</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="numberOfEvents" className="text-xs md:text-sm">{t("artistRegistration.numberOfEvents")}</Label>
-                    <Input id="numberOfEvents" type="number" required min="0" max="999999" value={formData.numberOfEvents} onChange={e => setFormData({ ...formData, numberOfEvents: e.target.value.replace(/\D/g, '').slice(0, 6) })} onKeyDown={e => {
-                      if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.numberOfEvents")} />
                   </div>
 
                   <div className="space-y-1">
