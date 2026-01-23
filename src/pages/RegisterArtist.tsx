@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
+import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -45,7 +46,8 @@ const RegisterArtist = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"];
+  const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
+  const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
   const totalSteps = 4;
   const progressPercentage = currentStep / totalSteps * 100;
 
@@ -333,17 +335,19 @@ const RegisterArtist = () => {
                     <CountrySelector value={formData.country} onChange={value => setFormData({ ...formData, country: value })} showLabel variant="list" />
                   </div>
 
-                  <div className="space-y-1 md:col-span-2">
-                    <Label htmlFor="county" className="text-xs md:text-sm">{t("artistRegistration.county")}</Label>
-                    <Select value={formData.county} onValueChange={value => setFormData({ ...formData, county: value })}>
-                      <SelectTrigger className="bg-input border-border h-9">
-                        <SelectValue placeholder={t("artistRegistration.placeholders.selectCounty")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {romanianCounties.map(county => <SelectItem key={county} value={county}>{county}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {formData.country && availableRegions.length > 0 && (
+                    <div className="space-y-1 md:col-span-2">
+                      <Label htmlFor="county" className="text-xs md:text-sm">{divisionLabel}</Label>
+                      <Select value={formData.county} onValueChange={value => setFormData({ ...formData, county: value })}>
+                        <SelectTrigger className="bg-input border-border h-9">
+                          <SelectValue placeholder={t("artistRegistration.placeholders.selectCounty")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableRegions.map(region => <SelectItem key={region} value={region}>{region}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end pt-2">
