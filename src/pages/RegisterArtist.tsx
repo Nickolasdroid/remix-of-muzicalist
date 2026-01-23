@@ -229,11 +229,11 @@ const RegisterArtist = () => {
       setIsSubmitting(false);
     }
   };
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background flex flex-col">
       
-      <div className="pt-12 pb-20 px-0 py-0">
-        <div className="container max-w-3xl mx-0 py-0 px-0">
-          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)] px-0 py-0">
+      <div className="flex-1 flex items-center justify-center py-12 px-4">
+        <div className="w-full max-w-4xl">
+          <form onSubmit={handleSubmit} className="space-y-8 bg-gradient-to-br from-card to-secondary p-8 md:p-12 rounded-2xl border-2 border-accent/30 shadow-[var(--shadow-elegant)]">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent mb-6 shadow-[var(--shadow-gold)]">
                 <UserPlus className="h-10 w-10 text-accent-foreground" />
