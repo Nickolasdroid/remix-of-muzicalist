@@ -267,10 +267,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3"
             >
               {selectedCountry ? (
-                <span className="flex items-center gap-2">
-                  <span className="text-xl">{selectedCountry.flag}</span>
-                  <span>{selectedCountry.name}</span>
-                </span>
+                <span>{selectedCountry.name}</span>
               ) : (
                 <span className="text-muted-foreground">Select country</span>
               )}
