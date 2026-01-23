@@ -52,14 +52,23 @@ const RegisterArtist = () => {
   // Update phone prefix when country changes
   useEffect(() => {
     if (formData.country) {
-      const prefix = getPhonePrefix(formData.country);
-      if (prefix) {
-        // Only update if phone is empty or only contains a prefix
-        const currentPhone = formData.phone;
-        const isOnlyPrefix = currentPhone === "" || Object.values(getPhonePrefix).some(p => currentPhone === p);
-        if (!currentPhone || currentPhone.startsWith("+") && currentPhone.length <= 5) {
-          setFormData(prev => ({ ...prev, phone: prefix }));
-        }
+      const newPrefix = getPhonePrefix(formData.country);
+      if (newPrefix) {
+        setFormData(prev => {
+          const currentPhone = prev.phone;
+          // If phone is empty, just set the prefix
+          if (!currentPhone) {
+            return { ...prev, phone: newPrefix };
+          }
+          // If phone starts with a different prefix, replace it
+          if (currentPhone.startsWith("+")) {
+            // Find where the prefix ends (after the + and digits before space or the actual number)
+            const phoneWithoutPrefix = currentPhone.replace(/^\+\d+\s*/, "");
+            return { ...prev, phone: newPrefix + " " + phoneWithoutPrefix };
+          }
+          // If phone doesn't start with +, prepend the prefix
+          return { ...prev, phone: newPrefix + " " + currentPhone };
+        });
       }
     }
   }, [formData.country]);
