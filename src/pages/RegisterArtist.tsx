@@ -14,7 +14,7 @@ import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
-import { getPhonePrefix } from "@/lib/countryPhoneCodes";
+import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -95,6 +95,16 @@ const RegisterArtist = () => {
           toast({
             title: t("common.error"),
             description: t("artistRegistration.validation.completeStep1"),
+            variant: "destructive"
+          });
+          return false;
+        }
+        // Validate phone number length
+        const phoneValidation = validatePhoneNumber(formData.phone, formData.country);
+        if (!phoneValidation.valid) {
+          toast({
+            title: t("common.error"),
+            description: phoneValidation.message,
             variant: "destructive"
           });
           return false;
@@ -311,7 +321,32 @@ const RegisterArtist = () => {
 
                   <div className="space-y-1 md:col-span-2">
                     <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
-                    <Input id="phone" type="tel" required value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.phone")} />
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      required 
+                      value={formData.phone} 
+                      onChange={e => {
+                        const newValue = e.target.value;
+                        const prefix = getPhonePrefix(formData.country);
+                        // Ensure prefix cannot be deleted
+                        if (prefix && !newValue.startsWith(prefix)) {
+                          return;
+                        }
+                        // Only allow digits after prefix (and spaces for formatting)
+                        const afterPrefix = newValue.slice(prefix.length);
+                        if (afterPrefix && !/^[\s\d]*$/.test(afterPrefix)) {
+                          return;
+                        }
+                        // Check max length
+                        const maxLength = getMaxPhoneLength(formData.country);
+                        if (newValue.length <= maxLength) {
+                          setFormData({ ...formData, phone: newValue });
+                        }
+                      }}
+                      className="bg-input border-border focus:border-accent h-9" 
+                      placeholder={t("artistRegistration.placeholders.phone")} 
+                    />
                   </div>
                 </div>
 
