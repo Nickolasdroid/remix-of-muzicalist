@@ -421,21 +421,7 @@ const RegisterArtist = () => {
                 
                 <div className="space-y-4">
                   <Label htmlFor="profilePic">Upload Profile Picture</Label>
-                  <div className="relative">
-                    <input 
-                      id="profilePic" 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleImageUpload} 
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                    />
-                    <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg bg-input hover:bg-input/80 transition-colors cursor-pointer">
-                      <div className="text-center">
-                        <p className="text-muted-foreground">Click to choose a file</p>
-                        <p className="text-xs text-muted-foreground mt-1">JPG, PNG or GIF</p>
-                      </div>
-                    </div>
-                  </div>
+                  <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
 
                   {imageSrc && <div className="space-y-4">
                       <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
