@@ -1042,8 +1042,8 @@ const ArtistProfile = () => {
                 {/* Posts Tab */}
                 <TabsContent value="posts" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
-                      <FileText className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                    <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                      <FileText className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       Posts
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
@@ -1147,8 +1147,8 @@ const ArtistProfile = () => {
                 {/* Announcements Tab */}
                 <TabsContent value="announcements" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
-                      <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                    <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                      <Megaphone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       Announcements
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
@@ -1242,8 +1242,8 @@ const ArtistProfile = () => {
                   <div className="space-y-6 md:space-y-8">
                     {/* Photos Section */}
                     <div>
-                      <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
-                        <Images className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                      <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                        <Images className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Photos
                       </h2>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
@@ -1263,8 +1263,8 @@ const ArtistProfile = () => {
 
                     {/* Videos Section */}
                     <div>
-                      <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
-                        <Play className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                      <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                        <Play className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                         Videos
                       </h2>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
@@ -1290,8 +1290,8 @@ const ArtistProfile = () => {
                 {/* Calendar Tab */}
                 <TabsContent value="calendar">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-display font-bold mb-4 md:mb-6 flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                    <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       Availability Calendar
                     </h2>
                     <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr] gap-4 items-start">

@@ -2204,8 +2204,8 @@ const Dashboard = () => {
                       {/* Calendar Tab */}
                       <TabsContent value="calendar">
                         <div>
-                          <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-                            <CalendarIcon className="h-6 w-6 text-accent" />
+                          <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                            <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             My Calendar
                           </h2>
                           <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
