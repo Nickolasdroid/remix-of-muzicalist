@@ -66,7 +66,7 @@ const About = () => {
   const values = [{
     icon: Music2,
     title: "Excellence in Music",
-    description: "We connect clients with the most talented musical artists across Romania, ensuring every event becomes unforgettable."
+    description: "We connect clients with the most talented musical artists, ensuring every event becomes unforgettable."
   }, {
     icon: Users,
     title: "Community First",
