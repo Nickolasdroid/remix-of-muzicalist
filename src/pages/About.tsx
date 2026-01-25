@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
-import ArtistSearchBar from "@/components/ArtistSearchBar";
-import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
 import { Music2, Users, Target, Heart, Mic, Guitar, Headphones } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import logo from "@/assets/logo.png";
 const About = () => {
   const [counts, setCounts] = useState({
     Singer: 0,
@@ -80,11 +78,34 @@ const About = () => {
     title: "Passion for Music",
     description: "We're driven by our love for music and our commitment to supporting artists in their careers."
   }];
-  return <div className="min-h-screen md:ml-64">
-      <Navigation />
+  return <div className="min-h-screen">
+      {/* Standalone Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/95 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto h-full flex items-center justify-between px-4">
+          {/* Logo + Name */}
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="Muzicalist" className="h-9 w-auto" />
+            <span className="text-xl font-display font-bold text-foreground">Muzicalist</span>
+          </Link>
+          
+          {/* Auth Buttons */}
+          <div className="flex items-center gap-3">
+            <Link to="/login">
+              <Button variant="ghost" className="text-foreground hover:bg-accent/10">
+                Login
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                Register
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
       
       {/* Hero Section */}
-      <section className="pt-20 md:pt-32 pb-12 md:pb-20 px-4">
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-foreground">
             Find Your Perfect
