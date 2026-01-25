@@ -134,7 +134,7 @@ const About = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="bg-muted/30 px-0 py-[30px]">
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
@@ -146,7 +146,7 @@ const About = () => {
           </div>
 
           <div className="max-w-4xl mx-auto mb-20">
-            <Card className="p-8 md:p-12 bg-card/50 backdrop-blur border-accent/20">
+            <Card className="p-8 md:p-12 bg-card/50 backdrop-blur border-accent/20 px-0 py-[26px]">
               <h3 className="text-3xl font-display font-bold text-foreground mb-6">Our Mission</h3>
               <p className="text-lg text-muted-foreground mb-6">
                 Muzicalist was created to bridge the gap between talented musical artists and clients looking for the perfect entertainment for their events. Whether you're planning a wedding, corporate event, private party, or any special occasion, we make it easy to discover and connect with professional musicians.
