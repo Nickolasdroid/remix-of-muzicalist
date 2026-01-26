@@ -261,14 +261,14 @@ const Navigation = () => {
               </div>
 
               {/* Main navigation - same order as desktop */}
-              <div className="flex-1 p-4 space-y-0.5 overflow-y-auto">
+              <div className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {/* Main Links: Categories, Leaderboard, Regions */}
                 {sidebarLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       isActive(link.to.split('?')[0])
                         ? 'bg-accent/20 text-accent'
                         : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
@@ -281,12 +281,12 @@ const Navigation = () => {
               </div>
 
               {/* Bottom section - Settings, About, Country, Logout (like desktop "More") */}
-              <div className="p-4 border-t border-border space-y-0.5">
+              <div className="p-4 border-t border-border space-y-1">
                 {user && (
                   <Link
                     to="/dashboard?tab=settings"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       location.search.includes('tab=settings')
                         ? 'bg-accent/20 text-accent'
                         : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
@@ -300,7 +300,7 @@ const Navigation = () => {
                 <Link
                   to="/about"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                     isActive('/about')
                       ? 'bg-accent/20 text-accent'
                       : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
@@ -313,7 +313,7 @@ const Navigation = () => {
                 <div className="h-px bg-border my-1" />
 
                 {/* Country Selector */}
-                <div className="px-3 py-2.5">
+                <div className="px-3 py-2">
                   <p className="text-xs text-muted-foreground mb-2 font-medium">Filter by Country</p>
                   <CountrySelector 
                     variant="navigation" 
@@ -329,7 +329,7 @@ const Navigation = () => {
                       setMobileMenuOpen(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     <LogOut className="h-5 w-5 flex-shrink-0" />
                     <span className="font-medium">Logout</span>
