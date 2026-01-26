@@ -109,7 +109,7 @@ const Dashboard = () => {
     mediaType: ""
   });
   const [showPostDialog, setShowPostDialog] = useState(false);
-  const [postMediaType, setPostMediaType] = useState<'text' | 'image' | 'video'>('text');
+  const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   // Post limits for standard subscription
@@ -599,7 +599,7 @@ const Dashboard = () => {
 
   // Posts functions
   const handleAddPost = async () => {
-    if (!user || !newPost.content) return;
+    if (!user || !newPost.content || !newPost.mediaUrl) return;
 
     // Check monthly post limit
     if (monthlyPostsCount >= STANDARD_POST_LIMIT) {
@@ -628,7 +628,7 @@ const Dashboard = () => {
         mediaType: ""
       });
       setShowPostDialog(false);
-      setPostMediaType('text');
+      setPostMediaType('image');
       toast({
         title: "Success",
         description: "Post created!"
@@ -1832,23 +1832,11 @@ const Dashboard = () => {
                                   <DialogTitle>Create New Post</DialogTitle>
                                 </DialogHeader>
                                 <div className="space-y-4 mt-4">
-                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'text' | 'image' | 'video')}>
-                                    <TabsList className="grid w-full grid-cols-3">
-                                      <TabsTrigger value="text">Text Only</TabsTrigger>
+                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video')}>
+                                    <TabsList className="grid w-full grid-cols-2">
                                       <TabsTrigger value="image">Photo</TabsTrigger>
                                       <TabsTrigger value="video">Video</TabsTrigger>
                                     </TabsList>
-                                    
-                                    <TabsContent value="text" className="space-y-4">
-                                      <div>
-                                        <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={e => setNewPost({
-                                ...newPost,
-                                content: e.target.value.slice(0, 100)
-                              })} placeholder="What's on your mind?" rows={6} maxLength={100} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
-                                      </div>
-                                    </TabsContent>
                                     
                                     <TabsContent value="image" className="space-y-4">
                                       <div>
@@ -1902,7 +1890,7 @@ const Dashboard = () => {
                                     </TabsContent>
                                   </Tabs>
                                   
-                                  <Button onClick={handleAddPost} disabled={isSaving || !newPost.content} className="w-full bg-accent text-accent-foreground">
+                                  <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
                                     {isSaving ? "Creating..." : "Create Post"}
                                   </Button>
                                 </div>
