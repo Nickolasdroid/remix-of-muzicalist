@@ -309,17 +309,6 @@ const Navigation = () => {
                   <Info className="h-5 w-5 flex-shrink-0" />
                   <span className="font-medium">About</span>
                 </Link>
-
-                {/* Country Selector */}
-                <div className="px-3 py-2">
-                  <p className="text-xs text-muted-foreground mb-2 font-medium">Filter by Country</p>
-                  <CountrySelector 
-                    variant="navigation" 
-                    value={selectedCountry}
-                    onChange={setSelectedCountry}
-                    userCountry={profile?.country}
-                  />
-                </div>
               </div>
 
               {/* Bottom section - Logout only */}
@@ -519,18 +508,6 @@ const Navigation = () => {
                   <Info className="h-5 w-5" />
                   <span className="font-medium">About</span>
                 </Link>
-                
-                <div className="h-px bg-border my-1" />
-                
-                {/* Country Selector */}
-                <div className="px-3 py-2">
-                  <CountrySelector 
-                    variant="navigation" 
-                    value={selectedCountry}
-                    onChange={setSelectedCountry}
-                    userCountry={profile?.country}
-                  />
-                </div>
                 
                 {user && (
                   <>
