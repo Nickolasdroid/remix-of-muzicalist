@@ -458,7 +458,6 @@ const Navigation = () => {
           {/* User-specific links */}
           {user && (
             <>
-              <div className="h-px bg-border my-2" />
               {userSidebarLinks.map((link) => (
                 <Link
                   key={link.to}
