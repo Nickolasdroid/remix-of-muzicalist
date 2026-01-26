@@ -145,7 +145,15 @@ const ArtistProfile = () => {
           session
         }
       } = await supabase.auth.getSession();
-      setCurrentUserId(session?.user?.id || null);
+      const userId = session?.user?.id || null;
+      setCurrentUserId(userId);
+      
+      // Redirect artist to their editable profile (dashboard) if viewing their own profile
+      if (userId && userId === id) {
+        navigate('/dashboard?tab=profile', { replace: true });
+        return;
+      }
+      
       if (session?.user?.id) {
         // Try to fetch user's profile for pre-filling review and booking forms
         const {
