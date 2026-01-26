@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -175,6 +175,7 @@ const Navigation = () => {
   const sidebarLinks = [
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+    { to: '/countries', icon: Globe, label: 'Countries' },
     { to: '/counties', icon: MapPin, label: 'Regions' },
   ];
 
