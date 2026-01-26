@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -838,7 +838,7 @@ const Leaderboard = () => {
                       <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
                       <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
                       <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
-                      <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4">Rating</TableHead>
+                      <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
