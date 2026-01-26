@@ -2,10 +2,9 @@ import Navigation from "@/components/Navigation";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users } from "lucide-react";
-import SimpleArtistCard from "@/components/SimpleArtistCard";
+import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { getCountryFlag } from "@/lib/countryFlags";
 
 const CountryArtists = () => {
@@ -78,15 +77,14 @@ const CountryArtists = () => {
               <p className="text-muted-foreground">Loading artists...</p>
             </div>
           ) : filteredArtists.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
               {filteredArtists.map(artist => (
-                <SimpleArtistCard
+                <ArtistProfileCard
                   key={artist.id}
                   id={artist.id}
-                  name={`${artist.first_name} ${artist.last_name}`}
                   stageName={artist.stage_name}
                   imageUrl={artist.avatar_url}
-                  isPremium={artist.plan !== 'Free'}
+                  plan={artist.plan}
                 />
               ))}
             </div>
