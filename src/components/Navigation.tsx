@@ -274,7 +274,7 @@ const Navigation = () => {
                         : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
-                    <link.icon className="h-5 w-5" />
+                    <link.icon className="h-5 w-5 flex-shrink-0" />
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 ))}
@@ -292,7 +292,7 @@ const Navigation = () => {
                         : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
-                    <Settings className="h-5 w-5" />
+                    <Settings className="h-5 w-5 flex-shrink-0" />
                     <span className="font-medium">Settings</span>
                   </Link>
                 )}
@@ -306,7 +306,7 @@ const Navigation = () => {
                       : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
-                  <Info className="h-5 w-5" />
+                  <Info className="h-5 w-5 flex-shrink-0" />
                   <span className="font-medium">About</span>
                 </Link>
 
@@ -331,7 +331,7 @@ const Navigation = () => {
                     }}
                     className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                   >
-                    <LogOut className="h-5 w-5" />
+                    <LogOut className="h-5 w-5 flex-shrink-0" />
                     <span className="font-medium">Logout</span>
                   </button>
                 ) : (
