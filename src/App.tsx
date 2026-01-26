@@ -14,6 +14,8 @@ import CategoryArtists from "./pages/CategoryArtists";
 import Counties from "./pages/Counties";
 import CountyArtists from "./pages/CountyArtists";
 import CountySpecializationArtists from "./pages/CountySpecializationArtists";
+import Countries from "./pages/Countries";
+import CountryArtists from "./pages/CountryArtists";
 import Announcements from "./pages/Announcements";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -38,6 +40,8 @@ const App = () => (
           <Route path="/categories" element={<Categories />} />
           <Route path="/categories/:category" element={<CategoryArtists />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/countries" element={<Countries />} />
+          <Route path="/countries/:country" element={<CountryArtists />} />
           <Route path="/counties" element={<Counties />} />
           <Route path="/counties/:county" element={<CountyArtists />} />
           <Route path="/counties/:county/:specialization" element={<CountySpecializationArtists />} />
