@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
@@ -43,10 +44,11 @@ const CountryArtists = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
-        {/* Back button */}
-        <Link to="/countries" className="inline-flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Countries</span>
+        <Link to="/countries">
+          <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
+            <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+            Back
+          </Button>
         </Link>
 
         <div className="text-center mb-8 md:mb-16">
