@@ -11,6 +11,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -18,6 +25,129 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
+interface FilterButtonProps {
+  filterCounty: string;
+  setFilterCounty: (value: string) => void;
+  filterExperience: string;
+  setFilterExperience: (value: string) => void;
+  sortOrder: string;
+  setSortOrder: (value: string) => void;
+  counties: string[];
+}
+
+const FilterContent = ({
+  filterCounty,
+  setFilterCounty,
+  filterExperience,
+  setFilterExperience,
+  sortOrder,
+  setSortOrder,
+  counties,
+}: FilterButtonProps) => (
+  <div className="space-y-4">
+    <div className="space-y-2">
+      <Label htmlFor="county">County</Label>
+      <Select value={filterCounty} onValueChange={setFilterCounty}>
+        <SelectTrigger id="county">
+          <SelectValue placeholder="All Counties" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Counties</SelectItem>
+          {counties.map(county => (
+            <SelectItem key={county} value={county}>{county}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="experience">Experience Level</Label>
+      <Select value={filterExperience} onValueChange={setFilterExperience}>
+        <SelectTrigger id="experience">
+          <SelectValue placeholder="All Levels" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Levels</SelectItem>
+          <SelectItem value="Beginner">Beginner</SelectItem>
+          <SelectItem value="Intermediate">Intermediate</SelectItem>
+          <SelectItem value="Advanced">Advanced</SelectItem>
+          <SelectItem value="Professional">Professional</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="sort">Sort Alphabetically</Label>
+      <Select value={sortOrder} onValueChange={setSortOrder}>
+        <SelectTrigger id="sort">
+          <SelectValue placeholder="No Sorting" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="none">No Sorting</SelectItem>
+          <SelectItem value="a-z">A to Z</SelectItem>
+          <SelectItem value="z-a">Z to A</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <Button 
+      variant="outline" 
+      onClick={() => {
+        setFilterCounty("all");
+        setFilterExperience("all");
+        setSortOrder("none");
+      }}
+      className="w-full"
+    >
+      Clear All Filters
+    </Button>
+  </div>
+);
+
+const FilterButton = (props: FilterButtonProps) => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
+            <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+            Filter
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent className="px-4 pb-6">
+          <DrawerHeader className="text-left px-0">
+            <DrawerTitle>Filter Artists</DrawerTitle>
+            <p className="text-sm text-muted-foreground">Apply filters to find the perfect artist</p>
+          </DrawerHeader>
+          <FilterContent {...props} />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
+          <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+          Filter
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 bg-card border border-border z-50">
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-foreground mb-1">Filter Artists</h4>
+            <p className="text-sm text-muted-foreground">Apply filters to find the perfect artist</p>
+          </div>
+          <FilterContent {...props} />
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 interface Artist {
   id: string;
@@ -112,79 +242,15 @@ const CategoryArtists = () => {
             {category}
           </h1>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-                <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                Filter
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 bg-card border border-border z-50">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-foreground mb-1">Filter Artists</h4>
-                  <p className="text-sm text-muted-foreground">Apply filters to find the perfect artist</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="county">County</Label>
-                  <Select value={filterCounty} onValueChange={setFilterCounty}>
-                    <SelectTrigger id="county">
-                      <SelectValue placeholder="All Counties" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Counties</SelectItem>
-                      {counties.map(county => (
-                        <SelectItem key={county} value={county}>{county}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="experience">Experience Level</Label>
-                  <Select value={filterExperience} onValueChange={setFilterExperience}>
-                    <SelectTrigger id="experience">
-                      <SelectValue placeholder="All Levels" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Levels</SelectItem>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                      <SelectItem value="Professional">Professional</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="sort">Sort Alphabetically</Label>
-                  <Select value={sortOrder} onValueChange={setSortOrder}>
-                    <SelectTrigger id="sort">
-                      <SelectValue placeholder="No Sorting" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Sorting</SelectItem>
-                      <SelectItem value="a-z">A to Z</SelectItem>
-                      <SelectItem value="z-a">Z to A</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setFilterCounty("all");
-                    setFilterExperience("all");
-                    setSortOrder("none");
-                  }}
-                  className="w-full"
-                >
-                  Clear All Filters
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <FilterButton 
+            filterCounty={filterCounty}
+            setFilterCounty={setFilterCounty}
+            filterExperience={filterExperience}
+            setFilterExperience={setFilterExperience}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            counties={counties}
+          />
         </div>
 
         {loading ? (
