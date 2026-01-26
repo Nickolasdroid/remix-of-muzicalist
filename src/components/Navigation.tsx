@@ -278,10 +278,8 @@ const Navigation = () => {
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 ))}
-              </div>
 
-              {/* Bottom section - Settings, About, Country, Logout (like desktop "More") */}
-              <div className="p-4 border-t border-border space-y-1">
+                {/* Settings (only when logged in) */}
                 {user && (
                   <Link
                     to="/dashboard?tab=settings"
@@ -297,6 +295,7 @@ const Navigation = () => {
                   </Link>
                 )}
                 
+                {/* About */}
                 <Link
                   to="/about"
                   onClick={() => setMobileMenuOpen(false)}
@@ -310,8 +309,6 @@ const Navigation = () => {
                   <span className="font-medium">About</span>
                 </Link>
 
-                <div className="h-px bg-border my-1" />
-
                 {/* Country Selector */}
                 <div className="px-3 py-2">
                   <p className="text-xs text-muted-foreground mb-2 font-medium">Filter by Country</p>
@@ -322,7 +319,10 @@ const Navigation = () => {
                     userCountry={profile?.country}
                   />
                 </div>
+              </div>
 
+              {/* Bottom section - Logout only */}
+              <div className="p-4 border-t border-border space-y-1">
                 {user ? (
                   <button
                     onClick={() => {
@@ -335,7 +335,7 @@ const Navigation = () => {
                     <span className="font-medium">Logout</span>
                   </button>
                 ) : (
-                  <div className="space-y-2 pt-2">
+                  <div className="space-y-2">
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                       <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                         <LogIn className="h-4 w-4 mr-2" />
