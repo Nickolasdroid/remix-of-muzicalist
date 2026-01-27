@@ -189,7 +189,7 @@ const SettingsTab = ({
 
   // Desktop nav items
   const navItems = [
-    { id: "account", label: "Account", icon: User },
+    { id: "account", label: "Profile", icon: User },
     { id: "plan", label: "My Plan", icon: Crown },
   ];
 
