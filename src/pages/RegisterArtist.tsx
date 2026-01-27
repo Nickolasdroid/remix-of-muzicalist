@@ -32,9 +32,7 @@ const RegisterArtist = () => {
     country: "",
     county: "",
     specialization: "",
-    musicGenres: "",
     experienceLevel: "",
-    numberOfEvents: "",
     careerStartYear: "",
     password: "",
     confirmPassword: ""
@@ -227,11 +225,10 @@ const RegisterArtist = () => {
         stage_name: formData.stageName,
         email: formData.email,
         phone: formData.phone,
+        country: formData.country,
         county: formData.county,
         specialization: formData.specialization as any,
-        music_genres: formData.musicGenres,
         experience_level: formData.experienceLevel as any,
-        number_of_events: parseInt(formData.numberOfEvents),
         career_start_year: parseInt(formData.careerStartYear),
         avatar_url: avatarUrl
       });
