@@ -344,11 +344,15 @@ const Navigation = () => {
             </SheetContent>
           </Sheet>
 
-          {/* Center: Logo */}
-          <Link to="/feed" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
-            <span className="font-display font-bold text-foreground">Muzicalist</span>
-          </Link>
+          {/* Center: Logo or Page Title */}
+          {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
+            <span className="font-display font-bold text-foreground text-lg">Settings</span>
+          ) : (
+            <Link to="/feed" className="flex items-center gap-2">
+              <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+              <span className="font-display font-bold text-foreground">Muzicalist</span>
+            </Link>
+          )}
 
           {/* Right: Search + Notifications */}
           <div className="flex items-center gap-1">
