@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import ArtistSearchBar from "@/components/ArtistSearchBar";
 import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
@@ -58,20 +57,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Advanced Search Section */}
-      <section className="py-10 md:py-20 px-4 md:px-8">
-        <div className="container mx-auto max-w-6xl px-0">
-          <div className="text-center mb-6 md:mb-12 px-2">
-            <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
-              Advanced Search
-            </h2>
-            <p className="text-xs md:text-lg text-muted-foreground">
-              Filter by category, location, price range, and more
-            </p>
-          </div>
-          <ArtistSearchBar />
-        </div>
-      </section>
 
       {/* Search Artists Worldwide Section */}
       <section className="py-10 md:py-20 px-4 md:px-8 pb-24 md:pb-20 bg-muted/30">
