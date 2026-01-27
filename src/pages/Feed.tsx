@@ -52,9 +52,13 @@ const Feed = () => {
         session
       }
     }) => {
-      setCurrentUserId(session?.user?.id ?? null);
+      if (!session?.user) {
+        navigate('/login');
+        return;
+      }
+      setCurrentUserId(session.user.id);
     });
-  }, []);
+  }, [navigate]);
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
     try {
       const from = pageNum * POSTS_PER_PAGE;

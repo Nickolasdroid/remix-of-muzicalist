@@ -9,7 +9,7 @@ import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, G
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
@@ -21,6 +21,7 @@ interface MediaPreview {
   type: "image" | "video";
 }
 const Announcements = () => {
+  const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'promotion' | 'ads'>('all');
@@ -29,15 +30,20 @@ const Announcements = () => {
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
+
   useEffect(() => {
     supabase.auth.getSession().then(({
       data: {
         session
       }
     }) => {
-      setCurrentUserId(session?.user?.id ?? null);
+      if (!session?.user) {
+        navigate('/login');
+        return;
+      }
+      setCurrentUserId(session.user.id);
     });
-  }, []);
+  }, [navigate]);
   const handleDeleteAnnouncement = async (announcementId: string) => {
     try {
       const {

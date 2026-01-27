@@ -1,16 +1,36 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
 const Categories = () => {
+  const navigate = useNavigate();
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
     DJ: 0,
     Band: 0
   });
+
+  // Check authentication
   useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      setIsAuthChecked(true);
+    };
+    checkAuth();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!isAuthChecked) return;
+    
     const fetchCounts = async () => {
       const {
         data
@@ -31,7 +51,7 @@ const Categories = () => {
       }
     };
     fetchCounts();
-  }, []);
+  }, [isAuthChecked]);
   const categories = [{
     icon: Mic,
     title: "Singer",
@@ -57,6 +77,12 @@ const Categories = () => {
     count: counts.Band,
     href: "/categories/Bands"
   }];
+
+  // Show nothing while checking auth (redirect happens in useEffect)
+  if (!isAuthChecked) {
+    return null;
+  }
+
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       

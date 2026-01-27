@@ -2,12 +2,12 @@ import Navigation from "@/components/Navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 const allCountries = [{
@@ -616,6 +616,7 @@ interface ArtistReviewCount {
   [key: string]: number;
 }
 const Leaderboard = () => {
+  const navigate = useNavigate();
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [selectedCategory, setSelectedCategory] = useState<string>("singers");
@@ -624,6 +625,20 @@ const Leaderboard = () => {
   const [artistReviewCounts, setArtistReviewCounts] = useState<ArtistReviewCount>({});
   const [loading, setLoading] = useState(true);
   const [countrySearch, setCountrySearch] = useState<string>("");
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  // Check authentication
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      setIsAuthChecked(true);
+    };
+    checkAuth();
+  }, [navigate]);
 
   // Get countries with registered artists
   const getAvailableCountries = () => {
@@ -745,6 +760,15 @@ const Leaderboard = () => {
   };
 
   const currentArtists = getArtistsBySpecialization(categoryMap[selectedCategory]);
+
+  // Show loading while checking auth
+  if (!isAuthChecked) {
+    return (
+      <div className="min-h-screen md:ml-64 bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      </div>
+    );
+  }
 
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
