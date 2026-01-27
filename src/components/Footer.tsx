@@ -112,10 +112,10 @@ const Footer = () => {
             © {currentYear} Muzicalist. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <Link to="#" className="text-muted-foreground hover:text-accent transition-colors">
+            <Link to="/privacy-policy" className="text-muted-foreground hover:text-accent transition-colors">
               Privacy Policy
             </Link>
-            <Link to="#" className="text-muted-foreground hover:text-accent transition-colors">
+            <Link to="/terms-of-service" className="text-muted-foreground hover:text-accent transition-colors">
               Terms of Service
             </Link>
           </div>
