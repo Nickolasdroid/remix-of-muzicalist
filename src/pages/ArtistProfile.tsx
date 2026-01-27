@@ -1,6 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
@@ -93,7 +92,6 @@ interface MediaPreview {
   type: "image" | "video";
 }
 const ArtistProfile = () => {
-  const { t } = useTranslation();
   const {
     id
   } = useParams<{
@@ -976,7 +974,7 @@ const ArtistProfile = () => {
                     <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
                       <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
                         <Star className="h-4 w-4 text-accent" />
-                        {t('reviews.title')}
+                        Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
                             ({getAverageRating()} • {reviews.length})
                           </span>}
@@ -984,15 +982,15 @@ const ArtistProfile = () => {
                       {currentUserId !== id && <Button onClick={() => {
                           if (!currentUserId) {
                             toast({
-                              title: t('reviews.loginRequired'),
-                              description: t('reviews.loginToReview')
+                              title: "Login Required",
+                              description: "Please log in or create an account to write a review."
                             });
                             navigate('/login');
                             return;
                           }
                           setReviewDialogOpen(true);
                         }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">
-                          {t('reviews.writeReview')}
+                          Write a Review
                         </Button>}
                     </div>
 
@@ -1031,7 +1029,7 @@ const ArtistProfile = () => {
                         <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
                       </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">{t('reviews.noReviews')}</p>
+                        <p className="text-sm text-muted-foreground">No reviews yet</p>
                       </div>}
                   </div>
                 </TabsContent>
@@ -1489,28 +1487,28 @@ const ArtistProfile = () => {
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">{t('reviews.title')} {artist.stage_name}</DialogTitle>
+                    <DialogTitle className="text-2xl font-display">Review {artist.stage_name}</DialogTitle>
                     <DialogDescription>
-                      {t('reviews.shareExperience')}
+                      Share your experience with this artist
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
-                      <Label htmlFor="reviewerName">{t('reviews.yourName')}</Label>
-                      <Input id="reviewerName" placeholder={t('reviews.yourName')} value={reviewForm.name} onChange={e => setReviewForm({
+                      <Label htmlFor="reviewerName">Your Name</Label>
+                      <Input id="reviewerName" placeholder="Your name" value={reviewForm.name} onChange={e => setReviewForm({
                     ...reviewForm,
                     name: e.target.value
                   })} required maxLength={100} readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="reviewerEmail">{t('reviews.yourEmail')}</Label>
+                      <Label htmlFor="reviewerEmail">Your Email</Label>
                       <Input id="reviewerEmail" type="email" placeholder="your.email@example.com" value={reviewForm.email} onChange={e => setReviewForm({
                     ...reviewForm,
                     email: e.target.value
                   })} required maxLength={255} readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
-                      <Label>{t('reviews.rating')}</Label>
+                      <Label>Rating</Label>
                       <div className="py-2">
                         {renderStars(reviewForm.rating, true, rating => setReviewForm({
                       ...reviewForm,
@@ -1520,16 +1518,16 @@ const ArtistProfile = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="reviewComment">{t('reviews.yourReview')}</Label>
+                        <Label htmlFor="reviewComment">Your Review (Optional)</Label>
                         <span className="text-xs text-muted-foreground">{reviewForm.comment.length}/100</span>
                       </div>
-                      <Textarea id="reviewComment" placeholder={t('reviews.shareExperience')} value={reviewForm.comment} onChange={e => setReviewForm({
+                      <Textarea id="reviewComment" placeholder="Share your experience..." value={reviewForm.comment} onChange={e => setReviewForm({
                     ...reviewForm,
                     comment: e.target.value
                   })} rows={3} maxLength={100} />
                     </div>
                     <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={submittingReview}>
-                      {submittingReview ? t('reviews.submitting') : t('reviews.submitReview')}
+                      {submittingReview ? "Submitting..." : "Submit Review"}
                     </Button>
                   </form>
                 </DialogContent>
