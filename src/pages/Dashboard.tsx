@@ -1412,11 +1412,14 @@ const Dashboard = () => {
                       <TabsContent value="details" className="space-y-4 md:space-y-8">
                         {/* Bio/Description */}
                         <div className="group">
-                          <div className="mb-2 md:mb-4">
+                          <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
                               <User className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               About Me
                             </h2>
+                            {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
+                                <Edit2 className="h-4 w-4" />
+                              </Button>}
                           </div>
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={e => {
@@ -1442,15 +1445,10 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               </div>
-                            </div> : <div className="flex items-start gap-2">
-                              <div className="flex-1 min-w-0">
-                                {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
-                                    {formData.bio}
-                                  </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
-                              </div>
-                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
-                                <Edit2 className="h-4 w-4" />
-                              </Button>
+                            </div> : <div>
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+                                  {formData.bio}
+                                </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
                             </div>}
                         </div>
 
