@@ -172,7 +172,8 @@
     },
     "validation": {
       "passwordMismatch": "Passwords don't match",
-      "passwordTooShort": "Password must be at least 6 characters"
+      "passwordTooShort": "Password must be at least 6 characters",
+      "countryRequired": "Please select your country"
     },
     "success": "Registration successful! Please check your email to verify your account."
   },

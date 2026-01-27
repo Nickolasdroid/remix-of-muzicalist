@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import CountrySelector from "@/components/CountrySelector";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -17,14 +18,36 @@ const RegisterUser = () => {
     lastName: "",
     email: "",
     phone: "",
+    country: "",
     password: "",
     confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Auto-detect country on mount
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        if (data.country_name) {
+          setFormData(prev => ({ ...prev, country: data.country_name }));
+        }
+      } catch (error) {
+        console.log('Could not auto-detect country');
+      }
+    };
+    detectCountry();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.country) {
+      toast.error(t("userRegistration.validation.countryRequired"));
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error(t("userRegistration.validation.passwordMismatch"));
@@ -66,7 +89,7 @@ const RegisterUser = () => {
 
         if (roleError) throw roleError;
 
-        // Create basic profile
+        // Create basic profile with country
         const { error: profileError } = await supabase
           .from("profiles")
           .insert({
@@ -77,6 +100,7 @@ const RegisterUser = () => {
             phone: formData.phone,
             stage_name: `${formData.firstName} ${formData.lastName}`,
             county: "",
+            country: formData.country,
           });
 
         if (profileError) throw profileError;
@@ -137,6 +161,14 @@ const RegisterUser = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="country">{t("artistRegistration.country")}</Label>
+            <CountrySelector
+              value={formData.country}
+              onChange={(value) => setFormData({ ...formData, country: value })}
             />
           </div>
 

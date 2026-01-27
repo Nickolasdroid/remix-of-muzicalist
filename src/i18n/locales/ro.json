@@ -172,7 +172,8 @@
     },
     "validation": {
       "passwordMismatch": "Parolele nu se potrivesc",
-      "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere"
+      "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere",
+      "countryRequired": "Te rugăm să selectezi țara ta"
     },
     "success": "Înregistrare reușită! Verifică-ți emailul pentru a-ți confirma contul."
   },
