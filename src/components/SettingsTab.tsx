@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,13 +14,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface SettingsTabProps {
   formData: {
     email: string;
+    plan?: string;
   };
   handleLogout: () => void;
   handleDeleteAccount: () => void;
   isSaving: boolean;
 }
 
-type SettingSection = "main" | "email" | "password" | "report" | "logout" | "delete";
+type SettingSection = "main" | "plan" | "email" | "password" | "report" | "logout" | "delete";
 
 const SettingsTab = ({
   formData,
@@ -178,6 +179,7 @@ const SettingsTab = ({
 
   // Mobile setting items
   const mobileSettingItems = [
+    { id: "plan" as const, label: "My Plan", icon: Crown },
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "report" as const, label: "Report an Issue", icon: Flag },
@@ -215,6 +217,57 @@ const SettingsTab = ({
       })}
     </div>
   );
+
+  // Mobile: Plan section
+  const MobilePlanSection = () => {
+    const isPremium = formData.plan === "Premium";
+    
+    return (
+      <div className="p-4 space-y-4">
+        <button
+          onClick={() => setActiveSection("main")}
+          className="flex items-center gap-2 text-muted-foreground mb-4"
+        >
+          <ChevronRight className="h-4 w-4 rotate-180" />
+          <span className="text-sm">Back</span>
+        </button>
+        <div>
+          <h2 className="text-lg font-semibold">My Plan</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your current subscription plan
+          </p>
+        </div>
+        
+        <div className={`p-4 rounded-lg border-2 ${isPremium ? 'border-yellow-500/50 bg-yellow-500/10' : 'border-muted'}`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${isPremium ? 'bg-yellow-500/20' : 'bg-muted'}`}>
+              <Crown className={`h-5 w-5 ${isPremium ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+            </div>
+            <div>
+              <p className={`font-semibold ${isPremium ? 'text-yellow-500' : 'text-foreground'}`}>
+                {formData.plan || "Free"}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {isPremium ? "Premium features unlocked" : "Basic features"}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {!isPremium && (
+          <div className="pt-2">
+            <p className="text-sm text-muted-foreground mb-3">
+              Upgrade to Premium to unlock all features and get priority visibility.
+            </p>
+            <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              <Crown className="h-4 w-4 mr-2" />
+              Upgrade to Premium
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Mobile: Email section
   const MobileEmailSection = () => (
@@ -506,6 +559,7 @@ const SettingsTab = ({
     return (
       <div className="w-full min-h-screen">
         {activeSection === "main" && <MobileMainList />}
+        {activeSection === "plan" && <MobilePlanSection />}
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "report" && <MobileReportSection />}
