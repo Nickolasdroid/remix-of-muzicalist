@@ -73,7 +73,7 @@ const Countries = () => {
   }, []);
 
   const filteredCountries = countries.filter(country => 
-    country.name.toLowerCase().includes(searchTerm.toLowerCase())
+    country.name && country.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
