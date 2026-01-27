@@ -617,61 +617,53 @@ interface ArtistReviewCount {
 }
 const Leaderboard = () => {
   const navigate = useNavigate();
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [selectedCategory, setSelectedCategory] = useState<string>("singers");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [artistReviewCounts, setArtistReviewCounts] = useState<ArtistReviewCount>({});
   const [loading, setLoading] = useState(true);
-  const [countrySearch, setCountrySearch] = useState<string>("");
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
 
-  // Check authentication
+  // Check authentication and get user's country
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndGetCountry = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/login');
         return;
       }
+      
+      // Get user's country from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      setUserCountry(profile?.country || null);
       setIsAuthChecked(true);
     };
-    checkAuth();
+    checkAuthAndGetCountry();
   }, [navigate]);
 
-  // Get countries with registered artists
-  const getAvailableCountries = () => {
-    const artistCountries = [...new Set(artists.map(artist => artist.country).filter(Boolean))];
-    return allCountries.filter(country => artistCountries.some(ac => ac === country.code || ac === country.name || ac?.toLowerCase() === country.name.toLowerCase() ||
-    // Handle diacritics variations (e.g., România vs Romania)
-    ac?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === country.name.toLowerCase()));
-  };
-  const availableCountries = getAvailableCountries();
-  const filteredCountries = availableCountries.filter(country => country.name.toLowerCase().includes(countrySearch.toLowerCase()));
-
-  // Get unique counties from artists based on selected country
+  // Get unique counties from artists in user's country
   const getAvailableCounties = () => {
-    let filteredArtists = artists;
-    if (selectedCountry) {
-      const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filteredArtists = artists.filter(artist => artist.country === selectedCountry || artist.country === countryName || artist.country?.toLowerCase() === countryName?.toLowerCase() || artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase());
-    }
-    const counties = [...new Set(filteredArtists.map(artist => artist.county))].sort();
+    const counties = [...new Set(artists.map(artist => artist.county))].sort();
     return counties;
   };
+
   useEffect(() => {
-    // Reset county when country changes
-    setSelectedCounty("All Regions");
-  }, [selectedCountry]);
-  useEffect(() => {
+    if (!isAuthChecked || !userCountry) return;
+    
     const fetchArtists = async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events').order('number_of_events', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
+        .eq('country', userCountry)
+        .order('number_of_events', { ascending: false });
+      
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
@@ -680,7 +672,7 @@ const Leaderboard = () => {
       setLoading(false);
     };
     fetchArtists();
-  }, []);
+  }, [isAuthChecked, userCountry]);
 
   // Fetch reviews and calculate average ratings for all artists
   useEffect(() => {
@@ -721,12 +713,6 @@ const Leaderboard = () => {
 
     // Only include artists who have at least one review (rating > 0)
     filtered = filtered.filter(artist => artistRatings[artist.id] && artistRatings[artist.id] > 0);
-
-    // Filter by country (handle both code, name, and diacritics)
-    if (selectedCountry) {
-      const countryName = allCountries.find(c => c.code === selectedCountry)?.name;
-      filtered = filtered.filter(artist => artist.country === selectedCountry || artist.country === countryName || artist.country?.toLowerCase() === countryName?.toLowerCase() || artist.country?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === countryName?.toLowerCase());
-    }
 
     // Filter by county
     if (selectedCounty !== "All Regions") {
@@ -783,39 +769,6 @@ const Leaderboard = () => {
             
 
             <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
-              <DropdownMenu onOpenChange={open => !open && setCountrySearch("")}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">
-                    {selectedCountry ? availableCountries.find(c => c.code === selectedCountry)?.name : "All Countries"}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[220px] p-0 bg-card border-border">
-                  <div className="p-2 border-b border-border" onKeyDown={e => e.stopPropagation()}>
-                    <div className="relative">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Search country..." value={countrySearch} onChange={e => setCountrySearch(e.target.value)} onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()} className="pl-8 h-8 bg-input" autoComplete="off" />
-                    </div>
-                  </div>
-                  <div className="max-h-[250px] overflow-y-auto">
-                    <DropdownMenuItem onClick={() => {
-                    setSelectedCountry("");
-                    setCountrySearch("");
-                  }} className="cursor-pointer font-medium">
-                      All Countries
-                    </DropdownMenuItem>
-                    {filteredCountries.length > 0 ? filteredCountries.map(country => <DropdownMenuItem key={country.code} onClick={() => {
-                    setSelectedCountry(country.code);
-                    setCountrySearch("");
-                  }} className="cursor-pointer">
-                          {country.name}
-                        </DropdownMenuItem>) : <div className="p-2 text-sm text-muted-foreground text-center">
-                        No countries found
-                      </div>}
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">

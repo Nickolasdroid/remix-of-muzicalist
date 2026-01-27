@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Categories = () => {
   const navigate = useNavigate();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
@@ -15,26 +16,37 @@ const Categories = () => {
     Band: 0
   });
 
-  // Check authentication
+  // Check authentication and get user's country
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndGetCountry = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/login');
         return;
       }
+      
+      // Get user's country from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      setUserCountry(profile?.country || null);
       setIsAuthChecked(true);
     };
-    checkAuth();
+    checkAuthAndGetCountry();
   }, [navigate]);
 
   useEffect(() => {
-    if (!isAuthChecked) return;
+    if (!isAuthChecked || !userCountry) return;
     
     const fetchCounts = async () => {
-      const {
-        data
-      } = await supabase.from("profiles").select("specialization");
+      const { data } = await supabase
+        .from("profiles")
+        .select("specialization")
+        .eq("country", userCountry);
+      
       if (data) {
         const newCounts = {
           Singer: 0,
@@ -51,7 +63,7 @@ const Categories = () => {
       }
     };
     fetchCounts();
-  }, [isAuthChecked]);
+  }, [isAuthChecked, userCountry]);
   const categories = [{
     icon: Mic,
     title: "Singer",
