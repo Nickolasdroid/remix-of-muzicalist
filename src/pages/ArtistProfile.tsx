@@ -979,7 +979,7 @@ const ArtistProfile = () => {
                             ({getAverageRating()} • {reviews.length})
                           </span>}
                       </h3>
-                      {currentUserId !== id && reviews.length > 0 && <Button onClick={() => {
+                      {currentUserId !== id && <Button onClick={() => {
                           if (!currentUserId) {
                             toast({
                               title: "Login Required",
