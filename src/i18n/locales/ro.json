@@ -175,5 +175,19 @@
       "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere"
     },
     "success": "Înregistrare reușită! Verifică-ți emailul pentru a-ți confirma contul."
+  },
+  "reviews": {
+    "title": "Recenzii",
+    "noReviews": "Nicio recenzie încă",
+    "writeReview": "Scrie o recenzie",
+    "submitReview": "Trimite recenzia",
+    "submitting": "Se trimite...",
+    "yourName": "Numele tău",
+    "yourEmail": "Emailul tău",
+    "rating": "Evaluare",
+    "yourReview": "Recenzia ta (Opțional)",
+    "shareExperience": "Împărtășește experiența ta...",
+    "loginRequired": "Autentificare necesară",
+    "loginToReview": "Te rugăm să te autentifici sau să creezi un cont pentru a scrie o recenzie."
   }
 }
