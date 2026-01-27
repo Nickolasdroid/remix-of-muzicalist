@@ -25,7 +25,7 @@ const Counties = () => {
           .from('profiles')
           .select('country')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
         
         country = profile?.country || null;
         setUserCountry(country);
