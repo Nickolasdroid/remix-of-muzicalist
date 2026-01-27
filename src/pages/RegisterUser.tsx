@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import CountrySelector from "@/components/CountrySelector";
+import { getPhonePrefix, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -41,11 +42,62 @@ const RegisterUser = () => {
     detectCountry();
   }, []);
 
+  // Update phone prefix when country changes
+  useEffect(() => {
+    if (formData.country) {
+      const newPrefix = getPhonePrefix(formData.country);
+      const config = getPhoneConfig(formData.country);
+      if (newPrefix && config) {
+        setFormData(prev => {
+          const currentPhone = prev.phone;
+          // If phone is empty, just set the prefix
+          if (!currentPhone) {
+            return { ...prev, phone: newPrefix };
+          }
+          // Extract digits after any existing prefix
+          const digitsOnly = currentPhone.replace(/^\+\d+/, "").replace(/\D/g, "");
+          // Truncate to max allowed digits for this country
+          const truncatedDigits = digitsOnly.slice(0, config.maxLength);
+          return { ...prev, phone: newPrefix + truncatedDigits };
+        });
+      }
+    }
+  }, [formData.country]);
+
+  // Handle phone input with validation
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const prefix = getPhonePrefix(formData.country) || "";
+    const config = getPhoneConfig(formData.country);
+    
+    // Prevent deleting the prefix
+    if (!value.startsWith(prefix)) {
+      return;
+    }
+    
+    // Extract digits after prefix
+    const afterPrefix = value.slice(prefix.length);
+    const digitsOnly = afterPrefix.replace(/\D/g, "");
+    
+    // Apply max length
+    const maxDigits = config?.maxLength || 15;
+    const truncatedDigits = digitsOnly.slice(0, maxDigits);
+    
+    setFormData({ ...formData, phone: prefix + truncatedDigits });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.country) {
       toast.error(t("userRegistration.validation.countryRequired"));
+      return;
+    }
+
+    // Validate phone number
+    const phoneValidation = validatePhoneNumber(formData.phone, formData.country);
+    if (!phoneValidation.valid) {
+      toast.error(phoneValidation.message);
       return;
     }
     
@@ -177,9 +229,9 @@ const RegisterUser = () => {
             <Input
               id="phone"
               type="tel"
-              placeholder={t("userRegistration.placeholders.phone")}
+              placeholder={getPhonePrefix(formData.country) || t("userRegistration.placeholders.phone")}
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={handlePhoneChange}
               required
             />
           </div>
