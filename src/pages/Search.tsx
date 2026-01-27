@@ -130,9 +130,10 @@ const Search = () => {
               <Drawer>
                 <DrawerTrigger asChild>
                   <Button
+                    className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
-                    AI Search
+                    AI
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent>
