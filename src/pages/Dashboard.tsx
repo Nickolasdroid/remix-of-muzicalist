@@ -2582,7 +2582,7 @@ const Dashboard = () => {
 
 
               {/* Settings Tab */}
-              {activeTab === "settings" && <SettingsTab formData={formData} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} />}
+              {activeTab === "settings" && <SettingsTab formData={{ ...formData, plan: profile?.plan }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} />}
         </div>
       </div>
 
