@@ -3,33 +3,37 @@ import { Input } from "@/components/ui/input";
 import { Search, MapPin, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const Counties = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [counties, setCounties] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserCountryAndCounties = async () => {
+    const checkAuthAndFetch = async () => {
       setIsLoading(true);
       
-      // Get current user's country
+      // Check if user is logged in
       const { data: { user } } = await supabase.auth.getUser();
-      let country: string | null = null;
       
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('country')
-          .eq('id', user.id)
-          .maybeSingle();
-        
-        country = profile?.country || null;
-        setUserCountry(country);
+      if (!user) {
+        navigate('/login');
+        return;
       }
+      
+      // Get current user's country
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      const country = profile?.country || null;
+      setUserCountry(country);
 
       // Fetch counties filtered by user's country
       let query = supabase
@@ -55,8 +59,8 @@ const Counties = () => {
       setIsLoading(false);
     };
 
-    fetchUserCountryAndCounties();
-  }, []);
+    checkAuthAndFetch();
+  }, [navigate]);
 
   const filteredCounties = counties.filter(county => 
     county.toLowerCase().includes(searchTerm.toLowerCase())
