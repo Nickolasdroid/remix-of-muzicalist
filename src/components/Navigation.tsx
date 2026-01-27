@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -183,6 +183,7 @@ const Navigation = () => {
   const userSidebarLinks = [
     { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
     { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+    { to: '/dashboard?tab=plan', icon: Crown, label: 'My Plan' },
     { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
   ];
 
