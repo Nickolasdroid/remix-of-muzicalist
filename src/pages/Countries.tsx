@@ -1,16 +1,22 @@
 import Navigation from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
-import { Search, Globe, MapPin } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag } from "@/lib/countryFlags";
+import { getCountryDisplay } from "@/lib/countryFlags";
+
+interface CountryData {
+  original: string;
+  name: string;
+  flag: string | null;
+}
 
 const Countries = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [countries, setCountries] = useState<string[]>([]);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [countries, setCountries] = useState<CountryData[]>([]);
+  const [userCountry, setUserCountry] = useState<CountryData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,8 +30,21 @@ const Countries = () => {
         .not('country', 'is', null);
 
       if (profileCountries) {
-        const uniqueCountries = [...new Set(profileCountries.map(p => p.country).filter(Boolean))] as string[];
-        setCountries(uniqueCountries.sort());
+        const uniqueOriginals = [...new Set(profileCountries.map(p => p.country).filter(Boolean))] as string[];
+        
+        // Convert to display format with standardized names
+        const countryData: CountryData[] = uniqueOriginals.map(original => {
+          const display = getCountryDisplay(original);
+          return {
+            original,
+            name: display.name,
+            flag: display.flag,
+          };
+        });
+        
+        // Sort by standardized name
+        countryData.sort((a, b) => a.name.localeCompare(b.name));
+        setCountries(countryData);
       }
 
       // Get current user's country
@@ -38,7 +57,12 @@ const Countries = () => {
           .maybeSingle();
         
         if (profile?.country) {
-          setUserCountry(profile.country);
+          const display = getCountryDisplay(profile.country);
+          setUserCountry({
+            original: profile.country,
+            name: display.name,
+            flag: display.flag,
+          });
         }
       }
 
@@ -49,7 +73,7 @@ const Countries = () => {
   }, []);
 
   const filteredCountries = countries.filter(country => 
-    country.toLowerCase().includes(searchTerm.toLowerCase())
+    country.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -64,7 +88,7 @@ const Countries = () => {
           {userCountry && (
             <div className="mb-6 flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="h-4 w-4 text-accent" />
-              <span>Your country: <span className="font-medium text-foreground">{userCountry} {getCountryFlag(userCountry)}</span></span>
+              <span>Your country: <span className="font-medium text-foreground">{userCountry.flag} {userCountry.name}</span></span>
             </div>
           )}
 
@@ -86,15 +110,15 @@ const Countries = () => {
               <p className="text-muted-foreground">Loading countries...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {filteredCountries.map(country => (
-                <Link key={country} to={`/countries/${encodeURIComponent(country)}`}>
+                <Link key={country.original} to={`/countries/${encodeURIComponent(country.original)}`}>
                   <Button 
                     variant="outline" 
-                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-2 md:gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
+                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-3 md:gap-4 hover:bg-accent/10 hover:border-accent transition-all group px-4"
                   >
-                    <span className="text-lg md:text-xl">{getCountryFlag(country)}</span>
-                    <span className="text-sm md:text-lg font-medium truncate">{country}</span>
+                    <span className="text-2xl md:text-3xl flex-shrink-0">{country.flag}</span>
+                    <span className="text-sm md:text-base font-medium text-left">{country.name}</span>
                   </Button>
                 </Link>
               ))}
