@@ -30,25 +30,32 @@ const Announcements = () => {
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({
-      data: {
-        session
-      }
-    }) => {
+    const checkAuthAndGetCountry = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         navigate('/login');
         return;
       }
       setCurrentUserId(session.user.id);
-    });
+      
+      // Get user's country from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      setUserCountry(profile?.country || null);
+    };
+    checkAuthAndGetCountry();
   }, [navigate]);
+
   const handleDeleteAnnouncement = async (announcementId: string) => {
     try {
-      const {
-        error
-      } = await supabase.from('announcements').delete().eq('id', announcementId);
+      const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
       if (error) throw error;
       setAnnouncements(items => items.filter(item => item.id !== announcementId));
       toast({
@@ -66,26 +73,30 @@ const Announcements = () => {
       setDeleteAnnouncementId(null);
     }
   };
+
   const fetchAnnouncements = useCallback(async (pageNum: number, append: boolean = false) => {
+    if (!userCountry) return;
+    
     try {
       const from = pageNum * ANNOUNCEMENTS_PER_PAGE;
       const to = from + ANNOUNCEMENTS_PER_PAGE - 1;
       
-      const {
-        data,
-        error
-      } = await supabase.from("announcements").select(`
+      const { data, error } = await supabase
+        .from("announcements")
+        .select(`
           *,
-          profiles (
+          profiles!inner (
             avatar_url,
             stage_name,
             county,
             specialization,
-            plan
+            plan,
+            country
           )
-        `).order("created_at", {
-        ascending: false
-      }).range(from, to);
+        `)
+        .eq('profiles.country', userCountry)
+        .order("created_at", { ascending: false })
+        .range(from, to);
       
       if (error) {
         console.error("Error fetching announcements:", error);
@@ -105,11 +116,13 @@ const Announcements = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userCountry]);
 
   useEffect(() => {
-    fetchAnnouncements(0);
-  }, [fetchAnnouncements]);
+    if (userCountry) {
+      fetchAnnouncements(0);
+    }
+  }, [fetchAnnouncements, userCountry]);
 
   const loadMoreAnnouncements = useCallback(async () => {
     const nextPage = page + 1;

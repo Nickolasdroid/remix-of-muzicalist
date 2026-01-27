@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
@@ -160,15 +160,38 @@ interface Artist {
 
 const CategoryArtists = () => {
   const { category } = useParams<{ category: string }>();
+  const navigate = useNavigate();
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterCounty, setFilterCounty] = useState<string>("all");
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [availableCounties, setAvailableCounties] = useState<string[]>([]);
+
+  // Check auth and get user's country
+  useEffect(() => {
+    const checkAuthAndGetCountry = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      setUserCountry(profile?.country || null);
+    };
+    checkAuthAndGetCountry();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchArtists = async () => {
-      if (!category) return;
+      if (!category || !userCountry) return;
 
       // Map URL category to database specialization value
       const categoryMap: Record<string, string> = {
@@ -183,27 +206,27 @@ const CategoryArtists = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, experience_level, plan')
-        .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band");
+        .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band")
+        .eq('country', userCountry);
 
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
         setArtists(data || []);
+        // Get unique counties from artists
+        const counties = [...new Set(data?.map(a => a.county) || [])].sort();
+        setAvailableCounties(counties);
       }
       setLoading(false);
     };
 
-    fetchArtists();
-  }, [category]);
+    if (userCountry) {
+      fetchArtists();
+    }
+  }, [category, userCountry]);
 
-  const counties = [
-    "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani",
-    "Brăila", "Brașov", "București", "Buzău", "Călărași", "Caraș-Severin",
-    "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
-    "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
-    "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Sălaj", "Satu Mare",
-    "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vâlcea", "Vaslui", "Vrancea"
-  ];
+  // Use dynamic counties from fetched artists
+  const counties = availableCounties;
 
   const filteredArtists = useMemo(() => {
     let result = [...artists];

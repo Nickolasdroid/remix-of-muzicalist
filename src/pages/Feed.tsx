@@ -46,37 +46,64 @@ const Feed = () => {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+
   useEffect(() => {
-    supabase.auth.getSession().then(({
-      data: {
-        session
-      }
-    }) => {
+    const checkAuthAndGetCountry = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         navigate('/login');
         return;
       }
       setCurrentUserId(session.user.id);
-    });
+      
+      // Get user's country from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('country')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      setUserCountry(profile?.country || null);
+    };
+    checkAuthAndGetCountry();
   }, [navigate]);
+
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
+    if (!userCountry) return;
+    
     try {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      const {
-        data: posts,
-        error
-      } = await supabase.from('posts').select(`
+      // First get profile IDs from the user's country
+      const { data: countryProfiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('country', userCountry);
+      
+      const profileIds = countryProfiles?.map(p => p.id) || [];
+      
+      if (profileIds.length === 0) {
+        setFeedItems([]);
+        setHasMore(false);
+        setLoading(false);
+        return;
+      }
+      
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select(`
           id,
           profile_id,
           content,
           media_url,
           media_type,
           created_at
-        `).order('created_at', {
-        ascending: false
-      }).range(from, to);
+        `)
+        .in('profile_id', profileIds)
+        .order('created_at', { ascending: false })
+        .range(from, to);
       
       if (error) throw error;
 
@@ -87,11 +114,11 @@ const Feed = () => {
 
       // Fetch profiles and likes for each post
       const postsWithProfiles = await Promise.all((posts || []).map(async post => {
-        const [profileResult, likesResult, userLikeResult] = await Promise.all([supabase.from('profiles').select('stage_name, avatar_url, specialization, plan').eq('id', post.profile_id).maybeSingle(), supabase.from('post_likes').select('id', {
-          count: 'exact'
-        }).eq('post_id', post.id), currentUserId ? supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({
-          data: null
-        })]);
+        const [profileResult, likesResult, userLikeResult] = await Promise.all([
+          supabase.from('profiles').select('stage_name, avatar_url, specialization, plan').eq('id', post.profile_id).maybeSingle(),
+          supabase.from('post_likes').select('id', { count: 'exact' }).eq('post_id', post.id),
+          currentUserId ? supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
+        ]);
         return {
           ...post,
           profile: profileResult.data || {
@@ -121,11 +148,13 @@ const Feed = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId]);
+  }, [currentUserId, userCountry]);
 
   useEffect(() => {
-    fetchPosts(0);
-  }, [fetchPosts]);
+    if (userCountry) {
+      fetchPosts(0);
+    }
+  }, [fetchPosts, userCountry]);
 
   const loadMorePosts = useCallback(async () => {
     const nextPage = page + 1;
