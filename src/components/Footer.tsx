@@ -58,32 +58,33 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-display font-bold text-lg text-foreground mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              {quickLinks.map(link => <li key={link.title}>
-                  <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                    {link.title}
-                  </Link>
-                </li>)}
-            </ul>
-          </div>
+          {/* Quick Links + For Artists - same row on mobile */}
+          <div className="flex flex-row gap-8 md:contents">
+            <div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">
+                Quick Links
+              </h3>
+              <ul className="space-y-2">
+                {quickLinks.map(link => <li key={link.title}>
+                    <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
+                      {link.title}
+                    </Link>
+                  </li>)}
+              </ul>
+            </div>
 
-          {/* For Artists */}
-          <div>
-            <h3 className="font-display font-bold text-lg text-foreground mb-4">
-              For Artists
-            </h3>
-            <ul className="space-y-2">
-              {artistLinks.map(link => <li key={link.title}>
-                  <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                    {link.title}
-                  </Link>
-                </li>)}
-            </ul>
+            <div>
+              <h3 className="font-display font-bold text-lg text-foreground mb-4">
+                For Artists
+              </h3>
+              <ul className="space-y-2">
+                {artistLinks.map(link => <li key={link.title}>
+                    <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
+                      {link.title}
+                    </Link>
+                  </li>)}
+              </ul>
+            </div>
           </div>
 
           {/* Contact Info */}
