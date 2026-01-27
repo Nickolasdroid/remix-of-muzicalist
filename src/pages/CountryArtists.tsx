@@ -269,7 +269,7 @@ const CountryArtists = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-2xl md:text-3xl">{getCountryFlag(decodedCountry)}</span>
-            <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{decodedCountry}</h1>
+            <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">{decodedCountry}</h1>
           </div>
 
           <FilterButton 
