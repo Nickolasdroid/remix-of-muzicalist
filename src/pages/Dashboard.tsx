@@ -1383,8 +1383,6 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    <Separator className="my-8" />
-
                     {/* Tabs Section */}
                     <Tabs defaultValue="details" className="w-full">
                       <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
