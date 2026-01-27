@@ -78,25 +78,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Search Artists Worldwide Section */}
-      <section className="py-10 md:py-20 px-4 bg-muted/30">
-        <div className="text-center px-0">
-          <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
-            Discover Artists Worldwide
-          </h2>
-          <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto px-2">
-            Browse talented musicians from countries around the globe
-          </p>
-          <Link to="/countries">
-            <Button 
-              size="lg"
-              className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-8 md:px-10 py-5 md:py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 mx-2"
-            >
-              Explore All Countries
-            </Button>
-          </Link>
-        </div>
-      </section>
 
       {/* About Section */}
       <section className="py-10 md:py-20 px-4">
