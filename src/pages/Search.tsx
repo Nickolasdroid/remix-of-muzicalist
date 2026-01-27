@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search as SearchIcon, User, Sparkles, SlidersHorizontal, Crown } from "lucide-react";
+import { Search as SearchIcon, User, Sparkles, Crown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -71,7 +71,7 @@ const Search = () => {
   };
 
   const ProSearchContent = () => (
-    <div className="p-2 md:p-0">
+    <div className="p-4">
       <ArtistSearchBar />
     </div>
   );
@@ -103,7 +103,7 @@ const Search = () => {
                     Pro Search
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="max-h-[90vh] overflow-y-auto">
+                <DrawerContent>
                   <ProSearchContent />
                 </DrawerContent>
               </Drawer>
@@ -124,38 +124,6 @@ const Search = () => {
               </Dialog>
             )}
 
-            {/* Pro Search 2 Button (placeholder for second pro search) */}
-            {isMobile ? (
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-accent/50 text-accent hover:bg-accent/10"
-                  >
-                    <SlidersHorizontal className="h-4 w-4 mr-2" />
-                    Filters
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="max-h-[90vh] overflow-y-auto">
-                  <ProSearchContent />
-                </DrawerContent>
-              </Drawer>
-            ) : (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-accent/50 text-accent hover:bg-accent/10"
-                  >
-                    <SlidersHorizontal className="h-4 w-4 mr-2" />
-                    Filters
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
-                  <ProSearchContent />
-                </DialogContent>
-              </Dialog>
-            )}
 
             {/* AI Search Button */}
             {isMobile ? (
@@ -168,7 +136,7 @@ const Search = () => {
                     AI
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="max-h-[90vh] overflow-y-auto">
+                <DrawerContent>
                   <AISearchContent />
                 </DrawerContent>
               </Drawer>
