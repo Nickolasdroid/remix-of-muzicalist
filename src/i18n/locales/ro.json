@@ -175,5 +175,24 @@
       "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere"
     },
     "success": "Înregistrare reușită! Verifică-ți emailul pentru a-ți confirma contul."
+  },
+  "userDashboard": {
+    "myAds": "Anunțurile Mele",
+    "ads": "Anunțuri",
+    "adsRemaining": "{{standard}} standard / {{premium}} premium anunțuri rămase",
+    "newAd": "Anunț Nou",
+    "createAd": "Creează Anunț Nou",
+    "description": "Descriere",
+    "descriptionPlaceholder": "Descrie ce cauți...",
+    "media": "Media (opțional)",
+    "uploadMedia": "Încarcă foto sau video",
+    "mediaUploaded": "Media încărcată",
+    "markAsPremium": "Marchează ca Anunț Premium",
+    "postAd": "Postează Anunț",
+    "noAds": "Nu ai postat încă niciun anunț",
+    "premium": "Premium",
+    "deleteAdTitle": "Șterge Anunțul",
+    "deleteAdDescription": "Ești sigur că vrei să ștergi acest anunț? Această acțiune nu poate fi anulată.",
+    "delete": "Șterge"
   }
 }

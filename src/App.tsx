@@ -20,6 +20,7 @@ import Announcements from "./pages/Announcements";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UserDashboard from "./pages/UserDashboard";
 import ArtistProfile from "./pages/ArtistProfile";
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/register/artist" element={<RegisterArtist />} />
           <Route path="/register/user" element={<RegisterUser />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/artist/:id" element={<ArtistProfile />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />

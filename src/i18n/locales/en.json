@@ -175,5 +175,24 @@
       "passwordTooShort": "Password must be at least 6 characters"
     },
     "success": "Registration successful! Please check your email to verify your account."
+  },
+  "userDashboard": {
+    "myAds": "My Ads",
+    "ads": "Ads",
+    "adsRemaining": "{{standard}} standard / {{premium}} premium ads remaining",
+    "newAd": "New Ad",
+    "createAd": "Create New Ad",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what you're looking for...",
+    "media": "Media (optional)",
+    "uploadMedia": "Upload photo or video",
+    "mediaUploaded": "Media uploaded",
+    "markAsPremium": "Mark as Premium Ad",
+    "postAd": "Post Ad",
+    "noAds": "You haven't posted any ads yet",
+    "premium": "Premium",
+    "deleteAdTitle": "Delete Ad",
+    "deleteAdDescription": "Are you sure you want to delete this ad? This action cannot be undone.",
+    "delete": "Delete"
   }
 }

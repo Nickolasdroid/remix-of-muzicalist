@@ -20,11 +20,22 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in
+    // Check if already logged in and redirect based on user type
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/dashboard');
+        // Check user type to redirect appropriately
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        
+        if (roleData?.user_type === 'user') {
+          navigate('/user-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     };
     checkAuth();
@@ -52,12 +63,23 @@ const Login = () => {
 
       if (error) throw error;
 
+      // Check user type to redirect appropriately
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
       toast({
         title: "Login Successful!",
         description: "Welcome back to Muzicalist.",
       });
 
-      navigate('/dashboard');
+      if (roleData?.user_type === 'user') {
+        navigate('/user-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast({
         title: "Login Failed",

@@ -18,6 +18,7 @@ const Navigation = () => {
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [userType, setUserType] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -42,16 +43,25 @@ const Navigation = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const { data } = await supabase
+        // Fetch profile
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('avatar_url, stage_name, plan, country')
           .eq('id', session.user.id)
           .single();
-        setProfile(data);
+        setProfile(profileData);
         
-        if (data?.country) {
-          setSelectedCountry(data.country);
+        if (profileData?.country) {
+          setSelectedCountry(profileData.country);
         }
+        
+        // Fetch user type
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        setUserType(roleData?.user_type || null);
       }
     };
 
@@ -72,8 +82,19 @@ const Navigation = () => {
               setSelectedCountry(data.country);
             }
           });
+        
+        // Fetch user type
+        supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', session.user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            setUserType(data?.user_type || null);
+          });
       } else {
         setProfile(null);
+        setUserType(null);
       }
     });
 
@@ -172,6 +193,9 @@ const Navigation = () => {
     };
   }, [user]);
 
+  // Determine dashboard path based on user type
+  const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
+  
   const sidebarLinks = [
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
@@ -180,19 +204,26 @@ const Navigation = () => {
   ];
 
   // User-specific sidebar links (only shown when logged in)
-  const userSidebarLinks = [
-    { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
-    { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-    { to: '/dashboard?tab=plan', icon: Crown, label: 'My Plan' },
-    { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
-  ];
+  // For regular users, show different links than for artists
+  const userSidebarLinks = userType === 'user' 
+    ? [
+        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+        { to: '/user-dashboard', icon: User, label: 'My Ads' },
+      ]
+    : [
+        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+        { to: '/dashboard?tab=plan', icon: Crown, label: 'My Plan' },
+        { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+      ];
 
-  // Mobile bottom nav items (left to right: Feed - Ads - Messages - Search - Profile)
+  // Mobile bottom nav items (left to right: Feed - Ads - Messages - Profile)
   const mobileBottomNav = [
     { to: '/feed', icon: Home, label: 'Feed', showBadge: false },
     { to: '/announcements', icon: Megaphone, label: 'Ads', showBadge: false },
     { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
-    { to: user ? '/dashboard?tab=profile' : '/login', icon: User, label: 'Profile', showBadge: false },
+    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: 'Profile', showBadge: false },
   ];
 
   return (
