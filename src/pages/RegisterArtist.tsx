@@ -327,13 +327,17 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
-                  <div className="md:col-span-2">
-                    <CountrySelector value={formData.country} onChange={value => setFormData({ ...formData, country: value })} showLabel variant="list" />
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="country" className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>
+                    <CountrySelector 
+                      value={formData.country} 
+                      onChange={value => setFormData({ ...formData, country: value, county: "" })} 
+                    />
                   </div>
 
                   {formData.country && availableRegions.length > 0 && (
-                    <div className="space-y-1 md:col-span-2">
+                    <div className="space-y-1">
                       <Label htmlFor="county" className="text-xs md:text-sm">{divisionLabel}</Label>
                       <Select value={formData.county} onValueChange={value => setFormData({ ...formData, county: value })}>
                         <SelectTrigger className="bg-input border-border h-9">
