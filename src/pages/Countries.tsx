@@ -115,10 +115,10 @@ const Countries = () => {
                 <Link key={country.original} to={`/countries/${encodeURIComponent(country.original)}`}>
                   <Button 
                     variant="outline" 
-                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-3 md:gap-4 hover:bg-accent/10 hover:border-accent transition-all group px-4"
+                    className="h-auto py-4 md:py-6 w-full flex items-center justify-center md:justify-start gap-3 md:gap-4 hover:bg-accent/10 hover:border-accent transition-all group px-4"
                   >
                     <span className="text-2xl md:text-3xl flex-shrink-0">{country.flag}</span>
-                    <span className="text-sm md:text-base font-medium text-left">{country.name}</span>
+                    <span className="hidden md:inline text-base font-medium text-left">{country.name}</span>
                   </Button>
                 </Link>
               ))}
