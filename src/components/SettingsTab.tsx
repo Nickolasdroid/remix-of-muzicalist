@@ -188,10 +188,11 @@ const SettingsTab = ({
   ];
 
   // Desktop nav items
-  const navItems = [
-    { id: "account", label: "Profile", icon: User },
-    { id: "plan", label: "My Plan", icon: Crown },
-  ];
+  const navItems = [{
+    id: "account",
+    label: "Account",
+    icon: User
+  }];
 
   // Mobile: Main list view
   const MobileMainList = () => (
@@ -577,14 +578,12 @@ const SettingsTab = ({
           <ul className="space-y-1">
             {navItems.map(item => {
               const Icon = item.icon;
-              const isActive = (item.id === "account" && activeSection === "main") || 
-                              (item.id === "plan" && activeSection === "plan");
               return (
                 <li key={item.id}>
                   <button 
-                    onClick={() => setActiveSection(item.id === "account" ? "main" : "plan")} 
+                    onClick={() => setActiveSection("main")} 
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      activeSection === "main" ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -598,10 +597,7 @@ const SettingsTab = ({
 
         {/* Main Content */}
         <div className="flex-1 max-w-2xl">
-          {activeSection === "plan" ? (
-            <DesktopPlanSection />
-          ) : (
-          /* Account Section */
+          {/* Account Section */}
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold text-foreground">Account</h2>
@@ -895,57 +891,10 @@ const SettingsTab = ({
               </div>
             </div>
           </div>
-          )}
         </div>
       </div>
     </div>
   );
-
-  // Desktop: Plan section
-  function DesktopPlanSection() {
-    const isPremium = formData.plan === "Premium";
-    
-    return (
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">My Plan</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Your current subscription plan
-          </p>
-        </div>
-
-        <Separator />
-
-        <div className={`p-6 rounded-lg border-2 ${isPremium ? 'border-yellow-500/50 bg-yellow-500/10' : 'border-muted'}`}>
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-full ${isPremium ? 'bg-yellow-500/20' : 'bg-muted'}`}>
-              <Crown className={`h-6 w-6 ${isPremium ? 'text-yellow-500' : 'text-muted-foreground'}`} />
-            </div>
-            <div>
-              <p className={`text-lg font-semibold ${isPremium ? 'text-yellow-500' : 'text-foreground'}`}>
-                {formData.plan || "Free"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {isPremium ? "Premium features unlocked" : "Basic features"}
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        {!isPremium && (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Upgrade to Premium to unlock all features and get priority visibility.
-            </p>
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Crown className="h-4 w-4 mr-2" />
-              Upgrade to Premium
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  }
 };
 
 export default SettingsTab;
