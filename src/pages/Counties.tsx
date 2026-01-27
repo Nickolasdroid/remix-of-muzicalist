@@ -10,14 +10,38 @@ const Counties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [counties, setCounties] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCountiesWithArtists = async () => {
+    const fetchUserCountryAndCounties = async () => {
       setIsLoading(true);
-      const { data, error } = await supabase
+      
+      // Get current user's country
+      const { data: { user } } = await supabase.auth.getUser();
+      let country: string | null = null;
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', user.id)
+          .single();
+        
+        country = profile?.country || null;
+        setUserCountry(country);
+      }
+
+      // Fetch counties filtered by user's country
+      let query = supabase
         .from('profiles')
         .select('county')
         .not('county', 'is', null);
+      
+      if (country) {
+        query = query.eq('country', country);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching counties:', error);
@@ -31,7 +55,7 @@ const Counties = () => {
       setIsLoading(false);
     };
 
-    fetchCountiesWithArtists();
+    fetchUserCountryAndCounties();
   }, []);
 
   const filteredCounties = counties.filter(county => 
