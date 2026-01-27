@@ -597,6 +597,46 @@ const SettingsTab = ({
 
         {/* Main Content */}
         <div className="flex-1 max-w-2xl">
+          {/* My Plan Section */}
+          <div className="space-y-4 mb-8">
+            <div>
+              <h2 className="text-xl font-semibold text-foreground">My Plan</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your current subscription plan
+              </p>
+            </div>
+
+            <div className={`p-4 rounded-lg border-2 ${formData.plan === "Premium" ? 'border-yellow-500/50 bg-yellow-500/10' : 'border-muted'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-full ${formData.plan === "Premium" ? 'bg-yellow-500/20' : 'bg-muted'}`}>
+                  <Crown className={`h-5 w-5 ${formData.plan === "Premium" ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                </div>
+                <div>
+                  <p className={`font-semibold ${formData.plan === "Premium" ? 'text-yellow-500' : 'text-foreground'}`}>
+                    {formData.plan || "Free"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {formData.plan === "Premium" ? "Premium features unlocked" : "Basic features"}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {formData.plan !== "Premium" && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Upgrade to Premium to unlock all features and get priority visibility.
+                </p>
+                <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Premium
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <Separator className="mb-8" />
+
           {/* Account Section */}
           <div className="space-y-6">
             <div>
