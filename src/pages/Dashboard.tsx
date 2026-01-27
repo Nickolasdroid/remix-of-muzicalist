@@ -1299,10 +1299,17 @@ const Dashboard = () => {
                       </h1>
 
                       {/* Centered Category + Location */}
-                      <div className="flex flex-wrap items-center justify-center gap-3">
+                      <div className="flex flex-wrap items-center justify-center gap-2">
                         {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
                             {formData.specialization}
                           </Badge>}
+                        {/* Display instrument for instrumentalists on mobile */}
+                        {formData.specialization?.toLowerCase() === 'instrumentalist' && formData.instruments && (
+                          <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-3 py-1 text-sm font-medium">
+                            <Music2 className="h-3.5 w-3.5 mr-1" />
+                            {formData.instruments.split(',')[0].trim()}
+                          </Badge>
+                        )}
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
