@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
 import { Music2, Users, Target, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import logo from "@/assets/logo.png";
 
 const About = () => {
   const values = [{
@@ -24,35 +24,13 @@ const About = () => {
     description: "We're driven by our love for music and our commitment to supporting artists in their careers."
   }];
 
-  return <div className="min-h-screen">
-      {/* Standalone Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="h-full flex items-center justify-between px-4">
-          {/* Logo + Name */}
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist" className="h-8 md:h-9 w-auto" />
-            <span className="text-lg md:text-xl font-display font-bold text-foreground">Muzicalist</span>
-          </Link>
-          
-          {/* Auth Buttons */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-foreground hover:bg-accent/10 text-sm md:text-base px-3 md:px-4">
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm md:text-base px-3 md:px-4">
-                Register
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+  return (
+    <div className="min-h-screen md:ml-64">
+      <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-20 md:pt-32 pb-10 md:pb-20 px-4">
-        <div className="text-center px-0">
+      <section className="pt-20 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
+        <div className="container mx-auto text-center px-0">
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-3 md:mb-6 text-foreground">
             Find Your Perfect
             <span className="text-accent block mt-1 md:mt-2">Musical Artist</span>
@@ -78,10 +56,9 @@ const About = () => {
         </div>
       </section>
 
-
       {/* About Section */}
-      <section className="py-10 md:py-20 px-4">
-        <div className="px-0">
+      <section className="py-10 md:py-20 px-4 md:px-8">
+        <div className="container mx-auto px-0">
           <div className="text-center mb-10 md:mb-16 px-2">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">
               About Muzicalist
@@ -110,8 +87,9 @@ const About = () => {
             <h3 className="text-xl md:text-4xl font-display font-bold text-center text-foreground mb-6 md:mb-12">Our Values</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto px-0">
               {values.map(value => {
-              const Icon = value.icon;
-              return <Card key={value.title} className="p-4 md:p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
+                const Icon = value.icon;
+                return (
+                  <Card key={value.title} className="p-4 md:p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
                     <Icon className="h-8 w-8 md:h-12 md:w-12 text-accent mb-3 md:mb-4" />
                     <h4 className="text-lg md:text-2xl font-display font-bold text-foreground mb-2 md:mb-3">
                       {value.title}
@@ -119,16 +97,17 @@ const About = () => {
                     <p className="text-sm md:text-base text-muted-foreground">
                       {value.description}
                     </p>
-                  </Card>;
-            })}
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-10 md:py-20 px-4 bg-muted/30">
-        <div className="px-0">
+      <section className="py-10 md:py-20 px-4 md:px-8 pb-24 md:pb-20 bg-muted/30">
+        <div className="container mx-auto px-0">
           <div className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-card to-secondary p-6 md:p-12 border-2 border-accent/30 shadow-[var(--shadow-elegant)] text-center mx-0">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 md:mb-6 text-foreground">
               Are You a Musical Artist?
@@ -147,6 +126,8 @@ const About = () => {
       </section>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default About;
