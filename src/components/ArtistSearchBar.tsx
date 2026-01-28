@@ -29,9 +29,23 @@ const ArtistSearchBar = () => {
   // Fetch countries where artists are registered
   useEffect(() => {
     const fetchCountries = async () => {
+      // First get artist user IDs from user_roles
+      const { data: artistRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('user_type', 'artist');
+      
+      const artistIds = artistRoles?.map(r => r.user_id) || [];
+      
+      if (artistIds.length === 0) {
+        setCountries([]);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('country')
+        .in('id', artistIds)
         .not('country', 'is', null);
 
       if (!error && data) {
@@ -50,9 +64,23 @@ const ArtistSearchBar = () => {
         return;
       }
 
+      // First get artist user IDs from user_roles
+      const { data: artistRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('user_type', 'artist');
+      
+      const artistIds = artistRoles?.map(r => r.user_id) || [];
+      
+      if (artistIds.length === 0) {
+        setCounties([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('county')
+        .in('id', artistIds)
         .eq('country', selectedCountry)
         .not('county', 'is', null);
 

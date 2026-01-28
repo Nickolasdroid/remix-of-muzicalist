@@ -23,10 +23,25 @@ const Countries = () => {
     const fetchCountriesAndUser = async () => {
       setLoading(true);
       
-      // Fetch distinct countries from profiles
+      // First get artist user IDs from user_roles
+      const { data: artistRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('user_type', 'artist');
+      
+      const artistIds = artistRoles?.map(r => r.user_id) || [];
+      
+      if (artistIds.length === 0) {
+        setCountries([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch distinct countries from artist profiles only
       const { data: profileCountries } = await supabase
         .from('profiles')
         .select('country')
+        .in('id', artistIds)
         .not('country', 'is', null);
 
       if (profileCountries) {

@@ -658,9 +658,24 @@ const Leaderboard = () => {
     if (!isAuthChecked || !userCountry) return;
     
     const fetchArtists = async () => {
+      // First get artist user IDs from user_roles
+      const { data: artistRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('user_type', 'artist');
+      
+      const artistIds = artistRoles?.map(r => r.user_id) || [];
+      
+      if (artistIds.length === 0) {
+        setArtists([]);
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
+        .in('id', artistIds)
         .eq('country', userCountry)
         .order('number_of_events', { ascending: false });
       
