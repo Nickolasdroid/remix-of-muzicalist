@@ -226,6 +226,7 @@ const CountryArtists = () => {
         .select('id, stage_name, avatar_url, county, specialization, experience_level, plan')
         .in('id', artistIds)
         .eq('country', decodedCountry)
+        .not('specialization', 'is', null)
         .order('stage_name');
 
       setArtists(data || []);
