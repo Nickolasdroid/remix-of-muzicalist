@@ -42,23 +42,9 @@ const Categories = () => {
     if (!isAuthChecked || !userCountry) return;
     
     const fetchCounts = async () => {
-      // First get artist user IDs only
-      const { data: artistRoles } = await supabase
-        .from('user_roles')
-        .select('user_id')
-        .eq('user_type', 'artist');
-      
-      const artistIds = artistRoles?.map(r => r.user_id) || [];
-      
-      if (artistIds.length === 0) {
-        setCounts({ Singer: 0, Instrumentalist: 0, DJ: 0, Band: 0 });
-        return;
-      }
-      
       const { data } = await supabase
         .from("profiles")
         .select("specialization")
-        .in("id", artistIds)
         .eq("country", userCountry);
       
       if (data) {
