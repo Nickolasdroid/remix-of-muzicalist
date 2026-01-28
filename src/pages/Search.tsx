@@ -35,9 +35,31 @@ const Search = () => {
 
     setIsLoading(true);
     
+    // First get artist user IDs from user_roles
+    const { data: artistRoles, error: rolesError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('user_type', 'artist');
+
+    if (rolesError) {
+      console.error('Error fetching artist roles:', rolesError);
+      setSuggestions([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const artistIds = artistRoles?.map(r => r.user_id) || [];
+
+    if (artistIds.length === 0) {
+      setSuggestions([]);
+      setIsLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, stage_name, avatar_url, specialization, county, music_genres')
+      .in('id', artistIds)
       .ilike('stage_name', `%${query.trim()}%`)
       .limit(10);
 
