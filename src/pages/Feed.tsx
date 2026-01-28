@@ -76,26 +76,10 @@ const Feed = () => {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      // First get artist user IDs from user_roles
-      const { data: artistRoles } = await supabase
-        .from('user_roles')
-        .select('user_id')
-        .eq('user_type', 'artist');
-      
-      const artistIds = artistRoles?.map(r => r.user_id) || [];
-      
-      if (artistIds.length === 0) {
-        setFeedItems([]);
-        setHasMore(false);
-        setLoading(false);
-        return;
-      }
-      
-      // Then get profile IDs from the user's country that are artists
+      // First get profile IDs from the user's country
       const { data: countryProfiles } = await supabase
         .from('profiles')
         .select('id')
-        .in('id', artistIds)
         .eq('country', userCountry);
       
       const profileIds = countryProfiles?.map(p => p.id) || [];
