@@ -4,7 +4,6 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 
 interface Artist {
   id: string;
@@ -35,28 +34,18 @@ const CountySpecializationArtists = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArtistsData = async () => {
+    const fetchArtists = async () => {
       if (!county || !specialization) return;
       
       const dbSpecialization = specializationMap[specialization.toLowerCase()];
       if (!dbSpecialization) return;
       
       setLoading(true);
-      
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      if (artistIds.length === 0) {
-        setArtists([]);
-        setLoading(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, plan')
         .ilike('county', county)
-        .eq('specialization', dbSpecialization)
-        .in('id', artistIds);
+        .eq('specialization', dbSpecialization);
       
       if (error) {
         console.error('Error fetching artists:', error);
@@ -66,7 +55,7 @@ const CountySpecializationArtists = () => {
       setLoading(false);
     };
 
-    fetchArtistsData();
+    fetchArtists();
   }, [county, specialization]);
 
   const title = specialization ? specializationTitles[specialization.toLowerCase()] || specialization : '';

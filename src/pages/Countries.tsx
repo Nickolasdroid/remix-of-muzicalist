@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryDisplay } from "@/lib/countryFlags";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 
 interface CountryData {
   original: string;
@@ -24,20 +23,10 @@ const Countries = () => {
     const fetchCountriesAndUser = async () => {
       setLoading(true);
       
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      
-      if (artistIds.length === 0) {
-        setCountries([]);
-        setLoading(false);
-        return;
-      }
-
-      // Fetch distinct countries from artist profiles only
+      // Fetch distinct countries from profiles
       const { data: profileCountries } = await supabase
         .from('profiles')
         .select('country')
-        .in('id', artistIds)
         .not('country', 'is', null);
 
       if (profileCountries) {

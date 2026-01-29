@@ -4,7 +4,6 @@ import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -43,18 +42,10 @@ const Categories = () => {
     if (!isAuthChecked || !userCountry) return;
     
     const fetchCounts = async () => {
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      if (artistIds.length === 0) {
-        setCounts({ Singer: 0, Instrumentalist: 0, DJ: 0, Band: 0 });
-        return;
-      }
-
       const { data } = await supabase
         .from("profiles")
-        .select("id, specialization")
-        .eq("country", userCountry)
-        .in("id", artistIds);
+        .select("specialization")
+        .eq("country", userCountry);
       
       if (data) {
         const newCounts = {

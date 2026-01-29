@@ -5,7 +5,6 @@ import { ArrowLeft, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
   Popover,
   PopoverContent,
@@ -27,7 +26,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
-
 interface FilterButtonProps {
   filterCounty: string;
   setFilterCounty: (value: string) => void;
@@ -205,21 +203,11 @@ const CategoryArtists = () => {
       
       const specialization = categoryMap[category] || category;
 
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      if (artistIds.length === 0) {
-        setArtists([]);
-        setAvailableCounties([]);
-        setLoading(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, experience_level, plan')
         .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band")
-        .eq('country', userCountry)
-        .in('id', artistIds);
+        .eq('country', userCountry);
 
       if (error) {
         console.error('Error fetching artists:', error);

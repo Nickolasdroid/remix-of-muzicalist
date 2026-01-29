@@ -10,7 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 const allCountries = [{
   name: "Afghanistan",
   code: "AF"
@@ -658,20 +657,11 @@ const Leaderboard = () => {
   useEffect(() => {
     if (!isAuthChecked || !userCountry) return;
     
-    const fetchArtistsData = async () => {
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      if (artistIds.length === 0) {
-        setArtists([]);
-        setLoading(false);
-        return;
-      }
-
+    const fetchArtists = async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
         .eq('country', userCountry)
-        .in('id', artistIds)
         .order('number_of_events', { ascending: false });
       
       if (error) {
@@ -681,7 +671,7 @@ const Leaderboard = () => {
       }
       setLoading(false);
     };
-    fetchArtistsData();
+    fetchArtists();
   }, [isAuthChecked, userCountry]);
 
   // Fetch reviews and calculate average ratings for all artists

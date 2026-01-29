@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { getCountryFlag } from "@/lib/countryFlags";
-import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
   Popover,
   PopoverContent,
@@ -196,31 +195,21 @@ const CountryArtists = () => {
   const [sortOrder, setSortOrder] = useState<string>("none");
 
   useEffect(() => {
-    const fetchArtistsData = async () => {
+    const fetchArtists = async () => {
       if (!decodedCountry) return;
       
       setLoading(true);
-      
-      // Get artist IDs first to filter out regular users
-      const artistIds = await fetchArtistIds();
-      if (artistIds.length === 0) {
-        setArtists([]);
-        setLoading(false);
-        return;
-      }
-
       const { data } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, specialization, experience_level, plan')
         .eq('country', decodedCountry)
-        .in('id', artistIds)
         .order('stage_name');
 
       setArtists(data || []);
       setLoading(false);
     };
 
-    fetchArtistsData();
+    fetchArtists();
   }, [decodedCountry]);
 
   const counties = useMemo(() => {
