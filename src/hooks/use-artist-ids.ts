@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Hook to fetch artist IDs from user_roles table.
- * Only users with user_type = 'artist' should appear in artist listings.
+ * Hook to fetch artist IDs from profiles table.
+ * Artists are identified by having a specialization (Singer/Instrumentalist/DJ/Band).
+ * Regular users don't have a specialization set.
  */
 export const useArtistIds = () => {
   const [artistIds, setArtistIds] = useState<string[]>([]);
@@ -12,15 +13,15 @@ export const useArtistIds = () => {
   useEffect(() => {
     const fetchArtistIds = async () => {
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('user_id')
-        .eq('user_type', 'artist');
+        .from('profiles')
+        .select('id')
+        .not('specialization', 'is', null);
 
       if (error) {
         console.error('Error fetching artist IDs:', error);
         setArtistIds([]);
       } else {
-        setArtistIds(data?.map(r => r.user_id) || []);
+        setArtistIds(data?.map(r => r.id) || []);
       }
       setLoading(false);
     };
@@ -32,18 +33,19 @@ export const useArtistIds = () => {
 };
 
 /**
- * Utility function to fetch artist IDs (for use in async functions)
+ * Utility function to fetch artist IDs (for use in async functions).
+ * Artists have a specialization set, regular users don't.
  */
 export const fetchArtistIds = async (): Promise<string[]> => {
   const { data, error } = await supabase
-    .from('user_roles')
-    .select('user_id')
-    .eq('user_type', 'artist');
+    .from('profiles')
+    .select('id')
+    .not('specialization', 'is', null);
 
   if (error) {
     console.error('Error fetching artist IDs:', error);
     return [];
   }
 
-  return data?.map(r => r.user_id) || [];
+  return data?.map(r => r.id) || [];
 };
