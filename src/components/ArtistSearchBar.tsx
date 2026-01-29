@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchArtistIds } from "@/hooks/use-artist-ids";
 
 const ArtistSearchBar = () => {
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -28,10 +29,18 @@ const ArtistSearchBar = () => {
 
   // Fetch countries where artists are registered
   useEffect(() => {
-    const fetchCountries = async () => {
+    const fetchCountriesData = async () => {
+      // Get artist IDs first to filter out regular users
+      const artistIds = await fetchArtistIds();
+      if (artistIds.length === 0) {
+        setCountries([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('country')
+        .in('id', artistIds)
         .not('country', 'is', null);
 
       if (!error && data) {
@@ -39,13 +48,20 @@ const ArtistSearchBar = () => {
         setCountries(uniqueCountries.sort());
       }
     };
-    fetchCountries();
+    fetchCountriesData();
   }, []);
 
   // Fetch counties when country changes
   useEffect(() => {
-    const fetchCounties = async () => {
+    const fetchCountiesData = async () => {
       if (!selectedCountry) {
+        setCounties([]);
+        return;
+      }
+
+      // Get artist IDs first to filter out regular users
+      const artistIds = await fetchArtistIds();
+      if (artistIds.length === 0) {
         setCounties([]);
         return;
       }
@@ -54,6 +70,7 @@ const ArtistSearchBar = () => {
         .from('profiles')
         .select('county')
         .eq('country', selectedCountry)
+        .in('id', artistIds)
         .not('county', 'is', null);
 
       if (!error && data) {
@@ -61,7 +78,7 @@ const ArtistSearchBar = () => {
         setCounties(uniqueCounties.sort());
       }
     };
-    fetchCounties();
+    fetchCountiesData();
   }, [selectedCountry]);
 
   return (
