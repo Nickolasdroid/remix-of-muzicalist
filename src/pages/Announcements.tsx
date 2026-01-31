@@ -183,7 +183,7 @@ const Announcements = () => {
                           {announcement.profiles?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{announcement.profiles?.specialization || "Artist"}</span>
+                          <span>{announcement.profiles?.specialization || "User"}</span>
                           <span>·</span>
                           <span>{new Date(announcement.date).toLocaleDateString()}</span>
                           <span>·</span>
