@@ -373,7 +373,7 @@ const Messages = () => {
   };
   const getOtherSpecialization = (conv: Conversation) => {
     const profile = getOtherProfile(conv);
-    return profile.specialization || "Artist";
+    return profile.specialization || "User";
   };
   const formatMessageDate = (date: Date) => {
     if (isToday(date)) return "Today";
@@ -480,7 +480,7 @@ const Messages = () => {
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "Artist"}
+                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "User"}
                     </span>
                   </div>
                   {selectedConversation && <DropdownMenu>
@@ -605,7 +605,7 @@ const Messages = () => {
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "Artist"}
+                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "User"}
                     </span>
                   </div>
                   {selectedConversation && <DropdownMenu>

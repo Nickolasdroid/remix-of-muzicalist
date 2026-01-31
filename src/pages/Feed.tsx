@@ -234,7 +234,7 @@ const Feed = () => {
     }
   };
   const getSpecializationLabel = (specialization: string | null) => {
-    if (!specialization) return "Artist";
+    if (!specialization) return "User";
     return specialization;
   };
   const formatDate = (dateString: string) => {
