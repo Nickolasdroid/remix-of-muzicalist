@@ -1,40 +1,28 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
-import SettingsTab from "@/components/SettingsTab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Megaphone, Plus, Trash2, Upload, Settings as SettingsIcon, User } from "lucide-react";
+import { LogOut, Megaphone, Plus, Trash2, Upload } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
 const UserDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [searchParams] = useSearchParams();
+const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "ads");
-
-  // Update active tab when URL params change
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
 
   // Avatar cropper state
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -342,190 +330,152 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="ads" className="gap-2">
-              <Megaphone className="h-4 w-4" />
-              <span className="hidden md:inline">{t("userDashboard.myAds")}</span>
-              <span className="md:hidden">{t("userDashboard.ads")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-2">
-              <SettingsIcon className="h-4 w-4" />
-              <span>{t("navigation.settings")}</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Ads Tab */}
-          <TabsContent value="ads">
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-lg font-semibold">{t("userDashboard.myAds")}</h2>
-                    <p className="text-sm text-muted-foreground">
-                      {t("userDashboard.adsRemaining", { standard: standardAdsRemaining, premium: premiumAdsRemaining })}
-                    </p>
-                  </div>
-                  <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        {t("userDashboard.newAd")}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="rounded-lg">
-                      <DialogHeader>
-                        <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium flex items-center justify-between">
-                            {t("userDashboard.description")}
-                            <span className="text-muted-foreground text-xs">
-                              {newAnnouncement.description.length}/100
-                            </span>
-                          </label>
-                          <Textarea
-                            value={newAnnouncement.description}
-                            onChange={(e) => setNewAnnouncement({ 
-                              ...newAnnouncement, 
-                              description: e.target.value.slice(0, 100) 
-                            })}
-                            placeholder={t("userDashboard.descriptionPlaceholder")}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium">{t("userDashboard.media")}</label>
-                          <div className="mt-1">
-                            <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-accent transition-colors">
-                              <Upload className="h-5 w-5" />
-                              <span className="text-sm">{t("userDashboard.uploadMedia")}</span>
-                              <input
-                                type="file"
-                                accept="image/*,video/*"
-                                className="hidden"
-                                onChange={handleAnnouncementMediaUpload}
-                              />
-                            </label>
-                            {newAnnouncement.mediaUrl && (
-                              <p className="text-xs text-muted-foreground mt-2">
-                                ✓ {t("userDashboard.mediaUploaded")}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="premium"
-                            checked={newAnnouncement.isPremium}
-                            onCheckedChange={(checked) =>
-                              setNewAnnouncement({ ...newAnnouncement, isPremium: !!checked })
-                            }
-                            disabled={premiumAdsRemaining <= 0}
-                          />
-                          <label htmlFor="premium" className="text-sm cursor-pointer">
-                            {t("userDashboard.markAsPremium")}
-                          </label>
-                        </div>
-                        <Button
-                          className="w-full"
-                          onClick={handleAddAnnouncement}
-                          disabled={!newAnnouncement.description || isSaving}
-                        >
-                          {isSaving ? t("common.creating") : t("userDashboard.postAd")}
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-
-                {/* Ads List */}
-                {announcements.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>{t("userDashboard.noAds")}</p>
-                  </div>
-                ) : (
+        {/* My Ads Section */}
+        <Card>
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold">{t("userDashboard.myAds")}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {t("userDashboard.adsRemaining", { standard: standardAdsRemaining, premium: premiumAdsRemaining })}
+                </p>
+              </div>
+              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    {t("userDashboard.newAd")}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="rounded-lg">
+                  <DialogHeader>
+                    <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
+                  </DialogHeader>
                   <div className="space-y-4">
-                    {announcements.map((ad) => (
-                      <div key={ad.id} className="p-4 border rounded-lg">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            {ad.media_url && (
-                              <div className="mb-3">
-                                {ad.media_type === 'video' ? (
-                                  <video src={ad.media_url} className="rounded-lg max-h-48 w-full object-cover" controls />
-                                ) : (
-                                  <img src={ad.media_url} alt="" className="rounded-lg max-h-48 w-full object-cover" />
-                                )}
-                              </div>
+                    <div>
+                      <label className="text-sm font-medium flex items-center justify-between">
+                        {t("userDashboard.description")}
+                        <span className="text-muted-foreground text-xs">
+                          {newAnnouncement.description.length}/100
+                        </span>
+                      </label>
+                      <Textarea
+                        value={newAnnouncement.description}
+                        onChange={(e) => setNewAnnouncement({ 
+                          ...newAnnouncement, 
+                          description: e.target.value.slice(0, 100) 
+                        })}
+                        placeholder={t("userDashboard.descriptionPlaceholder")}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">{t("userDashboard.media")}</label>
+                      <div className="mt-1">
+                        <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-accent transition-colors">
+                          <Upload className="h-5 w-5" />
+                          <span className="text-sm">{t("userDashboard.uploadMedia")}</span>
+                          <input
+                            type="file"
+                            accept="image/*,video/*"
+                            className="hidden"
+                            onChange={handleAnnouncementMediaUpload}
+                          />
+                        </label>
+                        {newAnnouncement.mediaUrl && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            ✓ {t("userDashboard.mediaUploaded")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="premium"
+                        checked={newAnnouncement.isPremium}
+                        onCheckedChange={(checked) =>
+                          setNewAnnouncement({ ...newAnnouncement, isPremium: !!checked })
+                        }
+                        disabled={premiumAdsRemaining <= 0}
+                      />
+                      <label htmlFor="premium" className="text-sm cursor-pointer">
+                        {t("userDashboard.markAsPremium")}
+                      </label>
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={handleAddAnnouncement}
+                      disabled={!newAnnouncement.description || isSaving}
+                    >
+                      {isSaving ? t("common.creating") : t("userDashboard.postAd")}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Ads List */}
+            {announcements.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>{t("userDashboard.noAds")}</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {announcements.map((ad) => (
+                  <div key={ad.id} className="p-4 border rounded-lg">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        {ad.media_url && (
+                          <div className="mb-3">
+                            {ad.media_type === 'video' ? (
+                              <video src={ad.media_url} className="rounded-lg max-h-48 w-full object-cover" controls />
+                            ) : (
+                              <img src={ad.media_url} alt="" className="rounded-lg max-h-48 w-full object-cover" />
                             )}
-                            <p className="text-sm">{ad.description}</p>
-                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                              <span>{formatDate(ad.date)}</span>
-                              {ad.is_premium && (
-                                <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full">
-                                  {t("userDashboard.premium")}
-                                </span>
-                              )}
-                            </div>
                           </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="rounded-lg">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {t("userDashboard.deleteAdDescription")}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteAnnouncement(ad.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  {t("userDashboard.delete")}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                        )}
+                        <p className="text-sm">{ad.description}</p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          <span>{formatDate(ad.date)}</span>
+                          {ad.is_premium && (
+                            <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full">
+                              {t("userDashboard.premium")}
+                            </span>
+                          )}
                         </div>
                       </div>
-                    ))}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="rounded-lg">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t("userDashboard.deleteAdDescription")}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteAnnouncement(ad.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              {t("userDashboard.delete")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings">
-            <SettingsTab 
-              formData={{ email: profile?.email || "", plan: "Free" }}
-              handleLogout={handleLogout}
-              handleDeleteAccount={async () => {
-                try {
-                  // Delete profile first
-                  await supabase.from('profiles').delete().eq('id', user.id);
-                  await supabase.from('user_roles').delete().eq('user_id', user.id);
-                  await supabase.auth.signOut({ scope: 'local' });
-                  toast({ title: t("common.success"), description: "Account deleted." });
-                  navigate('/');
-                } catch (error: any) {
-                  toast({ title: t("common.error"), description: error.message, variant: "destructive" });
-                }
-              }}
-              isSaving={isSaving}
-            />
-          </TabsContent>
-        </Tabs>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
