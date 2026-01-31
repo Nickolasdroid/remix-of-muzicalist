@@ -231,12 +231,10 @@ const CountryArtists = () => {
   const filteredArtists = useMemo(() => {
     let result = [...artists];
 
-    // Search filter
+    // Search filter - only by artist name
     if (searchTerm) {
       result = result.filter(artist =>
-        artist.stage_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        artist.specialization?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        artist.county?.toLowerCase().includes(searchTerm.toLowerCase())
+        artist.stage_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -305,7 +303,7 @@ const CountryArtists = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input 
               type="text" 
-              placeholder="Search artists by name, specialization, or region..." 
+              placeholder="Search by artist name..." 
               value={searchTerm} 
               onChange={e => setSearchTerm(e.target.value)} 
               className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card/50 backdrop-blur border-accent/20" 
