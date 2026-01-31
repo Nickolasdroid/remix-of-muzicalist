@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Megaphone, Plus, Trash2, Upload } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
@@ -322,10 +322,6 @@ const { t } = useTranslation();
                 </h1>
                 <p className="text-muted-foreground text-sm">{profile?.email}</p>
               </div>
-              <Button variant="outline" onClick={handleLogout} className="gap-2">
-                <LogOut className="h-4 w-4" />
-                {t("navigation.logout")}
-              </Button>
             </div>
           </CardContent>
         </Card>
