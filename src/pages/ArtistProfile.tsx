@@ -47,6 +47,7 @@ interface Profile {
   tiktok_url: string | null;
   spotify_url: string | null;
   instruments: string | null;
+  created_at: string | null;
 }
 interface Announcement {
   id: string;
@@ -830,6 +831,12 @@ const ArtistProfile = () => {
                     <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
                       {artist.bio || "No bio available."}
                     </p>
+                    {artist.created_at && (
+                      <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-accent" />
+                        Member since {new Date(artist.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </p>
+                    )}
                   </div>
 
                   <Separator />
