@@ -1449,6 +1449,12 @@ const Dashboard = () => {
                               {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
                                   {formData.bio}
                                 </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
+                              {profile?.created_at && (
+                                <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
+                                  <CalendarIcon className="h-4 w-4 text-accent" />
+                                  Member since {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                </p>
+                              )}
                             </div>}
                         </div>
 
