@@ -1446,7 +1446,7 @@ const Dashboard = () => {
                                 </div>
                               </div>
                             </div> : <div>
-                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-sm">
                                   {formData.bio}
                                 </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
                               {profile?.created_at && (
