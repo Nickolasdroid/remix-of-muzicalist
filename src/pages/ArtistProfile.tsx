@@ -1289,7 +1289,7 @@ const ArtistProfile = () => {
 
                 {/* Calendar Tab */}
                 <TabsContent value="calendar">
-                  <div className="space-y-4">
+                  <div>
                     <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
                       <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                       Availability Calendar
