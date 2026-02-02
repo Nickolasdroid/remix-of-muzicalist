@@ -1337,7 +1337,7 @@ const ArtistProfile = () => {
                           </div>
                         </div>
                         {/* Calendar */}
-                        <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
+                        <div className="flex-shrink-0 w-full flex flex-col items-center lg:items-start lg:w-auto">
                           <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
                         busy: getBusyDates(),
                         blocked: getBlockedDates()
@@ -1345,6 +1345,9 @@ const ArtistProfile = () => {
                         busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                         blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                       }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
+                          <p className="text-sm text-muted-foreground mt-3">
+                            Select a date to send a booking request
+                          </p>
                         </div>
                         {/* Legend and selected date - desktop only */}
                         <div className="hidden lg:block min-w-0 space-y-3 md:space-y-4">
