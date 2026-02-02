@@ -781,7 +781,7 @@ const Leaderboard = () => {
             <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto min-w-[180px] justify-between">
+                  <Button variant="outline" className="w-auto min-w-[180px] justify-between">
                     {selectedCounty}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
