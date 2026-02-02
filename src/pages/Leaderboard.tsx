@@ -799,19 +799,19 @@ const Leaderboard = () => {
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
               <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Mic className="h-6 w-6 md:h-4 md:w-4" />
+                  <Mic className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Singers</span>
                 </TabsTrigger>
                 <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Guitar className="h-6 w-6 md:h-4 md:w-4" />
+                  <Guitar className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Instrumentalists</span>
                 </TabsTrigger>
                 <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Headphones className="h-6 w-6 md:h-4 md:w-4" />
+                  <Headphones className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">DJs</span>
                 </TabsTrigger>
                 <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Users className="h-6 w-6 md:h-4 md:w-4" />
+                  <Users className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Bands</span>
                 </TabsTrigger>
               </TabsList>
