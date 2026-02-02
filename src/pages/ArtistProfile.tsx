@@ -1315,7 +1315,7 @@ const ArtistProfile = () => {
                         </div>
                       </Card>
                     ) : (
-                      <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr] gap-4 items-start">
+                      <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                         {/* Legend - above calendar on mobile */}
                         <div className="w-full lg:hidden">
                           <div className="p-3 rounded-lg bg-secondary/50">
@@ -1346,59 +1346,56 @@ const ArtistProfile = () => {
                         blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
                       }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                         </div>
-                        {/* Booking prompt - matches dashboard format */}
-                        <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
-                          <p className="text-sm text-center">Select a date to send a booking request</p>
-                        </div>
-                        {/* Legend and selected date - desktop only */}
-                        <div className="hidden lg:block min-w-0 space-y-3 md:space-y-4">
-                          <div className="p-3 md:p-4 rounded-lg bg-secondary/50">
-                            <h4 className="font-semibold text-foreground mb-2 md:mb-3 text-sm md:text-base">Legend</h4>
-                            <div className="flex flex-col gap-3">
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                                <span className="text-sm text-muted-foreground">Booked</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-muted/80"></div>
-                                <span className="text-sm text-muted-foreground">Unavailable</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded bg-accent"></div>
-                                <span className="text-sm text-muted-foreground">Available</span>
-                              </div>
-                            </div>
-                          </div>
-                          {selectedDate && <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
+                        {/* Date details / prompt (matches dashboard positioning) */}
+                        <div className="w-full lg:min-w-0 lg:w-auto">
+                          {selectedDate ? (
+                            <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
                               <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
                               <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
                                 {selectedDate.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
+                                  weekday: 'long',
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
+                              <Badge
+                                className={
+                                  isBlockedDate(selectedDate)
+                                    ? "bg-muted text-muted-foreground"
+                                    : isBusyDate(selectedDate)
+                                      ? "bg-destructive text-destructive-foreground"
+                                      : "bg-accent text-accent-foreground"
+                                }
+                              >
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
-                            </div>}
+                            </div>
+                          ) : (
+                            <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                              <p className="text-sm text-center">Select a date to send a booking request</p>
+                            </div>
+                          )}
                         </div>
-                        {/* Selected date - mobile only */}
-                        {selectedDate && <div className="w-full lg:hidden p-3 rounded-lg border border-border bg-card">
-                          <h4 className="font-semibold text-foreground mb-2 text-sm">Selected Date</h4>
-                          <p className="text-xs text-muted-foreground mb-2">
-                            {selectedDate.toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                          </p>
-                          <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
-                            {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
-                          </Badge>
-                        </div>}
+
+                        {/* Legend - desktop only */}
+                        <div className="hidden lg:block p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-48">
+                          <h4 className="font-semibold text-foreground mb-2 md:mb-3">Legend</h4>
+                          <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                              <span className="text-sm text-muted-foreground">Booked</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded bg-muted/80"></div>
+                              <span className="text-sm text-muted-foreground">Unavailable</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded bg-accent"></div>
+                              <span className="text-sm text-muted-foreground">Available</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
