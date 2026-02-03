@@ -48,47 +48,27 @@ const Search = () => {
     fetchUserCountry();
   }, []);
 
-  const fetchSuggestions = async (query: string) => {
-    if (query.trim().length < 2) {
+  const fetchSuggestions = async (searchQuery: string) => {
+    if (searchQuery.trim().length < 2) {
       setSuggestions([]);
       return;
     }
 
     setIsLoading(true);
     
-    // First get artist user IDs from user_roles
-    const { data: artistRoles, error: rolesError } = await supabase
-      .from('user_roles')
-      .select('user_id')
-      .eq('user_type', 'artist');
-
-    if (rolesError) {
-      console.error('Error fetching artist roles:', rolesError);
-      setSuggestions([]);
-      setIsLoading(false);
-      return;
-    }
-
-    const artistIds = artistRoles?.map(r => r.user_id) || [];
-
-    if (artistIds.length === 0) {
-      setSuggestions([]);
-      setIsLoading(false);
-      return;
-    }
-
-    // Build query with country filter if user is logged in and has a country
-    let query_builder = supabase
+    // Build query - artists are identified by having a specialization set
+    // Filter by user's country and search by stage name
+    let queryBuilder = supabase
       .from('profiles')
       .select('id, stage_name, avatar_url, specialization, county, music_genres')
-      .in('id', artistIds)
-      .ilike('stage_name', `%${query.trim()}%`);
+      .not('specialization', 'is', null) // Only artists have specialization
+      .ilike('stage_name', `%${searchQuery.trim()}%`);
 
     if (userCountry) {
-      query_builder = query_builder.eq('country', userCountry);
+      queryBuilder = queryBuilder.eq('country', userCountry);
     }
 
-    const { data, error } = await query_builder.limit(10);
+    const { data, error } = await queryBuilder.limit(10);
 
     if (error) {
       console.error('Error fetching suggestions:', error);
