@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, Crown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,28 @@ const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
   const isMobile = useIsMobile();
+
+  // Fetch current user's country on mount
+  useEffect(() => {
+    const fetchUserCountry = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile?.country) {
+          setUserCountry(profile.country);
+        }
+      }
+    };
+    
+    fetchUserCountry();
+  }, []);
 
   const fetchSuggestions = async (query: string) => {
     if (query.trim().length < 2) {
@@ -56,12 +77,18 @@ const Search = () => {
       return;
     }
 
-    const { data, error } = await supabase
+    // Build query with country filter if user is logged in and has a country
+    let query_builder = supabase
       .from('profiles')
       .select('id, stage_name, avatar_url, specialization, county, music_genres')
       .in('id', artistIds)
-      .ilike('stage_name', `%${query.trim()}%`)
-      .limit(10);
+      .ilike('stage_name', `%${query.trim()}%`);
+
+    if (userCountry) {
+      query_builder = query_builder.eq('country', userCountry);
+    }
+
+    const { data, error } = await query_builder.limit(10);
 
     if (error) {
       console.error('Error fetching suggestions:', error);
