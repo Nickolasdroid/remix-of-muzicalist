@@ -316,11 +316,6 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="email" className="text-xs md:text-sm">{t("artistRegistration.email")}</Label>
-                    <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
-                  </div>
-
-                  <div className="space-y-1">
                     <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
                     <Input 
                       id="phone" 
@@ -348,6 +343,11 @@ const RegisterArtist = () => {
                       className="bg-input border-border focus:border-accent h-9" 
                       placeholder={t("artistRegistration.placeholders.phone")} 
                     />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="email" className="text-xs md:text-sm">{t("artistRegistration.email")}</Label>
+                    <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
                   </div>
                 </div>
 
