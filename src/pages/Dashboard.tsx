@@ -1851,9 +1851,9 @@ const Dashboard = () => {
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
                                 ...newPost,
-                                content: e.target.value.slice(0, 100)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={100} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
+                                content: e.target.value.slice(0, 200)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
                                       </div>
                                       {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
                                           <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
@@ -1881,9 +1881,9 @@ const Dashboard = () => {
                                         <Label>Post Content</Label>
                                         <Textarea value={newPost.content} onChange={e => setNewPost({
                                 ...newPost,
-                                content: e.target.value.slice(0, 100)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={100} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/100</p>
+                                content: e.target.value.slice(0, 200)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
                                       </div>
                                       <div>
                                         <Label>Video URL (YouTube/Embed)</Label>
