@@ -290,11 +290,6 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="email" className="text-xs md:text-sm">{t("artistRegistration.email")}</Label>
-                  <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
-                </div>
-
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="country" className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>
@@ -319,34 +314,41 @@ const RegisterArtist = () => {
                   )}
                 </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
-                  <Input 
-                    id="phone" 
-                    type="tel" 
-                    required 
-                    value={formData.phone} 
-                    onChange={e => {
-                      const newValue = e.target.value;
-                      const prefix = getPhonePrefix(formData.country);
-                      // Ensure prefix cannot be deleted
-                      if (prefix && !newValue.startsWith(prefix)) {
-                        return;
-                      }
-                      // Only allow digits after prefix (no spaces)
-                      const afterPrefix = newValue.slice(prefix.length);
-                      if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
-                        return;
-                      }
-                      // Check max length
-                      const maxLength = getMaxPhoneLength(formData.country);
-                      if (newValue.length <= maxLength) {
-                        setFormData({ ...formData, phone: newValue });
-                      }
-                    }}
-                    className="bg-input border-border focus:border-accent h-9" 
-                    placeholder={t("artistRegistration.placeholders.phone")} 
-                  />
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="email" className="text-xs md:text-sm">{t("artistRegistration.email")}</Label>
+                    <Input id="email" type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      required 
+                      value={formData.phone} 
+                      onChange={e => {
+                        const newValue = e.target.value;
+                        const prefix = getPhonePrefix(formData.country);
+                        // Ensure prefix cannot be deleted
+                        if (prefix && !newValue.startsWith(prefix)) {
+                          return;
+                        }
+                        // Only allow digits after prefix (no spaces)
+                        const afterPrefix = newValue.slice(prefix.length);
+                        if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
+                          return;
+                        }
+                        // Check max length
+                        const maxLength = getMaxPhoneLength(formData.country);
+                        if (newValue.length <= maxLength) {
+                          setFormData({ ...formData, phone: newValue });
+                        }
+                      }}
+                      className="bg-input border-border focus:border-accent h-9" 
+                      placeholder={t("artistRegistration.placeholders.phone")} 
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-end pt-2">
