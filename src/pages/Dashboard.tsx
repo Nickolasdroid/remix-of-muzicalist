@@ -2010,9 +2010,9 @@ const Dashboard = () => {
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
                                       <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
                               ...newAnnouncement,
-                              description: e.target.value.slice(0, 100)
-                            })} placeholder="Write your announcement here..." rows={4} maxLength={100} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/100</p>
+                              description: e.target.value.slice(0, 200)
+                            })} placeholder="Write your announcement here..." rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                                     </div>
                                     
                                     {newAnnouncement.isPremium && <div>

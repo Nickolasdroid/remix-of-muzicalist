@@ -352,17 +352,18 @@ const { t } = useTranslation();
                       <label className="text-sm font-medium flex items-center justify-between">
                         {t("userDashboard.description")}
                         <span className="text-muted-foreground text-xs">
-                          {newAnnouncement.description.length}/100
+                          {newAnnouncement.description.length}/200
                         </span>
                       </label>
                       <Textarea
                         value={newAnnouncement.description}
                         onChange={(e) => setNewAnnouncement({ 
                           ...newAnnouncement, 
-                          description: e.target.value.slice(0, 100) 
+                          description: e.target.value.slice(0, 200) 
                         })}
                         placeholder={t("userDashboard.descriptionPlaceholder")}
                         className="mt-1"
+                        maxLength={200}
                       />
                     </div>
                     <div>
