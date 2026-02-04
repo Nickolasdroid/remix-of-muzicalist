@@ -1995,6 +1995,11 @@ const Dashboard = () => {
                                   <DialogHeader>
                                     <DialogTitle>Add New Announcement</DialogTitle>
                                   </DialogHeader>
+                                  <p className="text-sm text-muted-foreground mt-2">
+                                    {newAnnouncement.isPremium 
+                                      ? "Promotions are valid for 30 days."
+                                      : "Ads are valid for 15 days."}
+                                  </p>
                                   <div className="space-y-4 mt-4">
                                     <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
                                       <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
