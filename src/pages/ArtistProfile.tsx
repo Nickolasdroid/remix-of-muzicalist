@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import ExpandableText from "@/components/ExpandableText";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -1098,7 +1099,7 @@ const ArtistProfile = () => {
                               </div>
 
                               {/* Content */}
-                              <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
+                              <ExpandableText text={post.content} className="mt-3" />
                             </div>
                             
                             {/* Media */}
@@ -1207,7 +1208,7 @@ const ArtistProfile = () => {
                               </div>
 
                               {/* Content */}
-                              <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                              <ExpandableText text={announcement.description} className="mt-3" />
                             </div>
                             
                             {/* Media for premium announcements */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import SettingsTab from "@/components/SettingsTab";
+import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { getCountryFlag } from "@/lib/countryFlags";
@@ -1934,7 +1935,7 @@ const Dashboard = () => {
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                   </Button>
                                 </div>
-                                <p className="text-foreground mt-3 whitespace-pre-wrap">{post.content}</p>
+                                <ExpandableText text={post.content} className="mt-3" />
                               </div>
                               
                               {post.media_url && <div className="mt-3 bg-muted/30">
@@ -2081,7 +2082,7 @@ const Dashboard = () => {
                                     <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                                   </Button>
                                 </div>
-                                <p className="text-foreground mt-3 whitespace-pre-wrap">{announcement.description}</p>
+                                <ExpandableText text={announcement.description} className="mt-3" />
                               </div>
                               
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
