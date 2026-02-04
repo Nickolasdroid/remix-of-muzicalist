@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2 } from "lucide-react";
+import ExpandableText from "@/components/ExpandableText";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -335,7 +336,7 @@ const Feed = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mt-3 whitespace-pre-wrap my-[5px]">{item.content}</p>
+                  <ExpandableText text={item.content} className="mt-3 my-[5px]" />
                 </div>
                 
                 {/* Media - Natural aspect ratio for landscape images */}

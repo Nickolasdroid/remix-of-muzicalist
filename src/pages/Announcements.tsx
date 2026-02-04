@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import ExpandableText from "@/components/ExpandableText";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -221,7 +222,7 @@ const Announcements = () => {
                   </div>
 
                   {/* Content */}
-                  <p className="text-foreground mt-3 whitespace-pre-wrap my-[5px]">{announcement.description}</p>
+                  <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
                 </div>
                 
                 {/* Media for premium announcements - Natural aspect ratio for landscape images */}
