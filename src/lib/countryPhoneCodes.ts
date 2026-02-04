@@ -89,6 +89,7 @@ export const countryPhoneCodes: Record<string, CountryPhoneConfig> = {
   // H
   HT: { prefix: "+509", minLength: 8, maxLength: 8 },    // Haiti: 8 digits
   HN: { prefix: "+504", minLength: 8, maxLength: 8 },    // Honduras: 8 digits
+  HK: { prefix: "+852", minLength: 8, maxLength: 8 },    // Hong Kong: 8 digits
   HU: { prefix: "+36", minLength: 9, maxLength: 9 },     // Hungary: 9 digits
   // I
   IS: { prefix: "+354", minLength: 7, maxLength: 7 },    // Iceland: 7 digits

@@ -88,6 +88,7 @@ const allCountries = [
   { name: "Guyana", flag: "🇬🇾", code: "GY" },
   { name: "Haiti", flag: "🇭🇹", code: "HT" },
   { name: "Honduras", flag: "🇭🇳", code: "HN" },
+  { name: "Hong Kong", flag: "🇭🇰", code: "HK" },
   { name: "Hungary", flag: "🇭🇺", code: "HU" },
   { name: "Iceland", flag: "🇮🇸", code: "IS" },
   { name: "India", flag: "🇮🇳", code: "IN" },
