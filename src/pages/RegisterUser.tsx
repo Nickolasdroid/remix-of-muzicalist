@@ -26,14 +26,19 @@ const RegisterUser = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Auto-detect country on mount
+  // Auto-detect country on mount and set phone prefix
   useEffect(() => {
     const detectCountry = async () => {
       try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
         if (data.country_name) {
-          setFormData(prev => ({ ...prev, country: data.country_name }));
+          const prefix = getPhonePrefix(data.country_name);
+          setFormData(prev => ({ 
+            ...prev, 
+            country: data.country_name,
+            phone: prefix || prev.phone
+          }));
         }
       } catch (error) {
         console.log('Could not auto-detect country');
