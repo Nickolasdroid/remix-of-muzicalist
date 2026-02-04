@@ -347,6 +347,11 @@ const { t } = useTranslation();
                   <DialogHeader>
                     <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                   </DialogHeader>
+                  <p className="text-sm text-muted-foreground">
+                    {newAnnouncement.isPremium 
+                      ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
+                      : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
+                  </p>
                   <div className="space-y-4">
                     <div>
                       <label className="text-sm font-medium flex items-center justify-between">
