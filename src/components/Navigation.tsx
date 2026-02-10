@@ -380,6 +380,10 @@ const Navigation = () => {
             <span className="font-display font-bold text-foreground text-lg">Settings</span>
           ) : location.pathname === '/leaderboard' ? (
             <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
+          ) : location.pathname === '/countries' ? (
+            <span className="font-display font-bold text-foreground text-lg">Countries</span>
+          ) : location.pathname === '/counties' ? (
+            <span className="font-display font-bold text-foreground text-lg">Regions</span>
           ) : (
             <Link to="/feed" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
