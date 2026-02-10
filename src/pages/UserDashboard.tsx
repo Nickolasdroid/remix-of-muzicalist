@@ -320,7 +320,16 @@ const { t } = useTranslation();
                 <h1 className="text-xl md:text-2xl font-display font-bold">
                   {profile?.first_name} {profile?.last_name}
                 </h1>
-                <p className="text-muted-foreground text-sm">{profile?.email}</p>
+                <div className="flex flex-col sm:flex-row items-center md:items-start gap-1 sm:gap-4 mt-1 text-sm text-muted-foreground">
+                  <span>{t("userDashboard.adsPublished", { count: announcements.length })}</span>
+                  {profile?.created_at && (
+                    <span>
+                      {t("userDashboard.memberSince", { 
+                        date: new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) 
+                      })}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
