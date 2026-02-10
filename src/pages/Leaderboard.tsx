@@ -797,19 +797,19 @@ const Leaderboard = () => {
                       <DrawerTitle>Select Region</DrawerTitle>
                       <p className="text-sm text-muted-foreground">Choose a region to filter by</p>
                     </DrawerHeader>
-                    <ScrollArea className="h-64">
-                      <div className="p-2 space-y-0.5">
+                    <ScrollArea className="h-72">
+                      <div className="space-y-0.5">
                         {["All Regions", ...getAvailableCounties()].map(county => (
                           <button
                             key={county}
                             type="button"
                             onClick={() => { setSelectedCounty(county); setRegionDrawerOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
                               selectedCounty === county ? "bg-accent/20 text-accent" : "text-foreground"
                             }`}
                           >
-                            <MapPin className="h-4 w-4" />
-                            <span className="flex-1 text-left">{county}</span>
+                            <MapPin className="h-5 w-5" />
+                            <span className="flex-1 text-left font-medium">{county}</span>
                           </button>
                         ))}
                       </div>
