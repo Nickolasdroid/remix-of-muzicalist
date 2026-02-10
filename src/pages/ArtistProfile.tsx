@@ -705,35 +705,66 @@ const ArtistProfile = () => {
 
         {/* User's Ads */}
         {announcements.length > 0 && (
-          <div className="mt-6 space-y-4">
-            <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+          <div className="mt-6">
+            <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
               <Megaphone className="h-4 w-4 text-accent" />
               Ads
             </h2>
-            {announcements.map((ad) => (
-              <div key={ad.id} className="p-4 border rounded-lg">
-                {ad.media_url && (
-                  <div className="mb-3">
-                    {ad.media_type === 'video' ? (
-                      <video src={ad.media_url} className="rounded-lg max-h-48 w-full object-cover" controls />
-                    ) : (
-                      <img src={ad.media_url} alt="" className="rounded-lg max-h-48 w-full object-cover" />
-                    )}
+            <div className="w-full max-w-[500px] mx-auto space-y-1">
+              {announcements.map((ad) => (
+                <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                  <div className="p-4 pb-0 px-[6px] py-[3px]">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10 border-2 border-background">
+                          <AvatarImage src={artist.avatar_url || undefined} alt={artist.first_name} />
+                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                            {artist.first_name?.[0] || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium text-foreground">
+                            {artist.first_name} {artist.last_name}
+                          </h3>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>User</span>
+                            <span>·</span>
+                            <span>{new Date(ad.date).toLocaleDateString()}</span>
+                            <span>·</span>
+                            {ad.is_premium ? (
+                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                            ) : (
+                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <ExpandableText text={ad.description} className="mt-3" />
                   </div>
-                )}
-                <p className="text-sm text-foreground">{ad.description}</p>
-                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                  <span>{new Date(ad.date).toLocaleDateString()}</span>
-                  {ad.is_premium ? (
-                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
-                  ) : (
-                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
+                  
+                  {ad.is_premium && ad.media_url && (
+                    <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                      url: ad.media_url!,
+                      type: ad.media_type === "video" ? "video" : "image"
+                    })}>
+                      {ad.media_type === "video" ? (
+                        <div className="relative w-full aspect-video">
+                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+                        </div>
+                      ) : (
+                        <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
+                      )}
+                    </div>
                   )}
-                </div>
-              </div>
-            ))}
+                </Card>
+              ))}
+            </div>
           </div>
         )}
+
+        {/* Media Preview Dialog */}
+        <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
       </div>
     </div>;
   }
