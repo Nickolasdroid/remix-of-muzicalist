@@ -798,9 +798,9 @@ const Leaderboard = () => {
               {isMobile ? (
                 <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
                   <DrawerTrigger asChild>
-                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
-                      {selectedCounty}
-                      <ChevronDown className="ml-2 h-4 w-4" />
+                    <Button variant="outline" className="h-10 px-4 min-w-[180px] justify-between gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
                     </Button>
                   </DrawerTrigger>
                   <DrawerContent className="px-4 pb-6">
@@ -830,9 +830,9 @@ const Leaderboard = () => {
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
-                      {selectedCounty}
-                      <ChevronDown className="ml-2 h-4 w-4" />
+                    <Button variant="outline" className="h-10 px-4 min-w-[180px] justify-between gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
