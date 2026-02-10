@@ -5,11 +5,12 @@ import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
+import CountryPickerButton from "@/components/CountryPickerButton";
 
 const Categories = () => {
   const navigate = useNavigate();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
@@ -26,24 +27,22 @@ const Categories = () => {
         return;
       }
       
-      // Get user's country from profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('country')
         .eq('id', user.id)
         .maybeSingle();
       
-      setUserCountry(profile?.country || null);
+      setSelectedCountry(profile?.country || null);
       setIsAuthChecked(true);
     };
     checkAuthAndGetCountry();
   }, [navigate]);
 
   useEffect(() => {
-    if (!isAuthChecked || !userCountry) return;
+    if (!isAuthChecked || !selectedCountry) return;
     
     const fetchCounts = async () => {
-      // Get artist IDs first to filter out regular users
       const artistIds = await fetchArtistIds();
       if (artistIds.length === 0) {
         setCounts({ Singer: 0, Instrumentalist: 0, DJ: 0, Band: 0 });
@@ -53,7 +52,7 @@ const Categories = () => {
       const { data } = await supabase
         .from("profiles")
         .select("id, specialization")
-        .eq("country", userCountry)
+        .eq("country", selectedCountry)
         .in("id", artistIds);
       
       if (data) {
@@ -72,7 +71,8 @@ const Categories = () => {
       }
     };
     fetchCounts();
-  }, [isAuthChecked, userCountry]);
+  }, [isAuthChecked, selectedCountry]);
+
   const categories = [{
     icon: Mic,
     title: "Singer",
@@ -99,7 +99,6 @@ const Categories = () => {
     href: "/categories/Bands"
   }];
 
-  // Show nothing while checking auth (redirect happens in useEffect)
   if (!isAuthChecked) {
     return null;
   }
@@ -111,6 +110,12 @@ const Categories = () => {
         <div className="text-center mb-8 md:mb-16">
           <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
           
+          <div className="flex justify-center mb-4">
+            <CountryPickerButton
+              selectedCountry={selectedCountry}
+              onCountryChange={setSelectedCountry}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
