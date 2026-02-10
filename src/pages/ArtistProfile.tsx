@@ -150,9 +150,20 @@ const ArtistProfile = () => {
       const userId = session?.user?.id || null;
       setCurrentUserId(userId);
       
-      // Redirect artist to their editable profile (dashboard) if viewing their own profile
+      // Redirect to appropriate dashboard if viewing own profile
       if (userId && userId === id) {
-        navigate('/dashboard?tab=profile', { replace: true });
+        // Check if user is an artist or regular user
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        if (roleData?.user_type === 'user') {
+          navigate('/user-dashboard', { replace: true });
+        } else {
+          navigate('/dashboard?tab=profile', { replace: true });
+        }
         return;
       }
       
@@ -660,6 +671,73 @@ const ArtistProfile = () => {
         </div>
       </div>;
   }
+
+  // Simplified view for regular user accounts (no specialization)
+  const isUserAccount = !artist.specialization;
+  if (isUserAccount) {
+    return <div className="min-h-screen md:ml-64 bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg">
+        <Card className="overflow-hidden">
+          <CardContent className="p-6 md:p-8">
+            <div className="flex flex-col items-center gap-4">
+              <Avatar className="h-24 w-24 border-2 border-accent/20">
+                <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                <AvatarFallback className="text-2xl">
+                  {artist.first_name?.[0]}{artist.last_name?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+                {artist.first_name} {artist.last_name}
+              </h1>
+              <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                <span>{announcements.length} {announcements.length === 1 ? 'ad' : 'ads'} published</span>
+                {artist.created_at && (
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    Member since {new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                  </span>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* User's Ads */}
+        {announcements.length > 0 && (
+          <div className="mt-6 space-y-4">
+            <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+              <Megaphone className="h-4 w-4 text-accent" />
+              Ads
+            </h2>
+            {announcements.map((ad) => (
+              <div key={ad.id} className="p-4 border rounded-lg">
+                {ad.media_url && (
+                  <div className="mb-3">
+                    {ad.media_type === 'video' ? (
+                      <video src={ad.media_url} className="rounded-lg max-h-48 w-full object-cover" controls />
+                    ) : (
+                      <img src={ad.media_url} alt="" className="rounded-lg max-h-48 w-full object-cover" />
+                    )}
+                  </div>
+                )}
+                <p className="text-sm text-foreground">{ad.description}</p>
+                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                  <span>{new Date(ad.date).toLocaleDateString()}</span>
+                  {ad.is_premium ? (
+                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                  ) : (
+                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>;
+  }
+
   const isPremium = artist.plan === 'Premium';
   return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
