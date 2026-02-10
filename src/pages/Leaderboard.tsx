@@ -2,7 +2,10 @@ import Navigation from "@/components/Navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2 } from "lucide-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2, MapPin } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -618,8 +621,10 @@ interface ArtistReviewCount {
 }
 const Leaderboard = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [selectedCategory, setSelectedCategory] = useState<string>("singers");
+  const [regionDrawerOpen, setRegionDrawerOpen] = useState(false);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
   const [artistReviewCounts, setArtistReviewCounts] = useState<ArtistReviewCount>({});
@@ -779,19 +784,55 @@ const Leaderboard = () => {
             
 
             <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-auto min-w-[180px] justify-between">
-                    {selectedCounty}
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
-                  {["All Regions", ...getAvailableCounties()].map(county => <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
-                      {county}
-                    </DropdownMenuItem>)}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {isMobile ? (
+                <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
+                      {selectedCounty}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent className="px-4 pb-6">
+                    <DrawerHeader className="text-left px-0">
+                      <DrawerTitle>Select Region</DrawerTitle>
+                      <p className="text-sm text-muted-foreground">Choose a region to filter by</p>
+                    </DrawerHeader>
+                    <ScrollArea className="h-64">
+                      <div className="p-2 space-y-0.5">
+                        {["All Regions", ...getAvailableCounties()].map(county => (
+                          <button
+                            key={county}
+                            type="button"
+                            onClick={() => { setSelectedCounty(county); setRegionDrawerOpen(false); }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                              selectedCounty === county ? "bg-accent/20 text-accent" : "text-foreground"
+                            }`}
+                          >
+                            <MapPin className="h-4 w-4" />
+                            <span className="flex-1 text-left">{county}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </DrawerContent>
+                </Drawer>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
+                      {selectedCounty}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
+                    {["All Regions", ...getAvailableCounties()].map(county => (
+                      <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
+                        {county}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
 
