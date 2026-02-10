@@ -36,13 +36,13 @@ const CountryList = ({
           key={dbValue}
           type="button"
           onClick={() => onSelect(dbValue)}
-          className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+          className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
             isSelected ? "bg-accent/20 text-accent" : "text-foreground"
           }`}
         >
-          <span className="text-lg">{getCountryFlag(dbValue)}</span>
-          <span className="flex-1 text-left">{name}</span>
-          {isSelected && <Check className="h-4 w-4 text-accent" />}
+          <span className="text-xl">{getCountryFlag(dbValue)}</span>
+          <span className="flex-1 text-left font-medium">{name}</span>
+          {isSelected && <Check className="h-5 w-5 text-accent" />}
         </button>
       );
     })}
@@ -144,8 +144,10 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
           <div className="mb-3">
             {searchInput}
           </div>
-          <ScrollArea className="h-64">
-            <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} />
+          <ScrollArea className="h-72">
+            <div className="space-y-0.5">
+              <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} />
+            </div>
           </ScrollArea>
         </DrawerContent>
       </Drawer>
