@@ -1,66 +1,69 @@
 import Navigation from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import CountryPickerButton from "@/components/CountryPickerButton";
 
 const Counties = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [counties, setCounties] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
+  // Check auth and get user's country
   useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      setIsLoading(true);
-      
-      // Check if user is logged in
+    const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         navigate('/login');
         return;
       }
-      
-      // Get current user's country
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('country')
         .eq('id', user.id)
         .maybeSingle();
-      
-      const country = profile?.country || null;
-      setUserCountry(country);
 
-      // Fetch counties filtered by user's country
-      let query = supabase
-        .from('profiles')
-        .select('county')
-        .not('county', 'is', null);
-      
-      if (country) {
-        query = query.eq('country', country);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching counties:', error);
-        setIsLoading(false);
-        return;
-      }
-
-      // Get unique counties and sort them alphabetically
-      const uniqueCounties = [...new Set(data.map(p => p.county))].filter(Boolean).sort();
-      setCounties(uniqueCounties);
-      setIsLoading(false);
+      setSelectedCountry(profile?.country || null);
     };
-
-    checkAuthAndFetch();
+    checkAuth();
   }, [navigate]);
+
+  // Fetch counties when country changes
+  const fetchCounties = useCallback(async () => {
+    if (!selectedCountry) return;
+    setIsLoading(true);
+
+    let query = supabase
+      .from('profiles')
+      .select('county')
+      .not('county', 'is', null)
+      .not('specialization', 'is', null)
+      .eq('country', selectedCountry);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching counties:', error);
+      setIsLoading(false);
+      return;
+    }
+
+    const uniqueCounties = [...new Set(data.map(p => p.county))].filter(Boolean).sort();
+    setCounties(uniqueCounties);
+    setIsLoading(false);
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchCounties();
+    }
+  }, [selectedCountry, fetchCounties]);
 
   const filteredCounties = counties.filter(county => 
     county.toLowerCase().includes(searchTerm.toLowerCase())
@@ -74,6 +77,13 @@ const Counties = () => {
         <div className="text-center mb-8 md:mb-16">
           <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Regions</h1>
           
+          <div className="flex justify-center mb-4">
+            <CountryPickerButton
+              selectedCountry={selectedCountry}
+              onCountryChange={setSelectedCountry}
+            />
+          </div>
+
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input 
