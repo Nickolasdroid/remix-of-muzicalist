@@ -772,10 +772,10 @@ const Leaderboard = () => {
       <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0">
         <div className="px-4 md:container md:mx-auto">
           <div className="text-center mb-8 md:mb-12 py-0">
-            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
+            <div className="hidden md:inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
               <Trophy className="h-8 w-8 md:h-10 md:w-10 text-accent-foreground" />
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
+            <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">Leaderboard</h1>
             
 
             <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">

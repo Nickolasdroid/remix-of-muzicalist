@@ -378,6 +378,8 @@ const Navigation = () => {
           {/* Center: Logo or Page Title */}
           {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
             <span className="font-display font-bold text-foreground text-lg">Settings</span>
+          ) : location.pathname === '/leaderboard' ? (
+            <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
           ) : (
             <Link to="/feed" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
