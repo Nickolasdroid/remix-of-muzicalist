@@ -10,27 +10,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
+import { toast } from "sonner";
+
+const EVENT_TYPES = [
+  "Wedding", "Birthday", "Corporate Event", "Concert", "Festival",
+  "Private Party", "Club Event", "Restaurant", "Funeral", "Other"
+];
+
+const COUNTRY_CURRENCIES: Record<string, string> = {
+  "România": "RON",
+  "Moldova": "MDL",
+  "United States": "USD",
+  "United Kingdom": "GBP",
+  "Germany": "EUR",
+  "France": "EUR",
+  "Italy": "EUR",
+  "Spain": "EUR",
+};
 
 const ArtistSearchBar = () => {
-  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [countries, setCountries] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [counties, setCounties] = useState<string[]>([]);
+  const [selectedCounty, setSelectedCounty] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedGenre, setSelectedGenre] = useState<string>("");
+  const [selectedExperience, setSelectedExperience] = useState<string>("");
+  const [minEvents, setMinEvents] = useState("");
+  const [minReviews, setMinReviews] = useState("");
+  const [selectedEventType, setSelectedEventType] = useState<string>("");
+  const [budget, setBudget] = useState("");
+  const [userCurrency, setUserCurrency] = useState("RON");
 
   const categories = ["Singer", "Instrumentalist", "DJ", "Band"];
   const genres = [
-    "Pop", "Rock", "Jazz", "Classical", "Electronic", "Hip Hop", "Folk", 
+    "Pop", "Rock", "Jazz", "Classical", "Electronic", "Hip Hop", "Folk",
     "R&B", "Country", "Reggae", "Blues", "Metal"
   ];
   const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Professional"];
 
+  // Fetch user's country for currency
+  useEffect(() => {
+    const fetchUserCurrency = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', user.id)
+          .single();
+        if (profile?.country) {
+          setUserCurrency(COUNTRY_CURRENCIES[profile.country] || "EUR");
+        }
+      }
+    };
+    fetchUserCurrency();
+  }, []);
+
   // Fetch countries where artists are registered
   useEffect(() => {
     const fetchCountriesData = async () => {
-      // Get artist IDs first to filter out regular users
       const artistIds = await fetchArtistIds();
       if (artistIds.length === 0) {
         setCountries([]);
@@ -59,7 +100,6 @@ const ArtistSearchBar = () => {
         return;
       }
 
-      // Get artist IDs first to filter out regular users
       const artistIds = await fetchArtistIds();
       if (artistIds.length === 0) {
         setCounties([]);
@@ -81,6 +121,36 @@ const ArtistSearchBar = () => {
     fetchCountiesData();
   }, [selectedCountry]);
 
+  // Update currency when selected country changes
+  useEffect(() => {
+    if (selectedCountry) {
+      setUserCurrency(COUNTRY_CURRENCIES[selectedCountry] || "EUR");
+    }
+  }, [selectedCountry]);
+
+  const isAtLeastOneFieldFilled = () => {
+    return !!(
+      selectedCountry ||
+      selectedCounty ||
+      selectedCategory ||
+      selectedGenre ||
+      selectedExperience ||
+      minEvents ||
+      minReviews ||
+      selectedEventType ||
+      budget
+    );
+  };
+
+  const handleSearch = () => {
+    if (!isAtLeastOneFieldFilled()) {
+      toast.error("Please fill in at least one field to search.");
+      return;
+    }
+    // TODO: implement actual search logic
+    toast.success("Searching...");
+  };
+
   return (
     <div className="bg-card rounded-2xl p-4 md:p-6 border border-border shadow-[var(--shadow-elegant)]">
       <div className="flex items-center gap-2 mb-4">
@@ -94,7 +164,7 @@ const ArtistSearchBar = () => {
         {/* Country */}
         <div className="space-y-1">
           <Label htmlFor="country" className="text-xs">Country</Label>
-          <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+          <Select value={selectedCountry} onValueChange={(v) => { setSelectedCountry(v); setSelectedCounty(""); }}>
             <SelectTrigger id="country" className="h-9 text-sm">
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
@@ -111,7 +181,7 @@ const ArtistSearchBar = () => {
         {/* Region/County */}
         <div className="space-y-1">
           <Label htmlFor="county" className="text-xs">Region</Label>
-          <Select disabled={!selectedCountry}>
+          <Select value={selectedCounty} onValueChange={setSelectedCounty} disabled={!selectedCountry}>
             <SelectTrigger id="county" className="h-9 text-sm">
               <SelectValue placeholder="Select region" />
             </SelectTrigger>
@@ -128,7 +198,7 @@ const ArtistSearchBar = () => {
         {/* Category */}
         <div className="space-y-1">
           <Label htmlFor="category" className="text-xs">Category</Label>
-          <Select>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger id="category" className="h-9 text-sm">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -145,7 +215,7 @@ const ArtistSearchBar = () => {
         {/* Musical Genre */}
         <div className="space-y-1">
           <Label htmlFor="genre" className="text-xs">Genre</Label>
-          <Select>
+          <Select value={selectedGenre} onValueChange={setSelectedGenre}>
             <SelectTrigger id="genre" className="h-9 text-sm">
               <SelectValue placeholder="Select genre" />
             </SelectTrigger>
@@ -162,7 +232,7 @@ const ArtistSearchBar = () => {
         {/* Experience Level */}
         <div className="space-y-1">
           <Label htmlFor="experience" className="text-xs">Experience</Label>
-          <Select>
+          <Select value={selectedExperience} onValueChange={setSelectedExperience}>
             <SelectTrigger id="experience" className="h-9 text-sm">
               <SelectValue placeholder="Select level" />
             </SelectTrigger>
@@ -184,6 +254,8 @@ const ArtistSearchBar = () => {
             type="number"
             placeholder="0"
             min="0"
+            value={minEvents}
+            onChange={(e) => setMinEvents(e.target.value)}
             className="h-9 text-sm"
           />
         </div>
@@ -196,61 +268,49 @@ const ArtistSearchBar = () => {
             type="number"
             placeholder="0"
             min="0"
+            value={minReviews}
+            onChange={(e) => setMinReviews(e.target.value)}
             className="h-9 text-sm"
           />
         </div>
 
-        {/* Age */}
+        {/* Event Type */}
         <div className="space-y-1">
-          <Label htmlFor="age" className="text-xs">Age</Label>
+          <Label htmlFor="eventType" className="text-xs">Event Type</Label>
+          <Select value={selectedEventType} onValueChange={setSelectedEventType}>
+            <SelectTrigger id="eventType" className="h-9 text-sm">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              {EVENT_TYPES.map((type) => (
+                <SelectItem key={type} value={type.toLowerCase()}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Budget */}
+        <div className="space-y-1">
+          <Label htmlFor="budget" className="text-xs">Budget ({userCurrency})</Label>
           <Input
-            id="age"
+            id="budget"
             type="number"
-            placeholder="Any"
-            min="18"
-            max="100"
+            placeholder={`0 (${userCurrency})`}
+            min="0"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
             className="h-9 text-sm"
           />
         </div>
 
-        {/* Price Range - spans 2 columns */}
-        <div className="col-span-2 space-y-2">
-          <Label className="text-xs">Price Range (RON)</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              placeholder="From"
-              value={priceRange[0]}
-              onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
-              className="h-9 text-sm flex-1"
-            />
-            <span className="text-muted-foreground text-sm">-</span>
-            <Input
-              type="number"
-              placeholder="To"
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 10000])}
-              className="h-9 text-sm flex-1"
-            />
-          </div>
-          <Slider
-            value={priceRange}
-            onValueChange={setPriceRange}
-            max={10000}
-            step={100}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>{priceRange[0]} RON</span>
-            <span>{priceRange[1]} RON</span>
-          </div>
-        </div>
-
-        {/* Search Button - spans remaining column on desktop */}
+        {/* Search Button */}
         <div className="hidden md:flex items-end">
-          <Button 
+          <Button
             size="default"
             className="w-full bg-accent text-accent-foreground hover:bg-accent/90 h-9"
+            onClick={handleSearch}
           >
             <Search className="mr-2 h-4 w-4" />
             Search
@@ -260,9 +320,10 @@ const ArtistSearchBar = () => {
 
       {/* Mobile Search Button */}
       <div className="mt-4 md:hidden">
-        <Button 
+        <Button
           size="default"
           className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+          onClick={handleSearch}
         >
           <Search className="mr-2 h-4 w-4" />
           Search Artists
