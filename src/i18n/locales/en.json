@@ -194,6 +194,8 @@
     "premium": "Premium",
     "deleteAdTitle": "Delete Ad",
     "deleteAdDescription": "Are you sure you want to delete this ad? This action cannot be undone.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "adsPublished": "{{count}} ads published",
+    "memberSince": "Member since {{date}}"
   }
 }

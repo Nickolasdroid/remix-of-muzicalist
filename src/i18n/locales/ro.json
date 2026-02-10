@@ -194,6 +194,8 @@
     "premium": "Premium",
     "deleteAdTitle": "Șterge Anunțul",
     "deleteAdDescription": "Ești sigur că vrei să ștergi acest anunț? Această acțiune nu poate fi anulată.",
-    "delete": "Șterge"
+    "delete": "Șterge",
+    "adsPublished": "{{count}} anunțuri publicate",
+    "memberSince": "Membru din {{date}}"
   }
 }
