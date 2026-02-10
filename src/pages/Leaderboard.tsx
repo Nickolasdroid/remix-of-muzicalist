@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
+import CountryPickerButton from "@/components/CountryPickerButton";
 const allCountries = [{
   name: "Afghanistan",
   code: "AF"
@@ -631,6 +632,7 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   // Check authentication and get user's country
   useEffect(() => {
@@ -648,7 +650,9 @@ const Leaderboard = () => {
         .eq('id', user.id)
         .maybeSingle();
       
-      setUserCountry(profile?.country || null);
+      const country = profile?.country || null;
+      setUserCountry(country);
+      setSelectedCountry(country);
       setIsAuthChecked(true);
     };
     checkAuthAndGetCountry();
@@ -661,7 +665,7 @@ const Leaderboard = () => {
   };
 
   useEffect(() => {
-    if (!isAuthChecked || !userCountry) return;
+    if (!isAuthChecked || !selectedCountry) return;
     
     const fetchArtistsData = async () => {
       // Get artist IDs first to filter out regular users
@@ -675,7 +679,7 @@ const Leaderboard = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
-        .eq('country', userCountry)
+        .eq('country', selectedCountry)
         .in('id', artistIds)
         .order('number_of_events', { ascending: false });
       
@@ -687,7 +691,7 @@ const Leaderboard = () => {
       setLoading(false);
     };
     fetchArtistsData();
-  }, [isAuthChecked, userCountry]);
+  }, [isAuthChecked, selectedCountry]);
 
   // Fetch reviews and calculate average ratings for all artists
   useEffect(() => {
@@ -784,6 +788,13 @@ const Leaderboard = () => {
             
 
             <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
+              <CountryPickerButton
+                selectedCountry={selectedCountry}
+                onCountryChange={(country) => {
+                  setSelectedCountry(country);
+                  setSelectedCounty("All Regions");
+                }}
+              />
               {isMobile ? (
                 <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
                   <DrawerTrigger asChild>
