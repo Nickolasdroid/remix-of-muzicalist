@@ -262,7 +262,7 @@ const { t } = useTranslation();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen md:ml-64 bg-background flex items-center justify-center">
+      <div className="min-h-screen md:ml-64 bg-card flex items-center justify-center">
         <Navigation />
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
       </div>
@@ -270,7 +270,7 @@ const { t } = useTranslation();
   }
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background">
+    <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
 
       {/* Avatar Cropper Dialog */}
