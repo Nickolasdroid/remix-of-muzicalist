@@ -150,9 +150,20 @@ const ArtistProfile = () => {
       const userId = session?.user?.id || null;
       setCurrentUserId(userId);
       
-      // Redirect artist to their editable profile (dashboard) if viewing their own profile
+      // Redirect to appropriate dashboard if viewing own profile
       if (userId && userId === id) {
-        navigate('/dashboard?tab=profile', { replace: true });
+        // Check if user is an artist or regular user
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('user_type')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        if (roleData?.user_type === 'user') {
+          navigate('/user-dashboard', { replace: true });
+        } else {
+          navigate('/dashboard?tab=profile', { replace: true });
+        }
         return;
       }
       
