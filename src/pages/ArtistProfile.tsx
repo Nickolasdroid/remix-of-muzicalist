@@ -149,24 +149,24 @@ const ArtistProfile = () => {
       } = await supabase.auth.getSession();
       const userId = session?.user?.id || null;
       setCurrentUserId(userId);
-      
+
       // Redirect to appropriate dashboard if viewing own profile
       if (userId && userId === id) {
         // Check if user is an artist or regular user
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('user_type')
-          .eq('user_id', userId)
-          .maybeSingle();
-        
+        const {
+          data: roleData
+        } = await supabase.from('user_roles').select('user_type').eq('user_id', userId).maybeSingle();
         if (roleData?.user_type === 'user') {
-          navigate('/user-dashboard', { replace: true });
+          navigate('/user-dashboard', {
+            replace: true
+          });
         } else {
-          navigate('/dashboard?tab=profile', { replace: true });
+          navigate('/dashboard?tab=profile', {
+            replace: true
+          });
         }
         return;
       }
-      
       if (session?.user?.id) {
         // Try to fetch user's profile for pre-filling review and booking forms
         const {
@@ -254,7 +254,11 @@ const ArtistProfile = () => {
       });
 
       // Get current user session for checking likes
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       const userId = session?.user?.id;
 
       // Fetch likes count and check if current user liked each post
@@ -265,18 +269,13 @@ const ArtistProfile = () => {
           count: 'exact',
           head: true
         }).eq('post_id', post.id);
-
         let isLiked = false;
         if (userId) {
-          const { data: likeData } = await supabase
-            .from('post_likes')
-            .select('id')
-            .eq('post_id', post.id)
-            .eq('user_id', userId)
-            .maybeSingle();
+          const {
+            data: likeData
+          } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', userId).maybeSingle();
           isLiked = !!likeData;
         }
-
         return {
           ...post,
           likes: count || 0,
@@ -356,7 +355,6 @@ const ArtistProfile = () => {
     return slots;
   };
   const isOwnProfile = currentUserId === id;
-
   const handlePostLike = async (postId: string) => {
     if (!currentUserId) {
       toast({
@@ -375,7 +373,6 @@ const ArtistProfile = () => {
       isLiked: !p.isLiked,
       likes: p.isLiked ? p.likes - 1 : p.likes + 1
     } : p));
-
     try {
       if (post.isLiked) {
         // Unlike
@@ -678,7 +675,7 @@ const ArtistProfile = () => {
     return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg">
-        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4">
+        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
           <Avatar className="h-24 w-24 border-2 border-accent/20">
             <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
             <AvatarFallback className="text-2xl">
@@ -690,25 +687,24 @@ const ArtistProfile = () => {
           </h1>
           <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
             <span>{announcements.length} {announcements.length === 1 ? 'ad' : 'ads'} published</span>
-            {artist.created_at && (
-              <span className="flex items-center gap-1.5">
+            {artist.created_at && <span className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
-                Member since {new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-              </span>
-            )}
+                Member since {new Date(artist.created_at).toLocaleDateString(undefined, {
+                month: 'long',
+                year: 'numeric'
+              })}
+              </span>}
           </div>
         </div>
 
         {/* User's Ads */}
-        {announcements.length > 0 && (
-          <div className="mt-6">
+        {announcements.length > 0 && <div className="mt-6">
             <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
               <Megaphone className="h-4 w-4 text-accent" />
               Ads
             </h2>
             <div className="w-full max-w-[500px] mx-auto space-y-1">
-              {announcements.map((ad) => (
-                <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+              {announcements.map(ad => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                   <div className="p-4 pb-0 px-[6px] py-[3px]">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -727,11 +723,7 @@ const ArtistProfile = () => {
                             <span>·</span>
                             <span>{new Date(ad.date).toLocaleDateString()}</span>
                             <span>·</span>
-                            {ad.is_premium ? (
-                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
-                            ) : (
-                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
-                            )}
+                            {ad.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
                           </div>
                         </div>
                       </div>
@@ -739,32 +731,23 @@ const ArtistProfile = () => {
                     <ExpandableText text={ad.description} className="mt-3" />
                   </div>
                   
-                  {ad.is_premium && ad.media_url && (
-                    <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                      url: ad.media_url!,
-                      type: ad.media_type === "video" ? "video" : "image"
-                    })}>
-                      {ad.media_type === "video" ? (
-                        <div className="relative w-full aspect-video">
+                  {ad.is_premium && ad.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                url: ad.media_url!,
+                type: ad.media_type === "video" ? "video" : "image"
+              })}>
+                      {ad.media_type === "video" ? <div className="relative w-full aspect-video">
                           <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                        </div>
-                      ) : (
-                        <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
-                      )}
-                    </div>
-                  )}
-                </Card>
-              ))}
+                        </div> : <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                    </div>}
+                </Card>)}
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Media Preview Dialog */}
         <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
       </div>
     </div>;
   }
-
   const isPremium = artist.plan === 'Premium';
   return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
@@ -789,17 +772,13 @@ const ArtistProfile = () => {
                 </div>
 
                 {/* Contact button - top right */}
-                {currentUserId && currentUserId !== artist.id ? (
-                  <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
+                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
                     <MessageCircle className="mr-1.5 h-4 w-4" />
                     Contact
-                  </Button>
-                ) : !currentUserId ? (
-                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
+                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
                     <MessageCircle className="mr-1.5 h-4 w-4" />
                     Contact
-                  </Button>
-                ) : null}
+                  </Button> : null}
               </div>
 
               {/* Centered Avatar - with top padding to account for absolute positioned elements */}
@@ -825,9 +804,7 @@ const ArtistProfile = () => {
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm">{artist.county}</span>
-                  {artist.country && getCountryFlag(artist.country) && (
-                    <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>
-                  )}
+                  {artist.country && getCountryFlag(artist.country) && <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>}
                 </div>
               </div>
             </div>
@@ -874,9 +851,7 @@ const ArtistProfile = () => {
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-5 w-5" />
                       <span className="text-base">{artist.county}</span>
-                      {artist.country && getCountryFlag(artist.country) && (
-                        <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>
-                      )}
+                      {artist.country && getCountryFlag(artist.country) && <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>}
                     </div>
 
                     {/* Contact button */}
@@ -937,12 +912,13 @@ const ArtistProfile = () => {
                     <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
                       {artist.bio || "No bio available."}
                     </p>
-                    {artist.created_at && (
-                      <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
+                    {artist.created_at && <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
                         <Clock className="h-4 w-4 text-accent" />
-                        Member since {new Date(artist.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                      </p>
-                    )}
+                        Member since {new Date(artist.created_at).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                      </p>}
                   </div>
 
                   <Separator />
@@ -1091,16 +1067,16 @@ const ArtistProfile = () => {
                           </span>}
                       </h3>
                       {currentUserId !== id && <Button onClick={() => {
-                          if (!currentUserId) {
-                            toast({
-                              title: "Login Required",
-                              description: "Please log in or create an account to write a review."
-                            });
-                            navigate('/login');
-                            return;
-                          }
-                          setReviewDialogOpen(true);
-                        }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">
+                    if (!currentUserId) {
+                      toast({
+                        title: "Login Required",
+                        description: "Please log in or create an account to write a review."
+                      });
+                      navigate('/login');
+                      return;
+                    }
+                    setReviewDialogOpen(true);
+                  }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">
                           Write a Review
                         </Button>}
                     </div>
@@ -1226,12 +1202,7 @@ const ArtistProfile = () => {
                             {/* Actions */}
                             <div className="px-2 py-1">
                               <div className="flex items-center justify-around">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => handlePostLike(post.id)}
-                                  className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
-                                >
+                                <Button variant="ghost" size="sm" onClick={() => handlePostLike(post.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}>
                                   <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
                                   <span className="font-medium">Like</span>
                                 </Button>
@@ -1353,15 +1324,12 @@ const ArtistProfile = () => {
                         Photos
                       </h2>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getImages().length > 0 ? getImages().map((image, index) => 
-                          <div 
-                            key={image.id}
-                            className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors"
-                            onClick={() => setMediaPreview({ url: image.url, type: "image" })}
-                          >
+                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => setMediaPreview({
+                      url: image.url,
+                      type: "image"
+                    })}>
                             <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                          </div>
-                        ) : <div className="col-span-full text-center text-muted-foreground py-8">
+                          </div>) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No photos available yet.
                           </div>}
                       </div>
@@ -1402,8 +1370,7 @@ const ArtistProfile = () => {
                     </h2>
                     
                     {/* Show login prompt for non-authenticated users */}
-                    {!currentUserId ? (
-                      <Card className="p-8 text-center">
+                    {!currentUserId ? <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                         <h3 className="text-lg font-semibold text-foreground mb-2">
                           Login Required
@@ -1419,9 +1386,7 @@ const ArtistProfile = () => {
                             Register
                           </Button>
                         </div>
-                      </Card>
-                    ) : (
-                      <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                      </Card> : <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                         {/* Legend - above calendar on mobile */}
                         <div className="w-full lg:hidden">
                           <div className="p-3 rounded-lg bg-secondary/50">
@@ -1445,43 +1410,31 @@ const ArtistProfile = () => {
                         {/* Calendar */}
                         <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
                           <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
-                        busy: getBusyDates(),
-                        blocked: getBlockedDates()
-                      }} modifiersClassNames={{
-                        busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                        blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                      }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
+                      busy: getBusyDates(),
+                      blocked: getBlockedDates()
+                    }} modifiersClassNames={{
+                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                    }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                         </div>
                         {/* Date details / prompt (matches dashboard positioning) */}
                         <div className="w-full lg:min-w-0 lg:w-auto">
-                          {selectedDate ? (
-                            <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
+                          {selectedDate ? <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
                               <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
                               <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
                                 {selectedDate.toLocaleDateString('en-US', {
-                                  weekday: 'long',
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                })}
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                               </p>
-                              <Badge
-                                className={
-                                  isBlockedDate(selectedDate)
-                                    ? "bg-muted text-muted-foreground"
-                                    : isBusyDate(selectedDate)
-                                      ? "bg-destructive text-destructive-foreground"
-                                      : "bg-accent text-accent-foreground"
-                                }
-                              >
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
-                            </div>
-                          ) : (
-                            <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                            </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
                               <p className="text-sm text-center">Select a date to send a booking request</p>
-                            </div>
-                          )}
+                            </div>}
                         </div>
 
                         {/* Legend - desktop only */}
@@ -1502,8 +1455,7 @@ const ArtistProfile = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </TabsContent>
 
@@ -1651,11 +1603,11 @@ const ArtistProfile = () => {
                   <DialogHeader className="pb-2">
                     <DialogTitle className="text-lg font-medium">
                       {selectedDate && selectedDate.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
                     </DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleBookingSubmit} className="space-y-4">
