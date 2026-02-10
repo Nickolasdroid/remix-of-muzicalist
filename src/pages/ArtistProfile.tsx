@@ -678,7 +678,7 @@ const ArtistProfile = () => {
     return <div className="min-h-screen md:ml-64 bg-card">
       <Navigation />
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg">
-        <div className="flex flex-col items-center gap-4 py-6">
+        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4">
           <Avatar className="h-24 w-24 border-2 border-accent/20">
             <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
             <AvatarFallback className="text-2xl">
