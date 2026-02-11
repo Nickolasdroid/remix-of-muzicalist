@@ -290,7 +290,7 @@ const Navigation = () => {
       {/* Mobile: Top Header Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
         <div className="flex items-center justify-between h-14 px-4">
-          {/* Left: Menu Button (only when logged in) */}
+          {/* Left: Menu Button (only when logged in) or Logo (when logged out) */}
           {user ? (
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -359,62 +359,53 @@ const Navigation = () => {
 
               {/* Bottom section - Logout only */}
               <div className="p-4 border-t border-border space-y-1">
-                {user ? (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
-                  >
-                    <LogOut className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">Logout</span>
-                  </button>
-                ) : (
-                  <div className="space-y-2">
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                        <LogIn className="h-4 w-4 mr-2" />
-                        Login
-                      </Button>
-                    </Link>
-                    <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                        Register
-                      </Button>
-                    </Link>
-                  </div>
-                )}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="h-5 w-5 flex-shrink-0" />
+                  <span className="font-medium">Logout</span>
+                </button>
               </div>
             </SheetContent>
           </Sheet>
           ) : (
-            <div className="w-10" /> 
-          )}
-
-          {/* Center: Logo or Page Title */}
-          {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
-            <span className="font-display font-bold text-foreground text-lg">Settings</span>
-          ) : location.pathname === '/leaderboard' ? (
-            <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
-          ) : location.pathname === '/countries' ? (
-            <span className="font-display font-bold text-foreground text-lg">Countries</span>
-          ) : location.pathname === '/counties' ? (
-            <span className="font-display font-bold text-foreground text-lg">Regions</span>
-          ) : location.pathname === '/categories' ? (
-            <span className="font-display font-bold text-foreground text-lg">Categories</span>
-          ) : location.pathname === '/notifications' ? (
-            <span className="font-display font-bold text-foreground text-lg">Notifications</span>
-          ) : (
-            <Link to="/feed" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
               <span className="font-display font-bold text-foreground">Muzicalist</span>
             </Link>
           )}
 
-          {/* Right: Notifications (only when logged in) */}
+          {/* Center: Page title (only when logged in) */}
+          {user && (
+            <>
+              {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
+                <span className="font-display font-bold text-foreground text-lg">Settings</span>
+              ) : location.pathname === '/leaderboard' ? (
+                <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
+              ) : location.pathname === '/countries' ? (
+                <span className="font-display font-bold text-foreground text-lg">Countries</span>
+              ) : location.pathname === '/counties' ? (
+                <span className="font-display font-bold text-foreground text-lg">Regions</span>
+              ) : location.pathname === '/categories' ? (
+                <span className="font-display font-bold text-foreground text-lg">Categories</span>
+              ) : location.pathname === '/notifications' ? (
+                <span className="font-display font-bold text-foreground text-lg">Notifications</span>
+              ) : (
+                <Link to="/feed" className="flex items-center gap-2">
+                  <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+                  <span className="font-display font-bold text-foreground">Muzicalist</span>
+                </Link>
+              )}
+            </>
+          )}
+
+          {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
           <div className="flex items-center gap-1">
-            {user && (
+            {user ? (
               <button
                 onClick={() => navigate('/notifications')}
                 className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
@@ -426,6 +417,20 @@ const Navigation = () => {
                   </span>
                 )}
               </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs px-3">
+                    <LogIn className="h-3.5 w-3.5 mr-1" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-3">
+                    Register
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
