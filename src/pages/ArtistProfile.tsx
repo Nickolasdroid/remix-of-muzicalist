@@ -925,6 +925,23 @@ const ArtistProfile = () => {
                       </p>}
                   </div>
 
+                  {/* Instrument Section for Instrumentalists */}
+                  {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
+                    <>
+                      <Separator />
+                      <div>
+                        <h2 className="text-lg md:text-xl font-display flex items-center gap-2 mb-4">
+                          <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          Instrument
+                        </h2>
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          <Music2 className="h-4 w-4 mr-1.5" />
+                          {artist.instruments.split(',')[0].trim()}
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+
                   <Separator />
 
                   {/* Details Grid */}
