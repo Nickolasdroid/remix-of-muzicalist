@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { Music2, Users, Target, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import heroConcert from "@/assets/hero-concert.png";
 
 const About = () => {
   const values = [{
@@ -29,8 +30,14 @@ const About = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-20 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
-        <div className="container mx-auto text-center px-0">
+      <section className="relative pt-20 md:pt-32 pb-10 md:pb-20 px-4 md:px-8 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroConcert})` }}
+        />
+        <div className="absolute inset-0 bg-background/70" />
+        
+        <div className="container mx-auto text-center px-0 relative z-10">
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-3 md:mb-6 text-foreground">
             The Global Stage for
             <span className="text-accent block mt-1 md:mt-2">Musical Artists</span>
