@@ -32,8 +32,8 @@ const About = () => {
       <section className="pt-20 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
         <div className="container mx-auto text-center px-0">
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-3 md:mb-6 text-foreground">
-            Find Your Perfect
-            <span className="text-accent block mt-1 md:mt-2">Musical Artist</span>
+            The Global Stage for
+            <span className="text-accent block mt-1 md:mt-2">Musical Artists</span>
           </h1>
           
           <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed px-2">
