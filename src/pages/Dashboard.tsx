@@ -1478,23 +1478,18 @@ const Dashboard = () => {
                                 };
                                 return instrumentName ? (
                                   <div className="flex items-center gap-2">
-                                    <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
-                                      <InstrumentIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                                      My Instrument: {instrumentName}
+                                    <h2 className="text-lg md:text-xl font-display">
+                                      My Instrument:
                                     </h2>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-auto p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                                      onClick={() => handleInstrumentsChange("")}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
+                                    <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
+                                      <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                                      {instrumentName}
+                                      <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Badge>
                                   </div>
                                 ) : (
                                   <div className="flex items-center gap-2">
-                                    <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
-                                      <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                    <h2 className="text-lg md:text-xl font-display">
                                       My Instrument:
                                     </h2>
                                     <InstrumentSelector
