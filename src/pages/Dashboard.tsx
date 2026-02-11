@@ -2094,6 +2094,9 @@ const Dashboard = () => {
                                           {profile?.stage_name || "Artist"}
                                         </h3>
                                         {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+                                        {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
+                                            Expired
+                                          </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
                                       </div>
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
@@ -2105,9 +2108,6 @@ const Dashboard = () => {
                                           </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Ad
                                           </Badge>}
-                                        {isAdExpired(announcement) ? <Badge variant="destructive" className="text-xs">
-                                            Expired
-                                          </Badge> : <span className="text-muted-foreground/70">{getDaysRemaining(announcement)}d left</span>}
                                       </div>
                                     </div>
                                   </div>

@@ -451,9 +451,14 @@ const UserDashboard = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <h3 className="font-medium text-foreground">
-                            {profile?.first_name} {profile?.last_name}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-medium text-foreground">
+                              {profile?.first_name} {profile?.last_name}
+                            </h3>
+                            {isAdExpired(ad) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
+                                Expired
+                              </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(ad)}d left</Badge>}
+                          </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>User</span>
                             <span>·</span>
@@ -462,9 +467,6 @@ const UserDashboard = () => {
                             {ad.is_premium 
                               ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
                               : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
-                            {isAdExpired(ad) ? <Badge variant="destructive" className="text-xs">
-                                Expired
-                              </Badge> : <span className="text-muted-foreground/70">{getDaysRemaining(ad)}d left</span>}
                           </div>
                         </div>
                       </div>
