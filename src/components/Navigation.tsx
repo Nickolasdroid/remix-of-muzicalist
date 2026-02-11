@@ -387,6 +387,8 @@ const Navigation = () => {
             <span className="font-display font-bold text-foreground text-lg">Regions</span>
           ) : location.pathname === '/categories' ? (
             <span className="font-display font-bold text-foreground text-lg">Categories</span>
+          ) : location.pathname === '/notifications' ? (
+            <span className="font-display font-bold text-foreground text-lg">Notifications</span>
           ) : (
             <Link to="/feed" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
