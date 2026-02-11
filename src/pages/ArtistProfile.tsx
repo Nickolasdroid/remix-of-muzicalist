@@ -701,7 +701,7 @@ const ArtistProfile = () => {
 
         {/* User's Ads */}
         {announcements.filter(a => !isAdExpired(a)).length > 0 && <div className="mt-6">
-            <h2 className="text-lg md:text-xl font-display flex items-center gap-2 mb-2">
+            <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
               <Megaphone className="h-4 w-4 text-accent" />
               Ads
             </h2>
@@ -1082,7 +1082,7 @@ const ArtistProfile = () => {
                   <div>
                     <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
                       <h3 className="text-lg md:text-xl font-display flex items-center gap-2 text-left">
-                        <Star className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                        <Star className="h-4 w-4 text-accent" />
                         Reviews
                         {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
                             ({getAverageRating()} • {reviews.length})
