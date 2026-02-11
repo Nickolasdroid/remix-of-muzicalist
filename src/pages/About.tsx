@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Music2, Users, Target, Heart } from "lucide-react";
+import { Music2, Users, Target, Heart, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
@@ -50,6 +50,31 @@ const About = () => {
           </p>
 
           <HeroSearchBar />
+
+          {/* Stats Bar */}
+          <div className="mt-8 md:mt-12 w-full max-w-3xl mx-auto">
+            <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 px-4 py-4 md:px-10 md:py-5 shadow-lg">
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
