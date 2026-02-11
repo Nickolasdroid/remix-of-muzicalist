@@ -14,7 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle } from "lucide-react";
+import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
@@ -461,6 +462,9 @@ const UserDashboard = () => {
                             {ad.is_premium 
                               ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
                               : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
+                            {isAdExpired(ad) ? <Badge variant="destructive" className="text-xs">
+                                Expired
+                              </Badge> : <span className="text-muted-foreground/70">{getDaysRemaining(ad)}d left</span>}
                           </div>
                         </div>
                       </div>

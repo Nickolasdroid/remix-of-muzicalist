@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock } from "lucide-react";
+import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -699,13 +700,13 @@ const ArtistProfile = () => {
         </div>
 
         {/* User's Ads */}
-        {announcements.length > 0 && <div className="mt-6">
+        {announcements.filter(a => !isAdExpired(a)).length > 0 && <div className="mt-6">
             <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
               <Megaphone className="h-4 w-4 text-accent" />
               Ads
             </h2>
             <div className="w-full max-w-[500px] mx-auto space-y-1">
-              {announcements.map(ad => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+              {announcements.filter(a => !isAdExpired(a)).map(ad => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                   <div className="p-4 pb-0 px-[6px] py-[3px]">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -1250,7 +1251,7 @@ const ArtistProfile = () => {
                       Announcements
                     </h2>
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.length > 0 ? announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                      {announcements.filter(a => !isAdExpired(a)).length > 0 ? announcements.filter(a => !isAdExpired(a)).map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
