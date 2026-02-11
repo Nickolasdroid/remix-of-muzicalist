@@ -1467,7 +1467,7 @@ const Dashboard = () => {
                               <div className="flex items-center gap-2">
                                 <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
                                   <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                                  Instrumentul meu:
+                                  My Instrument:
                                 </h2>
                                 <div className="text-lg md:text-xl font-display">
                                   <InstrumentSelector
