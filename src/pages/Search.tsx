@@ -17,6 +17,7 @@ interface ArtistProfile {
   stage_name: string;
   avatar_url: string | null;
   specialization: string | null;
+  country: string | null;
   county: string;
   music_genres: string | null;
 }
@@ -38,7 +39,7 @@ const Search = () => {
     // Search all artists globally by stage name
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, stage_name, avatar_url, specialization, county, music_genres')
+      .select('id, stage_name, avatar_url, specialization, country, county, music_genres')
       .not('specialization', 'is', null)
       .ilike('stage_name', `%${searchQuery.trim()}%`)
       .limit(10);
@@ -207,7 +208,13 @@ const Search = () => {
                     {artist.specialization && (
                       <span>{getSpecializationLabel(artist.specialization)}</span>
                     )}
-                    {artist.specialization && artist.county && (
+                    {artist.specialization && artist.country && (
+                      <span>•</span>
+                    )}
+                    {artist.country && (
+                      <span>{artist.country}</span>
+                    )}
+                    {artist.country && artist.county && (
                       <span>•</span>
                     )}
                     {artist.county && (
