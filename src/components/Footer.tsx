@@ -25,9 +25,6 @@ const Footer = () => {
   }, {
     title: "About Us",
     href: "/about"
-  }, {
-    title: "Contact",
-    href: "/contact"
   }];
   const socialLinks = [{
     icon: Facebook,
