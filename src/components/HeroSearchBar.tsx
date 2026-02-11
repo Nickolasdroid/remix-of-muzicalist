@@ -95,12 +95,12 @@ const HeroSearchBar = () => {
                 setCountrySearch("");
               }}
               className={cn(
-                "w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10",
+                "w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10",
                 selectedCountry === c && "bg-accent/20 text-accent"
               )}
             >
-              <span>{getCountryFlag(c)}</span>
-              <span>{getCountryName(c)}</span>
+              <span className="text-xl">{getCountryFlag(c)}</span>
+              <span className="font-medium">{getCountryName(c)}</span>
             </button>
           ))}
         </div>
