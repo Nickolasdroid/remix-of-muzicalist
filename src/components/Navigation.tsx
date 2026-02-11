@@ -230,15 +230,19 @@ const Navigation = () => {
   return (
     <>
       {/* Desktop: Top Header Bar */}
-      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-center px-6`}>
-        <div className="flex items-center gap-6">
-          {/* Logo (visible when sidebar is hidden / not logged in) */}
+      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8`}>
+        {/* Left: Logo (when not logged in) */}
+        <div className="flex items-center gap-2">
           {!user && (
             <Link to="/" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
               <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
             </Link>
           )}
+        </div>
+
+        {/* Center: Nav links */}
+        <div className="flex items-center gap-3">
           <Link
             to="/feed"
             className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
@@ -261,8 +265,10 @@ const Navigation = () => {
             <Megaphone className="h-5 w-5" />
             <span className="font-medium">Ads</span>
           </Link>
+        </div>
 
-          {/* Login/Register (only when not logged in) */}
+        {/* Right: Login/Register (only when not logged in) */}
+        <div className="flex items-center gap-3">
           {!user && (
             <>
               <Link to="/login">
