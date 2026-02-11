@@ -23,7 +23,7 @@ const Home = () => {
             Search, discover, and book professional artists for your events.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-2">
+          <div className="flex flex-row items-center justify-center gap-3 md:gap-4 px-2">
             <Link to="/register" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 py-5 md:py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
                 Create Account
