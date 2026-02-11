@@ -1,9 +1,19 @@
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const PrivacyPolicy = () => {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
-    <div className="min-h-screen md:ml-64">
+    <div className={`min-h-screen ${user ? 'md:ml-64' : ''}`}>
       <Navigation />
       
       <div className="pt-20 md:pt-24 pb-12 px-4 md:px-8">

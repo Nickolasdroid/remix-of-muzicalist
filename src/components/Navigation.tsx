@@ -230,7 +230,7 @@ const Navigation = () => {
   return (
     <>
       {/* Desktop: Top Header Bar */}
-      <nav className="fixed top-0 left-64 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-6">
+      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-6`}>
         {/* Left: Feed & Ads */}
         <div className="flex items-center gap-2">
           <Link

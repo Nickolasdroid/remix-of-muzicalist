@@ -92,7 +92,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
