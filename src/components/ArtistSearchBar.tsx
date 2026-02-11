@@ -13,22 +13,12 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { toast } from "sonner";
+import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 
 const EVENT_TYPES = [
   "Wedding", "Birthday", "Corporate Event", "Concert", "Festival",
   "Private Party", "Club Event", "Restaurant", "Funeral", "Other"
 ];
-
-const COUNTRY_CURRENCIES: Record<string, string> = {
-  "România": "RON",
-  "Moldova": "MDL",
-  "United States": "USD",
-  "United Kingdom": "GBP",
-  "Germany": "EUR",
-  "France": "EUR",
-  "Italy": "EUR",
-  "Spain": "EUR",
-};
 
 const ArtistSearchBar = () => {
   const [countries, setCountries] = useState<string[]>([]);
@@ -62,7 +52,7 @@ const ArtistSearchBar = () => {
           .eq('id', user.id)
           .single();
         if (profile?.country) {
-          setUserCurrency(COUNTRY_CURRENCIES[profile.country] || "EUR");
+          setUserCurrency(getCurrencyForCountry(profile.country));
         }
       }
     };
@@ -124,7 +114,7 @@ const ArtistSearchBar = () => {
   // Update currency when selected country changes
   useEffect(() => {
     if (selectedCountry) {
-      setUserCurrency(COUNTRY_CURRENCIES[selectedCountry] || "EUR");
+      setUserCurrency(getCurrencyForCountry(selectedCountry));
     }
   }, [selectedCountry]);
 
