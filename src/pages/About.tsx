@@ -84,6 +84,35 @@ const About = () => {
       {/* Discover Artists Section */}
       <DiscoverArtistsSection />
 
+      {/* How Muzicalist Works Section */}
+      <section className="py-10 md:py-20 px-4 md:px-8">
+        <div className="container mx-auto px-0">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground text-center mb-6 md:mb-12">
+            How Muzicalist Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+            {[
+              { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
+              { step: 2, title: "Connect", description: "Chat and finalize event details directly." },
+              { step: 3, title: "Book", description: "Secure payment. Professional experience guaranteed." },
+            ].map(({ step, title, description }) => (
+              <div
+                key={step}
+                className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-5 md:p-6"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-full border-2 border-accent text-accent text-sm font-bold">
+                    {step}
+                  </span>
+                  <h3 className="text-lg md:text-xl font-bold text-foreground">{title}</h3>
+                </div>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="py-10 md:py-20 px-4 md:px-8">
         <div className="container mx-auto px-0">
