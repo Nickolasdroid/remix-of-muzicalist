@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Music2, Users, Target, Heart, Star } from "lucide-react";
+import { Music2, Users, Target, Heart, Star, Mic, Guitar, Headphones } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
+import CategoryCard from "@/components/CategoryCard";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
@@ -109,6 +110,21 @@ const About = () => {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Browse by Category Section */}
+      <section className="py-10 md:py-20 px-4 md:px-8">
+        <div className="container mx-auto px-0">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground text-center mb-6 md:mb-12">
+            Browse by Category
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+            <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/register" />
+            <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/register" />
+            <CategoryCard title="Band" description="Musical groups" icon={Users} href="/register" />
+            <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/register" />
           </div>
         </div>
       </section>
