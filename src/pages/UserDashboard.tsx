@@ -8,11 +8,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
@@ -345,76 +347,83 @@ const UserDashboard = () => {
                   {t("userDashboard.newAd")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-lg">
+              <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                 </DialogHeader>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mt-2">
                   {newAnnouncement.isPremium 
                     ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
                     : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
+                  <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
+                    <Checkbox
+                      id="premium-ad-user"
+                      checked={newAnnouncement.isPremium}
+                      onCheckedChange={(checked) =>
+                        setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
+                      }
+                      disabled={premiumAdsRemaining <= 0}
+                    />
+                    <Label htmlFor="premium-ad-user" className="cursor-pointer font-medium">
+                      {t("userDashboard.markAsPremium", "Promotion Ad (with photo/video)")}
+                    </Label>
+                  </div>
+
                   <div>
-                    <label className="text-sm font-medium flex items-center justify-between">
-                      {t("userDashboard.description")}
-                      <span className="text-muted-foreground text-xs">
-                        {newAnnouncement.description.length}/200
-                      </span>
-                    </label>
+                    <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
                     <Textarea
+                      id="announcement-text-user"
                       value={newAnnouncement.description}
                       onChange={(e) => setNewAnnouncement({ 
                         ...newAnnouncement, 
                         description: e.target.value.slice(0, 200) 
                       })}
-                      placeholder={t("userDashboard.descriptionPlaceholder")}
-                      className="mt-1"
+                      placeholder={t("userDashboard.descriptionPlaceholder", "Write your announcement here...")}
+                      rows={4}
                       maxLength={200}
+                      className="mt-2"
                     />
+                    <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">{t("userDashboard.media")}</label>
-                    <div className="mt-1">
-                      <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-accent transition-colors">
-                        <Upload className="h-5 w-5" />
-                        <span className="text-sm">{t("userDashboard.uploadMedia")}</span>
-                        <input
-                          type="file"
-                          accept="image/*,video/*"
-                          className="hidden"
-                          onChange={handleAnnouncementMediaUpload}
-                        />
-                      </label>
-                      {newAnnouncement.mediaUrl && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          ✓ {t("userDashboard.mediaUploaded")}
-                        </p>
+
+                  {newAnnouncement.isPremium && (
+                    <div>
+                      <Label htmlFor="announcement-media-user">{t("userDashboard.media", "Photo/Video")}</Label>
+                      {newAnnouncement.mediaUrl ? (
+                        <div className="mt-2 relative">
+                          {newAnnouncement.mediaType === 'video' 
+                            ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> 
+                            : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
+                            ...newAnnouncement,
+                            mediaUrl: "",
+                            mediaType: ""
+                          })}>
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <Label htmlFor="announcement-media-input-user" className="cursor-pointer">
+                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                              <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                              <p className="text-sm text-muted-foreground">{t("userDashboard.uploadMedia", "Click to upload photo or video")}</p>
+                            </div>
+                          </Label>
+                          <Input id="announcement-media-input-user" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
+                        </>
                       )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="premium"
-                      checked={newAnnouncement.isPremium}
-                      onCheckedChange={(checked) =>
-                        setNewAnnouncement({ ...newAnnouncement, isPremium: !!checked })
-                      }
-                      disabled={premiumAdsRemaining <= 0}
-                    />
-                    <label htmlFor="premium" className="text-sm cursor-pointer">
-                      {t("userDashboard.markAsPremium")}
-                    </label>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("userDashboard.adsRemaining", { standard: standardAdsRemaining, premium: premiumAdsRemaining })}
-                  </p>
+                  )}
+
                   <Button
-                    className="w-full"
                     onClick={handleAddAnnouncement}
-                    disabled={!newAnnouncement.description || isSaving}
+                    disabled={isSaving || !newAnnouncement.description}
+                    className="w-full bg-accent text-accent-foreground"
                   >
-                    {isSaving ? t("common.creating") : t("userDashboard.postAd")}
+                    {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
                   </Button>
                 </div>
               </DialogContent>
