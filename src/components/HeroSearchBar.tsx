@@ -115,7 +115,7 @@ const HeroSearchBar = () => {
                   type="button"
                   onClick={() => { setSelectedRegion(null); setLocationOpen(false); }}
                   className={cn(
-                    "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10",
+                    "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-accent/10",
                     !selectedRegion && "bg-accent/20 text-accent"
                   )}
                 >
@@ -127,7 +127,7 @@ const HeroSearchBar = () => {
                     type="button"
                     onClick={() => { setSelectedRegion(r); setLocationOpen(false); }}
                     className={cn(
-                      "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10",
+                      "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-accent/10",
                       selectedRegion === r && "bg-accent/20 text-accent"
                     )}
                   >
