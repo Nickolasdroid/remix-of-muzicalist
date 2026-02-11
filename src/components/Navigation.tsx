@@ -230,17 +230,15 @@ const Navigation = () => {
   return (
     <>
       {/* Desktop: Top Header Bar */}
-      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-6`}>
-        {/* Left side */}
-        <div className="flex items-center gap-4">
+      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-center px-6`}>
+        <div className="flex items-center gap-6">
           {/* Logo (visible when sidebar is hidden / not logged in) */}
           {!user && (
-            <Link to="/" className="flex items-center gap-2 mr-4">
+            <Link to="/" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
               <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
             </Link>
           )}
-          <div className="flex items-center gap-2">
           <Link
             to="/feed"
             className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
@@ -263,25 +261,24 @@ const Navigation = () => {
             <Megaphone className="h-5 w-5" />
             <span className="font-medium">Ads</span>
           </Link>
-          </div>
-        </div>
 
-        {/* Right: Login/Register (only when not logged in) */}
-        {!user && (
-          <div className="flex items-center gap-2">
-            <Link to="/login">
-              <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                Register
-              </Button>
-            </Link>
-          </div>
-        )}
+          {/* Login/Register (only when not logged in) */}
+          {!user && (
+            <>
+              <Link to="/login">
+                <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
 
       {/* Mobile: Top Header Bar */}
