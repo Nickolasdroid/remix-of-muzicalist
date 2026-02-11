@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import { Music2, Users, Target, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
+import HeroSearchBar from "@/components/HeroSearchBar";
 
 const About = () => {
   const values = [{
@@ -48,18 +49,7 @@ const About = () => {
             Search, discover, and book professional artists for your events.
           </p>
 
-          <div className="flex flex-row items-center justify-center gap-3 md:gap-4 px-2">
-            <Link to="/register" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 py-5 md:py-6 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
-                Create Account
-              </Button>
-            </Link>
-            <Link to="/countries" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground text-base md:text-lg px-6 md:px-8 py-5 md:py-6 hover:scale-105 transition-all duration-300">
-                Find Artists
-              </Button>
-            </Link>
-          </div>
+          <HeroSearchBar />
         </div>
       </section>
 
