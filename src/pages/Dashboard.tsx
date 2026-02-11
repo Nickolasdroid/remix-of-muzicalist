@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
+import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
@@ -1663,7 +1664,7 @@ const Dashboard = () => {
                                 <Input value={formData.estimatedPrice} onChange={e => setFormData({
                       ...formData,
                       estimatedPrice: e.target.value
-                    })} placeholder="e.g., 500-1000 RON per event" />
+                    })} placeholder={`e.g., 500-1000 ${getCurrencyForCountry(profile?.country)} per event`} />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
