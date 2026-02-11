@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
+import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import EditableField from "@/components/EditableField";
 import { Calendar } from "@/components/ui/calendar";
 import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
@@ -1464,25 +1465,32 @@ const Dashboard = () => {
                           <>
                             <Separator />
                             <div className="group">
-                              <div className="flex items-center gap-2">
-                                <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
-                                  <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                                  My Instrument:
-                                </h2>
-                                <div className="text-lg md:text-xl font-display">
-                                  <InstrumentSelector
-                                    instruments={formData.instruments}
-                                    onInstrumentsChange={(instruments) => {
-                                      setFormData({ ...formData, instruments });
-                                      supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
-                                        if (!error) {
-                                          toast({ title: "Saved", description: "Instrument updated!" });
-                                        }
-                                      });
-                                    }}
-                                  />
-                                </div>
-                              </div>
+                              {(() => {
+                                const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
+                                const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
+                                const handleInstrumentsChange = (instruments: string) => {
+                                  setFormData({ ...formData, instruments });
+                                  supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                                    if (!error) {
+                                      toast({ title: "Saved", description: "Instrument updated!" });
+                                    }
+                                  });
+                                };
+                                return (
+                                  <div className="flex items-center gap-2">
+                                    <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
+                                      <InstrumentIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                      My Instrument:{instrumentName ? ` ${instrumentName}` : ""}
+                                    </h2>
+                                    <InstrumentSelector
+                                      instruments={formData.instruments}
+                                      onInstrumentsChange={handleInstrumentsChange}
+                                      readOnly={false}
+                                      hideSelectedBadge={!!instrumentName}
+                                    />
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </>
                         )}
