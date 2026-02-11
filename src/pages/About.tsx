@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { Music2, Users, Target, Heart, Star } from "lucide-react";
+import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
@@ -79,6 +80,9 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* Discover Artists Section */}
+      <DiscoverArtistsSection />
 
       {/* About Section */}
       <section className="py-10 md:py-20 px-4 md:px-8">
