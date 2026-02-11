@@ -3,26 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock } from "lucide-react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
+import ExpandableText from "@/components/ExpandableText";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+
+interface MediaPreview {
+  url: string;
+  type: "image" | "video";
+}
 
 const UserDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-const { t } = useTranslation();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
 
   // Avatar cropper state
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -40,13 +49,10 @@ const { t } = useTranslation();
     mediaType: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
-  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
   // Ad limits
   const STANDARD_AD_LIMIT = 5;
   const PREMIUM_AD_LIMIT = 2;
-
-  // Calculate used ads
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
@@ -252,12 +258,7 @@ const { t } = useTranslation();
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
-      setDeleteAnnouncementId(null);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
   };
 
   if (isLoading) {
@@ -299,166 +300,165 @@ const { t } = useTranslation();
         </div>
       )}
 
-      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8">
-        {/* Profile Header */}
-        <Card className="mb-6">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <div className="relative group">
-                <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-accent/20">
-                  <AvatarImage src={profile?.avatar_url} alt={profile?.stage_name} />
-                  <AvatarFallback className="text-xl md:text-2xl">
-                    {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                  <Upload className="h-6 w-6 text-white" />
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                </label>
-              </div>
-              <div className="text-center md:text-left flex-1">
-                <h1 className="text-xl md:text-2xl font-display font-bold">
-                  {profile?.first_name} {profile?.last_name}
-                </h1>
-                <div className="flex flex-col sm:flex-row items-center md:items-start gap-1 sm:gap-4 mt-1 text-sm text-muted-foreground">
-                  <span>{t("userDashboard.adsPublished", { count: announcements.length })}</span>
-                  {profile?.created_at && (
-                    <span>
-                      {t("userDashboard.memberSince", { 
-                        date: new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) 
-                      })}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]">
+        {/* Profile Header - matching public user profile format */}
+        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
+          <div className="relative group">
+            <Avatar className="h-24 w-24 border-2 border-accent/20">
+              <AvatarImage src={profile?.avatar_url} alt={profile?.stage_name} />
+              <AvatarFallback className="text-2xl">
+                {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              <Upload className="h-6 w-6 text-white" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            </label>
+          </div>
+          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+            {profile?.first_name} {profile?.last_name}
+          </h1>
+          <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+            <span>{t("userDashboard.adsPublished", { count: announcements.length })}</span>
+            {profile?.created_at && (
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                {t("userDashboard.memberSince", { 
+                  date: new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) 
+                })}
+              </span>
+            )}
+          </div>
+        </div>
 
         {/* My Ads Section */}
-        <Card>
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-semibold">{t("userDashboard.myAds")}</h2>
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+              <Megaphone className="h-4 w-4 text-accent" />
+              {t("userDashboard.myAds")}
+            </h2>
+            <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  {t("userDashboard.newAd")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-lg">
+                <DialogHeader>
+                  <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
+                </DialogHeader>
                 <p className="text-sm text-muted-foreground">
-                  {t("userDashboard.adsRemaining", { standard: standardAdsRemaining, premium: premiumAdsRemaining })}
+                  {newAnnouncement.isPremium 
+                    ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
+                    : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
                 </p>
-              </div>
-              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    {t("userDashboard.newAd")}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="rounded-lg">
-                  <DialogHeader>
-                    <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
-                  </DialogHeader>
-                  <p className="text-sm text-muted-foreground">
-                    {newAnnouncement.isPremium 
-                      ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
-                      : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
-                  </p>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium flex items-center justify-between">
-                        {t("userDashboard.description")}
-                        <span className="text-muted-foreground text-xs">
-                          {newAnnouncement.description.length}/200
-                        </span>
-                      </label>
-                      <Textarea
-                        value={newAnnouncement.description}
-                        onChange={(e) => setNewAnnouncement({ 
-                          ...newAnnouncement, 
-                          description: e.target.value.slice(0, 200) 
-                        })}
-                        placeholder={t("userDashboard.descriptionPlaceholder")}
-                        className="mt-1"
-                        maxLength={200}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">{t("userDashboard.media")}</label>
-                      <div className="mt-1">
-                        <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-accent transition-colors">
-                          <Upload className="h-5 w-5" />
-                          <span className="text-sm">{t("userDashboard.uploadMedia")}</span>
-                          <input
-                            type="file"
-                            accept="image/*,video/*"
-                            className="hidden"
-                            onChange={handleAnnouncementMediaUpload}
-                          />
-                        </label>
-                        {newAnnouncement.mediaUrl && (
-                          <p className="text-xs text-muted-foreground mt-2">
-                            ✓ {t("userDashboard.mediaUploaded")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="premium"
-                        checked={newAnnouncement.isPremium}
-                        onCheckedChange={(checked) =>
-                          setNewAnnouncement({ ...newAnnouncement, isPremium: !!checked })
-                        }
-                        disabled={premiumAdsRemaining <= 0}
-                      />
-                      <label htmlFor="premium" className="text-sm cursor-pointer">
-                        {t("userDashboard.markAsPremium")}
-                      </label>
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={handleAddAnnouncement}
-                      disabled={!newAnnouncement.description || isSaving}
-                    >
-                      {isSaving ? t("common.creating") : t("userDashboard.postAd")}
-                    </Button>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium flex items-center justify-between">
+                      {t("userDashboard.description")}
+                      <span className="text-muted-foreground text-xs">
+                        {newAnnouncement.description.length}/200
+                      </span>
+                    </label>
+                    <Textarea
+                      value={newAnnouncement.description}
+                      onChange={(e) => setNewAnnouncement({ 
+                        ...newAnnouncement, 
+                        description: e.target.value.slice(0, 200) 
+                      })}
+                      placeholder={t("userDashboard.descriptionPlaceholder")}
+                      className="mt-1"
+                      maxLength={200}
+                    />
                   </div>
-                </DialogContent>
-              </Dialog>
-            </div>
+                  <div>
+                    <label className="text-sm font-medium">{t("userDashboard.media")}</label>
+                    <div className="mt-1">
+                      <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-accent transition-colors">
+                        <Upload className="h-5 w-5" />
+                        <span className="text-sm">{t("userDashboard.uploadMedia")}</span>
+                        <input
+                          type="file"
+                          accept="image/*,video/*"
+                          className="hidden"
+                          onChange={handleAnnouncementMediaUpload}
+                        />
+                      </label>
+                      {newAnnouncement.mediaUrl && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          ✓ {t("userDashboard.mediaUploaded")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="premium"
+                      checked={newAnnouncement.isPremium}
+                      onCheckedChange={(checked) =>
+                        setNewAnnouncement({ ...newAnnouncement, isPremium: !!checked })
+                      }
+                      disabled={premiumAdsRemaining <= 0}
+                    />
+                    <label htmlFor="premium" className="text-sm cursor-pointer">
+                      {t("userDashboard.markAsPremium")}
+                    </label>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {t("userDashboard.adsRemaining", { standard: standardAdsRemaining, premium: premiumAdsRemaining })}
+                  </p>
+                  <Button
+                    className="w-full"
+                    onClick={handleAddAnnouncement}
+                    disabled={!newAnnouncement.description || isSaving}
+                  >
+                    {isSaving ? t("common.creating") : t("userDashboard.postAd")}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
 
-            {/* Ads List */}
-            {announcements.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t("userDashboard.noAds")}</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {announcements.map((ad) => (
-                  <div key={ad.id} className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        {ad.media_url && (
-                          <div className="mb-3">
-                            {ad.media_type === 'video' ? (
-                              <video src={ad.media_url} className="rounded-lg max-h-48 w-full object-cover" controls />
-                            ) : (
-                              <img src={ad.media_url} alt="" className="rounded-lg max-h-48 w-full object-cover" />
-                            )}
+          {/* Ads List - matching public profile card format */}
+          {announcements.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>{t("userDashboard.noAds")}</p>
+            </div>
+          ) : (
+            <div className="w-full max-w-[500px] mx-auto space-y-1">
+              {announcements.map((ad) => (
+                <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                  <div className="p-4 pb-0 px-[6px] py-[3px]">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10 border-2 border-background">
+                          <AvatarImage src={profile?.avatar_url} alt={profile?.first_name} />
+                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                            {profile?.first_name?.[0] || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium text-foreground">
+                            {profile?.first_name} {profile?.last_name}
+                          </h3>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>User</span>
+                            <span>·</span>
+                            <span>{new Date(ad.date).toLocaleDateString()}</span>
+                            <span>·</span>
+                            {ad.is_premium 
+                              ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
+                              : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
                           </div>
-                        )}
-                        <p className="text-sm">{ad.description}</p>
-                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                          <span>{formatDate(ad.date)}</span>
-                          {ad.is_premium && (
-                            <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full">
-                              {t("userDashboard.premium")}
-                            </span>
-                          )}
                         </div>
                       </div>
+                      {/* Delete button */}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive h-8 w-8">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
@@ -481,13 +481,32 @@ const { t } = useTranslation();
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
+                    <ExpandableText text={ad.description} className="mt-3" />
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  
+                  {ad.is_premium && ad.media_url && (
+                    <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                      url: ad.media_url!,
+                      type: ad.media_type === "video" ? "video" : "image"
+                    })}>
+                      {ad.media_type === "video" ? (
+                        <div className="relative w-full aspect-video">
+                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+                        </div>
+                      ) : (
+                        <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
+                      )}
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Media Preview Dialog */}
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
     </div>
   );
 };
