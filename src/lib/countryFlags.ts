@@ -572,3 +572,19 @@ export const getCountryDisplay = (country: string | null | undefined): { flag: s
     name: getCountryName(country),
   };
 };
+
+/**
+ * Get ISO 2-letter country code from a country name or value
+ */
+export const getCountryCode = (country: string | null | undefined): string | null => {
+  if (!country) return null;
+  const upper = country.toUpperCase();
+  if (codeToCountry[upper]) return upper;
+  const standardName = getCountryName(country);
+  if (!standardName) return null;
+  const normalizedStandard = normalizeString(standardName);
+  for (const [code, info] of Object.entries(codeToCountry)) {
+    if (normalizeString(info.name) === normalizedStandard) return code;
+  }
+  return null;
+};

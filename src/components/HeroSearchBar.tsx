@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
+import { getCountryFlag, getCountryName, getCountryCode } from "@/lib/countryFlags";
 import { countryAdminDivisions } from "@/lib/countryAdminDivisions";
 import { useEffect } from "react";
 
@@ -46,7 +46,8 @@ const HeroSearchBar = () => {
     fetchCountries();
   }, []);
 
-  const regions = selectedCountry ? countryAdminDivisions[selectedCountry]?.regions || [] : [];
+  const countryCode = selectedCountry ? getCountryCode(selectedCountry) : null;
+  const regions = countryCode ? countryAdminDivisions[countryCode]?.regions || [] : [];
 
   const locationLabel = selectedCountry
     ? `${getCountryFlag(selectedCountry)} ${selectedRegion || getCountryName(selectedCountry)}`
