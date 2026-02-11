@@ -1343,27 +1343,6 @@ const Dashboard = () => {
                               <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>
-                              
-                              {/* Instrument Selector for Instrumentalists */}
-                              {formData.specialization?.toLowerCase() === 'instrumentalist' && <InstrumentSelector instruments={formData.instruments} onInstrumentsChange={instruments => {
-                      setFormData({
-                        ...formData,
-                        instruments
-                      });
-                      // Auto-save instruments
-                      supabase.from('profiles').update({
-                        instruments
-                      }).eq('id', user?.id).then(({
-                        error
-                      }) => {
-                        if (!error) {
-                          toast({
-                            title: "Saved",
-                            description: "Instruments updated!"
-                          });
-                        }
-                      });
-                    }} />}
                             </div>
 
                             {/* Location row */}
