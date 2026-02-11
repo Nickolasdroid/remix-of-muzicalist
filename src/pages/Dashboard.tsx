@@ -16,7 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle } from "lucide-react";
+import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
@@ -2104,6 +2105,9 @@ const Dashboard = () => {
                                           </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Ad
                                           </Badge>}
+                                        {isAdExpired(announcement) ? <Badge variant="destructive" className="text-xs">
+                                            Expired
+                                          </Badge> : <span className="text-muted-foreground/70">{getDaysRemaining(announcement)}d left</span>}
                                       </div>
                                     </div>
                                   </div>

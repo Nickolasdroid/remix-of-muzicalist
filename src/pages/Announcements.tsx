@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import { isAdExpired } from "@/lib/adExpiration";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ExpandableText from "@/components/ExpandableText";
@@ -154,6 +155,8 @@ const Announcements = () => {
         <div className="max-w-[500px] mx-auto space-y-1">
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const filteredAnnouncements = announcements.filter(a => {
+            // Hide expired ads from public feed
+            if (isAdExpired(a)) return false;
             if (filter === 'all') return true;
             if (filter === 'promotion') return a.is_premium === true;
             if (filter === 'ads') return a.is_premium === false;
