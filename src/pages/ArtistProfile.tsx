@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock } from "lucide-react";
+import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -801,10 +802,14 @@ const ArtistProfile = () => {
                 {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
                     {artist.specialization}
                   </Badge>}
-                {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-3 py-1 text-sm font-medium">
-                    <Music2 className="h-3.5 w-3.5 mr-1" />
-                    {artist.instruments.split(',')[0].trim()}
-                  </Badge>}
+                {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
+                  const instrumentName = artist.instruments.split(',')[0].trim();
+                  const InstrumentIcon = getInstrumentIcon(instrumentName);
+                  return <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-3 py-1 text-sm font-medium">
+                    <InstrumentIcon className="h-3.5 w-3.5 mr-1" />
+                    {instrumentName}
+                  </Badge>;
+                })()}
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm">{artist.county}</span>
@@ -845,10 +850,14 @@ const ArtistProfile = () => {
                         </Badge>}
                       
                       {/* Display instrument for instrumentalists */}
-                      {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-                          <Music2 className="h-4 w-4 mr-1" />
-                          {artist.instruments.split(',')[0].trim()}
-                        </Badge>}
+                      {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
+                        const instrumentName = artist.instruments.split(',')[0].trim();
+                        const InstrumentIcon = getInstrumentIcon(instrumentName);
+                        return <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          <InstrumentIcon className="h-4 w-4 mr-1" />
+                          {instrumentName}
+                        </Badge>;
+                      })()}
                     </div>
 
                     {/* Location */}
@@ -934,10 +943,14 @@ const ArtistProfile = () => {
                           <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                           Instrument
                         </h2>
-                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-                          <Music2 className="h-4 w-4 mr-1.5" />
-                          {artist.instruments.split(',')[0].trim()}
-                        </Badge>
+                        {(() => {
+                          const instrumentName = artist.instruments.split(',')[0].trim();
+                          const InstrumentIcon = getInstrumentIcon(instrumentName);
+                          return <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                            <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                            {instrumentName}
+                          </Badge>;
+                        })()}
                       </div>
                     </>
                   )}
