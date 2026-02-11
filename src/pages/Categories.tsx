@@ -73,30 +73,31 @@ const Categories = () => {
     fetchCounts();
   }, [isAuthChecked, selectedCountry]);
 
+  const countryParam = selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : '';
   const categories = [{
     icon: Mic,
     title: "Singer",
     description: "Professional vocalists for any event",
     count: counts.Singer,
-    href: "/categories/Singers"
+    href: `/categories/Singers${countryParam}`
   }, {
     icon: Guitar,
     title: "Instrumentalist",
     description: "Skilled musicians with various instruments",
     count: counts.Instrumentalist,
-    href: "/categories/Instrumentalists"
+    href: `/categories/Instrumentalists${countryParam}`
   }, {
     icon: Headphones,
     title: "DJ",
     description: "Expert DJs for parties and events",
     count: counts.DJ,
-    href: "/categories/DJs"
+    href: `/categories/DJs${countryParam}`
   }, {
     icon: Users,
     title: "Band",
     description: "Complete musical groups for your events",
     count: counts.Band,
-    href: "/categories/Bands"
+    href: `/categories/Bands${countryParam}`
   }];
 
   if (!isAuthChecked) {
