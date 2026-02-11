@@ -219,7 +219,7 @@ const HeroSearchBar = () => {
                   selected={selectedDate}
                   onSelect={(d) => { setSelectedDate(d); setDateOpen(false); }}
                   disabled={(date) => date < new Date()}
-                  className="p-3 pointer-events-auto w-full [&_.rdp-month]:w-full [&_.rdp-table]:w-full [&_.rdp-head_cell]:w-12 [&_.rdp-cell]:w-12 [&_.rdp-cell]:h-12 [&_.rdp-day]:h-12 [&_.rdp-day]:w-12 [&_.rdp-caption_label]:text-base [&_.rdp-nav_button]:h-9 [&_.rdp-nav_button]:w-9"
+                  className="p-3 pointer-events-auto"
                 />
               </div>
             </DrawerContent>
