@@ -1796,7 +1796,7 @@ const Dashboard = () => {
                         {/* Reviews Section */}
                         <div>
                           <h2 className="text-lg md:text-xl font-display mb-4 md:mb-6 flex items-center gap-2 text-left">
-                            <Star className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                            <Star className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             My Reviews
                             {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
                                 ({getAverageRating()} • {reviews.length})
@@ -2185,8 +2185,8 @@ const Dashboard = () => {
                         <div className="space-y-8">
                           {/* Photos Section */}
                           <div>
-                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                              <Images className="h-5 w-5 text-accent" />
+                            <h3 className="text-lg md:text-xl font-display mb-4 flex items-center gap-2">
+                              <Images className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               Photos
                               <span className="text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
                             </h3>
@@ -2211,8 +2211,8 @@ const Dashboard = () => {
 
                           {/* Videos Section */}
                           <div>
-                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                              <Play className="h-5 w-5 text-accent" />
+                            <h3 className="text-lg md:text-xl font-display mb-4 flex items-center gap-2">
+                              <Play className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               Videos
                               <span className="text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
                             </h3>
@@ -2431,8 +2431,8 @@ const Dashboard = () => {
 
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
-                            <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                              <CalendarIcon className="h-5 w-5 text-accent" />
+                            <h3 className="text-lg md:text-xl font-display flex items-center gap-2 mb-4">
+                              <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               Booking Requests
                             </h3>
                             
