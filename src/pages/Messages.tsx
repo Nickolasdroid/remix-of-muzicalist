@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -71,6 +71,7 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'conversations' | 'requests'>('conversations');
   const artistId = searchParams.get("artistId");
   useEffect(() => {
     const checkAuth = async () => {
@@ -436,31 +437,53 @@ const Messages = () => {
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Messages</h2>
             </div>
-            <ScrollArea className="h-[calc(100%-60px)]">
-              {conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setActiveTab('conversations')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Conversations
+              </button>
+              <button
+                onClick={() => setActiveTab('requests')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Requests
+              </button>
+            </div>
+            <ScrollArea className="h-[calc(100%-108px)]">
+              {activeTab === 'conversations' ? (
+                conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
                 </div> : conversations.map(conv => {
-              const profile = getOtherProfile(conv);
-              return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => setSelectedConversation(conv)}>
-                      <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
-                        <AvatarImage src={profile.avatar_url || undefined} />
-                        <AvatarFallback>
-                          <User className="h-5 w-5" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="text-left flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{profile.stage_name}</p>
-                          {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                            </span>}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(conv.updated_at).toLocaleDateString()}
-                        </p>
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => setSelectedConversation(conv)}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
                       </div>
-                    </div>;
-            })}
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(conv.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>;
+                })
+              ) : (
+                <div className="p-4 text-center text-muted-foreground">
+                  <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                  <p>No requests yet</p>
+                  <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
+                </div>
+              )}
             </ScrollArea>
           </div>
 
@@ -555,8 +578,23 @@ const Messages = () => {
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Messages</h2>
             </div>
-            <ScrollArea className="h-[calc(100%-60px)]">
-              {conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setActiveTab('conversations')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Conversations
+              </button>
+              <button
+                onClick={() => setActiveTab('requests')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Requests
+              </button>
+            </div>
+            <ScrollArea className="h-[calc(100%-108px)]">
+              {activeTab === 'conversations' ? (
+                conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
                 </div> : conversations.map(conv => {
               const profile = getOtherProfile(conv);
@@ -579,9 +617,24 @@ const Messages = () => {
                         </p>
                       </div>
                     </div>;
-            })}
+              })
+              ) : (
+                <div className="p-4 text-center text-muted-foreground">
+                  <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                  <p>No requests yet</p>
+                  <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
+                </div>
+              )}
             </ScrollArea>
           </div>
+
+          {activeTab === 'requests' && !selectedConversation && !pendingArtist && (
+            <div className="p-4 text-center text-muted-foreground mt-8">
+              <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
+              <p>No requests yet</p>
+              <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
+            </div>
+          )}
 
           {/* Mobile: Chat overlay */}
           {(selectedConversation || pendingArtist) && <div className="fixed top-14 bottom-16 left-0 right-0 z-40 bg-background">
