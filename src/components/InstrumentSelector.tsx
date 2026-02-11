@@ -28,9 +28,10 @@ interface InstrumentSelectorProps {
   instruments: string;
   onInstrumentsChange: (instruments: string) => void;
   readOnly?: boolean;
+  hideSelectedBadge?: boolean;
 }
 
-const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false }: InstrumentSelectorProps) => {
+const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false, hideSelectedBadge = false }: InstrumentSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -67,6 +68,20 @@ const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false
         {selectedInstrument}
       </Badge>
     ) : null;
+  }
+
+  // When hideSelectedBadge is true and instrument is selected, show just a remove button
+  if (hideSelectedBadge && selectedInstrument) {
+    return (
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-auto p-1 text-muted-foreground hover:text-destructive"
+        onClick={handleRemoveInstrument}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    );
   }
 
   return (
