@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Plus, X, Search, Music2 } from "lucide-react";
+import { getInstrumentIcon } from "@/lib/instrumentIcons";
 
 const INSTRUMENTS = [
   // Strings
@@ -57,10 +58,12 @@ const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false
     }
   };
 
+  const SelectedIcon = selectedInstrument ? getInstrumentIcon(selectedInstrument) : Music2;
+
   if (readOnly) {
     return selectedInstrument ? (
       <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-        <Music2 className="h-4 w-4 mr-1.5" />
+        <SelectedIcon className="h-4 w-4 mr-1.5" />
         {selectedInstrument}
       </Badge>
     ) : null;
@@ -73,7 +76,7 @@ const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false
           className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group"
           onClick={handleRemoveInstrument}
         >
-          <Music2 className="h-4 w-4 mr-1.5" />
+          <SelectedIcon className="h-4 w-4 mr-1.5" />
           {selectedInstrument}
           <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Badge>
@@ -123,18 +126,21 @@ const InstrumentSelector = ({ instruments, onInstrumentsChange, readOnly = false
 
               <ScrollArea className="h-64">
                 <div className="grid grid-cols-2 gap-2">
-                  {filteredInstruments.map(instrument => (
-                    <Button
-                      key={instrument}
-                      variant="outline"
-                      size="sm"
-                      className="justify-start text-left h-auto py-2 px-3"
-                      onClick={() => handleSelectInstrument(instrument)}
-                    >
-                      <Music2 className="h-3 w-3 mr-2 flex-shrink-0" />
-                      <span className="truncate">{instrument}</span>
-                    </Button>
-                  ))}
+                  {filteredInstruments.map(instrument => {
+                    const ItemIcon = getInstrumentIcon(instrument);
+                    return (
+                      <Button
+                        key={instrument}
+                        variant="outline"
+                        size="sm"
+                        className="justify-start text-left h-auto py-2 px-3"
+                        onClick={() => handleSelectInstrument(instrument)}
+                      >
+                        <ItemIcon className="h-3 w-3 mr-2 flex-shrink-0" />
+                        <span className="truncate">{instrument}</span>
+                      </Button>
+                    );
+                  })}
                 </div>
               </ScrollArea>
             </div>
