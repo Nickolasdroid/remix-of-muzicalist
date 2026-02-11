@@ -586,7 +586,7 @@ const Messages = () => {
                 Requests
               </button>
             </div>
-            <ScrollArea className="h-[calc(100%-45px)]">
+            <div className="overflow-y-auto h-[calc(100%-45px)]" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
               {activeTab === 'conversations' ? (
                 conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
@@ -614,12 +614,11 @@ const Messages = () => {
               })
               ) : (
                 <div className="p-4 text-center text-muted-foreground">
-                  <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
                   <p>No requests yet</p>
                   <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
                 </div>
               )}
-            </ScrollArea>
+            </div>
           </div>
 
           {activeTab === 'requests' && !selectedConversation && !pendingArtist && (
