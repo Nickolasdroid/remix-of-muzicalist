@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, Crown } from "lucide-react";
+import { getCountryName } from "@/lib/countryFlags";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -212,7 +213,7 @@ const Search = () => {
                       <span>•</span>
                     )}
                     {artist.country && (
-                      <span>{artist.country}</span>
+                      <span>{getCountryName(artist.country)}</span>
                     )}
                     {artist.country && artist.county && (
                       <span>•</span>
