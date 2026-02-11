@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
@@ -162,6 +162,7 @@ interface Artist {
 
 const CategoryArtists = () => {
   const { category } = useParams<{ category: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -171,12 +172,18 @@ const CategoryArtists = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
 
-  // Check auth and get user's country
+  // Check auth and get country (from URL param or user's profile)
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/login');
+        return;
+      }
+      
+      const countryFromUrl = searchParams.get('country');
+      if (countryFromUrl) {
+        setUserCountry(countryFromUrl);
         return;
       }
       
@@ -189,7 +196,7 @@ const CategoryArtists = () => {
       setUserCountry(profile?.country || null);
     };
     checkAuthAndGetCountry();
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   useEffect(() => {
     const fetchArtists = async () => {
