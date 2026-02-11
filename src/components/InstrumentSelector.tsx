@@ -19,7 +19,7 @@ const INSTRUMENTS = [
   // Percussion
   "Drums", "Percussion", "Cajon", "Congas", "Bongos", "Djembe", "Timpani", "Marimba", "Xylophone", "Vibraphone", "Tambourine", "Triangle",
   // Electronic
-  "DJ Equipment", "Turntables", "Drum Machine", "Sampler", "MIDI Controller",
+  "Drum Machine", "Sampler", "MIDI Controller",
   // Traditional/Folk
   "Bagpipes", "Didgeridoo", "Tabla", "Nai", "Cimbalom", "Cobza", "Țambal"
 ].sort();
