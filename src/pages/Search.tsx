@@ -25,29 +25,7 @@ const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
   const isMobile = useIsMobile();
-
-  // Fetch current user's country on mount
-  useEffect(() => {
-    const fetchUserCountry = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('country')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile?.country) {
-          setUserCountry(profile.country);
-        }
-      }
-    };
-    
-    fetchUserCountry();
-  }, []);
-
   const fetchSuggestions = async (searchQuery: string) => {
     if (searchQuery.trim().length < 2) {
       setSuggestions([]);
@@ -57,18 +35,13 @@ const Search = () => {
     setIsLoading(true);
     
     // Build query - artists are identified by having a specialization set
-    // Filter by user's country and search by stage name
-    let queryBuilder = supabase
+    // Search all artists globally by stage name
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, stage_name, avatar_url, specialization, county, music_genres')
-      .not('specialization', 'is', null) // Only artists have specialization
-      .ilike('stage_name', `%${searchQuery.trim()}%`);
-
-    if (userCountry) {
-      queryBuilder = queryBuilder.eq('country', userCountry);
-    }
-
-    const { data, error } = await queryBuilder.limit(10);
+      .not('specialization', 'is', null)
+      .ilike('stage_name', `%${searchQuery.trim()}%`)
+      .limit(10);
 
     if (error) {
       console.error('Error fetching suggestions:', error);
