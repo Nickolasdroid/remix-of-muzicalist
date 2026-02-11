@@ -926,10 +926,15 @@ const ArtistProfile = () => {
                           const instrumentName = artist.instruments.split(',')[0].trim();
                           const InstrumentIcon = getInstrumentIcon(instrumentName);
                           return (
-                            <h2 className="text-lg md:text-xl font-display flex items-center gap-2">
-                              <InstrumentIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              Instrument: {instrumentName}
-                            </h2>
+                            <div className="flex items-center gap-2">
+                              <h2 className="text-lg md:text-xl font-display">
+                                Instrument:
+                              </h2>
+                              <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                                <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                                {instrumentName}
+                              </Badge>
+                            </div>
                           );
                         })()}
                       </div>
