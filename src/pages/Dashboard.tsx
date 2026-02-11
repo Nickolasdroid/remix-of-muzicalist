@@ -1459,6 +1459,30 @@ const Dashboard = () => {
                             </div>}
                         </div>
 
+                        {/* Instrument Section for Instrumentalists */}
+                        {formData.specialization?.toLowerCase() === 'instrumentalist' && (
+                          <>
+                            <Separator />
+                            <div className="group">
+                              <h2 className="text-lg md:text-xl font-display flex items-center gap-2 mb-4">
+                                <Music2 className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                My Instrument
+                              </h2>
+                              <InstrumentSelector
+                                instruments={formData.instruments}
+                                onInstrumentsChange={(instruments) => {
+                                  setFormData({ ...formData, instruments });
+                                  supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                                    if (!error) {
+                                      toast({ title: "Saved", description: "Instrument updated!" });
+                                    }
+                                  });
+                                }}
+                              />
+                            </div>
+                          </>
+                        )}
+
                         <Separator />
 
                         {/* Details Grid */}
