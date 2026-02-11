@@ -290,7 +290,8 @@ const Navigation = () => {
       {/* Mobile: Top Header Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
         <div className="flex items-center justify-between h-14 px-4">
-          {/* Left: Menu Button */}
+          {/* Left: Menu Button (only when logged in) */}
+          {user ? (
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
@@ -387,6 +388,9 @@ const Navigation = () => {
               </div>
             </SheetContent>
           </Sheet>
+          ) : (
+            <div className="w-10" /> 
+          )}
 
           {/* Center: Logo or Page Title */}
           {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
