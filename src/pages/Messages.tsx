@@ -434,9 +434,6 @@ const Messages = () => {
         <div className="hidden md:grid md:grid-cols-3 h-[calc(100vh-64px)]">
           {/* Conversations List */}
           <div className="md:col-span-1 p-0 overflow-hidden bg-card border-r border-border">
-            <div className="p-4 border-b border-border">
-              <h2 className="font-semibold">Messages</h2>
-            </div>
             <div className="flex border-b border-border">
               <button
                 onClick={() => setActiveTab('conversations')}
@@ -451,7 +448,7 @@ const Messages = () => {
                 Requests
               </button>
             </div>
-            <ScrollArea className="h-[calc(100%-108px)]">
+            <ScrollArea className="h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
                 conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
@@ -575,9 +572,6 @@ const Messages = () => {
         {/* Mobile: Full-width conversation list */}
         <div className="md:hidden h-full">
           <div className="p-0 overflow-hidden bg-card h-full border-t border-border">
-            <div className="p-4 border-b border-border">
-              <h2 className="font-semibold">Messages</h2>
-            </div>
             <div className="flex border-b border-border">
               <button
                 onClick={() => setActiveTab('conversations')}
@@ -592,7 +586,7 @@ const Messages = () => {
                 Requests
               </button>
             </div>
-            <ScrollArea className="h-[calc(100%-108px)]">
+            <ScrollArea className="h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
                 conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
