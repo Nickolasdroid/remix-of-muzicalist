@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, DollarSign } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -341,13 +341,18 @@ const UserDashboard = () => {
               <Megaphone className="h-4 w-4 text-accent" />
               {t("userDashboard.myAds")}
             </h2>
-            <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  {t("userDashboard.newAd")}
-                </Button>
-              </DialogTrigger>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                <DollarSign className="h-4 w-4 mr-1" />
+                Buy Ads
+              </Button>
+              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    {t("userDashboard.newAd")}
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
@@ -429,6 +434,7 @@ const UserDashboard = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
           </div>
 
           {/* Ads List - matching public profile card format */}
