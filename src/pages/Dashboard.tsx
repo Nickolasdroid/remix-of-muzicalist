@@ -16,7 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle } from "lucide-react";
+import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
@@ -82,6 +83,26 @@ const Dashboard = () => {
     instruments: ""
   });
 
+  // Announcements state
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    description: "",
+    isPremium: false,
+    mediaUrl: "",
+    mediaType: ""
+  });
+  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+
+  // Ad limits
+  const STANDARD_AD_LIMIT = 5;
+  const PREMIUM_AD_LIMIT = 2;
+
+  // Calculate used ads
+  const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
+  const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
+  const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
+  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
@@ -138,6 +159,15 @@ const Dashboard = () => {
   const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
 
   // Data loading functions (defined early to avoid hoisting issues)
+  const loadAnnouncements = async () => {
+    if (!user) return;
+    const {
+      data
+    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('date', {
+      ascending: false
+    });
+    if (data) setAnnouncements(data);
+  };
   const loadGalleryItems = async () => {
     if (!user) return;
     const {
@@ -236,6 +266,7 @@ const Dashboard = () => {
   }, []);
   useEffect(() => {
     if (user) {
+      loadAnnouncements();
       loadGalleryItems();
       loadCalendarEvents();
       loadBookingRequests();
@@ -471,6 +502,104 @@ const Dashboard = () => {
     }
   };
 
+  // Announcements functions
+  const handleAnnouncementMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      setNewAnnouncement({
+        ...newAnnouncement,
+        mediaUrl: publicUrl,
+        mediaType
+      });
+      toast({
+        title: "Success",
+        description: "Media uploaded!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleAddAnnouncement = async () => {
+    if (!user || !newAnnouncement.description) return;
+    setIsSaving(true);
+    try {
+      const todayDate = new Date().toISOString().split('T')[0];
+      const {
+        error
+      } = await supabase.from('announcements').insert({
+        profile_id: user.id,
+        title: "Announcement",
+        date: todayDate,
+        description: newAnnouncement.description,
+        is_premium: newAnnouncement.isPremium,
+        media_url: newAnnouncement.mediaUrl || null,
+        media_type: newAnnouncement.mediaType || null
+      });
+      if (error) throw error;
+      await loadAnnouncements();
+      setNewAnnouncement({
+        description: "",
+        isPremium: false,
+        mediaUrl: "",
+        mediaType: ""
+      });
+      setShowAnnouncementDialog(false);
+      toast({
+        title: "Success",
+        description: "Announcement added!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteAnnouncement = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('announcements').delete().eq('id', id);
+      if (error) throw error;
+      await loadAnnouncements();
+      toast({
+        title: "Success",
+        description: "Announcement deleted!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setDeleteAnnouncementId(null);
+    }
+  };
 
   // Posts functions
   const handleAddPost = async () => {
@@ -1248,6 +1377,10 @@ const Dashboard = () => {
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Posts</span>
                         </TabsTrigger>
+                        <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                          <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
+                          <span className="hidden md:inline">Announcements</span>
+                        </TabsTrigger>
                         <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <Images className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Gallery</span>
@@ -1855,6 +1988,153 @@ const Dashboard = () => {
                         </div>
                       </TabsContent>
 
+                      {/* Announcements Tab */}
+                      <TabsContent value="announcements" className="space-y-4">
+                        <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
+                          <Megaphone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          My Announcements
+                        </h2>
+                        <div className="max-w-[500px] mx-auto space-y-4">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                            <div className="flex items-center gap-6">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                                <DollarSign className="h-4 w-4 mr-1" />
+                                Buy Ads
+                              </Button>
+                              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    New Ad
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                  <DialogHeader>
+                                    <DialogTitle>Add New Announcement</DialogTitle>
+                                  </DialogHeader>
+                                  <p className="text-sm text-muted-foreground mt-2">
+                                    {newAnnouncement.isPremium 
+                                      ? "Promotions are valid for 30 days."
+                                      : "Ads are valid for 15 days."}
+                                  </p>
+                                  <div className="space-y-4 mt-4">
+                                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
+                                      <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
+                              ...newAnnouncement,
+                              isPremium: checked as boolean
+                            })} />
+                                      <Label htmlFor="premium-ad-inner" className="cursor-pointer font-medium">
+                                        Promotion Ad (with photo/video)
+                                      </Label>
+                                    </div>
+                                    
+                                    <div>
+                                      <Label htmlFor="announcement-text-inner">Announcement Text</Label>
+                                      <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
+                              ...newAnnouncement,
+                              description: e.target.value.slice(0, 200)
+                            })} placeholder="Write your announcement here..." rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
+                                    </div>
+                                    
+                                    {newAnnouncement.isPremium && <div>
+                                        <Label htmlFor="announcement-media-inner">Photo/Video</Label>
+                                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
+                                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
+                                ...newAnnouncement,
+                                mediaUrl: "",
+                                mediaType: ""
+                              })}>
+                                              <X className="h-4 w-4" />
+                                            </Button>
+                                          </div> : <>
+                                            <Label htmlFor="announcement-media-input-inner" className="cursor-pointer">
+                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                              </div>
+                                            </Label>
+                                            <Input id="announcement-media-input-inner" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
+                                          </>}
+                                      </div>}
+                                    
+                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Adding..." : "Add Announcement"}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </div>
+                          {announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                              <div className="p-4 pb-0 px-[6px] py-[3px]">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
+                                      <Avatar className="w-10 h-10 border-2 border-background">
+                                        <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
+                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                          {(profile?.stage_name || "A").charAt(0)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="font-semibold text-foreground">
+                                          {profile?.stage_name || "Artist"}
+                                        </h3>
+                                        {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+                                        {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
+                                            Expired
+                                          </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
+                                      </div>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span>{profile?.specialization || "User"}</span>
+                                        <span>·</span>
+                                        <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                        <span>·</span>
+                                        {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                            Promotion
+                                          </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                            Ad
+                                          </Badge>}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(announcement.id)} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                                  </Button>
+                                </div>
+                                <ExpandableText text={announcement.description} className="mt-3" />
+                              </div>
+                              
+                              {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
+                                  {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
+                                      <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                    </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
+                                </div>}
+                              
+                              <div className="h-2" />
+                            </Card>)}
+                          {announcements.length === 0 && <div className="text-center py-12 text-muted-foreground">
+                              <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                              <p className="text-sm">No announcements yet</p>
+                            </div>}
+                        </div>
+                      </TabsContent>
+
                       {/* Gallery Tab */}
                       <TabsContent value="gallery">
                         <h2 className="text-lg md:text-xl font-display mb-2 md:mb-4 flex items-center gap-2">
@@ -2449,6 +2729,24 @@ const Dashboard = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => deletePostId && handleDeletePost(deletePostId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Announcement Confirmation Dialog */}
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={open => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this announcement? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
