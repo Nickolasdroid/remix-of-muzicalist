@@ -6,10 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Crown } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Crown, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 interface SettingsTabProps {
   formData: {
@@ -21,7 +22,7 @@ interface SettingsTabProps {
   isSaving: boolean;
 }
 
-type SettingSection = "main" | "plan" | "account" | "email" | "password" | "report" | "logout" | "delete";
+type SettingSection = "main" | "plan" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
 
 const SettingsTab = ({
   formData,
@@ -31,6 +32,7 @@ const SettingsTab = ({
 }: SettingsTabProps) => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { i18n } = useTranslation();
   const [activeSection, setActiveSection] = useState<SettingSection>("main");
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -182,6 +184,7 @@ const SettingsTab = ({
     { id: "plan" as const, label: "My Plan", icon: Crown },
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
+    { id: "language" as const, label: "Language", icon: Languages },
     { id: "report" as const, label: "Report an Issue", icon: Flag },
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
@@ -613,6 +616,48 @@ const SettingsTab = ({
     </div>
   );
 
+  // Mobile: Language section
+  const MobileLanguageSection = () => {
+    const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+    return (
+      <div className="p-4 space-y-4">
+        <button
+          onClick={() => setActiveSection("main")}
+          className="flex items-center gap-2 text-muted-foreground mb-4"
+        >
+          <ChevronRight className="h-4 w-4 rotate-180" />
+          <span className="text-sm">Back</span>
+        </button>
+        <div>
+          <h2 className="text-lg font-semibold">Language</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Choose your preferred language
+          </p>
+        </div>
+        <div className="space-y-2">
+          {[
+            { code: "en", label: "English", flag: "🇬🇧" },
+            { code: "ro", label: "Română", flag: "🇷🇴" },
+          ].map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => i18n.changeLanguage(lang.code)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
+                currentLang === lang.code
+                  ? "border-accent/50 bg-accent/10 text-accent"
+                  : "border-border text-foreground hover:border-muted-foreground/50"
+              }`}
+            >
+              <span className="text-xl">{lang.flag}</span>
+              <span className="flex-1 text-left font-medium">{lang.label}</span>
+              {currentLang === lang.code && <CheckCircle className="h-5 w-5 text-accent" />}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   // Mobile: Logout section
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
@@ -691,6 +736,7 @@ const SettingsTab = ({
         {activeSection === "plan" && <MobilePlanSection />}
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
+        {activeSection === "language" && <MobileLanguageSection />}
         {activeSection === "report" && <MobileReportSection />}
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
@@ -900,6 +946,37 @@ const SettingsTab = ({
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
+                </div>
+
+                <Separator />
+
+                {/* Language */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Language</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Choose your preferred language
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {[
+                      { code: "en", label: "🇬🇧 English" },
+                      { code: "ro", label: "🇷🇴 Română" },
+                    ].map((lang) => {
+                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+                      return (
+                        <Button
+                          key={lang.code}
+                          variant={currentLang === lang.code ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => i18n.changeLanguage(lang.code)}
+                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
+                        >
+                          {lang.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <Separator />
