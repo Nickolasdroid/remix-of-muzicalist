@@ -396,55 +396,53 @@ const Navigation = () => {
             </Link>
           )}
 
-          {/* Right: Notifications */}
+          {/* Right: Notifications (only when logged in) */}
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => {
-                if (user) {
-                  navigate('/notifications');
-                } else {
-                  navigate('/login');
-                }
-              }}
-              className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
-            >
-              <Bell className="h-6 w-6" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
-                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                </span>
-              )}
-            </button>
+            {user && (
+              <button
+                onClick={() => navigate('/notifications')}
+                className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
+              >
+                <Bell className="h-6 w-6" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Mobile: Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
-        <div className="flex items-center justify-around h-16 px-1">
-          {mobileBottomNav.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
-                isActive(item.to.split('?')[0])
-                  ? 'text-accent'
-                  : 'text-foreground/60 hover:text-accent'
-              }`}
-            >
-              <div className="relative">
-                <item.icon className="h-5 w-5 mb-1" />
-                {item.showBadge && unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </div>
-              <span className="text-[10px] font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
+      {/* Mobile: Bottom Navigation Bar (only when logged in) */}
+      {user && (
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+          <div className="flex items-center justify-around h-16 px-1">
+            {mobileBottomNav.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
+                  isActive(item.to.split('?')[0])
+                    ? 'text-accent'
+                    : 'text-foreground/60 hover:text-accent'
+                }`}
+              >
+                <div className="relative">
+                  <item.icon className="h-5 w-5 mb-1" />
+                  {item.showBadge && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+      )}
 
       {/* Desktop: Left Sidebar - Always visible */}
       <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
