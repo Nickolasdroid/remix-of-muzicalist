@@ -1385,7 +1385,7 @@ const ArtistProfile = () => {
                   <div>
                     <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                       <CalendarIcon className="h-5 w-5 text-accent" />
-                      Availability Calendar
+                      Calendar
                     </h2>
                     
                     {/* Show login prompt for non-authenticated users */}
