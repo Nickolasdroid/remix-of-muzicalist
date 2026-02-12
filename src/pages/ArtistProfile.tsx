@@ -836,19 +836,16 @@ const ArtistProfile = () => {
                       </h1>
                     </div>
                     
-                    {/* Badges */}
+                    {/* Category + Location */}
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                       {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                           {artist.specialization}
                         </Badge>}
-                      
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="h-5 w-5" />
-                      <span className="text-base">{artist.county}</span>
-                      {artist.country && getCountryFlag(artist.country) && <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>}
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-5 w-5" />
+                        <span className="text-base">{artist.county}</span>
+                        {artist.country && getCountryFlag(artist.country) && <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>}
+                      </div>
                     </div>
 
                     {/* Contact button */}
