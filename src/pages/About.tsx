@@ -57,7 +57,7 @@ const About = () => {
         {/* Stats Bar */}
         <div className="relative z-10 px-0 md:px-8 py-0 md:py-10">
           <div className="container mx-auto max-w-5xl px-0 md:px-4">
-            <div className="flex items-center justify-between bg-card backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
+            <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
               <div className="flex flex-col items-center gap-0.5">
                 <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
