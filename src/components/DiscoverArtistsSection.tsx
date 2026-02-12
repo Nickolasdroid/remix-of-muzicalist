@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { User, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +28,22 @@ interface ArtistWithRating extends ArtistData {
 
 const DiscoverArtistsSection = () => {
   const [artists, setArtists] = useState<ArtistWithRating[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -72,7 +88,7 @@ const DiscoverArtistsSection = () => {
   if (loading || artists.length === 0) return null;
 
   return (
-    <section className="py-10 md:py-20 px-4 md:px-8">
+    <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-8">
       <div className="container mx-auto px-0">
         <div className="text-center mb-6 md:mb-12 px-2">
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
@@ -82,12 +98,20 @@ const DiscoverArtistsSection = () => {
 
         <Carousel opts={{ align: "start", loop: true }} className="w-full">
           <CarouselContent className="-ml-3 md:-ml-4">
-            {artists.map(artist => {
+            {artists.map((artist, index) => {
               const isFree = !artist.plan || artist.plan === 'Free';
               const flag = artist.country ? getCountryFlag(artist.country) : '';
 
               return (
-                <CarouselItem key={artist.id} className="pl-3 md:pl-4 basis-1/2 md:basis-1/4">
+                <CarouselItem
+                  key={artist.id}
+                  className="pl-3 md:pl-4 basis-1/2 md:basis-1/4 transition-all duration-700 ease-out"
+                  style={{
+                    opacity: isVisible ? 1 : 0,
+                    transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transitionDelay: `${index * 100}ms`,
+                  }}
+                >
                   <Link to={`/artist/${artist.id}`} className="group block">
                     <div className="overflow-hidden rounded-lg">
                       <div className="relative aspect-square overflow-hidden">
