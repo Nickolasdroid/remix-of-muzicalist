@@ -32,15 +32,15 @@ const About = () => {
     <div className="min-h-screen">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="relative pt-20 md:pt-32 pb-10 md:pb-20 px-4 md:px-8 overflow-hidden">
+      {/* Hero Section + Stats Bar */}
+      <section className="relative pt-20 md:pt-32 pb-0 md:pb-10 px-0 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroConcert})` }}
         />
         <div className="absolute inset-0 bg-background/70" />
         
-        <div className="container mx-auto text-center px-0 relative z-10">
+        <div className="container mx-auto text-center px-4 md:px-8 relative z-10 pb-10 md:pb-20">
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-3 md:mb-6 text-foreground">
             The Global Stage for
             <span className="text-accent block mt-1 md:mt-2">Musical Artists</span>
@@ -53,30 +53,30 @@ const About = () => {
 
           <HeroSearchBar />
         </div>
-      </section>
 
-      {/* Stats Bar */}
-      <section className="px-0 md:px-8 py-0 md:py-10 bg-muted/30">
-        <div className="container mx-auto max-w-5xl px-0 md:px-4">
-          <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
-              <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
-            </div>
-            <div className="w-px h-8 bg-border/50" />
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
-              <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
-            </div>
-            <div className="w-px h-8 bg-border/50" />
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
-              <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
-            </div>
-            <div className="w-px h-8 bg-border/50" />
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
-              <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+        {/* Stats Bar */}
+        <div className="relative z-10 px-0 md:px-8 py-0 md:py-10">
+          <div className="container mx-auto max-w-5xl px-0 md:px-4">
+            <div className="flex items-center justify-between bg-card/80 backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+              </div>
+              <div className="w-px h-8 bg-border/50" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
+                <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+              </div>
             </div>
           </div>
         </div>
