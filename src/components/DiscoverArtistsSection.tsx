@@ -26,12 +26,15 @@ interface ArtistWithRating extends ArtistData {
   rating: number | null;
 }
 
-const DiscoverArtistsSection = () => {
+const DiscoverArtistsSection = () => { 
   const [artists, setArtists] = useState<ArtistWithRating[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (loading || artists.length === 0) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -43,8 +46,7 @@ const DiscoverArtistsSection = () => {
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
-  }, []);
-  const [loading, setLoading] = useState(true);
+  }, [loading, artists]);
 
   useEffect(() => {
     const fetchArtists = async () => {
