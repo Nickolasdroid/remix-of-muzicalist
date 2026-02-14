@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { Music2, Users, Target, Heart, Star, Mic, Guitar, Headphones } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
+import CommunitySections from "@/components/CommunitySections";
 import CategoryCard from "@/components/CategoryCard";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
@@ -84,6 +85,9 @@ const About = () => {
 
       {/* Discover Artists Section */}
       <DiscoverArtistsSection />
+
+      {/* Community Sections */}
+      <CommunitySections />
 
       {/* How Muzicalist Works Section */}
       <section className="py-10 md:py-20 px-4 md:px-8">
