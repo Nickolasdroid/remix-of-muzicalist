@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
 
+
 const Home = () => {
 
   return (
