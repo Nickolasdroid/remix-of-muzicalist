@@ -194,6 +194,13 @@ const CountryArtists = () => {
   const [filterCounty, setFilterCounty] = useState<string>("all");
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id || null);
+    });
+  }, []);
 
   useEffect(() => {
     const fetchArtistsData = async () => {
@@ -264,7 +271,7 @@ const CountryArtists = () => {
   }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder]);
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background">
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
