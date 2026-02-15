@@ -181,10 +181,10 @@ const CommunitySections = () => {
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-8 md:mb-16">
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
-            The Muzicalist Community
+            Posts & Event Opportunities
           </h2>
           <p className="text-xs md:text-lg text-muted-foreground max-w-xl mx-auto">
-            Not just booking. Connect, perform and get discovered.
+            Share performances, explore real event requests, and turn activity into bookings.
           </p>
         </div>
 
