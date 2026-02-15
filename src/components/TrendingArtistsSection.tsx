@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -33,7 +33,7 @@ const TrendingArtistsSection = () => {
               >
                 <div className="overflow-hidden rounded-lg opacity-60">
                   <div className="relative aspect-square bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                    <User className="h-16 w-16 text-muted-foreground/40" />
+                    <HelpCircle className="h-20 w-20 md:h-24 md:w-24 text-muted-foreground/40" />
                   </div>
                   <div className="bg-card border-t border-border p-2 space-y-0.5">
                     <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
