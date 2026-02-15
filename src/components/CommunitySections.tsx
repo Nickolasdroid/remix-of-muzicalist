@@ -50,11 +50,7 @@ const PhoneMockup = () => (
 
       {/* Event Request section inside phone */}
       <div className="p-2.5 space-y-1.5">
-        <div className="flex items-center gap-1.5">
-          <Megaphone className="h-3 w-3 text-accent" />
-          <span className="text-[10px] font-display font-bold text-foreground">Event Opportunities</span>
-        </div>
-        <p className="text-[8px] text-muted-foreground">Browse and apply to real gig opportunities.</p>
+        <h4 className="font-display font-bold text-sm text-foreground">Announcements</h4>
 
         {[
           { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },
