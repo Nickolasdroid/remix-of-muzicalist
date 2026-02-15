@@ -50,7 +50,7 @@ const PhoneMockup = () => (
       <div className="p-2.5 space-y-1.5">
         <div className="flex items-center gap-1.5">
           <Megaphone className="h-3 w-3 text-accent" />
-          <span className="text-[10px] font-display font-bold text-foreground">Event Request</span>
+          <span className="text-[10px] font-display font-bold text-foreground">Event Opportunities</span>
         </div>
         <p className="text-[8px] text-muted-foreground">Browse and apply to real gig opportunities.</p>
 
@@ -95,7 +95,7 @@ const RightContent = () => (
         Share performances, build your audience, and get booked.
       </p>
       <p className="text-xs md:text-sm text-muted-foreground">
-        Post your performance videos, grow your followers, and get booked directly from your content.
+        Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
     </div>
 
@@ -103,10 +103,13 @@ const RightContent = () => (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-        <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Event Request</h3>
+        <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Event Opportunities</h3>
       </div>
-      <p className="text-sm md:text-base text-muted-foreground">
-        Browse and apply to real gig opportunities.
+      <p className="text-sm md:text-base font-semibold text-foreground/90">
+        Browse real event requests, apply quickly, and secure new bookings.
+      </p>
+      <p className="text-xs md:text-sm text-muted-foreground">
+        Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
       {[
@@ -150,8 +153,8 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
             <Megaphone className="h-5 w-5 text-accent" />
             <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
           </div>
-          <p className="text-sm font-semibold text-foreground/90">Share performances, build your audience, and get booked.</p>
-          <p className="text-xs text-muted-foreground">Post your performance videos, grow your followers, and get booked directly from your content.</p>
+      <p className="text-sm font-semibold text-foreground/90">Share performances, build your audience, and get booked.</p>
+          <p className="text-xs text-muted-foreground">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
           <Link to="/feed">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
               Explore Feed
@@ -168,9 +171,10 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
       <div className="relative z-10 flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Megaphone className="h-5 w-5 text-accent" />
-          <h3 className="text-lg font-display font-bold text-foreground">Event Request</h3>
+           <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
         </div>
-        <p className="text-xs text-muted-foreground">Browse and apply to real gig opportunities.</p>
+        <p className="text-xs font-semibold text-foreground/90">Browse real event requests, apply quickly, and secure new bookings.</p>
+        <p className="text-[10px] text-muted-foreground">Connect with verified organizers and turn opportunities into confirmed events.</p>
         {[
           { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },
           { name: "Lucia Events", location: "Cluj-Napoca", date: "June 14" },
