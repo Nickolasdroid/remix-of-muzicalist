@@ -241,31 +241,33 @@ const Navigation = () => {
           )}
         </div>
 
-        {/* Center: Nav links */}
-        <div className="flex items-center gap-3">
-          <Link
-            to="/feed"
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-              isActive('/feed')
-                ? 'bg-accent/20 text-accent'
-                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-            }`}
-          >
-            <Home className="h-5 w-5" />
-            <span className="font-medium">Feed</span>
-          </Link>
-          <Link
-            to="/announcements"
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-              isActive('/announcements')
-                ? 'bg-accent/20 text-accent'
-                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-            }`}
-          >
-            <Megaphone className="h-5 w-5" />
-            <span className="font-medium">Ads</span>
-          </Link>
-        </div>
+        {/* Center: Nav links (hidden on homepage) */}
+        {location.pathname !== '/' && (
+          <div className="flex items-center gap-3">
+            <Link
+              to="/feed"
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+                isActive('/feed')
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
+              <Home className="h-5 w-5" />
+              <span className="font-medium">Feed</span>
+            </Link>
+            <Link
+              to="/announcements"
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+                isActive('/announcements')
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+              }`}
+            >
+              <Megaphone className="h-5 w-5" />
+              <span className="font-medium">Ads</span>
+            </Link>
+          </div>
+        )}
 
         {/* Right: Login/Register (only when not logged in) */}
         <div className="flex items-center gap-3">
