@@ -75,12 +75,6 @@ const PhoneMockup = () => (
         ))}
       </div>
 
-      {/* Explore Feed button inside phone */}
-      <div className="px-3 pb-3">
-        <div className="w-full text-center py-1.5 rounded-lg bg-accent text-accent-foreground font-display font-bold text-[10px]">
-          Explore Feed
-        </div>
-      </div>
     </div>
   </div>
 );
