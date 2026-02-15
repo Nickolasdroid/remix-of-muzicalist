@@ -170,22 +170,6 @@ const HeroSearchBar = () => {
     return (
       <div className="w-full max-w-md mx-auto">
         <div className="bg-card/90 backdrop-blur-sm rounded-2xl border border-border/50 overflow-hidden shadow-lg">
-          {/* Location */}
-          <Drawer open={locationOpen} onOpenChange={setLocationOpen}>
-            <DrawerTrigger asChild>
-              <button type="button" className={cn(fieldClass, "w-full border-b border-border/30")}>
-                <MapPin className="h-4 w-4 text-accent shrink-0" />
-                <span className="truncate text-foreground/90">{locationLabel}</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="px-4 pb-6">
-              <DrawerHeader className="text-left px-0">
-                <DrawerTitle>Select Location</DrawerTitle>
-              </DrawerHeader>
-              {locationContent}
-            </DrawerContent>
-          </Drawer>
-
           {/* Category */}
           <Drawer open={categoryOpen} onOpenChange={setCategoryOpen}>
             <DrawerTrigger asChild>
@@ -199,6 +183,22 @@ const HeroSearchBar = () => {
                 <DrawerTitle>Select Artist Type</DrawerTitle>
               </DrawerHeader>
               {categoryContent}
+            </DrawerContent>
+          </Drawer>
+
+          {/* Location */}
+          <Drawer open={locationOpen} onOpenChange={setLocationOpen}>
+            <DrawerTrigger asChild>
+              <button type="button" className={cn(fieldClass, "w-full border-b border-border/30")}>
+                <MapPin className="h-4 w-4 text-accent shrink-0" />
+                <span className="truncate text-foreground/90">{locationLabel}</span>
+              </button>
+            </DrawerTrigger>
+            <DrawerContent className="px-4 pb-6">
+              <DrawerHeader className="text-left px-0">
+                <DrawerTitle>Select Location</DrawerTitle>
+              </DrawerHeader>
+              {locationContent}
             </DrawerContent>
           </Drawer>
 
@@ -243,31 +243,31 @@ const HeroSearchBar = () => {
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="flex items-center bg-card/90 backdrop-blur-sm rounded-full border border-border/50 overflow-hidden shadow-lg">
-        {/* Location */}
-        <Popover open={locationOpen} onOpenChange={setLocationOpen}>
+        {/* Category */}
+        <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
           <PopoverTrigger asChild>
             <button type="button" className={cn(fieldClass, "flex-1 min-w-0 rounded-l-full")}>
-              <MapPin className="h-4 w-4 text-accent shrink-0" />
-              <span className="truncate text-foreground/90">{locationLabel}</span>
+              <Music className="h-4 w-4 text-accent shrink-0" />
+              <span className="truncate text-foreground/90">{categoryLabel}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 p-3 bg-card border-border z-50" align="start">
-            {locationContent}
+          <PopoverContent className="w-48 p-0 bg-card border-border z-50" align="start">
+            {categoryContent}
           </PopoverContent>
         </Popover>
 
         <div className={dividerClass} />
 
-        {/* Category */}
-        <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+        {/* Location */}
+        <Popover open={locationOpen} onOpenChange={setLocationOpen}>
           <PopoverTrigger asChild>
             <button type="button" className={cn(fieldClass, "flex-1 min-w-0")}>
-              <Music className="h-4 w-4 text-accent shrink-0" />
-              <span className="truncate text-foreground/90">{categoryLabel}</span>
+              <MapPin className="h-4 w-4 text-accent shrink-0" />
+              <span className="truncate text-foreground/90">{locationLabel}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-48 p-0 bg-card border-border z-50" align="center">
-            {categoryContent}
+          <PopoverContent className="w-72 p-3 bg-card border-border z-50" align="center">
+            {locationContent}
           </PopoverContent>
         </Popover>
 
