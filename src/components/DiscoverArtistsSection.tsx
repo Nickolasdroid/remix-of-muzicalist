@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { User, Star, ChevronRight } from "lucide-react";
+import { User, Star, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import diamondIcon from "@/assets/diamond-icon.png";
@@ -135,6 +135,12 @@ const DiscoverArtistsSection = () => {
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
                             <User className="h-16 w-16 text-accent" />
+                          </div>
+                        )}
+                        {artist.rating !== null && artist.rating >= 4.5 && (
+                          <div className="absolute top-2 left-2 flex items-center gap-1 bg-accent text-accent-foreground text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                            <TrendingUp className="h-3 w-3" />
+                            Top Rated
                           </div>
                         )}
                       </div>
