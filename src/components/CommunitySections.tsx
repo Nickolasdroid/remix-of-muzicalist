@@ -97,6 +97,14 @@ const RightContent = () => (
       <p className="text-xs md:text-sm text-muted-foreground">
         Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
+      <Link to="/feed">
+        <Button
+          size="sm"
+          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
+        >
+          Explore Feed
+        </Button>
+      </Link>
     </div>
 
     {/* Event Request */}
@@ -112,33 +120,15 @@ const RightContent = () => (
         Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
-      {[
-        { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },
-        { name: "Lucia Events", location: "Cluj-Napoca", date: "June 14, Budget" },
-      ].map((event, i) => (
-        <div key={i} className="rounded-xl border border-accent/20 bg-card/60 backdrop-blur-sm p-3 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <h5 className="font-display font-bold text-sm text-foreground">{event.name}</h5>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <MapPin className="h-3 w-3 text-accent" /> {event.location}
-            </p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <CalendarDays className="h-3 w-3 text-accent" /> {event.date}
-            </p>
-          </div>
-          <span className="text-xs font-bold border border-accent text-accent px-3 py-1 rounded-lg">APPLY NOW</span>
-        </div>
-      ))}
+      <Link to="/announcements">
+        <Button
+          size="sm"
+          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
+        >
+          Explore Ads
+        </Button>
+      </Link>
     </div>
-
-    <Link to="/feed">
-      <Button
-        size="sm"
-        className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
-      >
-        Explore Feed
-      </Button>
-    </Link>
   </div>
 );
 
@@ -175,22 +165,9 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
         </div>
         <p className="text-xs font-semibold text-foreground/90">Browse real event requests, apply quickly, and secure new bookings.</p>
         <p className="text-[10px] text-muted-foreground">Connect with verified organizers and turn opportunities into confirmed events.</p>
-        {[
-          { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },
-          { name: "Lucia Events", location: "Cluj-Napoca", date: "June 14" },
-        ].map((event, i) => (
-          <div key={i} className="rounded-lg border border-accent/20 bg-secondary/50 p-2.5 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h5 className="font-display font-bold text-xs text-foreground">{event.name}</h5>
-              <p className="text-[10px] text-muted-foreground flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5 text-accent" /> {event.location}</p>
-              <p className="text-[10px] text-muted-foreground flex items-center gap-0.5"><CalendarDays className="h-2.5 w-2.5 text-accent" /> {event.date}</p>
-            </div>
-            <span className="text-[9px] font-bold border border-accent text-accent px-2 py-0.5 rounded">APPLY NOW</span>
-          </div>
-        ))}
         <Link to="/announcements">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
-            View Opportunities
+            Explore Ads
           </Button>
         </Link>
       </div>
