@@ -1,4 +1,4 @@
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Lock } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -19,9 +19,12 @@ const TrendingArtistsSection = () => {
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
             Trending Artists
           </h2>
-          <p className="text-sm md:text-lg text-muted-foreground mt-2">
-            Launching Soon
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <Lock className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
+            <p className="text-sm md:text-lg text-muted-foreground">
+              Launching Soon
+            </p>
+          </div>
         </div>
 
         <Carousel opts={{ align: "start", loop: true }} className="w-full">
