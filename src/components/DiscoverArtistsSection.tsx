@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { User, Star } from "lucide-react";
+import { User, Star, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import diamondIcon from "@/assets/diamond-icon.png";
@@ -93,9 +93,18 @@ const DiscoverArtistsSection = () => {
     <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-8">
       <div className="container mx-auto px-0">
         <div className="text-center mb-6 md:mb-12 px-2">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
-            Discover Artists
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
+              Discover Artists
+            </h2>
+            <Link
+              to="/artists"
+              className="flex items-center gap-1 text-sm md:text-base text-accent hover:text-accent/80 font-medium transition-colors"
+            >
+              See more
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         <Carousel opts={{ align: "start", loop: true }} className="w-full">
