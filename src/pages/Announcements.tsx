@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight, Share2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
@@ -207,6 +207,17 @@ const Announcements = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => {
+                          const url = `${window.location.origin}/artist/${announcement.profile_id}`;
+                          navigator.clipboard.writeText(url);
+                          toast({
+                            title: "Link copied",
+                            description: "The link has been copied to your clipboard."
+                          });
+                        }}>
+                          <Share2 className="h-4 w-4 mr-2" />
+                          Share
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                       toast({
                         title: "Report submitted",
