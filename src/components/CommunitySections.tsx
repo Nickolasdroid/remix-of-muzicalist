@@ -7,7 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const PhoneMockup = () => (
   <div className="w-64 md:w-72 flex-shrink-0">
-    <div className="rounded-[2rem] border-2 border-accent/30 bg-card overflow-hidden shadow-[0_0_40px_-5px_hsl(var(--accent)/0.4)] relative">
+    <div className="rounded-[2rem] border-2 border-black bg-card overflow-hidden shadow-[0_0_40px_-5px_hsl(var(--accent)/0.4)] relative">
       {/* Status bar */}
       <div className="flex items-center justify-between px-5 py-1.5 bg-black/80 text-white text-[9px]">
         <span className="font-semibold">9:41</span>
