@@ -1051,26 +1051,36 @@ const ArtistProfile = () => {
                   {/* Social Media */}
                   <div>
                     <h3 className="text-xl font-display font-bold mb-4 text-left">Social Networks</h3>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                      {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Facebook">
-                          <Facebook className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-                        </a>}
-                      {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Instagram">
-                          <Instagram className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-                        </a>}
-                      {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="YouTube">
-                          <Youtube className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-                        </a>}
-                      {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="TikTok">
-                          <Music className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-                        </a>}
-                      {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Spotify">
-                          <svg className="h-5 w-5 md:h-6 md:w-6 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                          </svg>
-                        </a>}
-                      {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
-                    </div>
+                    {currentUserId ? (
+                      <div className="flex flex-wrap gap-2 md:gap-3">
+                        {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Facebook">
+                            <Facebook className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                          </a>}
+                        {artist.instagram_url && <a href={artist.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Instagram">
+                            <Instagram className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                          </a>}
+                        {artist.youtube_url && <a href={artist.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="YouTube">
+                            <Youtube className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                          </a>}
+                        {artist.tiktok_url && <a href={artist.tiktok_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="TikTok">
+                            <Music className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+                          </a>}
+                        {artist.spotify_url && <a href={artist.spotify_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Spotify">
+                            <svg className="h-5 w-5 md:h-6 md:w-6 text-accent" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                            </svg>
+                          </a>}
+                        {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
+                      </div>
+                    ) : (
+                      <div
+                        className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-accent transition-colors"
+                        onClick={() => navigate('/login')}
+                      >
+                        <Lock className="h-4 w-4" />
+                        <span className="text-sm">Login to view social media links</span>
+                      </div>
+                    )}
                   </div>
 
                   <Separator />
