@@ -443,7 +443,7 @@ const RegisterArtist = () => {
 
                   {imageSrc && (
                     <div className="space-y-4">
-                      <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden">
+                      <div className="relative w-full aspect-square max-w-[400px] mx-auto bg-black rounded-lg overflow-hidden">
                         <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} />
                       </div>
                       
