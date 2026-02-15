@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
-import { getCountryFlag } from "@/lib/countryFlags";
+import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
   Popover,
@@ -187,6 +187,7 @@ interface Artist {
 const CountryArtists = () => {
   const { country } = useParams<{ country: string }>();
   const decodedCountry = country ? decodeURIComponent(country) : "";
+  const displayName = getCountryName(decodedCountry);
   const [searchTerm, setSearchTerm] = useState("");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -285,7 +286,7 @@ const CountryArtists = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-2xl md:text-3xl">{getCountryFlag(decodedCountry)}</span>
-            <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">{decodedCountry}</h1>
+            <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
           </div>
 
           <FilterButton 
@@ -340,8 +341,8 @@ const CountryArtists = () => {
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground text-base md:text-lg">
                 {searchTerm || filterCategory !== "all" || filterCounty !== "all" || filterExperience !== "all"
-                  ? "No artists found matching your filters" 
-                  : `No artists registered from ${decodedCountry} yet`
+                   ? "No artists found matching your filters" 
+                   : `No artists registered from ${displayName} yet`
                 }
               </p>
             </div>
