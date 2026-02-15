@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import CommunitySections from "@/components/CommunitySections";
+import TrendingArtistsSection from "@/components/TrendingArtistsSection";
 import CategoryCard from "@/components/CategoryCard";
 import { Card } from "@/components/ui/card";
 import heroConcert from "@/assets/hero-concert.png";
@@ -70,6 +71,9 @@ const About = () => {
 
       {/* Community Sections */}
       <CommunitySections />
+
+      {/* Trending Artists Section */}
+      <TrendingArtistsSection />
 
       {/* How Muzicalist Works Section */}
       <section className="py-10 md:py-20 px-4 md:px-8">
