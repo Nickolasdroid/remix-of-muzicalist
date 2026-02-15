@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
@@ -226,6 +226,28 @@ const Announcements = () => {
 
                   {/* Content */}
                   <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
+                  {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) && (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
+                      {announcement.location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {announcement.location}
+                        </span>
+                      )}
+                      {announcement.event_date && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(announcement.event_date).toLocaleDateString()}
+                        </span>
+                      )}
+                      {announcement.budget && (
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          {announcement.budget}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 {/* Media for premium announcements - Natural aspect ratio for landscape images */}
@@ -238,13 +260,20 @@ const Announcements = () => {
                       </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                 
-                {/* Contact button */}
+                {/* Action button */}
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                      <MessageCircle className="w-5 h-5" />
-                      <span className="font-medium">Contact</span>
-                    </Button>
+                    {announcement.is_premium ? (
+                      <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
+                        <MessageCircle className="w-5 h-5" />
+                        <span className="font-medium">Contact</span>
+                      </Button>
+                    ) : (
+                      <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
+                        <ArrowRight className="w-5 h-5" />
+                        <span className="font-medium">Apply Now</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card>);

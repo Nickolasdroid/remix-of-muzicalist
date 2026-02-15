@@ -16,11 +16,14 @@ export type Database = {
     Tables: {
       announcements: {
         Row: {
+          budget: string | null
           created_at: string
           date: string
           description: string
+          event_date: string | null
           id: string
           is_premium: boolean
+          location: string | null
           media_type: string | null
           media_url: string | null
           profile_id: string
@@ -28,11 +31,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          budget?: string | null
           created_at?: string
           date?: string
           description: string
+          event_date?: string | null
           id?: string
           is_premium?: boolean
+          location?: string | null
           media_type?: string | null
           media_url?: string | null
           profile_id: string
@@ -40,11 +46,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          budget?: string | null
           created_at?: string
           date?: string
           description?: string
+          event_date?: string | null
           id?: string
           is_premium?: boolean
+          location?: string | null
           media_type?: string | null
           media_url?: string | null
           profile_id?: string
