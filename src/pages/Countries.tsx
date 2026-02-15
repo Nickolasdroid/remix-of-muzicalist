@@ -19,6 +19,7 @@ const Countries = () => {
   const [countries, setCountries] = useState<CountryData[]>([]);
   const [userCountry, setUserCountry] = useState<CountryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCountriesAndUser = async () => {
@@ -61,6 +62,7 @@ const Countries = () => {
       // Get current user's country
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        setCurrentUserId(session.user.id);
         const { data: profile } = await supabase
           .from('profiles')
           .select('country')
@@ -88,7 +90,7 @@ const Countries = () => {
   );
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background">
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
