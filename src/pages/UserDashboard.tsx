@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, DollarSign } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, DollarSign, MapPin } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -49,7 +49,10 @@ const UserDashboard = () => {
     description: "",
     isPremium: false,
     mediaUrl: "",
-    mediaType: ""
+    mediaType: "",
+    location: "",
+    eventDate: "",
+    budget: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
 
@@ -235,12 +238,15 @@ const UserDashboard = () => {
         description: newAnnouncement.description,
         is_premium: newAnnouncement.isPremium,
         media_url: newAnnouncement.mediaUrl || null,
-        media_type: newAnnouncement.mediaType || null
+        media_type: newAnnouncement.mediaType || null,
+        location: newAnnouncement.location || null,
+        event_date: newAnnouncement.eventDate || null,
+        budget: newAnnouncement.budget || null
       });
       if (error) throw error;
       
       await loadAnnouncements();
-      setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "" });
+      setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "", location: "", eventDate: "", budget: "" });
       setShowAnnouncementDialog(false);
       toast({ title: t("common.success"), description: "Ad posted successfully!" });
     } catch (error: any) {
@@ -394,6 +400,23 @@ const UserDashboard = () => {
                     <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                   </div>
 
+                  {!newAnnouncement.isPremium && (
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="announcement-location-user">Location (optional)</Label>
+                        <Input id="announcement-location-user" value={newAnnouncement.location} onChange={(e) => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
+                        <Input id="announcement-event-date-user" type="date" value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
+                        <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={(e) => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
+                      </div>
+                    </div>
+                  )}
+
                   {newAnnouncement.isPremium && (
                     <div>
                       <Label htmlFor="announcement-media-user">{t("userDashboard.media", "Photo/Video")}</Label>
@@ -503,6 +526,28 @@ const UserDashboard = () => {
                       </AlertDialog>
                     </div>
                     <ExpandableText text={ad.description} className="mt-3" />
+                    {!ad.is_premium && (ad.location || ad.event_date || ad.budget) && (
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+                        {ad.location && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {ad.location}
+                          </span>
+                        )}
+                        {ad.event_date && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {new Date(ad.event_date).toLocaleDateString()}
+                          </span>
+                        )}
+                        {ad.budget && (
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            {ad.budget}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {ad.is_premium && ad.media_url && (

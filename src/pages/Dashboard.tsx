@@ -89,7 +89,10 @@ const Dashboard = () => {
     description: "",
     isPremium: false,
     mediaUrl: "",
-    mediaType: ""
+    mediaType: "",
+    location: "",
+    eventDate: "",
+    budget: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
@@ -552,7 +555,10 @@ const Dashboard = () => {
         description: newAnnouncement.description,
         is_premium: newAnnouncement.isPremium,
         media_url: newAnnouncement.mediaUrl || null,
-        media_type: newAnnouncement.mediaType || null
+        media_type: newAnnouncement.mediaType || null,
+        location: newAnnouncement.location || null,
+        event_date: newAnnouncement.eventDate || null,
+        budget: newAnnouncement.budget || null
       });
       if (error) throw error;
       await loadAnnouncements();
@@ -560,7 +566,10 @@ const Dashboard = () => {
         description: "",
         isPremium: false,
         mediaUrl: "",
-        mediaType: ""
+        mediaType: "",
+        location: "",
+        eventDate: "",
+        budget: ""
       });
       setShowAnnouncementDialog(false);
       toast({
@@ -2042,6 +2051,23 @@ const Dashboard = () => {
                             })} placeholder="Write your announcement here..." rows={4} maxLength={200} className="mt-2" />
                                       <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                                     </div>
+
+                                    {!newAnnouncement.isPremium && (
+                                      <div className="space-y-3">
+                                        <div>
+                                          <Label htmlFor="announcement-location-inner">Location (optional)</Label>
+                                          <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
+                                        </div>
+                                        <div>
+                                          <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
+                                          <Input id="announcement-event-date-inner" type="date" value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
+                                        </div>
+                                        <div>
+                                          <Label htmlFor="announcement-budget-inner">Budget (optional)</Label>
+                                          <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
+                                        </div>
+                                      </div>
+                                    )}
                                     
                                     {newAnnouncement.isPremium && <div>
                                         <Label htmlFor="announcement-media-inner">Photo/Video</Label>
@@ -2114,6 +2140,28 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                                 <ExpandableText text={announcement.description} className="mt-3" />
+                                {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) && (
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+                                    {announcement.location && (
+                                      <span className="flex items-center gap-1">
+                                        <MapPin className="h-3 w-3" />
+                                        {announcement.location}
+                                      </span>
+                                    )}
+                                    {announcement.event_date && (
+                                      <span className="flex items-center gap-1">
+                                        <CalendarIcon className="h-3 w-3" />
+                                        {new Date(announcement.event_date).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                    {announcement.budget && (
+                                      <span className="flex items-center gap-1">
+                                        <DollarSign className="h-3 w-3" />
+                                        {announcement.budget}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
