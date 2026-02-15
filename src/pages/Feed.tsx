@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2 } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -318,6 +318,17 @@ const Feed = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => {
+                          const url = `${window.location.origin}/artist/${item.profile_id}`;
+                          navigator.clipboard.writeText(url);
+                          toast({
+                            title: "Link copied",
+                            description: "The link has been copied to your clipboard."
+                          });
+                        }}>
+                          <Share2 className="h-4 w-4 mr-2" />
+                          Share
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                     toast({
                       title: "Report submitted",
