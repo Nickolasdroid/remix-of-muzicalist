@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone } from "lucide-react";
+import artistFeedImg from "@/assets/artist-feed-mockup.png";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -16,7 +17,8 @@ const PhoneMockup = () => (
       </div>
 
       {/* Artist image area */}
-      <div className="aspect-[3/3.2] bg-gradient-to-br from-accent/30 via-accent/10 to-background relative flex items-end">
+      <div className="aspect-[3/3.2] relative flex items-end overflow-hidden">
+        <img src={artistFeedImg} alt="Artist performing" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-12 h-12 rounded-full bg-background/40 backdrop-blur-sm flex items-center justify-center">
             <Play className="h-5 w-5 text-accent fill-accent" />
