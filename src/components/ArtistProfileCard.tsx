@@ -1,17 +1,20 @@
 import { Link } from "react-router-dom";
-import { User, Star } from "lucide-react";
+import { User, Star, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import diamondIcon from "@/assets/diamond-icon.png";
+import { getCountryName } from "@/lib/countryFlags";
 
 interface ArtistProfileCardProps {
   id: string;
   stageName: string;
   imageUrl?: string | null;
   plan?: string;
+  country?: string | null;
+  county?: string | null;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
 
   useEffect(() => {
@@ -55,6 +58,14 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan }: ArtistProfileCardP
           <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate">
             {stageName}
           </h3>
+          {(country || county) && (
+            <p className="text-xs text-muted-foreground truncate flex items-center gap-0.5">
+              <MapPin className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">
+                {[county, country ? getCountryName(country) : null].filter(Boolean).join(', ')}
+              </span>
+            </p>
+          )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 text-accent fill-accent" />
