@@ -1946,12 +1946,14 @@ const Dashboard = () => {
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
-                                    <Avatar className="w-10 h-10">
-                                      <AvatarImage src={profile?.avatar_url || undefined} alt={formData.stageName} />
-                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                        {formData.stageName.charAt(0)}
-                                      </AvatarFallback>
-                                    </Avatar>
+                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
+                                      <Avatar className="w-10 h-10 border-2 border-background">
+                                        <AvatarImage src={profile?.avatar_url || undefined} alt={formData.stageName} />
+                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                          {formData.stageName.charAt(0)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    </div>
                                     <div>
                                       <div className="flex items-center gap-2">
                                         <h3 className="font-semibold text-foreground">
@@ -1967,8 +1969,8 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => setDeletePostId(post.id)} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeletePostId(post.id)} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                                   </Button>
                                 </div>
                                 <ExpandableText text={post.content} className="mt-3" />
