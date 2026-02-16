@@ -67,23 +67,21 @@ const AISearchBar = () => {
 
 
             
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="E.g., 'Find jazz singers in București' or 'Rock bands for wedding'"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="pl-10"
-                  disabled={isLoading} />
-
-              </div>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="E.g., 'Find jazz singers in București' or 'Rock bands for wedding'"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-10 pr-12"
+                disabled={isLoading} />
               <Button
                 type="submit"
                 disabled={isLoading}
                 size="icon"
-                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full h-10 w-10">
+                variant="ghost"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90">
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
