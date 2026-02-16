@@ -242,7 +242,7 @@ const Navigation = () => {
         </div>
 
         {/* Center: Nav links (hidden on homepage) */}
-        {location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register' && (
+        {location.pathname !== '/' && (
           <div className="flex items-center gap-3">
             <Link
               to="/feed"
