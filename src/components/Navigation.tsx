@@ -242,7 +242,7 @@ const Navigation = () => {
         </div>
 
         {/* Center: Nav links (hidden on homepage for guests, shown for logged-in users) */}
-        {(location.pathname !== '/' || user) && (
+        {(user || !['/login', '/register', '/register/artist', '/register/user', '/'].includes(location.pathname)) && (
           <div className="flex items-center gap-3">
             <Link
               to="/feed"
