@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Sparkles, Loader2 } from "lucide-react";
+import { Search, Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -82,19 +82,13 @@ const AISearchBar = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-accent text-accent-foreground hover:bg-accent/90">
-
-                {isLoading ?
-                <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Searching...
-                  </> :
-
-                <>
-                    <Search className="mr-2 h-4 w-4" />
-                    Search
-                  </>
-                }
+                size="icon"
+                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-full h-10 w-10">
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </form>
