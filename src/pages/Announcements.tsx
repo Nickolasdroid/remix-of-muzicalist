@@ -37,23 +37,23 @@ const Announcements = () => {
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/login');
-        return;
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+        
+        // Get user's country from profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        setUserCountry(profile?.country || '__all__');
+      } else {
+        setUserCountry('__all__');
       }
-      setCurrentUserId(session.user.id);
-      
-      // Get user's country from profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('country')
-        .eq('id', session.user.id)
-        .maybeSingle();
-      
-      setUserCountry(profile?.country || null);
     };
     checkAuthAndGetCountry();
-  }, [navigate]);
+  }, []);
 
   const handleDeleteAnnouncement = async (announcementId: string) => {
     try {
@@ -83,7 +83,7 @@ const Announcements = () => {
       const from = pageNum * ANNOUNCEMENTS_PER_PAGE;
       const to = from + ANNOUNCEMENTS_PER_PAGE - 1;
       
-      const { data, error } = await supabase
+      let query = supabase
         .from("announcements")
         .select(`
           *,
@@ -95,8 +95,13 @@ const Announcements = () => {
             plan,
             country
           )
-        `)
-        .eq('profiles.country', userCountry)
+        `);
+      
+      if (userCountry !== '__all__') {
+        query = query.eq('profiles.country', userCountry);
+      }
+      
+      const { data, error } = await query
         .order("created_at", { ascending: false })
         .range(from, to);
       
@@ -133,7 +138,7 @@ const Announcements = () => {
   }, [page, fetchAnnouncements]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
-  return <div className="min-h-screen md:ml-64 bg-background">
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto pt-16 md:pt-[68px] pb-0 px-0">
