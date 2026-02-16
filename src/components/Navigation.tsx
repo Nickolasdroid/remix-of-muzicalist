@@ -241,13 +241,13 @@ const Navigation = () => {
           )}
         </div>
 
-        {/* Center: Nav links (hidden on homepage) */}
-        {location.pathname !== '/' && (
+        {/* Center: Nav links (hidden on homepage for guests, shown for logged-in users) */}
+        {(location.pathname !== '/' || user) && (
           <div className="flex items-center gap-3">
             <Link
               to="/feed"
               className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                isActive('/feed')
+                isActive('/feed') || (location.pathname === '/' && user)
                   ? 'bg-accent/20 text-accent'
                   : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
               }`}
@@ -447,7 +447,7 @@ const Navigation = () => {
                 key={item.label}
                 to={item.to}
                 className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
-                  isActive(item.to.split('?')[0])
+                  (isActive(item.to.split('?')[0]) || (item.to === '/feed' && location.pathname === '/' && user))
                     ? 'text-accent'
                     : 'text-foreground/60 hover:text-accent'
                 }`}
