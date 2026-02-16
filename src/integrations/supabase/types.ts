@@ -542,6 +542,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
       get_or_create_conversation: {
         Args: { _artist_id: string; _participant_id: string }
         Returns: string
