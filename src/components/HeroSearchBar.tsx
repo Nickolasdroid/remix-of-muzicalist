@@ -162,6 +162,7 @@ const HeroSearchBar = () => {
     </div>
   );
 
+  const allFieldsFilled = !!selectedCategory && !!selectedCountry && !!selectedDate;
   const fieldClass = "flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-muted/20 transition-colors text-sm font-medium whitespace-nowrap";
   const dividerClass = "w-px bg-border/50 self-stretch my-2";
 
@@ -229,7 +230,8 @@ const HeroSearchBar = () => {
           {/* Search */}
           <Button
             onClick={handleSearch}
-            className="w-full rounded-none rounded-b-2xl bg-accent text-accent-foreground hover:bg-accent/90 py-3 text-base font-semibold"
+            disabled={!allFieldsFilled}
+            className="w-full rounded-none rounded-b-2xl bg-accent text-accent-foreground hover:bg-accent/90 py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search className="h-4 w-4 mr-2" />
             Search
@@ -295,7 +297,8 @@ const HeroSearchBar = () => {
         {/* Search Button */}
         <Button
           onClick={handleSearch}
-          className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 text-base font-semibold m-1.5 shadow-[var(--shadow-gold)]"
+          disabled={!allFieldsFilled}
+          className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 text-base font-semibold m-1.5 shadow-[var(--shadow-gold)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Search className="h-4 w-4 mr-2" />
           Search
