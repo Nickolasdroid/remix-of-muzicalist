@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import Home from "./Home";
+import Feed from "./Feed";
 import About from "./About";
 
 const Index = () => {
@@ -25,7 +25,7 @@ const Index = () => {
     return null;
   }
 
-  return isAuthenticated ? <Home /> : <About />;
+  return isAuthenticated ? <Feed /> : <About />;
 };
 
 export default Index;
