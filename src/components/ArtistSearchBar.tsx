@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCountryName } from "@/lib/countryFlags";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -161,7 +162,7 @@ const ArtistSearchBar = () => {
             <SelectContent>
               {countries.map((country) => (
                 <SelectItem key={country} value={country}>
-                  {country}
+                  {getCountryName(country)}
                 </SelectItem>
               ))}
             </SelectContent>
