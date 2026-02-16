@@ -29,33 +29,54 @@ import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FilterButtonProps {
+  filterCountry: string;
+  setFilterCountry: (value: string) => void;
   filterCounty: string;
   setFilterCounty: (value: string) => void;
   filterExperience: string;
   setFilterExperience: (value: string) => void;
   sortOrder: string;
   setSortOrder: (value: string) => void;
+  countries: string[];
   counties: string[];
 }
 
 const FilterContent = ({
+  filterCountry,
+  setFilterCountry,
   filterCounty,
   setFilterCounty,
   filterExperience,
   setFilterExperience,
   sortOrder,
   setSortOrder,
+  countries,
   counties,
 }: FilterButtonProps) => (
   <div className="space-y-4">
     <div className="space-y-2">
-      <Label htmlFor="county">County</Label>
-      <Select value={filterCounty} onValueChange={setFilterCounty}>
-        <SelectTrigger id="county">
-          <SelectValue placeholder="All Counties" />
+      <Label htmlFor="country">Country</Label>
+      <Select value={filterCountry} onValueChange={setFilterCountry}>
+        <SelectTrigger id="country">
+          <SelectValue placeholder="All Countries" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Counties</SelectItem>
+          <SelectItem value="all">All Countries</SelectItem>
+          {countries.map(country => (
+            <SelectItem key={country} value={country}>{country}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="county">Region</Label>
+      <Select value={filterCounty} onValueChange={setFilterCounty}>
+        <SelectTrigger id="county">
+          <SelectValue placeholder="All Regions" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Regions</SelectItem>
           {counties.map(county => (
             <SelectItem key={county} value={county}>{county}</SelectItem>
           ))}
@@ -96,6 +117,7 @@ const FilterContent = ({
     <Button 
       variant="outline" 
       onClick={() => {
+        setFilterCountry("all");
         setFilterCounty("all");
         setFilterExperience("all");
         setSortOrder("none");
@@ -155,6 +177,7 @@ interface Artist {
   id: string;
   stage_name: string;
   avatar_url: string | null;
+  country: string | null;
   county: string;
   experience_level: string | null;
   plan: string;
@@ -166,15 +189,16 @@ const CategoryArtists = () => {
   const navigate = useNavigate();
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterCountry, setFilterCountry] = useState<string>("all");
   const [filterCounty, setFilterCounty] = useState<string>("all");
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
 
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  // Check auth and get country (from URL param or user's profile, guests see all)
+  // Check auth and get country (guests see all countries)
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
       const countryFromUrl = searchParams.get('country');
@@ -194,11 +218,7 @@ const CategoryArtists = () => {
         setUserCountry(profile?.country || '__all__');
       } else {
         setCurrentUserId(null);
-        if (countryFromUrl) {
-          setUserCountry(countryFromUrl);
-        } else {
-          setUserCountry('__all__');
-        }
+        setUserCountry(countryFromUrl || '__all__');
       }
     };
     checkAuthAndGetCountry();
@@ -208,7 +228,6 @@ const CategoryArtists = () => {
     const fetchArtists = async () => {
       if (!category || !userCountry) return;
 
-      // Map URL category to database specialization value
       const categoryMap: Record<string, string> = {
         'Singers': 'Singer',
         'Instrumentalists': 'Instrumentalist',
@@ -218,10 +237,10 @@ const CategoryArtists = () => {
       
       const specialization = categoryMap[category] || category;
 
-      // Get artist IDs first to filter out regular users
       const artistIds = await fetchArtistIds();
       if (artistIds.length === 0) {
         setArtists([]);
+        setAvailableCountries([]);
         setAvailableCounties([]);
         setLoading(false);
         return;
@@ -229,7 +248,7 @@ const CategoryArtists = () => {
 
       let query = supabase
         .from('profiles')
-        .select('id, stage_name, avatar_url, county, experience_level, plan')
+        .select('id, stage_name, avatar_url, country, county, experience_level, plan')
         .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band")
         .in('id', artistIds);
 
@@ -243,7 +262,8 @@ const CategoryArtists = () => {
         console.error('Error fetching artists:', error);
       } else {
         setArtists(data || []);
-        // Get unique counties from artists
+        const countries = [...new Set(data?.map(a => a.country).filter(Boolean) as string[] || [])].sort();
+        setAvailableCountries(countries);
         const counties = [...new Set(data?.map(a => a.county) || [])].sort();
         setAvailableCounties(counties);
       }
@@ -255,11 +275,21 @@ const CategoryArtists = () => {
     }
   }, [category, userCountry]);
 
-  // Use dynamic counties from fetched artists
-  const counties = availableCounties;
+  // Update available counties when country filter changes
+  const filteredCounties = useMemo(() => {
+    if (filterCountry === "all") return availableCounties;
+    const countiesForCountry = [...new Set(
+      artists.filter(a => a.country === filterCountry).map(a => a.county)
+    )].sort();
+    return countiesForCountry;
+  }, [artists, filterCountry, availableCounties]);
 
   const filteredArtists = useMemo(() => {
     let result = [...artists];
+
+    if (filterCountry !== "all") {
+      result = result.filter(artist => artist.country === filterCountry);
+    }
 
     if (filterCounty !== "all") {
       result = result.filter(artist => artist.county === filterCounty);
@@ -276,7 +306,7 @@ const CategoryArtists = () => {
     }
 
     return result;
-  }, [artists, filterCounty, filterExperience, sortOrder]);
+  }, [artists, filterCountry, filterCounty, filterExperience, sortOrder]);
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
@@ -284,7 +314,7 @@ const CategoryArtists = () => {
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="flex items-center justify-between mb-8 md:mb-12">
-          <Link to="/categories">
+          <Link to="/">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
@@ -296,13 +326,16 @@ const CategoryArtists = () => {
           </h1>
 
           <FilterButton 
+            filterCountry={filterCountry}
+            setFilterCountry={setFilterCountry}
             filterCounty={filterCounty}
             setFilterCounty={setFilterCounty}
             filterExperience={filterExperience}
             setFilterExperience={setFilterExperience}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
-            counties={counties}
+            countries={availableCountries}
+            counties={filteredCounties}
           />
         </div>
 
