@@ -20,8 +20,8 @@ const About = () => {
       <section className="relative pt-20 md:pt-32 pb-0 md:pb-10 px-0 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroConcert})` }}
-        />
+          style={{ backgroundImage: `url(${heroConcert})` }} />
+
         <div className="absolute inset-0 bg-background/70" />
         
         <div className="container mx-auto text-center px-4 md:px-8 relative z-10 pb-10 md:pb-20">
@@ -83,14 +83,14 @@ const About = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {[
-              { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
-              { step: 2, title: "Connect", description: "Chat and finalize event details directly." },
-              { step: 3, title: "Book", description: "Secure payment. Professional experience guaranteed." },
-            ].map(({ step, title, description }) => (
-              <div
-                key={step}
-                className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-5 md:p-6"
-              >
+            { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
+            { step: 2, title: "Connect", description: "Chat and finalize event details directly." },
+            { step: 3, title: "Book", description: "Secure payment. Professional experience guaranteed." }].
+            map(({ step, title, description }) =>
+            <div
+              key={step}
+              className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-5 md:p-6">
+
                 <div className="flex items-center gap-3 mb-2">
                   <span className="flex items-center justify-center w-7 h-7 rounded-full border-2 border-accent text-accent text-sm font-bold">
                     {step}
@@ -99,7 +99,7 @@ const About = () => {
                 </div>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{description}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -120,7 +120,7 @@ const About = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-10 md:py-20 px-4 md:px-8 pb-24 md:pb-20 bg-muted/30">
+      <section className="py-10 px-4 pb-24 md:pb-20 bg-muted/30 md:px-0 md:py-0">
         <div className="container mx-auto px-0">
           <div className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-card to-secondary p-6 md:p-12 border-2 border-accent/30 shadow-[var(--shadow-elegant)] text-center mx-0">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 md:mb-6 text-foreground">
@@ -140,8 +140,8 @@ const About = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>);
+
 };
 
 export default About;
