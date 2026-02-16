@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone } from "lucide-react";
+import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone, Newspaper } from "lucide-react";
 import artistFeedImg from "@/assets/artist-feed-mockup.png";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -80,7 +80,7 @@ const RightContent = () => (
     {/* Artist Feed */}
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
+        <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-accent" />
         <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Artist Feed</h3>
       </div>
       <p className="text-sm md:text-base font-semibold text-foreground/90">
@@ -132,7 +132,7 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-[linear-gradient(105deg,transparent_40%,hsl(var(--accent)/0.08)_45%,hsl(var(--accent)/0.15)_50%,hsl(var(--accent)/0.08)_55%,transparent_60%)] bg-[length:200%_100%] group-hover:animate-[shimmer_1.5s_ease-in-out]" />
         <div className="relative z-10 flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <Megaphone className="h-5 w-5 text-accent" />
+            <Newspaper className="h-5 w-5 text-accent" />
             <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
           </div>
       <p className="text-sm font-semibold text-foreground/90">Share performances, build your audience, and get booked.</p>
