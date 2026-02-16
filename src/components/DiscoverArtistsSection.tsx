@@ -92,17 +92,11 @@ const DiscoverArtistsSection = () => {
   return (
     <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-8">
       <div className="container mx-auto px-0">
-        <div className="mb-6 md:mb-12 px-2">
+        <div className="text-center mb-6 md:mb-12 px-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
-                Discover Artists
-              </h2>
-              <div className="flex items-center gap-1 bg-accent text-accent-foreground text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-                <TrendingUp className="h-3 w-3" />
-                Top Rated
-              </div>
-            </div>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
+              Discover Artists
+            </h2>
             <Link
               to="/artists"
               className="flex items-center gap-1 text-sm md:text-base text-accent hover:text-accent/80 font-medium transition-colors"
@@ -141,6 +135,12 @@ const DiscoverArtistsSection = () => {
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
                             <User className="h-16 w-16 text-accent" />
+                          </div>
+                        )}
+                        {artist.rating !== null && artist.rating >= 4.5 && (
+                          <div className="absolute top-2 left-2 flex items-center gap-1 bg-accent text-accent-foreground text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                            <TrendingUp className="h-3 w-3" />
+                            Top Rated
                           </div>
                         )}
                       </div>
