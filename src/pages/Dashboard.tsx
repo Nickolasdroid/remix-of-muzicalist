@@ -27,6 +27,7 @@ import { Calendar } from "@/components/ui/calendar";
 import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import GenrePickerDialog from "@/components/GenrePickerDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -1527,60 +1528,45 @@ const Dashboard = () => {
                                 </div>
                                 
                                 {/* Available genres to add */}
-                                <div className="space-y-2">
-                                  <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
-                                  <div className="flex flex-wrap gap-2">
-                                    {['Pop', 'Rock', 'Jazz', 'Blues', 'Hip-Hop', 'R&B', 'Country', 'Electronic', 'Dance', 'House', 'Techno', 'Classical', 'Folk', 'Reggae', 'Metal', 'Punk', 'Soul', 'Funk', 'Latin', 'Manele', 'Traditional', 'Party Music', 'Easy Listening', 'Ethno', 'Trap', 'Disco', 'Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Cumbia', 'Dancehall', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'EDM', 'Fado', 'Flamenco', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Indie', 'J-Pop', 'K-Pop', 'Klezmer', 'Kizomba', 'Kompa', 'Lo-fi', 'Mariachi', 'Merengue', 'Motown', 'New Wave', 'Opera', 'Polka', 'Progressive Rock', 'Qawwali', 'Ranchera', 'Reggaeton', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Synthwave', 'Tango', 'Trance', 'Turbo-Folk', 'Vallenato', 'Zouk'].filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre)).map(genre => <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
-                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                          if (!currentGenres.includes(genre)) {
-                            setFormData({
-                              ...formData,
-                              musicGenres: [...currentGenres, genre].join(', ')
-                            });
-                          }
-                        }}>
-                                          <Plus className="h-3 w-3 mr-1" />
-                                          {genre}
-                                        </Badge>)}
-                                  </div>
-                                </div>
-                                
-                                {/* Custom genre input */}
-                                <div className="flex gap-2">
-                                  <Input placeholder="Add custom genre..." className="flex-1" onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const input = e.currentTarget;
-                          const newGenre = input.value.trim();
-                          if (newGenre) {
-                            const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                            if (!currentGenres.includes(newGenre)) {
-                              setFormData({
-                                ...formData,
-                                musicGenres: [...currentGenres, newGenre].join(', ')
-                              });
-                            }
-                            input.value = '';
-                          }
-                        }
-                      }} />
-                                  <Button size="sm" variant="outline" onClick={e => {
-                        const input = e.currentTarget.previousSibling as HTMLInputElement;
-                        const newGenre = input.value.trim();
-                        if (newGenre) {
-                          const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                          if (!currentGenres.includes(newGenre)) {
-                            setFormData({
-                              ...formData,
-                              musicGenres: [...currentGenres, newGenre].join(', ')
-                            });
-                          }
-                          input.value = '';
-                        }
-                      }}>
-                                    <Plus className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                                {(() => {
+                                  const ALL_GENRES = ['Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Blues', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Classical', 'Country', 'Cumbia', 'Dance', 'Dancehall', 'Disco', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'Easy Listening', 'EDM', 'Electronic', 'Ethno', 'Fado', 'Flamenco', 'Folk', 'Funk', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Hip-Hop', 'House', 'Indie', 'J-Pop', 'Jazz', 'K-Pop', 'Kizomba', 'Klezmer', 'Kompa', 'Latin', 'Lo-fi', 'Manele', 'Mariachi', 'Merengue', 'Metal', 'Motown', 'New Wave', 'Opera', 'Party Music', 'Polka', 'Pop', 'Progressive Rock', 'Punk', 'Qawwali', 'R&B', 'Ranchera', 'Reggae', 'Reggaeton', 'Rock', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Soul', 'Synthwave', 'Tango', 'Techno', 'Traditional', 'Trance', 'Trap', 'Turbo-Folk', 'Vallenato', 'Zouk'];
+                                  const availableGenres = ALL_GENRES.filter(genre => !formData.musicGenres?.split(',').map(g => g.trim()).includes(genre));
+                                  const VISIBLE_COUNT = 12;
+                                  const visibleGenres = availableGenres.slice(0, VISIBLE_COUNT);
+                                  const hasMore = availableGenres.length > VISIBLE_COUNT;
+                                  
+                                  const genreBadge = (genre: string) => (
+                                    <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                                      const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                                      if (!currentGenres.includes(genre)) {
+                                        setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                                      }
+                                    }}>
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      {genre}
+                                    </Badge>
+                                  );
+
+                                  return (
+                                    <div className="space-y-2">
+                                      <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
+                                      <div className="flex flex-wrap gap-2">
+                                        {visibleGenres.map(genre => genreBadge(genre))}
+                                        {hasMore && (
+                                          <GenrePickerDialog
+                                            availableGenres={availableGenres}
+                                            onSelect={(genre) => {
+                                              const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
+                                              if (!currentGenres.includes(genre)) {
+                                                setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                                              }
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                                 
                                 <div className="flex gap-2 pt-2">
                                   <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
