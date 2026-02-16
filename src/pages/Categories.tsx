@@ -11,6 +11,7 @@ const Categories = () => {
   const navigate = useNavigate();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
@@ -18,22 +19,23 @@ const Categories = () => {
     Band: 0
   });
 
-  // Check authentication and get user's country
+  // Check authentication and get user's country (guests see all countries)
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/login');
-        return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        setSelectedCountry(profile?.country || '__all__');
+      } else {
+        setCurrentUserId(null);
+        setSelectedCountry('__all__');
       }
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('country')
-        .eq('id', user.id)
-        .maybeSingle();
-      
-      setSelectedCountry(profile?.country || null);
       setIsAuthChecked(true);
     };
     checkAuthAndGetCountry();
@@ -49,11 +51,16 @@ const Categories = () => {
         return;
       }
 
-      const { data } = await supabase
+      let query = supabase
         .from("profiles")
         .select("id, specialization")
-        .eq("country", selectedCountry)
         .in("id", artistIds);
+      
+      if (selectedCountry !== '__all__') {
+        query = query.eq("country", selectedCountry);
+      }
+
+      const { data } = await query;
       
       if (data) {
         const newCounts = {
@@ -104,7 +111,7 @@ const Categories = () => {
     return null;
   }
 
-  return <div className="min-h-screen md:ml-64 bg-background">
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">

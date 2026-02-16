@@ -172,28 +172,34 @@ const CategoryArtists = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
 
-  // Check auth and get country (from URL param or user's profile)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Check auth and get country (from URL param or user's profile, guests see all)
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-      
       const countryFromUrl = searchParams.get('country');
-      if (countryFromUrl) {
-        setUserCountry(countryFromUrl);
-        return;
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+        if (countryFromUrl) {
+          setUserCountry(countryFromUrl);
+          return;
+        }
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        setUserCountry(profile?.country || '__all__');
+      } else {
+        setCurrentUserId(null);
+        if (countryFromUrl) {
+          setUserCountry(countryFromUrl);
+        } else {
+          setUserCountry('__all__');
+        }
       }
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('country')
-        .eq('id', user.id)
-        .maybeSingle();
-      
-      setUserCountry(profile?.country || null);
     };
     checkAuthAndGetCountry();
   }, [navigate, searchParams]);
@@ -221,12 +227,17 @@ const CategoryArtists = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, experience_level, plan')
         .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band")
-        .eq('country', userCountry)
         .in('id', artistIds);
+
+      if (userCountry !== '__all__') {
+        query = query.eq('country', userCountry);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching artists:', error);
@@ -268,7 +279,7 @@ const CategoryArtists = () => {
   }, [artists, filterCounty, filterExperience, sortOrder]);
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background">
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
