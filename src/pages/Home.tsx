@@ -77,7 +77,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 md:py-20 px-4 md:px-8">
+      <section className="py-6 md:py-10 px-4 md:px-8">
         <div className="container mx-auto px-0">
           <div className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-card to-secondary p-6 md:p-12 border-2 border-accent/30 shadow-[var(--shadow-elegant)] text-center mx-2 md:mx-0">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 md:mb-6 text-foreground">
