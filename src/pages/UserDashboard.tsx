@@ -341,133 +341,132 @@ const UserDashboard = () => {
         </div>
 
         {/* My Ads Section */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-display font-semibold flex items-center gap-2">
-              <Megaphone className="h-4 w-4 text-accent" />
-              {t("userDashboard.myAds")}
-            </h2>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                <DollarSign className="h-4 w-4 mr-1" />
-                Buy Ads
-              </Button>
-              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    {t("userDashboard.newAd")}
-                  </Button>
-                </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
-                </DialogHeader>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {newAnnouncement.isPremium 
-                    ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
-                    : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
-                </p>
-                <div className="space-y-4 mt-4">
-                  <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                    <Checkbox
-                      id="premium-ad-user"
-                      checked={newAnnouncement.isPremium}
-                      onCheckedChange={(checked) =>
-                        setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
-                      }
-                      disabled={premiumAdsRemaining <= 0}
-                    />
-                    <Label htmlFor="premium-ad-user" className="cursor-pointer font-medium">
-                      {t("userDashboard.markAsPremium", "Promotion Ad (with photo/video)")}
-                    </Label>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
-                    <Textarea
-                      id="announcement-text-user"
-                      value={newAnnouncement.description}
-                      onChange={(e) => setNewAnnouncement({ 
-                        ...newAnnouncement, 
-                        description: e.target.value.slice(0, 200) 
-                      })}
-                      placeholder={t("userDashboard.descriptionPlaceholder", "Write your announcement here...")}
-                      rows={4}
-                      maxLength={200}
-                      className="mt-2"
-                    />
-                    <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
-                  </div>
-
-                  {!newAnnouncement.isPremium && (
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="announcement-location-user">Location (optional)</Label>
-                        <Input id="announcement-location-user" value={newAnnouncement.location} onChange={(e) => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
-                        <Input id="announcement-event-date-user" type="date" value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
-                        <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={(e) => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
-                      </div>
-                    </div>
-                  )}
-
-                  {newAnnouncement.isPremium && (
-                    <div>
-                      <Label htmlFor="announcement-media-user">{t("userDashboard.media", "Photo/Video")}</Label>
-                      {newAnnouncement.mediaUrl ? (
-                        <div className="mt-2 relative">
-                          {newAnnouncement.mediaType === 'video' 
-                            ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> 
-                            : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                            ...newAnnouncement,
-                            mediaUrl: "",
-                            mediaType: ""
-                          })}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <>
-                          <Label htmlFor="announcement-media-input-user" className="cursor-pointer">
-                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                              <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                              <p className="text-sm text-muted-foreground">{t("userDashboard.uploadMedia", "Click to upload photo or video")}</p>
-                            </div>
-                          </Label>
-                          <Input id="announcement-media-input-user" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
-                        </>
-                      )}
-                    </div>
-                  )}
-
-                  <Button
-                    onClick={handleAddAnnouncement}
-                    disabled={isSaving || !newAnnouncement.description}
-                    className="w-full bg-accent text-accent-foreground"
-                  >
-                    {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
-                  </Button>
+        <div className="mt-6 space-y-4">
+          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
+            <Megaphone className="h-5 w-5 text-accent" />
+            {t("userDashboard.myAds")}
+          </h2>
+          <div className="max-w-[500px] mx-auto space-y-4">
+            <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                 </div>
-              </DialogContent>
-            </Dialog>
-            </div>
-          </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-accent" />
+                  <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+                  <DollarSign className="h-4 w-4 mr-1" />
+                  Buy Ads
+                </Button>
+                <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      <Plus className="h-4 w-4 mr-1" />
+                      {t("userDashboard.newAd")}
+                    </Button>
+                  </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
+                  </DialogHeader>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {newAnnouncement.isPremium 
+                      ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
+                      : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
+                  </p>
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
+                      <Checkbox
+                        id="premium-ad-user"
+                        checked={newAnnouncement.isPremium}
+                        onCheckedChange={(checked) =>
+                          setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
+                        }
+                        disabled={premiumAdsRemaining <= 0}
+                      />
+                      <Label htmlFor="premium-ad-user" className="cursor-pointer font-medium">
+                        {t("userDashboard.markAsPremium", "Promotion Ad (with photo/video)")}
+                      </Label>
+                    </div>
 
-          {/* Ads List - matching public profile card format */}
-          {announcements.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>{t("userDashboard.noAds")}</p>
+                    <div>
+                      <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
+                      <Textarea
+                        id="announcement-text-user"
+                        value={newAnnouncement.description}
+                        onChange={(e) => setNewAnnouncement({ 
+                          ...newAnnouncement, 
+                          description: e.target.value.slice(0, 200) 
+                        })}
+                        placeholder={t("userDashboard.descriptionPlaceholder", "Write your announcement here...")}
+                        rows={4}
+                        maxLength={200}
+                        className="mt-2"
+                      />
+                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
+                    </div>
+
+                    {!newAnnouncement.isPremium && (
+                      <div className="space-y-3">
+                        <div>
+                          <Label htmlFor="announcement-location-user">Location (optional)</Label>
+                          <Input id="announcement-location-user" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
+                        </div>
+                        <div>
+                          <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
+                          <Input id="announcement-event-date-user" type="date" value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
+                        </div>
+                        <div>
+                          <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
+                          <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
+                        </div>
+                      </div>
+                    )}
+
+                    {newAnnouncement.isPremium && <div>
+                        <Label htmlFor="announcement-media-user">Photo/Video</Label>
+                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
+                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
+                              ...newAnnouncement,
+                              mediaUrl: "",
+                              mediaType: ""
+                            })}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div> : <>
+                            <Label htmlFor="announcement-media-input-user" className="cursor-pointer">
+                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                              </div>
+                            </Label>
+                            <Input id="announcement-media-input-user" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
+                          </>}
+                      </div>}
+
+                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
+                      {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              </div>
             </div>
-          ) : (
-            <div className="w-full max-w-[500px] mx-auto space-y-1">
+
+            {/* Ads List - matching public profile card format */}
+            {announcements.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>{t("userDashboard.noAds")}</p>
+              </div>
+            ) : (
+              <div className="space-y-1">
               {announcements.map((ad) => (
                 <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                   <div className="p-4 pb-0 px-[6px] py-[3px]">
@@ -568,6 +567,7 @@ const UserDashboard = () => {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
 
