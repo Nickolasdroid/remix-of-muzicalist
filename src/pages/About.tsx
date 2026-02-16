@@ -111,10 +111,10 @@ const About = () => {
             Browse by Category
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
-            <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/register" />
-            <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/register" />
-            <CategoryCard title="Band" description="Musical groups" icon={Users} href="/register" />
-            <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/register" />
+            <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/categories/Singers" />
+            <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/categories/DJs" />
+            <CategoryCard title="Band" description="Musical groups" icon={Users} href="/categories/Bands" />
+            <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/categories/Instrumentalists" />
           </div>
         </div>
       </section>
