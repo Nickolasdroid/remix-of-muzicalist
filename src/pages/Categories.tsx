@@ -6,6 +6,7 @@ import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
+import categoriesBg from "@/assets/categories-bg.png";
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -111,10 +112,14 @@ const Categories = () => {
     return null;
   }
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background relative`}>
+      <div className="absolute inset-0 z-0">
+        <img src={categoriesBg} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/80" />
+      </div>
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
+      <div className="relative z-10 container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="text-center mb-8 md:mb-16">
           <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
           
