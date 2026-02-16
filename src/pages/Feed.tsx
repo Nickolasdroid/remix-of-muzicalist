@@ -52,23 +52,23 @@ const Feed = () => {
   useEffect(() => {
     const checkAuthAndGetCountry = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/login');
-        return;
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+        
+        // Get user's country from profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        
+        setUserCountry(profile?.country || '__all__');
+      } else {
+        setUserCountry('__all__');
       }
-      setCurrentUserId(session.user.id);
-      
-      // Get user's country from profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('country')
-        .eq('id', session.user.id)
-        .maybeSingle();
-      
-      setUserCountry(profile?.country || null);
     };
     checkAuthAndGetCountry();
-  }, [navigate]);
+  }, []);
 
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
     if (!userCountry) return;
@@ -77,22 +77,26 @@ const Feed = () => {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      // First get profile IDs from the user's country
-      const { data: countryProfiles } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('country', userCountry);
+      let profileIds: string[] | null = null;
       
-      const profileIds = countryProfiles?.map(p => p.id) || [];
-      
-      if (profileIds.length === 0) {
-        setFeedItems([]);
-        setHasMore(false);
-        setLoading(false);
-        return;
+      if (userCountry !== '__all__') {
+        // Filter by user's country
+        const { data: countryProfiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('country', userCountry);
+        
+        profileIds = countryProfiles?.map(p => p.id) || [];
+        
+        if (profileIds.length === 0) {
+          setFeedItems([]);
+          setHasMore(false);
+          setLoading(false);
+          return;
+        }
       }
       
-      const { data: posts, error } = await supabase
+      let query = supabase
         .from('posts')
         .select(`
           id,
@@ -101,8 +105,13 @@ const Feed = () => {
           media_url,
           media_type,
           created_at
-        `)
-        .in('profile_id', profileIds)
+        `);
+      
+      if (profileIds) {
+        query = query.in('profile_id', profileIds);
+      }
+      
+      const { data: posts, error } = await query
         .order('created_at', { ascending: false })
         .range(from, to);
       
@@ -250,7 +259,7 @@ const Feed = () => {
     return date.toLocaleDateString();
   };
   if (loading) {
-    return <div className="min-h-screen md:ml-64 bg-background">
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
         <Navigation />
         <div className="container mx-auto px-4 pt-20 md:pt-24 pb-20 md:pb-12">
           <div className="max-w-2xl mx-auto">
@@ -273,7 +282,7 @@ const Feed = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen md:ml-64 bg-background">
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto sm:px-4 pt-[60px] md:pt-[72px] pb-0 px-0">

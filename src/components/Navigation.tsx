@@ -241,8 +241,8 @@ const Navigation = () => {
           )}
         </div>
 
-        {/* Center: Nav links (hidden on homepage and for logged-out users) */}
-        {user && location.pathname !== '/' && (
+        {/* Center: Nav links (hidden on homepage) */}
+        {location.pathname !== '/' && (
           <div className="flex items-center gap-3">
             <Link
               to="/feed"
@@ -438,8 +438,8 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Mobile: Bottom Navigation Bar (only when logged in) */}
-      {user && (
+      {/* Mobile: Bottom Navigation Bar */}
+      {(user || ['/feed', '/announcements', '/search'].some(p => location.pathname.startsWith(p))) && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
