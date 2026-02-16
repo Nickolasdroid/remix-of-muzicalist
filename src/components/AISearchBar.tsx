@@ -13,7 +13,7 @@ const AISearchBar = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!query.trim()) {
       toast.error("Please enter a search query");
       return;
@@ -63,9 +63,9 @@ const AISearchBar = () => {
                 AI-Powered Search
               </h3>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Search for artists, musical opportunities, or specific announcements using natural language
-            </p>
+            
+
+
             
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -76,31 +76,31 @@ const AISearchBar = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="pl-10"
-                  disabled={isLoading}
-                />
+                  disabled={isLoading} />
+
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isLoading}
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                {isLoading ? (
-                  <>
+                className="bg-accent text-accent-foreground hover:bg-accent/90">
+
+                {isLoading ?
+                <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Searching...
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <Search className="mr-2 h-4 w-4" />
                     Search
                   </>
-                )}
+                }
               </Button>
             </div>
           </form>
 
-          {response && (
-            <div className="mt-6 p-4 rounded-lg bg-secondary/50 border border-border">
+          {response &&
+          <div className="mt-6 p-4 rounded-lg bg-secondary/50 border border-border">
               <div className="flex items-start gap-2 mb-2">
                 <Sparkles className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                 <div className="flex-1">
@@ -111,11 +111,11 @@ const AISearchBar = () => {
                 </div>
               </div>
             </div>
-          )}
+          }
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
+
 };
 
 export default AISearchBar;
