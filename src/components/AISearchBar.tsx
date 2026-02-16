@@ -54,7 +54,7 @@ const AISearchBar = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-      <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+      <Card className="border-0 bg-accent/20 shadow-[var(--shadow-gold)]">
         <CardContent className="p-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
