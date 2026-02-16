@@ -120,7 +120,7 @@ const About = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="md:py-20 md:px-8 pb-24 md:pb-20 bg-muted/30 px-0 py-0">
+      <section className="md:py-20 md:px-8 pb-24 md:pb-20 px-0 py-0 bg-background">
         <div className="container mx-auto px-0">
           <div className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-card to-secondary p-6 md:p-12 border-2 border-accent/30 shadow-[var(--shadow-elegant)] text-center mx-0">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 md:mb-6 text-foreground">
