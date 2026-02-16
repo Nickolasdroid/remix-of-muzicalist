@@ -6,6 +6,7 @@ import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
+import { getCountryName } from "@/lib/countryFlags";
 import {
   Popover,
   PopoverContent,
@@ -63,7 +64,7 @@ const FilterContent = ({
         <SelectContent>
           <SelectItem value="all">All Countries</SelectItem>
           {countries.map(country => (
-            <SelectItem key={country} value={country}>{country}</SelectItem>
+            <SelectItem key={country} value={country}>{getCountryName(country)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -353,6 +354,8 @@ const CategoryArtists = () => {
                   stageName={artist.stage_name}
                   imageUrl={artist.avatar_url}
                   plan={artist.plan}
+                  country={artist.country}
+                  county={artist.county}
                 />
               ))
             ) : (
