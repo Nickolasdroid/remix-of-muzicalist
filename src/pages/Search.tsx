@@ -142,7 +142,7 @@ const Search = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-12 pr-14 h-12 text-base rounded-xl border-2 border-border focus:border-border focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
-                autoFocus
+                
                 disabled={isAILoading}
               />
               {isAIMode && (
