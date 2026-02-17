@@ -10,7 +10,7 @@ import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const normalizeString = (str: string) =>
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 interface CountryPickerButtonProps {
   selectedCountry: string | null;
@@ -20,39 +20,39 @@ interface CountryPickerButtonProps {
 const CountryList = ({
   filtered,
   selectedCountry,
-  onSelect,
-}: {
-  filtered: { dbValue: string; displayName: string }[];
-  selectedCountry: string | null;
-  onSelect: (dbValue: string) => void;
-}) => (
-  <div className="p-2 space-y-0.5">
+  onSelect
+
+
+
+
+}: {filtered: {dbValue: string;displayName: string;}[];selectedCountry: string | null;onSelect: (dbValue: string) => void;}) =>
+<div className="p-2 space-y-0.5">
     {filtered.map(({ dbValue, displayName: name }) => {
-      const isSelected = selectedCountry
-        ? normalizeString(getCountryName(selectedCountry)) === normalizeString(name)
-        : false;
-      return (
-        <button
-          key={dbValue}
-          type="button"
-          onClick={() => onSelect(dbValue)}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
-            isSelected ? "bg-accent/20 text-accent" : "text-foreground"
-          }`}
-        >
+    const isSelected = selectedCountry ?
+    normalizeString(getCountryName(selectedCountry)) === normalizeString(name) :
+    false;
+    return (
+      <button
+        key={dbValue}
+        type="button"
+        onClick={() => onSelect(dbValue)}
+        className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+        isSelected ? "bg-accent/20 text-accent" : "text-foreground"}`
+        }>
+
           <span className="text-xl">{getCountryFlag(dbValue)}</span>
           <span className="flex-1 text-left font-medium">{name}</span>
           {isSelected && <Check className="h-5 w-5 text-accent" />}
-        </button>
-      );
-    })}
-    {filtered.length === 0 && (
-      <p className="text-center text-muted-foreground py-4 text-sm">
+        </button>);
+
+  })}
+    {filtered.length === 0 &&
+  <p className="text-center text-muted-foreground py-4 text-sm">
         No countries found
       </p>
-    )}
-  </div>
-);
+  }
+  </div>;
+
 
 const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPickerButtonProps) => {
   const [open, setOpen] = useState(false);
@@ -62,16 +62,16 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
 
   useEffect(() => {
     const fetchCountries = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("country")
-        .not("specialization", "is", null);
+      const { data } = await supabase.
+      from("profiles").
+      select("country").
+      not("specialization", "is", null);
 
       if (data) {
         const rawValues = [...new Set(data.map((p) => p.country).filter(Boolean))] as string[];
         const resolved = rawValues.map((val) => ({
           dbValue: val,
-          displayName: getCountryName(val),
+          displayName: getCountryName(val)
         }));
         const uniqueMap = new Map<string, string>();
         resolved.forEach(({ dbValue, displayName }) => {
@@ -87,11 +87,11 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
 
   const availableCountries = countriesWithArtists.map((dbVal) => ({
     dbValue: dbVal,
-    displayName: getCountryName(dbVal),
+    displayName: getCountryName(dbVal)
   })).sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   const filtered = availableCountries.filter((c) =>
-    c.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+  c.displayName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const flag = getCountryFlag(selectedCountry);
@@ -103,32 +103,32 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
     setSearchTerm("");
   };
 
-  const searchInput = (
-    <Input
-      placeholder="Search country..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      onClick={(e) => e.stopPropagation()}
-      className="bg-background/50"
-    />
-  );
+  const searchInput =
+  <Input
+    placeholder="Search country..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    onClick={(e) => e.stopPropagation()}
+    className="bg-background/50" />;
 
-  const triggerButton = (
-    <Button
-      variant="outline"
-      className="h-10 px-4 gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all"
-    >
-      {flag ? (
-        <span className="text-lg">{flag}</span>
-      ) : (
-        <Globe className="h-4 w-4 text-accent" />
-      )}
+
+
+  const triggerButton =
+  <Button
+    variant="outline"
+    className="h-10 px-4 gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+
+      {flag ?
+    <span className="text-lg">{flag}</span> :
+
+    <Globe className="h-4 w-4 text-accent" />
+    }
       <span className="text-sm font-medium truncate max-w-[200px]">
         {displayName || "Select Country"}
       </span>
       <ChevronDown className="h-3 w-3 text-muted-foreground" />
-    </Button>
-  );
+    </Button>;
+
 
   if (isMobile) {
     return (
@@ -139,7 +139,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
         <DrawerContent className="px-4 pb-6">
           <DrawerHeader className="text-left px-0">
             <DrawerTitle>Select Country</DrawerTitle>
-            <p className="text-sm text-muted-foreground">Choose a country to filter by</p>
+            
           </DrawerHeader>
           <div className="mb-3">
             {searchInput}
@@ -150,8 +150,8 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
             </div>
           </ScrollArea>
         </DrawerContent>
-      </Drawer>
-    );
+      </Drawer>);
+
   }
 
   return (
@@ -167,8 +167,8 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
           <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} />
         </ScrollArea>
       </PopoverContent>
-    </Popover>
-  );
+    </Popover>);
+
 };
 
 export default CountryPickerButton;
