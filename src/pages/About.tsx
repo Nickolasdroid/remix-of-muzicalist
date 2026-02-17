@@ -2,28 +2,15 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Star, Mic, Guitar, Headphones, Users, Crown } from "lucide-react";
+import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import CommunitySections from "@/components/CommunitySections";
 import TrendingArtistsSection from "@/components/TrendingArtistsSection";
 import CategoryCard from "@/components/CategoryCard";
-import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import ArtistSearchBar from "@/components/ArtistSearchBar";
-import { useIsMobile } from "@/hooks/use-mobile";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
 
 const About = () => {
-  const isMobile = useIsMobile();
-
-  const ProSearchContent = () => (
-    <div className="p-4">
-      <ArtistSearchBar />
-    </div>
-  );
-
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -48,41 +35,6 @@ const About = () => {
           </p>
 
           <HeroSearchBar />
-
-          {/* Pro Search Button */}
-          <div className="mt-4">
-            {isMobile ? (
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="border-accent/50 text-accent hover:bg-accent/10"
-                  >
-                    <Crown className="h-4 w-4 mr-2" />
-                    Pro Search
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                  <ProSearchContent />
-                </DrawerContent>
-              </Drawer>
-            ) : (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="border-accent/50 text-accent hover:bg-accent/10"
-                  >
-                    <Crown className="h-4 w-4 mr-2" />
-                    Pro Search
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
-                  <ProSearchContent />
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
 
         {/* Stats Bar */}
