@@ -117,7 +117,7 @@ const Notifications = () => {
       
       <main className="md:ml-64 pt-16 md:pt-16 pb-20 md:pb-4">
         <div className="max-w-3xl mx-auto p-4 md:p-6 px-0 py-0">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-0 md:mb-6">
             <div className="flex items-center gap-3">
               <Bell className="h-6 w-6 text-accent hidden md:block" />
               <h1 className="text-2xl font-bold hidden md:block">Notifications</h1>
