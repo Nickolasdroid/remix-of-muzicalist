@@ -127,7 +127,7 @@ const Notifications = () => {
                 Mark all as read
               </Button>}
           </div>
-          {unreadCount > 0 && <div className="flex md:hidden justify-end p-2 border-b border-border">
+          {unreadCount > 0 && <div className="flex md:hidden justify-end p-2">
             <Button variant="outline" size="sm" className="pl-2" onClick={markAllAsRead}>
               <Check className="h-4 w-4 mr-1" />
               Mark all as read
