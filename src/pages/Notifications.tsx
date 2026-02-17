@@ -50,8 +50,8 @@ const Notifications = () => {
       schema: 'public',
       table: 'notifications',
       filter: `user_id=eq.${user.id}`
-    }, payload => {
-      setNotifications(prev => [payload.new as Notification, ...prev]);
+    }, (payload) => {
+      setNotifications((prev) => [payload.new as Notification, ...prev]);
     }).subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -74,7 +74,7 @@ const Notifications = () => {
     await supabase.from('notifications').update({
       read_at: new Date().toISOString()
     }).eq('id', notificationId);
-    setNotifications(prev => prev.map(n => n.id === notificationId ? {
+    setNotifications((prev) => prev.map((n) => n.id === notificationId ? {
       ...n,
       read_at: new Date().toISOString()
     } : n));
@@ -83,7 +83,7 @@ const Notifications = () => {
     await supabase.from('notifications').update({
       read_at: new Date().toISOString()
     }).eq('user_id', user.id).is('read_at', null);
-    setNotifications(prev => prev.map(n => ({
+    setNotifications((prev) => prev.map((n) => ({
       ...n,
       read_at: n.read_at || new Date().toISOString()
     })));
@@ -91,7 +91,7 @@ const Notifications = () => {
   const deleteNotification = async () => {
     if (!deleteNotificationId) return;
     await supabase.from('notifications').delete().eq('id', deleteNotificationId);
-    setNotifications(prev => prev.filter(n => n.id !== deleteNotificationId));
+    setNotifications((prev) => prev.filter((n) => n.id !== deleteNotificationId));
     setDeleteNotificationId(null);
   };
   const getNotificationIcon = (type: string) => {
@@ -111,11 +111,11 @@ const Notifications = () => {
     if (notification.read_at) return;
     await markAsRead(notification.id);
   };
-  const unreadCount = notifications.filter(n => !n.read_at).length;
+  const unreadCount = notifications.filter((n) => !n.read_at).length;
   return <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="md:ml-64 pt-16 md:pt-16 pb-20 md:pb-4">
+      <main className="md:ml-64 pt-16 md:pt-16 pb-20 md:pb-4 py-[31px]">
         <div className="max-w-3xl mx-auto p-4 md:p-6 px-0 py-0">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ const Notifications = () => {
           </div>
 
           {loading ? <div className="space-y-4">
-              {[1, 2, 3].map(i => <Card key={i} className="p-4 animate-pulse">
+              {[1, 2, 3].map((i) => <Card key={i} className="p-4 animate-pulse">
                   <div className="flex items-start gap-4">
                     <div className="h-10 w-10 rounded-full bg-muted" />
                     <div className="flex-1 space-y-2">
@@ -145,7 +145,7 @@ const Notifications = () => {
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>
             </Card> : <div className="divide-y divide-border border-y border-border">
-              {notifications.map(notification => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
+              {notifications.map((notification) => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
                       {getNotificationIcon(notification.type)}
@@ -165,7 +165,7 @@ const Notifications = () => {
                       })}
                           </p>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={e => {
+                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={(e) => {
                     e.stopPropagation();
                     setDeleteNotificationId(notification.id);
                   }}>
@@ -181,7 +181,7 @@ const Notifications = () => {
       </main>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteNotificationId} onOpenChange={open => !open && setDeleteNotificationId(null)}>
+      <AlertDialog open={!!deleteNotificationId} onOpenChange={(open) => !open && setDeleteNotificationId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Notification</AlertDialogTitle>
