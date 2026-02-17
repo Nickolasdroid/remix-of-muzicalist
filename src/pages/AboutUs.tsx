@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import ArtistSearchBar from "@/components/ArtistSearchBar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const values = [
   { icon: Music2, title: "Excellence in Music", description: "We connect clients with the most talented musical artists, ensuring every event becomes unforgettable." },
@@ -17,6 +19,17 @@ const values = [
 
 const AboutUs = () => {
   const isMobile = useIsMobile();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_, session) => setIsAuthenticated(!!session?.user)
+    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const ProSearchContent = () => (
     <div className="p-4">
@@ -25,7 +38,7 @@ const AboutUs = () => {
   );
 
   return (
-    <div className="min-h-screen md:ml-64">
+    <div className={`min-h-screen ${isAuthenticated ? 'md:ml-64' : ''}`}>
       <Navigation />
 
       <section className="pt-24 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
