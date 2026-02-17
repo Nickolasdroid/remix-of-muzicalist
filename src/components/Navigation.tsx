@@ -480,19 +480,6 @@ const Navigation = () => {
         
         {/* Main navigation links */}
         <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {/* Search Link */}
-          <Link
-            to="/search"
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-              isActive('/search')
-                ? 'bg-accent/20 text-accent'
-                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-            }`}
-          >
-            <Search className="h-5 w-5" />
-            <span className="font-medium">Search</span>
-          </Link>
-          
           {sidebarLinks.map((link) => (
             <Link
               key={link.to}
@@ -507,6 +494,19 @@ const Navigation = () => {
               <span className="font-medium">{link.label}</span>
             </Link>
           ))}
+
+          {/* Search Link - between Regions and Notifications */}
+          <Link
+            to="/search"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+              isActive('/search')
+                ? 'bg-accent/20 text-accent'
+                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+            }`}
+          >
+            <Search className="h-5 w-5" />
+            <span className="font-medium">Search</span>
+          </Link>
 
           {/* User-specific links */}
           {user && (
