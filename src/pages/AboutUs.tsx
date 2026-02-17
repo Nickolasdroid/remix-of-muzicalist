@@ -25,7 +25,7 @@ const AboutUs = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen md:ml-64">
       <Navigation />
 
       <section className="pt-24 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
