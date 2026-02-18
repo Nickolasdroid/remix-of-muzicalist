@@ -108,6 +108,14 @@ const Dashboard = () => {
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
+  // Promotion dialog state (in Posts section)
+  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
+  const [newPromotion, setNewPromotion] = useState({
+    description: "",
+    mediaUrl: "",
+    mediaType: ""
+  });
+
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
   const [monthlyPostsCount, setMonthlyPostsCount] = useState(0);
@@ -554,7 +562,7 @@ const Dashboard = () => {
         title: "Announcement",
         date: todayDate,
         description: newAnnouncement.description,
-        is_premium: newAnnouncement.isPremium,
+        is_premium: false,
         media_url: newAnnouncement.mediaUrl || null,
         media_type: newAnnouncement.mediaType || null,
         location: newAnnouncement.location || null,
@@ -608,6 +616,56 @@ const Dashboard = () => {
     } finally {
       setIsSaving(false);
       setDeleteAnnouncementId(null);
+    }
+  };
+
+  // Promotion functions (in Posts section)
+  const handlePromotionMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setIsSaving(true);
+    try {
+      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      setNewPromotion({ ...newPromotion, mediaUrl: publicUrl, mediaType });
+      toast({ title: "Success", description: "Media uploaded!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddPromotion = async () => {
+    if (!user || !newPromotion.description) return;
+    if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
+      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions.`, variant: "destructive" });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const todayDate = new Date().toISOString().split('T')[0];
+      const { error } = await supabase.from('announcements').insert({
+        profile_id: user.id,
+        title: "Announcement",
+        date: todayDate,
+        description: newPromotion.description,
+        is_premium: true,
+        media_url: newPromotion.mediaUrl || null,
+        media_type: newPromotion.mediaType || null
+      });
+      if (error) throw error;
+      await loadAnnouncements();
+      setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
+      setShowPromotionDialog(false);
+      toast({ title: "Success", description: "Promotion created!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1850,86 +1908,146 @@ const Dashboard = () => {
                         </h2>
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-accent" />
-                              <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Promotions: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                              </div>
                             </div>
-                            <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" disabled={postsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90 text-right">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  New Post
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Create New Post</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 mt-4">
-                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video')}>
-                                    <TabsList className="grid w-full grid-cols-2">
-                                      <TabsTrigger value="image">Photo</TabsTrigger>
-                                      <TabsTrigger value="video">Video</TabsTrigger>
-                                    </TabsList>
+                            <div className="flex items-center gap-2">
+                              <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" disabled={postsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    New Post
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                  <DialogHeader>
+                                    <DialogTitle>Create New Post</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4 mt-4">
+                                    <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video')}>
+                                      <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="image">Photo</TabsTrigger>
+                                        <TabsTrigger value="video">Video</TabsTrigger>
+                                      </TabsList>
+                                      
+                                      <TabsContent value="image" className="space-y-4">
+                                        <div>
+                                          <Label>Post Content</Label>
+                                          <Textarea value={newPost.content} onChange={e => setNewPost({
+                                  ...newPost,
+                                  content: e.target.value.slice(0, 200)
+                                })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                          <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                        </div>
+                                        {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
+                                            <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
+                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
+                                  ...newPost,
+                                  mediaUrl: "",
+                                  mediaType: ""
+                                })}>
+                                              <X className="h-4 w-4" />
+                                            </Button>
+                                          </div>}
+                                        {!newPost.mediaUrl && <>
+                                            <Label htmlFor="post-image-inner" className="cursor-pointer">
+                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                                <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                                <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                              </div>
+                                            </Label>
+                                            <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                          </>}
+                                      </TabsContent>
+                                      
+                                      <TabsContent value="video" className="space-y-4">
+                                        <div>
+                                          <Label>Post Content</Label>
+                                          <Textarea value={newPost.content} onChange={e => setNewPost({
+                                  ...newPost,
+                                  content: e.target.value.slice(0, 200)
+                                })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                          <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                        </div>
+                                        <div>
+                                          <Label>Video URL (YouTube/Embed)</Label>
+                                          <Input value={newPost.mediaUrl} onChange={e => {
+                                  setNewPost({
+                                    ...newPost,
+                                    mediaUrl: e.target.value,
+                                    mediaType: 'video'
+                                  });
+                                }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
+                                        </div>
+                                      </TabsContent>
+                                    </Tabs>
                                     
-                                    <TabsContent value="image" className="space-y-4">
-                                      <div>
-                                        <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={e => setNewPost({
-                                ...newPost,
-                                content: e.target.value.slice(0, 200)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                      </div>
-                                      {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
-                                          <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                ...newPost,
+                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Creating..." : "Create Post"}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                              <Dialog open={showPromotionDialog} onOpenChange={setShowPromotionDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" disabled={premiumAdsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    New Promotion
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                  <DialogHeader>
+                                    <DialogTitle>Create New Promotion</DialogTitle>
+                                  </DialogHeader>
+                                  <p className="text-sm text-muted-foreground mt-2">
+                                    Promotions are valid for 30 days.
+                                  </p>
+                                  <div className="space-y-4 mt-4">
+                                    <div>
+                                      <Label>Promotion Text</Label>
+                                      <Textarea value={newPromotion.description} onChange={e => setNewPromotion({
+                                ...newPromotion,
+                                description: e.target.value.slice(0, 200)
+                              })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
+                                    </div>
+                                    
+                                    <div>
+                                      <Label>Photo/Video</Label>
+                                      {newPromotion.mediaUrl ? <div className="mt-2 relative">
+                                          {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
+                                ...newPromotion,
                                 mediaUrl: "",
                                 mediaType: ""
                               })}>
                                             <X className="h-4 w-4" />
                                           </Button>
-                                        </div>}
-                                      {!newPost.mediaUrl && <>
-                                          <Label htmlFor="post-image-inner" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                        </div> : <>
+                                          <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                              <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                              <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
                                             </div>
                                           </Label>
-                                          <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                          <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
                                         </>}
-                                    </TabsContent>
+                                    </div>
                                     
-                                    <TabsContent value="video" className="space-y-4">
-                                      <div>
-                                        <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={e => setNewPost({
-                                ...newPost,
-                                content: e.target.value.slice(0, 200)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                      </div>
-                                      <div>
-                                        <Label>Video URL (YouTube/Embed)</Label>
-                                        <Input value={newPost.mediaUrl} onChange={e => {
-                                setNewPost({
-                                  ...newPost,
-                                  mediaUrl: e.target.value,
-                                  mediaType: 'video'
-                                });
-                              }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
-                                      </div>
-                                    </TabsContent>
-                                  </Tabs>
-                                  
-                                  <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                    {isSaving ? "Creating..." : "Create Post"}
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                                    <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Creating..." : "Create Promotion"}
+                                    </Button>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
                           </div>
                           {posts.map(post => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
@@ -1978,8 +2096,59 @@ const Dashboard = () => {
                                 </div>}
                               <div className="p-4" />
                             </Card>)}
+
+                          {/* Promotions in Posts section */}
+                          {announcements.filter(a => a.is_premium).map(promotion => <Card key={`promo-${promotion.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                              <div className="p-4 pb-0 px-[6px] py-[3px]">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
+                                      <Avatar className="w-10 h-10 border-2 border-background">
+                                        <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
+                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                          {(profile?.stage_name || "A").charAt(0)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="font-semibold text-foreground">
+                                          {profile?.stage_name || "Artist"}
+                                        </h3>
+                                        {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+                                        {isAdExpired(promotion) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
+                                            Expired
+                                          </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(promotion)}d left</Badge>}
+                                      </div>
+                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <span>{profile?.specialization || "User"}</span>
+                                        <span>·</span>
+                                        <span>{new Date(promotion.date).toLocaleDateString()}</span>
+                                        <span>·</span>
+                                        <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                          Promotion
+                                        </Badge>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(promotion.id)} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                                  </Button>
+                                </div>
+                                <ExpandableText text={promotion.description} className="mt-3" />
+                              </div>
+                              
+                              {promotion.media_url && <div className="mt-3 bg-muted/30">
+                                  {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
+                                      <video src={promotion.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                    </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
+                                </div>}
+                              
+                              <div className="h-2" />
+                            </Card>)}
                           
-                          {posts.length === 0 && <Card className="border-2 border-dashed border-accent/30">
+                          {posts.length === 0 && announcements.filter(a => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
                               <CardContent className="p-12 text-center">
                                 <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                 <p className="text-muted-foreground">No posts yet. Create your first post!</p>
@@ -1996,15 +2165,9 @@ const Dashboard = () => {
                         </h2>
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
-                              </div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
@@ -2019,21 +2182,9 @@ const Dashboard = () => {
                                     <DialogTitle>Add New Announcement</DialogTitle>
                                   </DialogHeader>
                                   <p className="text-sm text-muted-foreground mt-2">
-                                    {newAnnouncement.isPremium 
-                                      ? "Promotions are valid for 30 days."
-                                      : "Ads are valid for 15 days."}
+                                    Ads are valid for 15 days.
                                   </p>
                                   <div className="space-y-4 mt-4">
-                                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                                      <Checkbox id="premium-ad-inner" checked={newAnnouncement.isPremium} onCheckedChange={checked => setNewAnnouncement({
-                              ...newAnnouncement,
-                              isPremium: checked as boolean
-                            })} />
-                                      <Label htmlFor="premium-ad-inner" className="cursor-pointer font-medium">
-                                        Promotion Ad (with photo/video)
-                                      </Label>
-                                    </div>
-                                    
                                     <div>
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
                                       <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
@@ -2043,44 +2194,20 @@ const Dashboard = () => {
                                       <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                                     </div>
 
-                                    {!newAnnouncement.isPremium && (
-                                      <div className="space-y-3">
-                                        <div>
-                                          <Label htmlFor="announcement-location-inner">Location (optional)</Label>
-                                          <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
-                                          <Input id="announcement-event-date-inner" type="date" value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="announcement-budget-inner">Budget (optional)</Label>
-                                          <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
-                                        </div>
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label htmlFor="announcement-location-inner">Location (optional)</Label>
+                                        <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
                                       </div>
-                                    )}
-                                    
-                                    {newAnnouncement.isPremium && <div>
-                                        <Label htmlFor="announcement-media-inner">Photo/Video</Label>
-                                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
-                                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                                ...newAnnouncement,
-                                mediaUrl: "",
-                                mediaType: ""
-                              })}>
-                                              <X className="h-4 w-4" />
-                                            </Button>
-                                          </div> : <>
-                                            <Label htmlFor="announcement-media-input-inner" className="cursor-pointer">
-                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                              </div>
-                                            </Label>
-                                            <Input id="announcement-media-input-inner" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
-                                          </>}
-                                      </div>}
+                                      <div>
+                                        <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
+                                        <Input id="announcement-event-date-inner" type="date" value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
+                                      </div>
+                                      <div>
+                                        <Label htmlFor="announcement-budget-inner">Budget (optional)</Label>
+                                        <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
+                                      </div>
+                                    </div>
                                     
                                     <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                                       {isSaving ? "Adding..." : "Add Announcement"}
@@ -2090,7 +2217,7 @@ const Dashboard = () => {
                               </Dialog>
                             </div>
                           </div>
-                          {announcements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {announcements.filter(a => !a.is_premium).map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
@@ -2163,7 +2290,7 @@ const Dashboard = () => {
                               
                               <div className="h-2" />
                             </Card>)}
-                          {announcements.length === 0 && <div className="text-center py-12 text-muted-foreground">
+                          {announcements.filter(a => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">No announcements yet</p>
                             </div>}
