@@ -209,7 +209,7 @@ const Navigation = () => {
     ? [
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        { to: '/user-dashboard', icon: User, label: 'My Ads' },
+        { to: '/user-dashboard', icon: User, label: 'My Profile' },
       ]
     : [
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
