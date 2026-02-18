@@ -178,7 +178,7 @@
     "success": "Registration successful! Please check your email to verify your account."
   },
   "userDashboard": {
-    "myAds": "My Profile",
+    "myAds": "Profile",
     "ads": "Ads",
     "adsRemaining": "{{standard}} standard / {{premium}} premium ads remaining",
     "newAd": "New Ad",
