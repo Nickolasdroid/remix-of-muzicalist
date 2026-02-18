@@ -14,7 +14,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
-import LeaderboardPodium from "@/components/LeaderboardPodium";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import leaderboardBg from "@/assets/leaderboard-bg.png";
 const allCountries = [{
@@ -767,15 +766,7 @@ const Leaderboard = () => {
   };
 
   const currentArtists = getArtistsBySpecialization(categoryMap[selectedCategory]);
-  const podiumArtists = currentArtists.slice(0, 3).map(artist => ({
-    id: artist.id,
-    stage_name: artist.stage_name,
-    avatar_url: artist.avatar_url,
-    plan: artist.plan,
-    rating: artistRatings[artist.id] || 0,
-    reviewCount: artistReviewCounts[artist.id] || 0,
-  }));
-  const tableArtists = currentArtists.slice(3);
+
   // Show loading while checking auth
   if (!isAuthChecked) {
     return (
@@ -883,57 +874,40 @@ const Leaderboard = () => {
               </TabsList>
             </Tabs>
 
-            {loading ? (
-              <div className="text-center py-16">
+            {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div>
-            ) : currentArtists.length > 0 ? (
-              <>
-                {podiumArtists.length > 0 && (
-                  <div className="py-6 md:py-8">
-                    <LeaderboardPodium artists={podiumArtists} />
-                  </div>
-                )}
-                {tableArtists.length > 0 && (
-                  <Table className="table-fixed w-full">
-                    <TableHeader>
-                      <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
-                        <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                        <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
-                        <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
-                        <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {tableArtists.map((artist, index) => (
-                        <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
-                          <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 4}</TableCell>
-                          <TableCell className="px-2 md:px-4">
-                            <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                              <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist.plan)} flex-shrink-0`}>
-                                <Avatar className="h-9 w-9 md:h-11 md:w-11 border-2 border-background">
-                                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                                  <AvatarFallback className="bg-muted">
-                                    <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
-                                  </AvatarFallback>
-                                </Avatar>
-                              </div>
-                              <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
-                            </Link>
-                          </TableCell>
-                          <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
-                          <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-16">
+              </div> : currentArtists.length > 0 ? <Table className="table-fixed w-full">
+                  <TableHeader>
+                    <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
+                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
+                      <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
+                      <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentArtists.map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
+                        <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
+                        <TableCell className="px-2 md:px-4">
+                          <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
+                            <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist.plan)} flex-shrink-0`}>
+                              <Avatar className="h-9 w-9 md:h-11 md:w-11 border-2 border-background">
+                                <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                                <AvatarFallback className="bg-muted">
+                                  <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
+                        <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
+                      </TableRow>)}
+                  </TableBody>
+                </Table> : <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </div>
