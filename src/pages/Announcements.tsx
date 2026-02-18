@@ -26,7 +26,6 @@ const Announcements = () => {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'promotion' | 'ads'>('all');
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
@@ -40,7 +39,6 @@ const Announcements = () => {
       if (session?.user) {
         setCurrentUserId(session.user.id);
         
-        // Get user's country from profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('country')
@@ -95,7 +93,8 @@ const Announcements = () => {
             plan,
             country
           )
-        `);
+        `)
+        .eq('is_premium', false); // Only standard ads, no promotions
       
       if (userCountry !== '__all__') {
         query = query.eq('profiles.country', userCountry);
@@ -110,7 +109,6 @@ const Announcements = () => {
         return;
       }
       
-      // Check if there are more announcements
       if (!data || data.length < ANNOUNCEMENTS_PER_PAGE) {
         setHasMore(false);
       }
@@ -138,35 +136,14 @@ const Announcements = () => {
   }, [page, fetchAnnouncements]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
+
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className="container mx-auto pt-16 md:pt-[68px] pb-0 px-0">
-        {/* Filter buttons */}
-        <div className="max-w-[500px] mx-auto mb-1">
-          <div className="flex gap-2 rounded-none border-none">
-            <Button variant={filter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('all')} className={filter === 'all' ? 'bg-accent text-accent-foreground hover:bg-accent' : 'hover:bg-transparent hover:text-foreground'}>
-              All
-            </Button>
-            <Button variant={filter === 'promotion' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('promotion')} className={filter === 'promotion' ? 'bg-accent text-accent-foreground hover:bg-accent' : 'hover:bg-transparent hover:text-foreground'}>
-              Promotions
-            </Button>
-            <Button variant={filter === 'ads' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('ads')} className={filter === 'ads' ? 'bg-accent text-accent-foreground hover:bg-accent' : 'hover:bg-transparent hover:text-foreground'}>
-              Ads
-            </Button>
-          </div>
-        </div>
-
         <div className="max-w-[500px] mx-auto space-y-1">
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
-          const filteredAnnouncements = announcements.filter(a => {
-            // Hide expired ads from public feed
-            if (isAdExpired(a)) return false;
-            if (filter === 'all') return true;
-            if (filter === 'promotion') return a.is_premium === true;
-            if (filter === 'ads') return a.is_premium === false;
-            return true;
-          });
+          const filteredAnnouncements = announcements.filter(a => !isAdExpired(a));
           return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -196,11 +173,9 @@ const Announcements = () => {
                           <span>·</span>
                           <span>{new Date(announcement.date).toLocaleDateString()}</span>
                           <span>·</span>
-                          {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Promotion
-                            </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Ad
-                            </Badge>}
+                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                            Ad
+                          </Badge>
                         </div>
                       </div>
                     </div>
@@ -242,7 +217,7 @@ const Announcements = () => {
 
                   {/* Content */}
                   <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
-                  {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) && (
+                  {(announcement.location || announcement.event_date || announcement.budget) && (
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
                       {announcement.location && (
                         <span className="flex items-center gap-1">
@@ -266,30 +241,13 @@ const Announcements = () => {
                   )}
                 </div>
                 
-                {/* Media for premium announcements - Natural aspect ratio for landscape images */}
-                {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-              url: announcement.media_url!,
-              type: announcement.media_type === "video" ? "video" : "image"
-            })}>
-                    {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                        <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
-                  </div>}
-                
                 {/* Action button */}
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    {announcement.is_premium ? (
-                      <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                        <MessageCircle className="w-5 h-5" />
-                        <span className="font-medium">Contact</span>
-                      </Button>
-                    ) : (
-                      <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
-                        <ArrowRight className="w-5 h-5" />
-                        <span className="font-medium">Apply Now</span>
-                      </Button>
-                    )}
+                    <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
+                      <ArrowRight className="w-5 h-5" />
+                      <span className="font-medium">Apply Now</span>
+                    </Button>
                   </div>
                 </div>
               </Card>);
