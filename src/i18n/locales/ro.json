@@ -178,7 +178,7 @@
     "success": "Înregistrare reușită! Verifică-ți emailul pentru a-ți confirma contul."
   },
   "userDashboard": {
-    "myAds": "Anunțurile Mele",
+    "myAds": "Profilul Meu",
     "ads": "Anunțuri",
     "adsRemaining": "{{standard}} standard / {{premium}} premium anunțuri rămase",
     "newAd": "Anunț Nou",
