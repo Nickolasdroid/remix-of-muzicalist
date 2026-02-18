@@ -315,7 +315,7 @@ const CategoryArtists = () => {
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="flex items-center justify-between mb-8 md:mb-12">
-          <Link to="/categories">
+          <Link to={currentUserId ? "/categories" : "/"}>
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
