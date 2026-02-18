@@ -125,7 +125,7 @@ const Dashboard = () => {
     mediaType: ""
   });
   const [showPostDialog, setShowPostDialog] = useState(false);
-  const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
+  const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   // Post limits for standard subscription
@@ -1918,136 +1918,130 @@ const Dashboard = () => {
                                 <span className="text-sm text-muted-foreground">Promotions: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Dialog open={showPostDialog} onOpenChange={setShowPostDialog}>
-                                <DialogTrigger asChild>
-                                  <Button size="sm" disabled={postsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                    <Plus className="h-4 w-4 mr-1" />
-                                    New Post
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-md">
-                                  <DialogHeader>
-                                    <DialogTitle>Create New Post</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4 mt-4">
-                                    <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video')}>
-                                      <TabsList className="grid w-full grid-cols-2">
-                                        <TabsTrigger value="image">Photo</TabsTrigger>
-                                        <TabsTrigger value="video">Video</TabsTrigger>
-                                      </TabsList>
-                                      
-                                      <TabsContent value="image" className="space-y-4">
-                                        <div>
-                                          <Label>Post Content</Label>
-                                          <Textarea value={newPost.content} onChange={e => setNewPost({
-                                  ...newPost,
-                                  content: e.target.value.slice(0, 200)
-                                })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                          <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                        </div>
-                                        {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
-                                            <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                  ...newPost,
-                                  mediaUrl: "",
-                                  mediaType: ""
-                                })}>
-                                              <X className="h-4 w-4" />
-                                            </Button>
-                                          </div>}
-                                        {!newPost.mediaUrl && <>
-                                            <Label htmlFor="post-image-inner" className="cursor-pointer">
-                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                                <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                                <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                              </div>
-                                            </Label>
-                                            <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
-                                          </>}
-                                      </TabsContent>
-                                      
-                                      <TabsContent value="video" className="space-y-4">
-                                        <div>
-                                          <Label>Post Content</Label>
-                                          <Textarea value={newPost.content} onChange={e => setNewPost({
-                                  ...newPost,
-                                  content: e.target.value.slice(0, 200)
-                                })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                          <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                        </div>
-                                        <div>
-                                          <Label>Video URL (YouTube/Embed)</Label>
-                                          <Input value={newPost.mediaUrl} onChange={e => {
-                                  setNewPost({
-                                    ...newPost,
-                                    mediaUrl: e.target.value,
-                                    mediaType: 'video'
-                                  });
-                                }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
-                                        </div>
-                                      </TabsContent>
-                                    </Tabs>
-                                    
-                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create Post"}
-                                    </Button>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                              <Dialog open={showPromotionDialog} onOpenChange={setShowPromotionDialog}>
-                                <DialogTrigger asChild>
-                                  <Button size="sm" disabled={premiumAdsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                    <Plus className="h-4 w-4 mr-1" />
-                                    New Promotion
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-md">
-                                  <DialogHeader>
-                                    <DialogTitle>Create New Promotion</DialogTitle>
-                                  </DialogHeader>
+                            <Dialog open={showPostDialog} onOpenChange={(open) => {
+                              setShowPostDialog(open);
+                              if (!open) setPostMediaType('image');
+                            }}>
+                              <DialogTrigger asChild>
+                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  New Post
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Create New Post</DialogTitle>
+                                </DialogHeader>
+                                {postMediaType === 'promotion' && (
                                   <p className="text-sm text-muted-foreground mt-2">
                                     Promotions are valid for 30 days.
                                   </p>
-                                  <div className="space-y-4 mt-4">
-                                    <div>
-                                      <Label>Promotion Text</Label>
-                                      <Textarea value={newPromotion.description} onChange={e => setNewPromotion({
-                                ...newPromotion,
-                                description: e.target.value.slice(0, 200)
-                              })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
-                                    </div>
+                                )}
+                                <div className="space-y-4 mt-4">
+                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
+                                    <TabsList className="grid w-full grid-cols-3">
+                                      <TabsTrigger value="image">Photo</TabsTrigger>
+                                      <TabsTrigger value="video">Video</TabsTrigger>
+                                      <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
+                                    </TabsList>
                                     
-                                    <div>
-                                      <Label>Photo/Video</Label>
-                                      {newPromotion.mediaUrl ? <div className="mt-2 relative">
-                                          {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
-                                ...newPromotion,
+                                    <TabsContent value="image" className="space-y-4">
+                                      <div>
+                                        <Label>Post Content</Label>
+                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                ...newPost,
+                                content: e.target.value.slice(0, 200)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                      </div>
+                                      {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
+                                          <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
+                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
+                                ...newPost,
                                 mediaUrl: "",
                                 mediaType: ""
                               })}>
                                             <X className="h-4 w-4" />
                                           </Button>
-                                        </div> : <>
-                                          <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                              <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                        </div>}
+                                      {!newPost.mediaUrl && <>
+                                          <Label htmlFor="post-image-inner" className="cursor-pointer">
+                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                              <p className="text-sm text-muted-foreground">Click to upload image</p>
                                             </div>
                                           </Label>
-                                          <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                          <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
                                         </>}
-                                    </div>
+                                      <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
+                                        {isSaving ? "Creating..." : "Create Post"}
+                                      </Button>
+                                    </TabsContent>
                                     
-                                    <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create Promotion"}
-                                    </Button>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
+                                    <TabsContent value="video" className="space-y-4">
+                                      <div>
+                                        <Label>Post Content</Label>
+                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                ...newPost,
+                                content: e.target.value.slice(0, 200)
+                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                      </div>
+                                      <div>
+                                        <Label>Video URL (YouTube/Embed)</Label>
+                                        <Input value={newPost.mediaUrl} onChange={e => {
+                                setNewPost({
+                                  ...newPost,
+                                  mediaUrl: e.target.value,
+                                  mediaType: 'video'
+                                });
+                              }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
+                                      </div>
+                                      <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
+                                        {isSaving ? "Creating..." : "Create Post"}
+                                      </Button>
+                                    </TabsContent>
+
+                                    <TabsContent value="promotion" className="space-y-4">
+                                      <div>
+                                        <Label>Promotion Text</Label>
+                                        <Textarea value={newPromotion.description} onChange={e => setNewPromotion({
+                                ...newPromotion,
+                                description: e.target.value.slice(0, 200)
+                              })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
+                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
+                                      </div>
+                                      
+                                      <div>
+                                        <Label>Photo/Video</Label>
+                                        {newPromotion.mediaUrl ? <div className="mt-2 relative">
+                                            {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
+                                ...newPromotion,
+                                mediaUrl: "",
+                                mediaType: ""
+                              })}>
+                                              <X className="h-4 w-4" />
+                                            </Button>
+                                          </div> : <>
+                                            <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                              </div>
+                                            </Label>
+                                            <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                          </>}
+                                      </div>
+                                      
+                                      <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
+                                        {isSaving ? "Creating..." : "Create Promotion"}
+                                      </Button>
+                                    </TabsContent>
+                                  </Tabs>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           </div>
                           {posts.map(post => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
