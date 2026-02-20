@@ -844,6 +844,18 @@ const ArtistProfile = () => {
                 {artist.stage_name}
               </h1>
 
+              {/* Centered Category + Location */}
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
+                    {artist.specialization}
+                  </Badge>}
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{artist.county}</span>
+                  {artist.country && getCountryFlag(artist.country) && <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>}
+                </div>
+              </div>
+
               {/* Followers count + Follow button */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -861,18 +873,6 @@ const ArtistProfile = () => {
                     {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
                   </Button>
                 )}
-              </div>
-
-              {/* Centered Category + Location */}
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
-                    {artist.specialization}
-                  </Badge>}
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <MapPin className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{artist.county}</span>
-                  {artist.country && getCountryFlag(artist.country) && <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>}
-                </div>
               </div>
             </div>
 
