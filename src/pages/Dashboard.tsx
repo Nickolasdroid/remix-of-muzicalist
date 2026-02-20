@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -168,6 +168,12 @@ const Dashboard = () => {
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+
+  // Following state
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followingArtists, setFollowingArtists] = useState<any[]>([]);
+  const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+
   const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
 
   // Data loading functions (defined early to avoid hoisting issues)
@@ -244,6 +250,17 @@ const Dashboard = () => {
     });
     if (data) setReviews(data);
   };
+  const loadFollowing = async () => {
+    if (!user) return;
+    const { data, count } = await supabase
+      .from('followers')
+      .select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' })
+      .eq('follower_id', user.id);
+    setFollowingCount(count || 0);
+    if (data) {
+      setFollowingArtists(data.map((f: any) => f.profiles).filter(Boolean));
+    }
+  };
   const handleDeleteReview = async (reviewId: string) => {
     if (!user) return;
     setIsSaving(true);
@@ -284,6 +301,7 @@ const Dashboard = () => {
       loadBookingRequests();
       loadPosts();
       loadReviews();
+      loadFollowing();
     }
   }, [user]);
   const checkAuth = async () => {
@@ -1409,19 +1427,22 @@ const Dashboard = () => {
                               </h1>
                             </div>
                             
+                            {/* Category + Location on same line */}
                             <div className="flex flex-wrap items-center gap-3 mb-2">
-                              <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
+                              {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
-                              </Badge>
+                              </Badge>}
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <MapPin className="h-5 w-5" />
+                                <span className="text-base">{formData.county}</span>
+                                {formData.country && getCountryFlag(formData.country) && <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>}
+                              </div>
                             </div>
 
-                            {/* Location row */}
-                            <div className="flex flex-wrap items-center gap-3">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                  <MapPin className="h-5 w-5" />
-                                  <span className="text-base">{formData.county}</span>
-                                  {formData.country && getCountryFlag(formData.country) && <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>}
-                                </div>
+                            {/* Following count */}
+                            <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                              <Users className="h-4 w-4" />
+                              <span className="text-sm font-medium">{followingCount} following</span>
                             </div>
                           </div>
 
@@ -2926,6 +2947,36 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Following Dialog */}
+      <Dialog open={showFollowingDialog} onOpenChange={setShowFollowingDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent" />
+              Following ({followingCount})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {followingArtists.length === 0 ? (
+              <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p>
+            ) : (
+              followingArtists.map((artist) => (
+                <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => { setShowFollowingDialog(false); navigate(`/artist/${artist.id}`); }}>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={artist.avatar_url} />
+                    <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{artist.stage_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default Dashboard;
