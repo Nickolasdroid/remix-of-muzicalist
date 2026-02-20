@@ -1399,6 +1399,12 @@ const Dashboard = () => {
                             {formData.country && getCountryFlag(formData.country) && <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>}
                           </div>
                       </div>
+
+                      {/* Following count */}
+                      <div className="flex items-center justify-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                        <Users className="h-4 w-4" />
+                        <span className="text-sm font-medium">{followingCount} following</span>
+                      </div>
                     </div>
 
                     {/* Desktop Header Layout */}
