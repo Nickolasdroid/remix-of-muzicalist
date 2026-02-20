@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Users } from "lucide-react";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
@@ -139,6 +139,8 @@ const ArtistProfile = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
   const {
     toast
   } = useToast();
@@ -285,6 +287,25 @@ const ArtistProfile = () => {
         };
       }));
       setPosts(postsWithLikes);
+
+      // Fetch followers count
+      const { count: followCount } = await supabase
+        .from('followers')
+        .select('id', { count: 'exact', head: true })
+        .eq('artist_id', id);
+      setFollowersCount(followCount || 0);
+
+      // Check if current user follows this artist
+      if (userId) {
+        const { data: followData } = await supabase
+          .from('followers')
+          .select('id')
+          .eq('artist_id', id)
+          .eq('follower_id', userId)
+          .maybeSingle();
+        setIsFollowing(!!followData);
+      }
+
       setLoading(false);
     };
     fetchArtistData();
@@ -394,6 +415,31 @@ const ArtistProfile = () => {
         likes: post.likes
       } : p));
       console.error('Error toggling like:', error);
+    }
+  };
+  const handleFollowToggle = async () => {
+    if (!currentUserId) {
+      toast({ title: "Login Required", description: "Please log in to follow artists." });
+      navigate('/login');
+      return;
+    }
+    if (!id) return;
+
+    // Optimistic update
+    setIsFollowing(prev => !prev);
+    setFollowersCount(prev => isFollowing ? prev - 1 : prev + 1);
+
+    try {
+      if (isFollowing) {
+        await supabase.from('followers').delete().eq('artist_id', id).eq('follower_id', currentUserId);
+      } else {
+        await supabase.from('followers').insert({ artist_id: id, follower_id: currentUserId });
+      }
+    } catch (error) {
+      // Revert on error
+      setIsFollowing(prev => !prev);
+      setFollowersCount(prev => isFollowing ? prev + 1 : prev - 1);
+      console.error('Error toggling follow:', error);
     }
   };
   const handleDateSelect = (date: Date | undefined) => {
@@ -798,6 +844,25 @@ const ArtistProfile = () => {
                 {artist.stage_name}
               </h1>
 
+              {/* Followers count + Follow button */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span className="text-sm font-semibold">{followersCount}</span>
+                  <span className="text-sm">followers</span>
+                </div>
+                {!isOwnProfile && (
+                  <Button
+                    onClick={handleFollowToggle}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                  >
+                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
+                  </Button>
+                )}
+              </div>
+
               {/* Centered Category + Location */}
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
@@ -848,8 +913,22 @@ const ArtistProfile = () => {
                       </div>
                     </div>
 
-                    {/* Contact button */}
-                    <div className="flex mt-3">
+                    {/* Followers count + Follow + Contact */}
+                    <div className="flex items-center gap-3 mt-3">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Users className="h-5 w-5" />
+                        <span className="text-base font-semibold">{followersCount}</span>
+                        <span className="text-base">followers</span>
+                      </div>
+                      {!isOwnProfile && (
+                        <Button
+                          onClick={handleFollowToggle}
+                          variant={isFollowing ? "outline" : "default"}
+                          className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                        >
+                          {isFollowing ? <><UserCheck className="mr-2 h-4 w-4" /> Following</> : <><UserPlus className="mr-2 h-4 w-4" /> Follow</>}
+                        </Button>
+                      )}
                       {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
@@ -1404,8 +1483,8 @@ const ArtistProfile = () => {
                               {/* Content */}
                               <ExpandableText text={announcement.description} className="mt-3" />
                             </div>
-                            
-                            
+
+
                             {/* Contact button */}
                             <div className="px-2 py-2">
                               <div className="flex items-center justify-around">
