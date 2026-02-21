@@ -155,8 +155,8 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
           <Megaphone className="h-5 w-5 text-accent" />
            <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
         </div>
-        <p className="text-xs font-semibold text-foreground/90">Browse real event requests, apply quickly, and secure new bookings.</p>
-        <p className="text-xs font-semibold text-foreground/90">Connect with verified organizers and turn opportunities into confirmed events.</p>
+        <p className="text-sm font-semibold text-foreground/90">Browse real event requests, apply quickly, and secure new bookings.</p>
+        <p className="text-sm font-semibold text-foreground/90">Connect with verified organizers and turn opportunities into confirmed events.</p>
         <Link to="/announcements">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
             Explore Ads
