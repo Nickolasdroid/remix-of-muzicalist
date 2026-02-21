@@ -86,7 +86,7 @@ const RightContent = () => (
       <p className="text-sm md:text-base font-semibold text-foreground/90">
         Share performances, build your audience, and get booked.
       </p>
-      <p className="text-xs md:text-sm text-muted-foreground">
+      <p className="text-sm md:text-base text-muted-foreground">
         Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
       <Link to="/feed" className="mt-2 inline-block">
@@ -108,7 +108,7 @@ const RightContent = () => (
       <p className="text-sm md:text-base font-semibold text-foreground/90">
         Browse real event requests, apply quickly, and secure new bookings.
       </p>
-      <p className="text-xs md:text-sm text-muted-foreground">
+      <p className="text-sm md:text-base text-muted-foreground">
         Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
@@ -136,7 +136,7 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
             <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
           </div>
       <p className="text-sm font-semibold text-foreground/90">Share performances, build your audience, and get booked.</p>
-          <p className="text-xs text-muted-foreground">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
+          <p className="text-sm text-muted-foreground">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
           <Link to="/feed">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
               Explore Feed
@@ -156,7 +156,7 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
            <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
         </div>
         <p className="text-xs font-semibold text-foreground/90">Browse real event requests, apply quickly, and secure new bookings.</p>
-        <p className="text-[10px] text-muted-foreground">Connect with verified organizers and turn opportunities into confirmed events.</p>
+        <p className="text-xs text-muted-foreground">Connect with verified organizers and turn opportunities into confirmed events.</p>
         <Link to="/announcements">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
             Explore Ads
