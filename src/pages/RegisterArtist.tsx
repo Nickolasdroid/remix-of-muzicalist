@@ -280,7 +280,7 @@ const RegisterArtist = () => {
                   {t("auth.register.basicInfo")}
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="firstName" className="text-xs md:text-sm">{t("artistRegistration.firstName")}</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
