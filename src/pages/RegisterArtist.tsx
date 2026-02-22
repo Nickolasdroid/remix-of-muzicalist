@@ -258,7 +258,8 @@ const RegisterArtist = () => {
     <div className="min-h-screen flex flex-col" style={{ backgroundImage: `url(${registerArtistBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen space-y-4 md:space-y-8 bg-black/40 backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen bg-black/40 backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
+            <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1">
             <div className="text-center mb-4 md:mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
                 <UserPlus className="h-7 w-7 md:h-10 md:w-10 text-accent-foreground" />
@@ -506,6 +507,7 @@ const RegisterArtist = () => {
                 </div>
               </div>
             }
+            </div>
           </form>
         </div>
       </div>
