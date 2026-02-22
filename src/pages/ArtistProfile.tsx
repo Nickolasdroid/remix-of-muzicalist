@@ -1236,6 +1236,17 @@ const ArtistProfile = () => {
                       <FileText className="h-5 w-5 text-accent" />
                       Posts
                     </h2>
+                    {!currentUserId ? (
+                      <Card className="p-8 text-center">
+                        <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
+                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's posts.</p>
+                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                          <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
+                          <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
+                        </div>
+                      </Card>
+                    ) : (
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {(() => {
                         const promotions = announcements.filter(a => a.is_premium && !isAdExpired(a)).map(a => ({
@@ -1417,6 +1428,7 @@ const ArtistProfile = () => {
                         </Card>;
                       })()}
                     </div>
+                    )}
                   </div>
                 </TabsContent>
 
@@ -1427,6 +1439,17 @@ const ArtistProfile = () => {
                       <Megaphone className="h-5 w-5 text-accent" />
                       Announcements
                     </h2>
+                    {!currentUserId ? (
+                      <Card className="p-8 text-center">
+                        <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
+                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's announcements.</p>
+                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                          <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
+                          <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
+                        </div>
+                      </Card>
+                    ) : (
                     <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {announcements.filter(a => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter(a => !a.is_premium && !isAdExpired(a)).map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
@@ -1499,6 +1522,7 @@ const ArtistProfile = () => {
                           <p className="text-muted-foreground">No announcements yet.</p>
                         </Card>}
                     </div>
+                    )}
                   </div>
                 </TabsContent>
 
