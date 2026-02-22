@@ -16,6 +16,7 @@ import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
+import registerArtistBg from "@/assets/register-artist-bg.png";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -254,10 +255,10 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen md:min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen md:min-h-screen bg-background flex flex-col" style={{ backgroundImage: `url(${registerArtistBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <div className="flex-1 flex flex-col md:items-center md:justify-center py-0 md:py-12 px-0 md:px-4">
         <div className="w-full max-w-4xl flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-0 space-y-4 md:space-y-8 bg-gradient-to-br from-card to-secondary p-4 md:p-12 md:rounded-2xl md:border-2 border-accent/30 md:shadow-[var(--shadow-elegant)]">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-0 space-y-4 md:space-y-8 bg-black/40 backdrop-blur-sm p-4 md:p-12 md:rounded-2xl md:border-2 border-accent/30 md:shadow-[var(--shadow-elegant)]">
             <div className="text-center mb-4 md:mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
                 <UserPlus className="h-7 w-7 md:h-10 md:w-10 text-accent-foreground" />
