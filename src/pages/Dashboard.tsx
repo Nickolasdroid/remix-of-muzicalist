@@ -1934,7 +1934,7 @@ const Dashboard = () => {
                           My Posts
                         </h2>
                         <div className="max-w-[500px] mx-auto space-y-4">
-                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
@@ -2185,7 +2185,7 @@ const Dashboard = () => {
                           My Announcements
                         </h2>
                         <div className="max-w-[500px] mx-auto space-y-4">
-                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
+                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                               <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
