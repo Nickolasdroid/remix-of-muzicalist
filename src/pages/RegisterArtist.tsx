@@ -98,16 +98,7 @@ const RegisterArtist = () => {
           });
           return false;
         }
-        // Validate phone number length
-        const phoneValidation = validatePhoneNumber(formData.phone, formData.country);
-        if (!phoneValidation.valid) {
-          toast({
-            title: t("common.error"),
-            description: phoneValidation.message,
-            variant: "destructive"
-          });
-          return false;
-        }
+        // Phone validation removed - any valid phone number is accepted regardless of country
         break;
       case 2:
         if (!formData.stageName || !formData.specialization || !formData.experienceLevel || !formData.careerStartYear) {
@@ -336,11 +327,8 @@ const RegisterArtist = () => {
                       if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
                         return;
                       }
-                      // Check max length
-                      const maxLength = getMaxPhoneLength(formData.country);
-                      if (newValue.length <= maxLength) {
-                        setFormData({ ...formData, phone: newValue });
-                      }
+                      // No max length restriction - accept any length
+                      setFormData({ ...formData, phone: newValue });
                     }}
                     className="bg-input border-border focus:border-accent h-9"
                     placeholder={t("artistRegistration.placeholders.phone")} />
