@@ -1384,12 +1384,12 @@ const Dashboard = () => {
                       </div>
 
                       {/* Centered Name */}
-                      <h1 className="text-2xl font-display font-bold text-foreground text-center">
+                      <h1 className="text-2xl font-display font-bold text-foreground text-center -mb-2">
                         {formData.stageName}
                       </h1>
 
                       {/* Centered Category + Location */}
-                      <div className="flex flex-wrap items-center justify-center gap-3">
+                      <div className="flex flex-wrap items-center justify-center gap-3 -mb-2">
                         {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
                             {formData.specialization}
                           </Badge>}
