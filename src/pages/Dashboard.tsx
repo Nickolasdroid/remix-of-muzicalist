@@ -174,6 +174,11 @@ const Dashboard = () => {
   const [followingArtists, setFollowingArtists] = useState<any[]>([]);
   const [showFollowingDialog, setShowFollowingDialog] = useState(false);
 
+  // Followers state
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followersList, setFollowersList] = useState<any[]>([]);
+  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
+
   const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
 
   // Data loading functions (defined early to avoid hoisting issues)
@@ -261,6 +266,24 @@ const Dashboard = () => {
       setFollowingArtists(data.map((f: any) => f.profiles).filter(Boolean));
     }
   };
+  const loadFollowers = async () => {
+    if (!user) return;
+    const { data, count } = await supabase
+      .from('followers')
+      .select('follower_id', { count: 'exact' })
+      .eq('artist_id', user.id);
+    setFollowersCount(count || 0);
+    if (data && data.length > 0) {
+      const followerIds = data.map((f: any) => f.follower_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, stage_name, avatar_url, specialization, county')
+        .in('id', followerIds);
+      setFollowersList(profiles || []);
+    } else {
+      setFollowersList([]);
+    }
+  };
   const handleDeleteReview = async (reviewId: string) => {
     if (!user) return;
     setIsSaving(true);
@@ -302,6 +325,7 @@ const Dashboard = () => {
       loadPosts();
       loadReviews();
       loadFollowing();
+      loadFollowers();
     }
   }, [user]);
   const checkAuth = async () => {
@@ -1400,10 +1424,16 @@ const Dashboard = () => {
                           </div>
                       </div>
 
-                      {/* Following count */}
-                      <div className="flex items-center justify-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                        <Users className="h-4 w-4" />
-                        <span className="text-sm font-medium">{followingCount} following</span>
+                       {/* Followers + Following count */}
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
+                          <Users className="h-4 w-4" />
+                          <span className="text-sm font-medium">{followersCount} followers</span>
+                        </div>
+                        <span className="text-muted-foreground/50">·</span>
+                        <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                          <span className="text-sm font-medium">{followingCount} following</span>
+                        </div>
                       </div>
                     </div>
 
@@ -1445,10 +1475,16 @@ const Dashboard = () => {
                               </div>
                             </div>
 
-                            {/* Following count */}
-                            <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                              <Users className="h-4 w-4" />
-                              <span className="text-sm font-medium">{followingCount} following</span>
+                            {/* Followers + Following count */}
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
+                                <Users className="h-4 w-4" />
+                                <span className="text-sm font-medium">{followersCount} followers</span>
+                              </div>
+                              <span className="text-muted-foreground/50">·</span>
+                              <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                                <span className="text-sm font-medium">{followingCount} following</span>
+                              </div>
                             </div>
                           </div>
 
@@ -2993,6 +3029,36 @@ const Dashboard = () => {
                   >
                     Following
                   </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Followers Dialog */}
+      <Dialog open={showFollowersDialog} onOpenChange={setShowFollowersDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent" />
+              Followers ({followersCount})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {followersList.length === 0 ? (
+              <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p>
+            ) : (
+              followersList.map((follower) => (
+                <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => { setShowFollowersDialog(false); navigate(`/artist/${follower.id}`); }}>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={follower.avatar_url} />
+                    <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{follower.stage_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{follower.specialization} · {follower.county}</p>
+                  </div>
                 </div>
               ))
             )}
