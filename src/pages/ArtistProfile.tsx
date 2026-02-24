@@ -141,6 +141,9 @@ const ArtistProfile = () => {
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followingArtists, setFollowingArtists] = useState<any[]>([]);
+  const [showFollowingDialog, setShowFollowingDialog] = useState(false);
   const {
     toast
   } = useToast();
@@ -294,6 +297,16 @@ const ArtistProfile = () => {
         .select('id', { count: 'exact', head: true })
         .eq('artist_id', id);
       setFollowersCount(followCount || 0);
+
+      // Fetch following count for this artist
+      const { data: followingData, count: followingTotal } = await supabase
+        .from('followers')
+        .select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' })
+        .eq('follower_id', id);
+      setFollowingCount(followingTotal || 0);
+      if (followingData) {
+        setFollowingArtists(followingData.map((f: any) => f.profiles).filter(Boolean));
+      }
 
       // Check if current user follows this artist
       if (userId) {
@@ -863,6 +876,11 @@ const ArtistProfile = () => {
                   <span className="text-sm font-semibold">{followersCount}</span>
                   <span className="text-sm">followers</span>
                 </div>
+                <span className="text-muted-foreground/50">·</span>
+                <div className="flex items-center gap-1.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                  <span className="text-sm font-semibold">{followingCount}</span>
+                  <span className="text-sm">following</span>
+                </div>
                 {!isOwnProfile && (
                   <Button
                     onClick={handleFollowToggle}
@@ -919,6 +937,11 @@ const ArtistProfile = () => {
                         <Users className="h-5 w-5" />
                         <span className="text-base font-semibold">{followersCount}</span>
                         <span className="text-base">followers</span>
+                      </div>
+                      <span className="text-muted-foreground/50">·</span>
+                      <div className="flex items-center gap-1.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                        <span className="text-base font-semibold">{followingCount}</span>
+                        <span className="text-base">following</span>
                       </div>
                       {!isOwnProfile && (
                         <Button
@@ -1939,6 +1962,36 @@ const ArtistProfile = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Following Dialog */}
+      <Dialog open={showFollowingDialog} onOpenChange={setShowFollowingDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent" />
+              Following ({followingCount})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {followingArtists.length === 0 ? (
+              <p className="text-muted-foreground text-sm text-center py-4">This artist isn't following anyone yet.</p>
+            ) : (
+              followingArtists.map((a) => (
+                <div key={a.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => { setShowFollowingDialog(false); navigate(`/artist/${a.id}`); }}>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={a.avatar_url} />
+                    <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{a.stage_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{a.specialization} · {a.county}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default ArtistProfile;
