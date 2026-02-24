@@ -2968,15 +2968,31 @@ const Dashboard = () => {
               <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p>
             ) : (
               followingArtists.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => { setShowFollowingDialog(false); navigate(`/artist/${artist.id}`); }}>
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={artist.avatar_url} />
-                    <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{artist.stage_name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
+                <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowingDialog(false); navigate(`/artist/${artist.id}`); }}>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={artist.avatar_url} />
+                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{artist.stage_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 text-xs"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!user) return;
+                      await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', artist.id);
+                      setFollowingArtists(prev => prev.filter(a => a.id !== artist.id));
+                      setFollowingCount(prev => prev - 1);
+                    }}
+                  >
+                    Following
+                  </Button>
                 </div>
               ))
             )}
