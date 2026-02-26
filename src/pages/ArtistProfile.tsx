@@ -919,7 +919,7 @@ const ArtistProfile = () => {
                     <div className="flex items-center gap-3 mt-3">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
                         
-                        <span className="text-base font-semibold">{followersCount}</span>
+                        
                         <span className="text-base">followers</span>
                       </div>
                       {!isOwnProfile &&
