@@ -51,40 +51,6 @@ const AboutUs = () => {
               The premier platform connecting talented musical artists with clients seeking exceptional entertainment
             </p>
 
-            {/* Pro Search Button */}
-            <div className="mt-6">
-              {isMobile ? (
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="border-accent/50 text-accent hover:bg-accent/10"
-                    >
-                      <Crown className="h-4 w-4 mr-2" />
-                      Pro Search
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent>
-                    <ProSearchContent />
-                  </DrawerContent>
-                </Drawer>
-              ) : (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="border-accent/50 text-accent hover:bg-accent/10"
-                    >
-                      <Crown className="h-4 w-4 mr-2" />
-                      Pro Search
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
-                    <ProSearchContent />
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
           </div>
 
           <div className="max-w-4xl mx-auto mb-10 md:mb-20 px-0">
@@ -100,6 +66,41 @@ const AboutUs = () => {
                 We believe that great music transforms events into memories, and we're committed to making those connections happen seamlessly.
               </p>
             </Card>
+          </div>
+
+          {/* Pro Search Button */}
+          <div className="text-center mb-6 md:mb-10">
+            {isMobile ? (
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-accent/50 text-accent hover:bg-accent/10"
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    Pro Search
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <ProSearchContent />
+                </DrawerContent>
+              </Drawer>
+            ) : (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-accent/50 text-accent hover:bg-accent/10"
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    Pro Search
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+                  <ProSearchContent />
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           <div className="mb-10 md:mb-16">
