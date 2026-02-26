@@ -2262,7 +2262,7 @@ const Dashboard = () => {
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-budget-inner">Budget (optional)</Label>
-                                        <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, budget: e.target.value })} placeholder="e.g. $500" className="mt-1" />
+                                        <Input id="announcement-budget-inner" type="number" min="0" value={newAnnouncement.budget} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, budget: e.target.value.replace(/[^0-9]/g, '') })} placeholder="e.g. 500" className="mt-1" />
                                       </div>
                                     </div>
                                     
