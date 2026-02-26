@@ -2258,7 +2258,7 @@ const Dashboard = () => {
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
-                                        <Input id="announcement-event-date-inner" type="date" max={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
+                                        <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-budget-inner">Budget $ (optional)</Label>
