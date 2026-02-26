@@ -1478,7 +1478,7 @@ const Dashboard = () => {
                             {/* Followers + Following count */}
                             <div className="flex items-center gap-4">
                               <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                                <Users className="h-4 w-4" />
+                                
                                 <span className="text-sm font-medium">{followersCount} followers</span>
                               </div>
                               <span className="text-muted-foreground/50">·</span>
