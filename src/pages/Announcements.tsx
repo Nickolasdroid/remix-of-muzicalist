@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -171,7 +172,7 @@ const Announcements = () => {
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{announcement.profiles?.specialization || "User"}</span>
                           <span>·</span>
-                          <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                          <span>{formatDateNoYear(announcement.date)}</span>
                           <span>·</span>
                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                             Ad
@@ -228,7 +229,7 @@ const Announcements = () => {
                       {announcement.event_date && (
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(announcement.event_date).toLocaleDateString()}
+                          {formatDateNoYear(announcement.event_date)}
                         </span>
                       )}
                       {announcement.budget && (
