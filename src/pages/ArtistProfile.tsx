@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck } from "lucide-react";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
@@ -60,6 +60,9 @@ interface Announcement {
   is_premium: boolean;
   media_url: string | null;
   media_type: string | null;
+  location: string | null;
+  event_date: string | null;
+  budget: string | null;
 }
 interface GalleryItem {
   id: string;
@@ -223,7 +226,7 @@ const ArtistProfile = () => {
       // Fetch announcements
       const {
         data: announcementsData
-      } = await supabase.from('announcements').select('id, title, description, date, is_premium, media_url, media_type').eq('profile_id', id).order('is_premium', {
+      } = await supabase.from('announcements').select('id, title, description, date, is_premium, media_url, media_type, location, event_date, budget').eq('profile_id', id).order('is_premium', {
         ascending: false
       }).order('date', {
         ascending: false
@@ -1506,16 +1509,37 @@ const ArtistProfile = () => {
                               </div>
 
                               {/* Content */}
-                              <ExpandableText text={announcement.description} className="mt-3" />
+                              <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
+                              {(announcement.location || announcement.event_date || announcement.budget) && (
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
+                                  {announcement.location && (
+                                    <span className="flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {announcement.location}
+                                    </span>
+                                  )}
+                                  {announcement.event_date && (
+                                    <span className="flex items-center gap-1">
+                                      <CalendarIcon className="h-3 w-3" />
+                                      {new Date(announcement.event_date).toLocaleDateString()}
+                                    </span>
+                                  )}
+                                  {announcement.budget && (
+                                    <span className="flex items-center gap-1">
+                                      <DollarSign className="h-3 w-3" />
+                                      {announcement.budget}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
 
-
-                            {/* Contact button */}
-                            <div className="px-2 py-2">
+                            {/* Action button */}
+                            <div className="px-2 py-1">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                                  <MessageCircle className="w-5 h-5" />
-                                  <span className="font-medium">Contact</span>
+                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
+                                  <ArrowRight className="w-5 h-5" />
+                                  <span className="font-medium">Apply Now</span>
                                 </Button>
                               </div>
                             </div>
