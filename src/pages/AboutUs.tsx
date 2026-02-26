@@ -68,6 +68,26 @@ const AboutUs = () => {
             </Card>
           </div>
 
+          <div className="mb-10 md:mb-16">
+            <h3 className="text-xl md:text-4xl font-display font-bold text-center text-foreground mb-6 md:mb-12">Our Values</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto px-0">
+              {values.map(value => {
+                const Icon = value.icon;
+                return (
+                  <Card key={value.title} className="p-4 md:p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
+                    <Icon className="h-8 w-8 md:h-12 md:w-12 text-accent mb-3 md:mb-4" />
+                    <h4 className="text-lg md:text-2xl font-display font-bold text-foreground mb-2 md:mb-3">
+                      {value.title}
+                    </h4>
+                    <p className="text-sm md:text-base text-muted-foreground">
+                      {value.description}
+                    </p>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Pro Search Button */}
           <div className="text-center mb-6 md:mb-10">
             {isMobile ? (
@@ -101,26 +121,6 @@ const AboutUs = () => {
                 </DialogContent>
               </Dialog>
             )}
-          </div>
-
-          <div className="mb-10 md:mb-16">
-            <h3 className="text-xl md:text-4xl font-display font-bold text-center text-foreground mb-6 md:mb-12">Our Values</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto px-0">
-              {values.map(value => {
-                const Icon = value.icon;
-                return (
-                  <Card key={value.title} className="p-4 md:p-8 bg-card/50 backdrop-blur border-accent/20 hover:border-accent/40 transition-all hover:shadow-[var(--shadow-gold)]">
-                    <Icon className="h-8 w-8 md:h-12 md:w-12 text-accent mb-3 md:mb-4" />
-                    <h4 className="text-lg md:text-2xl font-display font-bold text-foreground mb-2 md:mb-3">
-                      {value.title}
-                    </h4>
-                    <p className="text-sm md:text-base text-muted-foreground">
-                      {value.description}
-                    </p>
-                  </Card>
-                );
-              })}
-            </div>
           </div>
         </div>
       </section>
