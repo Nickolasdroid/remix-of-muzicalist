@@ -179,12 +179,12 @@ const ArtistProfile = () => {
         if (profileData) {
           setCurrentUserProfile(profileData);
           const fullName = `${profileData.first_name} ${profileData.last_name}`.trim();
-          setReviewForm((prev) => ({
+          setReviewForm(prev => ({
             ...prev,
             name: fullName,
             email: profileData.email
           }));
-          setBookingForm((prev) => ({
+          setBookingForm(prev => ({
             ...prev,
             name: fullName,
             email: profileData.email,
@@ -192,11 +192,11 @@ const ArtistProfile = () => {
           }));
         } else {
           // Fallback to auth email if no profile exists
-          setReviewForm((prev) => ({
+          setReviewForm(prev => ({
             ...prev,
             email: session.user.email || ''
           }));
-          setBookingForm((prev) => ({
+          setBookingForm(prev => ({
             ...prev,
             email: session.user.email || ''
           }));
@@ -266,7 +266,7 @@ const ArtistProfile = () => {
       const userId = session?.user?.id;
 
       // Fetch likes count and check if current user liked each post
-      const postsWithLikes = await Promise.all((postsData || []).map(async (post) => {
+      const postsWithLikes = await Promise.all((postsData || []).map(async post => {
         const {
           count
         } = await supabase.from('post_likes').select('id', {
@@ -289,22 +289,22 @@ const ArtistProfile = () => {
       setPosts(postsWithLikes);
 
       // Fetch followers count
-      const { count: followCount } = await supabase.
-      from('followers').
-      select('id', { count: 'exact', head: true }).
-      eq('artist_id', id);
+      const { count: followCount } = await supabase
+        .from('followers')
+        .select('id', { count: 'exact', head: true })
+        .eq('artist_id', id);
       setFollowersCount(followCount || 0);
 
 
       // Check if current user follows this artist
       // Check if current user follows this artist
       if (userId) {
-        const { data: followData } = await supabase.
-        from('followers').
-        select('id').
-        eq('artist_id', id).
-        eq('follower_id', userId).
-        maybeSingle();
+        const { data: followData } = await supabase
+          .from('followers')
+          .select('id')
+          .eq('artist_id', id)
+          .eq('follower_id', userId)
+          .maybeSingle();
         setIsFollowing(!!followData);
       }
 
@@ -313,10 +313,10 @@ const ArtistProfile = () => {
     fetchArtistData();
   }, [id]);
   const getBusyDates = () => {
-    return calendarEvents.filter((event) => event.status === 'busy' || event.status === 'booked').map((event) => parseYMDToLocalDate(event.event_date));
+    return calendarEvents.filter(event => event.status === 'busy' || event.status === 'booked').map(event => parseYMDToLocalDate(event.event_date));
   };
   const getBlockedDates = () => {
-    return calendarEvents.filter((event) => event.status === 'blocked' || event.status === 'unavailable').map((event) => parseYMDToLocalDate(event.event_date));
+    return calendarEvents.filter(event => event.status === 'blocked' || event.status === 'unavailable').map(event => parseYMDToLocalDate(event.event_date));
   };
   const isBusyDate = (date: Date) => {
     return getBusyDates().some((busyDate: Date) => busyDate.getDate() === date.getDate() && busyDate.getMonth() === date.getMonth() && busyDate.getFullYear() === date.getFullYear());
@@ -325,13 +325,13 @@ const ArtistProfile = () => {
     return getBlockedDates().some((blockedDate: Date) => blockedDate.getDate() === date.getDate() && blockedDate.getMonth() === date.getMonth() && blockedDate.getFullYear() === date.getFullYear());
   };
   const getEventForDate = (date: Date) => {
-    return calendarEvents.find((event) => {
+    return calendarEvents.find(event => {
       const eventDate = parseYMDToLocalDate(event.event_date);
       return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
     });
   };
   const getEventsForDate = (date: Date) => {
-    return calendarEvents.filter((event) => {
+    return calendarEvents.filter(event => {
       const eventDate = parseYMDToLocalDate(event.event_date);
       return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
     });
@@ -389,11 +389,11 @@ const ArtistProfile = () => {
       navigate('/login');
       return;
     }
-    const post = posts.find((p) => p.id === postId);
+    const post = posts.find(p => p.id === postId);
     if (!post) return;
 
     // Optimistic update
-    setPosts((currentPosts) => currentPosts.map((p) => p.id === postId ? {
+    setPosts(currentPosts => currentPosts.map(p => p.id === postId ? {
       ...p,
       isLiked: !p.isLiked,
       likes: p.isLiked ? p.likes - 1 : p.likes + 1
@@ -411,7 +411,7 @@ const ArtistProfile = () => {
       }
     } catch (error) {
       // Revert on error
-      setPosts((currentPosts) => currentPosts.map((p) => p.id === postId ? {
+      setPosts(currentPosts => currentPosts.map(p => p.id === postId ? {
         ...p,
         isLiked: post.isLiked,
         likes: post.likes
@@ -428,8 +428,8 @@ const ArtistProfile = () => {
     if (!id) return;
 
     // Optimistic update
-    setIsFollowing((prev) => !prev);
-    setFollowersCount((prev) => isFollowing ? prev - 1 : prev + 1);
+    setIsFollowing(prev => !prev);
+    setFollowersCount(prev => isFollowing ? prev - 1 : prev + 1);
 
     try {
       if (isFollowing) {
@@ -439,8 +439,8 @@ const ArtistProfile = () => {
       }
     } catch (error) {
       // Revert on error
-      setIsFollowing((prev) => !prev);
-      setFollowersCount((prev) => isFollowing ? prev + 1 : prev - 1);
+      setIsFollowing(prev => !prev);
+      setFollowersCount(prev => isFollowing ? prev + 1 : prev - 1);
       console.error('Error toggling follow:', error);
     }
   };
@@ -568,7 +568,7 @@ const ArtistProfile = () => {
         description: `Your booking request for ${selectedDate?.toLocaleDateString()} has been sent to ${artist?.stage_name}.`
       });
       setBookingDialogOpen(false);
-      setBookingForm((prev) => ({
+      setBookingForm(prev => ({
         name: currentUserProfile ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}`.trim() : "",
         email: currentUserProfile?.email || "",
         phone: currentUserProfile?.phone || "",
@@ -592,10 +592,10 @@ const ArtistProfile = () => {
   };
   const getGenresArray = () => {
     if (!artist?.music_genres) return [];
-    return artist.music_genres.split(',').map((g) => g.trim());
+    return artist.music_genres.split(',').map(g => g.trim());
   };
-  const getImages = () => galleryItems.filter((item) => item.type === 'image');
-  const getVideos = () => galleryItems.filter((item) => item.type === 'video');
+  const getImages = () => galleryItems.filter(item => item.type === 'image');
+  const getVideos = () => galleryItems.filter(item => item.type === 'video');
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
@@ -664,7 +664,7 @@ const ArtistProfile = () => {
         error
       } = await supabase.from('reviews').delete().eq('id', reviewId);
       if (error) throw error;
-      setReviews(reviews.filter((r) => r.id !== reviewId));
+      setReviews(reviews.filter(r => r.id !== reviewId));
       toast({
         title: "Review Deleted",
         description: "The review has been successfully deleted."
@@ -689,7 +689,7 @@ const ArtistProfile = () => {
   };
   const renderStars = (rating: number, interactive = false, onRate?: (r: number) => void) => {
     return <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-5 w-5 ${star <= rating ? 'text-accent fill-accent' : 'text-muted-foreground'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`} onClick={() => interactive && onRate?.(star)} />)}
+        {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-5 w-5 ${star <= rating ? 'text-accent fill-accent' : 'text-muted-foreground'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`} onClick={() => interactive && onRate?.(star)} />)}
       </div>;
   };
   if (loading) {
@@ -748,13 +748,13 @@ const ArtistProfile = () => {
         </div>
 
         {/* User's Ads */}
-        {announcements.filter((a) => !isAdExpired(a)).length > 0 && <div className="mt-6">
+        {announcements.filter(a => !isAdExpired(a)).length > 0 && <div className="mt-6">
             <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
               <Megaphone className="h-4 w-4 text-accent" />
               Ads
             </h2>
             <div className="w-full max-w-[500px] mx-auto space-y-1">
-              {announcements.filter((a) => !isAdExpired(a)).map((ad) => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+              {announcements.filter(a => !isAdExpired(a)).map(ad => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                   <div className="p-4 pb-0 px-[6px] py-[3px]">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -786,7 +786,7 @@ const ArtistProfile = () => {
                 type: ad.media_type === "video" ? "video" : "image"
               })}>
                       {ad.media_type === "video" ? <div className="relative w-full aspect-video">
-                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
                         </div> : <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                     </div>}
                 </Card>)}
@@ -865,16 +865,16 @@ const ArtistProfile = () => {
                   <span className="text-sm font-semibold">{followersCount}</span>
                   <span className="text-sm">followers</span>
                 </div>
-                {!isOwnProfile &&
-              <Button
-                onClick={handleFollowToggle}
-                variant={isFollowing ? "outline" : "default"}
-                size="sm"
-                className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-
+                {!isOwnProfile && (
+                  <Button
+                    onClick={handleFollowToggle}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                  >
                     {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
                   </Button>
-              }
+                )}
               </div>
             </div>
 
@@ -918,19 +918,19 @@ const ArtistProfile = () => {
                     {/* Followers count + Follow + Contact */}
                     <div className="flex items-center gap-3 mt-3">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
-                        
-                        
+                        <Users className="h-5 w-5" />
+                        <span className="text-base font-semibold">{followersCount}</span>
                         <span className="text-base">followers</span>
                       </div>
-                      {!isOwnProfile &&
-                    <Button
-                      onClick={handleFollowToggle}
-                      variant={isFollowing ? "outline" : "default"}
-                      className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-
+                      {!isOwnProfile && (
+                        <Button
+                          onClick={handleFollowToggle}
+                          variant={isFollowing ? "outline" : "default"}
+                          className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                        >
                           {isFollowing ? <><UserCheck className="mr-2 h-4 w-4" /> Following</> : <><UserPlus className="mr-2 h-4 w-4" /> Follow</>}
                         </Button>
-                    }
+                      )}
                       {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
                           <MessageCircle className="mr-2 h-4 w-4" />
                           Contact
@@ -997,15 +997,15 @@ const ArtistProfile = () => {
                   </div>
 
                   {/* Instrument Section for Instrumentalists */}
-                  {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments &&
-              <>
+                  {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (
+                    <>
                       <Separator />
                       <div>
                         {(() => {
-                    const instrumentName = artist.instruments.split(',')[0].trim();
-                    const InstrumentIcon = getInstrumentIcon(instrumentName);
-                    return (
-                      <div className="flex items-center gap-2">
+                          const instrumentName = artist.instruments.split(',')[0].trim();
+                          const InstrumentIcon = getInstrumentIcon(instrumentName);
+                          return (
+                            <div className="flex items-center gap-2">
                               <h2 className="text-xl font-display font-bold flex items-center gap-2">
                                 <Music2 className="h-5 w-5 text-accent" />
                                 Instrument:
@@ -1014,12 +1014,12 @@ const ArtistProfile = () => {
                                 <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                 {instrumentName}
                               </Badge>
-                            </div>);
-
-                  })()}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </>
-              }
+                  )}
 
                   <Separator />
 
@@ -1132,8 +1132,8 @@ const ArtistProfile = () => {
                   {/* Social Media */}
                   <div>
                     <h3 className="text-xl font-display font-bold mb-4 text-left">Social Networks</h3>
-                    {currentUserId ?
-                <div className="flex flex-wrap gap-2 md:gap-3">
+                    {currentUserId ? (
+                      <div className="flex flex-wrap gap-2 md:gap-3">
                         {artist.facebook_url && <a href={artist.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center p-2.5 md:p-3 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Facebook">
                             <Facebook className="h-5 w-5 md:h-6 md:w-6 text-accent" />
                           </a>}
@@ -1152,16 +1152,16 @@ const ArtistProfile = () => {
                             </svg>
                           </a>}
                         {!artist.facebook_url && !artist.instagram_url && !artist.youtube_url && !artist.tiktok_url && !artist.spotify_url && <p className="text-muted-foreground">No social media links available.</p>}
-                      </div> :
-
-                <div
-                  className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-accent transition-colors"
-                  onClick={() => navigate('/login')}>
-
+                      </div>
+                    ) : (
+                      <div
+                        className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-accent transition-colors"
+                        onClick={() => navigate('/login')}
+                      >
                         <Lock className="h-4 w-4" />
                         <span className="text-sm">Login to view social media links</span>
                       </div>
-                }
+                    )}
                   </div>
 
                   <Separator />
@@ -1193,7 +1193,7 @@ const ArtistProfile = () => {
 
                     {reviews.length > 0 ? <Carousel className="w-full">
                         <CarouselContent className="-ml-2 md:-ml-4">
-                          {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                          {reviews.map(review => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
                                 {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
                                     <Trash2 className="h-4 w-4" />
@@ -1216,7 +1216,7 @@ const ArtistProfile = () => {
                                   </div>
                                 </div>
                                 <div className="flex gap-0.5">
-                                  {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
+                                  {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                 </div>
                                 {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
                               </div>
@@ -1238,8 +1238,8 @@ const ArtistProfile = () => {
                       <FileText className="h-5 w-5 text-accent" />
                       Posts
                     </h2>
-                    {!currentUserId ?
-                <Card className="p-8 text-center">
+                    {!currentUserId ? (
+                      <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                         <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
                         <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's posts.</p>
@@ -1247,29 +1247,29 @@ const ArtistProfile = () => {
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                      </Card> :
-
-                <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                      </Card>
+                    ) : (
+                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {(() => {
-                    const promotions = announcements.filter((a) => a.is_premium && !isAdExpired(a)).map((a) => ({
-                      ...a,
-                      type: 'promotion' as const,
-                      content: a.description,
-                      created_at: a.date
-                    }));
-                    const postItems = posts.map((p) => ({
-                      ...p,
-                      type: 'post' as const
-                    }));
-                    const combined = [...postItems, ...promotions].sort(
-                      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                    );
-
-                    return combined.length > 0 ? combined.map((item) => {
-                      if (item.type === 'promotion') {
-                        const promo = item as typeof promotions[0];
-                        return (
-                          <Card key={`promo-${promo.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                        const promotions = announcements.filter(a => a.is_premium && !isAdExpired(a)).map(a => ({
+                          ...a,
+                          type: 'promotion' as const,
+                          content: a.description,
+                          created_at: a.date,
+                        }));
+                        const postItems = posts.map(p => ({
+                          ...p,
+                          type: 'post' as const,
+                        }));
+                        const combined = [...postItems, ...promotions].sort(
+                          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                        );
+                        
+                        return combined.length > 0 ? combined.map(item => {
+                          if (item.type === 'promotion') {
+                            const promo = item as typeof promotions[0];
+                            return (
+                              <Card key={`promo-${promo.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                                 <div className="p-4 pb-0 px-[6px] py-[3px]">
                                   <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
@@ -1303,8 +1303,8 @@ const ArtistProfile = () => {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => {
-                                      toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
-                                    }}>
+                                          toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
+                                        }}>
                                           <Flag className="h-4 w-4 mr-2" />
                                           Report Problem
                                         </DropdownMenuItem>
@@ -1313,17 +1313,17 @@ const ArtistProfile = () => {
                                   </div>
                                   <ExpandableText text={promo.description} className="mt-3" />
                                 </div>
-                                {promo.media_url &&
-                            <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })}>
-                                    {promo.media_type === "video" ?
-                              <div className="relative w-full aspect-video">
-                                        <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
-                                      </div> :
-
-                              <img src={promo.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
-                              }
+                                {promo.media_url && (
+                                  <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })}>
+                                    {promo.media_type === "video" ? (
+                                      <div className="relative w-full aspect-video">
+                                        <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+                                      </div>
+                                    ) : (
+                                      <img src={promo.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
+                                    )}
                                   </div>
-                            }
+                                )}
                                 <div className="px-2 py-2">
                                   <div className="flex items-center justify-around">
                                     <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
@@ -1332,13 +1332,13 @@ const ArtistProfile = () => {
                                     </Button>
                                   </div>
                                 </div>
-                              </Card>);
-
-                      }
-
-                      const post = item as typeof postItems[0];
-                      return (
-                        <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                              </Card>
+                            );
+                          }
+                          
+                          const post = item as typeof postItems[0];
+                          return (
+                            <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
@@ -1376,11 +1376,11 @@ const ArtistProfile = () => {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => {
-                                    toast({
-                                      title: "Report submitted",
-                                      description: "Thank you for reporting this problem. We'll review it shortly."
-                                    });
-                                  }}>
+                              toast({
+                                title: "Report submitted",
+                                description: "Thank you for reporting this problem. We'll review it shortly."
+                              });
+                            }}>
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
@@ -1394,11 +1394,11 @@ const ArtistProfile = () => {
                             
                             {/* Media */}
                             {post.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                            url: post.media_url!,
-                            type: post.media_type === "video" ? "video" : "image"
-                          })}>
+                      url: post.media_url!,
+                      type: post.media_type === "video" ? "video" : "image"
+                    })}>
                                 {post.media_type === "video" ? <div className="relative w-full aspect-video">
-                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
                                   </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                               </div>}
 
@@ -1422,15 +1422,15 @@ const ArtistProfile = () => {
                                 </Button>
                               </div>
                             </div>
-                          </Card>);
-
-                    }) : <Card className="p-8 text-center">
+                          </Card>
+                          );
+                        }) : <Card className="p-8 text-center">
                           <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                           <p className="text-muted-foreground">No posts yet.</p>
                         </Card>;
-                  })()}
+                      })()}
                     </div>
-                }
+                    )}
                   </div>
                 </TabsContent>
 
@@ -1441,8 +1441,8 @@ const ArtistProfile = () => {
                       <Megaphone className="h-5 w-5 text-accent" />
                       Announcements
                     </h2>
-                    {!currentUserId ?
-                <Card className="p-8 text-center">
+                    {!currentUserId ? (
+                      <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                         <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
                         <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's announcements.</p>
@@ -1450,10 +1450,10 @@ const ArtistProfile = () => {
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                      </Card> :
-
-                <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                      </Card>
+                    ) : (
+                    <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                      {announcements.filter(a => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter(a => !a.is_premium && !isAdExpired(a)).map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
@@ -1524,7 +1524,7 @@ const ArtistProfile = () => {
                           <p className="text-muted-foreground">No announcements yet.</p>
                         </Card>}
                     </div>
-                }
+                    )}
                   </div>
                 </TabsContent>
 
@@ -1629,7 +1629,7 @@ const ArtistProfile = () => {
                     }} modifiersClassNames={{
                       busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                       blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                    }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} />
+                    }} disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} />
                         </div>
                         {/* Date details / prompt (matches dashboard positioning) */}
                         <div className="w-full lg:min-w-0 lg:w-auto">
@@ -1698,7 +1698,7 @@ const ArtistProfile = () => {
                 const isBlocked = isBlockedDate(selectedDate);
 
                 // Collect all time slots from all events on this date
-                const allTimeSlots = events.flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
+                const allTimeSlots = events.flatMap(event => extractAllTimeSlotsFromNotes(event.notes));
                 const hasTimeSlots = allTimeSlots.length > 0;
                 return <div className="space-y-4 mt-2">
                         {/* Busy Time Slots */}
@@ -1773,14 +1773,14 @@ const ArtistProfile = () => {
                   <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
                       <Label htmlFor="reviewerName">Your Name</Label>
-                      <Input id="reviewerName" placeholder="Your name" value={reviewForm.name} onChange={(e) => setReviewForm({
+                      <Input id="reviewerName" placeholder="Your name" value={reviewForm.name} onChange={e => setReviewForm({
                     ...reviewForm,
                     name: e.target.value
                   })} required maxLength={100} readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="reviewerEmail">Your Email</Label>
-                      <Input id="reviewerEmail" type="email" placeholder="your.email@example.com" value={reviewForm.email} onChange={(e) => setReviewForm({
+                      <Input id="reviewerEmail" type="email" placeholder="your.email@example.com" value={reviewForm.email} onChange={e => setReviewForm({
                     ...reviewForm,
                     email: e.target.value
                   })} required maxLength={255} readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
@@ -1788,7 +1788,7 @@ const ArtistProfile = () => {
                     <div className="space-y-2">
                       <Label>Rating</Label>
                       <div className="py-2">
-                        {renderStars(reviewForm.rating, true, (rating) => setReviewForm({
+                        {renderStars(reviewForm.rating, true, rating => setReviewForm({
                       ...reviewForm,
                       rating
                     }))}
@@ -1799,7 +1799,7 @@ const ArtistProfile = () => {
                         <Label htmlFor="reviewComment">Your Review (Optional)</Label>
                         <span className="text-xs text-muted-foreground">{reviewForm.comment.length}/100</span>
                       </div>
-                      <Textarea id="reviewComment" placeholder="Share your experience..." value={reviewForm.comment} onChange={(e) => setReviewForm({
+                      <Textarea id="reviewComment" placeholder="Share your experience..." value={reviewForm.comment} onChange={e => setReviewForm({
                     ...reviewForm,
                     comment: e.target.value
                   })} rows={3} maxLength={100} />
@@ -1827,21 +1827,21 @@ const ArtistProfile = () => {
                   <form onSubmit={handleBookingSubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="Your name" value={bookingForm.name} onChange={(e) => setBookingForm({
+                      <Input id="name" placeholder="Your name" value={bookingForm.name} onChange={e => setBookingForm({
                     ...bookingForm,
                     name: e.target.value
                   })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="your.email@example.com" value={bookingForm.email} onChange={(e) => setBookingForm({
+                      <Input id="email" type="email" placeholder="your.email@example.com" value={bookingForm.email} onChange={e => setBookingForm({
                     ...bookingForm,
                     email: e.target.value
                   })} required readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="+40 712 345 678" value={bookingForm.phone} onChange={(e) => setBookingForm({
+                      <Input id="phone" type="tel" placeholder="+40 712 345 678" value={bookingForm.phone} onChange={e => setBookingForm({
                     ...bookingForm,
                     phone: e.target.value
                   })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
@@ -1856,7 +1856,7 @@ const ArtistProfile = () => {
                       })}
                         </div>
                         <div className="flex-1">
-                          <TimeSelector id="startTime" value={bookingForm.startTime} onChange={(value) => setBookingForm({
+                          <TimeSelector id="startTime" value={bookingForm.startTime} onChange={value => setBookingForm({
                         ...bookingForm,
                         startTime: value
                       })} placeholder="Start time" />
@@ -1880,14 +1880,14 @@ const ArtistProfile = () => {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={bookingForm.endDate || selectedDate} onSelect={(date) => setBookingForm({
+                            <Calendar mode="single" selected={bookingForm.endDate || selectedDate} onSelect={date => setBookingForm({
                           ...bookingForm,
                           endDate: date || null
-                        })} disabled={(date) => date < (selectedDate || new Date())} initialFocus className="p-3 pointer-events-auto" />
+                        })} disabled={date => date < (selectedDate || new Date())} initialFocus className="p-3 pointer-events-auto" />
                           </PopoverContent>
                         </Popover>
                         <div className="flex-1">
-                          <TimeSelector id="endTime" value={bookingForm.endTime} onChange={(value) => setBookingForm({
+                          <TimeSelector id="endTime" value={bookingForm.endTime} onChange={value => setBookingForm({
                         ...bookingForm,
                         endTime: value
                       })} placeholder="End time" />
@@ -1899,14 +1899,14 @@ const ArtistProfile = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="eventType">Event Type</Label>
-                      <Input id="eventType" placeholder="e.g., Wedding, Corporate Event, Birthday" value={bookingForm.eventType} onChange={(e) => setBookingForm({
+                      <Input id="eventType" placeholder="e.g., Wedding, Corporate Event, Birthday" value={bookingForm.eventType} onChange={e => setBookingForm({
                     ...bookingForm,
                     eventType: e.target.value
                   })} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="message">Additional Details</Label>
-                      <Textarea id="message" placeholder="Tell us more about your event..." value={bookingForm.message} onChange={(e) => setBookingForm({
+                      <Textarea id="message" placeholder="Tell us more about your event..." value={bookingForm.message} onChange={e => setBookingForm({
                     ...bookingForm,
                     message: e.target.value
                   })} rows={1} className="resize-none min-h-10 h-10" />
@@ -1925,7 +1925,7 @@ const ArtistProfile = () => {
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
       {/* Delete Review Confirmation Dialog */}
-      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
+      <AlertDialog open={!!deleteReviewId} onOpenChange={open => !open && setDeleteReviewId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Review</AlertDialogTitle>
