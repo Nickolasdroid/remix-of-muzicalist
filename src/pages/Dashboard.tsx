@@ -103,8 +103,8 @@ const Dashboard = () => {
   const PREMIUM_AD_LIMIT = 2;
 
   // Calculate used ads
-  const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
-  const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
+  const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
+  const premiumAdsUsed = announcements.filter((a) => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
@@ -148,8 +148,8 @@ const Dashboard = () => {
   const STANDARD_VIDEO_LIMIT = 3;
 
   // Calculate used gallery items
-  const imagesUsed = galleryItems.filter(item => item.type === 'image').length;
-  const videosUsed = galleryItems.filter(item => item.type === 'video').length;
+  const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
+  const videosUsed = galleryItems.filter((item) => item.type === 'video').length;
   const imagesRemaining = STANDARD_IMAGE_LIMIT - imagesUsed;
   const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
 
@@ -225,7 +225,7 @@ const Dashboard = () => {
     });
     if (data) {
       // Fetch likes count for each post
-      const postsWithLikes = await Promise.all(data.map(async post => {
+      const postsWithLikes = await Promise.all(data.map(async (post) => {
         const {
           count
         } = await supabase.from('post_likes').select('id', {
@@ -242,7 +242,7 @@ const Dashboard = () => {
       // Calculate posts created this month
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const postsThisMonth = data.filter(post => new Date(post.created_at) >= startOfMonth);
+      const postsThisMonth = data.filter((post) => new Date(post.created_at) >= startOfMonth);
       setMonthlyPostsCount(postsThisMonth.length);
     }
   };
@@ -257,10 +257,10 @@ const Dashboard = () => {
   };
   const loadFollowing = async () => {
     if (!user) return;
-    const { data, count } = await supabase
-      .from('followers')
-      .select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' })
-      .eq('follower_id', user.id);
+    const { data, count } = await supabase.
+    from('followers').
+    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' }).
+    eq('follower_id', user.id);
     setFollowingCount(count || 0);
     if (data) {
       setFollowingArtists(data.map((f: any) => f.profiles).filter(Boolean));
@@ -268,17 +268,17 @@ const Dashboard = () => {
   };
   const loadFollowers = async () => {
     if (!user) return;
-    const { data, count } = await supabase
-      .from('followers')
-      .select('follower_id', { count: 'exact' })
-      .eq('artist_id', user.id);
+    const { data, count } = await supabase.
+    from('followers').
+    select('follower_id', { count: 'exact' }).
+    eq('artist_id', user.id);
     setFollowersCount(count || 0);
     if (data && data.length > 0) {
       const followerIds = data.map((f: any) => f.follower_id);
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, stage_name, avatar_url, specialization, county')
-        .in('id', followerIds);
+      const { data: profiles } = await supabase.
+      from('profiles').
+      select('id, stage_name, avatar_url, specialization, county').
+      in('id', followerIds);
       setFollowersList(profiles || []);
     } else {
       setFollowersList([]);
@@ -292,7 +292,7 @@ const Dashboard = () => {
         error
       } = await supabase.from('reviews').delete().eq('id', reviewId);
       if (error) throw error;
-      setReviews(reviews.filter(r => r.id !== reviewId));
+      setReviews(reviews.filter((r) => r.id !== reviewId));
       toast({
         title: "Review Deleted",
         description: "The review has been successfully deleted."
@@ -424,7 +424,7 @@ const Dashboard = () => {
   const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
     const image = new Image();
     image.src = imageSrc;
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       image.onload = resolve;
     });
     const canvas = document.createElement('canvas');
@@ -435,8 +435,8 @@ const Dashboard = () => {
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
     ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise(resolve => {
-      canvas.toBlob(blob => {
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
         if (blob) resolve(blob);
       }, 'image/jpeg', 0.95);
     });
@@ -986,7 +986,7 @@ const Dashboard = () => {
   // Calendar functions
   const getBookingRequestForDate = (date: Date) => {
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    return bookingRequests.find(req => req.event_date === dateStr && req.status === 'accepted');
+    return bookingRequests.find((req) => req.event_date === dateStr && req.status === 'accepted');
   };
   const getBookedEventKey = (event: BookedEvent) => {
     return [event.timeSlot?.trim() ?? "", event.bookedBy?.trim() ?? "", event.contact?.trim() ?? "", event.phone?.trim() ?? "", event.eventType?.trim() ?? ""].join("|");
@@ -1019,7 +1019,7 @@ const Dashboard = () => {
   const rejectAcceptedBookingRequestsForBookedEvents = async (dateStr: string, removedEvents: BookedEvent[]) => {
     if (!user || removedEvents.length === 0) return 0;
     const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
-    const acceptedCandidates = bookingRequests.filter(req => {
+    const acceptedCandidates = bookingRequests.filter((req) => {
       return req.profile_id === user.id && req.status === 'accepted' && doesRequestCoverDate(req, dateStr);
     });
     const idsToReject = new Set<string>();
@@ -1027,7 +1027,7 @@ const Dashboard = () => {
       const wantedEmail = normalize(removedEvent.contact);
       const wantedName = (removedEvent.bookedBy ?? "").trim();
       const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
-      const match = acceptedCandidates.find(req => {
+      const match = acceptedCandidates.find((req) => {
         if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
         if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
         if (wantedTimes) {
@@ -1219,7 +1219,7 @@ const Dashboard = () => {
   const getEventForDate = (date: Date) => {
     // Use local date to avoid timezone issues
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    return calendarEvents.find(event => event.event_date === dateStr);
+    return calendarEvents.find((event) => event.event_date === dateStr);
   };
 
   // Booking request functions
@@ -1427,7 +1427,7 @@ const Dashboard = () => {
                        {/* Followers + Following count */}
                       <div className="flex items-center justify-center gap-4">
                         <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                          <Users className="h-4 w-4" />
+                          
                           <span className="text-sm font-medium">{followersCount} followers</span>
                         </div>
                         <span className="text-muted-foreground/50">·</span>
@@ -1536,7 +1536,7 @@ const Dashboard = () => {
                               </Button>}
                           </div>
                           {editingField === 'bio' ? <div className="space-y-2">
-                              <Textarea value={formData.bio} onChange={e => {
+                              <Textarea value={formData.bio} onChange={(e) => {
                     if (e.target.value.length <= 200) {
                       setFormData({
                         ...formData,
@@ -1563,33 +1563,33 @@ const Dashboard = () => {
                               {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
                                   {formData.bio}
                                 </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
-                              {profile?.created_at && (
-                                <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
+                              {profile?.created_at &&
+                  <p className="text-muted-foreground text-sm mt-3 flex items-center gap-2">
                                   <Clock className="h-4 w-4 text-accent" />
                                   Member since {new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                                 </p>
-                              )}
+                  }
                             </div>}
                         </div>
 
                         {/* Instrument Section for Instrumentalists */}
-                        {formData.specialization?.toLowerCase() === 'instrumentalist' && (
-                          <>
+                        {formData.specialization?.toLowerCase() === 'instrumentalist' &&
+              <>
                             <Separator />
                             <div className="group">
                               {(() => {
-                                const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
-                                const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
-                                const handleInstrumentsChange = (instruments: string) => {
-                                  setFormData({ ...formData, instruments });
-                                  supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
-                                    if (!error) {
-                                      toast({ title: "Saved", description: "Instrument updated!" });
-                                    }
-                                  });
-                                };
-                                return instrumentName ? (
-                                  <div className="flex items-center gap-2">
+                    const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
+                    const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
+                    const handleInstrumentsChange = (instruments: string) => {
+                      setFormData({ ...formData, instruments });
+                      supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                        if (!error) {
+                          toast({ title: "Saved", description: "Instrument updated!" });
+                        }
+                      });
+                    };
+                    return instrumentName ?
+                    <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-display font-bold flex items-center gap-2">
                                       <Music2 className="h-5 w-5 text-accent" />
                                       My Instrument:
@@ -1599,23 +1599,23 @@ const Dashboard = () => {
                                       {instrumentName}
                                       <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </Badge>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center gap-2">
+                                  </div> :
+
+                    <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-display font-bold flex items-center gap-2">
                                       <Music2 className="h-5 w-5 text-accent" />
                                       My Instrument:
                                     </h2>
                                     <InstrumentSelector
-                                      instruments={formData.instruments}
-                                      onInstrumentsChange={handleInstrumentsChange}
-                                    />
-                                  </div>
-                                );
-                              })()}
+                        instruments={formData.instruments}
+                        onInstrumentsChange={handleInstrumentsChange} />
+
+                                  </div>;
+
+                  })()}
                             </div>
                           </>
-                        )}
+              }
 
                         <Separator />
 
@@ -1635,9 +1635,9 @@ const Dashboard = () => {
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
-                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80" onClick={() => {
-                        const genres = formData.musicGenres.split(',').map(g => g.trim()).filter(g => g);
-                        const newGenres = genres.filter(g => g !== genre.trim());
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80" onClick={() => {
+                        const genres = formData.musicGenres.split(',').map((g) => g.trim()).filter((g) => g);
+                        const newGenres = genres.filter((g) => g !== genre.trim());
                         setFormData({
                           ...formData,
                           musicGenres: newGenres.join(', ')
@@ -1650,47 +1650,47 @@ const Dashboard = () => {
                                 
                                 {/* Available genres to add */}
                                 {(() => {
-                                  const PRIORITY_GENRES = ['Pop', 'Rock', 'Jazz', 'Manele', 'Traditional', 'Blues', 'Disco', 'Hip-Hop', 'Electronic', 'House', 'R&B', 'Latin', 'Trap', 'Reggaeton', 'Folk', 'Country'];
-                                  const OTHER_GENRES = ['Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Classical', 'Cumbia', 'Dance', 'Dancehall', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'Easy Listening', 'EDM', 'Ethno', 'Fado', 'Flamenco', 'Funk', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Indie', 'J-Pop', 'K-Pop', 'Kizomba', 'Klezmer', 'Kompa', 'Lo-fi', 'Mariachi', 'Merengue', 'Metal', 'Motown', 'New Wave', 'Opera', 'Party Music', 'Polka', 'Progressive Rock', 'Punk', 'Qawwali', 'R&B', 'Ranchera', 'Reggae', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Soul', 'Synthwave', 'Tango', 'Techno', 'Trance', 'Turbo-Folk', 'Vallenato', 'Zouk'];
-                                  const ALL_GENRES = [...PRIORITY_GENRES, ...OTHER_GENRES.filter(g => !PRIORITY_GENRES.includes(g))];
-                                  const selectedSet = new Set(formData.musicGenres?.split(',').map(g => g.trim()) || []);
-                                  const availableGenres = ALL_GENRES.filter(genre => !selectedSet.has(genre));
-                                  const VISIBLE_COUNT = 12;
-                                  const visibleGenres = availableGenres.slice(0, VISIBLE_COUNT);
-                                  const hasMore = availableGenres.length > VISIBLE_COUNT;
-                                  
-                                  const genreBadge = (genre: string) => (
-                                    <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
-                                      const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                                      if (!currentGenres.includes(genre)) {
-                                        setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
-                                      }
-                                    }}>
+                      const PRIORITY_GENRES = ['Pop', 'Rock', 'Jazz', 'Manele', 'Traditional', 'Blues', 'Disco', 'Hip-Hop', 'Electronic', 'House', 'R&B', 'Latin', 'Trap', 'Reggaeton', 'Folk', 'Country'];
+                      const OTHER_GENRES = ['Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Classical', 'Cumbia', 'Dance', 'Dancehall', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'Easy Listening', 'EDM', 'Ethno', 'Fado', 'Flamenco', 'Funk', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Indie', 'J-Pop', 'K-Pop', 'Kizomba', 'Klezmer', 'Kompa', 'Lo-fi', 'Mariachi', 'Merengue', 'Metal', 'Motown', 'New Wave', 'Opera', 'Party Music', 'Polka', 'Progressive Rock', 'Punk', 'Qawwali', 'R&B', 'Ranchera', 'Reggae', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Soul', 'Synthwave', 'Tango', 'Techno', 'Trance', 'Turbo-Folk', 'Vallenato', 'Zouk'];
+                      const ALL_GENRES = [...PRIORITY_GENRES, ...OTHER_GENRES.filter((g) => !PRIORITY_GENRES.includes(g))];
+                      const selectedSet = new Set(formData.musicGenres?.split(',').map((g) => g.trim()) || []);
+                      const availableGenres = ALL_GENRES.filter((genre) => !selectedSet.has(genre));
+                      const VISIBLE_COUNT = 12;
+                      const visibleGenres = availableGenres.slice(0, VISIBLE_COUNT);
+                      const hasMore = availableGenres.length > VISIBLE_COUNT;
+
+                      const genreBadge = (genre: string) =>
+                      <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                        const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
+                        if (!currentGenres.includes(genre)) {
+                          setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                        }
+                      }}>
                                       <Plus className="h-3 w-3 mr-1" />
                                       {genre}
-                                    </Badge>
-                                  );
+                                    </Badge>;
 
-                                  return (
-                                    <div className="space-y-2">
+
+                      return (
+                        <div className="space-y-2">
                                       <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
                                       <div className="flex flex-wrap gap-2">
-                                        {visibleGenres.map(genre => genreBadge(genre))}
-                                        {hasMore && (
-                                          <GenrePickerDialog
-                                            availableGenres={availableGenres}
-                                            onSelect={(genre) => {
-                                              const currentGenres = formData.musicGenres?.split(',').map(g => g.trim()).filter(g => g) || [];
-                                              if (!currentGenres.includes(genre)) {
-                                                setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
-                                              }
-                                            }}
-                                          />
-                                        )}
+                                        {visibleGenres.map((genre) => genreBadge(genre))}
+                                        {hasMore &&
+                            <GenrePickerDialog
+                              availableGenres={availableGenres}
+                              onSelect={(genre) => {
+                                const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
+                                if (!currentGenres.includes(genre)) {
+                                  setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                                }
+                              }} />
+
+                            }
                                       </div>
-                                    </div>
-                                  );
-                                })()}
+                                    </div>);
+
+                    })()}
                                 
                                 <div className="flex gap-2 pt-2">
                                   <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
@@ -1704,7 +1704,7 @@ const Dashboard = () => {
                                 </div>
                               </div> : <div>
                                 <div className="flex flex-wrap gap-2">
-                                  {formData.musicGenres?.split(',').filter(g => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
                                       {genre.trim()}
                                     </Badge>)}
                                   {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}
@@ -1724,7 +1724,7 @@ const Dashboard = () => {
                                 </Button>}
                             </div>
                             {editingField === 'experience' ? <div className="space-y-3">
-                                <Select value={formData.experienceLevel} onValueChange={value => setFormData({
+                                <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({
                       ...formData,
                       experienceLevel: value
                     })}>
@@ -1738,7 +1738,7 @@ const Dashboard = () => {
                                     <SelectItem value="Professional">Professional</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Input type="number" value={formData.numberOfEvents} onChange={e => setFormData({
+                                <Input type="number" value={formData.numberOfEvents} onChange={(e) => setFormData({
                       ...formData,
                       numberOfEvents: e.target.value
                     })} placeholder="Number of Events" />
@@ -1780,7 +1780,7 @@ const Dashboard = () => {
                                 </Button>}
                             </div>
                             {editingField === 'price' ? <div className="space-y-2">
-                                <Input value={formData.estimatedPrice} onChange={e => setFormData({
+                                <Input value={formData.estimatedPrice} onChange={(e) => setFormData({
                       ...formData,
                       estimatedPrice: e.target.value
                     })} placeholder={`e.g., 500-1000 ${getCurrencyForCountry(profile?.country)} per event`} />
@@ -1841,28 +1841,28 @@ const Dashboard = () => {
                           {editingField === 'social' ? <div className="space-y-3">
                               <div className="flex items-center gap-2">
                                 <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input value={formData.facebookUrl} onChange={e => setFormData({
+                                <Input value={formData.facebookUrl} onChange={(e) => setFormData({
                       ...formData,
                       facebookUrl: e.target.value
                     })} placeholder="Facebook profile URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input value={formData.instagramUrl} onChange={e => setFormData({
+                                <Input value={formData.instagramUrl} onChange={(e) => setFormData({
                       ...formData,
                       instagramUrl: e.target.value
                     })} placeholder="Instagram profile URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input value={formData.youtubeUrl} onChange={e => setFormData({
+                                <Input value={formData.youtubeUrl} onChange={(e) => setFormData({
                       ...formData,
                       youtubeUrl: e.target.value
                     })} placeholder="YouTube channel URL" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Music className="h-5 w-5 text-accent flex-shrink-0" />
-                                <Input value={formData.tiktokUrl} onChange={e => setFormData({
+                                <Input value={formData.tiktokUrl} onChange={(e) => setFormData({
                       ...formData,
                       tiktokUrl: e.target.value
                     })} placeholder="TikTok profile URL" />
@@ -1871,7 +1871,7 @@ const Dashboard = () => {
                                 <svg className="h-5 w-5 text-accent flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                                 </svg>
-                                <Input value={formData.spotifyUrl} onChange={e => setFormData({
+                                <Input value={formData.spotifyUrl} onChange={(e) => setFormData({
                       ...formData,
                       spotifyUrl: e.target.value
                     })} placeholder="Spotify artist URL" />
@@ -1924,7 +1924,7 @@ const Dashboard = () => {
                           
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
-                                {reviews.map(review => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                                {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                                     <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
                                       <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
                                         <Trash2 className="h-4 w-4" />
@@ -1947,7 +1947,7 @@ const Dashboard = () => {
                                         </div>
                                       </div>
                                       <div className="flex gap-0.5">
-                                        {[1, 2, 3, 4, 5].map(star => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
+                                        {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                       </div>
                                       {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
                                     </div>
@@ -1982,9 +1982,9 @@ const Dashboard = () => {
                               </div>
                             </div>
                             <Dialog open={showPostDialog} onOpenChange={(open) => {
-                              setShowPostDialog(open);
-                              if (!open) setPostMediaType('image');
-                            }}>
+                    setShowPostDialog(open);
+                    if (!open) setPostMediaType('image');
+                  }}>
                               <DialogTrigger asChild>
                                 <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                   <Plus className="h-4 w-4 mr-1" />
@@ -1995,13 +1995,13 @@ const Dashboard = () => {
                                 <DialogHeader>
                                   <DialogTitle>Create New Post</DialogTitle>
                                 </DialogHeader>
-                                {postMediaType === 'promotion' && (
-                                  <p className="text-sm text-muted-foreground mt-2">
+                                {postMediaType === 'promotion' &&
+                      <p className="text-sm text-muted-foreground mt-2">
                                     Promotions are valid for 30 days.
                                   </p>
-                                )}
+                      }
                                 <div className="space-y-4 mt-4">
-                                  <Tabs value={postMediaType} onValueChange={v => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
+                                  <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
                                     <TabsList className="grid w-full grid-cols-3">
                                       <TabsTrigger value="image">Photo</TabsTrigger>
                                       <TabsTrigger value="video">Video</TabsTrigger>
@@ -2011,7 +2011,7 @@ const Dashboard = () => {
                                     <TabsContent value="image" className="space-y-4">
                                       <div>
                                         <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                        <Textarea value={newPost.content} onChange={(e) => setNewPost({
                                 ...newPost,
                                 content: e.target.value.slice(0, 200)
                               })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
@@ -2044,7 +2044,7 @@ const Dashboard = () => {
                                     <TabsContent value="video" className="space-y-4">
                                       <div>
                                         <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={e => setNewPost({
+                                        <Textarea value={newPost.content} onChange={(e) => setNewPost({
                                 ...newPost,
                                 content: e.target.value.slice(0, 200)
                               })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
@@ -2052,7 +2052,7 @@ const Dashboard = () => {
                                       </div>
                                       <div>
                                         <Label>Video URL (YouTube/Embed)</Label>
-                                        <Input value={newPost.mediaUrl} onChange={e => {
+                                        <Input value={newPost.mediaUrl} onChange={(e) => {
                                 setNewPost({
                                   ...newPost,
                                   mediaUrl: e.target.value,
@@ -2068,7 +2068,7 @@ const Dashboard = () => {
                                     <TabsContent value="promotion" className="space-y-4">
                                       <div>
                                         <Label>Promotion Text</Label>
-                                        <Textarea value={newPromotion.description} onChange={e => setNewPromotion({
+                                        <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({
                                 ...newPromotion,
                                 description: e.target.value.slice(0, 200)
                               })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
@@ -2080,10 +2080,10 @@ const Dashboard = () => {
                                         {newPromotion.mediaUrl ? <div className="mt-2 relative">
                                             {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
                                             <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
-                                ...newPromotion,
-                                mediaUrl: "",
-                                mediaType: ""
-                              })}>
+                                  ...newPromotion,
+                                  mediaUrl: "",
+                                  mediaType: ""
+                                })}>
                                               <X className="h-4 w-4" />
                                             </Button>
                                           </div> : <>
@@ -2106,7 +2106,7 @@ const Dashboard = () => {
                               </DialogContent>
                             </Dialog>
                           </div>
-                          {posts.map(post => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {posts.map((post) => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
@@ -2155,7 +2155,7 @@ const Dashboard = () => {
                             </Card>)}
 
                           {/* Promotions in Posts section */}
-                          {announcements.filter(a => a.is_premium).map(promotion => <Card key={`promo-${promotion.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {announcements.filter((a) => a.is_premium).map((promotion) => <Card key={`promo-${promotion.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
@@ -2205,7 +2205,7 @@ const Dashboard = () => {
                               <div className="h-2" />
                             </Card>)}
                           
-                          {posts.length === 0 && announcements.filter(a => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
+                          {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
                               <CardContent className="p-12 text-center">
                                 <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                 <p className="text-muted-foreground">No posts yet. Create your first post!</p>
@@ -2244,7 +2244,7 @@ const Dashboard = () => {
                                   <div className="space-y-4 mt-4">
                                     <div>
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
-                                      <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={e => setNewAnnouncement({
+                                      <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={(e) => setNewAnnouncement({
                               ...newAnnouncement,
                               description: e.target.value.slice(0, 200)
                             })} placeholder="Write your announcement here..." rows={4} maxLength={200} className="mt-2" />
@@ -2254,15 +2254,15 @@ const Dashboard = () => {
                                     <div className="space-y-3">
                                       <div>
                                         <Label htmlFor="announcement-location-inner">Location (optional)</Label>
-                                        <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
+                                        <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, location: e.target.value })} placeholder="e.g. New York, NY" className="mt-1" />
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
-                                        <Input id="announcement-event-date-inner" type="date" max={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
+                                        <Input id="announcement-event-date-inner" type="date" max={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-budget-inner">Budget (optional)</Label>
-                                        <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
+                                        <Input id="announcement-budget-inner" value={newAnnouncement.budget} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, budget: e.target.value })} placeholder="e.g. $500" className="mt-1" />
                                       </div>
                                     </div>
                                     
@@ -2274,7 +2274,7 @@ const Dashboard = () => {
                               </Dialog>
                             </div>
                           </div>
-                          {announcements.filter(a => !a.is_premium).map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
@@ -2315,28 +2315,28 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                                 <ExpandableText text={announcement.description} className="mt-3" />
-                                {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) && (
-                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                                    {announcement.location && (
-                                      <span className="flex items-center gap-1">
+                                {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) &&
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+                                    {announcement.location &&
+                      <span className="flex items-center gap-1">
                                         <MapPin className="h-3 w-3" />
                                         {announcement.location}
                                       </span>
-                                    )}
-                                    {announcement.event_date && (
-                                      <span className="flex items-center gap-1">
+                      }
+                                    {announcement.event_date &&
+                      <span className="flex items-center gap-1">
                                         <CalendarIcon className="h-3 w-3" />
                                         {new Date(announcement.event_date).toLocaleDateString()}
                                       </span>
-                                    )}
-                                    {announcement.budget && (
-                                      <span className="flex items-center gap-1">
+                      }
+                                    {announcement.budget &&
+                      <span className="flex items-center gap-1">
                                         <DollarSign className="h-3 w-3" />
                                         {announcement.budget}
                                       </span>
-                                    )}
+                      }
                                   </div>
-                                )}
+                    }
                               </div>
                               
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
@@ -2347,7 +2347,7 @@ const Dashboard = () => {
                               
                               <div className="h-2" />
                             </Card>)}
-                          {announcements.filter(a => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
+                          {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">No announcements yet</p>
                             </div>}
@@ -2374,7 +2374,7 @@ const Dashboard = () => {
                                 <DialogTitle>Add Media</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
-                                <Tabs value={galleryUploadType} onValueChange={v => setGalleryUploadType(v as 'image' | 'video')}>
+                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
                                   <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Image</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
@@ -2414,7 +2414,7 @@ const Dashboard = () => {
                               <span className="text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter(item => item.type === 'image').map(item => <div key={item.id} className="relative group">
+                              {galleryItems.filter((item) => item.type === 'image').map((item) => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
                                     <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
                                   </div>
@@ -2426,7 +2426,7 @@ const Dashboard = () => {
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
-                              {galleryItems.filter(item => item.type === 'image').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
+                              {galleryItems.filter((item) => item.type === 'image').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No photos yet. Add your first image!
                                 </div>}
                             </div>
@@ -2440,7 +2440,7 @@ const Dashboard = () => {
                               <span className="text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter(item => item.type === 'video').map(item => <div key={item.id} className="relative group">
+                              {galleryItems.filter((item) => item.type === 'video').map((item) => <div key={item.id} className="relative group">
                                   <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
@@ -2452,7 +2452,7 @@ const Dashboard = () => {
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
-                              {galleryItems.filter(item => item.type === 'video').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
+                              {galleryItems.filter((item) => item.type === 'video').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No videos yet. Add your first video!
                                 </div>}
                             </div>
@@ -2490,7 +2490,7 @@ const Dashboard = () => {
                             </div>
                             {/* Calendar */}
                             <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
-                              <Calendar mode="single" selected={selectedDate} onSelect={date => {
+                              <Calendar mode="single" selected={selectedDate} onSelect={(date) => {
                       if (!date) {
                         setSelectedDate(undefined);
                         setUserChangedStatus(false);
@@ -2518,9 +2518,9 @@ const Dashboard = () => {
                         setEventStatus('available');
                         setEventNotes("");
                       }
-                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
-                      busy: calendarEvents.filter(e => e.status === 'busy').map(e => parseYMDToLocalDate(e.event_date)),
-                      blocked: calendarEvents.filter(e => e.status === 'blocked').map(e => parseYMDToLocalDate(e.event_date))
+                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
+                      busy: calendarEvents.filter((e) => e.status === 'busy').map((e) => parseYMDToLocalDate(e.event_date)),
+                      blocked: calendarEvents.filter((e) => e.status === 'blocked').map((e) => parseYMDToLocalDate(e.event_date))
                     }} modifiersClassNames={{
                       busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                       blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
@@ -2545,7 +2545,7 @@ const Dashboard = () => {
                             const currentEvent = getEventForDate(selectedDate);
                             const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
                             const showAsBooked = isBooked && !userChangedStatus;
-                            return <Select value={showAsBooked ? 'busy' : eventStatus} onValueChange={v => {
+                            return <Select value={showAsBooked ? 'busy' : eventStatus} onValueChange={(v) => {
                               if (v !== 'busy') {
                                 setEventStatus(v as 'available' | 'blocked');
                                 setUserChangedStatus(true);
@@ -2581,7 +2581,7 @@ const Dashboard = () => {
                                 const oldEvents = parseBookedEvents(oldNotes);
                                 const newEvents = parseBookedEvents(newNotes);
                                 const newKeys = new Set(newEvents.map(getBookedEventKey));
-                                const removedEvents = oldEvents.filter(e => !newKeys.has(getBookedEventKey(e)));
+                                const removedEvents = oldEvents.filter((e) => !newKeys.has(getBookedEventKey(e)));
 
                                 // First, update the calendar notes
                                 const {
@@ -2615,7 +2615,7 @@ const Dashboard = () => {
                           }
                           return <div>
                                           <Label>Notes (optional)</Label>
-                                          <Textarea value={eventNotes} onChange={e => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
+                                          <Textarea value={eventNotes} onChange={(e) => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
                                         </div>;
                         })()}
                                     <div className="flex gap-2">
@@ -2665,7 +2665,7 @@ const Dashboard = () => {
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
                               </Card> : <div className="space-y-3">
-                                {bookingRequests.map(request => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
+                                {bookingRequests.map((request) => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
                       setSelectedBookingRequest(request);
                       setShowBookingDetailDialog(true);
                     }}>
@@ -2697,7 +2697,7 @@ const Dashboard = () => {
                                           </div>
                                         </div>
                                         
-                                        {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={e => e.stopPropagation()}>
+                                        {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
                                             <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90">
                                               Accept
                                             </Button>
@@ -2856,7 +2856,7 @@ const Dashboard = () => {
             
             <div className="space-y-2 mb-4">
               <Label>Zoom: {zoom.toFixed(1)}x</Label>
-              <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={e => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+              <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
             </div>
 
             <div className="flex gap-2 justify-end">
@@ -2919,7 +2919,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Review Confirmation Dialog */}
-      <AlertDialog open={!!deleteReviewId} onOpenChange={open => !open && setDeleteReviewId(null)}>
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Review</AlertDialogTitle>
@@ -2937,7 +2937,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Post Confirmation Dialog */}
-      <AlertDialog open={!!deletePostId} onOpenChange={open => !open && setDeletePostId(null)}>
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Post</AlertDialogTitle>
@@ -2955,7 +2955,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Announcement Confirmation Dialog */}
-      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={open => !open && setDeleteAnnouncementId(null)}>
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
@@ -2973,7 +2973,7 @@ const Dashboard = () => {
       </AlertDialog>
 
       {/* Delete Gallery Item Confirmation Dialog */}
-      <AlertDialog open={!!deleteGalleryItem} onOpenChange={open => !open && setDeleteGalleryItem(null)}>
+      <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete {deleteGalleryItem?.type === 'video' ? 'Video' : 'Photo'}</AlertDialogTitle>
@@ -3000,12 +3000,12 @@ const Dashboard = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {followingArtists.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p>
-            ) : (
-              followingArtists.map((artist) => (
-                <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowingDialog(false); navigate(`/artist/${artist.id}`); }}>
+            {followingArtists.length === 0 ?
+          <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p> :
+
+          followingArtists.map((artist) =>
+          <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowingDialog(false);navigate(`/artist/${artist.id}`);}}>
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={artist.avatar_url} />
                       <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
@@ -3016,22 +3016,22 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <Button
-                    variant="outline"
-                    size="sm"
-                    className="shrink-0 text-xs"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!user) return;
-                      await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', artist.id);
-                      setFollowingArtists(prev => prev.filter(a => a.id !== artist.id));
-                      setFollowingCount(prev => prev - 1);
-                    }}
-                  >
+              variant="outline"
+              size="sm"
+              className="shrink-0 text-xs"
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (!user) return;
+                await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', artist.id);
+                setFollowingArtists((prev) => prev.filter((a) => a.id !== artist.id));
+                setFollowingCount((prev) => prev - 1);
+              }}>
+
                     Following
                   </Button>
                 </div>
-              ))
-            )}
+          )
+          }
           </div>
         </DialogContent>
       </Dialog>
@@ -3046,11 +3046,11 @@ const Dashboard = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {followersList.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p>
-            ) : (
-              followersList.map((follower) => (
-                <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => { setShowFollowersDialog(false); navigate(`/artist/${follower.id}`); }}>
+            {followersList.length === 0 ?
+          <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p> :
+
+          followersList.map((follower) =>
+          <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => {setShowFollowersDialog(false);navigate(`/artist/${follower.id}`);}}>
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={follower.avatar_url} />
                     <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
@@ -3060,8 +3060,8 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground truncate">{follower.specialization} · {follower.county}</p>
                   </div>
                 </div>
-              ))
-            )}
+          )
+          }
           </div>
         </DialogContent>
       </Dialog>
