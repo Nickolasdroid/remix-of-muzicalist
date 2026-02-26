@@ -174,11 +174,13 @@ const Dashboard = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [followingArtists, setFollowingArtists] = useState<any[]>([]);
   const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+  const [unfollowTargetId, setUnfollowTargetId] = useState<string | null>(null);
 
   // Followers state
   const [followersCount, setFollowersCount] = useState(0);
   const [followersList, setFollowersList] = useState<any[]>([]);
   const [showFollowersDialog, setShowFollowersDialog] = useState(false);
+  const [removeFollowerTargetId, setRemoveFollowerTargetId] = useState<string | null>(null);
 
   const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
 
@@ -2993,7 +2995,6 @@ const Dashboard = () => {
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {followingArtists.length === 0 ?
           <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p> :
-
           followingArtists.map((artist) =>
           <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowingDialog(false);navigate(`/artist/${artist.id}`);}}>
@@ -3006,26 +3007,34 @@ const Dashboard = () => {
                       <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
                     </div>
                   </div>
-                  <Button
-              variant="outline"
-              size="sm"
-              className="shrink-0 text-xs"
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (!user) return;
-                await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', artist.id);
-                setFollowingArtists((prev) => prev.filter((a) => a.id !== artist.id));
-                setFollowingCount((prev) => prev - 1);
-              }}>
-
+                  <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setUnfollowTargetId(artist.id); }}>
                     Following
                   </Button>
                 </div>
-          )
-          }
+          )}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Unfollow Confirmation */}
+      <AlertDialog open={!!unfollowTargetId} onOpenChange={(open) => { if (!open) setUnfollowTargetId(null); }}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unfollow Artist</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to unfollow this artist? You can follow them again later.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!user || !unfollowTargetId) return;
+              await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', unfollowTargetId);
+              setFollowingArtists((prev) => prev.filter((a) => a.id !== unfollowTargetId));
+              setFollowingCount((prev) => prev - 1);
+              setUnfollowTargetId(null);
+            }}>Unfollow</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Followers Dialog */}
       <Dialog open={showFollowersDialog} onOpenChange={setShowFollowersDialog}>
@@ -3039,23 +3048,46 @@ const Dashboard = () => {
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {followersList.length === 0 ?
           <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p> :
-
           followersList.map((follower) =>
-          <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors" onClick={() => {setShowFollowersDialog(false);navigate(`/artist/${follower.id}`);}}>
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={follower.avatar_url} />
-                    <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{follower.stage_name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{follower.specialization} · {follower.county}</p>
+          <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowersDialog(false);navigate(`/artist/${follower.id}`);}}>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={follower.avatar_url} />
+                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{follower.stage_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{follower.specialization} · {follower.county}</p>
+                    </div>
                   </div>
+                  <Button variant="outline" size="sm" className="shrink-0 text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setRemoveFollowerTargetId(follower.id); }}>
+                    Remove
+                  </Button>
                 </div>
-          )
-          }
+          )}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Remove Follower Confirmation */}
+      <AlertDialog open={!!removeFollowerTargetId} onOpenChange={(open) => { if (!open) setRemoveFollowerTargetId(null); }}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Follower</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to remove this follower? They will no longer follow you but can follow you again later.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!user || !removeFollowerTargetId) return;
+              await supabase.from('followers').delete().eq('artist_id', user.id).eq('follower_id', removeFollowerTargetId);
+              setFollowersList((prev) => prev.filter((f) => f.id !== removeFollowerTargetId));
+              setFollowersCount((prev) => prev - 1);
+              setRemoveFollowerTargetId(null);
+            }}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default Dashboard;
