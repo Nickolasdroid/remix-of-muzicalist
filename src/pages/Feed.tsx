@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
@@ -295,17 +296,7 @@ const Feed = () => {
     return specialization;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
+  const formatDate = formatSmartDate;
 
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>

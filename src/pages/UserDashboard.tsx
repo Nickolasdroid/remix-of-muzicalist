@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatDateNoYear } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -490,7 +491,7 @@ const UserDashboard = () => {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>User</span>
                             <span>·</span>
-                            <span>{new Date(ad.date).toLocaleDateString()}</span>
+                            <span>{formatDateNoYear(ad.date)}</span>
                             <span>·</span>
                             {ad.is_premium 
                               ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
@@ -536,7 +537,7 @@ const UserDashboard = () => {
                         {ad.event_date && (
                           <span className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {new Date(ad.event_date).toLocaleDateString()}
+                            {formatDateNoYear(ad.event_date)}
                           </span>
                         )}
                         {ad.budget && (

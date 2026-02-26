@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import SettingsTab from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -394,17 +395,7 @@ const Dashboard = () => {
     }
     navigate('/');
   };
-  const formatPostDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
+  const formatPostDate = formatSmartDate;
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -2180,7 +2171,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{new Date(promotion.date).toLocaleDateString()}</span>
+                                        <span>{formatDateNoYear(promotion.date)}</span>
                                         <span>·</span>
                                         <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                           Promotion
@@ -2299,7 +2290,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                        <span>{formatDateNoYear(announcement.date)}</span>
                                         <span>·</span>
                                         {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Promotion
@@ -2326,7 +2317,7 @@ const Dashboard = () => {
                                     {announcement.event_date &&
                       <span className="flex items-center gap-1">
                                         <CalendarIcon className="h-3 w-3" />
-                                        {new Date(announcement.event_date).toLocaleDateString()}
+                                        {formatDateNoYear(announcement.event_date)}
                                       </span>
                       }
                                     {announcement.budget &&

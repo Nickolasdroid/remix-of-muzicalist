@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
@@ -604,17 +605,7 @@ const ArtistProfile = () => {
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return (sum / reviews.length).toFixed(1);
   };
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
+  const formatDate = formatSmartDate;
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
@@ -774,7 +765,7 @@ const ArtistProfile = () => {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>User</span>
                             <span>·</span>
-                            <span>{new Date(ad.date).toLocaleDateString()}</span>
+                            <span>{formatDateNoYear(ad.date)}</span>
                             <span>·</span>
                             {ad.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
                           </div>
@@ -1292,7 +1283,7 @@ const ArtistProfile = () => {
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                           <span>{artist?.specialization || "User"}</span>
                                           <span>·</span>
-                                          <span>{new Date(promo.date).toLocaleDateString()}</span>
+                                          <span>{formatDateNoYear(promo.date)}</span>
                                           <span>·</span>
                                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
                                         </div>
@@ -1479,7 +1470,7 @@ const ArtistProfile = () => {
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <span>{artist?.specialization || "User"}</span>
                                       <span>·</span>
-                                      <span>{new Date(announcement.date).toLocaleDateString()}</span>
+                                      <span>{formatDateNoYear(announcement.date)}</span>
                                       <span>·</span>
                                       <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                            Ad
@@ -1521,7 +1512,7 @@ const ArtistProfile = () => {
                                   {announcement.event_date && (
                                     <span className="flex items-center gap-1">
                                       <CalendarIcon className="h-3 w-3" />
-                                      {new Date(announcement.event_date).toLocaleDateString()}
+                                      {formatDateNoYear(announcement.event_date)}
                                     </span>
                                   )}
                                   {announcement.budget && (
