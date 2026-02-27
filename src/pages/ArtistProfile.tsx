@@ -84,6 +84,7 @@ interface Review {
   comment: string | null;
   created_at: string;
   reviewer_user_id: string | null;
+  reviewer_avatar_url?: string | null;
 }
 interface Post {
   id: string;
@@ -99,6 +100,20 @@ interface MediaPreview {
   url: string;
   type: "image" | "video";
 }
+const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> => {
+  const userIds = reviews.map(r => r.reviewer_user_id).filter(Boolean) as string[];
+  if (userIds.length === 0) return reviews;
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, avatar_url')
+    .in('id', userIds);
+  const avatarMap = new Map(profiles?.map(p => [p.id, p.avatar_url]) || []);
+  return reviews.map(r => ({
+    ...r,
+    reviewer_avatar_url: r.reviewer_user_id ? avatarMap.get(r.reviewer_user_id) || null : null,
+  }));
+};
+
 const ArtistProfile = () => {
   const {
     id
@@ -252,7 +267,9 @@ const ArtistProfile = () => {
       } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', id).order('created_at', {
         ascending: false
       });
-      setReviews(reviewsData || []);
+      // Fetch reviewer avatars
+      const reviewsWithAvatars = await enrichReviewsWithAvatars(reviewsData || []);
+      setReviews(reviewsWithAvatars);
 
       // Fetch posts with likes count
       const {
@@ -629,7 +646,8 @@ const ArtistProfile = () => {
       } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', id).order('created_at', {
         ascending: false
       });
-      setReviews(reviewsData || []);
+      const reviewsWithAvatars = await enrichReviewsWithAvatars(reviewsData || []);
+      setReviews(reviewsWithAvatars);
       toast({
         title: "Review Submitted!",
         description: `Thank you for reviewing ${artist?.stage_name}.`
@@ -1194,6 +1212,9 @@ const ArtistProfile = () => {
                                   </button>}
                                 <div className="flex items-center gap-3">
                                   <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                    {review.reviewer_avatar_url && (
+                                      <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />
+                                    )}
                                     <AvatarFallback className="bg-accent/10 text-accent text-sm">
                                       {review.reviewer_name.charAt(0).toUpperCase()}
                                     </AvatarFallback>
