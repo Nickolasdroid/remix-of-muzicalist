@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface MediaPreview {
   url: string;
@@ -12,7 +13,14 @@ interface InstagramZoomPreviewProps {
 }
 
 const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => {
+  const [isLandscape, setIsLandscape] = useState(false);
+
   if (!media) return null;
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setIsLandscape(img.naturalWidth > img.naturalHeight);
+  };
 
   return (
     <Dialog open={!!media} onOpenChange={onClose}>
@@ -40,8 +48,9 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
             <img
               src={media.url}
               alt="Full size preview"
-              className="max-w-[95vw] max-h-[90vh] object-contain"
+              className={`object-contain ${isLandscape ? 'w-[95vw] max-h-[90vh]' : 'max-w-[95vw] max-h-[90vh]'}`}
               draggable={false}
+              onLoad={handleImageLoad}
             />
           )}
         </div>
