@@ -1862,27 +1862,6 @@ const ArtistProfile = () => {
                   </DialogHeader>
                   <form onSubmit={handleBookingSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="Your name" value={bookingForm.name} onChange={(e) => setBookingForm({
-                    ...bookingForm,
-                    name: e.target.value
-                  })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="your.email@example.com" value={bookingForm.email} onChange={(e) => setBookingForm({
-                    ...bookingForm,
-                    email: e.target.value
-                  })} required readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="+40 712 345 678" value={bookingForm.phone} onChange={(e) => setBookingForm({
-                    ...bookingForm,
-                    phone: e.target.value
-                  })} required readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
-                    </div>
-                    <div className="space-y-2">
                       <Label>Start Time</Label>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 text-sm text-muted-foreground">
