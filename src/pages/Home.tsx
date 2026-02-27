@@ -10,7 +10,7 @@ import HeroSearchBar from "@/components/HeroSearchBar";
 const Home = () => {
 
   return (
-    <div className="min-h-screen md:ml-64">
+    <div className="min-h-screen">
       <Navigation />
       
       {/* Hero Section */}
