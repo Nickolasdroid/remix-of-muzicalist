@@ -159,6 +159,7 @@ const ArtistProfile = () => {
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const {
     toast
@@ -315,6 +316,13 @@ const ArtistProfile = () => {
       select('id', { count: 'exact', head: true }).
       eq('artist_id', id);
       setFollowersCount(followCount || 0);
+
+      // Fetch following count
+      const { count: followingCountData } = await supabase.
+      from('followers').
+      select('id', { count: 'exact', head: true }).
+      eq('follower_id', id);
+      setFollowingCount(followingCountData || 0);
 
 
       // Check if current user follows this artist
@@ -832,15 +840,7 @@ const ArtistProfile = () => {
                   <span className="text-sm font-bold">{getAverageRating() || 'N/A'}</span>
                   {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
                 </div>
-
-                {/* Contact button - top right */}
-                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    Contact
-                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    Contact
-                  </Button> : null}
+                <div />
               </div>
 
               {/* Centered Avatar - with top padding to account for absolute positioned elements */}
@@ -870,23 +870,36 @@ const ArtistProfile = () => {
                 </div>
               </div>
 
-              {/* Followers count + Follow button */}
-              <div className="flex items-center gap-3">
+              {/* Following + Followers counts */}
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
-                  
+                  <span className="text-sm font-semibold">{followingCount}</span>
+                  <span className="text-sm">following</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-muted-foreground">
                   <span className="text-sm font-semibold">{followersCount}</span>
                   <span className="text-sm">followers</span>
                 </div>
+              </div>
+
+              {/* Follow + Contact buttons */}
+              <div className="flex items-center gap-3">
                 {!isOwnProfile &&
               <Button
                 onClick={handleFollowToggle}
                 variant={isFollowing ? "outline" : "default"}
                 size="sm"
                 className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-
                     {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
                   </Button>
               }
+                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    Contact
+                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    Contact
+                  </Button> : null}
               </div>
             </div>
 
@@ -927,19 +940,25 @@ const ArtistProfile = () => {
                       </div>
                     </div>
 
-                    {/* Followers count + Follow + Contact */}
-                    <div className="flex items-center gap-3 mt-3">
+                    {/* Following + Followers counts */}
+                    <div className="flex items-center gap-4 mt-3">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
-                        
+                        <span className="text-base font-semibold">{followingCount}</span>
+                        <span className="text-base">following</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
                         <span className="text-base font-semibold">{followersCount}</span>
                         <span className="text-base">followers</span>
                       </div>
+                    </div>
+
+                    {/* Follow + Contact buttons */}
+                    <div className="flex items-center gap-3 mt-3">
                       {!isOwnProfile &&
                     <Button
                       onClick={handleFollowToggle}
                       variant={isFollowing ? "outline" : "default"}
                       className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-
                           {isFollowing ? <><UserCheck className="mr-2 h-4 w-4" /> Following</> : <><UserPlus className="mr-2 h-4 w-4" /> Follow</>}
                         </Button>
                     }
