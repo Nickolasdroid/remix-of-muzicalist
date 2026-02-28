@@ -2517,7 +2517,7 @@ const Dashboard = () => {
                         setEventStatus('available');
                         setEventNotes("");
                       }
-                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} modifiers={{
+                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
                       busy: calendarEvents.filter((e) => e.status === 'busy').map((e) => parseYMDToLocalDate(e.event_date)),
                       blocked: calendarEvents.filter((e) => e.status === 'blocked').map((e) => parseYMDToLocalDate(e.event_date))
                     }} modifiersClassNames={{
@@ -2528,7 +2528,52 @@ const Dashboard = () => {
                             
                             {/* Date Details Form */}
                             <div className="w-full lg:min-w-0 lg:w-auto">
-                              {selectedDate ? <Card className="p-4 h-full">
+                              {selectedDate ? (() => {
+                                const isPastDate = selectedDate < new Date(new Date().setHours(0, 0, 0, 0));
+                                const pastEvent = isPastDate ? getEventForDate(selectedDate) : null;
+                                
+                                if (isPastDate) {
+                                  // Read-only view for past dates
+                                  return <Card className="p-4 h-full">
+                                    <h4 className="font-semibold text-foreground mb-3">
+                                      {selectedDate.toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                      })}
+                                    </h4>
+                                    {pastEvent ? (
+                                      <div className="space-y-3">
+                                        <div>
+                                          <Label>Status</Label>
+                                          <div className={`mt-1 px-3 py-2 rounded-md border text-sm ${
+                                            pastEvent.status === 'busy' || pastEvent.status === 'booked'
+                                              ? 'bg-destructive/10 text-destructive border-destructive/30'
+                                              : pastEvent.status === 'blocked'
+                                              ? 'bg-muted text-muted-foreground border-border'
+                                              : 'bg-accent/10 text-accent-foreground border-accent/30'
+                                          }`}>
+                                            {pastEvent.status === 'busy' || pastEvent.status === 'booked' ? 'Booked' : pastEvent.status === 'blocked' ? 'Unavailable' : 'Available'}
+                                          </div>
+                                        </div>
+                                        {pastEvent.notes && (
+                                          <div>
+                                            <Label>Details</Label>
+                                            <div className="mt-1 px-3 py-2 rounded-md border bg-secondary/50 text-sm text-muted-foreground whitespace-pre-wrap">
+                                              {pastEvent.notes}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-muted-foreground">No events recorded for this date.</p>
+                                    )}
+                                  </Card>;
+                                }
+                                
+                                // Editable view for today and future dates
+                                return <Card className="p-4 h-full">
                                   <h4 className="font-semibold text-foreground mb-3">
                                     {selectedDate.toLocaleDateString('en-US', {
                           weekday: 'long',
@@ -2626,7 +2671,8 @@ const Dashboard = () => {
                                       </Button>}
                                     </div>
                                   </div>
-                                </Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                </Card>;
+                              })() : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
                                   <p className="text-sm text-center">Select a date to set availability</p>
                                 </div>}
                             </div>
