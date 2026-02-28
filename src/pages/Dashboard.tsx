@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import SettingsTab from "@/components/SettingsTab";
+import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -46,6 +46,36 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+  const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
+
+  const settingsSectionTitles: Record<SettingSection, string> = {
+    main: "Settings",
+    plan: "My Plan",
+    account: "Account",
+    email: "Email Address",
+    password: "Change Password",
+    language: "Language",
+    report: "Report an Issue",
+    logout: "Sign Out",
+    delete: "Delete Account",
+  };
+
+  const getMobileTitle = () => {
+    if (activeTab === "settings") {
+      return settingsSectionTitles[settingsSection] || "Settings";
+    }
+    return undefined;
+  };
+
+  const getMobileBackPath = (): string | number | undefined => {
+    if (activeTab === "settings") {
+      if (settingsSection !== "main") {
+        return undefined; // will be handled by onBack
+      }
+      return -1;
+    }
+    return undefined;
+  };
 
   // Update active tab when URL params change
   useEffect(() => {
@@ -1364,7 +1394,13 @@ const Dashboard = () => {
       </div>;
   }
   return <div className="min-h-screen md:ml-64 bg-card">
-      <Navigation />
+      <Navigation 
+        mobileTitle={getMobileTitle()} 
+        mobileBackPath={getMobileBackPath()}
+        onMobileBack={activeTab === "settings" && settingsSection !== "main" ? () => {
+          setSettingsSection("main");
+        } : undefined}
+      />
       
       <div className="pt-16 md:pt-24 pb-24 md:pb-20 px-0 md:px-4">
         <div className="container mx-auto max-w-6xl px-4 md:px-0">
@@ -2886,7 +2922,7 @@ const Dashboard = () => {
 
 
               {/* Settings Tab */}
-              {activeTab === "settings" && <SettingsTab formData={{ ...formData, plan: profile?.plan }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} />}
+              {activeTab === "settings" && <SettingsTab formData={{ ...formData, plan: profile?.plan }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} activeSection={settingsSection} onSectionChange={setSettingsSection} />}
         </div>
       </div>
 
