@@ -16,7 +16,7 @@ import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
-
+import registerArtistBg from "@/assets/register-artist-bg.png";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -255,10 +255,10 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col" style={{ backgroundImage: `url(${registerArtistBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none flex flex-col">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col bg-secondary">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
@@ -275,7 +275,7 @@ const RegisterArtist = () => {
             
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
-            <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
+              <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
                 <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">
                   {t("auth.register.basicInfo")}
                 </h2>
@@ -296,13 +296,13 @@ const RegisterArtist = () => {
                   <div className="space-y-1">
                     <Label htmlFor="country" className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>
                     <CountrySelector
-                    value={formData.country}
-                    onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
+                      value={formData.country}
+                      onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
 
                   </div>
 
                   {formData.country && availableRegions.length > 0 &&
-                <div className="space-y-1">
+                  <div className="space-y-1">
                       <Label htmlFor="county" className="text-xs md:text-sm">{divisionLabel}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })}>
                         <SelectTrigger className="bg-input border-border h-9">
@@ -313,37 +313,37 @@ const RegisterArtist = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                }
+                  }
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
                     <Input
-                    id="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => {
-                      const newValue = e.target.value;
-                      const prefix = getPhonePrefix(formData.country);
-                      // Ensure prefix cannot be deleted
-                      if (prefix && !newValue.startsWith(prefix)) {
-                        return;
-                      }
-                      // Only allow digits after prefix (no spaces)
-                      const afterPrefix = newValue.slice(prefix.length);
-                      if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
-                        return;
-                      }
-                      // Check max length
-                      const maxLength = getMaxPhoneLength(formData.country);
-                      if (newValue.length <= maxLength) {
-                        setFormData({ ...formData, phone: newValue });
-                      }
-                    }}
-                    className="bg-input border-border focus:border-accent h-9"
-                    placeholder={t("artistRegistration.placeholders.phone")} />
+                      id="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        const prefix = getPhonePrefix(formData.country);
+                        // Ensure prefix cannot be deleted
+                        if (prefix && !newValue.startsWith(prefix)) {
+                          return;
+                        }
+                        // Only allow digits after prefix (no spaces)
+                        const afterPrefix = newValue.slice(prefix.length);
+                        if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
+                          return;
+                        }
+                        // Check max length
+                        const maxLength = getMaxPhoneLength(formData.country);
+                        if (newValue.length <= maxLength) {
+                          setFormData({ ...formData, phone: newValue });
+                        }
+                      }}
+                      className="bg-input border-border focus:border-accent h-9"
+                      placeholder={t("artistRegistration.placeholders.phone")} />
 
                   </div>
 
@@ -359,11 +359,11 @@ const RegisterArtist = () => {
                   </Button>
                 </div>
               </div>
-            }
+              }
 
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
-            <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
+              <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
                 <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">
                   {t("auth.register.professionalInfo")}
                 </h2>
@@ -414,8 +414,8 @@ const RegisterArtist = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map((year) =>
-                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                      )}
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -430,11 +430,11 @@ const RegisterArtist = () => {
                   </Button>
                 </div>
               </div>
-            }
+              }
 
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
-            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="space-y-6 animate-in fade-in duration-500">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">
                   {t("auth.register.profilePicture")}
                 </h2>
@@ -444,7 +444,7 @@ const RegisterArtist = () => {
                   <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
 
                   {imageSrc &&
-                <div className="space-y-4">
+                  <div className="space-y-4">
                       <div className="relative w-full aspect-square max-w-[400px] mx-auto bg-black rounded-lg overflow-hidden">
                         <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} />
                       </div>
@@ -454,7 +454,7 @@ const RegisterArtist = () => {
                         <input id="zoom" type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
                       </div>
                     </div>
-                }
+                  }
                 </div>
 
                 <div className="flex justify-between">
@@ -466,11 +466,11 @@ const RegisterArtist = () => {
                   </Button>
                 </div>
               </div>
-            }
+              }
 
             {/* Step 4: Password */}
             {currentStep === 4 &&
-            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="space-y-6 animate-in fade-in duration-500">
                 <h2 className="text-2xl font-display font-bold text-foreground mb-6">
                   {t("auth.register.createPassword")}
                 </h2>
@@ -506,7 +506,7 @@ const RegisterArtist = () => {
                   </Button>
                 </div>
               </div>
-            }
+              }
             </div>
           </form>
         </div>
