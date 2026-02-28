@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3 } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -2456,10 +2456,16 @@ const Dashboard = () => {
                       {/* Calendar Tab */}
                       <TabsContent value="calendar">
                         <div>
-                          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                            <CalendarIcon className="h-5 w-5 text-accent" />
-                            My Calendar
-                          </h2>
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                              <CalendarIcon className="h-5 w-5 text-accent" />
+                              My Calendar
+                            </h2>
+                            <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
+                              <BarChart3 className="h-4 w-4" />
+                              Analytics
+                            </Button>
+                          </div>
                           <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                             {/* Legend - above calendar on mobile */}
                             <div className="w-full lg:hidden">
