@@ -311,18 +311,18 @@ const CategoryArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
-      <Navigation />
+      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="flex items-center justify-between mb-8 md:mb-12">
-          <Link to={currentUserId ? "/categories" : "/"}>
+          <Link to={currentUserId ? "/categories" : "/"} className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
             </Button>
           </Link>
 
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+          <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">
             {category}
           </h1>
 

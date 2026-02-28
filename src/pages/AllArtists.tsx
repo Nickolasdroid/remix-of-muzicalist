@@ -69,10 +69,10 @@ const AllArtists = () => {
 
   return (
     <div className="min-h-screen">
-      <Navigation />
+      <Navigation mobileTitle="Discover Artists" mobileBackPath="/" />
 
       <div className="container mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-24 md:pb-20">
-        <div className="flex items-center gap-3 mb-6 md:mb-10">
+        <div className="hidden md:flex items-center gap-3 mb-6 md:mb-10">
           <Link to="/">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeft className="h-5 w-5" />
