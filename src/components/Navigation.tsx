@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -13,7 +13,12 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import CountrySelector from "./CountrySelector";
 
-const Navigation = () => {
+interface NavigationProps {
+  mobileTitle?: string;
+  mobileBackPath?: string | number;
+}
+
+const Navigation = ({ mobileTitle, mobileBackPath }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
@@ -291,8 +296,23 @@ const Navigation = () => {
       {/* Mobile: Top Header Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
         <div className="flex items-center justify-between h-14 px-4">
-          {/* Left: Menu Button (only when logged in) or Logo (when logged out) */}
-          {user ? (
+          {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
+          {mobileTitle ? (
+            <button
+              className="p-2 text-foreground/80 hover:text-accent transition-colors"
+              onClick={() => {
+                if (typeof mobileBackPath === 'number') {
+                  navigate(mobileBackPath);
+                } else if (mobileBackPath) {
+                  navigate(mobileBackPath);
+                } else {
+                  navigate(-1);
+                }
+              }}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+          ) : user ? (
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
@@ -380,8 +400,10 @@ const Navigation = () => {
             </Link>
           )}
 
-          {/* Center: Page title (only when logged in) */}
-          {user && (
+          {/* Center: Custom mobile title or page title (logged in) or nothing */}
+          {mobileTitle ? (
+            <span className="font-display font-bold text-foreground text-lg absolute left-1/2 -translate-x-1/2">{mobileTitle}</span>
+          ) : user ? (
             <>
               {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
                 <span className="font-display font-bold text-foreground text-lg">Settings</span>
@@ -402,7 +424,7 @@ const Navigation = () => {
                 </Link>
               )}
             </>
-          )}
+          ) : null}
 
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
           <div className="flex items-center gap-1">

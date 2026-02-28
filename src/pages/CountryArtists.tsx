@@ -273,20 +273,20 @@ const CountryArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
-      <Navigation />
+      <Navigation mobileTitle={displayName} mobileBackPath="/countries" />
       
       <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
         <div className="flex items-center justify-between mb-6 md:mb-8">
-          <Link to="/countries">
+          <Link to="/countries" className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               Back
             </Button>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             <span className="text-2xl md:text-3xl">{getCountryFlag(decodedCountry)}</span>
-            <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
+            <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
           </div>
 
           <FilterButton 
