@@ -448,7 +448,9 @@ const ArtistProfile = () => {
       console.error('Error toggling like:', error);
     }
   };
-  const handleFollowToggle = async () => {
+  const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false);
+
+  const handleFollowToggle = () => {
     if (!currentUserId) {
       toast({ title: "Login Required", description: "Please log in to follow artists." });
       navigate('/login');
@@ -456,21 +458,38 @@ const ArtistProfile = () => {
     }
     if (!id) return;
 
-    // Optimistic update
-    setIsFollowing((prev) => !prev);
-    setFollowersCount((prev) => isFollowing ? prev - 1 : prev + 1);
+    if (isFollowing) {
+      setShowUnfollowConfirm(true);
+      return;
+    }
 
+    doFollow();
+  };
+
+  const doFollow = async () => {
+    if (!currentUserId || !id) return;
+    setIsFollowing(true);
+    setFollowersCount((prev) => prev + 1);
     try {
-      if (isFollowing) {
-        await supabase.from('followers').delete().eq('artist_id', id).eq('follower_id', currentUserId);
-      } else {
-        await supabase.from('followers').insert({ artist_id: id, follower_id: currentUserId });
-      }
+      await supabase.from('followers').insert({ artist_id: id, follower_id: currentUserId });
     } catch (error) {
-      // Revert on error
-      setIsFollowing((prev) => !prev);
-      setFollowersCount((prev) => isFollowing ? prev + 1 : prev - 1);
-      console.error('Error toggling follow:', error);
+      setIsFollowing(false);
+      setFollowersCount((prev) => prev - 1);
+      console.error('Error following:', error);
+    }
+  };
+
+  const doUnfollow = async () => {
+    if (!currentUserId || !id) return;
+    setIsFollowing(false);
+    setFollowersCount((prev) => prev - 1);
+    setShowUnfollowConfirm(false);
+    try {
+      await supabase.from('followers').delete().eq('artist_id', id).eq('follower_id', currentUserId);
+    } catch (error) {
+      setIsFollowing(true);
+      setFollowersCount((prev) => prev + 1);
+      console.error('Error unfollowing:', error);
     }
   };
   const handleDateSelect = (date: Date | undefined) => {
@@ -1972,6 +1991,20 @@ const ArtistProfile = () => {
             <AlertDialogAction onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Unfollow Confirmation Dialog */}
+      <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unfollow Artist</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to unfollow this artist? You can follow them again later.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={doUnfollow}>Unfollow</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
