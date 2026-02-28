@@ -52,6 +52,8 @@ interface Profile {
   spotify_url: string | null;
   instruments: string | null;
   created_at: string | null;
+  hide_phone: boolean;
+  hide_email: boolean;
 }
 interface Announcement {
   id: string;
@@ -1126,7 +1128,7 @@ const ArtistProfile = () => {
                     <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {currentUserId ? <>
-                          <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                          {!artist.hide_email && <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                             <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             <div className="text-left">
                               <p className="text-xs md:text-sm text-muted-foreground">Email</p>
@@ -1134,8 +1136,8 @@ const ArtistProfile = () => {
                                 {artist.email}
                               </a>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                          </div>}
+                          {!artist.hide_phone && <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                             <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                             <div className="text-left">
                               <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
@@ -1143,7 +1145,8 @@ const ArtistProfile = () => {
                                 {artist.phone}
                               </a>
                             </div>
-                          </div>
+                          </div>}
+                          {artist.hide_email && artist.hide_phone && <p className="text-muted-foreground text-sm col-span-full">No contact information available.</p>}
                         </> : <>
                           <button onClick={() => {
                       toast({
