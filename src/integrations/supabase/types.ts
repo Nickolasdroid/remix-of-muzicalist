@@ -423,6 +423,8 @@ export type Database = {
             | null
           facebook_url: string | null
           first_name: string
+          hide_email: boolean
+          hide_phone: boolean
           id: string
           instagram_url: string | null
           instruments: string | null
@@ -454,6 +456,8 @@ export type Database = {
             | null
           facebook_url?: string | null
           first_name: string
+          hide_email?: boolean
+          hide_phone?: boolean
           id: string
           instagram_url?: string | null
           instruments?: string | null
@@ -485,6 +489,8 @@ export type Database = {
             | null
           facebook_url?: string | null
           first_name?: string
+          hide_email?: boolean
+          hide_phone?: boolean
           id?: string
           instagram_url?: string | null
           instruments?: string | null

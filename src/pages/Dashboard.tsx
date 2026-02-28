@@ -17,7 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3 } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -112,7 +113,9 @@ const Dashboard = () => {
     youtubeUrl: "",
     tiktokUrl: "",
     spotifyUrl: "",
-    instruments: ""
+    instruments: "",
+    hidePhone: false,
+    hideEmail: false
   });
 
   // Announcements state
@@ -399,7 +402,9 @@ const Dashboard = () => {
         youtubeUrl: profileData.youtube_url || "",
         tiktokUrl: profileData.tiktok_url || "",
         spotifyUrl: profileData.spotify_url || "",
-        instruments: profileData.instruments || ""
+        instruments: profileData.instruments || "",
+        hidePhone: profileData.hide_phone || false,
+        hideEmail: profileData.hide_email || false
       });
     } catch (error: any) {
       console.error('Auth check error:', error);
@@ -1839,16 +1844,38 @@ const Dashboard = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              <div className="text-left">
+                              <div className="flex-1 text-left">
                                 <p className="text-xs md:text-sm text-muted-foreground">Email</p>
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
                               </div>
+                              <div className="flex items-center gap-2">
+                                {formData.hideEmail ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
+                                <Switch
+                                  checked={!formData.hideEmail}
+                                  onCheckedChange={async (checked) => {
+                                    const newVal = !checked;
+                                    setFormData(prev => ({ ...prev, hideEmail: newVal }));
+                                    await supabase.from('profiles').update({ hide_email: newVal } as any).eq('id', user.id);
+                                  }}
+                                />
+                              </div>
                             </div>
-                            <div className="group flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                            <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                                 <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 <div className="flex-1 text-left">
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
                                   <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {formData.hidePhone ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
+                                  <Switch
+                                    checked={!formData.hidePhone}
+                                    onCheckedChange={async (checked) => {
+                                      const newVal = !checked;
+                                      setFormData(prev => ({ ...prev, hidePhone: newVal }));
+                                      await supabase.from('profiles').update({ hide_phone: newVal } as any).eq('id', user.id);
+                                    }}
+                                  />
                                 </div>
                               </div>
                           </div>
