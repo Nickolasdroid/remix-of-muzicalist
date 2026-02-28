@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -276,25 +276,26 @@ const RegisterArtist = () => {
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">
+                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
+                  <User className="h-5 w-5 text-accent" />
                   {t("auth.register.basicInfo")}
                 </h2>
                 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="firstName" className="text-xs md:text-sm">{t("artistRegistration.firstName")}</Label>
+                    <Label htmlFor="firstName" className="text-xs md:text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="lastName" className="text-xs md:text-sm">{t("artistRegistration.lastName")}</Label>
+                    <Label htmlFor="lastName" className="text-xs md:text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.lastName")}</Label>
                     <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.lastName")} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="country" className="text-xs md:text-sm">{t("artistRegistration.country")}</Label>
+                    <Label htmlFor="country" className="text-xs md:text-sm flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.country")}</Label>
                     <CountrySelector
                       value={formData.country}
                       onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
@@ -303,7 +304,7 @@ const RegisterArtist = () => {
 
                   {formData.country && availableRegions.length > 0 &&
                   <div className="space-y-1">
-                      <Label htmlFor="county" className="text-xs md:text-sm">{divisionLabel}</Label>
+                      <Label htmlFor="county" className="text-xs md:text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })}>
                         <SelectTrigger className="bg-input border-border h-9">
                           <SelectValue placeholder={t("artistRegistration.placeholders.selectCounty")} />
@@ -318,7 +319,7 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="phone" className="text-xs md:text-sm">{t("artistRegistration.phone")}</Label>
+                    <Label htmlFor="phone" className="text-xs md:text-sm flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.phone")}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -348,7 +349,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="email" className="text-xs md:text-sm">{t("artistRegistration.email")}</Label>
+                    <Label htmlFor="email" className="text-xs md:text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
                     <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
                   </div>
                 </div>
@@ -364,18 +365,19 @@ const RegisterArtist = () => {
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4">
+                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-accent" />
                   {t("auth.register.professionalInfo")}
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="stageName" className="text-xs md:text-sm">{t("artistRegistration.stageName")}</Label>
+                    <Label htmlFor="stageName" className="text-xs md:text-sm flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.stageName")}</Label>
                     <Input id="stageName" required value={formData.stageName} onChange={(e) => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.stageName")} />
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="specialization" className="text-xs md:text-sm">{t("artistRegistration.specialization")}</Label>
+                    <Label htmlFor="specialization" className="text-xs md:text-sm flex items-center gap-1.5"><Music className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.specialization")}</Label>
                     <Select value={formData.specialization} onValueChange={(value) => setFormData({ ...formData, specialization: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.selectSpecialization")} />
@@ -392,7 +394,7 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="experienceLevel" className="text-xs md:text-sm">{t("artistRegistration.experienceLevel")}</Label>
+                    <Label htmlFor="experienceLevel" className="text-xs md:text-sm flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.experienceLevel")}</Label>
                     <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({ ...formData, experienceLevel: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.experienceLevel")} />
@@ -407,7 +409,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="careerStartYear" className="text-xs md:text-sm">{t("artistRegistration.careerStartYear")}</Label>
+                    <Label htmlFor="careerStartYear" className="text-xs md:text-sm flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.careerStartYear")}</Label>
                     <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({ ...formData, careerStartYear: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.careerStart")} />
@@ -435,7 +437,8 @@ const RegisterArtist = () => {
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Camera className="h-6 w-6 text-accent" />
                   {t("auth.register.profilePicture")}
                 </h2>
                 
@@ -471,13 +474,14 @@ const RegisterArtist = () => {
             {/* Step 4: Password */}
             {currentStep === 4 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Lock className="h-6 w-6 text-accent" />
                   {t("auth.register.createPassword")}
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="password">{t("artistRegistration.password")}</Label>
+                    <Label htmlFor="password" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.password")}</Label>
                     <div className="relative">
                       <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="bg-input border-border focus:border-accent pr-10" placeholder={t("artistRegistration.placeholders.password")} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -487,7 +491,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">{t("artistRegistration.confirmPassword")}</Label>
+                    <Label htmlFor="confirmPassword" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.confirmPassword")}</Label>
                     <div className="relative">
                       <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} className="bg-input border-border focus:border-accent pr-10" placeholder={t("artistRegistration.placeholders.confirmPassword")} />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
