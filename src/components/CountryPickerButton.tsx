@@ -116,17 +116,17 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
   const triggerButton =
   <Button
     variant="outline"
-    className="h-10 px-4 gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+    className="h-10 px-4 gap-2 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all max-w-full overflow-hidden">
 
       {flag ?
-    <span className="text-lg">{flag}</span> :
+    <span className="text-lg flex-shrink-0">{flag}</span> :
 
-    <Globe className="h-4 w-4 text-accent" />
+    <Globe className="h-4 w-4 text-accent flex-shrink-0" />
     }
-      <span className="text-sm font-medium truncate max-w-[200px]">
+      <span className="text-sm font-medium truncate">
         {displayName || "Select Country"}
       </span>
-      <ChevronDown className="h-3 w-3 text-muted-foreground" />
+      <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0" />
     </Button>;
 
 
