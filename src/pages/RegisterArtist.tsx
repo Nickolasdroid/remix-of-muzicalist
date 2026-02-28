@@ -16,7 +16,7 @@ import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
-import registerArtistBg from "@/assets/register-artist-bg.png";
+
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -255,10 +255,10 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundImage: `url(${registerArtistBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen flex flex-col bg-background">
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen bg-black/40 backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none flex flex-col">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
