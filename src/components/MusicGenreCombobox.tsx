@@ -150,9 +150,9 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between bg-input border-border hover:bg-input/80 text-left font-normal"
+            className="w-full justify-between bg-input border-border hover:bg-input/80 text-left font-normal overflow-hidden"
           >
-            <span className="truncate">
+            <span className="truncate min-w-0">
               {selectedGenres.length > 0
                 ? t("musicGenres.genresSelected", { count: selectedGenres.length })
                 : t("artistRegistration.placeholders.selectGenres")}

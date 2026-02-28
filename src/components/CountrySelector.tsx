@@ -407,12 +407,12 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             <Button 
               type="button"
               variant="outline" 
-              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3"
+              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3 overflow-hidden"
             >
               {selectedCountry ? (
-                <span>{selectedCountry.name}</span>
+                <span className="truncate">{selectedCountry.name}</span>
               ) : (
-                <span className="text-muted-foreground">{t("artistRegistration.placeholders.selectCountry")}</span>
+                <span className="text-muted-foreground truncate">{t("artistRegistration.placeholders.selectCountry")}</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -467,15 +467,15 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         <Button 
           type="button"
           variant="outline" 
-          className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3 h-10"
+          className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3 h-10 overflow-hidden"
         >
           {selectedCountry ? (
-            <span className="flex items-center gap-2">
-              <span className="text-lg">{selectedCountry.flag}</span>
-              <span>{selectedCountry.name}</span>
+            <span className="flex items-center gap-2 min-w-0 overflow-hidden">
+              <span className="text-lg flex-shrink-0">{selectedCountry.flag}</span>
+              <span className="truncate">{selectedCountry.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t("artistRegistration.placeholders.selectCountry")}</span>
+            <span className="text-muted-foreground truncate">{t("artistRegistration.placeholders.selectCountry")}</span>
           )}
         </Button>
       </PopoverTrigger>
