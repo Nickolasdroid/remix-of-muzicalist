@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 
+export type SettingSection = "main" | "plan" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
+
 interface SettingsTabProps {
   formData: {
     email: string;
@@ -20,20 +22,28 @@ interface SettingsTabProps {
   handleLogout: () => void;
   handleDeleteAccount: () => void;
   isSaving: boolean;
+  activeSection?: SettingSection;
+  onSectionChange?: (section: SettingSection) => void;
 }
-
-type SettingSection = "main" | "plan" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
 
 const SettingsTab = ({
   formData,
   handleLogout,
   handleDeleteAccount,
-  isSaving
+  isSaving,
+  activeSection: controlledSection,
+  onSectionChange,
 }: SettingsTabProps) => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { i18n } = useTranslation();
-  const [activeSection, setActiveSection] = useState<SettingSection>("main");
+  const [internalSection, setInternalSection] = useState<SettingSection>("main");
+  
+  const activeSection = controlledSection ?? internalSection;
+  const setActiveSection = (section: SettingSection) => {
+    onSectionChange?.(section);
+    setInternalSection(section);
+  };
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -285,13 +295,6 @@ const SettingsTab = ({
   const MobilePlanSection = () => {
     return (
       <div className="p-4 space-y-4">
-        <button
-          onClick={() => setActiveSection("main")}
-          className="flex items-center gap-2 text-muted-foreground mb-4"
-        >
-          <ChevronRight className="h-4 w-4 rotate-180" />
-          <span className="text-sm">Back</span>
-        </button>
         <div>
           <h2 className="text-lg font-semibold">My Plan</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -404,13 +407,6 @@ const SettingsTab = ({
   // Mobile: Email section
   const MobileEmailSection = () => (
     <div className="p-4 space-y-4">
-      <button
-        onClick={() => setActiveSection("main")}
-        className="flex items-center gap-2 text-muted-foreground mb-4"
-      >
-        <ChevronRight className="h-4 w-4 rotate-180" />
-        <span className="text-sm">Back</span>
-      </button>
       <div>
         <h2 className="text-lg font-semibold">Email Address</h2>
         <p className="text-sm text-muted-foreground mt-1">
@@ -429,16 +425,6 @@ const SettingsTab = ({
   // Mobile: Password section
   const MobilePasswordSection = () => (
     <div className="p-4 space-y-4">
-      <button
-        onClick={() => {
-          setActiveSection("main");
-          resetPasswordForm();
-        }}
-        className="flex items-center gap-2 text-muted-foreground mb-4"
-      >
-        <ChevronRight className="h-4 w-4 rotate-180" />
-        <span className="text-sm">Back</span>
-      </button>
       <div>
         <h2 className="text-lg font-semibold">Change Password</h2>
         <p className="text-sm text-muted-foreground mt-1">
@@ -558,17 +544,6 @@ const SettingsTab = ({
   // Mobile: Report section
   const MobileReportSection = () => (
     <div className="p-4 space-y-4">
-      <button
-        onClick={() => {
-          setActiveSection("main");
-          setReportMessage("");
-          setReportFile(null);
-        }}
-        className="flex items-center gap-2 text-muted-foreground mb-4"
-      >
-        <ChevronRight className="h-4 w-4 rotate-180" />
-        <span className="text-sm">Back</span>
-      </button>
       <div>
         <h2 className="text-lg font-semibold">Report an Issue</h2>
         <p className="text-sm text-muted-foreground mt-1">
@@ -621,13 +596,6 @@ const SettingsTab = ({
     const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
     return (
       <div className="p-4 space-y-4">
-        <button
-          onClick={() => setActiveSection("main")}
-          className="flex items-center gap-2 text-muted-foreground mb-4"
-        >
-          <ChevronRight className="h-4 w-4 rotate-180" />
-          <span className="text-sm">Back</span>
-        </button>
         <div>
           <h2 className="text-lg font-semibold">Language</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -661,13 +629,6 @@ const SettingsTab = ({
   // Mobile: Logout section
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
-      <button
-        onClick={() => setActiveSection("main")}
-        className="flex items-center gap-2 text-muted-foreground mb-4"
-      >
-        <ChevronRight className="h-4 w-4 rotate-180" />
-        <span className="text-sm">Back</span>
-      </button>
       <div>
         <h2 className="text-lg font-semibold">Sign Out</h2>
         <p className="text-sm text-muted-foreground mt-1">
@@ -684,13 +645,6 @@ const SettingsTab = ({
   // Mobile: Delete section
   const MobileDeleteSection = () => (
     <div className="p-4 space-y-4">
-      <button
-        onClick={() => setActiveSection("main")}
-        className="flex items-center gap-2 text-muted-foreground mb-4"
-      >
-        <ChevronRight className="h-4 w-4 rotate-180" />
-        <span className="text-sm">Back</span>
-      </button>
       <div>
         <h2 className="text-lg font-semibold text-destructive">Delete Account</h2>
         <p className="text-sm text-muted-foreground mt-1">

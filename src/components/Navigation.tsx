@@ -16,9 +16,10 @@ import CountrySelector from "./CountrySelector";
 interface NavigationProps {
   mobileTitle?: string;
   mobileBackPath?: string | number;
+  onMobileBack?: () => void;
 }
 
-const Navigation = ({ mobileTitle, mobileBackPath }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
@@ -301,7 +302,9 @@ const Navigation = ({ mobileTitle, mobileBackPath }: NavigationProps = {}) => {
             <button
               className="p-2 text-foreground/80 hover:text-accent transition-colors"
               onClick={() => {
-                if (typeof mobileBackPath === 'number') {
+                if (onMobileBack) {
+                  onMobileBack();
+                } else if (typeof mobileBackPath === 'number') {
                   navigate(mobileBackPath);
                 } else if (mobileBackPath) {
                   navigate(mobileBackPath);
