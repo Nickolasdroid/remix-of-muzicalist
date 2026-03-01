@@ -305,8 +305,8 @@ const RegisterArtist = () => {
                     {i < arr.length - 1 && (
                       <div
                         className={cn(
-                          "w-3 md:w-8 h-px transition-colors",
-                          currentStep > step.num ? "bg-accent/40" : "bg-border"
+                          "w-4 md:w-10 h-0.5 rounded-full transition-colors",
+                          currentStep > step.num ? "bg-accent/60" : "bg-border"
                         )}
                       />
                     )}
