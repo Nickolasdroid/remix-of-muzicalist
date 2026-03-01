@@ -7,12 +7,14 @@ const Register = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-secondary p-4 pt-6 pb-24 md:pb-4">
-      {/* Logo + Name */}
-      <Link to="/" className="flex items-center gap-2 mb-6 md:mb-8">
-        <img src={logo} alt="Logo" className="h-8 w-8 md:h-10 md:w-10" />
-        <span className="text-lg md:text-xl font-display font-bold text-foreground">Muzicalist</span>
-      </Link>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-secondary pb-24 md:pb-4">
+      {/* Logo + Name - matching Navigation header */}
+      <div className="h-16 flex items-center px-4 md:px-8">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
+          <span className="font-display font-bold text-foreground md:text-lg">Muzicalist</span>
+        </Link>
+      </div>
 
       <div className="flex-1 flex items-center justify-center">
       <div className="max-w-4xl w-full">
