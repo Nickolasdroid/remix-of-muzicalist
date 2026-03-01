@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
@@ -267,10 +267,52 @@ const RegisterArtist = () => {
               <h1 className="text-2xl md:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
                 {t("artistRegistration.title")}
               </h1>
-              <p className="text-sm md:text-xl text-muted-foreground mb-4 md:mb-6">
-                {t("auth.register.step", { current: currentStep, total: totalSteps })}
-              </p>
-              <Progress value={progressPercentage} className="w-full max-w-md mx-auto" />
+              {/* Step indicators */}
+              <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-4 md:mt-6">
+                {[
+                  { num: 1, label: "Basic" },
+                  { num: 2, label: "Professional" },
+                  { num: 3, label: "Media" },
+                  { num: 4, label: "Security" },
+                ].map((step, i, arr) => (
+                  <div key={step.num} className="flex items-center gap-1.5 md:gap-3">
+                    <div className="flex items-center gap-1 md:gap-1.5">
+                      <div
+                        className={cn(
+                          "w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[11px] md:text-sm font-bold transition-all",
+                          currentStep === step.num
+                            ? "bg-accent text-accent-foreground shadow-[var(--shadow-gold)]"
+                            : currentStep > step.num
+                            ? "bg-accent/30 text-accent"
+                            : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {step.num}
+                      </div>
+                      <span
+                        className={cn(
+                          "text-[11px] md:text-sm font-medium transition-colors",
+                          currentStep === step.num
+                            ? "text-accent"
+                            : currentStep > step.num
+                            ? "text-accent/60"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {step.label}
+                      </span>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <div
+                        className={cn(
+                          "w-3 md:w-8 h-px transition-colors",
+                          currentStep > step.num ? "bg-accent/40" : "bg-border"
+                        )}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
             
             {/* Step 1: Basic Information */}
