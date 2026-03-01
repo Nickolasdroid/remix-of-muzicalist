@@ -11,7 +11,7 @@ const Register = () => {
       {/* Logo + Name */}
       <Link to="/" className="flex items-center gap-2 mb-6 md:mb-8">
         <img src={logo} alt="Logo" className="h-8 w-8 md:h-10 md:w-10" />
-        <span className="text-lg md:text-xl font-display font-bold text-foreground">ArtBeat</span>
+        <span className="text-lg md:text-xl font-display font-bold text-foreground">Muzicalist</span>
       </Link>
 
       <div className="flex-1 flex items-center justify-center">
