@@ -405,7 +405,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
 
           {/* Center: Custom mobile title or page title (logged in) or nothing */}
           {mobileTitle ? (
-            <span className="font-display font-bold text-foreground text-lg absolute left-1/2 -translate-x-1/2">{mobileTitle}</span>
+            <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
           ) : user ? (
             <>
               {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
