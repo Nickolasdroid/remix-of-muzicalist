@@ -1,12 +1,20 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { UserCircle, Mic } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Register = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 pt-20 pb-24 md:pt-4 md:pb-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-secondary p-4 pt-6 pb-24 md:pb-4">
+      {/* Logo + Name */}
+      <Link to="/" className="flex items-center gap-2 mb-6 md:mb-8">
+        <img src={logo} alt="Logo" className="h-8 w-8 md:h-10 md:w-10" />
+        <span className="text-lg md:text-xl font-display font-bold text-foreground">ArtBeat</span>
+      </Link>
+
+      <div className="flex-1 flex items-center justify-center">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 md:mb-4 text-foreground">
@@ -123,6 +131,7 @@ const Register = () => {
             </button>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
