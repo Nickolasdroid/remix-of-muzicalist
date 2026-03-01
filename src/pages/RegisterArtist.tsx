@@ -318,8 +318,8 @@ const RegisterArtist = () => {
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
-                  <User className="h-5 w-5 text-accent" />
+                <h2 className="text-sm font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
+                  <User className="h-4 w-4 text-accent" />
                   {t("auth.register.basicInfo")}
                 </h2>
                 
@@ -407,8 +407,8 @@ const RegisterArtist = () => {
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-accent" />
+                <h2 className="text-sm font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-accent" />
                   {t("auth.register.professionalInfo")}
                 </h2>
                 
@@ -479,8 +479,8 @@ const RegisterArtist = () => {
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Camera className="h-6 w-6 text-accent" />
+                <h2 className="text-sm font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Camera className="h-4 w-4 text-accent" />
                   {t("auth.register.profilePicture")}
                 </h2>
                 
@@ -516,8 +516,8 @@ const RegisterArtist = () => {
             {/* Step 4: Password */}
             {currentStep === 4 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Lock className="h-6 w-6 text-accent" />
+                <h2 className="text-sm font-display font-bold text-foreground mb-6 flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-accent" />
                   {t("auth.register.createPassword")}
                 </h2>
                 
