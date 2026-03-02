@@ -325,19 +325,19 @@ const RegisterArtist = () => {
                 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="firstName" className="text-xs md:text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
+                    <Label htmlFor="firstName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
                     <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="lastName" className="text-xs md:text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.lastName")}</Label>
+                    <Label htmlFor="lastName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.lastName")}</Label>
                     <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.lastName")} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="country" className="text-xs md:text-sm flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.country")}</Label>
+                    <Label htmlFor="country" className="text-sm flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.country")}</Label>
                     <CountrySelector
                       value={formData.country}
                       onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
@@ -346,7 +346,7 @@ const RegisterArtist = () => {
 
                   {formData.country && availableRegions.length > 0 &&
                   <div className="space-y-1">
-                      <Label htmlFor="county" className="text-xs md:text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
+                      <Label htmlFor="county" className="text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })}>
                         <SelectTrigger className="bg-input border-border h-9">
                           <SelectValue placeholder={t("artistRegistration.placeholders.selectCounty")} />
@@ -361,7 +361,7 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="phone" className="text-xs md:text-sm flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.phone")}</Label>
+                    <Label htmlFor="phone" className="text-sm flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.phone")}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -391,7 +391,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="email" className="text-xs md:text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
+                    <Label htmlFor="email" className="text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
                     <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
                   </div>
                 </div>
@@ -414,12 +414,12 @@ const RegisterArtist = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="stageName" className="text-xs md:text-sm flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.stageName")}</Label>
+                    <Label htmlFor="stageName" className="text-sm flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.stageName")}</Label>
                     <Input id="stageName" required value={formData.stageName} onChange={(e) => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.stageName")} />
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="specialization" className="text-xs md:text-sm flex items-center gap-1.5"><Music className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.specialization")}</Label>
+                    <Label htmlFor="specialization" className="text-sm flex items-center gap-1.5"><Music className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.specialization")}</Label>
                     <Select value={formData.specialization} onValueChange={(value) => setFormData({ ...formData, specialization: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.selectSpecialization")} />
@@ -436,7 +436,7 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="experienceLevel" className="text-xs md:text-sm flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.experienceLevel")}</Label>
+                    <Label htmlFor="experienceLevel" className="text-sm flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.experienceLevel")}</Label>
                     <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({ ...formData, experienceLevel: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.experienceLevel")} />
@@ -451,7 +451,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="careerStartYear" className="text-xs md:text-sm flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.careerStartYear")}</Label>
+                    <Label htmlFor="careerStartYear" className="text-sm flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.careerStartYear")}</Label>
                     <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({ ...formData, careerStartYear: value })}>
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.careerStart")} />
