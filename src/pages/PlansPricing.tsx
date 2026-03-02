@@ -9,8 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 const plans = [
   {
     name: "Free",
-    price: "€0",
-    period: "/month",
+    monthlyPrice: 0,
     description: "Get started with basic features",
     features: ["Basic profile", "Limited visibility", "Community access"],
     cta: "Current Plan",
@@ -18,8 +17,7 @@ const plans = [
   },
   {
     name: "Standard",
-    price: "€29",
-    period: "/month",
+    monthlyPrice: 29,
     description: "Grow your presence and reach",
     features: ["Enhanced profile", "Priority listing", "Analytics dashboard", "Booking requests"],
     cta: "Upgrade",
@@ -27,8 +25,7 @@ const plans = [
   },
   {
     name: "Premium",
-    price: "€59",
-    period: "/month",
+    monthlyPrice: 59,
     description: "Maximum exposure and tools",
     features: ["Premium profile badge", "Top search ranking", "Advanced analytics", "Unlimited bookings", "Priority support"],
     cta: "Upgrade",
@@ -38,6 +35,13 @@ const plans = [
 
 const PlansPricing = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  const getPrice = (monthlyPrice: number) => {
+    if (monthlyPrice === 0) return "€0";
+    if (isAnnual) return `€${Math.round(monthlyPrice * 10)}`;
+    return `€${monthlyPrice}`;
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -59,9 +63,23 @@ const PlansPricing = () => {
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">
               Plans & Pricing
             </h1>
-            <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
               Choose the plan that best fits your needs
             </p>
+            <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
+              <button
+                onClick={() => setIsAnnual(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setIsAnnual(true)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Annual <span className="text-xs opacity-75">Save ~17%</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -73,8 +91,8 @@ const PlansPricing = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
                   <div className="mt-2">
-                    <span className="text-3xl md:text-4xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-3xl md:text-4xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
+                    <span className="text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
                   </div>
                   <CardDescription className="mt-2">{plan.description}</CardDescription>
                 </CardHeader>
