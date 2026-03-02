@@ -30,6 +30,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import AllArtists from "./pages/AllArtists";
 import ArtistAnalytics from "./pages/ArtistAnalytics";
+import PlansPricing from "./pages/PlansPricing";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/analytics" element={<ArtistAnalytics />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/plans" element={<PlansPricing />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
