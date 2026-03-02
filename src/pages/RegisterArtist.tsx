@@ -344,19 +344,17 @@ const RegisterArtist = () => {
 
                   </div>
 
-                  {formData.country && availableRegions.length > 0 &&
                   <div className="space-y-1">
                       <Label htmlFor="county" className="text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
-                      <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })}>
+                      <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })} disabled={!formData.country || availableRegions.length === 0}>
                         <SelectTrigger className="bg-input border-border h-9">
-                          <SelectValue placeholder={t("artistRegistration.placeholders.selectCounty")} />
+                          <SelectValue placeholder={formData.country ? t("artistRegistration.placeholders.selectCounty") : t("artistRegistration.placeholders.selectCountryFirst", "Select a country first")} />
                         </SelectTrigger>
                         <SelectContent>
                           {availableRegions.map((region) => <SelectItem key={region} value={region}>{region}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
-                  }
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:gap-4">
