@@ -416,7 +416,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
+          <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
             <div className="p-3 border-b border-border">
               <Input
                 placeholder={t("countries.searchPlaceholder")}
@@ -479,7 +479,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start">
+      <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
         <div className="p-3 border-b border-border">
           <Input
             placeholder={t("countries.searchPlaceholder")}
