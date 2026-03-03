@@ -186,7 +186,7 @@ const RegisterUser = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div>
               <Label htmlFor="firstName">{t("userRegistration.firstName")}</Label>
               <Input
@@ -221,7 +221,7 @@ const RegisterUser = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div>
               <Label htmlFor="country">{t("artistRegistration.country")}</Label>
               <CountrySelector
