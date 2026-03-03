@@ -109,6 +109,8 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
     onClick={(e) => e.stopPropagation()}
+    autoFocus={false}
+    onFocus={(e) => e.target.blur()}
     className="bg-background/50" />;
 
 
