@@ -256,10 +256,10 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundImage: `url(${registerArtistBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col bg-secondary">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
               <div className="flex items-center justify-center gap-2 mb-2 md:mb-4">
