@@ -109,8 +109,6 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
     onClick={(e) => e.stopPropagation()}
-    autoFocus={false}
-    onFocus={(e) => e.target.blur()}
     className="bg-background/50" />;
 
 
@@ -138,7 +136,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
         <DrawerTrigger asChild>
           {triggerButton}
         </DrawerTrigger>
-        <DrawerContent className="px-4 pb-6">
+        <DrawerContent className="px-4 pb-6" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DrawerHeader className="text-left px-0">
             <DrawerTitle>Select Country</DrawerTitle>
             
@@ -161,7 +159,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
       <PopoverTrigger asChild>
         {triggerButton}
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0 bg-card border-border z-50" align="center">
+      <PopoverContent className="w-72 p-0 bg-card border-border z-50" align="center" onOpenAutoFocus={(e) => e.preventDefault()}>
         <div className="p-3 border-b border-border">
           {searchInput}
         </div>
