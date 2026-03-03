@@ -17,6 +17,7 @@ import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
+import logo from "@/assets/logo.png";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
