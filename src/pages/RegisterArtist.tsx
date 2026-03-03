@@ -262,10 +262,11 @@ const RegisterArtist = () => {
           <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen backdrop-blur-sm p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col bg-secondary">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
-              <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
-                <UserPlus className="h-7 w-7 md:h-10 md:w-10 text-accent-foreground" />
+              <div className="flex items-center justify-center gap-2 mb-2 md:mb-4">
+                <img src={logo} alt="Muzicalist" className="h-10 w-10 md:h-14 md:w-14 object-contain" />
+                <span className="font-display font-bold text-foreground text-xl md:text-3xl">Muzicalist</span>
               </div>
-              <h1 className="text-2xl md:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
+              <h1 className="text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
                 {t("artistRegistration.title")}
               </h1>
               {/* Step indicators */}
