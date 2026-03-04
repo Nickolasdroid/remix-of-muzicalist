@@ -350,7 +350,7 @@ const RegisterArtist = () => {
                         <SelectTrigger className="bg-input border-border h-9">
                           <SelectValue placeholder={formData.country ? t("artistRegistration.placeholders.selectCounty") : t("artistRegistration.placeholders.selectCountryFirst", "Select a country first")} />
                         </SelectTrigger>
-                        <SelectContent side="bottom">
+                        <SelectContent side="bottom" avoidCollisions={false}>
                           {availableRegions.map((region) => <SelectItem key={region} value={region}>{region}</SelectItem>)}
                         </SelectContent>
                       </Select>
