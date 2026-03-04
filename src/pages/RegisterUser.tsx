@@ -175,7 +175,15 @@ const RegisterUser = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:items-center md:justify-center bg-background p-0 md:p-4">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Top-left logo linking to homepage */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 flex items-center px-4 md:px-8 bg-background border-b border-border">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
+          <span className="font-display font-bold text-foreground md:text-lg">Muzicalist</span>
+        </Link>
+      </div>
+      <div className="flex-1 flex flex-col md:items-center md:justify-center pt-14 md:pt-16 p-0 md:p-4">
       <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 bg-card md:rounded-2xl shadow-xl md:border-2 border-accent/20 p-4 md:p-8">
         <div className="text-center mb-4 md:mb-8">
           <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
