@@ -405,10 +405,8 @@ const RegisterArtist = () => {
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-accent" />
-                  {t("auth.register.professionalInfo")}
-                </h2>
+
+
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
