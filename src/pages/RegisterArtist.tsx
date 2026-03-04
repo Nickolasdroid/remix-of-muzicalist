@@ -510,10 +510,8 @@ const RegisterArtist = () => {
             {/* Step 4: Password */}
             {currentStep === 4 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Lock className="h-6 w-6 text-accent" />
-                  {t("auth.register.createPassword")}
-                </h2>
+
+
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
