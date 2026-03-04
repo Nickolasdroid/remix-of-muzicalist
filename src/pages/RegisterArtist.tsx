@@ -320,10 +320,8 @@ const RegisterArtist = () => {
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <h2 className="text-lg md:text-xl font-display font-bold text-foreground mb-3 md:mb-4 flex items-center gap-2">
-                  <User className="h-5 w-5 text-accent" />
-                  {t("auth.register.basicInfo")}
-                </h2>
+
+
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
