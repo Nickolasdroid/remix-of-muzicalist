@@ -238,6 +238,7 @@ const RegisterUser = () => {
                 value={formData.phone}
                 onChange={handlePhoneChange}
                 required
+                disabled={!formData.country}
               />
             </div>
           </div>
