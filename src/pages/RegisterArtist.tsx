@@ -452,7 +452,7 @@ const RegisterArtist = () => {
                       <SelectTrigger className="bg-input border-border h-9">
                         <SelectValue placeholder={t("artistRegistration.placeholders.careerStart")} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent side="bottom">
                         {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map((year) =>
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                         )}
