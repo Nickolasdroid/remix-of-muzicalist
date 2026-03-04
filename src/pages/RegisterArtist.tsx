@@ -364,6 +364,7 @@ const RegisterArtist = () => {
                       id="phone"
                       type="tel"
                       required
+                      disabled={!formData.country}
                       value={formData.phone}
                       onChange={(e) => {
                         const newValue = e.target.value;
