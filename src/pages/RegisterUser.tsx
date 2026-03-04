@@ -357,6 +357,7 @@ const RegisterUser = () => {
           </p>
         </div>
       </div>
+      </div>
     </div>
   );
 };
