@@ -120,7 +120,7 @@ const PlansPricing = () => {
         </div>
       </section>
 
-      <Footer />
+      
     </div>
   );
 };
