@@ -475,10 +475,8 @@ const RegisterArtist = () => {
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6 flex items-center gap-2">
-                  <Camera className="h-6 w-6 text-accent" />
-                  {t("auth.register.profilePicture")}
-                </h2>
+
+
                 
                 <div className="space-y-4">
                   <Label htmlFor="profilePic">{t("artistRegistration.uploadPhoto")}</Label>
