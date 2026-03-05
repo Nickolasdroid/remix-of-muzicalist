@@ -79,13 +79,13 @@ All colors MUST be HSL.
 
 /* Hide scrollbar on registration pages for mobile */
 @media (max-width: 767px) {
-  .hide-scrollbar,
-  .hide-scrollbar * {
+  html.hide-scrollbar,
+  html.hide-scrollbar body {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .hide-scrollbar::-webkit-scrollbar,
-  .hide-scrollbar *::-webkit-scrollbar {
+  html.hide-scrollbar::-webkit-scrollbar,
+  html.hide-scrollbar body::-webkit-scrollbar {
     display: none;
   }
 }
