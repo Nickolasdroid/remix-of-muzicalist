@@ -259,10 +259,13 @@ const RegisterArtist = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
       {/* Top-left logo linking to homepage */}
       <div className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 flex items-center px-4 md:px-8 bg-background border-b border-border">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 shrink-0">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          <span className="font-display font-bold text-foreground md:text-lg">Muzicalist</span>
+          <span className="hidden md:inline font-display font-bold text-foreground md:text-lg">Muzicalist</span>
         </Link>
+        <span className="md:hidden flex-1 text-center font-display font-semibold text-foreground text-sm">
+          {t("artistRegistration.title")}
+        </span>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0 pt-14 md:pt-16">
         <div className="w-full flex-1 md:flex-none">
