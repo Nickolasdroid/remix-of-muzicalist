@@ -76,3 +76,16 @@ All colors MUST be HSL.
     padding-bottom: 4.5rem; /* Height of mobile bottom nav + safe area */
   }
 }
+
+/* Hide scrollbar on registration pages for mobile */
+@media (max-width: 767px) {
+  .hide-scrollbar,
+  .hide-scrollbar * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar,
+  .hide-scrollbar *::-webkit-scrollbar {
+    display: none;
+  }
+}
