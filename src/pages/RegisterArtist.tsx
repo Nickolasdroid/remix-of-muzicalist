@@ -263,7 +263,7 @@ const RegisterArtist = () => {
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
           <span className="hidden md:inline font-display font-bold text-foreground md:text-lg">Muzicalist</span>
         </Link>
-        <span className="md:hidden flex-1 text-center font-display font-semibold text-foreground text-sm">
+        <span className="md:hidden flex-1 text-center font-display font-semibold text-foreground text-base">
           {t("artistRegistration.title")}
         </span>
       </div>
