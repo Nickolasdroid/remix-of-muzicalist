@@ -327,6 +327,12 @@ const RegisterArtist = () => {
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
 
+  // Hide scrollbar on mobile
+  useEffect(() => {
+    document.documentElement.classList.add('hide-scrollbar');
+    return () => document.documentElement.classList.remove('hide-scrollbar');
+  }, []);
+
 
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
