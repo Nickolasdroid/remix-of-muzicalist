@@ -51,6 +51,12 @@ const RegisterArtist = () => {
   const totalSteps = 4;
   const progressPercentage = currentStep / totalSteps * 100;
 
+  // Hide scrollbar on mobile
+  useEffect(() => {
+    document.documentElement.classList.add('hide-scrollbar');
+    return () => document.documentElement.classList.remove('hide-scrollbar');
+  }, []);
+
   // Update phone prefix when country changes
   useEffect(() => {
     if (formData.country) {
