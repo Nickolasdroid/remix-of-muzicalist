@@ -257,6 +257,12 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
+      {/* Top-left logo linking to homepage */}
+      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
+        </Link>
+      </div>
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
           <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
