@@ -262,7 +262,7 @@ const RegisterArtist = () => {
           <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
-              <h1 className="hidden md:block text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
+              <h1 className="text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
                 {t("artistRegistration.title")}
               </h1>
               {/* Step indicators */}
