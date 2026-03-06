@@ -257,22 +257,12 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 flex items-center px-4 md:px-8 bg-background border-b border-border">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          <span className="hidden md:inline font-display font-bold text-foreground md:text-lg">Muzicalist</span>
-        </Link>
-        <span className="md:hidden flex-1 text-center font-display font-semibold text-foreground text-base">
-          {t("artistRegistration.title")}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0 pt-14 md:pt-16">
+      <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
           <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
             <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             <div className="text-center mb-4 md:mb-8">
-              <h1 className="hidden md:block text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
+              <h1 className="text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
                 {t("artistRegistration.title")}
               </h1>
               {/* Step indicators */}
