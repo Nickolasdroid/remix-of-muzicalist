@@ -51,12 +51,6 @@ const RegisterArtist = () => {
   const totalSteps = 4;
   const progressPercentage = currentStep / totalSteps * 100;
 
-  // Hide scrollbar on mobile
-  useEffect(() => {
-    document.documentElement.classList.add('hide-scrollbar');
-    return () => document.documentElement.classList.remove('hide-scrollbar');
-  }, []);
-
   // Update phone prefix when country changes
   useEffect(() => {
     if (formData.country) {
@@ -262,7 +256,7 @@ const RegisterArtist = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background hide-scrollbar">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
       {/* Top-left logo linking to homepage */}
       <div className="fixed top-0 left-0 right-0 z-50 h-14 md:h-16 flex items-center px-4 md:px-8 bg-background border-b border-border">
         <Link to="/" className="flex items-center gap-2 shrink-0">
@@ -334,6 +328,7 @@ const RegisterArtist = () => {
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
 
 
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="firstName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
