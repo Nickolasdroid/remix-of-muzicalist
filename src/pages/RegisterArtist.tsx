@@ -25,18 +25,6 @@ const RegisterArtist = () => {
   const navigate = useNavigate();
   const [authChecking, setAuthChecking] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/", { replace: true });
-      } else {
-        setAuthChecking(false);
-      }
-    });
-  }, [navigate]);
-
-  if (authChecking) return null;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -58,6 +46,16 @@ const RegisterArtist = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/", { replace: true });
+      } else {
+        setAuthChecking(false);
+      }
+    });
+  }, [navigate]);
 
   const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
   const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
