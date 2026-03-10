@@ -23,7 +23,20 @@ const RegisterArtist = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [authChecking, setAuthChecking] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/", { replace: true });
+      } else {
+        setAuthChecking(false);
+      }
+    });
+  }, [navigate]);
+
+  if (authChecking) return null;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",

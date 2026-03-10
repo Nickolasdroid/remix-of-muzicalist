@@ -14,7 +14,20 @@ import { getPhonePrefix, validatePhoneNumber, getPhoneConfig } from "@/lib/count
 const RegisterUser = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [authChecking, setAuthChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/", { replace: true });
+      } else {
+        setAuthChecking(false);
+      }
+    });
+  }, [navigate]);
+
+  if (authChecking) return null;
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
