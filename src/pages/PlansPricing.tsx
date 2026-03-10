@@ -17,7 +17,7 @@ const plans = [
   },
   {
     name: "Standard",
-    monthlyPrice: 29,
+    monthlyPrice: 12,
     description: "Grow your presence and reach",
     features: ["Enhanced profile", "Priority listing", "Analytics dashboard", "Booking requests"],
     cta: "Upgrade",
