@@ -25,7 +25,7 @@ const plans = [
   },
   {
     name: "Premium",
-    monthlyPrice: 59,
+    monthlyPrice: 24,
     description: "Maximum exposure and tools",
     features: ["Premium profile badge", "Top search ranking", "Advanced analytics", "Unlimited bookings", "Priority support"],
     cta: "Upgrade",
