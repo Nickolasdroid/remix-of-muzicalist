@@ -84,6 +84,8 @@ const RegisterArtist = () => {
     }
   }, [formData.country]);
 
+  if (authChecking) return null;
+
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
