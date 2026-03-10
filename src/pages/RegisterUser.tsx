@@ -14,6 +14,7 @@ import { getPhonePrefix, validatePhoneNumber, getPhoneConfig } from "@/lib/count
 const RegisterUser = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [authChecking, setAuthChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -26,6 +27,16 @@ const RegisterUser = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/", { replace: true });
+      } else {
+        setAuthChecking(false);
+      }
+    });
+  }, [navigate]);
 
   // Auto-detect country on mount and set phone prefix
   useEffect(() => {
@@ -69,6 +80,8 @@ const RegisterUser = () => {
       }
     }
   }, [formData.country]);
+
+  if (authChecking) return null;
 
   // Handle phone input with validation
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
