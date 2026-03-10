@@ -81,6 +81,8 @@ const RegisterUser = () => {
     }
   }, [formData.country]);
 
+  if (authChecking) return null;
+
   // Handle phone input with validation
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
