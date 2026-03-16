@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 interface MediaPreview {
   url: string;
@@ -23,39 +23,44 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
   };
 
   return (
-    <Dialog open={!!media} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 bg-transparent border-none shadow-none [&>button]:hidden"
-      >
-        {/* Media container */}
-        <div className="relative flex items-center justify-center">
+    <DialogPrimitive.Root open={!!media} onOpenChange={onClose}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Content
+          className="fixed inset-0 z-50 flex items-center justify-center p-2"
+          onClick={onClose}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           {/* Close button */}
           <button
-            onClick={onClose}
-            className="absolute top-2 right-2 z-50 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
-          {media.type === "video" ? (
-            <video
-              src={media.url}
-              controls
-              autoPlay
-              className="max-w-[95vw] max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-          ) : (
-            <img
-              src={media.url}
-              alt="Full size preview"
-              className={`object-contain ${isLandscape ? 'w-[95vw] max-h-[90vh]' : 'max-w-[95vw] max-h-[90vh]'}`}
-              draggable={false}
-              onLoad={handleImageLoad}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+
+          {/* Media */}
+          <div onClick={(e) => e.stopPropagation()}>
+            {media.type === "video" ? (
+              <video
+                src={media.url}
+                controls
+                autoPlay
+                className="max-w-[95vw] max-h-[90vh] object-contain"
+              />
+            ) : (
+              <img
+                src={media.url}
+                alt="Full size preview"
+                className={`object-contain ${isLandscape ? 'w-[95vw] max-h-[90vh]' : 'max-w-[95vw] max-h-[90vh]'}`}
+                draggable={false}
+                onLoad={handleImageLoad}
+              />
+            )}
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 };
 
