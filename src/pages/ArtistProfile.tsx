@@ -891,15 +891,15 @@ const ArtistProfile = () => {
                 </div>
               </div>
 
-              {/* Following + Followers counts */}
+              {/* Followers + Following counts */}
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <span className="text-sm font-semibold">{followingCount}</span>
-                  <span className="text-sm">following</span>
-                </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <span className="text-sm font-semibold">{followersCount}</span>
                   <span className="text-sm">followers</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <span className="text-sm font-semibold">{followingCount}</span>
+                  <span className="text-sm">following</span>
                 </div>
               </div>
 
