@@ -1,7 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
-import { Music2, Users, Target, Heart, Crown } from "lucide-react";
+import { Music2, Users, Target, Heart, Crown, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -51,6 +51,33 @@ const AboutUs = () => {
               The premier platform connecting talented musical artists with clients seeking exceptional entertainment
             </p>
 
+          </div>
+
+          {/* Social Proof Stats Bar */}
+          <div className="mb-10 md:mb-16 px-0 md:px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg">
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="max-w-4xl mx-auto mb-10 md:mb-20 px-0">
