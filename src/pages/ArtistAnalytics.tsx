@@ -143,17 +143,17 @@ const ArtistAnalytics = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {statCards.map((stat) => (
             <Card key={stat.label} className="border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl ${stat.bg}`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col items-center text-center gap-2 md:flex-row md:text-left md:gap-4">
+                  <div className={`p-2.5 md:p-3 rounded-xl ${stat.bg}`}>
+                    <stat.icon className={`h-5 w-5 md:h-6 md:w-6 ${stat.color}`} />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    <p className="text-3xl font-bold">{stat.value}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
                   </div>
                 </div>
               </CardContent>
