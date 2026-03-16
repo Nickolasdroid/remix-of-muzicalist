@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles } from "lucide-react";
+import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -26,6 +27,9 @@ const RegisterArtist = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPlanSelection, setShowPlanSelection] = useState(false);
+  const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -253,9 +257,8 @@ const RegisterArtist = () => {
         title: t("artistRegistration.success.title"),
         description: t("artistRegistration.success.message")
       });
-      setTimeout(() => {
-        navigate(`/artist/${authData.user.id}`);
-      }, 2000);
+      setRegisteredUserId(authData.user.id);
+      setShowPlanSelection(true);
     } catch (error: any) {
       console.error('Registration error:', error);
       toast({
@@ -267,6 +270,138 @@ const RegisterArtist = () => {
       setIsSubmitting(false);
     }
   };
+
+  const plans = [
+    {
+      name: "Free",
+      monthlyPrice: 0,
+      description: "Get started with basic features",
+      features: ["Basic profile", "Limited visibility", "Community access"],
+      cta: "Continue with Free",
+      highlighted: false,
+    },
+    {
+      name: "Standard",
+      monthlyPrice: 12,
+      description: "Grow your presence and reach",
+      features: ["Enhanced profile", "Priority listing", "Analytics dashboard", "Booking requests"],
+      cta: "Choose Standard",
+      highlighted: true,
+    },
+    {
+      name: "Premium",
+      monthlyPrice: 24,
+      description: "Maximum exposure and tools",
+      features: ["Premium profile badge", "Top search ranking", "Advanced analytics", "Unlimited bookings", "Priority support"],
+      cta: "Choose Premium",
+      highlighted: false,
+    },
+  ];
+
+  const getPrice = (monthlyPrice: number) => {
+    if (monthlyPrice === 0) return "€0";
+    if (isAnnual) return `€${Math.round(monthlyPrice * 10)}`;
+    return `€${monthlyPrice}`;
+  };
+
+  const getSpecializationLabel = (spec: string) => {
+    const map: Record<string, string> = {
+      Singer: t("artistRegistration.specializations.singer"),
+      Instrumentalist: t("artistRegistration.specializations.instrumentalist"),
+      DJ: t("artistRegistration.specializations.dj"),
+      Band: t("artistRegistration.specializations.band"),
+    };
+    return map[spec] || spec;
+  };
+
+  const handlePlanSelect = (planName: string) => {
+    // For Free plan, just navigate. For paid plans, navigate (payment integration later).
+    if (registeredUserId) {
+      navigate(`/artist/${registeredUserId}`);
+    }
+  };
+
+  if (showPlanSelection) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
+        <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
+          </Link>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 mb-4">
+              <Sparkles className="h-4 w-4 text-accent" />
+              <span className="text-sm font-medium text-accent">
+                {getSpecializationLabel(formData.specialization)}
+              </span>
+            </div>
+            <h1 className="text-xl md:text-3xl lg:text-4xl font-display font-bold text-foreground mb-3">
+              Choose Your Plan
+            </h1>
+            <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto mb-6">
+              Select the plan that best fits your needs as a {getSpecializationLabel(formData.specialization).toLowerCase()}
+            </p>
+            <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
+              <button
+                type="button"
+                onClick={() => setIsAnnual(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAnnual(true)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Annual <span className="text-xs opacity-75">Save ~17%</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl w-full mx-auto">
+            {plans.map((plan) => (
+              <Card
+                key={plan.name}
+                className={`flex flex-col ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
+              >
+                <CardHeader className="text-center">
+                  <CardTitle className="text-lg md:text-xl font-display">{plan.name}</CardTitle>
+                  <div className="mt-2">
+                    <span className="text-2xl md:text-3xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
+                    <span className="text-muted-foreground text-sm">{isAnnual ? '/year' : '/month'}</span>
+                  </div>
+                  <CardDescription className="mt-2 text-xs md:text-sm">{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <ul className="space-y-2.5">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                        <Check className="h-3.5 w-3.5 text-accent shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full"
+                    variant={plan.highlighted ? "default" : "outline"}
+                    onClick={() => handlePlanSelect(plan.name)}
+                  >
+                    {plan.cta}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
