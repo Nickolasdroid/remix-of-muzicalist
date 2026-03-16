@@ -143,7 +143,7 @@ const ArtistAnalytics = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {statCards.map((stat) => (
             <Card key={stat.label} className="border-border/50">
               <CardContent className="p-4 md:p-6">
