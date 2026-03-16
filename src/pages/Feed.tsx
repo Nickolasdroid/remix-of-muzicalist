@@ -331,7 +331,7 @@ const Feed = () => {
         <div className="max-w-[500px] mx-auto space-y-1">
           
           {/* Filter Tabs */}
-          <div className="flex gap-2 px-2 sm:px-0 py-2 sticky top-[60px] md:top-0 z-30 bg-background">
+          <div className="flex gap-2 px-2 sm:px-0 py-2">
             <Button
               variant={feedFilter === "all" ? "default" : "outline"}
               size="sm"
