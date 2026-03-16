@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
+import AISearchShowcase from "@/components/AISearchShowcase";
 import CommunitySections from "@/components/CommunitySections";
 import TrendingArtistsSection from "@/components/TrendingArtistsSection";
 import CategoryCard from "@/components/CategoryCard";
