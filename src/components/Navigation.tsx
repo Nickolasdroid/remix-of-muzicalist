@@ -203,6 +203,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
+    { to: '/feed', icon: Home, label: 'Feed' },
+    { to: '/announcements', icon: Megaphone, label: 'Ads' },
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/countries', icon: Globe, label: 'Countries' },
@@ -234,65 +236,31 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
 
   return (
     <>
-      {/* Desktop: Top Header Bar */}
-      <nav className={`fixed top-0 ${user ? 'left-64' : 'left-0'} right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8`}>
-        {/* Left: Logo (when not logged in) */}
+      {/* Desktop: Top Header Bar - Only when NOT logged in */}
+      {!user && (
+      <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
-          {!user && (
-            <Link to="/" className="flex items-center gap-2">
-              <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
-              <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
-            </Link>
-          )}
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
+            <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+          </Link>
         </div>
 
-        {/* Center: Nav links (only for logged-in users) */}
-        {user && (
-          <div className="flex items-center gap-3">
-            <Link
-              to="/feed"
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                isActive('/feed') || (location.pathname === '/' && user)
-                  ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-              }`}
-            >
-              <Home className="h-5 w-5" />
-              <span className="font-medium">Feed</span>
-            </Link>
-            <Link
-              to="/announcements"
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                isActive('/announcements')
-                  ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-              }`}
-            >
-              <Megaphone className="h-5 w-5" />
-              <span className="font-medium">Ads</span>
-            </Link>
-          </div>
-        )}
-
-        {/* Right: Login/Register (only when not logged in) */}
         <div className="flex items-center gap-3">
-          {!user && (
-            <>
-              <Link to="/login">
-                <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
-              <Link to="/register">
-                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-                  Register
-                </Button>
-              </Link>
-            </>
-          )}
+          <Link to="/login">
+            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+              <LogIn className="h-4 w-4 mr-2" />
+              Login
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
+              Register
+            </Button>
+          </Link>
         </div>
       </nav>
+      )}
 
       {/* Mobile: Top Header Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
