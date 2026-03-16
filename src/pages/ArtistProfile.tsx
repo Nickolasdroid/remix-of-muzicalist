@@ -736,7 +736,7 @@ const ArtistProfile = () => {
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
-        <div className="pt-20 md:pt-8 pb-24 md:pb-20 px-4">
+        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
             <p className="text-lg md:text-xl text-muted-foreground">Loading artist profile...</p>
           </div>
@@ -746,7 +746,7 @@ const ArtistProfile = () => {
   if (!artist) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
-        <div className="pt-20 md:pt-8 pb-24 md:pb-20 px-4">
+        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
             <h1 className="text-2xl md:text-4xl font-display font-bold mb-4">Artist Not Found</h1>
             <Link to="/">
@@ -765,7 +765,7 @@ const ArtistProfile = () => {
   if (isUserAccount) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
-      <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]">
+      <div className={`container mx-auto pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]`}>
         <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
           <Avatar className="h-24 w-24 border-2 border-accent/20">
             <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
@@ -843,7 +843,7 @@ const ArtistProfile = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
-      <div className="pt-16 md:pt-8 pb-24 md:pb-20 px-0 md:px-4">
+      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-6xl px-4 md:px-0">
           <Link to="/leaderboard">
             
