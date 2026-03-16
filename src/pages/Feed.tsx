@@ -45,6 +45,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
+  const [feedFilter, setFeedFilter] = useState<"all" | "promotions">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
