@@ -736,7 +736,7 @@ const ArtistProfile = () => {
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
-        <div className="pt-20 md:pt-8 pb-24 md:pb-20 px-4">
+        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
             <p className="text-lg md:text-xl text-muted-foreground">Loading artist profile...</p>
           </div>
