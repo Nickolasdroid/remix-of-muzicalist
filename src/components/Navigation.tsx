@@ -299,10 +299,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
                 </Link>
               </div>
 
-              {/* Main navigation - same order as desktop */}
+              {/* Main navigation - exclude Feed/Ads (already in bottom nav) */}
               <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-                {/* Main Links: Categories, Leaderboard, Regions */}
-                {sidebarLinks.map((link) => (
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
