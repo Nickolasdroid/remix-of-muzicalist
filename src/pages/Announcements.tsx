@@ -29,6 +29,7 @@ const Announcements = () => {
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [adsFilter, setAdsFilter] = useState<"all" | "promoted">("all");
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -143,9 +144,30 @@ const Announcements = () => {
       
       <div className="container mx-auto pt-16 md:pt-2 pb-0 px-0">
         <div className="max-w-[500px] mx-auto space-y-1">
+          
+          {/* Filter Tabs */}
+          <div className="flex gap-2 px-2 sm:px-0 py-2">
+            <Button
+              variant={adsFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAdsFilter("all")}
+              className={adsFilter === "all" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+            >
+              All
+            </Button>
+            <Button
+              variant={adsFilter === "promoted" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setAdsFilter("promoted")}
+              className={adsFilter === "promoted" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+            >
+              Promoted
+            </Button>
+          </div>
+
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
-          const filteredAnnouncements = announcements.filter(a => !isAdExpired(a));
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+          const filteredAnnouncements = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted ads yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
