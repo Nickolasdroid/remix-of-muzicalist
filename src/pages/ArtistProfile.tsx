@@ -1660,24 +1660,7 @@ const ArtistProfile = () => {
                       Calendar
                     </h2>
                     
-                    {/* Show login prompt for non-authenticated users */}
-                    {!currentUserId ? <Card className="p-8 text-center">
-                        <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          Login Required
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Please log in or create an account to view the artist's availability calendar and make booking requests.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                          <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                            Login
-                          </Button>
-                          <Button variant="outline" onClick={() => navigate('/register')}>
-                            Register
-                          </Button>
-                        </div>
-                      </Card> : <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                    <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                         {/* Legend - above calendar on mobile */}
                         <div className="w-full lg:hidden">
                           <div className="p-3 rounded-lg bg-secondary/50">
@@ -1746,7 +1729,7 @@ const ArtistProfile = () => {
                             </div>
                           </div>
                         </div>
-                      </div>}
+                      </div>
                   </div>
                 </TabsContent>
 
