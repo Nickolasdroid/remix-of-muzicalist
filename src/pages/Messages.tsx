@@ -423,15 +423,15 @@ const Messages = () => {
   if (loading && !user) {
     return <div className="min-h-screen md:ml-64 bg-background">
         <Navigation />
-        <div className="pt-20 md:pt-32 text-center text-muted-foreground">Loading...</div>
+        <div className="pt-20 md:pt-8 text-center text-muted-foreground">Loading...</div>
       </div>;
   }
   return <div className="min-h-screen md:ml-64 bg-background">
       <Navigation />
       
-      <div className="px-0 pt-14 md:pt-16 pb-16 md:pb-0 h-screen">
+      <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen">
         {/* Desktop: Grid layout */}
-        <div className="hidden md:grid md:grid-cols-3 h-[calc(100vh-64px)]">
+        <div className="hidden md:grid md:grid-cols-3 h-screen">
           {/* Conversations List */}
           <div className="md:col-span-1 p-0 overflow-hidden bg-card border-r border-border">
             <div className="flex border-b border-border">

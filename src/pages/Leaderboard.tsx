@@ -783,7 +783,7 @@ const Leaderboard = () => {
       </div>
       <Navigation />
       
-      <div className="relative z-10 pt-16 md:pt-24 pb-24 md:pb-20 px-0">
+      <div className="relative z-10 pt-16 md:pt-8 pb-24 md:pb-20 px-0">
         <div className="px-4 md:container md:mx-auto">
           <div className="text-center mb-8 md:mb-12 py-0">
             <div className="hidden md:inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent mb-4 md:mb-6 shadow-[var(--shadow-gold)]">
