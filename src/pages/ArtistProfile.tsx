@@ -1729,7 +1729,7 @@ const ArtistProfile = () => {
                             </div>
                           </div>
                         </div>
-                      </div>}
+                      </div>
                   </div>
                 </TabsContent>
 
