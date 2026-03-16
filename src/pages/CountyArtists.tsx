@@ -101,7 +101,7 @@ const CountyArtists = () => {
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation mobileTitle={county} mobileBackPath="/counties" />
       
-      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">
+      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
         <div className="hidden md:flex items-center justify-between mb-6 md:mb-8">
           <Link to="/counties">
             <Button variant="outline" className="h-9 px-3">
