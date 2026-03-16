@@ -53,6 +53,33 @@ const AboutUs = () => {
 
           </div>
 
+          {/* Social Proof Stats Bar */}
+          <div className="mb-10 md:mb-16 px-0 md:px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg">
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+                </div>
+                <div className="w-px h-8 bg-border/50" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
+                  <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="max-w-4xl mx-auto mb-10 md:mb-20 px-0">
             <Card className="p-4 md:p-8 lg:p-12 bg-card/50 backdrop-blur border-accent/20">
               <h3 className="text-xl md:text-3xl font-display font-bold text-foreground mb-4 md:mb-6">Our Mission</h3>
