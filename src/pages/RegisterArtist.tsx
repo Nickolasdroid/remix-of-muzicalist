@@ -257,9 +257,8 @@ const RegisterArtist = () => {
         title: t("artistRegistration.success.title"),
         description: t("artistRegistration.success.message")
       });
-      setTimeout(() => {
-        navigate(`/artist/${authData.user.id}`);
-      }, 2000);
+      setRegisteredUserId(authData.user.id);
+      setShowPlanSelection(true);
     } catch (error: any) {
       console.error('Registration error:', error);
       toast({
