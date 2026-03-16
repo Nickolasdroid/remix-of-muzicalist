@@ -45,6 +45,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
+  const [feedFilter, setFeedFilter] = useState<"all" | "promotions">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
@@ -329,9 +330,31 @@ const Feed = () => {
       <div className="container mx-auto sm:px-4 pt-[60px] md:pt-[72px] pb-0 px-0">
         <div className="max-w-[500px] mx-auto space-y-1">
           
-          {feedItems.length === 0 ? <Card className="p-8 text-center">
-              <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
-            </Card> : feedItems.map(item => 
+          {/* Filter Tabs */}
+          <div className="flex gap-2 px-2 sm:px-0 py-2 sticky top-[60px] md:top-[72px] z-30 bg-background">
+            <Button
+              variant={feedFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFeedFilter("all")}
+              className={feedFilter === "all" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+            >
+              All
+            </Button>
+            <Button
+              variant={feedFilter === "promotions" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFeedFilter("promotions")}
+              className={feedFilter === "promotions" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+            >
+              Promotions
+            </Button>
+          </div>
+
+          {(() => {
+            const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "promotion") : feedItems;
+            return filtered.length === 0 ? <Card className="p-8 text-center">
+              <p className="text-muted-foreground">{feedFilter === "promotions" ? "No promotions yet." : "No posts yet. Be the first to share something!"}</p>
+            </Card> : filtered.map(item =>
               item.type === "promotion" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
@@ -515,7 +538,8 @@ const Feed = () => {
                 </div>
               </Card>
               )
-            )}
+            )
+          })()}
           
           <div ref={loadMoreRef} className="py-4 flex justify-center">
             {isLoadingMore && (
