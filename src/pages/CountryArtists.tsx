@@ -275,7 +275,7 @@ const CountryArtists = () => {
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation mobileTitle={displayName} mobileBackPath="/countries" />
       
-      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">
+      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <Link to="/countries" className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
