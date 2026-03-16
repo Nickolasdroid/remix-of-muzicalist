@@ -69,6 +69,9 @@ const About = () => {
       {/* Discover Artists Section */}
       <DiscoverArtistsSection />
 
+      {/* AI Search Showcase */}
+      <AISearchShowcase />
+
       {/* Community Sections */}
       <CommunitySections />
 
