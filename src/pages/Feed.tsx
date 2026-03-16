@@ -538,7 +538,8 @@ const Feed = () => {
                 </div>
               </Card>
               )
-            )}
+            )
+          })()}
           
           <div ref={loadMoreRef} className="py-4 flex justify-center">
             {isLoadingMore && (
