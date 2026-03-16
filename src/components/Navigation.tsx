@@ -203,6 +203,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
+    { to: '/feed', icon: Home, label: 'Feed' },
+    { to: '/announcements', icon: Megaphone, label: 'Ads' },
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/countries', icon: Globe, label: 'Countries' },
