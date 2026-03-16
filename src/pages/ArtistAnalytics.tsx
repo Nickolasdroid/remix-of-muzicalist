@@ -128,7 +128,7 @@ const ArtistAnalytics = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation mobileTitle="Calendar Analytics" mobileBackPath={-1} />
-      <div className="container mx-auto px-4 pt-20 md:pt-24 pb-8 max-w-4xl">
+      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-8 max-w-4xl">
         <div className="hidden md:flex items-center gap-3 mb-8">
           <Button
             variant="ghost"

@@ -128,7 +128,7 @@ const Search = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="pt-14 pb-20 md:pt-16 md:pb-8 md:pl-64">
+      <main className="pt-14 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto px-4 py-6 md:py-8">
           {/* Search Input */}
           <form onSubmit={handleSubmit}>

@@ -16,7 +16,7 @@ const PrivacyPolicy = () => {
     <div className={`min-h-screen ${user ? 'md:ml-64' : ''}`}>
       <Navigation />
       
-      <div className="pt-20 md:pt-24 pb-12 px-4 md:px-8">
+      <div className="pt-20 md:pt-8 pb-12 px-4 md:px-8">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
             Privacy Policy

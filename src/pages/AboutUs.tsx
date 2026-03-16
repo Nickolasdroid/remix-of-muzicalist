@@ -41,7 +41,7 @@ const AboutUs = () => {
     <div className={`min-h-screen ${isAuthenticated ? 'md:ml-64' : ''}`}>
       <Navigation />
 
-      <section className="pt-24 md:pt-32 pb-10 md:pb-20 px-4 md:px-8">
+      <section className="pt-24 md:pt-8 pb-10 md:pb-20 px-4 md:px-8">
         <div className="container mx-auto px-0">
           <div className="text-center mb-10 md:mb-16 px-2">
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">

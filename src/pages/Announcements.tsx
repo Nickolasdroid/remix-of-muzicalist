@@ -141,7 +141,7 @@ const Announcements = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
-      <div className="container mx-auto pt-16 md:pt-[68px] pb-0 px-0">
+      <div className="container mx-auto pt-16 md:pt-2 pb-0 px-0">
         <div className="max-w-[500px] mx-auto space-y-1">
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const filteredAnnouncements = announcements.filter(a => !isAdExpired(a));
