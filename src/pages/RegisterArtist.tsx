@@ -30,6 +30,7 @@ const RegisterArtist = () => {
   const [showPlanSelection, setShowPlanSelection] = useState(false);
   const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     stageName: "",
