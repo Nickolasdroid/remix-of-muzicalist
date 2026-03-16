@@ -29,6 +29,7 @@ const Announcements = () => {
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [adsFilter, setAdsFilter] = useState<"all" | "promoted">("all");
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
