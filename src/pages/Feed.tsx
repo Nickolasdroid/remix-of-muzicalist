@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Star } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -326,7 +326,34 @@ const Feed = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
-      <div className="container mx-auto sm:px-4 pt-[60px] md:pt-[72px] pb-0 px-0">
+      {/* Social Proof Stats Bar */}
+      <div className="relative z-10 px-0 md:px-8 py-0 md:py-10">
+        <div className="container mx-auto max-w-5xl px-0 md:px-4">
+          <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-lg md:text-2xl font-bold text-accent">25+</span>
+              <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+            </div>
+            <div className="w-px h-8 bg-border/50" />
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+              <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+            </div>
+            <div className="w-px h-8 bg-border/50" />
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+              <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+            </div>
+            <div className="w-px h-8 bg-border/50" />
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-lg md:text-2xl font-bold text-accent">30,000+</span>
+              <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="container mx-auto sm:px-4 pt-0 pb-0 px-0">
         <div className="max-w-[500px] mx-auto space-y-1">
           
           {feedItems.length === 0 ? <Card className="p-8 text-center">
