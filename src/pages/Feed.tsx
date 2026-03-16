@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Star } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
