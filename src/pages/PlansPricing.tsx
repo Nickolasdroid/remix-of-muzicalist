@@ -77,8 +77,9 @@ const PlansPricing = () => {
                 onClick={() => setIsAnnual(true)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Annual <span className="text-xs opacity-75">Save ~17%</span>
+                Annual
               </button>
+              <span className="text-xs text-muted-foreground ml-2">Save ~17%</span>
             </div>
           </div>
 
