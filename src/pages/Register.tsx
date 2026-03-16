@@ -34,9 +34,9 @@ const Register = () => {
       <div className="flex-1 flex items-center justify-center">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 md:mb-4 text-foreground">
-            Join Our Platform
-          </h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 md:mb-4 text-foreground">Join Muzicalist
+
+            </h1>
           <p className="text-base md:text-lg text-muted-foreground">
             Choose how you want to get started
           </p>
@@ -79,11 +79,11 @@ const Register = () => {
                 </li>
               </ul>
               
-              <Button 
-                onClick={() => navigate("/register/artist")}
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
-                size="lg"
-              >
+              <Button
+                  onClick={() => navigate("/register/artist")}
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  size="lg">
+                  
                 Continue as Artist
               </Button>
             </div>
@@ -125,12 +125,12 @@ const Register = () => {
                 </li>
               </ul>
               
-              <Button 
-                onClick={() => navigate("/register/user")}
-                variant="secondary"
-                className="w-full"
-                size="lg"
-              >
+              <Button
+                  onClick={() => navigate("/register/user")}
+                  variant="secondary"
+                  className="w-full"
+                  size="lg">
+                  
                 Continue as User
               </Button>
             </div>
@@ -141,17 +141,17 @@ const Register = () => {
           <p className="text-sm md:text-base text-muted-foreground">
             Already have an account?{" "}
             <button
-              onClick={() => navigate("/login")}
-              className="text-accent hover:underline font-semibold"
-            >
+                onClick={() => navigate("/login")}
+                className="text-accent hover:underline font-semibold">
+                
               Sign in
             </button>
           </p>
         </div>
       </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Register;
