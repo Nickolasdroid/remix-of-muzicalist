@@ -91,10 +91,6 @@ const Feed = () => {
         .select(`*, profiles!inner (avatar_url, stage_name, county, specialization, plan, country)`)
         .eq('is_premium', true);
       
-      if (userCountry !== '__all__') {
-        promoQuery = promoQuery.eq('profiles.country', userCountry);
-      }
-      
       const { data: promotions } = await promoQuery
         .order('created_at', { ascending: false })
         .range(from, to);

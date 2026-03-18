@@ -89,10 +89,6 @@ const Announcements = () => {
         `)
         .eq('is_premium', false); // Only standard ads, no promotions
       
-      if (userCountry !== '__all__') {
-        query = query.eq('profiles.country', userCountry);
-      }
-      
       const { data, error } = await query
         .order("created_at", { ascending: false })
         .range(from, to);
