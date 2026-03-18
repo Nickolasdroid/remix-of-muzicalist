@@ -57,23 +57,14 @@ const Feed = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuthAndGetCountry = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
-        
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('country')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        setUserCountry(profile?.country || '__all__');
-      } else {
-        setUserCountry('__all__');
       }
+      setUserCountry('__all__');
     };
-    checkAuthAndGetCountry();
+    checkAuth();
   }, []);
 
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
@@ -83,32 +74,10 @@ const Feed = () => {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      let profileIds: string[] | null = null;
-      
-      if (userCountry !== '__all__') {
-        const { data: countryProfiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('country', userCountry);
-        
-        profileIds = countryProfiles?.map(p => p.id) || [];
-        
-        if (profileIds.length === 0) {
-          setFeedItems([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
-        }
-      }
-      
       // Fetch posts
       let postsQuery = supabase
         .from('posts')
         .select(`id, profile_id, content, media_url, media_type, created_at`);
-      
-      if (profileIds) {
-        postsQuery = postsQuery.in('profile_id', profileIds);
-      }
       
       const { data: posts, error: postsError } = await postsQuery
         .order('created_at', { ascending: false })
@@ -121,10 +90,6 @@ const Feed = () => {
         .from('announcements')
         .select(`*, profiles!inner (avatar_url, stage_name, county, specialization, plan, country)`)
         .eq('is_premium', true);
-      
-      if (userCountry !== '__all__') {
-        promoQuery = promoQuery.eq('profiles.country', userCountry);
-      }
       
       const { data: promotions } = await promoQuery
         .order('created_at', { ascending: false })

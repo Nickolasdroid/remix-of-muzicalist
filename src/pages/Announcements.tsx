@@ -36,23 +36,14 @@ const Announcements = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuthAndGetCountry = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
-        
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('country')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        
-        setUserCountry(profile?.country || '__all__');
-      } else {
-        setUserCountry('__all__');
       }
+      setUserCountry('__all__');
     };
-    checkAuthAndGetCountry();
+    checkAuth();
   }, []);
 
   const handleDeleteAnnouncement = async (announcementId: string) => {
@@ -97,10 +88,6 @@ const Announcements = () => {
           )
         `)
         .eq('is_premium', false); // Only standard ads, no promotions
-      
-      if (userCountry !== '__all__') {
-        query = query.eq('profiles.country', userCountry);
-      }
       
       const { data, error } = await query
         .order("created_at", { ascending: false })
