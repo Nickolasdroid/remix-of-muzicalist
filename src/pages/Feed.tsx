@@ -74,32 +74,10 @@ const Feed = () => {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      let profileIds: string[] | null = null;
-      
-      if (userCountry !== '__all__') {
-        const { data: countryProfiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('country', userCountry);
-        
-        profileIds = countryProfiles?.map(p => p.id) || [];
-        
-        if (profileIds.length === 0) {
-          setFeedItems([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
-        }
-      }
-      
       // Fetch posts
       let postsQuery = supabase
         .from('posts')
         .select(`id, profile_id, content, media_url, media_type, created_at`);
-      
-      if (profileIds) {
-        postsQuery = postsQuery.in('profile_id', profileIds);
-      }
       
       const { data: posts, error: postsError } = await postsQuery
         .order('created_at', { ascending: false })
