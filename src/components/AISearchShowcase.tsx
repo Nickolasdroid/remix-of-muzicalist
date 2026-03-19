@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import heroConcert from "@/assets/hero-concert.png";
 
 const mockResults = [
-  { name: "DJ Alex Beat", location: "Cluj Napoca", rating: 5.0, avatar: "🎧" },
-  { name: "DJ SoundWave", location: "Cluj Napoca", rating: 5.0, avatar: "🎵" },
-  { name: "DJ ElectroNight", location: "Cluj Napoca", rating: 5.0, avatar: "🎶" },
-];
+{ name: "DJ Alex Beat", location: "Cluj Napoca", rating: 5.0, avatar: "🎧" },
+{ name: "DJ SoundWave", location: "Cluj Napoca", rating: 5.0, avatar: "🎵" },
+{ name: "DJ ElectroNight", location: "Cluj Napoca", rating: 5.0, avatar: "🎶" }];
+
 
 const AISearchShowcase = () => {
   return (
@@ -15,8 +15,8 @@ const AISearchShowcase = () => {
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroConcert})` }}
-      />
+        style={{ backgroundImage: `url(${heroConcert})` }} />
+      
       <div className="absolute inset-0 bg-background/80" />
 
       <div className="container mx-auto relative z-10">
@@ -55,11 +55,11 @@ const AISearchShowcase = () => {
 
             {/* Mock Results */}
             <div className="space-y-3">
-              {mockResults.map((artist) => (
-                <div
-                  key={artist.name}
-                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3"
-                >
+              {mockResults.map((artist) =>
+              <div
+                key={artist.name}
+                className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3">
+                
                   <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg shrink-0">
                     {artist.avatar}
                   </div>
@@ -67,9 +67,9 @@ const AISearchShowcase = () => {
                     <p className="text-sm font-bold text-foreground">{artist.name}</p>
                     <p className="text-xs text-muted-foreground">{artist.location}</p>
                     <div className="flex items-center gap-1 mt-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-accent text-accent" />
-                      ))}
+                      {Array.from({ length: 5 }).map((_, i) =>
+                    <Star key={i} className="h-3 w-3 fill-accent text-accent" />
+                    )}
                       <span className="text-xs font-semibold text-accent ml-1">{artist.rating.toFixed(1)}</span>
                     </div>
                   </div>
@@ -77,7 +77,7 @@ const AISearchShowcase = () => {
                     View Profile
                   </span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -95,18 +95,18 @@ const AISearchShowcase = () => {
             <Link to="/search">
               <Button
                 size="lg"
-                className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-8 py-5 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-2"
-              >
+                className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-8 py-5 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-2">
+                
                 <Sparkles className="h-5 w-5" />
                 Try AI Search
               </Button>
             </Link>
-            <p className="text-xs text-muted-foreground">Create a free account to use AI search</p>
+            
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default AISearchShowcase;
