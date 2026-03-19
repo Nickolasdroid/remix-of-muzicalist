@@ -116,11 +116,14 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
 
   const selectedGenres = value ? value.split(", ").filter(Boolean) : [];
 
+  const isAtLimit = selectedGenres.length >= MAX_GENRES;
+
   const handleSelect = (genre: string) => {
-    const newGenres = selectedGenres.includes(genre)
-      ? selectedGenres.filter((g) => g !== genre)
-      : [...selectedGenres, genre];
-    onChange(newGenres.join(", "));
+    if (selectedGenres.includes(genre)) {
+      onChange(selectedGenres.filter((g) => g !== genre).join(", "));
+    } else if (!isAtLimit) {
+      onChange([...selectedGenres, genre].join(", "));
+    }
   };
 
   const handleRemove = (genre: string) => {
