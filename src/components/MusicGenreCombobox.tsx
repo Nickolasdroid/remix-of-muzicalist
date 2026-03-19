@@ -132,7 +132,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
   };
 
   const handleAddCustom = () => {
-    if (inputValue && !selectedGenres.includes(inputValue)) {
+    if (inputValue && !selectedGenres.includes(inputValue) && !isAtLimit) {
       onChange([...selectedGenres, inputValue].join(", "));
       setInputValue("");
     }
