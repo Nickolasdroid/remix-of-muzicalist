@@ -1695,7 +1695,8 @@ const Dashboard = () => {
                       const hasMore = availableGenres.length > VISIBLE_COUNT;
 
                       const genreBadge = (genre: string) =>
-                      <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                      <Badge key={genre} variant="outline" className={cn("border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors", isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent")} onClick={() => {
+                        if (isAtLimit) return;
                         const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
                         if (!currentGenres.includes(genre)) {
                           setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
