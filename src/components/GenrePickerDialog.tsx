@@ -11,7 +11,7 @@ interface GenrePickerDialogProps {
   isAtLimit?: boolean;
 }
 
-export default function GenrePickerDialog({ availableGenres, onSelect }: GenrePickerDialogProps) {
+export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit }: GenrePickerDialogProps) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
