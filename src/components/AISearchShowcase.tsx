@@ -11,7 +11,7 @@ const mockResults = [
 
 const AISearchShowcase = () => {
   return (
-    <section className="relative py-16 md:py-24 px-4 md:px-8 overflow-hidden">
+    <section className="relative py-10 md:py-24 px-0 md:px-8 overflow-hidden">
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
