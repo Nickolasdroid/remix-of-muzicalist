@@ -33,7 +33,7 @@ const AISearchShowcase = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-5xl mx-auto items-center">
           {/* Left: Mock AI Search Card */}
-          <div className="relative rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)] pb-40 md:pb-6">
+          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)]">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-accent" />
@@ -79,33 +79,10 @@ const AISearchShowcase = () => {
                 </div>
               )}
             </div>
-
-            {/* Mobile CTA overlay */}
-            <div className="absolute bottom-0 left-0 right-0 lg:hidden">
-              <div className="backdrop-blur-md bg-card/70 border-t border-accent/20 px-4 py-5 text-center space-y-2">
-                <h3 className="text-lg font-display font-bold text-foreground">
-                  Try AI Search
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Create a free account and let AI match you with the best artists for your event.
-                </p>
-                <p className="text-xs text-muted-foreground font-semibold">
-                  Find talent in seconds.
-                </p>
-                <Link to="/search">
-                  <Button
-                    size="sm"
-                    className="mt-1 bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-6 py-2 shadow-[var(--shadow-gold)] gap-2">
-                    <Sparkles className="h-4 w-4" />
-                    Try AI Search
-                  </Button>
-                </Link>
-              </div>
-            </div>
           </div>
 
-          {/* Right: CTA (desktop only) */}
-          <div className="hidden lg:block text-center lg:text-left space-y-4 md:space-y-6">
+          {/* Right: CTA */}
+          <div className="text-center lg:text-left space-y-4 md:space-y-6">
             <h3 className="text-xl md:text-3xl font-display font-bold text-foreground">
               Try AI Search
             </h3>
@@ -119,10 +96,12 @@ const AISearchShowcase = () => {
               <Button
                 size="lg"
                 className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-8 py-5 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-2">
+                
                 <Sparkles className="h-5 w-5" />
                 Try AI Search
               </Button>
             </Link>
+            
           </div>
         </div>
       </div>
