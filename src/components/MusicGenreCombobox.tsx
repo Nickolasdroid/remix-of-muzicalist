@@ -159,7 +159,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
           >
             <span className="truncate min-w-0">
               {selectedGenres.length > 0
-                ? t("musicGenres.genresSelected", { count: selectedGenres.length })
+                ? `${t("musicGenres.genresSelected", { count: selectedGenres.length })} (${selectedGenres.length}/${MAX_GENRES})`
                 : t("artistRegistration.placeholders.selectGenres")}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
