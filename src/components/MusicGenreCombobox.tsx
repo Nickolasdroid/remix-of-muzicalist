@@ -102,6 +102,8 @@ const MUSIC_GENRES = [
   "Zouk",
 ];
 
+const MAX_GENRES = 5;
+
 interface MusicGenreComboboxProps {
   value: string;
   onChange: (value: string) => void;
