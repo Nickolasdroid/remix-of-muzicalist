@@ -192,7 +192,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     key={genre}
                     value={genre}
                     onSelect={() => handleSelect(genre)}
-                    className="cursor-pointer"
+                    className={cn("cursor-pointer", isAtLimit && !selectedGenres.includes(genre) && "opacity-40 pointer-events-none")}
                   >
                     <Check
                       className={cn(
