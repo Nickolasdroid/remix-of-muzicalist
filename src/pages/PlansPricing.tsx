@@ -10,24 +10,75 @@ const plans = [
   {
     name: "Free",
     monthlyPrice: 0,
-    description: "Get started with basic features",
-    features: ["Basic profile", "Limited visibility", "Community access"],
+    emoji: "🟢",
+    description: "Start your presence on Muzicalist",
+    features: [
+      "Basic artist profile",
+      "Gallery: up to 5 images (no video support)",
+      "Limited visibility in search results",
+      "Select your music genres",
+      "Set your experience level",
+      "Receive booking requests (by day)",
+      "Unlimited messages & contact",
+      "1 visible social media link",
+      "Up to 3 visible reviews",
+      "Appear in Leaderboard rankings",
+      "Like & follow other artists",
+      "Browse Feed (posts) & Ads (opportunities)",
+      "Cannot publish posts or ads",
+    ],
+    tagline: "👉 Perfect for getting started and exploring the platform",
     cta: "Current Plan",
     highlighted: false,
   },
   {
     name: "Standard",
     monthlyPrice: 12,
-    description: "Grow your presence and reach",
-    features: ["Enhanced profile", "Priority listing", "Analytics dashboard", "Booking requests"],
+    emoji: "🟡",
+    description: "Get discovered. Attract more clients. Grow your bookings.",
+    features: [
+      "Enhanced artist profile (more professional presence)",
+      "Gallery: up to 10 images & 2 videos",
+      "Priority placement in search results → more visibility",
+      "Publish up to 15 posts/month",
+      "5 Ads + 2 Boosted Promotions / month",
+      "Receive booking requests (by day)",
+      "Display your estimated pricing → higher conversion rate",
+      "Unlimited reviews → build credibility",
+      "Visible social media links",
+      "Appear in Feed (posts) & Ads (opportunities)",
+      "Increased visibility in Feed & Ads vs Free",
+      "Appear in Leaderboard rankings",
+      "Unlimited messages & contact",
+    ],
+    tagline: "👉 Designed to help you gain more exposure and consistent booking opportunities",
     cta: "Upgrade",
     highlighted: true,
   },
   {
     name: "Premium",
     monthlyPrice: 24,
-    description: "Maximum exposure and tools",
-    features: ["Premium profile badge", "Top search ranking", "Advanced analytics", "Unlimited bookings", "Priority support"],
+    emoji: "🔶",
+    description: "Maximize your visibility. Build authority. Get booked consistently.",
+    features: [
+      "Premium gold badge → stand out instantly",
+      "Gallery: up to 15 images & 5 videos",
+      "Top placement in search results → maximum exposure",
+      "Professional calendar: booking requests by day & time intervals",
+      "Advanced analytics dashboard: booking requests, accepted/declined events, performance insights",
+      "Publish up to 30 posts/month",
+      "10 Ads + 5 Boosted Promotions / month",
+      "Unlimited bookings & requests",
+      "Display your estimated pricing",
+      "Unlimited reviews → strong credibility",
+      "Visible social media links",
+      "Priority visibility in Feed (posts) & Ads (opportunities)",
+      "Appear in Leaderboard rankings",
+      "Unlimited messages & contact",
+      "Promotion on Muzicalist social media",
+      "Featured on homepage → premium exposure boost",
+    ],
+    tagline: "👉 Built for artists who want maximum exposure, strong credibility, and steady income from events",
     cta: "Upgrade",
     highlighted: false,
   },
@@ -97,14 +148,15 @@ const PlansPricing = () => {
                   <CardDescription className="mt-2">{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <ul className="space-y-3">
+                  <ul className="space-y-2.5">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 text-accent shrink-0" />
-                        {feature}
+                      <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
+                  <p className="mt-4 text-xs text-muted-foreground/80 italic">{plan.tagline}</p>
                 </CardContent>
                 <CardFooter>
                   <Button
