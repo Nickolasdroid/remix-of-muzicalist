@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
+import { formatSmartDate, formatDateNoYear, cn } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1687,14 +1687,16 @@ const Dashboard = () => {
                       const PRIORITY_GENRES = ['Pop', 'Rock', 'Jazz', 'Manele', 'Traditional', 'Blues', 'Disco', 'Hip-Hop', 'Electronic', 'House', 'R&B', 'Latin', 'Trap', 'Reggaeton', 'Folk', 'Country'];
                       const OTHER_GENRES = ['Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Classical', 'Cumbia', 'Dance', 'Dancehall', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'Easy Listening', 'EDM', 'Ethno', 'Fado', 'Flamenco', 'Funk', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Indie', 'J-Pop', 'K-Pop', 'Kizomba', 'Klezmer', 'Kompa', 'Lo-fi', 'Mariachi', 'Merengue', 'Metal', 'Motown', 'New Wave', 'Opera', 'Party Music', 'Polka', 'Progressive Rock', 'Punk', 'Qawwali', 'R&B', 'Ranchera', 'Reggae', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Soul', 'Synthwave', 'Tango', 'Techno', 'Trance', 'Turbo-Folk', 'Vallenato', 'Zouk'];
                       const ALL_GENRES = [...PRIORITY_GENRES, ...OTHER_GENRES.filter((g) => !PRIORITY_GENRES.includes(g))];
-                      const selectedSet = new Set(formData.musicGenres?.split(',').map((g) => g.trim()) || []);
+                      const selectedSet = new Set(formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || []);
+                      const isAtLimit = selectedSet.size >= 5;
                       const availableGenres = ALL_GENRES.filter((genre) => !selectedSet.has(genre));
                       const VISIBLE_COUNT = 12;
                       const visibleGenres = availableGenres.slice(0, VISIBLE_COUNT);
                       const hasMore = availableGenres.length > VISIBLE_COUNT;
 
                       const genreBadge = (genre: string) =>
-                      <Badge key={genre} variant="outline" className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors" onClick={() => {
+                      <Badge key={genre} variant="outline" className={cn("border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors", isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent")} onClick={() => {
+                        if (isAtLimit) return;
                         const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
                         if (!currentGenres.includes(genre)) {
                           setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
@@ -1713,7 +1715,9 @@ const Dashboard = () => {
                                         {hasMore &&
                             <GenrePickerDialog
                               availableGenres={availableGenres}
+                              isAtLimit={isAtLimit}
                               onSelect={(genre) => {
+                                if (isAtLimit) return;
                                 const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
                                 if (!currentGenres.includes(genre)) {
                                   setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });

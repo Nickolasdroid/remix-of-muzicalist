@@ -102,6 +102,8 @@ const MUSIC_GENRES = [
   "Zouk",
 ];
 
+const MAX_GENRES = 5;
+
 interface MusicGenreComboboxProps {
   value: string;
   onChange: (value: string) => void;
@@ -114,11 +116,14 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
 
   const selectedGenres = value ? value.split(", ").filter(Boolean) : [];
 
+  const isAtLimit = selectedGenres.length >= MAX_GENRES;
+
   const handleSelect = (genre: string) => {
-    const newGenres = selectedGenres.includes(genre)
-      ? selectedGenres.filter((g) => g !== genre)
-      : [...selectedGenres, genre];
-    onChange(newGenres.join(", "));
+    if (selectedGenres.includes(genre)) {
+      onChange(selectedGenres.filter((g) => g !== genre).join(", "));
+    } else if (!isAtLimit) {
+      onChange([...selectedGenres, genre].join(", "));
+    }
   };
 
   const handleRemove = (genre: string) => {
@@ -127,7 +132,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
   };
 
   const handleAddCustom = () => {
-    if (inputValue && !selectedGenres.includes(inputValue)) {
+    if (inputValue && !selectedGenres.includes(inputValue) && !isAtLimit) {
       onChange([...selectedGenres, inputValue].join(", "));
       setInputValue("");
     }
@@ -154,7 +159,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
           >
             <span className="truncate min-w-0">
               {selectedGenres.length > 0
-                ? t("musicGenres.genresSelected", { count: selectedGenres.length })
+                ? `${t("musicGenres.genresSelected", { count: selectedGenres.length })} (${selectedGenres.length}/${MAX_GENRES})`
                 : t("artistRegistration.placeholders.selectGenres")}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -187,7 +192,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                     key={genre}
                     value={genre}
                     onSelect={() => handleSelect(genre)}
-                    className="cursor-pointer"
+                    className={cn("cursor-pointer", isAtLimit && !selectedGenres.includes(genre) && "opacity-40 pointer-events-none")}
                   >
                     <Check
                       className={cn(

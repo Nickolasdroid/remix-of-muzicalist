@@ -4,13 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface GenrePickerDialogProps {
   availableGenres: string[];
   onSelect: (genre: string) => void;
+  isAtLimit?: boolean;
 }
 
-export default function GenrePickerDialog({ availableGenres, onSelect }: GenrePickerDialogProps) {
+export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit }: GenrePickerDialogProps) {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -45,9 +47,12 @@ export default function GenrePickerDialog({ availableGenres, onSelect }: GenrePi
               <Badge
                 key={genre}
                 variant="outline"
-                className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors"
+                className={cn(
+                  "border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors",
+                  isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent"
+                )}
                 onClick={() => {
-                  onSelect(genre);
+                  if (!isAtLimit) onSelect(genre);
                 }}
               >
                 <Plus className="h-3 w-3 mr-1" />
