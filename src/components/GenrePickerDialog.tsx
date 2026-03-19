@@ -8,6 +8,7 @@ import { Plus, Search } from "lucide-react";
 interface GenrePickerDialogProps {
   availableGenres: string[];
   onSelect: (genre: string) => void;
+  isAtLimit?: boolean;
 }
 
 export default function GenrePickerDialog({ availableGenres, onSelect }: GenrePickerDialogProps) {
