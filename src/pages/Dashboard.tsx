@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
+import { formatSmartDate, formatDateNoYear, cn } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
