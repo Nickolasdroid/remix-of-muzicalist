@@ -19,21 +19,21 @@ const AISearchShowcase = () => {
       
       <div className="absolute inset-0 bg-background/80" />
 
-      <div className="container mx-auto relative z-10">
+      <div className="container mx-auto relative z-10 px-2 md:px-0">
         {/* Section Header */}
-        <div className="text-center mb-10 md:mb-14">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-4">
+        <div className="text-center mb-6 md:mb-14 px-2">
+          <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
             Find the Perfect Artist with AI
           </h2>
-          <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto">
+          <p className="text-xs md:text-lg text-muted-foreground max-w-xl mx-auto">
             Describe your event in a few words and our AI will match you with the best artists.
           </p>
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-5xl mx-auto items-center">
           {/* Left: Mock AI Search Card */}
-          <div className="rounded-2xl border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-5 md:p-6 shadow-[var(--shadow-gold)]">
+          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)]">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-accent" />
