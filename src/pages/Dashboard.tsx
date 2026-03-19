@@ -1714,7 +1714,9 @@ const Dashboard = () => {
                                         {hasMore &&
                             <GenrePickerDialog
                               availableGenres={availableGenres}
+                              isAtLimit={isAtLimit}
                               onSelect={(genre) => {
+                                if (isAtLimit) return;
                                 const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
                                 if (!currentGenres.includes(genre)) {
                                   setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
