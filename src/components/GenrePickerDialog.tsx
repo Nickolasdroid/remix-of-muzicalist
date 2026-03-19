@@ -46,9 +46,12 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
               <Badge
                 key={genre}
                 variant="outline"
-                className="border-muted-foreground/30 text-muted-foreground px-3 py-1 cursor-pointer hover:border-accent hover:text-accent transition-colors"
+                className={cn(
+                  "border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors",
+                  isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent"
+                )}
                 onClick={() => {
-                  onSelect(genre);
+                  if (!isAtLimit) onSelect(genre);
                 }}
               >
                 <Plus className="h-3 w-3 mr-1" />
