@@ -53,13 +53,13 @@ const AISearchShowcase = () => {
             {/* Results Label */}
             <p className="text-sm font-bold text-accent mb-3">AI Results:</p>
 
-            {/* Mock Results - blurred on mobile with CTA overlay */}
+            {/* Mock Results - top clear, bottom blurred on mobile */}
             <div className="relative">
-              <div className="space-y-3 blur-[2px] md:blur-none">
-                {mockResults.map((artist) =>
+              <div className="space-y-3">
+                {mockResults.map((artist, index) =>
                 <div
                   key={artist.name}
-                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3">
+                  className={`flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3 ${index >= 1 ? 'blur-[2px] md:blur-none' : 'md:blur-none'}`}>
                 
                     <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg shrink-0">
                       {artist.avatar}
