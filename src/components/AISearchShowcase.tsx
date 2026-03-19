@@ -33,7 +33,7 @@ const AISearchShowcase = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-5xl mx-auto items-center">
           {/* Left: Mock AI Search Card */}
-          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)]">
+          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)] relative">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-accent" />
@@ -53,55 +53,76 @@ const AISearchShowcase = () => {
             {/* Results Label */}
             <p className="text-sm font-bold text-accent mb-3">AI Results:</p>
 
-            {/* Mock Results */}
-            <div className="space-y-3">
-              {mockResults.map((artist) =>
-              <div
-                key={artist.name}
-                className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3">
+            {/* Mock Results - blurred on mobile with CTA overlay */}
+            <div className="relative">
+              <div className="space-y-3 blur-[2px] md:blur-none">
+                {mockResults.map((artist) =>
+                <div
+                  key={artist.name}
+                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3">
                 
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg shrink-0">
-                    {artist.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground">{artist.name}</p>
-                    <p className="text-xs text-muted-foreground">{artist.location}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {Array.from({ length: 5 }).map((_, i) =>
-                    <Star key={i} className="h-3 w-3 fill-accent text-accent" />
-                    )}
-                      <span className="text-xs font-semibold text-accent ml-1">{artist.rating.toFixed(1)}</span>
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg shrink-0">
+                      {artist.avatar}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-foreground">{artist.name}</p>
+                      <p className="text-xs text-muted-foreground">{artist.location}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {Array.from({ length: 5 }).map((_, i) =>
+                      <Star key={i} className="h-3 w-3 fill-accent text-accent" />
+                      )}
+                        <span className="text-xs font-semibold text-accent ml-1">{artist.rating.toFixed(1)}</span>
+                      </div>
+                    </div>
+                    <span className="text-xs font-semibold border border-accent/50 text-accent rounded-full px-3 py-1 whitespace-nowrap">
+                      View Profile
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold border border-accent/50 text-accent rounded-full px-3 py-1 whitespace-nowrap">
-                    View Profile
-                  </span>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* Mobile CTA overlay on top of blurred results */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 lg:hidden">
+                <h3 className="text-lg font-display font-bold text-foreground mb-2">
+                  Try AI Search
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-1">
+                  Create a free account and let AI match you with the best artists for your event.
+                </p>
+                <p className="text-xs text-muted-foreground font-semibold mb-3">
+                  Find talent in seconds.
+                </p>
+                <Link to="/search">
+                  <Button
+                    size="sm"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-6 py-2 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-1.5">
+                    <Sparkles className="h-4 w-4" />
+                    Try AI Search
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* Right: CTA */}
-          <div className="text-center lg:text-left space-y-4 md:space-y-6">
-            <h3 className="text-xl md:text-3xl font-display font-bold text-foreground">
+          {/* Right: CTA - hidden on mobile since it's overlaid */}
+          <div className="hidden lg:block text-left space-y-6">
+            <h3 className="text-3xl font-display font-bold text-foreground">
               Try AI Search
             </h3>
-            <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto lg:mx-0">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-md">
               Create a free account and let AI match you with the best artists for your event.
             </p>
-            <p className="text-sm md:text-base text-muted-foreground font-semibold">
+            <p className="text-base text-muted-foreground font-semibold">
               Find talent in seconds.
             </p>
             <Link to="/search">
               <Button
                 size="lg"
-                className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 text-base md:text-lg px-8 py-5 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-2">
-                
+                className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-5 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 gap-2">
                 <Sparkles className="h-5 w-5" />
                 Try AI Search
               </Button>
             </Link>
-            
           </div>
         </div>
       </div>
