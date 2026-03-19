@@ -81,15 +81,18 @@ const AISearchShowcase = () => {
                 )}
               </div>
 
-              {/* Mobile CTA overlay on top of blurred results */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 lg:hidden">
-                <h3 className="text-lg font-display font-bold text-foreground mb-2">
+              {/* Gradient shadow overlay on mobile - grows from bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent rounded-xl pointer-events-none lg:hidden" />
+
+              {/* Mobile CTA overlay - positioned at bottom */}
+              <div className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center px-4 pb-3 pt-6 lg:hidden">
+                <h3 className="text-lg font-display font-bold text-white mb-1.5">
                   Try AI Search
                 </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-1">
+                <p className="text-xs text-white/80 leading-relaxed mb-1">
                   Create a free account and let AI match you with the best artists for your event.
                 </p>
-                <p className="text-xs text-muted-foreground font-semibold mb-3">
+                <p className="text-xs text-white/90 font-semibold mb-3">
                   Find talent in seconds.
                 </p>
                 <Link to="/search">
