@@ -67,7 +67,7 @@ const plans = [
       "Professional calendar: booking requests by day & time intervals",
       "Advanced analytics dashboard: booking requests, accepted/declined events, performance insights",
       "Publish up to 30 posts/month",
-      "10 Ads + 5 Boosted Promotions / month",
+      "10 Ads + 5 Promotions/month",
       "Unlimited bookings & requests",
       "Display your estimated pricing",
       "Unlimited reviews → strong credibility",
