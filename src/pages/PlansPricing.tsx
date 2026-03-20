@@ -41,7 +41,7 @@ const plans = [
       "Gallery: up to 10 images & 2 videos",
       "Priority placement in search results → more visibility",
       "Publish up to 15 posts/month",
-      "5 Ads + 2 Boosted Promotions / month",
+      "5 Ads + 2 Promotions/month",
       "Receive booking requests (by day)",
       "Display your estimated pricing → higher conversion rate",
       "Unlimited reviews → build credibility",
