@@ -174,18 +174,20 @@ const Search = () => {
             </div>
           </form>
 
-          {/* AI Toggle */}
-          <button
-            onClick={toggleAIMode}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all mb-4 ${
-              isAIMode
-                ? "bg-accent/15 text-accent border border-accent/30"
-                : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
-            }`}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            AI Search {isAIMode ? "ON" : "OFF"}
-          </button>
+          {/* AI Toggle - only for logged-in users */}
+          {isAuthenticated && (
+            <button
+              onClick={toggleAIMode}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all mb-4 ${
+                isAIMode
+                  ? "bg-accent/15 text-accent border border-accent/30"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              AI Search {isAIMode ? "ON" : "OFF"}
+            </button>
+          )}
 
           {/* AI Response */}
           {isAIMode && aiResponse && (
