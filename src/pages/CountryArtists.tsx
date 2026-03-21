@@ -285,7 +285,17 @@ const CountryArtists = () => {
       result = result.filter(artist => artist.experience_level?.toLowerCase() === filterExperience.toLowerCase());
     }
 
-    // Sorting
+    // If date filter is active, sort available artists first
+    if (urlDate) {
+      result.sort((a, b) => {
+        const aBooked = bookedArtistIds.has(a.id) ? 1 : 0;
+        const bBooked = bookedArtistIds.has(b.id) ? 1 : 0;
+        if (aBooked !== bBooked) return aBooked - bBooked;
+        return a.stage_name.localeCompare(b.stage_name);
+      });
+    }
+
+    // Sorting (overrides date sorting if explicitly set)
     if (sortOrder === "a-z") {
       result.sort((a, b) => a.stage_name.localeCompare(b.stage_name));
     } else if (sortOrder === "z-a") {
@@ -293,7 +303,7 @@ const CountryArtists = () => {
     }
 
     return result;
-  }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder]);
+  }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder, urlDate, bookedArtistIds]);
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
