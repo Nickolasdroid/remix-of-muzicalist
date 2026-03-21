@@ -186,13 +186,21 @@ interface Artist {
 
 const CountryArtists = () => {
   const { country } = useParams<{ country: string }>();
+  const [searchParams] = useSearchParams();
   const decodedCountry = country ? decodeURIComponent(country) : "";
   const displayName = getCountryName(decodedCountry);
   const [searchTerm, setSearchTerm] = useState("");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterCategory, setFilterCategory] = useState<string>("all");
-  const [filterCounty, setFilterCounty] = useState<string>("all");
+  const [bookedArtistIds, setBookedArtistIds] = useState<Set<string>>(new Set());
+
+  // Read initial values from URL params
+  const urlSpecialization = searchParams.get("specialization");
+  const urlRegion = searchParams.get("region");
+  const urlDate = searchParams.get("date");
+
+  const [filterCategory, setFilterCategory] = useState<string>(urlSpecialization || "all");
+  const [filterCounty, setFilterCounty] = useState<string>(urlRegion || "all");
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -225,11 +233,27 @@ const CountryArtists = () => {
         .order('stage_name');
 
       setArtists(data || []);
+
+      // If a date is provided, fetch booked artist IDs for that date
+      if (urlDate && data && data.length > 0) {
+        const artistIdsInCountry = data.map(a => a.id);
+        const { data: bookedEvents } = await supabase
+          .from('calendar_events')
+          .select('profile_id')
+          .eq('event_date', urlDate)
+          .in('status', ['Booked', 'Blocked'])
+          .in('profile_id', artistIdsInCountry);
+        
+        if (bookedEvents) {
+          setBookedArtistIds(new Set(bookedEvents.map(e => e.profile_id)));
+        }
+      }
+
       setLoading(false);
     };
 
     fetchArtistsData();
-  }, [decodedCountry]);
+  }, [decodedCountry, urlDate]);
 
   const counties = useMemo(() => {
     const uniqueCounties = [...new Set(artists.map(a => a.county).filter(Boolean))];
