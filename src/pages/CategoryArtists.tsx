@@ -368,6 +368,14 @@ const CategoryArtists = () => {
           />
         </div>
 
+        {urlDate && (
+          <div className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20 text-center">
+            <p className="text-sm text-muted-foreground">
+              Showing availability for <span className="font-semibold text-foreground">{urlDate}</span>
+            </p>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-16">
             <p className="text-xl text-muted-foreground">Loading artists...</p>
@@ -384,6 +392,8 @@ const CategoryArtists = () => {
                   plan={artist.plan}
                   country={artist.country}
                   county={artist.county}
+                  availabilityStatus={artist.availabilityStatus}
+                  searchDate={urlDate}
                 />
               ))
             ) : (
