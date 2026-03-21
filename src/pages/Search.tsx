@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
@@ -26,6 +26,17 @@ const Search = () => {
   const [isAIMode, setIsAIMode] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session?.user);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const fetchSuggestions = async (query: string) => {
     if (query.trim().length < 2) {
@@ -163,18 +174,20 @@ const Search = () => {
             </div>
           </form>
 
-          {/* AI Toggle */}
-          <button
-            onClick={toggleAIMode}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all mb-4 ${
-              isAIMode
-                ? "bg-accent/15 text-accent border border-accent/30"
-                : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
-            }`}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            AI Search {isAIMode ? "ON" : "OFF"}
-          </button>
+          {/* AI Toggle - only for logged-in users */}
+          {isAuthenticated && (
+            <button
+              onClick={toggleAIMode}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all mb-4 ${
+                isAIMode
+                  ? "bg-accent/15 text-accent border border-accent/30"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              AI Search {isAIMode ? "ON" : "OFF"}
+            </button>
+          )}
 
           {/* AI Response */}
           {isAIMode && aiResponse && (
