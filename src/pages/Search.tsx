@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
 import { Input } from "@/components/ui/input";
@@ -20,12 +20,30 @@ interface ArtistProfile {
 }
 
 const Search = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isAIMode, setIsAIMode] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      setIsAuthChecked(true);
+    };
+    checkAuth();
+  }, [navigate]);
+
+  if (!isAuthChecked) {
+    return null;
+  }
 
   const fetchSuggestions = async (query: string) => {
     if (query.trim().length < 2) {
