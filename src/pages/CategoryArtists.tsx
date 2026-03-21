@@ -182,6 +182,7 @@ interface Artist {
   county: string;
   experience_level: string | null;
   plan: string;
+  availabilityStatus?: "available" | "booked" | null;
 }
 
 const CategoryArtists = () => {
@@ -198,6 +199,7 @@ const CategoryArtists = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
+  const urlDate = searchParams.get('date');
 
   // Check auth and get country (guests see all countries)
   useEffect(() => {
