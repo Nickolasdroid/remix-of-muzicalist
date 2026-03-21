@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2 } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
 import { Input } from "@/components/ui/input";
