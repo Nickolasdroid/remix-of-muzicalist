@@ -378,6 +378,8 @@ const CountryArtists = () => {
                   stageName={artist.stage_name}
                   imageUrl={artist.avatar_url}
                   plan={artist.plan}
+                  availabilityStatus={urlDate ? (bookedArtistIds.has(artist.id) ? "booked" : "available") : null}
+                  searchDate={urlDate}
                 />
               ))}
             </div>
