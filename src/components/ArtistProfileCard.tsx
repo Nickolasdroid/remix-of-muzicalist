@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, Star, MapPin } from "lucide-react";
+import { User, Star, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import diamondIcon from "@/assets/diamond-icon.png";
@@ -12,9 +12,11 @@ interface ArtistProfileCardProps {
   plan?: string;
   country?: string | null;
   county?: string | null;
+  availabilityStatus?: "available" | "booked" | null;
+  searchDate?: string | null;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
 
   useEffect(() => {

@@ -336,9 +336,20 @@ const CountryArtists = () => {
           />
         </div>
 
+        {urlDate && (
+          <div className="mb-4 p-3 rounded-xl bg-accent/10 border border-accent/20 text-center">
+            <p className="text-sm text-foreground font-medium">
+              Showing availability for: <span className="text-accent">{new Date(urlDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Available artists are shown first
+            </p>
+          </div>
+        )}
+
         <div className="text-center mb-6 md:mb-8">
           <p className="text-muted-foreground mb-4">
-            {loading ? "Loading artists..." : `${artists.length} artist${artists.length !== 1 ? 's' : ''} registered`}
+            {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
           </p>
 
           <div className="max-w-xl mx-auto relative">
