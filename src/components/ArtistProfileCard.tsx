@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { User, Star, MapPin } from "lucide-react";
+import { User, Star, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import diamondIcon from "@/assets/diamond-icon.png";
@@ -12,9 +12,11 @@ interface ArtistProfileCardProps {
   plan?: string;
   country?: string | null;
   county?: string | null;
+  availabilityStatus?: "available" | "booked" | null;
+  searchDate?: string | null;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
 
   useEffect(() => {
@@ -49,6 +51,19 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county }: A
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
               <User className="h-16 w-16 text-accent" />
+            </div>
+          )}
+          {availabilityStatus && (
+            <div className={`absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+              availabilityStatus === "available" 
+                ? "bg-green-500/90 text-white" 
+                : "bg-red-500/80 text-white"
+            }`}>
+              {availabilityStatus === "available" ? (
+                <><CalendarCheck className="h-3 w-3" /> Available</>
+              ) : (
+                <><CalendarX className="h-3 w-3" /> Booked</>
+              )}
             </div>
           )}
         </div>

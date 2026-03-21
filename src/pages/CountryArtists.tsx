@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -186,13 +186,21 @@ interface Artist {
 
 const CountryArtists = () => {
   const { country } = useParams<{ country: string }>();
+  const [searchParams] = useSearchParams();
   const decodedCountry = country ? decodeURIComponent(country) : "";
   const displayName = getCountryName(decodedCountry);
   const [searchTerm, setSearchTerm] = useState("");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterCategory, setFilterCategory] = useState<string>("all");
-  const [filterCounty, setFilterCounty] = useState<string>("all");
+  const [bookedArtistIds, setBookedArtistIds] = useState<Set<string>>(new Set());
+
+  // Read initial values from URL params
+  const urlSpecialization = searchParams.get("specialization");
+  const urlRegion = searchParams.get("region");
+  const urlDate = searchParams.get("date");
+
+  const [filterCategory, setFilterCategory] = useState<string>(urlSpecialization || "all");
+  const [filterCounty, setFilterCounty] = useState<string>(urlRegion || "all");
   const [filterExperience, setFilterExperience] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -225,11 +233,27 @@ const CountryArtists = () => {
         .order('stage_name');
 
       setArtists(data || []);
+
+      // If a date is provided, fetch booked artist IDs for that date
+      if (urlDate && data && data.length > 0) {
+        const artistIdsInCountry = data.map(a => a.id);
+        const { data: bookedEvents } = await supabase
+          .from('calendar_events')
+          .select('profile_id')
+          .eq('event_date', urlDate)
+          .in('status', ['Booked', 'Blocked'])
+          .in('profile_id', artistIdsInCountry);
+        
+        if (bookedEvents) {
+          setBookedArtistIds(new Set(bookedEvents.map(e => e.profile_id)));
+        }
+      }
+
       setLoading(false);
     };
 
     fetchArtistsData();
-  }, [decodedCountry]);
+  }, [decodedCountry, urlDate]);
 
   const counties = useMemo(() => {
     const uniqueCounties = [...new Set(artists.map(a => a.county).filter(Boolean))];
@@ -261,7 +285,17 @@ const CountryArtists = () => {
       result = result.filter(artist => artist.experience_level?.toLowerCase() === filterExperience.toLowerCase());
     }
 
-    // Sorting
+    // If date filter is active, sort available artists first
+    if (urlDate) {
+      result.sort((a, b) => {
+        const aBooked = bookedArtistIds.has(a.id) ? 1 : 0;
+        const bBooked = bookedArtistIds.has(b.id) ? 1 : 0;
+        if (aBooked !== bBooked) return aBooked - bBooked;
+        return a.stage_name.localeCompare(b.stage_name);
+      });
+    }
+
+    // Sorting (overrides date sorting if explicitly set)
     if (sortOrder === "a-z") {
       result.sort((a, b) => a.stage_name.localeCompare(b.stage_name));
     } else if (sortOrder === "z-a") {
@@ -269,7 +303,7 @@ const CountryArtists = () => {
     }
 
     return result;
-  }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder]);
+  }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder, urlDate, bookedArtistIds]);
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
@@ -302,9 +336,20 @@ const CountryArtists = () => {
           />
         </div>
 
+        {urlDate && (
+          <div className="mb-4 p-3 rounded-xl bg-accent/10 border border-accent/20 text-center">
+            <p className="text-sm text-foreground font-medium">
+              Showing availability for: <span className="text-accent">{new Date(urlDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Available artists are shown first
+            </p>
+          </div>
+        )}
+
         <div className="text-center mb-6 md:mb-8">
           <p className="text-muted-foreground mb-4">
-            {loading ? "Loading artists..." : `${artists.length} artist${artists.length !== 1 ? 's' : ''} registered`}
+            {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
           </p>
 
           <div className="max-w-xl mx-auto relative">
@@ -333,6 +378,8 @@ const CountryArtists = () => {
                   stageName={artist.stage_name}
                   imageUrl={artist.avatar_url}
                   plan={artist.plan}
+                  availabilityStatus={urlDate ? (bookedArtistIds.has(artist.id) ? "booked" : "available") : null}
+                  searchDate={urlDate}
                 />
               ))}
             </div>
