@@ -302,7 +302,7 @@ const CategoryArtists = () => {
     if (userCountry) {
       fetchArtists();
     }
-  }, [category, userCountry]);
+  }, [category, userCountry, urlDate]);
 
   // Update available counties when country filter changes
   const filteredCounties = useMemo(() => {
