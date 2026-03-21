@@ -264,7 +264,7 @@ const CategoryArtists = () => {
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
-        let artistsWithAvailability = data || [];
+        let artistsWithAvailability: Artist[] = (data || []).map(a => ({ ...a, country: a.country ?? null, experience_level: a.experience_level ?? null }));
         
         // If a date is specified, check availability
         if (urlDate && artistsWithAvailability.length > 0) {
