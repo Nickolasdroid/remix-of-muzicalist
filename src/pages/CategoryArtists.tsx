@@ -182,6 +182,7 @@ interface Artist {
   county: string;
   experience_level: string | null;
   plan: string;
+  availabilityStatus?: "available" | "booked" | null;
 }
 
 const CategoryArtists = () => {
@@ -198,6 +199,7 @@ const CategoryArtists = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
+  const urlDate = searchParams.get('date');
 
   // Check auth and get country (guests see all countries)
   useEffect(() => {
@@ -262,10 +264,36 @@ const CategoryArtists = () => {
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
-        setArtists(data || []);
-        const countries = [...new Set(data?.map(a => a.country).filter(Boolean) as string[] || [])].sort();
+        let artistsWithAvailability: Artist[] = (data || []).map(a => ({ ...a, country: a.country ?? null, experience_level: a.experience_level ?? null }));
+        
+        // If a date is specified, check availability
+        if (urlDate && artistsWithAvailability.length > 0) {
+          const { data: bookedEvents } = await supabase
+            .from('calendar_events')
+            .select('profile_id')
+            .eq('event_date', urlDate)
+            .in('status', ['Booked', 'Blocked'])
+            .in('profile_id', artistsWithAvailability.map(a => a.id));
+          
+          const bookedArtistIds = new Set(bookedEvents?.map(e => e.profile_id) || []);
+          
+          artistsWithAvailability = artistsWithAvailability.map(a => ({
+            ...a,
+            availabilityStatus: bookedArtistIds.has(a.id) ? 'booked' as const : 'available' as const,
+          }));
+          
+          // Sort: available first
+          artistsWithAvailability.sort((a, b) => {
+            const aBooked = a.availabilityStatus === 'booked' ? 1 : 0;
+            const bBooked = b.availabilityStatus === 'booked' ? 1 : 0;
+            return aBooked - bBooked;
+          });
+        }
+        
+        setArtists(artistsWithAvailability);
+        const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
         setAvailableCountries(countries);
-        const counties = [...new Set(data?.map(a => a.county) || [])].sort();
+        const counties = [...new Set(artistsWithAvailability.map(a => a.county) || [])].sort();
         setAvailableCounties(counties);
       }
       setLoading(false);
@@ -274,7 +302,7 @@ const CategoryArtists = () => {
     if (userCountry) {
       fetchArtists();
     }
-  }, [category, userCountry]);
+  }, [category, userCountry, urlDate]);
 
   // Update available counties when country filter changes
   const filteredCounties = useMemo(() => {
@@ -340,6 +368,14 @@ const CategoryArtists = () => {
           />
         </div>
 
+        {urlDate && (
+          <div className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20 text-center">
+            <p className="text-sm text-muted-foreground">
+              Showing availability for <span className="font-semibold text-foreground">{urlDate}</span>
+            </p>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-16">
             <p className="text-xl text-muted-foreground">Loading artists...</p>
@@ -356,6 +392,8 @@ const CategoryArtists = () => {
                   plan={artist.plan}
                   country={artist.country}
                   county={artist.county}
+                  availabilityStatus={artist.availabilityStatus}
+                  searchDate={urlDate}
                 />
               ))
             ) : (
