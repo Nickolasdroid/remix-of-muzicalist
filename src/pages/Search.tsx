@@ -26,6 +26,17 @@ const Search = () => {
   const [isAIMode, setIsAIMode] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session?.user);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const fetchSuggestions = async (query: string) => {
     if (query.trim().length < 2) {
