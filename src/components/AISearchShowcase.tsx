@@ -33,7 +33,7 @@ const AISearchShowcase = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-5xl mx-auto items-center">
           {/* Left: Mock AI Search Card */}
-          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)] relative">
+          <div className="rounded-none md:rounded-2xl border-y md:border-2 border-accent/30 bg-card/80 backdrop-blur-sm p-4 md:p-6 shadow-[var(--shadow-gold)] relative -mx-2 md:mx-0">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-accent" />
