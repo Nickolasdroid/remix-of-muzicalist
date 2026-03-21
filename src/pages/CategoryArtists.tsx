@@ -264,10 +264,36 @@ const CategoryArtists = () => {
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
-        setArtists(data || []);
-        const countries = [...new Set(data?.map(a => a.country).filter(Boolean) as string[] || [])].sort();
+        let artistsWithAvailability = data || [];
+        
+        // If a date is specified, check availability
+        if (urlDate && artistsWithAvailability.length > 0) {
+          const { data: bookedEvents } = await supabase
+            .from('calendar_events')
+            .select('profile_id')
+            .eq('event_date', urlDate)
+            .in('status', ['Booked', 'Blocked'])
+            .in('profile_id', artistsWithAvailability.map(a => a.id));
+          
+          const bookedArtistIds = new Set(bookedEvents?.map(e => e.profile_id) || []);
+          
+          artistsWithAvailability = artistsWithAvailability.map(a => ({
+            ...a,
+            availabilityStatus: bookedArtistIds.has(a.id) ? 'booked' as const : 'available' as const,
+          }));
+          
+          // Sort: available first
+          artistsWithAvailability.sort((a, b) => {
+            const aBooked = a.availabilityStatus === 'booked' ? 1 : 0;
+            const bBooked = b.availabilityStatus === 'booked' ? 1 : 0;
+            return aBooked - bBooked;
+          });
+        }
+        
+        setArtists(artistsWithAvailability);
+        const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
         setAvailableCountries(countries);
-        const counties = [...new Set(data?.map(a => a.county) || [])].sort();
+        const counties = [...new Set(artistsWithAvailability.map(a => a.county) || [])].sort();
         setAvailableCounties(counties);
       }
       setLoading(false);
