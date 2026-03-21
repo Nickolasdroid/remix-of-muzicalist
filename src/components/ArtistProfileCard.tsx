@@ -53,6 +53,19 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
               <User className="h-16 w-16 text-accent" />
             </div>
           )}
+          {availabilityStatus && (
+            <div className={`absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+              availabilityStatus === "available" 
+                ? "bg-green-500/90 text-white" 
+                : "bg-red-500/80 text-white"
+            }`}>
+              {availabilityStatus === "available" ? (
+                <><CalendarCheck className="h-3 w-3" /> Available</>
+              ) : (
+                <><CalendarX className="h-3 w-3" /> Booked</>
+              )}
+            </div>
+          )}
         </div>
         
         {/* Info Section */}
