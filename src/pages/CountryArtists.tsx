@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
-import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
+import { getCountryFlag, getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
   Popover,
