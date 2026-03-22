@@ -600,6 +600,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
       )}
 
     </>
+  );
 };
 
 export default Navigation;
