@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
