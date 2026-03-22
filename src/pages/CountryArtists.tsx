@@ -225,10 +225,13 @@ const CountryArtists = () => {
         return;
       }
 
+      // Get all name variants for this country (e.g. "Romania", "România", "Roumanie")
+      const countryVariants = getCountryNameVariants(decodedCountry);
+
       const { data } = await supabase
         .from('profiles')
         .select('id, stage_name, avatar_url, county, specialization, experience_level, plan')
-        .eq('country', decodedCountry)
+        .in('country', countryVariants)
         .in('id', artistIds)
         .order('stage_name');
 
