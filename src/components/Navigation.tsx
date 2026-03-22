@@ -511,8 +511,95 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
       </aside>
       )}
 
+      {/* Mobile: Push-style sidebar menu */}
+      {user && (
+        <>
+          {/* Backdrop */}
+          {mobileMenuOpen && (
+            <div
+              className="fixed inset-0 bg-black/40 z-[60] md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
+          {/* Sidebar panel */}
+          <div
+            className={`fixed top-0 left-0 bottom-0 w-72 bg-background border-r border-border z-[70] flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
+              mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            {/* Logo */}
+            <div className="p-4 border-b border-border">
+              <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
+                <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+              </Link>
+            </div>
+
+            {/* Main navigation */}
+            <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+              {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                    isActive(link.to.split('?')[0])
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <link.icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="font-medium">{link.label}</span>
+                </Link>
+              ))}
+
+              {/* Settings */}
+              <Link
+                to="/dashboard?tab=settings"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                  location.search.includes('tab=settings')
+                    ? 'bg-accent/20 text-accent'
+                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                }`}
+              >
+                <Settings className="h-5 w-5 flex-shrink-0" />
+                <span className="font-medium">Settings</span>
+              </Link>
+
+              {/* About */}
+              <Link
+                to="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                  isActive('/about')
+                    ? 'bg-accent/20 text-accent'
+                    : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                }`}
+              >
+                <Info className="h-5 w-5 flex-shrink-0" />
+                <span className="font-medium">About</span>
+              </Link>
+            </div>
+
+            {/* Bottom - Logout */}
+            <div className="p-4 border-t border-border space-y-1">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                <span className="font-medium">Logout</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
     </>
-  );
 };
 
 export default Navigation;
