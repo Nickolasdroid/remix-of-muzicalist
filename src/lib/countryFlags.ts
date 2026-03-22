@@ -574,6 +574,24 @@ export const getCountryDisplay = (country: string | null | undefined): { flag: s
 };
 
 /**
+ * Get all known name variants for a country (English name + alternative/local names that map to it).
+ * Useful for database queries where the stored value might be a local name (e.g. "România" vs "Romania").
+ */
+export const getCountryNameVariants = (country: string): string[] => {
+  const standardName = getCountryName(country);
+  const variants = new Set<string>();
+  variants.add(country);
+  if (standardName) variants.add(standardName);
+  // Find all alternative names that map to this standard name
+  for (const [altName, stdName] of Object.entries(alternativeNames)) {
+    if (stdName === standardName) {
+      variants.add(altName);
+    }
+  }
+  return [...variants];
+};
+
+/**
  * Get ISO 2-letter country code from a country name or value
  */
 export const getCountryCode = (country: string | null | undefined): string | null => {
