@@ -18,7 +18,7 @@ const plans = [
       "Limited visibility in search results",
       "Select your music genres",
       "Set your experience level",
-      "Receive booking requests (by day)",
+      "Calendar: Receive booking requests (by day)",
       "Unlimited messages & contact",
       "1 visible social media link",
       "Up to 3 visible reviews",
