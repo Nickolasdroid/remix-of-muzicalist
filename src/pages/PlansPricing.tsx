@@ -42,7 +42,7 @@ const plans = [
       "Priority placement in search results → more visibility",
       "Publish up to 15 posts/month",
       "5 Ads + 2 Promotions/month",
-      "Receive booking requests (by day)",
+      "Calendar: Receive booking requests (by day)",
       "Display your estimated pricing → higher conversion rate",
       "Unlimited reviews → build credibility",
       "Visible social media links",
