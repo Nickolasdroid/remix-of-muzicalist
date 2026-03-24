@@ -167,8 +167,8 @@ const PlansPricing = () => {
                 </CardContent>
                 <CardFooter>
                   <Button
-                    className="w-full"
-                    variant={plan.highlighted ? "default" : "outline"}
+                    className={`w-full ${plan.name === 'Premium' ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
+                    variant={plan.name === 'Premium' ? 'default' : (plan.highlighted ? "default" : "outline")}
                   >
                     {!isAuthenticated ? (plan.name === 'Premium' ? 'Go Premium' : 'Get Started') : plan.cta}
                   </Button>
