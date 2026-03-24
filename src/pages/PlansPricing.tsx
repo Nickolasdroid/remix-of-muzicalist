@@ -135,10 +135,17 @@ const PlansPricing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((plan) => (
-              <Card
-                key={plan.name}
-                className={`flex flex-col ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
-              >
+              <div key={plan.name} className="relative">
+                {plan.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className="bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+                <Card
+                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
+                >
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
                   <div className="mt-2">
@@ -167,6 +174,7 @@ const PlansPricing = () => {
                   </Button>
                 </CardFooter>
               </Card>
+              </div>
             ))}
           </div>
         </div>
