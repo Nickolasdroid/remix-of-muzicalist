@@ -175,6 +175,7 @@ const PlansPricing = () => {
                 </CardFooter>
               </Card>
               </div>
+            ))}
           </div>
         </div>
       </section>
