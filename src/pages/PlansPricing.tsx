@@ -170,7 +170,7 @@ const PlansPricing = () => {
                     className="w-full"
                     variant={plan.highlighted ? "default" : "outline"}
                   >
-                    {plan.name === 'Free' && !isAuthenticated ? 'Get Started' : plan.cta}
+                    {!isAuthenticated ? 'Get Started' : plan.cta}
                   </Button>
                 </CardFooter>
               </Card>
