@@ -143,6 +143,13 @@ const PlansPricing = () => {
                     </span>
                   </div>
                 )}
+                {plan.name === 'Premium' && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full">
+                      ⭐ Best for Professionals
+                    </span>
+                  </div>
+                )}
                 <Card
                   className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
                 >
