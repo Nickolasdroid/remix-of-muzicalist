@@ -151,7 +151,7 @@ const PlansPricing = () => {
                   </div>
                 )}
                 <Card
-                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
+                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg' : 'border-border'}`}
                 >
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
