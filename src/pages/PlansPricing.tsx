@@ -137,7 +137,7 @@ const PlansPricing = () => {
             {plans.map((plan) => (
               <div key={plan.name} className="relative">
                 {plan.highlighted && (
-                  <div className="absolute -top-3 left-6 z-10">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                     <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full">
                       Most Popular
                     </span>
