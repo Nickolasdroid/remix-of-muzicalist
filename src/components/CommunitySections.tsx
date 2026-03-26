@@ -83,32 +83,22 @@ const RightContent = () => (
         <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-accent" />
         <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Artist Feed</h3>
       </div>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Share performances, build your audience, and get booked.
       </p>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
-      <Link to="/feed" className="mt-2 inline-block">
-        <Button
-          size="sm"
-          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
-        >
-          Explore Feed
-        </Button>
-      </Link>
-    </div>
-
-    {/* Event Request */}
+...
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
         <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Event Opportunities</h3>
       </div>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Browse real event requests, apply quickly, and secure new bookings.
       </p>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
