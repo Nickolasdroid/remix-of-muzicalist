@@ -319,6 +319,22 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
                   </Link>
                 ))}
 
+                {/* My Plan (only when logged in) */}
+                {user && (
+                  <Link
+                    to="/my-plan"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                      isActive('/my-plan')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    }`}
+                  >
+                    <Crown className="h-5 w-5 flex-shrink-0" />
+                    <span className="font-medium">My Plan</span>
+                  </Link>
+                )}
+
                 {/* Settings (only when logged in) */}
                 {user && (
                   <Link
