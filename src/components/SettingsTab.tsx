@@ -681,7 +681,7 @@ const SettingsTab = ({
     return (
       <div className="w-full min-h-screen">
         {activeSection === "main" && <MobileMainList />}
-        {activeSection === "plan" && <MobilePlanSection />}
+        
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
