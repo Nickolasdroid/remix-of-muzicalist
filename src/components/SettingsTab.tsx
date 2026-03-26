@@ -17,7 +17,6 @@ export type SettingSection = "main" | "account" | "email" | "password" | "langua
 interface SettingsTabProps {
   formData: {
     email: string;
-    plan?: string;
   };
   handleLogout: () => void;
   handleDeleteAccount: () => void;
