@@ -20,8 +20,6 @@ const RegisterUser = () => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    country: "",
     password: "",
     confirmPassword: "",
   });
