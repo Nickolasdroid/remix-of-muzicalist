@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import heroConcert from "@/assets/hero-concert.png";
+import ourStoryBand from "@/assets/our-story-band.png";
 
 const values = [
   { icon: Music, title: "Excellence in Music", description: "We connect only the best talented musical artists, ensuring clients receive outstanding performances." },
@@ -71,7 +72,7 @@ const AboutUs = () => {
               </div>
               <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg">
                 <img
-                  src={heroConcert}
+                  src={ourStoryBand}
                   alt="Concert performance"
                   className="w-full h-full object-cover aspect-[4/3]"
                 />
