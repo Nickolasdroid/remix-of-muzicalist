@@ -15,8 +15,7 @@ const RegisterUser = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -63,8 +62,8 @@ const RegisterUser = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+            first_name: formData.name,
+            last_name: "",
           },
         },
       });
@@ -87,11 +86,11 @@ const RegisterUser = () => {
           .from("profiles")
           .insert({
             id: authData.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+            first_name: formData.name,
+            last_name: "",
             email: formData.email,
             phone: "",
-            stage_name: `${formData.firstName} ${formData.lastName}`,
+            stage_name: formData.name,
             county: "",
           });
 
@@ -128,27 +127,15 @@ const RegisterUser = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div>
-              <Label htmlFor="firstName">{t("userRegistration.firstName")}</Label>
-              <Input
-                id="firstName"
-                placeholder={t("userRegistration.placeholders.firstName")}
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="lastName">{t("userRegistration.lastName")}</Label>
-              <Input
-                id="lastName"
-                placeholder={t("userRegistration.placeholders.lastName")}
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-              />
-            </div>
+          <div>
+            <Label htmlFor="name">{t("userRegistration.name", "Name")}</Label>
+            <Input
+              id="name"
+              placeholder={t("userRegistration.placeholders.name", "Your name")}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
           </div>
 
           <div>
