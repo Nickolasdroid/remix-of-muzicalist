@@ -8,8 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import CountrySelector from "@/components/CountrySelector";
-import { getPhonePrefix, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
