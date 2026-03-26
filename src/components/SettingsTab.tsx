@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 
-export type SettingSection = "main" | "plan" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
 
 interface SettingsTabProps {
   formData: {
