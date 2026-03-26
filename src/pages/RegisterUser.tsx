@@ -62,8 +62,8 @@ const RegisterUser = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+            first_name: formData.name,
+            last_name: "",
           },
         },
       });
