@@ -191,7 +191,7 @@ const HelpSupport = () => {
       <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-8">
         <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
           {/* Header */}
-          <div className="text-center mb-10">
+          <div className="text-center mb-10 hidden md:block">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/10 mb-4">
               <HelpCircle className="h-7 w-7 text-accent" />
             </div>

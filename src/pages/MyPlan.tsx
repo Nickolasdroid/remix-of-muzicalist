@@ -104,7 +104,7 @@ const MyPlan = () => {
       <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
         <div className="max-w-4xl mx-auto">
           <div className="space-y-6">
-            <div>
+            <div className={isMobile ? 'hidden' : ''}>
               <h1 className="text-xl font-semibold text-foreground">My Plan</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Choose the plan that fits your needs
