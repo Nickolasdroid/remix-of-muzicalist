@@ -31,6 +31,7 @@ import TermsOfService from "./pages/TermsOfService";
 import AllArtists from "./pages/AllArtists";
 import ArtistAnalytics from "./pages/ArtistAnalytics";
 import PlansPricing from "./pages/PlansPricing";
+import MyPlan from "./pages/MyPlan";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
