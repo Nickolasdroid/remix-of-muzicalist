@@ -32,6 +32,7 @@ import AllArtists from "./pages/AllArtists";
 import ArtistAnalytics from "./pages/ArtistAnalytics";
 import PlansPricing from "./pages/PlansPricing";
 import MyPlan from "./pages/MyPlan";
+import HelpSupport from "./pages/HelpSupport";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
