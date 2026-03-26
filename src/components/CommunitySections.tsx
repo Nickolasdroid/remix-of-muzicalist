@@ -83,10 +83,10 @@ const RightContent = () => (
         <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-accent" />
         <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Artist Feed</h3>
       </div>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Share performances, build your audience, and get booked.
       </p>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
       <Link to="/feed" className="mt-2 inline-block">
@@ -105,10 +105,10 @@ const RightContent = () => (
         <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
         <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Event Opportunities</h3>
       </div>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Browse real event requests, apply quickly, and secure new bookings.
       </p>
-      <p className="text-sm text-foreground/90 font-normal">
+      <p className="text-foreground/90 text-base font-normal">
         Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
@@ -135,8 +135,8 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
             <Newspaper className="h-5 w-5 text-accent" />
             <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
           </div>
-          <p className="text-sm text-foreground/90 font-normal">Share performances, build your audience, and get booked.</p>
-          <p className="text-sm text-foreground/90 font-normal">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
+          <p className="text-foreground/90 text-base font-normal">Share performances, build your audience, and get booked.</p>
+          <p className="text-foreground/90 text-base font-normal">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
           <Link to="/feed">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
               Explore Feed
@@ -155,8 +155,8 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
           <Megaphone className="h-5 w-5 text-accent" />
            <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
         </div>
-        <p className="text-sm text-foreground/90 font-normal">Browse real event requests, apply quickly, and secure new bookings.</p>
-        <p className="text-sm text-foreground/90 font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
+        <p className="text-foreground/90 text-base font-normal">Browse real event requests, apply quickly, and secure new bookings.</p>
+        <p className="text-foreground/90 text-base font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
         <Link to="/announcements">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
             Explore Ads
