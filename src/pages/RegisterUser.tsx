@@ -92,10 +92,9 @@ const RegisterUser = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
             email: formData.email,
-            phone: formData.phone,
+            phone: "",
             stage_name: `${formData.firstName} ${formData.lastName}`,
             county: "",
-            country: formData.country,
           });
 
         if (profileError) throw profileError;
