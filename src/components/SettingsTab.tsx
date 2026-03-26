@@ -191,7 +191,6 @@ const SettingsTab = ({
 
   // Mobile setting items
   const mobileSettingItems = [
-    { id: "plan" as const, label: "My Plan", icon: Crown },
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
@@ -202,11 +201,6 @@ const SettingsTab = ({
 
   // Desktop nav items
   const navItems = [
-    {
-      id: "plan",
-      label: "My Plan",
-      icon: Crown
-    },
     {
       id: "account",
       label: "Account",
