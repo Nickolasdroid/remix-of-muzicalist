@@ -27,7 +27,7 @@ const PhoneMockup = () => (
         {/* Artist info overlay */}
         <div className="relative z-10 p-3 w-full bg-gradient-to-t from-black/70 to-transparent">
           <h4 className="font-display font-bold text-sm text-white">Mark Rivers</h4>
-          <p className="text-[10px] text-white/80">DJ · New York, NY</p>
+          <p className="text-[10px] text-white/80">DJ · Cluj-Napoca, RO</p>
           <div className="flex items-center justify-between mt-1">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
