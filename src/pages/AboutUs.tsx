@@ -136,20 +136,20 @@ const AboutUs = () => {
                   <Card className="p-5 md:p-8 bg-card/50 backdrop-blur border-accent/20">
                     <div className="flex items-center gap-3 mb-4">
                       <UserRound className="h-6 w-6 text-accent" />
-                      <h3 className="text-base md:text-lg font-bold text-foreground">Create a professional profile</h3>
+                      <h3 className="text-base md:text-lg font-bold text-foreground">Artists for Every Event</h3>
                     </div>
                     <ul className="space-y-2.5">
                       <li className="flex items-start gap-2.5">
                         <span className="mt-1.5 h-2 w-2 rounded-full bg-accent shrink-0" />
-                        <span className="text-sm md:text-base text-muted-foreground">Showcase your talent</span>
+                        <span className="text-sm md:text-base text-muted-foreground">Wedding, private parties, and corporate events</span>
                       </li>
                       <li className="flex items-start gap-2.5">
                         <span className="mt-1.5 h-2 w-2 rounded-full bg-accent shrink-0" />
-                        <span className="text-sm md:text-base text-muted-foreground">Get discovered by clients</span>
+                        <span className="text-sm md:text-base text-muted-foreground">Explore multiple music styles and artist types </span>
                       </li>
                       <li className="flex items-start gap-2.5">
                         <span className="mt-1.5 h-2 w-2 rounded-full bg-accent shrink-0" />
-                        <span className="text-sm md:text-base text-muted-foreground">Grow your music career</span>
+                        <span className="text-sm md:text-base text-muted-foreground">Local and international artists available </span>
                       </li>
                     </ul>
                   </Card>
