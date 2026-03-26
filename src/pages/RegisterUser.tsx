@@ -43,17 +43,6 @@ const RegisterUser = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.country) {
-      toast.error(t("userRegistration.validation.countryRequired"));
-      return;
-    }
-
-    // Validate phone number
-    const phoneValidation = validatePhoneNumber(formData.phone, formData.country);
-    if (!phoneValidation.valid) {
-      toast.error(phoneValidation.message);
-      return;
-    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error(t("userRegistration.validation.passwordMismatch"));
