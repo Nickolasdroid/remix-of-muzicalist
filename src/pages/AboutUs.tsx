@@ -72,7 +72,7 @@ const AboutUs = () => {
               </div>
               <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg">
                 <img
-                  src={heroConcert}
+                  src={ourStoryBand}
                   alt="Concert performance"
                   className="w-full h-full object-cover aspect-[4/3]"
                 />
