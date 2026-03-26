@@ -88,7 +88,7 @@ const About = () => {
             {[
             { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
             { step: 2, title: "Connect", description: "Chat and finalize event details directly." },
-            { step: 3, title: "Book", description: "Secure payment. Professional experience guaranteed." }].
+            { step: 3, title: "Book", description: "Confirm your artist and organize your event with confidence." }].
             map(({ step, title, description }) =>
             <div
               key={step}
