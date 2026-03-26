@@ -89,7 +89,17 @@ const RightContent = () => (
       <p className="text-sm text-foreground/90 font-normal">
         Post your performance videos, grow your followers, and turn visibility into real bookings.
       </p>
-...
+      <Link to="/feed" className="mt-2 inline-block">
+        <Button
+          size="sm"
+          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
+        >
+          Explore Feed
+        </Button>
+      </Link>
+    </div>
+
+    {/* Event Request */}
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
@@ -125,9 +135,26 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
             <Newspaper className="h-5 w-5 text-accent" />
             <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
           </div>
-      <p className="text-sm text-foreground/90 font-normal">Share performances, build your audience, and get booked.</p>
+          <p className="text-sm text-foreground/90 font-normal">Share performances, build your audience, and get booked.</p>
           <p className="text-sm text-foreground/90 font-normal">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
-...
+          <Link to="/feed">
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
+              Explore Feed
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group relative rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-5 overflow-hidden transition-all duration-500 hover:border-accent/50 hover:shadow-[0_0_30px_-5px_hsl(var(--accent)/0.3)]">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-[linear-gradient(105deg,transparent_40%,hsl(var(--accent)/0.08)_45%,hsl(var(--accent)/0.15)_50%,hsl(var(--accent)/0.08)_55%,transparent_60%)] bg-[length:200%_100%] group-hover:animate-[shimmer_1.5s_ease-in-out]" />
+      <div className="relative z-10 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <Megaphone className="h-5 w-5 text-accent" />
+           <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
+        </div>
         <p className="text-sm text-foreground/90 font-normal">Browse real event requests, apply quickly, and secure new bookings.</p>
         <p className="text-sm text-foreground/90 font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
         <Link to="/announcements">
