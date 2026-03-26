@@ -171,7 +171,7 @@ const CommunitySections = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="py-12 md:py-28 px-4 md:px-8 relative overflow-hidden">
+    <section className="py-12 md:py-28 px-1 md:px-8 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--accent)/0.08)_0%,transparent_70%)]" />
 
       <div className="container mx-auto relative z-10">
