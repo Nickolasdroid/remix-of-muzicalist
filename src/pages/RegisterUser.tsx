@@ -15,8 +15,7 @@ const RegisterUser = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
