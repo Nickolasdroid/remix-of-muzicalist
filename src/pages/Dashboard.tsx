@@ -51,7 +51,6 @@ const Dashboard = () => {
 
   const settingsSectionTitles: Record<SettingSection, string> = {
     main: "Settings",
-    plan: "My Plan",
     account: "Account",
     email: "Email Address",
     password: "Change Password",
@@ -2953,7 +2952,7 @@ const Dashboard = () => {
 
 
               {/* Settings Tab */}
-              {activeTab === "settings" && <SettingsTab formData={{ ...formData, plan: profile?.plan }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} activeSection={settingsSection} onSectionChange={setSettingsSection} />}
+              {activeTab === "settings" && <SettingsTab formData={{ email: formData.email }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} activeSection={settingsSection} onSectionChange={setSettingsSection} />}
         </div>
       </div>
 

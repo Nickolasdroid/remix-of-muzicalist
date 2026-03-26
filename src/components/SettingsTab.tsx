@@ -6,18 +6,17 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Crown, Languages } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 
-export type SettingSection = "main" | "plan" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
 
 interface SettingsTabProps {
   formData: {
     email: string;
-    plan?: string;
   };
   handleLogout: () => void;
   handleDeleteAccount: () => void;
@@ -191,7 +190,6 @@ const SettingsTab = ({
 
   // Mobile setting items
   const mobileSettingItems = [
-    { id: "plan" as const, label: "My Plan", icon: Crown },
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
@@ -202,11 +200,6 @@ const SettingsTab = ({
 
   // Desktop nav items
   const navItems = [
-    {
-      id: "plan",
-      label: "My Plan",
-      icon: Crown
-    },
     {
       id: "account",
       label: "Account",
@@ -237,172 +230,6 @@ const SettingsTab = ({
       })}
     </div>
   );
-
-  // Subscription plans data
-  const subscriptionPlans = [
-    {
-      id: "Free",
-      name: "Free",
-      price: "0",
-      description: "Get started with basic features",
-      features: [
-        "Basic profile",
-        "5 standard ads",
-        "5 gallery images",
-        "3 gallery videos",
-        "15 posts/month",
-      ],
-      highlighted: false,
-    },
-    {
-      id: "Standard",
-      name: "Standard",
-      price: "29",
-      description: "More visibility and features",
-      features: [
-        "Enhanced profile",
-        "15 standard ads",
-        "2 premium ads",
-        "15 gallery images",
-        "10 gallery videos",
-        "50 posts/month",
-        "Priority in search results",
-      ],
-      highlighted: false,
-    },
-    {
-      id: "Premium",
-      name: "Premium",
-      price: "59",
-      description: "Maximum exposure and all features",
-      features: [
-        "Premium profile badge",
-        "Unlimited standard ads",
-        "10 premium ads",
-        "Unlimited gallery items",
-        "Unlimited posts",
-        "Top placement in search",
-        "Featured on homepage",
-        "Analytics dashboard",
-      ],
-      highlighted: true,
-    },
-  ];
-
-  const currentPlan = formData.plan || "Free";
-
-  // Mobile: Plan section
-  const MobilePlanSection = () => {
-    return (
-      <div className="p-4 space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">My Plan</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Choose the plan that fits your needs
-          </p>
-        </div>
-        
-        <div className="space-y-4">
-          {subscriptionPlans.map((plan) => {
-            const isCurrentPlan = currentPlan === plan.id;
-            const isPremiumPlan = plan.id === "Premium";
-            
-            return (
-              <div
-                key={plan.id}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  isCurrentPlan
-                    ? isPremiumPlan
-                      ? "border-yellow-500/50 bg-yellow-500/10"
-                      : "border-accent/50 bg-accent/10"
-                    : plan.highlighted
-                    ? "border-yellow-500/30 hover:border-yellow-500/50"
-                    : "border-border hover:border-muted-foreground/50"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-full ${
-                        isPremiumPlan
-                          ? "bg-yellow-500/20"
-                          : isCurrentPlan
-                          ? "bg-accent/20"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <Crown
-                        className={`h-5 w-5 ${
-                          isPremiumPlan
-                            ? "text-yellow-500"
-                            : isCurrentPlan
-                            ? "text-accent"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        className={`font-semibold ${
-                          isPremiumPlan
-                            ? "text-yellow-500"
-                            : isCurrentPlan
-                            ? "text-accent"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {plan.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {plan.description}
-                      </p>
-                    </div>
-                  </div>
-                  {isCurrentPlan && (
-                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-accent/20 text-accent">
-                      Current
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-2xl font-bold text-foreground">
-                    €{plan.price}
-                  </span>
-                  <span className="text-sm text-muted-foreground">/month</span>
-                </div>
-
-                <ul className="space-y-2 mb-4">
-                  {plan.features.map((feature, idx) => (
-                    <li
-                      key={idx}
-                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                    >
-                      <CheckCircle className="h-4 w-4 text-accent flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {!isCurrentPlan && (
-                  <Button
-                    className={`w-full ${
-                      isPremiumPlan
-                        ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black hover:from-yellow-400 hover:to-amber-500"
-                        : "bg-accent text-accent-foreground hover:bg-accent/90"
-                    }`}
-                  >
-                    <Crown className="h-4 w-4 mr-2" />
-                    Upgrade to {plan.name}
-                  </Button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
 
   // Mobile: Email section
   const MobileEmailSection = () => (
@@ -687,7 +514,7 @@ const SettingsTab = ({
     return (
       <div className="w-full min-h-screen">
         {activeSection === "main" && <MobileMainList />}
-        {activeSection === "plan" && <MobilePlanSection />}
+        
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
@@ -728,135 +555,6 @@ const SettingsTab = ({
         {/* Main Content */}
         <div className="flex-1 max-w-4xl">
           {/* Plan Section */}
-          {activeSection === "plan" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">My Plan</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Choose the plan that fits your needs
-                </p>
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {subscriptionPlans.map((plan) => {
-                  const isCurrentPlan = currentPlan === plan.id;
-                  const isPremiumPlan = plan.id === "Premium";
-
-                  return (
-                    <div
-                      key={plan.id}
-                      className={`relative p-5 rounded-lg border-2 transition-all ${
-                        isCurrentPlan
-                          ? isPremiumPlan
-                            ? "border-yellow-500/50 bg-yellow-500/10"
-                            : "border-accent/50 bg-accent/10"
-                          : plan.highlighted
-                          ? "border-yellow-500/30 hover:border-yellow-500/50"
-                          : "border-border hover:border-muted-foreground/50"
-                      }`}
-                    >
-                      {plan.highlighted && !isCurrentPlan && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-semibold px-3 py-1 rounded-full">
-                            Recommended
-                          </span>
-                        </div>
-                      )}
-
-                      {isCurrentPlan && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                            Current Plan
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-3 mb-4 mt-2">
-                        <div
-                          className={`p-2 rounded-full ${
-                            isPremiumPlan
-                              ? "bg-yellow-500/20"
-                              : isCurrentPlan
-                              ? "bg-accent/20"
-                              : "bg-muted"
-                          }`}
-                        >
-                          <Crown
-                            className={`h-5 w-5 ${
-                              isPremiumPlan
-                                ? "text-yellow-500"
-                                : isCurrentPlan
-                                ? "text-accent"
-                                : "text-muted-foreground"
-                            }`}
-                          />
-                        </div>
-                        <div>
-                          <p
-                            className={`font-semibold ${
-                              isPremiumPlan
-                                ? "text-yellow-500"
-                                : isCurrentPlan
-                                ? "text-accent"
-                                : "text-foreground"
-                            }`}
-                          >
-                            {plan.name}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-baseline gap-1 mb-2">
-                        <span className="text-3xl font-bold text-foreground">
-                          €{plan.price}
-                        </span>
-                        <span className="text-sm text-muted-foreground">/month</span>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {plan.description}
-                      </p>
-
-                      <ul className="space-y-2 mb-5">
-                        {plan.features.map((feature, idx) => (
-                          <li
-                            key={idx}
-                            className="flex items-start gap-2 text-sm text-muted-foreground"
-                          >
-                            <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-
-                      {!isCurrentPlan && (
-                        <Button
-                          className={`w-full ${
-                            isPremiumPlan
-                              ? "bg-gradient-to-r from-yellow-500 to-amber-600 text-black hover:from-yellow-400 hover:to-amber-500"
-                              : "bg-accent text-accent-foreground hover:bg-accent/90"
-                          }`}
-                        >
-                          <Crown className="h-4 w-4 mr-2" />
-                          Upgrade to {plan.name}
-                        </Button>
-                      )}
-
-                      {isCurrentPlan && (
-                        <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
-                          Your current plan
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Account Section */}
           {(activeSection === "main" || activeSection === "account") && (
             <div className="space-y-6">
               <div>

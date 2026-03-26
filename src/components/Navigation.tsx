@@ -218,11 +218,13 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
         { to: '/user-dashboard', icon: User, label: 'Profile' },
+        { to: '/my-plan', icon: Crown, label: 'My Plan' },
       ]
     : [
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
         { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+        { to: '/my-plan', icon: Crown, label: 'My Plan' },
       ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Profile)
@@ -316,6 +318,22 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 ))}
+
+                {/* My Plan (only when logged in) */}
+                {user && (
+                  <Link
+                    to="/my-plan"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                      isActive('/my-plan')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    }`}
+                  >
+                    <Crown className="h-5 w-5 flex-shrink-0" />
+                    <span className="font-medium">My Plan</span>
+                  </Link>
+                )}
 
                 {/* Settings (only when logged in) */}
                 {user && (
