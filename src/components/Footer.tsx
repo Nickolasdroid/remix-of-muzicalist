@@ -10,8 +10,8 @@ const Footer = () => {
     title: "Categories",
     href: "/categories"
   }, {
-    title: "Regions",
-    href: "/counties"
+    title: "Countries",
+    href: "/countries"
   }, {
     title: "Leaderboard",
     href: "/leaderboard"
