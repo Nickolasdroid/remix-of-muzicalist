@@ -8,8 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import CountrySelector from "@/components/CountrySelector";
-import { getPhonePrefix, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -20,8 +18,6 @@ const RegisterUser = () => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    country: "",
     password: "",
     confirmPassword: "",
   });
@@ -38,87 +34,13 @@ const RegisterUser = () => {
     });
   }, [navigate]);
 
-  // Auto-detect country on mount and set phone prefix
-  useEffect(() => {
-    const detectCountry = async () => {
-      try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        if (data.country_name) {
-          const prefix = getPhonePrefix(data.country_name);
-          setFormData(prev => ({ 
-            ...prev, 
-            country: data.country_name,
-            phone: prefix || prev.phone
-          }));
-        }
-      } catch (error) {
-        console.log('Could not auto-detect country');
-      }
-    };
-    detectCountry();
-  }, []);
-
-  // Update phone prefix when country changes
-  useEffect(() => {
-    if (formData.country) {
-      const newPrefix = getPhonePrefix(formData.country);
-      const config = getPhoneConfig(formData.country);
-      if (newPrefix && config) {
-        setFormData(prev => {
-          const currentPhone = prev.phone;
-          // If phone is empty, just set the prefix
-          if (!currentPhone) {
-            return { ...prev, phone: newPrefix };
-          }
-          // Extract digits after any existing prefix
-          const digitsOnly = currentPhone.replace(/^\+\d+/, "").replace(/\D/g, "");
-          // Truncate to max allowed digits for this country
-          const truncatedDigits = digitsOnly.slice(0, config.maxLength);
-          return { ...prev, phone: newPrefix + truncatedDigits };
-        });
-      }
-    }
-  }, [formData.country]);
 
   if (authChecking) return null;
 
-  // Handle phone input with validation
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const prefix = getPhonePrefix(formData.country) || "";
-    const config = getPhoneConfig(formData.country);
-    
-    // Prevent deleting the prefix
-    if (!value.startsWith(prefix)) {
-      return;
-    }
-    
-    // Extract digits after prefix
-    const afterPrefix = value.slice(prefix.length);
-    const digitsOnly = afterPrefix.replace(/\D/g, "");
-    
-    // Apply max length
-    const maxDigits = config?.maxLength || 15;
-    const truncatedDigits = digitsOnly.slice(0, maxDigits);
-    
-    setFormData({ ...formData, phone: prefix + truncatedDigits });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.country) {
-      toast.error(t("userRegistration.validation.countryRequired"));
-      return;
-    }
-
-    // Validate phone number
-    const phoneValidation = validatePhoneNumber(formData.phone, formData.country);
-    if (!phoneValidation.valid) {
-      toast.error(phoneValidation.message);
-      return;
-    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error(t("userRegistration.validation.passwordMismatch"));
@@ -168,10 +90,9 @@ const RegisterUser = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
             email: formData.email,
-            phone: formData.phone,
+            phone: "",
             stage_name: `${formData.firstName} ${formData.lastName}`,
             county: "",
-            country: formData.country,
           });
 
         if (profileError) throw profileError;
@@ -242,27 +163,6 @@ const RegisterUser = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div>
-              <Label htmlFor="country">{t("artistRegistration.country")}</Label>
-              <CountrySelector
-                value={formData.country}
-                onChange={(value) => setFormData({ ...formData, country: value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">{t("userRegistration.phone")}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder={getPhonePrefix(formData.country) || t("userRegistration.placeholders.phone")}
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                required
-                disabled={!formData.country}
-              />
-            </div>
-          </div>
 
           <div>
             <Label htmlFor="password">{t("userRegistration.password")}</Label>
