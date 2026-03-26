@@ -186,14 +186,14 @@ const CommunitySections = () => {
 
         {isMobile ? (
           <Carousel opts={{ align: "start", loop: false }} className="w-full -mx-4">
-            <CarouselContent className="-ml-1">
-              <CarouselItem className="pl-1 basis-[94%]">
-                <div className="pr-1">
+            <CarouselContent className="-ml-2">
+              <CarouselItem className="pl-2 basis-[88%]">
+                <div className="pr-2">
                   <MobileCard type="feed" />
                 </div>
               </CarouselItem>
-              <CarouselItem className="pl-1 basis-[94%]">
-                <div className="pr-1">
+              <CarouselItem className="pl-2 basis-[88%]">
+                <div className="pr-2">
                   <MobileCard type="events" />
                 </div>
               </CarouselItem>
