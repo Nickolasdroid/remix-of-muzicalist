@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const RegisterUser = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -195,11 +197,29 @@ const RegisterUser = () => {
             </div>
           </div>
 
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+            />
+            <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+              {t("userRegistration.agreeToTerms", "I agree to the")}{" "}
+              <Link to="/terms" className="text-accent hover:underline font-semibold">
+                {t("userRegistration.termsOfService", "Terms of Service")}
+              </Link>{" "}
+              {t("userRegistration.and", "and")}{" "}
+              <Link to="/privacy" className="text-accent hover:underline font-semibold">
+                {t("userRegistration.privacyPolicy", "Privacy Policy")}
+              </Link>
+            </label>
+          </div>
+
           <Button
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isLoading}
+            disabled={isLoading || !agreedToTerms}
           >
             {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
