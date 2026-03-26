@@ -100,7 +100,7 @@ const MyPlan = () => {
 
   return (
     <>
-      <Navigation />
+      <Navigation mobileTitle="My Plan" mobileBackPath={-1} />
       <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
         <div className="max-w-4xl mx-auto">
           <div className="space-y-6">
