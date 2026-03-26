@@ -36,48 +36,6 @@ const RegisterUser = () => {
     });
   }, [navigate]);
 
-  // Auto-detect country on mount and set phone prefix
-  useEffect(() => {
-    const detectCountry = async () => {
-      try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        if (data.country_name) {
-          const prefix = getPhonePrefix(data.country_name);
-          setFormData(prev => ({ 
-            ...prev, 
-            country: data.country_name,
-            phone: prefix || prev.phone
-          }));
-        }
-      } catch (error) {
-        console.log('Could not auto-detect country');
-      }
-    };
-    detectCountry();
-  }, []);
-
-  // Update phone prefix when country changes
-  useEffect(() => {
-    if (formData.country) {
-      const newPrefix = getPhonePrefix(formData.country);
-      const config = getPhoneConfig(formData.country);
-      if (newPrefix && config) {
-        setFormData(prev => {
-          const currentPhone = prev.phone;
-          // If phone is empty, just set the prefix
-          if (!currentPhone) {
-            return { ...prev, phone: newPrefix };
-          }
-          // Extract digits after any existing prefix
-          const digitsOnly = currentPhone.replace(/^\+\d+/, "").replace(/\D/g, "");
-          // Truncate to max allowed digits for this country
-          const truncatedDigits = digitsOnly.slice(0, config.maxLength);
-          return { ...prev, phone: newPrefix + truncatedDigits };
-        });
-      }
-    }
-  }, [formData.country]);
 
   if (authChecking) return null;
 
