@@ -218,11 +218,13 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
         { to: '/user-dashboard', icon: User, label: 'Profile' },
+        { to: '/my-plan', icon: Crown, label: 'My Plan' },
       ]
     : [
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
         { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+        { to: '/my-plan', icon: Crown, label: 'My Plan' },
       ];
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Profile)
