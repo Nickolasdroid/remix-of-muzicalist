@@ -179,7 +179,7 @@ const CommunitySections = () => {
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
             Posts & Event Opportunities
           </h2>
-          <p className="text-xs md:text-lg text-muted-foreground max-w-xl mx-auto">
+          <p className="md:text-lg text-muted-foreground max-w-xl mx-auto text-sm">
             Share performances, explore real event requests, and turn activity into bookings.
           </p>
         </div>
