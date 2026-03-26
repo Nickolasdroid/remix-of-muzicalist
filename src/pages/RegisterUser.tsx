@@ -165,27 +165,6 @@ const RegisterUser = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div>
-              <Label htmlFor="country">{t("artistRegistration.country")}</Label>
-              <CountrySelector
-                value={formData.country}
-                onChange={(value) => setFormData({ ...formData, country: value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">{t("userRegistration.phone")}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder={getPhonePrefix(formData.country) || t("userRegistration.placeholders.phone")}
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                required
-                disabled={!formData.country}
-              />
-            </div>
-          </div>
 
           <div>
             <Label htmlFor="password">{t("userRegistration.password")}</Label>
