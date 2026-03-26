@@ -51,7 +51,6 @@ const Dashboard = () => {
 
   const settingsSectionTitles: Record<SettingSection, string> = {
     main: "Settings",
-    plan: "My Plan",
     account: "Account",
     email: "Email Address",
     password: "Change Password",
