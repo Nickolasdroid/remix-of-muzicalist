@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -569,6 +569,17 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
                     <span className="font-medium">Settings</span>
                   </Link>
                 )}
+                <Link
+                  to="/help"
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                    isActive('/help')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <HelpCircle className="h-5 w-5" />
+                  <span className="font-medium">Help & Support</span>
+                </Link>
                 <Link
                   to="/about"
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
