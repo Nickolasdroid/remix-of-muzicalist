@@ -11,13 +11,7 @@ const mockResults = [
 
 const AISearchShowcase = () => {
   return (
-    <section className="relative py-10 md:py-24 px-0 md:px-8 overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroConcert})` }} />
-      
-      <div className="absolute inset-0 bg-background/80" />
+    <section className="relative py-10 md:py-24 px-0 md:px-8 overflow-hidden bg-muted/30">
 
       <div className="container mx-auto relative z-10 px-2 md:px-0">
         {/* Section Header */}
