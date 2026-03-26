@@ -86,11 +86,11 @@ const RegisterUser = () => {
           .from("profiles")
           .insert({
             id: authData.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
+            first_name: formData.name,
+            last_name: "",
             email: formData.email,
             phone: "",
-            stage_name: `${formData.firstName} ${formData.lastName}`,
+            stage_name: formData.name,
             county: "",
           });
 
