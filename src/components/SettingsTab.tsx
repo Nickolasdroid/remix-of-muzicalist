@@ -789,6 +789,51 @@ const SettingsTab = ({
               </div>
             </div>
           )}
+
+          {/* System Section */}
+          {activeSection === "system" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">System</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  System preferences and settings
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                {/* Language */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Language</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Choose your preferred language
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {[
+                      { code: "en", label: "🇬🇧 English" },
+                      { code: "ro", label: "🇷🇴 Română" },
+                    ].map((lang) => {
+                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+                      return (
+                        <Button
+                          key={lang.code}
+                          variant={currentLang === lang.code ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => i18n.changeLanguage(lang.code)}
+                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
+                        >
+                          {lang.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
