@@ -193,7 +193,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
-    { id: "report" as const, label: "Report an Issue", icon: Flag },
+    
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
   ];
@@ -518,7 +518,7 @@ const SettingsTab = ({
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
-        {activeSection === "report" && <MobileReportSection />}
+        
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
       </div>
@@ -765,74 +765,6 @@ const SettingsTab = ({
                               {isChangingPassword ? "Updating..." : "Update Password"}
                             </Button>
                           </div>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-
-                <Separator />
-
-                {/* Report */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Report an issue</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Send us feedback or report a problem
-                    </p>
-                  </div>
-                  <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Flag className="h-4 w-4 mr-2" />
-                        Report
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                          <Flag className="h-5 w-5 text-accent" />
-                          Report
-                        </DialogTitle>
-                      </DialogHeader>
-                      
-                      <div className="space-y-4 py-4">
-                        <Textarea
-                          value={reportMessage}
-                          onChange={(e) => setReportMessage(e.target.value)}
-                          placeholder="Describe your issue or feedback..."
-                          className="min-h-[150px] resize-none"
-                        />
-                        
-                        {reportFile && (
-                          <p className="text-sm text-muted-foreground">
-                            Attached: {reportFile.name}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center justify-between gap-3">
-                          <Button
-                            onClick={handleReportSubmit}
-                            className="bg-accent text-accent-foreground hover:bg-accent/90"
-                          >
-                            Send report
-                          </Button>
-                          
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => reportFileInputRef.current?.click()}
-                          >
-                            <Paperclip className="h-4 w-4 mr-2" />
-                            Attach file
-                          </Button>
-                          
-                          <input
-                            ref={reportFileInputRef}
-                            type="file"
-                            onChange={handleReportFileChange}
-                            className="hidden"
-                          />
                         </div>
                       </div>
                     </DialogContent>
