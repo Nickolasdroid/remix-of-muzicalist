@@ -127,7 +127,7 @@ const CountyArtists = () => {
               return (
                 <div key={category.key} className="space-y-4 md:space-y-8">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg md:text-xl font-sans font-bold text-accent uppercase">
+                    <h2 className="text-lg md:text-xl font-sans font-bold uppercase text-white">
                       {category.displayTitle} ({categoryArtists.length})
                     </h2>
                     <Link to={`/counties/${county}/${category.key}`}>
