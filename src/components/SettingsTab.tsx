@@ -193,7 +193,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
-    { id: "report" as const, label: "Report an Issue", icon: Flag },
+    
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
   ];
