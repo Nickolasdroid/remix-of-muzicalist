@@ -204,6 +204,11 @@ const SettingsTab = ({
       id: "account",
       label: "Account",
       icon: User
+    },
+    {
+      id: "system",
+      label: "System",
+      icon: Settings2
     }
   ];
 
