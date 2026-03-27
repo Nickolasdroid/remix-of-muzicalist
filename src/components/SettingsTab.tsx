@@ -518,7 +518,7 @@ const SettingsTab = ({
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
-        {activeSection === "report" && <MobileReportSection />}
+        
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
       </div>
