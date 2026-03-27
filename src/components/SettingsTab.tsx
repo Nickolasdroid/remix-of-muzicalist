@@ -6,13 +6,13 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 
-export type SettingSection = "main" | "account" | "email" | "password" | "language" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "report" | "logout" | "delete";
 
 interface SettingsTabProps {
   formData: {
@@ -204,6 +204,11 @@ const SettingsTab = ({
       id: "account",
       label: "Account",
       icon: User
+    },
+    {
+      id: "system",
+      label: "System",
+      icon: Settings2
     }
   ];
 
@@ -600,36 +605,7 @@ const SettingsTab = ({
                   </Button>
                 </div>
 
-                <Separator />
 
-                {/* Language */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Language</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Choose your preferred language
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {[
-                      { code: "en", label: "🇬🇧 English" },
-                      { code: "ro", label: "🇷🇴 Română" },
-                    ].map((lang) => {
-                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
-                      return (
-                        <Button
-                          key={lang.code}
-                          variant={currentLang === lang.code ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => i18n.changeLanguage(lang.code)}
-                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
-                        >
-                          {lang.label}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
 
                 <Separator />
 
@@ -809,6 +785,51 @@ const SettingsTab = ({
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* System Section */}
+          {activeSection === "system" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">System</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  System preferences and settings
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                {/* Language */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-medium">Language</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Choose your preferred language
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {[
+                      { code: "en", label: "🇬🇧 English" },
+                      { code: "ro", label: "🇷🇴 Română" },
+                    ].map((lang) => {
+                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+                      return (
+                        <Button
+                          key={lang.code}
+                          variant={currentLang === lang.code ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => i18n.changeLanguage(lang.code)}
+                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
+                        >
+                          {lang.label}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
