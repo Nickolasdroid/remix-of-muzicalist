@@ -6,6 +6,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   HelpCircle,
   BookOpen,
@@ -20,7 +22,10 @@ import {
   Calendar,
   Bell,
   Flag,
+  Paperclip,
 } from "lucide-react";
+import { useRef, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const faqSections = [
   {
