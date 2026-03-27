@@ -262,6 +262,50 @@ const HelpSupport = () => {
             ))}
           </div>
 
+          {/* Report an Issue */}
+          <div className="rounded-xl border border-border bg-card p-4 md:p-6">
+            <h2 className="text-lg font-display font-bold text-foreground mb-2 flex items-center gap-2">
+              <Flag className="h-5 w-5 text-accent" />
+              Report an Issue
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Send us feedback or report a problem
+            </p>
+            <Textarea
+              value={reportMessage}
+              onChange={(e) => setReportMessage(e.target.value)}
+              placeholder="Describe your issue or feedback..."
+              className="min-h-[120px] resize-none mb-3"
+            />
+            {reportFile && (
+              <p className="text-sm text-muted-foreground mb-3">
+                Attached: {reportFile.name}
+              </p>
+            )}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleReportSubmit}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                Send report
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => reportFileInputRef.current?.click()}
+              >
+                <Paperclip className="h-4 w-4 mr-2" />
+                Attach file
+              </Button>
+              <input
+                ref={reportFileInputRef}
+                type="file"
+                onChange={handleReportFileChange}
+                className="hidden"
+              />
+            </div>
+          </div>
+
           {/* Useful Links */}
           <div className="mt-10 rounded-xl border border-border bg-card p-4 md:p-6">
             <h2 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
