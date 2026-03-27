@@ -605,36 +605,7 @@ const SettingsTab = ({
                   </Button>
                 </div>
 
-                <Separator />
 
-                {/* Language */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm font-medium">Language</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Choose your preferred language
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {[
-                      { code: "en", label: "🇬🇧 English" },
-                      { code: "ro", label: "🇷🇴 Română" },
-                    ].map((lang) => {
-                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
-                      return (
-                        <Button
-                          key={lang.code}
-                          variant={currentLang === lang.code ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => i18n.changeLanguage(lang.code)}
-                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
-                        >
-                          {lang.label}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
 
                 <Separator />
 
