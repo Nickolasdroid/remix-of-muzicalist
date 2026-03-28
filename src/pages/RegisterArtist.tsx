@@ -661,11 +661,11 @@ const RegisterArtist = () => {
 
             {/* Step 4: Password */}
             {currentStep === 4 &&
-              <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="space-y-3 animate-in fade-in duration-500">
 
 
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="password" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.password")}</Label>
                     <div className="relative">
