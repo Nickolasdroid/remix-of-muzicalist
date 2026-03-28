@@ -465,20 +465,8 @@ const RegisterArtist = () => {
                   </div>
                 ))}
               </div>
-              {/* Progress bar */}
-              <div className="w-full max-w-xs mx-auto mt-3 md:mt-4 h-1 bg-border rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-accent rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercentage}%` }}
-                />
-              </div>
-              {/* Step counter */}
-              <p className="text-xs md:text-sm text-muted-foreground mt-2 flex items-center justify-center gap-1.5">
-                {t("artistRegistration.stepOf", { current: currentStep, total: totalSteps, defaultValue: `Pasul ${currentStep} din ${totalSteps}` })}
-                <span className="w-6 h-0.5 bg-border rounded-full inline-block" />
-              </p>
             </div>
-            <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 border border-accent/30 rounded-2xl p-4 md:p-8 bg-black/20">
+            <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20">
             
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
@@ -558,8 +546,8 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-center pt-4">
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 w-full max-w-xs">
+                <div className="flex justify-end pt-2">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
