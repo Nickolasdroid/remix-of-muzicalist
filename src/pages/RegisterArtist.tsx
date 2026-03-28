@@ -546,10 +546,13 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-2">
-                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pt-2">
+                  <div className="hidden md:block" />
+                  <div>
+                    <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               }
