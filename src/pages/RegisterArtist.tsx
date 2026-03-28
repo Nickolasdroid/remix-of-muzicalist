@@ -413,15 +413,15 @@ const RegisterArtist = () => {
       </div>
       <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
         <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-6 md:border-0 md:rounded-none border-accent/30 flex flex-col">
-            <div className="w-full max-w-3xl mx-auto space-y-3 md:space-y-5 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-6 md:bg-black/20 pt-10 md:pt-6">
+          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
+            <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20 pt-10 md:pt-8">
             {/* Title and steps inside the bordered container */}
             <div className="w-full text-center">
-              <h1 className="text-lg md:text-2xl font-display font-semibold mb-1 md:mb-2 text-muted-foreground">
+              <h1 className="text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
                 {t("artistRegistration.title")}
               </h1>
               {/* Step indicators */}
-              <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-2 md:mt-3">
+              <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-4 md:mt-6">
                 {[
                   { num: 1, label: "Basic" },
                   { num: 2, label: "Professional" },
@@ -546,7 +546,7 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-1">
+                <div className="flex justify-end pt-2">
                   <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -613,7 +613,7 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-1">
+                <div className="flex justify-between pt-2">
                   <Button type="button" onClick={previousStep} variant="outline" size="default">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
@@ -626,7 +626,7 @@ const RegisterArtist = () => {
 
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
-              <div className="space-y-3 animate-in fade-in duration-500">
+              <div className="space-y-6 animate-in fade-in duration-500">
 
 
                 
@@ -661,11 +661,11 @@ const RegisterArtist = () => {
 
             {/* Step 4: Password */}
             {currentStep === 4 &&
-              <div className="space-y-3 animate-in fade-in duration-500">
+              <div className="space-y-6 animate-in fade-in duration-500">
 
 
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="password" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.password")}</Label>
                     <div className="relative">
