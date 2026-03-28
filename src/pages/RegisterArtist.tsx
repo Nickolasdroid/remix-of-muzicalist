@@ -616,13 +616,16 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-2">
-                  <Button type="button" onClick={previousStep} variant="outline" size="default">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
-                  </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                    {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pt-2">
+                  <div className="hidden md:block" />
+                  <div className="flex gap-2">
+                    <Button type="button" onClick={previousStep} variant="outline" size="default">
+                      <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
+                    </Button>
+                    <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                      {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               }
@@ -651,11 +654,11 @@ const RegisterArtist = () => {
                   }
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex gap-2 pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -690,13 +693,16 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
-                  </Button>
-                  <Button type="submit" size="lg" disabled={isSubmitting} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
-                    {isSubmitting ? t("common.creating") : t("common.create")}
-                  </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pt-2">
+                  <div className="hidden md:block" />
+                  <div className="flex gap-2">
+                    <Button type="button" onClick={previousStep} variant="outline" size="default">
+                      <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
+                    </Button>
+                    <Button type="submit" size="default" disabled={isSubmitting} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
+                      {isSubmitting ? t("common.creating") : t("common.create")}
+                    </Button>
+                  </div>
                 </div>
               </div>
               }
