@@ -654,11 +654,11 @@ const RegisterArtist = () => {
                   }
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex gap-2 pt-2">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
