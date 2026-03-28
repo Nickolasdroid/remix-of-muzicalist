@@ -626,7 +626,7 @@ const RegisterArtist = () => {
 
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
-              <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="space-y-3 animate-in fade-in duration-500">
 
 
                 
