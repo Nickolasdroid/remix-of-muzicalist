@@ -17,9 +17,10 @@ interface NavigationProps {
   mobileTitle?: string;
   mobileBackPath?: string | number;
   onMobileBack?: () => void;
+  mobileHeaderContent?: React.ReactNode;
 }
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, mobileHeaderContent }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
@@ -402,8 +403,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationPro
             </Link>
           )}
 
-          {/* Center: Custom mobile title or page title (logged in) or nothing */}
-          {mobileTitle ? (
+          {/* Center: Custom mobile header content, title, or page title */}
+          {mobileHeaderContent ? (
+            <div className="flex-1 mx-2">{mobileHeaderContent}</div>
+          ) : mobileTitle ? (
             <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
           ) : user ? (
             <>
