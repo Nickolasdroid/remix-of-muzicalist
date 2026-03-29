@@ -403,8 +403,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, mobileHeaderCon
             </Link>
           )}
 
-          {/* Center: Custom mobile title or page title (logged in) or nothing */}
-          {mobileTitle ? (
+          {/* Center: Custom mobile header content, title, or page title */}
+          {mobileHeaderContent ? (
+            <div className="flex-1 mx-2">{mobileHeaderContent}</div>
+          ) : mobileTitle ? (
             <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
           ) : user ? (
             <>
