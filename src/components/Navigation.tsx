@@ -20,7 +20,7 @@ interface NavigationProps {
   mobileHeaderContent?: React.ReactNode;
 }
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, mobileHeaderContent }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
