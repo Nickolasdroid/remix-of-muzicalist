@@ -142,51 +142,44 @@ const Search = () => {
     return labels[spec] || spec;
   };
 
-  const searchInput = (
-    <form onSubmit={handleSubmit} className="w-full">
-      <div className="relative">
-        <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder={isAIMode
-            ? "E.g., 'Jazz singers in București' or 'Rock bands for wedding'"
-            : "Type artist name..."}
-          value={searchQuery}
-          onChange={handleSearchChange}
-          className="pl-12 pr-14 h-10 md:h-12 text-base rounded-xl border-2 border-border focus:border-border focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
-          disabled={isAILoading}
-        />
-        {isAIMode && (
-          <Button
-            type="submit"
-            disabled={isAILoading || !searchQuery.trim()}
-            size="icon"
-            variant="ghost"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            {isAILoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ArrowRight className="h-4 w-4" />
-            )}
-          </Button>
-        )}
-      </div>
-    </form>
-  );
-
   return (
     <div className="min-h-screen bg-background">
-      <Navigation mobileHeaderContent={searchInput} />
+      <Navigation />
       
       <main className="pt-14 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto px-4 py-6 md:py-8">
-          {/* Search Input - desktop only */}
-          <div className="hidden md:block">
-            <div className="mb-1">
-              {searchInput}
+          {/* Search Input */}
+          <form onSubmit={handleSubmit}>
+            <div className="relative mb-1">
+              <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={isAIMode
+                  ? "E.g., 'Jazz singers in București' or 'Rock bands for wedding'"
+                  : "Type artist name..."}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="pl-12 pr-14 h-12 text-base rounded-xl border-2 border-border focus:border-border focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
+                
+                disabled={isAILoading}
+              />
+              {isAIMode && (
+                <Button
+                  type="submit"
+                  disabled={isAILoading || !searchQuery.trim()}
+                  size="icon"
+                  variant="ghost"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                >
+                  {isAILoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
             </div>
-          </div>
+          </form>
 
           {/* AI Toggle */}
           <button
