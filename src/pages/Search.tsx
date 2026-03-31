@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArtistProfile {
   id: string;
@@ -21,6 +22,7 @@ interface ArtistProfile {
 
 const Search = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +30,8 @@ const Search = () => {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -144,11 +148,61 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navigation hideMobileHeader={true} />
+
+      {/* Mobile: Custom search header */}
+      {isMobile && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 h-14 px-3">
+            {(isFocused || searchQuery.length > 0) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFocused(false);
+                  setSearchQuery("");
+                  setSuggestions([]);
+                  inputRef.current?.blur();
+                  navigate(-1);
+                }}
+                className="p-1 text-foreground/80 hover:text-accent transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
+            )}
+            <div className="relative flex-1">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                ref={inputRef}
+                type="search"
+                placeholder={isAIMode
+                  ? "AI Search..."
+                  : "Search artists..."}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => setIsFocused(true)}
+                className="pl-10 pr-10 h-10 text-base rounded-xl border-2 border-border focus:border-border focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
+                disabled={isAILoading}
+              />
+              {isAIMode && searchQuery.trim() && (
+                <Button
+                  type="submit"
+                  disabled={isAILoading}
+                  size="icon"
+                  variant="ghost"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                >
+                  {isAILoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
       
       <main className="pt-14 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto px-4 py-6 md:py-8">
-          {/* Search Input */}
+          {/* Desktop Search Input */}
+          {!isMobile && (
           <form onSubmit={handleSubmit}>
             <div className="relative mb-1">
               <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -180,6 +234,7 @@ const Search = () => {
               )}
             </div>
           </form>
+          )}
 
           {/* AI Toggle */}
           <button
