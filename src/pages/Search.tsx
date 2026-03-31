@@ -22,6 +22,7 @@ interface ArtistProfile {
 
 const Search = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +30,8 @@ const Search = () => {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAILoading, setIsAILoading] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
