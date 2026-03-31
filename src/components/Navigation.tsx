@@ -20,7 +20,7 @@ interface NavigationProps {
   hideMobileHeader?: boolean;
 }
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<any>(null);
