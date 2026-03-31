@@ -153,7 +153,7 @@ const Search = () => {
       {/* Mobile: Custom search header */}
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 h-14 px-3">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 h-14 px-0">
             {(isFocused || searchQuery.length > 0) && (
               <button
                 type="button"
@@ -164,12 +164,12 @@ const Search = () => {
                   inputRef.current?.blur();
                   navigate(-1);
                 }}
-                className="p-1 text-foreground/80 hover:text-accent transition-colors flex-shrink-0"
+                className="pl-3 pr-1 text-foreground/80 hover:text-accent transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="h-6 w-6" />
               </button>
             )}
-            <div className="relative flex-1">
+            <div className="relative flex-1 h-full">
               <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 ref={inputRef}
@@ -180,7 +180,7 @@ const Search = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
-                className="pl-10 pr-10 h-10 text-base rounded-xl border-2 border-border focus:border-border focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
+                className="pl-10 pr-10 h-full w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                 disabled={isAILoading}
               />
               {isAIMode && searchQuery.trim() && (
@@ -189,7 +189,7 @@ const Search = () => {
                   disabled={isAILoading}
                   size="icon"
                   variant="ghost"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isAILoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                 </Button>
