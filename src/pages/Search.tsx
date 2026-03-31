@@ -170,7 +170,6 @@ const Search = () => {
               </button>
             )}
             <div className="relative flex-1 h-full">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 ref={inputRef}
                 type="search"
@@ -180,9 +179,12 @@ const Search = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
-                className="pl-10 pr-10 h-full w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                className="pl-4 pr-10 h-full w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                 disabled={isAILoading}
               />
+              {!(isAIMode && searchQuery.trim()) && (
+                <SearchIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+              )}
               {isAIMode && searchQuery.trim() && (
                 <Button
                   type="submit"
