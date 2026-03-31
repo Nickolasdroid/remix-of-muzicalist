@@ -234,6 +234,7 @@ const Search = () => {
               )}
             </div>
           </form>
+          )}
 
           {/* AI Toggle */}
           <button
