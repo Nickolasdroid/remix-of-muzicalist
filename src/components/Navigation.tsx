@@ -17,6 +17,7 @@ interface NavigationProps {
   mobileTitle?: string;
   mobileBackPath?: string | number;
   onMobileBack?: () => void;
+  hideMobileHeader?: boolean;
 }
 
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack }: NavigationProps = {}) => {
