@@ -688,11 +688,29 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="artist-terms"
+                    checked={agreedToTerms}
+                    onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                  />
+                  <label htmlFor="artist-terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                    {t("userRegistration.agreeToTerms", "I agree to the")}{" "}
+                    <Link to="/terms" className="text-accent hover:underline font-semibold">
+                      {t("userRegistration.termsOfService", "Terms of Service")}
+                    </Link>{" "}
+                    {t("userRegistration.and", "and")}{" "}
+                    <Link to="/privacy" className="text-accent hover:underline font-semibold">
+                      {t("userRegistration.privacyPolicy", "Privacy Policy")}
+                    </Link>
+                  </label>
+                </div>
+
                 <div className="flex justify-between">
                   <Button type="button" onClick={previousStep} variant="outline" size="lg">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="submit" size="lg" disabled={isSubmitting} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
+                  <Button type="submit" size="lg" disabled={isSubmitting || !agreedToTerms} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
                     {isSubmitting ? t("common.creating") : t("common.create")}
                   </Button>
                 </div>
