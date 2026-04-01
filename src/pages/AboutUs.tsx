@@ -303,6 +303,37 @@ const AboutUs = () => {
             </div>
           </div>
 
+          {/* What We Aim For Section */}
+          <div className="max-w-5xl mx-auto mb-10 md:mb-20">
+            <div className="relative rounded-xl overflow-hidden border border-border/50">
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${heroConcert})` }}
+              />
+              <div className="absolute inset-0 bg-background/80" />
+              <div className="relative z-10 py-8 md:py-12 px-6 md:px-10">
+                <h3 className="text-lg md:text-2xl font-display font-bold text-foreground mb-6 md:mb-8 text-center">
+                  What We Aim For
+                </h3>
+                <div className="flex flex-col gap-3 md:gap-4 max-w-md mx-auto">
+                  {[
+                    "Global artist discovery",
+                    "Seamless booking experience",
+                    "Professional music community",
+                    "Trusted event entertainment platform",
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <svg className="h-5 w-5 text-accent shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                      <span className="text-sm md:text-base font-semibold text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Join Muzicalist Today CTA */}
           <div className="max-w-5xl mx-auto mb-10 md:mb-0">
             <div className="relative rounded-xl overflow-hidden border border-border/50">
