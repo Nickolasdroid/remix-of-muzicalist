@@ -206,7 +206,7 @@ const Search = () => {
           {/* Desktop Search Input */}
           {!isMobile && (
           <form onSubmit={handleSubmit}>
-            <div className="relative mb-1 border border-accent rounded-lg">
+            <div className="relative mb-1 border rounded-lg border-primary">
               <Input
                 type="search"
                 placeholder={isAIMode
@@ -214,7 +214,7 @@ const Search = () => {
                   : "Type artist name..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-4 pr-12 h-14 w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                className="pl-4 pr-12 h-14 w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-primary border-border"
                 disabled={isAILoading}
               />
               {!(isAIMode && searchQuery.trim()) && (
