@@ -111,7 +111,7 @@ const MyPlan = () => {
               </p>
             </div>
 
-            <Separator />
+            <Separator className="hidden md:block" />
 
             <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
               {subscriptionPlans.map((plan) => {
