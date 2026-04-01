@@ -171,10 +171,31 @@ const RegisterArtist = () => {
     return true;
   };
 
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email.toLowerCase().trim())
+      .maybeSingle();
+    return !!data;
+  };
+
+  const nextStep = async () => {
+    if (!validateStep(currentStep)) return;
+
+    if (currentStep === 1) {
+      const emailExists = await checkEmailExists(formData.email);
+      if (emailExists) {
+        toast({
+          title: t("common.error"),
+          description: t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email."),
+          variant: "destructive"
+        });
+        return;
+      }
     }
+
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   };
 
   const previousStep = () => {
