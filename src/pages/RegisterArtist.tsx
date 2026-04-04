@@ -244,7 +244,7 @@ const RegisterArtist = () => {
   };
 
   const previousStep = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
