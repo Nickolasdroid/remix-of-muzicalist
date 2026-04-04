@@ -737,7 +737,7 @@ const RegisterArtist = () => {
 
                   <div className="space-y-1">
                     <Label htmlFor="email" className="text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
-                    <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.email")} />
+                    <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9 read-only:opacity-70" placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
                   </div>
                 </div>
 
