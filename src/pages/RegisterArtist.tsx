@@ -69,7 +69,49 @@ const RegisterArtist = () => {
   const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
   const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
   const totalSteps = 4;
-  const progressPercentage = currentStep / totalSteps * 100;
+  const progressPercentage = currentStep >= 1 ? (currentStep / totalSteps) * 100 : 0;
+
+  const handleStep0Continue = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!step0Email || !emailRegex.test(step0Email)) {
+      toast({
+        title: t("common.error"),
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const emailExists = await checkEmailExists(step0Email);
+    if (emailExists) {
+      toast({
+        title: t("common.error"),
+        description: t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email."),
+        variant: "destructive"
+      });
+      return;
+    }
+    setFormData(prev => ({ ...prev, email: step0Email }));
+    setCurrentStep(1);
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      toast({
+        title: t("common.error"),
+        description: "Google sign-in failed. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (result.redirected) {
+      return;
+    }
+    // After successful Google auth, redirect
+    navigate("/");
+  };
 
   // Update phone prefix when country changes
   useEffect(() => {
