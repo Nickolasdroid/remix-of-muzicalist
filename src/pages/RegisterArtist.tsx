@@ -13,12 +13,14 @@ import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import CountrySelector from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
+import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
 
 const RegisterArtist = () => {
