@@ -599,76 +599,89 @@ const RegisterArtist = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
+    <div className="min-h-screen flex flex-col md:flex-row">
       {/* Top-left logo linking to homepage */}
       <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
         </Link>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center py-0 px-0 md:py-0">
-        <div className="w-full flex-1 md:flex-none">
-          <form onSubmit={handleSubmit} className="min-h-screen md:min-h-screen p-4 md:p-12 md:border-0 md:rounded-none border-accent/30 flex flex-col">
-            <div className="w-full max-w-3xl mx-auto space-y-4 md:space-y-8 flex-1 md:border md:border-accent/30 md:rounded-2xl md:p-8 md:bg-black/20 pt-10 md:pt-8">
-            {/* Title and steps inside the bordered container */}
-            <div className="w-full text-center">
-              <h1 className="text-lg md:text-2xl font-display font-semibold mb-2 md:mb-4 text-muted-foreground">
-                {t("artistRegistration.title")}
+
+      {/* Left Side - Multi-Step Form */}
+      <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-1">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
+          <div className="w-full max-w-xl">
+            {/* Title */}
+            <div className="text-center mb-6">
+              <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
+                Create Artist Account
               </h1>
-              {/* Step indicators */}
-              <div className="flex items-center justify-center gap-1.5 md:gap-3 mt-4 md:mt-6">
-                {[
-                  { num: 1, label: "Basic" },
-                  { num: 2, label: "Professional" },
-                  { num: 3, label: "Media" },
-                  { num: 4, label: "Security" },
-                ].map((step, i, arr) => (
-                  <div key={step.num} className="flex items-center gap-1.5 md:gap-3">
-                    <div className="flex items-center gap-1 md:gap-1.5">
-                      <div
-                        className={cn(
-                          "w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[11px] md:text-sm font-bold transition-all",
-                          currentStep === step.num
-                            ? "bg-accent text-accent-foreground shadow-[var(--shadow-gold)]"
-                            : currentStep > step.num
-                            ? "bg-accent/30 text-accent"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        {step.num}
-                      </div>
-                      <span
-                        className={cn(
-                          "text-[11px] md:text-sm font-medium transition-colors",
-                          currentStep === step.num
-                            ? "text-accent"
-                            : currentStep > step.num
-                            ? "text-accent/60"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <div
-                        className={cn(
-                          "w-4 md:w-10 h-0.5 rounded-full transition-colors",
-                          currentStep > step.num ? "bg-accent/60" : "bg-border"
-                        )}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Step {currentStep} of {totalSteps} — {
+                  currentStep === 1 ? "Basic Information" :
+                  currentStep === 2 ? "Professional Details" :
+                  currentStep === 3 ? "Media Upload" :
+                  "Security Setup"
+                }
+              </p>
             </div>
-            
+
+            {/* Step Progress Bar */}
+            <div className="flex items-center justify-center gap-1 md:gap-2 mb-8">
+              {[
+                { num: 1, label: "Basic" },
+                { num: 2, label: "Professional" },
+                { num: 3, label: "Media" },
+                { num: 4, label: "Security" },
+              ].map((step, i, arr) => (
+                <div key={step.num} className="flex items-center gap-1 md:gap-2">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className={cn(
+                        "w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300",
+                        currentStep === step.num
+                          ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-500/30"
+                          : currentStep > step.num
+                          ? "bg-gradient-to-r from-amber-500/80 to-amber-600/80 text-black"
+                          : "bg-muted/50 text-muted-foreground border border-border"
+                      )}
+                    >
+                      {currentStep > step.num ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        step.num
+                      )}
+                    </div>
+                    <span
+                      className={cn(
+                        "text-[10px] md:text-xs font-medium transition-colors",
+                        currentStep === step.num
+                          ? "text-amber-500"
+                          : currentStep > step.num
+                          ? "text-amber-500/60"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div
+                      className={cn(
+                        "w-6 md:w-12 h-0.5 rounded-full transition-all duration-300 mb-5",
+                        currentStep > step.num ? "bg-amber-500/60" : "bg-border"
+                      )}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Form Container */}
+            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl">
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-
-
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="firstName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
@@ -687,7 +700,6 @@ const RegisterArtist = () => {
                     <CountrySelector
                       value={formData.country}
                       onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
-
                   </div>
 
                   <div className="space-y-1">
@@ -715,16 +727,13 @@ const RegisterArtist = () => {
                       onChange={(e) => {
                         const newValue = e.target.value;
                         const prefix = getPhonePrefix(formData.country);
-                        // Ensure prefix cannot be deleted
                         if (prefix && !newValue.startsWith(prefix)) {
                           return;
                         }
-                        // Only allow digits after prefix (no spaces)
                         const afterPrefix = newValue.slice(prefix.length);
                         if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
                           return;
                         }
-                        // Check max length
                         const maxLength = getMaxPhoneLength(formData.country);
                         if (newValue.length <= maxLength) {
                           setFormData({ ...formData, phone: newValue });
@@ -732,7 +741,6 @@ const RegisterArtist = () => {
                       }}
                       className="bg-input border-border focus:border-accent h-9"
                       placeholder={t("artistRegistration.placeholders.phone")} />
-
                   </div>
 
                   <div className="space-y-1">
@@ -741,8 +749,11 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-2">
-                  <Button type="button" onClick={nextStep} size="default" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <div className="flex justify-between pt-3">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
+                  </Button>
+                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -752,9 +763,6 @@ const RegisterArtist = () => {
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-
-
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="stageName" className="text-sm flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.stageName")}</Label>
@@ -808,11 +816,11 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-2">
+                <div className="flex justify-between pt-3">
                   <Button type="button" onClick={previousStep} variant="outline" size="default">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -822,9 +830,6 @@ const RegisterArtist = () => {
             {/* Step 3: Profile Picture */}
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-
-
-                
                 <div className="space-y-4">
                   <Label htmlFor="profilePic">{t("artistRegistration.uploadPhoto")}</Label>
                   <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
@@ -847,7 +852,7 @@ const RegisterArtist = () => {
                   <Button type="button" onClick={previousStep} variant="outline" size="lg">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -857,9 +862,6 @@ const RegisterArtist = () => {
             {/* Step 4: Password */}
             {currentStep === 4 &&
               <div className="space-y-6 animate-in fade-in duration-500">
-
-
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="password" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.password")}</Label>
@@ -904,14 +906,42 @@ const RegisterArtist = () => {
                   <Button type="button" onClick={previousStep} variant="outline" size="lg">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="submit" size="lg" disabled={isSubmitting || !agreedToTerms} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300">
+                  <Button type="submit" size="default" disabled={isSubmitting || !agreedToTerms} className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50">
                     {isSubmitting ? t("common.creating") : t("common.create")}
                   </Button>
                 </div>
               </div>
               }
-            </div>
-          </form>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Persistent Illustration (Mobile: top, Desktop: right) */}
+      <div className="relative w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex flex-col items-center justify-center overflow-hidden order-1 md:order-2 md:sticky md:top-0 md:h-screen">
+        {/* Background image */}
+        <img
+          src={artistOnboardingBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
+        {/* Subtle glow effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
+        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-8 md:px-12 py-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white mb-4">
+            Join Muzicalist
+          </h2>
+          <p className="text-base md:text-lg text-white/80 font-medium mb-3">
+            Create your artist profile and get booked for events
+          </p>
+          <p className="text-sm md:text-base text-white/60 max-w-md mx-auto">
+            Connect with clients, showcase your talent, and grow your music career.
+          </p>
         </div>
       </div>
     </div>);
