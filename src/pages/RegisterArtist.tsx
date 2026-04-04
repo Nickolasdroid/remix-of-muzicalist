@@ -608,7 +608,7 @@ const RegisterArtist = () => {
       </div>
 
       {/* Left Side - Multi-Step Form */}
-      <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-1">
+      <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-2">
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
             {/* Title */}
