@@ -28,7 +28,8 @@ const RegisterArtist = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [authChecking, setAuthChecking] = useState(true);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [step0Email, setStep0Email] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPlanSelection, setShowPlanSelection] = useState(false);
   const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
