@@ -915,7 +915,7 @@ const RegisterArtist = () => {
       </div>
 
       {/* Right Side - Persistent Illustration (Mobile: top, Desktop: right) */}
-      <div className="relative w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
+      <div className="relative hidden md:flex w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
         {/* Background image */}
         <img
           src={artistOnboardingBg}
