@@ -1,13 +1,13 @@
-import Navigation from "@/components/Navigation";
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
+import logo from "@/assets/logo.png";
 
 const Login = () => {
   const { toast } = useToast();
@@ -20,11 +20,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in and redirect based on user type
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Check user type to redirect appropriately
         const { data: roleData } = await supabase
           .from('user_roles')
           .select('user_type')
@@ -63,7 +61,6 @@ const Login = () => {
 
       if (error) throw error;
 
-      // Check user type to redirect appropriately
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('user_type')
@@ -92,43 +89,81 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <div className="container mx-auto px-4 pt-20 md:pt-32 pb-24 md:pb-20">
-        <div className="max-w-md mx-auto">
-          <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-4">
-              Welcome Back
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground">
-              Login to your Muzicalist account
-            </p>
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left Panel - Branding */}
+      <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col justify-end overflow-hidden">
+        {/* Background image */}
+        <img
+          src={artistOnboardingBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
+        {/* Subtle glow effects */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
+        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
+
+        {/* Content */}
+        <div className="relative z-10 px-8 md:px-12 pb-12 pt-20 md:pt-12">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
+            Welcome Back<br />to Muzicalist
+          </h1>
+          <p className="text-sm md:text-base text-white/70 max-w-md">
+            Log in and manage your artist profile, bookings and opportunities.
+          </p>
+        </div>
+
+        {/* Bottom logo */}
+        <div className="relative z-10 px-8 md:px-12 pb-8 flex items-center gap-2">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+          <span className="text-white font-display font-semibold text-lg">Muzicalist</span>
+        </div>
+      </div>
+
+      {/* Homepage logo - top left */}
+      <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
+        <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
+      </Link>
+
+      {/* Right Panel - Login Form */}
+      <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 py-12 md:px-12">
+        <div className="w-full max-w-md space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+              Login to your Account
+            </h2>
           </div>
 
-          <Card className="p-6 md:p-8 bg-card/50 backdrop-blur border-accent/20">
-            <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
-              <div>
-                <Label htmlFor="email">Email Address</Label>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="border border-border rounded-xl p-6 space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="mt-2 bg-background/50"
+                  className="h-12 bg-input border-border text-base"
                   placeholder="your@email.com"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <div className="relative mt-2">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="bg-background/50 pr-10"
+                    className="h-12 bg-input border-border text-base pr-12"
                     placeholder="••••••••"
                   />
                   <button
@@ -136,37 +171,38 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
-                  <input type="checkbox" className="rounded border-accent/30" />
+                  <input type="checkbox" className="rounded border-border" />
                   Remember me
                 </label>
-                <a href="#" className="text-accent hover:underline">
+                <a href="#" className="text-accent hover:underline font-medium">
                   Forgot password?
                 </a>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isLoading}
-                className="w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]"
+                className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-accent hover:underline font-semibold">
-                Register here
-              </Link>
             </div>
-          </Card>
+          </form>
+
+          {/* Register link */}
+          <p className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-accent hover:underline font-semibold">
+              Register here
+            </Link>
+          </p>
         </div>
       </div>
     </div>
