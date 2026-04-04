@@ -114,11 +114,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Bottom logo */}
-        <div className="relative z-10 px-8 md:px-12 pb-8 flex items-center gap-2">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
-          <span className="text-white font-display font-semibold text-lg">Muzicalist</span>
-        </div>
       </div>
 
       {/* Homepage logo - top left */}
