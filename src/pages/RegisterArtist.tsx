@@ -481,7 +481,7 @@ const RegisterArtist = () => {
         </Link>
 
         {/* Left Panel - Branding */}
-        <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col justify-center overflow-hidden">
+        <div className="relative hidden md:flex w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex-col justify-center overflow-hidden">
           {/* Background image */}
           <img
             src={artistOnboardingBg}
