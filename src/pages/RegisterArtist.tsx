@@ -499,11 +499,8 @@ const RegisterArtist = () => {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
               Join Muzicalist
             </h1>
-            <p className="text-lg md:text-xl text-white/80 font-medium mb-3">
-              Create your artist profile and get booked for events
-            </p>
-            <p className="text-sm md:text-base text-white/60 max-w-md mx-auto">
-              Connect with clients, showcase your talent, and grow your music career.
+            <p className="text-sm md:text-base text-white/70 max-w-md">
+              Create your artist profile and get booked for events.
             </p>
           </div>
         </div>
