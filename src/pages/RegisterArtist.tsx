@@ -475,8 +475,13 @@ const RegisterArtist = () => {
   if (currentStep === 0) {
     return (
       <div className="min-h-screen flex flex-col md:flex-row">
+        {/* Homepage logo - top left */}
+        <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
+        </Link>
+
         {/* Left Panel - Branding */}
-        <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col justify-end overflow-hidden">
           {/* Background image */}
           <img
             src={artistOnboardingBg}
@@ -490,18 +495,12 @@ const RegisterArtist = () => {
           <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
 
           {/* Content */}
-          <div className="relative z-10 text-center px-8 md:px-12 py-12">
-            <Link to="/" className="inline-block mb-8">
-              <img src={logo} alt="Muzicalist" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
-            </Link>
+          <div className="relative z-10 px-8 md:px-12 pb-12 pt-20 md:pt-12">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
               Join Muzicalist
             </h1>
-            <p className="text-lg md:text-xl text-white/80 font-medium mb-3">
-              Create your artist profile and get booked for events
-            </p>
-            <p className="text-sm md:text-base text-white/60 max-w-md mx-auto">
-              Connect with clients, showcase your talent, and grow your music career.
+            <p className="text-sm md:text-base text-white/70 max-w-md">
+              Create your artist profile and get booked for events.
             </p>
           </div>
         </div>
