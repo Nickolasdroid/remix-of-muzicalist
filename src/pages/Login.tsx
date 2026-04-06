@@ -91,7 +91,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel - Branding */}
-      <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col justify-end overflow-hidden">
+      <div className="relative w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex flex-col justify-center overflow-hidden">
         {/* Background image */}
         <img
           src={artistOnboardingBg}
@@ -105,7 +105,7 @@ const Login = () => {
         <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
 
         {/* Content */}
-        <div className="relative z-10 px-8 md:px-12 pb-12 pt-20 md:pt-12">
+        <div className="relative z-10 px-8 md:px-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
             Welcome Back<br />to Muzicalist
           </h1>
