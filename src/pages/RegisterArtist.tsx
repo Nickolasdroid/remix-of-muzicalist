@@ -392,7 +392,7 @@ const RegisterArtist = () => {
   if (showPlanSelection) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
-        <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+        <div className="fixed top-0 right-0 z-50 p-4 md:px-8 md:py-4">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
           </Link>
@@ -600,8 +600,8 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+      {/* Top-right logo linking to homepage */}
+      <div className="fixed top-0 right-0 z-50 p-4 md:px-8 md:py-4">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
         </Link>
