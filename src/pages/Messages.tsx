@@ -570,32 +570,54 @@ const Messages = () => {
               ) : (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
-                  return adConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-                  <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                  <p>No ad conversations yet</p>
-                  <p className="text-xs mt-1">Conversations from ad applications will appear here</p>
-                </div> : adConvs.map(conv => {
-                  const profile = getOtherProfile(conv);
-                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
-                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
-                      <AvatarImage src={profile.avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-left flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium truncate">{profile.stage_name}</p>
-                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                        </span>}
-                      </div>
-                      <p className="text-xs text-muted-foreground line-clamp-1">
-                        {conv.announcement_context?.title || "Ad conversation"}
-                      </p>
+                  // Requests: ads I posted, others applied to
+                  const requestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
+                  // Applications: ads others posted, I applied to
+                  const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
+                  const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
+
+                  return <>
+                    <div className="flex border-b border-border/50 bg-muted/30">
+                      <button
+                        onClick={() => setAdsSubTab('requests')}
+                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                      >
+                        Requests
+                      </button>
+                      <button
+                        onClick={() => setAdsSubTab('applications')}
+                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                      >
+                        Applications
+                      </button>
                     </div>
-                  </div>;
-                });
+                    {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                      <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                      <p>{adsSubTab === 'requests' ? 'No requests yet' : 'No applications yet'}</p>
+                      <p className="text-xs mt-1">{adsSubTab === 'requests' ? 'When someone applies to your ad, it will appear here' : 'When you apply to an ad, it will appear here'}</p>
+                    </div> : currentList.map(conv => {
+                      const profile = getOtherProfile(conv);
+                      return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
+                        <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                          <AvatarImage src={profile.avatar_url || undefined} />
+                          <AvatarFallback>
+                            <User className="h-5 w-5" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium truncate">{profile.stage_name}</p>
+                            {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                            </span>}
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-1">
+                            {conv.announcement_context?.title || "Ad conversation"}
+                          </p>
+                        </div>
+                      </div>;
+                    })}
+                  </>;
                 })()
               )}
             </ScrollArea>
