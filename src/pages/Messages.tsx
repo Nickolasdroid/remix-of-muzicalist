@@ -101,7 +101,9 @@ const Messages = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'conversations' | 'requests'>('conversations');
+  const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
+  const adId = searchParams.get("adId");
   useEffect(() => {
     const checkAuth = async () => {
       const {
