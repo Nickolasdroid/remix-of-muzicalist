@@ -169,6 +169,10 @@ const Messages = () => {
   }, [user, selectedConversation?.id]);
   useEffect(() => {
     if (!user || !artistId || loading) return;
+    // If coming from an ad, switch to ads tab
+    if (adId) {
+      setActiveTab('ads');
+    }
     handleArtistContact();
   }, [user, artistId, loading, conversations]);
   useEffect(() => {
