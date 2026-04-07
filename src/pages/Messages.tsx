@@ -496,7 +496,6 @@ const Messages = () => {
     .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
 
   // Check if ad conversation is locked (ad deleted or expired)
-  const activeConv = selectedConversation || (pendingArtist ? null : null);
   const isAdConversationLocked = (() => {
     const conv = selectedConversation;
     if (!conv?.announcement_id) return false;
