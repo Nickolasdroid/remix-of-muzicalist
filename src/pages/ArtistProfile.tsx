@@ -312,18 +312,18 @@ const ArtistProfile = () => {
       }));
       setPosts(postsWithLikes);
 
-      // Fetch followers count
-      const { count: followCount } = await supabase.
-      from('followers').
-      select('id', { count: 'exact', head: true }).
-      eq('artist_id', id);
+      // Fetch followers count (only count followers whose profiles still exist)
+      const { count: followCount } = await supabase
+        .from('followers')
+        .select('follower_id, profiles!inner(id)', { count: 'exact', head: true })
+        .eq('artist_id', id);
       setFollowersCount(followCount || 0);
 
-      // Fetch following count
-      const { count: followingCountData } = await supabase.
-      from('followers').
-      select('id', { count: 'exact', head: true }).
-      eq('follower_id', id);
+      // Fetch following count (only count artists whose profiles still exist)
+      const { count: followingCountData } = await supabase
+        .from('followers')
+        .select('artist_id, profiles!inner(id)', { count: 'exact', head: true })
+        .eq('follower_id', id);
       setFollowingCount(followingCountData || 0);
 
 
