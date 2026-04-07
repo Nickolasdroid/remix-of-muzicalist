@@ -19,6 +19,7 @@ interface Conversation {
   artist_id: string;
   participant_id: string;
   updated_at: string;
+  announcement_id?: string | null;
   deleted_at_by_artist?: string | null;
   deleted_at_by_participant?: string | null;
   artist_profile?: {
@@ -39,6 +40,7 @@ interface Conversation {
     plan?: string;
     specialization?: string;
   };
+  announcement_context?: AnnouncementContext | null;
 }
 interface Message {
   id: string;
@@ -100,7 +102,7 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'conversations' | 'requests'>('conversations');
+  const [activeTab, setActiveTab] = useState<'conversations' | 'ads'>('conversations');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
@@ -167,6 +169,10 @@ const Messages = () => {
   }, [user, selectedConversation?.id]);
   useEffect(() => {
     if (!user || !artistId || loading) return;
+    // If coming from an ad, switch to ads tab
+    if (adId) {
+      setActiveTab('ads');
+    }
     handleArtistContact();
   }, [user, artistId, loading, conversations]);
   useEffect(() => {
@@ -215,7 +221,7 @@ const Messages = () => {
       return;
     }
 
-    // Fetch profile info for each conversation
+    // Fetch profile info and announcement context for each conversation
     const conversationsWithProfiles = await Promise.all((data || []).map(async conv => {
       const otherUserId = conv.artist_id === user.id ? conv.participant_id : conv.artist_id;
 
@@ -228,10 +234,23 @@ const Messages = () => {
       const {
         data: artistProfile
       } = await supabase.from('profiles').select('stage_name, avatar_url, plan, specialization').eq('id', conv.artist_id).maybeSingle();
+
+      // Fetch announcement context if this is an ad conversation
+      let announcement_context: AnnouncementContext | null = null;
+      if (conv.announcement_id) {
+        const { data: adData } = await supabase
+          .from('announcements')
+          .select('id, title, description, location, event_date, budget')
+          .eq('id', conv.announcement_id)
+          .maybeSingle();
+        announcement_context = adData;
+      }
+
       return {
         ...conv,
         other_profile: otherProfile,
-        artist_profile: artistProfile
+        artist_profile: artistProfile,
+        announcement_context
       };
     }));
     setConversations(conversationsWithProfiles);
@@ -266,13 +285,29 @@ const Messages = () => {
   const handleArtistContact = async () => {
     if (!artistId || !user || artistId === user.id) return;
 
-    // First check if a conversation with messages already exists
-    const existingConv = conversations.find(c => c.artist_id === artistId && c.participant_id === user.id || c.participant_id === artistId && c.artist_id === user.id);
-    if (existingConv) {
-      // Conversation exists, select it
-      setSelectedConversation(existingConv);
-      setPendingArtist(null);
-      return;
+    // For ad conversations, look for existing conversation with same ad
+    if (adId) {
+      const existingAdConv = conversations.find(c => c.announcement_id === adId);
+      if (existingAdConv) {
+        setSelectedConversation(existingAdConv);
+        setActiveTab('ads');
+        setPendingArtist(null);
+        return;
+      }
+    }
+
+    // For regular conversations (no ad), find existing one without announcement
+    if (!adId) {
+      const existingConv = conversations.find(c => 
+        !c.announcement_id &&
+        ((c.artist_id === artistId && c.participant_id === user.id) || 
+         (c.participant_id === artistId && c.artist_id === user.id))
+      );
+      if (existingConv) {
+        setSelectedConversation(existingConv);
+        setPendingArtist(null);
+        return;
+      }
     }
 
     // No existing conversation - set up pending artist view
@@ -342,13 +377,17 @@ const Messages = () => {
 
     // If we have a pending artist, create the conversation first
     if (pendingArtist && !selectedConversation) {
+      const rpcParams: any = {
+        _artist_id: pendingArtist.id,
+        _participant_id: user.id
+      };
+      if (adId) {
+        rpcParams._announcement_id = adId;
+      }
       const {
         data: newConvId,
         error: rpcError
-      } = await supabase.rpc('get_or_create_conversation', {
-        _artist_id: pendingArtist.id,
-        _participant_id: user.id
-      });
+      } = await supabase.rpc('get_or_create_conversation', rpcParams);
       if (rpcError || !newConvId) {
         setMessages(prev => prev.filter(m => m.id !== tempId));
         setNewMessage(messageContent);
@@ -379,7 +418,8 @@ const Messages = () => {
           avatar_url: pendingArtist.avatar_url,
           plan: pendingArtist.plan,
           specialization: pendingArtist.specialization
-        }
+        },
+        announcement_context: announcementContext || null
       };
       setConversations(prev => [convWithProfile, ...prev]);
       setSelectedConversation(convWithProfile);
@@ -490,19 +530,21 @@ const Messages = () => {
                 Conversations
               </button>
               <button
-                onClick={() => setActiveTab('requests')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('ads')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Requests
+                Ads
               </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
-                conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                (() => {
+                  const regularConvs = conversations.filter(c => !c.announcement_id);
+                  return regularConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
-                </div> : conversations.map(conv => {
+                </div> : regularConvs.map(conv => {
                   const profile = getOtherProfile(conv);
-                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => setSelectedConversation(conv)}>
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
                     <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
                       <AvatarImage src={profile.avatar_url || undefined} />
                       <AvatarFallback>
@@ -521,13 +563,38 @@ const Messages = () => {
                       </p>
                     </div>
                   </div>;
-                })
+                });
+                })()
               ) : (
-                <div className="p-4 text-center text-muted-foreground">
+                (() => {
+                  const adConvs = conversations.filter(c => !!c.announcement_id);
+                  return adConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                  <p>No requests yet</p>
-                  <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
-                </div>
+                  <p>No ad conversations yet</p>
+                  <p className="text-xs mt-1">Conversations from ad applications will appear here</p>
+                </div> : adConvs.map(conv => {
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {conv.announcement_context?.title || "Ad conversation"}
+                      </p>
+                    </div>
+                  </div>;
+                });
+                })()
               )}
             </ScrollArea>
           </div>
@@ -631,43 +698,70 @@ const Messages = () => {
                 Conversations
               </button>
               <button
-                onClick={() => setActiveTab('requests')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('ads')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Requests
+                Ads
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
-                conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                (() => {
+                  const regularConvs = conversations.filter(c => !c.announcement_id);
+                  return regularConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
-                </div> : conversations.map(conv => {
-              const profile = getOtherProfile(conv);
-              return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => setSelectedConversation(conv)}>
-                      <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
-                        <AvatarImage src={profile.avatar_url || undefined} />
-                        <AvatarFallback>
-                          <User className="h-5 w-5" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="text-left flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{profile.stage_name}</p>
-                          {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                            </span>}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(conv.updated_at).toLocaleDateString()}
-                        </p>
+                </div> : regularConvs.map(conv => {
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
                       </div>
-                    </div>;
-              })
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(conv.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>;
+                });
+                })()
               ) : (
-                <div className="p-4 text-center text-muted-foreground">
-                  <p>No requests yet</p>
-                  <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
-                </div>
+                (() => {
+                  const adConvs = conversations.filter(c => !!c.announcement_id);
+                  return adConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                  <p>No ad conversations yet</p>
+                  <p className="text-xs mt-1">Conversations from ad applications will appear here</p>
+                </div> : adConvs.map(conv => {
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {conv.announcement_context?.title || "Ad conversation"}
+                      </p>
+                    </div>
+                  </div>;
+                });
+                })()
               )}
             </div>
           </div>

@@ -158,6 +158,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          announcement_id: string | null
           artist_id: string
           created_at: string
           deleted_at_by_artist: string | null
@@ -169,6 +170,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          announcement_id?: string | null
           artist_id: string
           created_at?: string
           deleted_at_by_artist?: string | null
@@ -180,6 +182,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          announcement_id?: string | null
           artist_id?: string
           created_at?: string
           deleted_at_by_artist?: string | null
@@ -191,6 +194,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "conversations_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conversations_artist_id_fkey"
             columns: ["artist_id"]
@@ -578,10 +588,19 @@ export type Database = {
     }
     Functions: {
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
-      get_or_create_conversation: {
-        Args: { _artist_id: string; _participant_id: string }
-        Returns: string
-      }
+      get_or_create_conversation:
+        | {
+            Args: { _artist_id: string; _participant_id: string }
+            Returns: string
+          }
+        | {
+            Args: {
+              _announcement_id?: string
+              _artist_id: string
+              _participant_id: string
+            }
+            Returns: string
+          }
       get_user_type: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]

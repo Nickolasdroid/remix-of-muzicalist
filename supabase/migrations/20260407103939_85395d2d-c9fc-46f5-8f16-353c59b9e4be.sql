@@ -1,0 +1,1 @@
+ALTER TABLE public.conversations ADD COLUMN announcement_id uuid REFERENCES public.announcements(id) ON DELETE SET NULL DEFAULT NULL;
