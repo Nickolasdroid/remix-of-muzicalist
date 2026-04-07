@@ -81,6 +81,7 @@ const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDism
       </div>
     )}
   </div>
+);
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
