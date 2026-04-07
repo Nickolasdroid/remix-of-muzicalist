@@ -551,7 +551,8 @@ const Messages = () => {
                 onClick={() => setActiveTab('ads')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads
+                Ads<UnreadBadge count={adsUnreadTotal} />
+              </button>
               </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
