@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, DollarSign, X } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
+import { isAdExpired } from "@/lib/adExpiration";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +67,8 @@ interface AnnouncementContext {
   event_date?: string | null;
   budget?: string | null;
   profile_id?: string;
+  date?: string;
+  is_premium?: boolean;
 }
 
 const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDismiss: () => void }) => (
@@ -130,7 +133,7 @@ const Messages = () => {
     const fetchAd = async () => {
       const { data } = await supabase
         .from('announcements')
-        .select('id, title, description, location, event_date, budget, profile_id')
+        .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
         .eq('id', adId)
         .maybeSingle();
       if (data) {
@@ -242,7 +245,7 @@ const Messages = () => {
       if (conv.announcement_id) {
         const { data: adData } = await supabase
           .from('announcements')
-          .select('id, title, description, location, event_date, budget, profile_id')
+          .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
           .eq('id', conv.announcement_id)
           .maybeSingle();
         announcement_context = adData;
@@ -492,6 +495,18 @@ const Messages = () => {
     .filter(c => !c.announcement_id)
     .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
 
+  // Check if ad conversation is locked (ad deleted or expired)
+  const isAdConversationLocked = (() => {
+    const conv = selectedConversation;
+    if (!conv?.announcement_id) return false;
+    // Ad was deleted (no context found)
+    if (!conv.announcement_context) return true;
+    // Ad is expired
+    const adDate = conv.announcement_context.date;
+    if (!adDate) return false;
+    return isAdExpired({ date: adDate, is_premium: !!conv.announcement_context.is_premium });
+  })();
+
   const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
     <span className="ml-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 inline-flex items-center justify-center">
       {count > 9 ? '9+' : count}
@@ -718,12 +733,18 @@ const Messages = () => {
                 </ScrollArea>
 
                 {/* Input */}
+                {isAdConversationLocked ? (
+                  <div className="p-4 border-t border-border text-center text-sm text-muted-foreground">
+                    This ad has been deleted or has expired. You can no longer send messages.
+                  </div>
+                ) : (
                 <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
                   <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} />
                   <Button type="submit" disabled={sending || !newMessage.trim()}>
                     <Send className="h-4 w-4" />
                   </Button>
                 </form>
+                )}
               </> : <div className="flex-1 flex items-center justify-center text-muted-foreground">
                 Select a conversation to start messaging
               </div>}
@@ -912,12 +933,18 @@ const Messages = () => {
                 </ScrollArea>
 
                 {/* Input */}
+                {isAdConversationLocked ? (
+                  <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-card">
+                    This ad has been deleted or has expired. You can no longer send messages.
+                  </div>
+                ) : (
                 <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-card">
                   <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} className="text-base" />
                   <Button type="submit" disabled={sending || !newMessage.trim()} size="icon">
                     <Send className="h-4 w-4" />
                   </Button>
                 </form>
+                )}
               </div>
             </div>}
         </div>
