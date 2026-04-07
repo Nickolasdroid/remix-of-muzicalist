@@ -701,40 +701,67 @@ const Messages = () => {
                 onClick={() => setActiveTab('ads')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Requests
+                Ads
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
-                conversations.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                (() => {
+                  const regularConvs = conversations.filter(c => !c.announcement_id);
+                  return regularConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                   No conversations yet
-                </div> : conversations.map(conv => {
-              const profile = getOtherProfile(conv);
-              return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => setSelectedConversation(conv)}>
-                      <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
-                        <AvatarImage src={profile.avatar_url || undefined} />
-                        <AvatarFallback>
-                          <User className="h-5 w-5" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="text-left flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{profile.stage_name}</p>
-                          {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                            </span>}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(conv.updated_at).toLocaleDateString()}
-                        </p>
+                </div> : regularConvs.map(conv => {
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
                       </div>
-                    </div>;
-              })
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(conv.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>;
+                });
+                })()
               ) : (
-                <div className="p-4 text-center text-muted-foreground">
-                  <p>No requests yet</p>
-                  <p className="text-xs mt-1">Contact requests from announcements will appear here</p>
-                </div>
+                (() => {
+                  const adConvs = conversations.filter(c => !!c.announcement_id);
+                  return adConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+                  <p>No ad conversations yet</p>
+                  <p className="text-xs mt-1">Conversations from ad applications will appear here</p>
+                </div> : adConvs.map(conv => {
+                  const profile = getOtherProfile(conv);
+                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                        </span>}
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {conv.announcement_context?.title || "Ad conversation"}
+                      </p>
+                    </div>
+                  </div>;
+                });
+                })()
               )}
             </div>
           </div>
