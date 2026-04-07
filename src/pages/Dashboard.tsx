@@ -3079,6 +3079,24 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Delete Booking Request Confirmation Dialog */}
+      <AlertDialog open={!!deleteBookingRequestId} onOpenChange={(open) => !open && setDeleteBookingRequestId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this booking request? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteBookingRequestId && handleDeleteBookingRequest(deleteBookingRequestId).then(() => setDeleteBookingRequestId(null))} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Delete Review Confirmation Dialog */}
       <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
         <AlertDialogContent>
