@@ -478,6 +478,22 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
   const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
+
+  // Compute unread counts for Ads tab and sub-tabs
+  const adConvsAll = conversations.filter(c => !!c.announcement_id);
+  const adsUnreadTotal = adConvsAll.reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  const requestsUnreadTotal = adConvsAll
+    .filter(c => c.announcement_context?.profile_id === user?.id)
+    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  const applicationsUnreadTotal = adConvsAll
+    .filter(c => c.announcement_context?.profile_id !== user?.id)
+    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+
+  const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
+    <span className="ml-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 inline-flex items-center justify-center">
+      {count > 9 ? '9+' : count}
+    </span>
+  ) : null;
   const handleDeleteConversation = async () => {
     if (!conversationToDelete) return;
     const {
@@ -535,7 +551,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('ads')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads
+                Ads<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
@@ -582,13 +598,13 @@ const Messages = () => {
                         onClick={() => setAdsSubTab('requests')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Requests
+                        Requests<UnreadBadge count={requestsUnreadTotal} />
                       </button>
                       <button
                         onClick={() => setAdsSubTab('applications')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Applications
+                        Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
@@ -725,7 +741,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('ads')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads
+                Ads<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
@@ -770,13 +786,13 @@ const Messages = () => {
                         onClick={() => setAdsSubTab('requests')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Requests
+                        Requests<UnreadBadge count={requestsUnreadTotal} />
                       </button>
                       <button
                         onClick={() => setAdsSubTab('applications')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Applications
+                        Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
