@@ -202,6 +202,7 @@ const Dashboard = () => {
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [deleteBookingRequestId, setDeleteBookingRequestId] = useState<string | null>(null);
 
   // Following state
   const [followingCount, setFollowingCount] = useState(0);
@@ -2798,7 +2799,8 @@ const Dashboard = () => {
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
                               </Card> : <div className="space-y-3">
-                                {bookingRequests.map((request) => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
+                                {bookingRequests.map((request) => <div key={request.id} className="flex items-center gap-2">
+                                  <Card className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer flex-1" onClick={() => {
                       setSelectedBookingRequest(request);
                       setShowBookingDetailDialog(true);
                     }}>
@@ -2840,7 +2842,11 @@ const Dashboard = () => {
                                           </div>}
                                       </div>
                                     </CardContent>
-                                  </Card>)}
+                                  </Card>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full flex-shrink-0" onClick={() => setDeleteBookingRequestId(request.id)} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                                  </Button>
+                                </div>)}
                               </div>}
                           </div>
 
@@ -3068,6 +3074,24 @@ const Dashboard = () => {
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmDeleteWithBooking} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
               {isSaving ? "Deleting..." : "Yes, Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Booking Request Confirmation Dialog */}
+      <AlertDialog open={!!deleteBookingRequestId} onOpenChange={(open) => !open && setDeleteBookingRequestId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this booking request? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteBookingRequestId && handleDeleteBookingRequest(deleteBookingRequestId).then(() => setDeleteBookingRequestId(null))} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
