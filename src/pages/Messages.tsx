@@ -746,8 +746,6 @@ const Messages = () => {
                   </Button>
                 </form>
                 )}
-                  </Button>
-                </form>
               </> : <div className="flex-1 flex items-center justify-center text-muted-foreground">
                 Select a conversation to start messaging
               </div>}
@@ -948,8 +946,6 @@ const Messages = () => {
                   </Button>
                 </form>
                 )}
-                  </Button>
-                </form>
               </div>
             </div>}
         </div>
