@@ -104,6 +104,7 @@ const Messages = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'conversations' | 'ads'>('conversations');
+  const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
