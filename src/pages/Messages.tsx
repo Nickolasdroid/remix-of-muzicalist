@@ -65,6 +65,7 @@ interface AnnouncementContext {
   location?: string | null;
   event_date?: string | null;
   budget?: string | null;
+  profile_id?: string;
 }
 
 const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDismiss: () => void }) => (
