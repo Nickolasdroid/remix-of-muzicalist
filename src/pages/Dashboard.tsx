@@ -306,11 +306,20 @@ const Dashboard = () => {
     if (!user) return;
     const { data } = await supabase
       .from('followers')
-      .select('follower_id, profiles!inner(id, stage_name, avatar_url, specialization, county)')
+      .select('follower_id')
       .eq('artist_id', user.id);
-    const validFollowers = data?.map((f: any) => f.profiles).filter(Boolean) || [];
-    setFollowersList(validFollowers);
-    setFollowersCount(validFollowers.length);
+    if (data && data.length > 0) {
+      const followerIds = data.map((f: any) => f.follower_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, stage_name, avatar_url, specialization, county')
+        .in('id', followerIds);
+      setFollowersList(profiles || []);
+      setFollowersCount(profiles?.length || 0);
+    } else {
+      setFollowersList([]);
+      setFollowersCount(0);
+    }
   };
   const handleDeleteReview = async (reviewId: string) => {
     if (!user) return;
