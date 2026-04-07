@@ -530,8 +530,8 @@ const Messages = () => {
                 Conversations
               </button>
               <button
-                onClick={() => setActiveTab('requests')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('ads')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Requests
               </button>
@@ -671,8 +671,8 @@ const Messages = () => {
                 Conversations
               </button>
               <button
-                onClick={() => setActiveTab('requests')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('ads')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Requests
               </button>
