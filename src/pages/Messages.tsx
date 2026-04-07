@@ -281,13 +281,29 @@ const Messages = () => {
   const handleArtistContact = async () => {
     if (!artistId || !user || artistId === user.id) return;
 
-    // First check if a conversation with messages already exists
-    const existingConv = conversations.find(c => c.artist_id === artistId && c.participant_id === user.id || c.participant_id === artistId && c.artist_id === user.id);
-    if (existingConv) {
-      // Conversation exists, select it
-      setSelectedConversation(existingConv);
-      setPendingArtist(null);
-      return;
+    // For ad conversations, look for existing conversation with same ad
+    if (adId) {
+      const existingAdConv = conversations.find(c => c.announcement_id === adId);
+      if (existingAdConv) {
+        setSelectedConversation(existingAdConv);
+        setActiveTab('ads');
+        setPendingArtist(null);
+        return;
+      }
+    }
+
+    // For regular conversations (no ad), find existing one without announcement
+    if (!adId) {
+      const existingConv = conversations.find(c => 
+        !c.announcement_id &&
+        ((c.artist_id === artistId && c.participant_id === user.id) || 
+         (c.participant_id === artistId && c.artist_id === user.id))
+      );
+      if (existingConv) {
+        setSelectedConversation(existingConv);
+        setPendingArtist(null);
+        return;
+      }
     }
 
     // No existing conversation - set up pending artist view
