@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, DollarSign, X } from "lucide-react";
+import { formatDateNoYear } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +55,34 @@ interface PendingArtist {
   plan?: string;
   specialization?: string;
 }
+
+interface AnnouncementContext {
+  id: string;
+  title: string;
+  description: string;
+  location?: string | null;
+  event_date?: string | null;
+  budget?: string | null;
+}
+
+const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDismiss: () => void }) => (
+  <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
+    <button onClick={onDismiss} className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
+      <X className="h-3.5 w-3.5" />
+    </button>
+    <p className="text-xs font-semibold text-accent mb-1">Regarding Ad</p>
+    <p className="text-sm font-medium text-foreground pr-4">{ad.title}</p>
+    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{ad.description}</p>
+    {(ad.location || ad.event_date || ad.budget) && (
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
+        {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{ad.location}</span>}
+        {ad.event_date && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateNoYear(ad.event_date)}</span>}
+        {ad.budget && <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" />{ad.budget}</span>}
+      </div>
+    )}
+  </div>
+);
+
 const Messages = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -72,7 +101,9 @@ const Messages = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'conversations' | 'requests'>('conversations');
+  const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
+  const adId = searchParams.get("adId");
   useEffect(() => {
     const checkAuth = async () => {
       const {
@@ -88,6 +119,23 @@ const Messages = () => {
     };
     checkAuth();
   }, [navigate]);
+
+  // Fetch announcement context if adId is present
+  useEffect(() => {
+    if (!adId) return;
+    const fetchAd = async () => {
+      const { data } = await supabase
+        .from('announcements')
+        .select('id, title, description, location, event_date, budget')
+        .eq('id', adId)
+        .maybeSingle();
+      if (data) {
+        setAnnouncementContext(data);
+      }
+    };
+    fetchAd();
+  }, [adId]);
+
   useEffect(() => {
     if (!user) return;
     fetchConversations();
@@ -518,6 +566,9 @@ const Messages = () => {
                     </DropdownMenu>}
                 </div>
 
+                {/* Announcement context header */}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
+
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-4">
@@ -661,6 +712,9 @@ const Messages = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>}
                 </div>
+
+                {/* Announcement context header */}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-card">
