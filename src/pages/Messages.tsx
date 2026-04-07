@@ -734,10 +734,18 @@ const Messages = () => {
                 </ScrollArea>
 
                 {/* Input */}
+                {isAdConversationLocked ? (
+                  <div className="p-4 border-t border-border text-center text-sm text-muted-foreground">
+                    This ad has been deleted or has expired. You can no longer send messages.
+                  </div>
+                ) : (
                 <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
                   <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} />
                   <Button type="submit" disabled={sending || !newMessage.trim()}>
                     <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+                )}
                   </Button>
                 </form>
               </> : <div className="flex-1 flex items-center justify-center text-muted-foreground">
@@ -928,10 +936,18 @@ const Messages = () => {
                 </ScrollArea>
 
                 {/* Input */}
+                {isAdConversationLocked ? (
+                  <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-card">
+                    This ad has been deleted or has expired. You can no longer send messages.
+                  </div>
+                ) : (
                 <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-card">
                   <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} className="text-base" />
                   <Button type="submit" disabled={sending || !newMessage.trim()} size="icon">
                     <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+                )}
                   </Button>
                 </form>
               </div>
