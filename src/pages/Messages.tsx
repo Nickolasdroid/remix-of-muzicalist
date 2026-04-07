@@ -598,13 +598,13 @@ const Messages = () => {
                         onClick={() => setAdsSubTab('requests')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Requests
+                        Requests<UnreadBadge count={requestsUnreadTotal} />
                       </button>
                       <button
                         onClick={() => setAdsSubTab('applications')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Applications
+                        Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
@@ -741,7 +741,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('ads')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads
+                Ads<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
@@ -786,13 +786,13 @@ const Messages = () => {
                         onClick={() => setAdsSubTab('requests')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Requests
+                        Requests<UnreadBadge count={requestsUnreadTotal} />
                       </button>
                       <button
                         onClick={() => setAdsSubTab('applications')}
                         className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
                       >
-                        Applications
+                        Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
