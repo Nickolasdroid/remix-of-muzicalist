@@ -102,7 +102,7 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'conversations' | 'requests'>('conversations');
+  const [activeTab, setActiveTab] = useState<'conversations' | 'ads'>('conversations');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
