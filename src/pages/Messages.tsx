@@ -19,6 +19,7 @@ interface Conversation {
   artist_id: string;
   participant_id: string;
   updated_at: string;
+  announcement_id?: string | null;
   deleted_at_by_artist?: string | null;
   deleted_at_by_participant?: string | null;
   artist_profile?: {
@@ -39,6 +40,7 @@ interface Conversation {
     plan?: string;
     specialization?: string;
   };
+  announcement_context?: AnnouncementContext | null;
 }
 interface Message {
   id: string;
