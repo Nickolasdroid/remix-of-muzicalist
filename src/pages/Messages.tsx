@@ -553,7 +553,6 @@ const Messages = () => {
               >
                 Ads<UnreadBadge count={adsUnreadTotal} />
               </button>
-              </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
               {activeTab === 'conversations' ? (
