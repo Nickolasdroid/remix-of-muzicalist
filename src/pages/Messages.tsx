@@ -418,7 +418,8 @@ const Messages = () => {
           avatar_url: pendingArtist.avatar_url,
           plan: pendingArtist.plan,
           specialization: pendingArtist.specialization
-        }
+        },
+        announcement_context: announcementContext || null
       };
       setConversations(prev => [convWithProfile, ...prev]);
       setSelectedConversation(convWithProfile);
