@@ -55,7 +55,34 @@ interface PendingArtist {
   plan?: string;
   specialization?: string;
 }
-const Messages = () => {
+
+interface AnnouncementContext {
+  id: string;
+  title: string;
+  description: string;
+  location?: string | null;
+  event_date?: string | null;
+  budget?: string | null;
+}
+
+const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDismiss: () => void }) => (
+  <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
+    <button onClick={onDismiss} className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
+      <X className="h-3.5 w-3.5" />
+    </button>
+    <p className="text-xs font-semibold text-accent mb-1">Regarding Ad</p>
+    <p className="text-sm font-medium text-foreground pr-4">{ad.title}</p>
+    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{ad.description}</p>
+    {(ad.location || ad.event_date || ad.budget) && (
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
+        {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{ad.location}</span>}
+        {ad.event_date && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateNoYear(ad.event_date)}</span>}
+        {ad.budget && <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" />{ad.budget}</span>}
+      </div>
+    )}
+  </div>
+);
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const {
