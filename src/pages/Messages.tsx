@@ -478,6 +478,22 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
   const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
+
+  // Compute unread counts for Ads tab and sub-tabs
+  const adConvsAll = conversations.filter(c => !!c.announcement_id);
+  const adsUnreadTotal = adConvsAll.reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  const requestsUnreadTotal = adConvsAll
+    .filter(c => c.announcement_context?.profile_id === user?.id)
+    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  const applicationsUnreadTotal = adConvsAll
+    .filter(c => c.announcement_context?.profile_id !== user?.id)
+    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+
+  const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
+    <span className="ml-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 inline-flex items-center justify-center">
+      {count > 9 ? '9+' : count}
+    </span>
+  ) : null;
   const handleDeleteConversation = async () => {
     if (!conversationToDelete) return;
     const {
