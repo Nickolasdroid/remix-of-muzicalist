@@ -242,7 +242,7 @@ const Messages = () => {
       if (conv.announcement_id) {
         const { data: adData } = await supabase
           .from('announcements')
-          .select('id, title, description, location, event_date, budget')
+          .select('id, title, description, location, event_date, budget, profile_id')
           .eq('id', conv.announcement_id)
           .maybeSingle();
         announcement_context = adData;
