@@ -548,7 +548,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('conversations')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Conversations
+                Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
                 onClick={() => setActiveTab('ads')}
@@ -738,7 +738,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('conversations')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Conversations
+                Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
                 onClick={() => setActiveTab('ads')}
