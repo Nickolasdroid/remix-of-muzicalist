@@ -2936,23 +2936,45 @@ const Dashboard = () => {
                                     </div>
                                   </div>
 
-                                  {selectedBookingRequest.status === 'pending' && <>
-                                      <Separator />
-                                      <div className="flex gap-2">
-                                        <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
+                                  <Separator />
+                                  <div className="flex gap-2">
+                                    {selectedBookingRequest.status === 'pending' && <>
+                                      <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
                             handleAcceptBooking(selectedBookingRequest);
                             setShowBookingDetailDialog(false);
                           }} disabled={isSaving}>
                                           Accept
                                         </Button>
-                                        <Button variant="outline" className="flex-1" onClick={() => {
+                                      <Button variant="outline" className="flex-1" onClick={() => {
                             handleDeclineBooking(selectedBookingRequest.id);
                             setShowBookingDetailDialog(false);
                           }} disabled={isSaving}>
                                           Decline
                                         </Button>
-                                      </div>
                                     </>}
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm" disabled={isSaving}>
+                                          <Trash2 className="h-4 w-4 mr-1" />
+                                          Delete
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Booking Request</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to permanently delete this booking request? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDeleteBookingRequest(selectedBookingRequest.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
                                 </div>}
                             </DialogContent>
                           </Dialog>
