@@ -59,11 +59,8 @@ const UserDashboard = () => {
 
   // Ad limits
   const STANDARD_AD_LIMIT = 5;
-  const PREMIUM_AD_LIMIT = 2;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
-  const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
-  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -237,7 +234,7 @@ const UserDashboard = () => {
         title: "Announcement",
         date: todayDate,
         description: newAnnouncement.description,
-        is_premium: newAnnouncement.isPremium,
+        is_premium: false,
         media_url: newAnnouncement.mediaUrl || null,
         media_type: newAnnouncement.mediaType || null,
         location: newAnnouncement.location || null,
@@ -354,10 +351,6 @@ const UserDashboard = () => {
                   <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-accent" />
-                  <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
-                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
@@ -376,24 +369,9 @@ const UserDashboard = () => {
                     <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                   </DialogHeader>
                   <p className="text-sm text-muted-foreground mt-2">
-                    {newAnnouncement.isPremium 
-                      ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
-                      : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
+                    {t("userDashboard.adValidity", "Ads are valid for 15 days.")}
                   </p>
                   <div className="space-y-4 mt-4">
-                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                      <Checkbox
-                        id="premium-ad-user"
-                        checked={newAnnouncement.isPremium}
-                        onCheckedChange={(checked) =>
-                          setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
-                        }
-                        disabled={premiumAdsRemaining <= 0}
-                      />
-                      <Label htmlFor="premium-ad-user" className="cursor-pointer font-medium">
-                        {t("userDashboard.markAsPremium", "Promotion Ad (with photo/video)")}
-                      </Label>
-                    </div>
 
                     <div>
                       <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
@@ -493,9 +471,7 @@ const UserDashboard = () => {
                             <span>·</span>
                             <span>{formatDateNoYear(ad.date)}</span>
                             <span>·</span>
-                            {ad.is_premium 
-                              ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
-                              : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
+                            <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
                           </div>
                         </div>
                       </div>
