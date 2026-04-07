@@ -59,11 +59,8 @@ const UserDashboard = () => {
 
   // Ad limits
   const STANDARD_AD_LIMIT = 5;
-  const PREMIUM_AD_LIMIT = 2;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
-  const premiumAdsUsed = announcements.filter(a => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
-  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -237,7 +234,7 @@ const UserDashboard = () => {
         title: "Announcement",
         date: todayDate,
         description: newAnnouncement.description,
-        is_premium: newAnnouncement.isPremium,
+        is_premium: false,
         media_url: newAnnouncement.mediaUrl || null,
         media_type: newAnnouncement.mediaType || null,
         location: newAnnouncement.location || null,
@@ -354,10 +351,6 @@ const UserDashboard = () => {
                   <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-accent" />
-                  <span className="text-sm text-muted-foreground">Promotion: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
-                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
@@ -376,24 +369,9 @@ const UserDashboard = () => {
                     <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                   </DialogHeader>
                   <p className="text-sm text-muted-foreground mt-2">
-                    {newAnnouncement.isPremium 
-                      ? t("userDashboard.promotionValidity", "Promotions are valid for 30 days.")
-                      : t("userDashboard.adValidity", "Ads are valid for 15 days.")}
+                    {t("userDashboard.adValidity", "Ads are valid for 15 days.")}
                   </p>
                   <div className="space-y-4 mt-4">
-                    <div className="flex items-center space-x-2 p-3 border border-accent/20 rounded-lg bg-accent/5">
-                      <Checkbox
-                        id="premium-ad-user"
-                        checked={newAnnouncement.isPremium}
-                        onCheckedChange={(checked) =>
-                          setNewAnnouncement({ ...newAnnouncement, isPremium: checked as boolean })
-                        }
-                        disabled={premiumAdsRemaining <= 0}
-                      />
-                      <Label htmlFor="premium-ad-user" className="cursor-pointer font-medium">
-                        {t("userDashboard.markAsPremium", "Promotion Ad (with photo/video)")}
-                      </Label>
-                    </div>
 
                     <div>
                       <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
@@ -429,27 +407,6 @@ const UserDashboard = () => {
                       </div>
                     )}
 
-                    {newAnnouncement.isPremium && <div>
-                        <Label htmlFor="announcement-media-user">Photo/Video</Label>
-                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
-                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                              ...newAnnouncement,
-                              mediaUrl: "",
-                              mediaType: ""
-                            })}>
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div> : <>
-                            <Label htmlFor="announcement-media-input-user" className="cursor-pointer">
-                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                              </div>
-                            </Label>
-                            <Input id="announcement-media-input-user" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
-                          </>}
-                      </div>}
 
                     <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                       {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
@@ -493,9 +450,7 @@ const UserDashboard = () => {
                             <span>·</span>
                             <span>{formatDateNoYear(ad.date)}</span>
                             <span>·</span>
-                            {ad.is_premium 
-                              ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> 
-                              : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
+                            <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
                           </div>
                         </div>
                       </div>
@@ -550,20 +505,6 @@ const UserDashboard = () => {
                     )}
                   </div>
                   
-                  {ad.is_premium && ad.media_url && (
-                    <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                      url: ad.media_url!,
-                      type: ad.media_type === "video" ? "video" : "image"
-                    })}>
-                      {ad.media_type === "video" ? (
-                        <div className="relative w-full aspect-video">
-                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                        </div>
-                      ) : (
-                        <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
-                      )}
-                    </div>
-                  )}
                 </Card>
               ))}
             </div>
