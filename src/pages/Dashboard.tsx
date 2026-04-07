@@ -1360,6 +1360,27 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  const handleDeleteBookingRequest = async (requestId: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from('booking_requests').delete().eq('id', requestId);
+      if (error) throw error;
+      await loadBookingRequests();
+      setShowBookingDetailDialog(false);
+      toast({
+        title: "Deleted",
+        description: "Booking request deleted successfully."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const handleDeleteAccount = async () => {
     if (!user) return;
     setIsSaving(true);
