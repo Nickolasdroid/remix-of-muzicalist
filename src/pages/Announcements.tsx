@@ -254,7 +254,17 @@ const Announcements = () => {
                 {/* Action button */}
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    <Button variant="ghost" size="sm" onClick={() => window.location.href = `/artist/${announcement.profile_id}`} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
+                    <Button variant="ghost" size="sm" onClick={() => {
+                      if (!currentUserId) {
+                        navigate("/login");
+                        return;
+                      }
+                      if (currentUserId === announcement.profile_id) {
+                        toast({ title: "Cannot apply", description: "You cannot apply to your own ad." });
+                        return;
+                      }
+                      navigate(`/messages?artistId=${announcement.profile_id}&adId=${announcement.id}`);
+                    }} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
                       <ArrowRight className="w-5 h-5" />
                       <span className="font-medium">Apply Now</span>
                     </Button>
