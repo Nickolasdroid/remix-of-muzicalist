@@ -133,7 +133,7 @@ const Messages = () => {
     const fetchAd = async () => {
       const { data } = await supabase
         .from('announcements')
-        .select('id, title, description, location, event_date, budget, profile_id')
+        .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
         .eq('id', adId)
         .maybeSingle();
       if (data) {
@@ -245,7 +245,7 @@ const Messages = () => {
       if (conv.announcement_id) {
         const { data: adData } = await supabase
           .from('announcements')
-          .select('id, title, description, location, event_date, budget, profile_id')
+          .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
           .eq('id', conv.announcement_id)
           .maybeSingle();
         announcement_context = adData;
