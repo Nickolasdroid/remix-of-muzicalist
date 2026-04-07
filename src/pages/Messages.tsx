@@ -119,6 +119,23 @@ const Messages = () => {
     };
     checkAuth();
   }, [navigate]);
+
+  // Fetch announcement context if adId is present
+  useEffect(() => {
+    if (!adId) return;
+    const fetchAd = async () => {
+      const { data } = await supabase
+        .from('announcements')
+        .select('id, title, description, location, event_date, budget')
+        .eq('id', adId)
+        .maybeSingle();
+      if (data) {
+        setAnnouncementContext(data);
+      }
+    };
+    fetchAd();
+  }, [adId]);
+
   useEffect(() => {
     if (!user) return;
     fetchConversations();
