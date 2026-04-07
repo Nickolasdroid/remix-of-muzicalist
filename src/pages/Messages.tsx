@@ -488,6 +488,9 @@ const Messages = () => {
   const applicationsUnreadTotal = adConvsAll
     .filter(c => c.announcement_context?.profile_id !== user?.id)
     .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  const conversationsUnreadTotal = conversations
+    .filter(c => !c.announcement_id)
+    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
 
   const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
     <span className="ml-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 inline-flex items-center justify-center">
@@ -545,7 +548,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('conversations')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Conversations
+                Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
                 onClick={() => setActiveTab('ads')}
@@ -735,7 +738,7 @@ const Messages = () => {
                 onClick={() => setActiveTab('conversations')}
                 className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Conversations
+                Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
                 onClick={() => setActiveTab('ads')}
