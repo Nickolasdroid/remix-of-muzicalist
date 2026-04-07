@@ -407,27 +407,6 @@ const UserDashboard = () => {
                       </div>
                     )}
 
-                    {newAnnouncement.isPremium && <div>
-                        <Label htmlFor="announcement-media-user">Photo/Video</Label>
-                        {newAnnouncement.mediaUrl ? <div className="mt-2 relative">
-                            {newAnnouncement.mediaType === 'video' ? <video src={newAnnouncement.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newAnnouncement.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewAnnouncement({
-                              ...newAnnouncement,
-                              mediaUrl: "",
-                              mediaType: ""
-                            })}>
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div> : <>
-                            <Label htmlFor="announcement-media-input-user" className="cursor-pointer">
-                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                              </div>
-                            </Label>
-                            <Input id="announcement-media-input-user" type="file" accept="image/*,video/*" onChange={handleAnnouncementMediaUpload} className="hidden" />
-                          </>}
-                      </div>}
 
                     <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
                       {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
@@ -526,20 +505,6 @@ const UserDashboard = () => {
                     )}
                   </div>
                   
-                  {ad.is_premium && ad.media_url && (
-                    <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                      url: ad.media_url!,
-                      type: ad.media_type === "video" ? "video" : "image"
-                    })}>
-                      {ad.media_type === "video" ? (
-                        <div className="relative w-full aspect-video">
-                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                        </div>
-                      ) : (
-                        <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
-                      )}
-                    </div>
-                  )}
                 </Card>
               ))}
             </div>
