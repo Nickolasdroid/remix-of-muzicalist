@@ -304,20 +304,21 @@ const Dashboard = () => {
   };
   const loadFollowers = async () => {
     if (!user) return;
-    const { data, count } = await supabase.
-    from('followers').
-    select('follower_id', { count: 'exact' }).
-    eq('artist_id', user.id);
-    setFollowersCount(count || 0);
+    const { data } = await supabase
+      .from('followers')
+      .select('follower_id')
+      .eq('artist_id', user.id);
     if (data && data.length > 0) {
       const followerIds = data.map((f: any) => f.follower_id);
-      const { data: profiles } = await supabase.
-      from('profiles').
-      select('id, stage_name, avatar_url, specialization, county').
-      in('id', followerIds);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, stage_name, avatar_url, specialization, county')
+        .in('id', followerIds);
       setFollowersList(profiles || []);
+      setFollowersCount(profiles?.length || 0);
     } else {
       setFollowersList([]);
+      setFollowersCount(0);
     }
   };
   const handleDeleteReview = async (reviewId: string) => {

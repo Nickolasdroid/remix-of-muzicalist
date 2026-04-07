@@ -312,19 +312,35 @@ const ArtistProfile = () => {
       }));
       setPosts(postsWithLikes);
 
-      // Fetch followers count
-      const { count: followCount } = await supabase.
-      from('followers').
-      select('id', { count: 'exact', head: true }).
-      eq('artist_id', id);
-      setFollowersCount(followCount || 0);
+      // Fetch followers count (only count followers whose profiles still exist)
+      const { data: followerRows } = await supabase
+        .from('followers')
+        .select('follower_id')
+        .eq('artist_id', id);
+      if (followerRows && followerRows.length > 0) {
+        const { count: validFollowerCount } = await supabase
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .in('id', followerRows.map(f => f.follower_id));
+        setFollowersCount(validFollowerCount || 0);
+      } else {
+        setFollowersCount(0);
+      }
 
-      // Fetch following count
-      const { count: followingCountData } = await supabase.
-      from('followers').
-      select('id', { count: 'exact', head: true }).
-      eq('follower_id', id);
-      setFollowingCount(followingCountData || 0);
+      // Fetch following count (only count artists whose profiles still exist)
+      const { data: followingRows } = await supabase
+        .from('followers')
+        .select('artist_id')
+        .eq('follower_id', id);
+      if (followingRows && followingRows.length > 0) {
+        const { count: validFollowingCount } = await supabase
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .in('id', followingRows.map(f => f.artist_id));
+        setFollowingCount(validFollowingCount || 0);
+      } else {
+        setFollowingCount(0);
+      }
 
 
       // Check if current user follows this artist
