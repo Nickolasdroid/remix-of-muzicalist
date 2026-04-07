@@ -377,13 +377,17 @@ const Messages = () => {
 
     // If we have a pending artist, create the conversation first
     if (pendingArtist && !selectedConversation) {
+      const rpcParams: any = {
+        _artist_id: pendingArtist.id,
+        _participant_id: user.id
+      };
+      if (adId) {
+        rpcParams._announcement_id = adId;
+      }
       const {
         data: newConvId,
         error: rpcError
-      } = await supabase.rpc('get_or_create_conversation', {
-        _artist_id: pendingArtist.id,
-        _participant_id: user.id
-      });
+      } = await supabase.rpc('get_or_create_conversation', rpcParams);
       if (rpcError || !newConvId) {
         setMessages(prev => prev.filter(m => m.id !== tempId));
         setNewMessage(messageContent);
