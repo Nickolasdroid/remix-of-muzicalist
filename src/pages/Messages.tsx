@@ -217,7 +217,7 @@ const Messages = () => {
       return;
     }
 
-    // Fetch profile info for each conversation
+    // Fetch profile info and announcement context for each conversation
     const conversationsWithProfiles = await Promise.all((data || []).map(async conv => {
       const otherUserId = conv.artist_id === user.id ? conv.participant_id : conv.artist_id;
 
@@ -230,10 +230,23 @@ const Messages = () => {
       const {
         data: artistProfile
       } = await supabase.from('profiles').select('stage_name, avatar_url, plan, specialization').eq('id', conv.artist_id).maybeSingle();
+
+      // Fetch announcement context if this is an ad conversation
+      let announcement_context: AnnouncementContext | null = null;
+      if (conv.announcement_id) {
+        const { data: adData } = await supabase
+          .from('announcements')
+          .select('id, title, description, location, event_date, budget')
+          .eq('id', conv.announcement_id)
+          .maybeSingle();
+        announcement_context = adData;
+      }
+
       return {
         ...conv,
         other_profile: otherProfile,
-        artist_profile: artistProfile
+        artist_profile: artistProfile,
+        announcement_context
       };
     }));
     setConversations(conversationsWithProfiles);
