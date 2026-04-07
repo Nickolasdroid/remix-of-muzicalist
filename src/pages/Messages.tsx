@@ -566,6 +566,9 @@ const Messages = () => {
                     </DropdownMenu>}
                 </div>
 
+                {/* Announcement context header */}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
+
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-4">
@@ -709,6 +712,9 @@ const Messages = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>}
                 </div>
+
+                {/* Announcement context header */}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-card">
