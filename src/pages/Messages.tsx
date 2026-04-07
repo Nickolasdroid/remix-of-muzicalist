@@ -493,6 +493,17 @@ const Messages = () => {
     .filter(c => !c.announcement_id)
     .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
 
+  // Check if ad conversation is locked (ad deleted or expired)
+  const activeConv = selectedConversation || (pendingArtist ? null : null);
+  const isAdConversationLocked = (() => {
+    const conv = selectedConversation;
+    if (!conv?.announcement_id) return false;
+    // Ad was deleted (no context found)
+    if (!conv.announcement_context) return true;
+    // Ad is expired
+    return isAdExpired({ date: (conv.announcement_context as any).date || conv.announcement_context.event_date || '', is_premium: false });
+  })();
+
   const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
     <span className="ml-1.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 inline-flex items-center justify-center">
       {count > 9 ? '9+' : count}
