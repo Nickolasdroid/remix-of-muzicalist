@@ -1,0 +1,2 @@
+ALTER TABLE public.conversations DROP CONSTRAINT conversations_announcement_id_fkey;
+ALTER TABLE public.conversations ADD CONSTRAINT conversations_announcement_id_fkey FOREIGN KEY (announcement_id) REFERENCES public.announcements(id) ON DELETE CASCADE;
