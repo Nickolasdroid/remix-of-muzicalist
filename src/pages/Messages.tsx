@@ -503,7 +503,9 @@ const Messages = () => {
     // Ad was deleted (no context found)
     if (!conv.announcement_context) return true;
     // Ad is expired
-    return isAdExpired({ date: (conv.announcement_context as any).date || conv.announcement_context.event_date || '', is_premium: false });
+    const adDate = conv.announcement_context.date;
+    if (!adDate) return false;
+    return isAdExpired({ date: adDate, is_premium: !!conv.announcement_context.is_premium });
   })();
 
   const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (
