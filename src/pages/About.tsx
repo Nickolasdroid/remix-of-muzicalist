@@ -48,7 +48,7 @@ const About = () => {
               </div>
               <div className="w-px h-8 bg-border/50" />
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">12,000+</span>
+                <span className="text-lg md:text-2xl font-bold text-accent">5+</span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
