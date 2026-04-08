@@ -155,7 +155,7 @@ const PlansPricing = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
             {plans.map((plan) => (
               <div key={plan.name} className={`relative ${plan.highlighted || plan.name === 'Premium' ? 'mt-4' : ''}`}>
                 {plan.highlighted && (
