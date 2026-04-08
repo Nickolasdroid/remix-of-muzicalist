@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryDisplay } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
-import countriesBg from "@/assets/countries-bg.png";
+
 
 interface CountryData {
   original: string;
@@ -91,11 +91,7 @@ const Countries = () => {
   );
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background relative`}>
-      <div className="absolute inset-0 z-0">
-        <img src={countriesBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/80" />
-      </div>
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-gradient-to-br from-background to-secondary relative`}>
       <Navigation />
       
       <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>

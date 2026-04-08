@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
-import leaderboardBg from "@/assets/leaderboard-bg.png";
+
 const allCountries = [{
   name: "Afghanistan",
   code: "AF"
@@ -776,11 +776,7 @@ const Leaderboard = () => {
     );
   }
 
-  return <div className="min-h-screen md:ml-64 bg-background relative">
-      <div className="absolute inset-0 z-0">
-        <img src={leaderboardBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/80" />
-      </div>
+  return <div className="min-h-screen md:ml-64 bg-gradient-to-br from-background to-secondary relative">
       <Navigation />
       
       <div className="relative z-10 pt-16 md:pt-8 pb-24 md:pb-20 px-0">
