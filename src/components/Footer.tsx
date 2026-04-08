@@ -95,7 +95,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-5 w-5 text-accent" />
-                <span>contact@artistplatform.ro</span>
+                <span>contact@muzicalist.com</span>
               </li>
               <li className="flex items-center gap-3 text-muted-foreground">
                 
