@@ -2,30 +2,47 @@ import Navigation from "@/components/Navigation";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const plans = [
+type PlanFeature = {
+  text: string;
+  included: boolean;
+};
+
+const plans: {
+  name: string;
+  monthlyPrice: number;
+  emoji: string;
+  description: string;
+  features: PlanFeature[];
+  tagline: string;
+  cta: string;
+  highlighted: boolean;
+}[] = [
   {
     name: "Free",
     monthlyPrice: 0,
     emoji: "🟢",
     description: "Start your presence on Muzicalist",
     features: [
-      "Basic artist profile",
-      "Gallery: up to 5 images (no video support)",
-      "Limited visibility in search results",
-      "Select your music genres",
-      "Set your experience level",
-      "Calendar: booking requests (by day)",
-      "Unlimited messages & contact",
-      "1 visible social media link",
-      "Up to 3 visible reviews",
-      "Appear in Leaderboard rankings",
-      "Like & follow other artists",
-      "Browse Feed (posts) & Ads (opportunities)",
-      "Cannot publish posts or ads",
+      { text: "Basic artist profile", included: true },
+      { text: "Gallery: up to 5 images (no video support)", included: true },
+      { text: "Select your music genres", included: true },
+      { text: "Set your experience level", included: true },
+      { text: "Messaging, direct contact & artist connections", included: true },
+      { text: "Calendar: booking requests (by day)", included: true },
+      { text: "1 visible social media link", included: true },
+      { text: "Up to 3 visible reviews", included: true },
+      { text: "Appear in Leaderboard rankings", included: true },
+      { text: "Browse Feed (posts) & Ads (opportunities)", included: true },
+      { text: "Cannot publish posts", included: false },
+      { text: "Cannot publish ads", included: false },
+      { text: "Periodic promotion on Muzicalist social media", included: false },
+      { text: "Limited visibility in search results", included: false },
+      { text: "Advanced analytics dashboard", included: false },
+      { text: "Featured on homepage", included: false },
     ],
     tagline: "👉 Perfect for getting started and exploring the platform",
     cta: "Current Plan",
@@ -37,19 +54,23 @@ const plans = [
     emoji: "🟡",
     description: "Get discovered. Attract more clients. Grow your bookings.",
     features: [
-      "Enhanced artist profile (more professional presence)",
-      "Gallery: up to 10 images & 2 videos",
-      "Priority placement in search results → more visibility",
-      "Publish up to 15 posts/month",
-      "5 Ads + 2 Promotions/month",
-      "Calendar: booking requests (by day)",
-      "Display your estimated pricing → higher conversion rate",
-      "Unlimited reviews → build credibility",
-      "Visible social media links",
-      "Appear in Feed (posts) & Ads (opportunities)",
-      "Increased visibility in Feed & Ads vs Free",
-      "Appear in Leaderboard rankings",
-      "Unlimited messages & contact",
+      { text: "Enhanced artist profile (more professional presence)", included: true },
+      { text: "Gallery: up to 10 images & 2 videos", included: true },
+      { text: "Select your music genres", included: true },
+      { text: "Set your experience level", included: true },
+      { text: "Unlimited messaging, direct contact & artist connections", included: true },
+      { text: "Publish up to 15 posts/month", included: true },
+      { text: "5 Ads + 2 Promotions/month", included: true },
+      { text: "Calendar: booking requests (by day)", included: true },
+      { text: "Display your estimated pricing → higher conversion rate", included: true },
+      { text: "Unlimited reviews → build credibility", included: true },
+      { text: "Visible social media links", included: true },
+      { text: "Appear in Leaderboard rankings", included: true },
+      { text: "Appear in Feed (posts) & Ads (opportunities)", included: true },
+      { text: "Priority placement in search results → more visibility", included: true },
+      { text: "Periodic promotion on Muzicalist social media", included: true },
+      { text: "Advanced analytics dashboard", included: false },
+      { text: "Featured on homepage", included: false },
     ],
     tagline: "👉 Designed to help you gain more exposure and consistent booking opportunities",
     cta: "Upgrade",
@@ -61,22 +82,23 @@ const plans = [
     emoji: "🔶",
     description: "Maximize your visibility. Build authority. Get booked consistently.",
     features: [
-      "Premium gold badge → stand out instantly",
-      "Gallery: up to 15 images & 5 videos",
-      "Top placement in search results → maximum exposure",
-      "Professional calendar: booking requests by day & time intervals",
-      "Advanced analytics dashboard: booking requests, accepted/declined events, performance insights",
-      "Publish up to 30 posts/month",
-      "10 Ads + 5 Promotions/month",
-      "Unlimited bookings & requests",
-      "Display your estimated pricing",
-      "Unlimited reviews → strong credibility",
-      "Visible social media links",
-      "Priority visibility in Feed (posts) & Ads (opportunities)",
-      "Appear in Leaderboard rankings",
-      "Unlimited messages & contact",
-      "Promotion on Muzicalist social media",
-      "Featured on homepage → premium exposure boost",
+      { text: "Premium gold badge → stand out instantly", included: true },
+      { text: "Gallery: up to 15 images & 5 videos", included: true },
+      { text: "Select your music genres", included: true },
+      { text: "Set your experience level", included: true },
+      { text: "Publish up to 30 posts/month", included: true },
+      { text: "10 Ads + 5 Promotions/month", included: true },
+      { text: "Unlimited messaging, direct contact & artist connections", included: true },
+      { text: "Professional calendar: Unlimited booking requests by day & time intervals", included: true },
+      { text: "Display your estimated pricing → higher conversion rate", included: true },
+      { text: "Unlimited reviews → strong credibility", included: true },
+      { text: "Visible social media links", included: true },
+      { text: "Appear in Leaderboard rankings", included: true },
+      { text: "Priority visibility in Feed (posts) & Ads (opportunities)", included: true },
+      { text: "Top placement in search results → maximum exposure", included: true },
+      { text: "Regular promotion on Muzicalist social media", included: true },
+      { text: "Advanced analytics dashboard: booking requests, accepted / declined events, performance insights", included: true },
+      { text: "Featured on homepage → premium exposure boost", included: true },
     ],
     tagline: "👉 Built for artists who want maximum exposure, strong credibility, and steady income from events",
     cta: "Upgrade",
@@ -89,9 +111,9 @@ const PlansPricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
 
   const getPrice = (monthlyPrice: number) => {
-    if (monthlyPrice === 0) return "€0";
-    if (isAnnual) return `€${Math.round(monthlyPrice * 10)}`;
-    return `€${monthlyPrice}`;
+    if (monthlyPrice === 0) return "$0";
+    if (isAnnual) return `$${Math.round(monthlyPrice * 10)}`;
+    return `$${monthlyPrice}`;
   };
 
   useEffect(() => {
@@ -164,9 +186,13 @@ const PlansPricing = () => {
                 <CardContent className="flex-1">
                   <ul className="space-y-2.5">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                        <span>{feature}</span>
+                      <li key={feature.text} className={`flex items-start gap-2 text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                        {feature.included ? (
+                          <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                        ) : (
+                          <X className="h-4 w-4 text-destructive/60 shrink-0 mt-0.5" />
+                        )}
+                        <span className={feature.included ? '' : 'line-through'}>{feature.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -186,8 +212,6 @@ const PlansPricing = () => {
           </div>
         </div>
       </section>
-
-      
     </div>
   );
 };
