@@ -155,7 +155,7 @@ const PlansPricing = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((plan) => (
               <div key={plan.name} className={`relative ${plan.highlighted || plan.name === 'Premium' ? 'mt-4' : ''}`}>
                 {plan.highlighted && (
@@ -173,7 +173,7 @@ const PlansPricing = () => {
                   </div>
                 )}
                 <Card
-                  className={`flex flex-col ${plan.highlighted ? 'border-accent shadow-lg' : 'border-border'}`}
+                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg' : 'border-border'}`}
                 >
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
