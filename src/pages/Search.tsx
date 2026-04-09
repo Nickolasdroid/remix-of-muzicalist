@@ -164,7 +164,7 @@ const Search = () => {
                   inputRef.current?.blur();
                   navigate(-1);
                 }}
-                className="pl-3 pr-1 text-foreground/80 hover:text-accent transition-colors flex-shrink-0"
+                className="pl-3 pr-3 text-foreground/80 hover:text-accent transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="h-6 w-6" />
               </button>
