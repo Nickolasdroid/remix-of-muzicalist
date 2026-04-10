@@ -2566,7 +2566,7 @@ const Dashboard = () => {
                                   No videos yet. Add your first video!
                                 </div>}
                             </div>
-                          </div>
+                          </div>}
                         </div>
                       </TabsContent>
 
