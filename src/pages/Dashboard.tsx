@@ -2314,7 +2314,7 @@ const Dashboard = () => {
                                 <p className="text-muted-foreground">No posts yet. Create your first post!</p>
                               </CardContent>
                             </Card>}
-                        </div>
+                        </div>}
                       </TabsContent>
 
                       {/* Announcements Tab */}
