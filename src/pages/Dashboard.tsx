@@ -2542,8 +2542,8 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          {/* Videos Section */}
-                          <div>
+                          {/* Videos Section - hidden for Free plan */}
+                          {STANDARD_VIDEO_LIMIT > 0 && <div>
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
