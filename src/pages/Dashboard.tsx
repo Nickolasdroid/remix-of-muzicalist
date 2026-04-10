@@ -2483,10 +2483,12 @@ const Dashboard = () => {
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
                                 <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                                  <TabsList className="grid w-full grid-cols-2">
+                                  {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Image</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList>
+                                  </TabsList> : <TabsList className="grid w-full grid-cols-1">
+                                    <TabsTrigger value="image">Image</TabsTrigger>
+                                  </TabsList>}
                                   <TabsContent value="image" className="space-y-4">
                                     <Label htmlFor="gallery-upload" className="cursor-pointer">
                                       <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
