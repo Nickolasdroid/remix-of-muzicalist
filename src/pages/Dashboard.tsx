@@ -35,6 +35,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { isFree, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
 const Dashboard = () => {
   const {
     toast
@@ -132,9 +133,10 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Ad limits
-  const STANDARD_AD_LIMIT = 5;
-  const PREMIUM_AD_LIMIT = 2;
+  // Ad limits (plan-based)
+  const currentPlan = profile?.plan;
+  const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
+  const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
   // Calculate used ads
   const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
@@ -162,8 +164,8 @@ const Dashboard = () => {
   const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
-  // Post limits for standard subscription
-  const STANDARD_POST_LIMIT = 15;
+  // Post limits (plan-based)
+  const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
 
   // Gallery state
@@ -177,9 +179,9 @@ const Dashboard = () => {
     type: string;
   } | null>(null);
 
-  // Gallery limits for standard subscription
-  const STANDARD_IMAGE_LIMIT = 5;
-  const STANDARD_VIDEO_LIMIT = 3;
+  // Gallery limits (plan-based)
+  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
+  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
