@@ -1926,33 +1926,42 @@ const Dashboard = () => {
                               </Button>}
                           </div>
                           {editingField === 'social' ? <div className="space-y-3">
+                              {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="h-3.5 w-3.5" />
+                                Free plan: only 1 social media link visible. Upgrade for more.
+                              </p>}
+                              {(() => {
+                                const socialLimit = getSocialLinkLimit(currentPlan);
+                                const filledCount = countFilledSocialLinks(formData);
+                                const canAddMore = (fieldValue: string) => fieldValue || filledCount < socialLimit;
+                                return <>
                               <div className="flex items-center gap-2">
                                 <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.facebookUrl} onChange={(e) => setFormData({
                       ...formData,
                       facebookUrl: e.target.value
-                    })} placeholder="Facebook profile URL" />
+                    })} placeholder="Facebook profile URL" disabled={!canAddMore(formData.facebookUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.instagramUrl} onChange={(e) => setFormData({
                       ...formData,
                       instagramUrl: e.target.value
-                    })} placeholder="Instagram profile URL" />
+                    })} placeholder="Instagram profile URL" disabled={!canAddMore(formData.instagramUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.youtubeUrl} onChange={(e) => setFormData({
                       ...formData,
                       youtubeUrl: e.target.value
-                    })} placeholder="YouTube channel URL" />
+                    })} placeholder="YouTube channel URL" disabled={!canAddMore(formData.youtubeUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Music className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.tiktokUrl} onChange={(e) => setFormData({
                       ...formData,
                       tiktokUrl: e.target.value
-                    })} placeholder="TikTok profile URL" />
+                    })} placeholder="TikTok profile URL" disabled={!canAddMore(formData.tiktokUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <svg className="h-5 w-5 text-accent flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -1961,7 +1970,10 @@ const Dashboard = () => {
                                 <Input value={formData.spotifyUrl} onChange={(e) => setFormData({
                       ...formData,
                       spotifyUrl: e.target.value
-                    })} placeholder="Spotify artist URL" />
+                    })} placeholder="Spotify artist URL" disabled={!canAddMore(formData.spotifyUrl)} />
+                              </div>
+                              </>;
+                              })()}
                               </div>
                               <div className="flex gap-2">
                                 <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
