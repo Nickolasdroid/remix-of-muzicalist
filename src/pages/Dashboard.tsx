@@ -2459,7 +2459,7 @@ const Dashboard = () => {
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">No announcements yet</p>
                             </div>}
-                        </div>
+                        </div>}
                       </TabsContent>
 
                       {/* Gallery Tab */}
