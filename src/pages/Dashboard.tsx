@@ -2323,6 +2323,11 @@ const Dashboard = () => {
                           <Megaphone className="h-5 w-5 text-accent" />
                           My Announcements
                         </h2>
+                        {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                            <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create ads</p>
+                          </div> :
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
