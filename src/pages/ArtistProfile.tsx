@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice } from "@/lib/planLimits";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit } from "@/lib/planLimits";
 interface Profile {
   id: string;
   first_name: string;
@@ -1131,7 +1131,7 @@ const ArtistProfile = () => {
                         Estimated Price
                       </h3>
                       <div className="space-y-1 md:space-y-2 text-left">
-                        {artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1">
+                        {canSetEstimatedPrice(artist.plan) && artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1">
                             {artist.estimated_price}
                           </Badge> : <p className="text-muted-foreground text-sm">Contact for pricing</p>}
                       </div>
@@ -1648,7 +1648,7 @@ const ArtistProfile = () => {
                     </div>
 
                     {/* Videos Section */}
-                    <div>
+                    {getVideoLimit(artist.plan) > 0 && <div>
                       <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                         <Play className="h-5 w-5 text-accent" />
                         Videos
@@ -1669,7 +1669,7 @@ const ArtistProfile = () => {
                             No videos available yet.
                           </div>}
                       </div>
-                    </div>
+                    </div>}
                   </div>
                 </TabsContent>
 
