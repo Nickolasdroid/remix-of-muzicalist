@@ -1974,7 +1974,6 @@ const Dashboard = () => {
                               </div>
                               </>;
                               })()}
-                              </div>
                               <div className="flex gap-2">
                                 <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
                                   <Save className="h-3 w-3 mr-1" />
