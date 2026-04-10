@@ -1837,11 +1837,14 @@ const Dashboard = () => {
                                 <DollarSign className="h-5 w-5 text-accent" />
                                 Estimated Price
                               </h3>
-                              {editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
+                              {canSetEstimatedPrice(currentPlan) && editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
                             </div>
-                            {editingField === 'price' ? <div className="space-y-2">
+                            {!canSetEstimatedPrice(currentPlan) ? <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <Lock className="h-4 w-4" />
+                                <span>Upgrade to Standard or Premium to display pricing</span>
+                              </div> : editingField === 'price' ? <div className="space-y-2">
                                 <Input value={formData.estimatedPrice} onChange={(e) => setFormData({
                       ...formData,
                       estimatedPrice: e.target.value
