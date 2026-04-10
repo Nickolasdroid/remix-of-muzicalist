@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
