@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice } from "@/lib/planLimits";
 interface Profile {
   id: string;
   first_name: string;
@@ -1260,9 +1261,12 @@ const ArtistProfile = () => {
                         </Button>}
                     </div>
 
-                    {reviews.length > 0 ? <Carousel className="w-full">
+                    {reviews.length > 0 ? (() => {
+                      const reviewLimit = getReviewDisplayLimit(artist?.plan);
+                      const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
+                      return <Carousel className="w-full">
                         <CarouselContent className="-ml-2 md:-ml-4">
-                          {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                          {visibleReviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
                                 {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
                                     <Trash2 className="h-4 w-4" />
@@ -1296,7 +1300,8 @@ const ArtistProfile = () => {
                         </CarouselContent>
                         <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
                         <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                      </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                      </Carousel>;
+                    })() : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground">No reviews yet</p>
                       </div>}

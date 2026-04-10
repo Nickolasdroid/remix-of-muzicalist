@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
@@ -35,6 +35,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { isFree, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
 const Dashboard = () => {
   const {
     toast
@@ -132,9 +133,10 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Ad limits
-  const STANDARD_AD_LIMIT = 5;
-  const PREMIUM_AD_LIMIT = 2;
+  // Ad limits (plan-based)
+  const currentPlan = profile?.plan;
+  const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
+  const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
   // Calculate used ads
   const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
@@ -162,8 +164,8 @@ const Dashboard = () => {
   const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
-  // Post limits for standard subscription
-  const STANDARD_POST_LIMIT = 15;
+  // Post limits (plan-based)
+  const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
 
   // Gallery state
@@ -177,9 +179,9 @@ const Dashboard = () => {
     type: string;
   } | null>(null);
 
-  // Gallery limits for standard subscription
-  const STANDARD_IMAGE_LIMIT = 5;
-  const STANDARD_VIDEO_LIMIT = 3;
+  // Gallery limits (plan-based)
+  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
+  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
@@ -1835,11 +1837,14 @@ const Dashboard = () => {
                                 <DollarSign className="h-5 w-5 text-accent" />
                                 Estimated Price
                               </h3>
-                              {editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
+                              {canSetEstimatedPrice(currentPlan) && editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
                             </div>
-                            {editingField === 'price' ? <div className="space-y-2">
+                            {!canSetEstimatedPrice(currentPlan) ? <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <Lock className="h-4 w-4" />
+                                <span>Upgrade to Standard or Premium to display pricing</span>
+                              </div> : editingField === 'price' ? <div className="space-y-2">
                                 <Input value={formData.estimatedPrice} onChange={(e) => setFormData({
                       ...formData,
                       estimatedPrice: e.target.value
@@ -1921,33 +1926,42 @@ const Dashboard = () => {
                               </Button>}
                           </div>
                           {editingField === 'social' ? <div className="space-y-3">
+                              {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="h-3.5 w-3.5" />
+                                Free plan: only 1 social media link visible. Upgrade for more.
+                              </p>}
+                              {(() => {
+                                const socialLimit = getSocialLinkLimit(currentPlan);
+                                const filledCount = countFilledSocialLinks(formData);
+                                const canAddMore = (fieldValue: string) => fieldValue || filledCount < socialLimit;
+                                return <>
                               <div className="flex items-center gap-2">
                                 <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.facebookUrl} onChange={(e) => setFormData({
                       ...formData,
                       facebookUrl: e.target.value
-                    })} placeholder="Facebook profile URL" />
+                    })} placeholder="Facebook profile URL" disabled={!canAddMore(formData.facebookUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.instagramUrl} onChange={(e) => setFormData({
                       ...formData,
                       instagramUrl: e.target.value
-                    })} placeholder="Instagram profile URL" />
+                    })} placeholder="Instagram profile URL" disabled={!canAddMore(formData.instagramUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.youtubeUrl} onChange={(e) => setFormData({
                       ...formData,
                       youtubeUrl: e.target.value
-                    })} placeholder="YouTube channel URL" />
+                    })} placeholder="YouTube channel URL" disabled={!canAddMore(formData.youtubeUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <Music className="h-5 w-5 text-accent flex-shrink-0" />
                                 <Input value={formData.tiktokUrl} onChange={(e) => setFormData({
                       ...formData,
                       tiktokUrl: e.target.value
-                    })} placeholder="TikTok profile URL" />
+                    })} placeholder="TikTok profile URL" disabled={!canAddMore(formData.tiktokUrl)} />
                               </div>
                               <div className="flex items-center gap-2">
                                 <svg className="h-5 w-5 text-accent flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -1956,8 +1970,10 @@ const Dashboard = () => {
                                 <Input value={formData.spotifyUrl} onChange={(e) => setFormData({
                       ...formData,
                       spotifyUrl: e.target.value
-                    })} placeholder="Spotify artist URL" />
+                    })} placeholder="Spotify artist URL" disabled={!canAddMore(formData.spotifyUrl)} />
                               </div>
+                              </>;
+                              })()}
                               <div className="flex gap-2">
                                 <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
                                   <Save className="h-3 w-3 mr-1" />
@@ -2051,6 +2067,11 @@ const Dashboard = () => {
                           <FileText className="h-5 w-5 text-accent" />
                           My Posts
                         </h2>
+                        {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                            <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
+                          </div> :
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
@@ -2293,7 +2314,7 @@ const Dashboard = () => {
                                 <p className="text-muted-foreground">No posts yet. Create your first post!</p>
                               </CardContent>
                             </Card>}
-                        </div>
+                        </div>}
                       </TabsContent>
 
                       {/* Announcements Tab */}
@@ -2302,6 +2323,11 @@ const Dashboard = () => {
                           <Megaphone className="h-5 w-5 text-accent" />
                           My Announcements
                         </h2>
+                        {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                            <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create ads</p>
+                          </div> :
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
@@ -2433,7 +2459,7 @@ const Dashboard = () => {
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">No announcements yet</p>
                             </div>}
-                        </div>
+                        </div>}
                       </TabsContent>
 
                       {/* Gallery Tab */}
@@ -2457,10 +2483,12 @@ const Dashboard = () => {
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
                                 <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                                  <TabsList className="grid w-full grid-cols-2">
+                                  {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Image</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList>
+                                  </TabsList> : <TabsList className="grid w-full grid-cols-1">
+                                    <TabsTrigger value="image">Image</TabsTrigger>
+                                  </TabsList>}
                                   <TabsContent value="image" className="space-y-4">
                                     <Label htmlFor="gallery-upload" className="cursor-pointer">
                                       <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
@@ -2514,8 +2542,8 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          {/* Videos Section */}
-                          <div>
+                          {/* Videos Section - hidden for Free plan */}
+                          {STANDARD_VIDEO_LIMIT > 0 && <div>
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
@@ -2538,7 +2566,7 @@ const Dashboard = () => {
                                   No videos yet. Add your first video!
                                 </div>}
                             </div>
-                          </div>
+                          </div>}
                         </div>
                       </TabsContent>
 
