@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice } from "@/lib/planLimits";
 interface Profile {
   id: string;
   first_name: string;
