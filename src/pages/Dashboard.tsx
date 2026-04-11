@@ -2584,10 +2584,12 @@ const Dashboard = () => {
                               <CalendarIcon className="h-5 w-5 text-accent" />
                               My Calendar
                             </h2>
-                            <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
-                              <BarChart3 className="h-4 w-4" />
-                              Analytics
-                            </Button>
+                            {isPremium(currentPlan) && (
+                              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
+                                <BarChart3 className="h-4 w-4" />
+                                Analytics
+                              </Button>
+                            )}
                           </div>
                           <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                             {/* Legend - above calendar on mobile */}

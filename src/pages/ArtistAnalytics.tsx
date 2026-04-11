@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BarChart3, Calendar, CheckCircle, XCircle, Clock, Ban } from "lucide-react";
+import { isPremium } from "@/lib/planLimits";
 
 const ArtistAnalytics = () => {
   const navigate = useNavigate();
@@ -31,6 +32,18 @@ const ArtistAnalytics = () => {
       }
 
       const userId = session.user.id;
+
+      // Check if user has Premium plan
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", userId)
+        .single();
+
+      if (!isPremium(profile?.plan)) {
+        navigate("/dashboard");
+        return;
+      }
 
       // Load booking requests
       const { data: requests } = await supabase
