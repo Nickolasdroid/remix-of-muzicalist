@@ -1326,6 +1326,11 @@ const ArtistProfile = () => {
                 <Card className="p-8 text-center">
                         <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">This artist doesn't have any posts yet.</p>
+                        {isOwnProfile && (
+                          <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                            Upgrade to Start Posting
+                          </Button>
+                        )}
                       </Card> :
 
                 <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
@@ -1529,10 +1534,15 @@ const ArtistProfile = () => {
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                      </Card> : !canPost(artist.plan) ?
+                     </Card> : !canPost(artist.plan) ?
                 <Card className="p-8 text-center">
                         <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">This artist doesn't have any announcements yet.</p>
+                        {isOwnProfile && (
+                          <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                            Upgrade to Post Announcements
+                          </Button>
+                        )}
                       </Card> :
 
                 <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
