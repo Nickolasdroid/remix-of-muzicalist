@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit } from "@/lib/planLimits";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
 interface Profile {
   id: string;
   first_name: string;
@@ -1922,6 +1922,8 @@ const ArtistProfile = () => {
                     </DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleBookingSubmit} className="space-y-4">
+                    {canUseTimeIntervals(artist?.plan) && (
+                    <>
                     <div className="space-y-2">
                       <Label>Start Time</Label>
                       <div className="flex items-center gap-2">
@@ -1973,6 +1975,8 @@ const ArtistProfile = () => {
                         Select a different date if the event extends to the next day
                       </p>
                     </div>
+                    </>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="eventType">Event Type</Label>
                       <Input id="eventType" placeholder="e.g., Wedding, Corporate Event, Birthday" value={bookingForm.eventType} onChange={(e) => setBookingForm({
