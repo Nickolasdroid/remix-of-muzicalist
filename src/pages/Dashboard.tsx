@@ -2071,6 +2071,9 @@ const Dashboard = () => {
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
+                            <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                              Upgrade Plan
+                            </Button>
                           </div> :
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
@@ -2327,6 +2330,9 @@ const Dashboard = () => {
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create ads</p>
+                            <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                              Upgrade Plan
+                            </Button>
                           </div> :
                         <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
