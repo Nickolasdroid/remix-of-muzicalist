@@ -35,7 +35,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { isFree, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
 const Dashboard = () => {
   const {
     toast
