@@ -82,6 +82,7 @@ export type Database = {
           requester_email: string
           requester_name: string
           requester_phone: string
+          requester_user_id: string | null
           status: string
           updated_at: string
         }
@@ -96,6 +97,7 @@ export type Database = {
           requester_email: string
           requester_name: string
           requester_phone: string
+          requester_user_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -110,6 +112,7 @@ export type Database = {
           requester_email?: string
           requester_name?: string
           requester_phone?: string
+          requester_user_id?: string | null
           status?: string
           updated_at?: string
         }
