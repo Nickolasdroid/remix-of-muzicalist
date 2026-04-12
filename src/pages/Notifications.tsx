@@ -24,6 +24,7 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [userType, setUserType] = useState<string | null>(null);
   const [deleteNotificationId, setDeleteNotificationId] = useState<string | null>(null);
   useEffect(() => {
     const checkAuth = async () => {
