@@ -623,6 +623,7 @@ const ArtistProfile = () => {
         requester_name: bookingForm.name,
         requester_email: bookingForm.email,
         requester_phone: bookingForm.phone,
+        requester_user_id: currentUserId,
         event_date: formatLocalDateToYMD(selectedDate),
         event_end_date: formatLocalDateToYMD(endDate),
         event_type: bookingForm.eventType,

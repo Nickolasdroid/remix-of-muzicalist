@@ -101,6 +101,7 @@ const Notifications = () => {
       case 'like':
         return <Heart className="h-5 w-5 text-red-500" />;
       case 'booking_request':
+      case 'booking_update':
         return <Calendar className="h-5 w-5 text-blue-500" />;
       default:
         return <Bell className="h-5 w-5 text-muted-foreground" />;
