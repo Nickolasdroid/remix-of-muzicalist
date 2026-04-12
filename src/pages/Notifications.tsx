@@ -38,6 +38,9 @@ const Notifications = () => {
         return;
       }
       setUser(session.user);
+      // Check user type
+      const { data: roleData } = await supabase.from('user_roles').select('user_type').eq('user_id', session.user.id).maybeSingle();
+      setUserType(roleData?.user_type || null);
       loadNotifications(session.user.id);
     };
     checkAuth();
