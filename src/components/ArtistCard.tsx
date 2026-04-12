@@ -41,7 +41,7 @@ const ArtistCard = ({
         <Link to={`/artist/${id}`} className="block">
           {/* Mobile Layout */}
           <div className="flex md:hidden items-center gap-3 pl-7">
-            <div className={`w-12 h-12 rounded-full overflow-hidden border-2 ${isPremium ? "border-accent/50" : "border-muted/50"} flex-shrink-0`}>
+            <div className={`w-12 h-12 rounded-full overflow-hidden ${isPremium ? "border-2 border-accent/50" : ""} flex-shrink-0`}>
               {imageUrl ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
@@ -65,7 +65,7 @@ const ArtistCard = ({
 
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center gap-4">
-            <div className={`w-24 h-24 rounded-full overflow-hidden border-4 ${isPremium ? "border-accent/50 group-hover:border-accent" : "border-muted/50 group-hover:border-muted"} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
+            <div className={`w-24 h-24 rounded-full overflow-hidden ${isPremium ? "border-4 border-accent/50 group-hover:border-accent" : ""} transition-all duration-500 group-hover:scale-110 cursor-pointer flex-shrink-0`}>
               {imageUrl ? (
                 <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
