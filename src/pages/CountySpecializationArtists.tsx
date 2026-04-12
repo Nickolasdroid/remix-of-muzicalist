@@ -106,15 +106,20 @@ const CountySpecializationArtists = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
             {artists.map((artist) => {
               const isPremium = artist.plan === 'Premium';
+              const isFree = !artist.plan || artist.plan === 'Free';
               const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
               const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
               const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
-              const avatarBorderColor = isPremium ? "border-accent" : "border-burgundy";
+              const avatarBorderClasses = isFree
+                ? ""
+                : isPremium
+                  ? "border-2 border-accent"
+                  : "border-2 border-burgundy";
               
               return (
                 <Link key={artist.id} to={`/artist/${artist.id}`}>
                   <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
-                    <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${avatarBorderColor} flex-shrink-0`}>
+                    <div className={`w-16 h-16 rounded-full overflow-hidden ${avatarBorderClasses} flex-shrink-0`}>
                       {artist.avatar_url ? (
                         <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
                       ) : (
