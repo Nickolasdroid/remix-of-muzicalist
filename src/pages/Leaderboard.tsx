@@ -783,10 +783,10 @@ const Leaderboard = () => {
         <div className="px-4 md:container md:mx-auto">
           <div className="text-center mb-8 md:mb-12 py-0">
             <h1 className="hidden md:flex items-center justify-center gap-3 text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">
+              Leaderboard
               <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-accent shadow-[var(--shadow-gold)]">
                 <Trophy className="h-6 w-6 md:h-8 md:w-8 text-accent-foreground" />
               </div>
-              Leaderboard
             </h1>
             
 
