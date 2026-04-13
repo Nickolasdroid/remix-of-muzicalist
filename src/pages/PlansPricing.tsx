@@ -157,7 +157,7 @@ const PlansPricing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((plan) => (
-              <div key={plan.name} className={`relative ${plan.highlighted || plan.name === 'Premium' ? 'mt-4' : ''}`}>
+              <div key={plan.name} className="relative mt-4">
                 {plan.highlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                     <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
