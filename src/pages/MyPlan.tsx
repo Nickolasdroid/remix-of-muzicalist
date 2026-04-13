@@ -122,6 +122,17 @@ const MyPlan = () => {
         navigate('/login');
         return;
       }
+      // Check if user is an artist - only artists can access My Plan
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', session.user.id)
+        .single();
+      if (roleData?.user_type === 'user') {
+        navigate('/user-dashboard');
+        return;
+      }
+
       const { data: profileData } = await supabase
         .from('profiles')
         .select('plan')

@@ -218,7 +218,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     ? [
         { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        { to: '/my-plan', icon: Crown, label: 'My Plan' },
         { to: '/user-dashboard', icon: User, label: 'Profile' },
       ]
     : [
@@ -320,8 +319,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   </Link>
                 ))}
 
-                {/* My Plan (only when logged in) */}
-                {user && (
+                {/* My Plan (only for artist accounts) */}
+                {user && userType === 'artist' && (
                   <Link
                     to="/my-plan"
                     onClick={() => setMobileMenuOpen(false)}
