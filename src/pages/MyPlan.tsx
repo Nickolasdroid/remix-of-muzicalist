@@ -169,7 +169,7 @@ const MyPlan = () => {
                 const isPremiumPlan = plan.id === "Premium";
 
                 return (
-                  <div key={plan.id} className={`relative ${plan.highlighted || isPremiumPlan ? 'mt-4' : ''}`}>
+                  <div key={plan.id} className="relative mt-4">
                     {!isCurrentPlan && plan.highlighted && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                         <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
