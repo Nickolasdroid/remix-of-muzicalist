@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import heroConcert from "@/assets/hero-concert.png";
+import { PLATFORM_STATS } from "@/lib/platformStats";
 import ourStoryBand from "@/assets/our-story-band.png";
 
 const values = [
