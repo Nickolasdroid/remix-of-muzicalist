@@ -287,15 +287,15 @@ const AboutUs = () => {
                 </div>
                 <div className="flex items-center justify-center gap-8 md:gap-16">
                   <div className="flex flex-col items-center">
-                    <span className="text-2xl md:text-3xl font-bold text-accent">12,000+</span>
+                    <span className="text-2xl md:text-3xl font-bold text-accent">{PLATFORM_STATS.artists}</span>
                     <span className="text-xs md:text-sm text-muted-foreground">Artists</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-2xl md:text-3xl font-bold text-accent">25</span>
+                    <span className="text-2xl md:text-3xl font-bold text-accent">{PLATFORM_STATS.countries}</span>
                     <span className="text-xs md:text-sm text-muted-foreground">Countries</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-2xl md:text-3xl font-bold text-accent">30,000+</span>
+                    <span className="text-2xl md:text-3xl font-bold text-accent">{PLATFORM_STATS.eventsBooked}</span>
                     <span className="text-xs md:text-sm text-muted-foreground">Events Booked</span>
                   </div>
                 </div>
