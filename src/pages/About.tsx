@@ -10,6 +10,7 @@ import TrendingArtistsSection from "@/components/TrendingArtistsSection";
 import CategoryCard from "@/components/CategoryCard";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
+import { PLATFORM_STATS } from "@/lib/platformStats";
 
 const About = () => {
   return (
@@ -43,22 +44,22 @@ const About = () => {
           <div className="container mx-auto max-w-5xl px-0 md:px-4">
             <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">1+</span>
+                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.countries}</span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">5+</span>
+                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.artists}</span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">4.9 <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
+<span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">{PLATFORM_STATS.averageRating} <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">2+</span>
+                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.eventsBooked}</span>
                 <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
               </div>
             </div>
