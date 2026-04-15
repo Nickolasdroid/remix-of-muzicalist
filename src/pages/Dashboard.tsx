@@ -862,7 +862,8 @@ const Dashboard = () => {
     }
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/gallery/${Date.now()}_${file.name}`;
+      const sanitizedName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileName = `${user.id}/gallery/${Date.now()}_${sanitizedName}`;
       const {
         error: uploadError
       } = await supabase.storage.from('avatars').upload(fileName, file);
@@ -922,7 +923,8 @@ const Dashboard = () => {
     }
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/gallery/videos/${Date.now()}_${file.name}`;
+      const sanitizedName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileName = `${user.id}/gallery/videos/${Date.now()}_${sanitizedName}`;
       const {
         error: uploadError
       } = await supabase.storage.from('avatars').upload(fileName, file);
