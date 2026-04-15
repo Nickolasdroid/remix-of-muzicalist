@@ -2994,7 +2994,8 @@ const Dashboard = () => {
                                     </div>
                                   </div>
 
-                                  <Separator />
+
+
                                   <div className="flex gap-2">
                                     {selectedBookingRequest.status === 'pending' && <>
                                       <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
