@@ -3010,28 +3010,6 @@ const Dashboard = () => {
                                           Decline
                                         </Button>
                                     </>}
-                                    <AlertDialog>
-                                      <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" size="sm" disabled={isSaving}>
-                                          <Trash2 className="h-4 w-4 mr-1" />
-                                          Delete
-                                        </Button>
-                                      </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Delete Booking Request</AlertDialogTitle>
-                                          <AlertDialogDescription>
-                                            Are you sure you want to permanently delete this booking request? This action cannot be undone.
-                                          </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => handleDeleteBookingRequest(selectedBookingRequest.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                            Delete
-                                          </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                      </AlertDialogContent>
-                                    </AlertDialog>
                                   </div>
                                 </div>}
                             </DialogContent>
