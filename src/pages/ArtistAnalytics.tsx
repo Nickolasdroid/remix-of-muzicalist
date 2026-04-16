@@ -152,7 +152,7 @@ const ArtistAnalytics = () => {
           </Button>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-accent" />
-            Calendar Analytics
+            Statistics
           </h1>
         </div>
 

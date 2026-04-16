@@ -2589,7 +2589,7 @@ const Dashboard = () => {
                             {isPremium(currentPlan) && (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />
-                                Analytics
+                                Statistics
                               </Button>
                             )}
                           </div>
