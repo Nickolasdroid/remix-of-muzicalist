@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
+import { getPlanPriority } from "@/lib/planLimits";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ExpandableText from "@/components/ExpandableText";
