@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import { formatDateNoYear } from "@/lib/utils";
+import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getPlanPriority } from "@/lib/planLimits";
 import { Card } from "@/components/ui/card";
@@ -190,7 +190,7 @@ const Announcements = () => {
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{announcement.profiles?.specialization || "User"}</span>
                           <span>·</span>
-                          <span>{formatDateNoYear(announcement.date)}</span>
+                          <span>{formatSmartDate(announcement.date)}</span>
                           <span>·</span>
                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                             Ad

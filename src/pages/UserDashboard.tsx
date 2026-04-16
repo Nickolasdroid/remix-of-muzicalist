@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatDateNoYear } from "@/lib/utils";
+import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -448,7 +448,7 @@ const UserDashboard = () => {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>User</span>
                             <span>·</span>
-                            <span>{formatDateNoYear(ad.date)}</span>
+                            <span>{formatSmartDate(ad.date)}</span>
                             <span>·</span>
                             <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
                           </div>
