@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
+import { getCountryNameVariants } from "@/lib/countryFlags";
 
 const allCountries = [{
   name: "Afghanistan",
@@ -677,10 +678,11 @@ const Leaderboard = () => {
         return;
       }
 
+      const countryVariants = getCountryNameVariants(selectedCountry);
       const { data, error } = await supabase
         .from('profiles')
         .select('id, stage_name, specialization, county, country, plan, avatar_url, number_of_events')
-        .eq('country', selectedCountry)
+        .in('country', countryVariants)
         .in('id', artistIds)
         .order('number_of_events', { ascending: false });
       
