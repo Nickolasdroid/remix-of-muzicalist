@@ -12,6 +12,7 @@ import { sortByPlanPriority } from "@/lib/planLimits";
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Drawer,
   DrawerContent,
