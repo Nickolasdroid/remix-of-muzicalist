@@ -6,6 +6,7 @@ import { Mic, Guitar, Headphones, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
+import { getCountryNameVariants } from "@/lib/countryFlags";
 
 
 const Categories = () => {
@@ -58,7 +59,8 @@ const Categories = () => {
         .in("id", artistIds);
       
       if (selectedCountry !== '__all__') {
-        query = query.eq("country", selectedCountry);
+        const variants = getCountryNameVariants(selectedCountry);
+        query = query.in("country", variants);
       }
 
       const { data } = await query;

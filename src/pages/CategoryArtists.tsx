@@ -6,7 +6,7 @@ import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
-import { getCountryName } from "@/lib/countryFlags";
+import { getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Popover,
@@ -257,7 +257,8 @@ const CategoryArtists = () => {
         .in('id', artistIds);
 
       if (userCountry !== '__all__') {
-        query = query.eq('country', userCountry);
+        const variants = getCountryNameVariants(userCountry);
+        query = query.in('country', variants);
       }
 
       const { data, error } = await query;
