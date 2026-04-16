@@ -126,7 +126,7 @@ const DiscoverArtistsSection = () => {
                   }}
                 >
                   <Link to={`/artist/${artist.id}`} className="group block">
-                    <div className={`overflow-hidden rounded-lg ${isPremium(artist.plan) ? 'ring-2 ring-accent' : isStandard(artist.plan) ? 'ring-2 ring-white' : ''}`}>
+                    <div className={`overflow-hidden rounded-lg ${isPremium(artist.plan) ? 'border-2 border-accent' : isStandard(artist.plan) ? 'border-2 border-white' : ''}`}>
                       <div className="relative aspect-square overflow-hidden">
                         {artist.avatar_url ? (
                           <img
