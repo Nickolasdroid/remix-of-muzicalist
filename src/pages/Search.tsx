@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 

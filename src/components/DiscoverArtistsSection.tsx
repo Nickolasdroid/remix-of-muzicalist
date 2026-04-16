@@ -4,6 +4,7 @@ import { User, Star, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import diamondIcon from "@/assets/diamond-icon.png";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Carousel,
   CarouselContent,
@@ -80,6 +81,7 @@ const DiscoverArtistsSection = () => {
           : null,
       }));
 
+      withRatings.sort((a, b) => sortByPlanPriority(a, b));
       setArtists(withRatings);
       setLoading(false);
     };
