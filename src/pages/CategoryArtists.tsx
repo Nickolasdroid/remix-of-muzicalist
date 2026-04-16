@@ -8,11 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { getCountryName } from "@/lib/countryFlags";
 import { sortByPlanPriority } from "@/lib/planLimits";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Drawer,
   DrawerContent,
