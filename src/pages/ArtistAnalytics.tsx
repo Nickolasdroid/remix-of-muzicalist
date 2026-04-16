@@ -128,7 +128,7 @@ const ArtistAnalytics = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation mobileTitle="Calendar Analytics" mobileBackPath={-1} />
+        <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -140,7 +140,7 @@ const ArtistAnalytics = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation mobileTitle="Calendar Analytics" mobileBackPath={-1} />
+      <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-8 max-w-4xl">
         <div className="hidden md:flex items-center gap-3 mb-8">
           <Button
@@ -152,7 +152,7 @@ const ArtistAnalytics = () => {
           </Button>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-accent" />
-            Calendar Analytics
+            Statistics
           </h1>
         </div>
 
