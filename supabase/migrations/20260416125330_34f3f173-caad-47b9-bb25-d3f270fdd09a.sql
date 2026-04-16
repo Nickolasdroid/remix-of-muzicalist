@@ -1,0 +1,1 @@
+UPDATE profiles SET country = 'România' WHERE id = 'ab6fe11a-c545-4277-8346-fa2af7431252' AND country = 'RO';
