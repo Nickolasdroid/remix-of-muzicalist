@@ -40,9 +40,9 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
   const isStandard = plan === 'Standard';
 
   const borderClass = isPremium
-    ? 'ring-2 ring-accent'
+    ? 'border-2 border-accent'
     : isStandard
-      ? 'ring-2 ring-white'
+      ? 'border-2 border-white'
       : '';
 
   return (
