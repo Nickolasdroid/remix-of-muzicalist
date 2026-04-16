@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { getCountryName } from "@/lib/countryFlags";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Popover,
   PopoverContent,
@@ -290,6 +291,8 @@ const CategoryArtists = () => {
           });
         }
         
+        // Sort by plan priority (Premium > Standard > Free)
+        artistsWithAvailability.sort((a, b) => sortByPlanPriority(a, b));
         setArtists(artistsWithAvailability);
         const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
         setAvailableCountries(countries);

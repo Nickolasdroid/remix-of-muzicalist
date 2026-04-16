@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -58,7 +59,7 @@ const Search = () => {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, stage_name, avatar_url, specialization, country, county, music_genres')
+      .select('id, stage_name, avatar_url, specialization, country, county, music_genres, plan')
       .not('specialization', 'is', null)
       .ilike('stage_name', `%${query.trim()}%`)
       .limit(10);
@@ -67,7 +68,8 @@ const Search = () => {
       console.error('Error fetching suggestions:', error);
       setSuggestions([]);
     } else {
-      setSuggestions(data || []);
+      const sorted = [...(data || [])].sort((a, b) => sortByPlanPriority(a, b));
+      setSuggestions(sorted);
     }
     setIsLoading(false);
   };

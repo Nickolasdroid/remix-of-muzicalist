@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { useParams, Link, useSearchParams } from "react-router-dom";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -235,7 +236,8 @@ const CountryArtists = () => {
         .in('id', artistIds)
         .order('stage_name');
 
-      setArtists(data || []);
+      const sorted = [...(data || [])].sort((a, b) => sortByPlanPriority(a, b));
+      setArtists(sorted);
 
       // If a date is provided, fetch booked artist IDs for that date
       if (urlDate && data && data.length > 0) {

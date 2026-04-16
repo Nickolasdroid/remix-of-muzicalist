@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
+import { sortByPlanPriority } from "@/lib/planLimits";
 import {
   Carousel,
   CarouselContent,
@@ -57,7 +58,8 @@ const CountyArtists = () => {
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
-        setArtists(data || []);
+        const sorted = [...(data || [])].sort((a, b) => sortByPlanPriority(a, b));
+        setArtists(sorted);
       }
       setLoading(false);
     };
