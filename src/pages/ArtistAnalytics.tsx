@@ -127,7 +127,7 @@ const ArtistAnalytics = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background md:ml-64">
         <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
@@ -139,7 +139,7 @@ const ArtistAnalytics = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background md:ml-64">
       <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-8 max-w-4xl">
         <div className="hidden md:flex items-center gap-3 mb-8">
