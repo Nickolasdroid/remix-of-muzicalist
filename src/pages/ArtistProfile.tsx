@@ -1342,7 +1342,7 @@ const ArtistProfile = () => {
                       ...a,
                       type: 'promotion' as const,
                       content: a.description,
-                      created_at: a.date
+                      created_at: a.created_at
                     }));
                     const postItems = posts.map((p) => ({
                       ...p,
@@ -1376,7 +1376,7 @@ const ArtistProfile = () => {
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                           <span>{artist?.specialization || "User"}</span>
                                           <span>·</span>
-                                          <span>{formatSmartDate(promo.date)}</span>
+                                          <span>{formatSmartDate(promo.created_at)}</span>
                                           <span>·</span>
                                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
                                         </div>
@@ -1572,7 +1572,7 @@ const ArtistProfile = () => {
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <span>{artist?.specialization || "User"}</span>
                                       <span>·</span>
-                                      <span>{formatSmartDate(announcement.date)}</span>
+                                      <span>{formatSmartDate(announcement.created_at)}</span>
                                       <span>·</span>
                                       <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                            Ad
