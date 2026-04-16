@@ -59,7 +59,7 @@ const Search = () => {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, stage_name, avatar_url, specialization, country, county, music_genres')
+      .select('id, stage_name, avatar_url, specialization, country, county, music_genres, plan')
       .not('specialization', 'is', null)
       .ilike('stage_name', `%${query.trim()}%`)
       .limit(10);
@@ -68,7 +68,8 @@ const Search = () => {
       console.error('Error fetching suggestions:', error);
       setSuggestions([]);
     } else {
-      setSuggestions(data || []);
+      const sorted = [...(data || [])].sort((a, b) => sortByPlanPriority(a, b));
+      setSuggestions(sorted);
     }
     setIsLoading(false);
   };
