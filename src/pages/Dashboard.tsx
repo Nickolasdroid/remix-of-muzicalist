@@ -2288,7 +2288,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{formatDateNoYear(promotion.date)}</span>
+                                        <span>{formatSmartDate(promotion.date)}</span>
                                         <span>·</span>
                                         <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                           Promotion
@@ -2415,7 +2415,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{formatDateNoYear(announcement.date)}</span>
+                                        <span>{formatSmartDate(announcement.date)}</span>
                                         <span>·</span>
                                         {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Promotion
