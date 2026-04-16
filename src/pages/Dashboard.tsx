@@ -224,7 +224,7 @@ const Dashboard = () => {
     if (!user) return;
     const {
       data
-    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('date', {
+    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (data) setAnnouncements(data);
@@ -2288,7 +2288,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{formatSmartDate(promotion.date)}</span>
+                                        <span>{formatSmartDate(promotion.created_at)}</span>
                                         <span>·</span>
                                         <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                           Promotion
@@ -2415,7 +2415,7 @@ const Dashboard = () => {
                                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <span>{profile?.specialization || "User"}</span>
                                         <span>·</span>
-                                        <span>{formatSmartDate(announcement.date)}</span>
+                                        <span>{formatSmartDate(announcement.created_at)}</span>
                                         <span>·</span>
                                         {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Promotion

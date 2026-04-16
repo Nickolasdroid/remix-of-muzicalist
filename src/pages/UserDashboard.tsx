@@ -68,7 +68,7 @@ const UserDashboard = () => {
       .from('announcements')
       .select('*')
       .eq('profile_id', user.id)
-      .order('date', { ascending: false });
+      .order('created_at', { ascending: false });
     if (data) setAnnouncements(data);
   };
 
@@ -448,7 +448,7 @@ const UserDashboard = () => {
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>User</span>
                             <span>·</span>
-                            <span>{formatSmartDate(ad.date)}</span>
+                            <span>{formatSmartDate(ad.created_at)}</span>
                             <span>·</span>
                             <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
                           </div>
