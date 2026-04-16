@@ -4,6 +4,20 @@
 
 export type PlanType = 'Free' | 'Standard' | 'Premium';
 
+/** Returns a numeric priority for sorting (higher = shown first) */
+export const getPlanPriority = (plan?: string | null): number => {
+  switch (getPlan(plan)) {
+    case 'Premium': return 3;
+    case 'Standard': return 2;
+    default: return 1;
+  }
+};
+
+/** Sort comparator: Premium first, then Standard, then Free */
+export const sortByPlanPriority = <T extends { plan?: string | null }>(a: T, b: T): number => {
+  return getPlanPriority(b.plan) - getPlanPriority(a.plan);
+};
+
 export const getPlan = (plan?: string | null): PlanType => {
   if (plan === 'Premium') return 'Premium';
   if (plan === 'Standard') return 'Standard';
