@@ -5,7 +5,7 @@
  * After expiration, ads remain visible only to the owner as history.
  */
 
-const STANDARD_AD_VALIDITY_DAYS = 15;
+const STANDARD_AD_VALIDITY_DAYS = 7;
 const PREMIUM_AD_VALIDITY_DAYS = 30;
 
 export function isAdExpired(ad: { date: string; is_premium: boolean }): boolean {

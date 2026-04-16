@@ -21,6 +21,9 @@ export const getAvatarOutlineClasses = (plan?: string | null): string => {
   if (plan === 'Premium') {
     return 'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600';
   }
+  if (plan === 'Standard') {
+    return 'bg-gradient-to-r from-red-800 via-red-900 to-red-800';
+  }
   return 'bg-muted';
 };
 
@@ -35,6 +38,9 @@ export const getAvatarOutlineClassesLarge = (plan?: string | null): string => {
   if (plan === 'Premium') {
     return 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600';
   }
+  if (plan === 'Standard') {
+    return 'bg-gradient-to-br from-red-800 via-red-900 to-red-800';
+  }
   return 'bg-muted';
 };
 
@@ -47,6 +53,9 @@ export const getAvatarOutlineClassesLarge = (plan?: string | null): string => {
 export const getAvatarRingClasses = (plan?: string | null): string => {
   if (plan === 'Premium') {
     return 'ring-2 ring-accent ring-offset-2 ring-offset-background';
+  }
+  if (plan === 'Standard') {
+    return 'ring-2 ring-red-800 ring-offset-2 ring-offset-background';
   }
   return 'ring-2 ring-muted ring-offset-2 ring-offset-background';
 };

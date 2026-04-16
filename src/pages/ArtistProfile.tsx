@@ -858,6 +858,7 @@ const ArtistProfile = () => {
     </div>;
   }
   const isPremium = artist.plan === 'Premium';
+  const isStandard = artist.plan === 'Standard';
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
