@@ -312,7 +312,7 @@ const RegisterArtist = () => {
         stage_name: formData.stageName,
         email: formData.email,
         phone: formData.phone,
-        country: formData.country,
+        country: getCountryNameByCode(formData.country),
         county: formData.county,
         specialization: formData.specialization as any,
         experience_level: formData.experienceLevel as any,
