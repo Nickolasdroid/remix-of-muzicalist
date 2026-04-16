@@ -42,7 +42,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
   const borderClass = isPremium
     ? 'ring-2 ring-accent'
     : isStandard
-      ? 'ring-2 ring-red-800'
+      ? 'ring-2 ring-muted'
       : '';
 
   return (
