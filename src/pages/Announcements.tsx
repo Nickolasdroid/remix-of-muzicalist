@@ -103,10 +103,18 @@ const Announcements = () => {
         setHasMore(false);
       }
       
+      // Sort by plan priority (Premium ads first)
+      const sorted = [...(data || [])].sort((a, b) => {
+        const planA = getPlanPriority((a as any).profiles?.plan);
+        const planB = getPlanPriority((b as any).profiles?.plan);
+        if (planB !== planA) return planB - planA;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
       if (append) {
-        setAnnouncements(prev => [...prev, ...(data || [])]);
+        setAnnouncements(prev => [...prev, ...sorted]);
       } else {
-        setAnnouncements(data || []);
+        setAnnouncements(sorted);
       }
     } finally {
       setLoading(false);
