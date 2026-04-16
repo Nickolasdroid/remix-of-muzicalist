@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
-import CountrySelector from "@/components/CountrySelector";
+import CountrySelector, { getCountryNameByCode } from "@/components/CountrySelector";
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";

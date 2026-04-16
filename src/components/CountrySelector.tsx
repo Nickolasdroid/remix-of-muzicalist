@@ -523,4 +523,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
   );
 };
 
+export const getCountryNameByCode = (code: string): string => {
+  const country = allCountries.find(c => c.code === code);
+  return country?.name || code;
+};
+
 export default CountrySelector;
