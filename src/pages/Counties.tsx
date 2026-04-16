@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CountryPickerButton from "@/components/CountryPickerButton";
+import { getCountryNameVariants } from "@/lib/countryFlags";
 
 
 const Counties = () => {
@@ -40,12 +41,14 @@ const Counties = () => {
     if (!selectedCountry) return;
     setIsLoading(true);
 
+    const variants = getCountryNameVariants(selectedCountry);
+
     let query = supabase
       .from('profiles')
       .select('county')
       .not('county', 'is', null)
       .not('specialization', 'is', null)
-      .eq('country', selectedCountry);
+      .in('country', variants);
 
     const { data, error } = await query;
 
