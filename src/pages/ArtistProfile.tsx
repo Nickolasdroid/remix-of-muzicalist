@@ -858,6 +858,7 @@ const ArtistProfile = () => {
     </div>;
   }
   const isPremium = artist.plan === 'Premium';
+  const isStandard = artist.plan === 'Standard';
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
@@ -883,7 +884,7 @@ const ArtistProfile = () => {
               </div>
 
               {/* Centered Avatar - with top padding to account for absolute positioned elements */}
-              <div className={`mt-10 p-1 rounded-full ${getAvatarOutlineClassesLarge(isPremium ? 'Premium' : 'Free')}`}>
+              <div className={`mt-10 p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)}`}>
                 <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
                   <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                   <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
@@ -946,7 +947,7 @@ const ArtistProfile = () => {
             <div className="hidden md:flex flex-row gap-8 mb-8">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(isPremium ? 'Premium' : 'Free')}`}>
+                <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)}`}>
                   <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">

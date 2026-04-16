@@ -26,7 +26,7 @@ export const getImageLimit = (plan?: string | null): number => {
 export const getVideoLimit = (plan?: string | null): number => {
   switch (getPlan(plan)) {
     case 'Premium': return 5;
-    case 'Standard': return 2;
+    case 'Standard': return 3;
     default: return 0; // Free cannot upload videos
   }
 };
