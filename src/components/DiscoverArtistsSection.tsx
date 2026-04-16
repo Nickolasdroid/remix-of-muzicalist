@@ -4,7 +4,7 @@ import { User, Star, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import diamondIcon from "@/assets/diamond-icon.png";
-import { sortByPlanPriority } from "@/lib/planLimits";
+import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
 import {
   Carousel,
   CarouselContent,
@@ -126,7 +126,7 @@ const DiscoverArtistsSection = () => {
                   }}
                 >
                   <Link to={`/artist/${artist.id}`} className="group block">
-                    <div className="overflow-hidden rounded-lg">
+                    <div className={`overflow-hidden rounded-lg ${isPremium(artist.plan) ? 'ring-2 ring-accent' : isStandard(artist.plan) ? 'ring-2 ring-white' : ''}`}>
                       <div className="relative aspect-square overflow-hidden">
                         {artist.avatar_url ? (
                           <img
