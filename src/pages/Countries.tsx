@@ -45,15 +45,19 @@ const Countries = () => {
       if (profileCountries) {
         const uniqueOriginals = [...new Set(profileCountries.map(p => p.country).filter(Boolean))] as string[];
         
-        // Convert to display format with standardized names
-        const countryData: CountryData[] = uniqueOriginals.map(original => {
+        // Convert to display format, deduplicating by standardized name
+        const countryMap = new Map<string, CountryData>();
+        uniqueOriginals.forEach(original => {
           const display = getCountryDisplay(original);
-          return {
-            original,
-            name: display.name,
-            flag: display.flag,
-          };
+          if (!countryMap.has(display.name)) {
+            countryMap.set(display.name, {
+              original,
+              name: display.name,
+              flag: display.flag,
+            });
+          }
         });
+        const countryData = Array.from(countryMap.values());
         
         // Sort by standardized name
         countryData.sort((a, b) => a.name.localeCompare(b.name));
