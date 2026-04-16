@@ -291,6 +291,8 @@ const CategoryArtists = () => {
           });
         }
         
+        // Sort by plan priority (Premium > Standard > Free)
+        artistsWithAvailability.sort((a, b) => sortByPlanPriority(a, b));
         setArtists(artistsWithAvailability);
         const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
         setAvailableCountries(countries);
