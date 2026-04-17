@@ -111,7 +111,7 @@ const MyPlan = () => {
                       <div className="text-center mb-4 mt-2">
                         <p className="text-xl font-semibold text-foreground">{plan.name}</p>
                         <div className="mt-2">
-                          <span className="text-3xl font-bold text-foreground">${plan.price}</span>
+                          <span className="text-3xl font-bold text-foreground">{formatPlanPrice(plan.monthlyPrice, false)}</span>
                           <span className="text-sm text-muted-foreground">/month</span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
