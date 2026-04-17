@@ -11,11 +11,7 @@ const PlansPricing = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
 
-  const getPrice = (monthlyPrice: number) => {
-    if (monthlyPrice === 0) return "$0";
-    if (isAnnual) return `$${Math.round(monthlyPrice * 10)}`;
-    return `$${monthlyPrice}`;
-  };
+  const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
