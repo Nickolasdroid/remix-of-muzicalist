@@ -135,18 +135,24 @@ const MyPlan = () => {
 
                       <p className="text-xs text-muted-foreground/80 italic mb-4">{plan.tagline}</p>
 
-                      {!isCurrentPlan && (
-                        <Button
-                          className={`w-full ${
-                            isPremiumPlan
-                              ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
-                              : "bg-accent text-accent-foreground hover:bg-accent/90"
-                          }`}
-                        >
-                          <Crown className="h-4 w-4 mr-2" />
-                          Upgrade to {plan.name}
-                        </Button>
-                      )}
+                      {!isCurrentPlan && (() => {
+                        const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
+                        const currentRank = rank[currentPlan] ?? 1;
+                        const planRank = rank[plan.id] ?? 1;
+                        const action = planRank < currentRank ? 'Downgrade' : 'Upgrade';
+                        return (
+                          <Button
+                            className={`w-full ${
+                              isPremiumPlan
+                                ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
+                                : "bg-accent text-accent-foreground hover:bg-accent/90"
+                            }`}
+                          >
+                            <Crown className="h-4 w-4 mr-2" />
+                            {action} to {plan.name}
+                          </Button>
+                        );
+                      })()}
 
                       {isCurrentPlan && (
                         <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
