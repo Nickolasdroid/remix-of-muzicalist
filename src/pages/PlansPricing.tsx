@@ -10,15 +10,35 @@ import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionP
 const PlansPricing = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [isArtist, setIsArtist] = useState(false);
 
   const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
 
+  const loadPlan = async (userId: string) => {
+    const [{ data: roleData }, { data: profileData }] = await Promise.all([
+      supabase.from('user_roles').select('user_type').eq('user_id', userId).maybeSingle(),
+      supabase.from('profiles').select('plan').eq('id', userId).maybeSingle(),
+    ]);
+    setIsArtist(roleData?.user_type !== 'user');
+    setCurrentPlan(profileData?.plan || 'Free');
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_, session) => setIsAuthenticated(!!session?.user)
+      (_, session) => {
+        setIsAuthenticated(!!session?.user);
+        if (session?.user) {
+          loadPlan(session.user.id);
+        } else {
+          setCurrentPlan(null);
+          setIsArtist(false);
+        }
+      }
     );
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session?.user);
+      if (session?.user) loadPlan(session.user.id);
     });
     return () => subscription.unsubscribe();
   }, []);
