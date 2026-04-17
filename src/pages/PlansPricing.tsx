@@ -98,48 +98,57 @@ const PlansPricing = () => {
                     </span>
                   </div>
                 )}
-                <Card
-                  className={`flex flex-col h-full ${
+                <div
+                  className={`flex flex-col h-full p-5 rounded-lg border-2 transition-all ${
                     isCurrentPlan
                       ? isPremiumPlan
-                        ? 'border-amber-500/50 bg-amber-500/10 shadow-lg'
-                        : 'border-accent/50 bg-accent/10 shadow-lg'
-                      : plan.highlighted ? 'border-accent shadow-lg' : 'border-border'
+                        ? 'border-amber-500/50 bg-amber-500/10'
+                        : 'border-accent/50 bg-accent/10'
+                      : plan.highlighted
+                      ? 'border-accent shadow-lg'
+                      : 'border-border hover:border-muted-foreground/50'
                   }`}
                 >
-                <CardHeader className="text-center">
-                  <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
-                  <div className="mt-2">
-                    <span className="text-3xl md:text-4xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
-                    <span className="text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
+                  <div className="text-center mb-4 mt-2">
+                    <p className="text-xl font-semibold text-foreground">{plan.name}</p>
+                    <div className="mt-2">
+                      <span className="text-3xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
+                      <span className="text-sm text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
                   </div>
-                  <CardDescription className="mt-2">{plan.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-2.5">
-                    {plan.features.map((feature) => (
-                      <li key={feature.text} className={`flex items-start gap-2 text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+
+                  <ul className="space-y-2.5 mb-4 flex-1">
+                    {plan.features.map((feature, idx) => (
+                      <li
+                        key={idx}
+                        className={`flex items-start gap-2 text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}
+                      >
                         {feature.included ? (
-                          <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                          <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
                         ) : (
-                          <X className="h-4 w-4 text-destructive/60 shrink-0 mt-0.5" />
+                          <X className="h-4 w-4 text-destructive/60 flex-shrink-0 mt-0.5" />
                         )}
                         <span className={feature.included ? '' : 'line-through'}>{feature.text}</span>
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-4 text-xs text-muted-foreground/80 italic">{plan.tagline}</p>
-                </CardContent>
-                <CardFooter>
+
+                  <p className="text-xs text-muted-foreground/80 italic mb-4">{plan.tagline}</p>
+
                   {isCurrentPlan ? (
                     <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
                       Your current plan
                     </div>
                   ) : (
                     <Button
-                      className={`w-full ${isPremiumPlan ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
-                      variant={isPremiumPlan ? 'default' : (plan.highlighted ? 'default' : 'outline')}
+                      className={`w-full ${
+                        isPremiumPlan
+                          ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
+                          : 'bg-accent text-accent-foreground hover:bg-accent/90'
+                      }`}
                     >
+                      <Crown className="h-4 w-4 mr-2" />
                       {(() => {
                         if (!isAuthenticated || !isArtist) {
                           return isPremiumPlan ? 'Go Premium' : 'Get Started';
@@ -147,12 +156,12 @@ const PlansPricing = () => {
                         const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
                         const currentRank = rank[currentPlan || 'Free'] ?? 1;
                         const planRank = rank[plan.id] ?? 1;
-                        return planRank < currentRank ? 'Downgrade' : 'Upgrade';
+                        const action = planRank < currentRank ? 'Downgrade' : 'Upgrade';
+                        return `${action} to ${plan.name}`;
                       })()}
                     </Button>
                   )}
-                </CardFooter>
-              </Card>
+                </div>
               </div>
               );
             })}
