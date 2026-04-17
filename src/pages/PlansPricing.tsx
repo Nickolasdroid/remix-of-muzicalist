@@ -10,15 +10,35 @@ import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionP
 const PlansPricing = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [isArtist, setIsArtist] = useState(false);
 
   const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
 
+  const loadPlan = async (userId: string) => {
+    const [{ data: roleData }, { data: profileData }] = await Promise.all([
+      supabase.from('user_roles').select('user_type').eq('user_id', userId).maybeSingle(),
+      supabase.from('profiles').select('plan').eq('id', userId).maybeSingle(),
+    ]);
+    setIsArtist(roleData?.user_type !== 'user');
+    setCurrentPlan(profileData?.plan || 'Free');
+  };
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_, session) => setIsAuthenticated(!!session?.user)
+      (_, session) => {
+        setIsAuthenticated(!!session?.user);
+        if (session?.user) {
+          loadPlan(session.user.id);
+        } else {
+          setCurrentPlan(null);
+          setIsArtist(false);
+        }
+      }
     );
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session?.user);
+      if (session?.user) loadPlan(session.user.id);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -53,24 +73,40 @@ const PlansPricing = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {plans.map((plan) => (
-              <div key={plan.name} className="relative mt-4">
-                {plan.highlighted && (
+            {plans.map((plan) => {
+              const isCurrentPlan = isAuthenticated && isArtist && currentPlan === plan.id;
+              const isPremiumPlan = plan.id === 'Premium';
+              return (
+              <div key={plan.id} className="relative mt-4">
+                {!isCurrentPlan && plan.highlighted && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                     <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
                       Most Popular
                     </span>
                   </div>
                 )}
-                {plan.name === 'Premium' && (
+                {!isCurrentPlan && isPremiumPlan && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                     <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
                       ⭐ Best for Professionals
                     </span>
                   </div>
                 )}
+                {isCurrentPlan && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className={`bg-card border text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${isPremiumPlan ? 'border-amber-500 text-amber-500' : 'border-accent text-accent'}`}>
+                      ✓ Your current plan
+                    </span>
+                  </div>
+                )}
                 <Card
-                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg' : 'border-border'}`}
+                  className={`flex flex-col h-full ${
+                    isCurrentPlan
+                      ? isPremiumPlan
+                        ? 'border-amber-500/50 bg-amber-500/10 shadow-lg'
+                        : 'border-accent/50 bg-accent/10 shadow-lg'
+                      : plan.highlighted ? 'border-accent shadow-lg' : 'border-border'
+                  }`}
                 >
                 <CardHeader className="text-center">
                   <CardTitle className="text-xl md:text-2xl font-display">{plan.name}</CardTitle>
@@ -96,16 +132,23 @@ const PlansPricing = () => {
                   <p className="mt-4 text-xs text-muted-foreground/80 italic">{plan.tagline}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    className={`w-full ${plan.name === 'Premium' ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
-                    variant={plan.name === 'Premium' ? 'default' : (plan.highlighted ? "default" : "outline")}
-                  >
-                    {!isAuthenticated ? (plan.name === 'Premium' ? 'Go Premium' : 'Get Started') : plan.cta}
-                  </Button>
+                  {isCurrentPlan ? (
+                    <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
+                      Your current plan
+                    </div>
+                  ) : (
+                    <Button
+                      className={`w-full ${isPremiumPlan ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
+                      variant={isPremiumPlan ? 'default' : (plan.highlighted ? 'default' : 'outline')}
+                    >
+                      {!isAuthenticated ? (isPremiumPlan ? 'Go Premium' : 'Get Started') : (plan.id === 'Free' ? 'Downgrade' : 'Upgrade')}
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
