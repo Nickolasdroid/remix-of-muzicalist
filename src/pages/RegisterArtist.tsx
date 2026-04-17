@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles, Check } from "lucide-react";
+import { UserPlus, ArrowLeft, ArrowRight, Eye, EyeOff, User, Mail, Phone, Globe, MapPin, Mic, Star, Calendar, Camera, Lock, Music, Award, Sparkles, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -22,6 +22,7 @@ import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions"
 import registerArtistBg from "@/assets/register-artist-bg.png";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
+import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -339,38 +340,9 @@ const RegisterArtist = () => {
     }
   };
 
-  const plans = [
-    {
-      name: "Free",
-      monthlyPrice: 0,
-      description: "Get started with basic features",
-      features: ["Basic profile", "Limited visibility", "Community access"],
-      cta: "Continue with Free",
-      highlighted: false,
-    },
-    {
-      name: "Standard",
-      monthlyPrice: 12,
-      description: "Grow your presence and reach",
-      features: ["Enhanced profile", "Priority listing", "Analytics dashboard", "Booking requests"],
-      cta: "Choose Standard",
-      highlighted: true,
-    },
-    {
-      name: "Premium",
-      monthlyPrice: 24,
-      description: "Maximum exposure and tools",
-      features: ["Premium profile badge", "Top search ranking", "Advanced analytics", "Unlimited bookings", "Priority support"],
-      cta: "Choose Premium",
-      highlighted: false,
-    },
-  ];
+  const plans = subscriptionPlans;
 
-  const getPrice = (monthlyPrice: number) => {
-    if (monthlyPrice === 0) return "€0";
-    if (isAnnual) return `€${Math.round(monthlyPrice * 10)}`;
-    return `€${monthlyPrice}`;
-  };
+  const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
 
   const getSpecializationLabel = (spec: string) => {
     const map: Record<string, string> = {
@@ -432,38 +404,61 @@ const RegisterArtist = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl w-full mx-auto">
             {plans.map((plan) => (
-              <Card
-                key={plan.name}
-                className={`flex flex-col ${plan.highlighted ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'}`}
-              >
-                <CardHeader className="text-center">
-                  <CardTitle className="text-lg md:text-xl font-display">{plan.name}</CardTitle>
-                  <div className="mt-2">
-                    <span className="text-2xl md:text-3xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
-                    <span className="text-muted-foreground text-sm">{isAnnual ? '/year' : '/month'}</span>
+              <div key={plan.id} className="relative mt-4">
+                {plan.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                      Most Popular
+                    </span>
                   </div>
-                  <CardDescription className="mt-2 text-xs md:text-sm">{plan.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-2.5">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                        <Check className="h-3.5 w-3.5 text-accent shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full"
-                    variant={plan.highlighted ? "default" : "outline"}
-                    onClick={() => handlePlanSelect(plan.name)}
-                  >
-                    {plan.cta}
-                  </Button>
-                </CardFooter>
-              </Card>
+                )}
+                {plan.id === 'Premium' && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                      ⭐ Best for Professionals
+                    </span>
+                  </div>
+                )}
+                <Card
+                  className={`flex flex-col h-full ${plan.highlighted ? 'border-accent shadow-lg' : 'border-border'}`}
+                >
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-lg md:text-xl font-display">{plan.name}</CardTitle>
+                    <div className="mt-2">
+                      <span className="text-2xl md:text-3xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
+                      <span className="text-muted-foreground text-sm">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    <CardDescription className="mt-2 text-xs md:text-sm">{plan.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <ul className="space-y-2.5">
+                      {plan.features.map((feature) => (
+                        <li
+                          key={feature.text}
+                          className={`flex items-start gap-2 text-xs md:text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}
+                        >
+                          {feature.included ? (
+                            <Check className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
+                          ) : (
+                            <X className="h-3.5 w-3.5 text-destructive/60 shrink-0 mt-0.5" />
+                          )}
+                          <span className={feature.included ? '' : 'line-through'}>{feature.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 text-xs text-muted-foreground/80 italic">{plan.tagline}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      className={`w-full ${plan.id === 'Premium' ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
+                      variant={plan.id === 'Premium' ? 'default' : (plan.highlighted ? 'default' : 'outline')}
+                      onClick={() => handlePlanSelect(plan.name)}
+                    >
+                      {plan.registerCta}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             ))}
           </div>
         </div>
