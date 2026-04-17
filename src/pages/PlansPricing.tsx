@@ -141,7 +141,15 @@ const PlansPricing = () => {
                       className={`w-full ${isPremiumPlan ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
                       variant={isPremiumPlan ? 'default' : (plan.highlighted ? 'default' : 'outline')}
                     >
-                      {!isAuthenticated ? (isPremiumPlan ? 'Go Premium' : 'Get Started') : (plan.id === 'Free' ? 'Downgrade' : 'Upgrade')}
+                      {(() => {
+                        if (!isAuthenticated || !isArtist) {
+                          return isPremiumPlan ? 'Go Premium' : 'Get Started';
+                        }
+                        const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
+                        const currentRank = rank[currentPlan || 'Free'] ?? 1;
+                        const planRank = rank[plan.id] ?? 1;
+                        return planRank < currentRank ? 'Downgrade' : 'Upgrade';
+                      })()}
                     </Button>
                   )}
                 </CardFooter>
