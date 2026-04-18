@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -55,12 +55,21 @@ const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [canCreate, setCanCreate] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('plan, specialization')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
+          setCanCreate(true);
+        }
       }
       setUserCountry('__all__');
     };
@@ -519,6 +528,17 @@ const Feed = () => {
           </div>
         </div>
       </div>
+
+      {canCreate && (
+        <Button
+          onClick={() => navigate('/dashboard?tab=profile&section=posts&new=1')}
+          size="icon"
+          aria-label="Create post"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      )}
 
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 

@@ -48,6 +48,7 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+  const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
@@ -84,6 +85,14 @@ const Dashboard = () => {
     const tab = searchParams.get('tab');
     if (tab) {
       setActiveTab(tab);
+    }
+    const section = searchParams.get('section');
+    if (section) {
+      setProfileSection(section);
+    }
+    if (searchParams.get('new') === '1') {
+      if (section === 'posts') setShowPostDialog(true);
+      if (section === 'announcements') setShowAnnouncementDialog(true);
     }
   }, [searchParams]);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -1558,7 +1567,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Tabs Section */}
-                    <Tabs defaultValue="details" className="w-full">
+                    <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
                       <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                         <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <User className="h-5 w-5 md:h-4 md:w-4" />
