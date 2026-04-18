@@ -2846,6 +2846,11 @@ const Dashboard = () => {
                             <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                               <CalendarIcon className="h-5 w-5 text-accent" />
                               Booking Requests
+                              {bookingRequests.length > 0 && (
+                                <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                  {bookingRequests.length}
+                                </Badge>
+                              )}
                             </h3>
                             
                             {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
