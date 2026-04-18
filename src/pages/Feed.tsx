@@ -55,12 +55,21 @@ const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [canCreate, setCanCreate] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('plan, specialization')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
+          setCanCreate(true);
+        }
       }
       setUserCountry('__all__');
     };
