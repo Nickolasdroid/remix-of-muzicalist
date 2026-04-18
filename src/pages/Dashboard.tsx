@@ -2112,8 +2112,13 @@ const Dashboard = () => {
                                 <DialogHeader>
                                   <DialogTitle>Create New Post</DialogTitle>
                                 </DialogHeader>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                  {postMediaType === 'promotion'
+                                    ? `You have ${Math.max(premiumAdsRemaining, 0)} of ${PREMIUM_AD_LIMIT} promotions remaining.`
+                                    : `You have ${Math.max(postsRemaining, 0)} of ${STANDARD_POST_LIMIT} posts remaining this month.`}
+                                </p>
                                 {postMediaType === 'promotion' &&
-                      <p className="text-sm text-muted-foreground mt-2">
+                      <p className="text-sm text-muted-foreground mt-1">
                                     Promotions are valid for 30 days.
                                   </p>
                       }
