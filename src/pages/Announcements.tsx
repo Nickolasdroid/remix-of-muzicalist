@@ -282,7 +282,7 @@ const Announcements = () => {
                         return;
                       }
                       navigate(`/messages?artistId=${announcement.profile_id}&adId=${announcement.id}`);
-                    }} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
+                    }} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent border">
                       <ArrowRight className="w-5 h-5" />
                       <span className="font-medium">Apply Now</span>
                     </Button>
