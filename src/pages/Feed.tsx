@@ -529,6 +529,17 @@ const Feed = () => {
         </div>
       </div>
 
+      {canCreate && (
+        <Button
+          onClick={() => navigate('/dashboard?tab=profile&section=posts&new=1')}
+          size="icon"
+          aria-label="Create post"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      )}
+
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
       {/* Delete Post Confirmation Dialog */}
