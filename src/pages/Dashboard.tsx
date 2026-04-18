@@ -86,6 +86,14 @@ const Dashboard = () => {
     if (tab) {
       setActiveTab(tab);
     }
+    const section = searchParams.get('section');
+    if (section) {
+      setProfileSection(section);
+    }
+    if (searchParams.get('new') === '1') {
+      if (section === 'posts') setShowPostDialog(true);
+      if (section === 'announcements') setShowAnnouncementDialog(true);
+    }
   }, [searchParams]);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({
