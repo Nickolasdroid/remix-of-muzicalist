@@ -172,7 +172,7 @@ const Announcements = () => {
 
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const filteredAnnouncements = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted ads yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted ads yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
