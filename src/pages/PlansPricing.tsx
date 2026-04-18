@@ -91,13 +91,6 @@ const PlansPricing = () => {
                     </span>
                   </div>
                 )}
-                {isCurrentPlan && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className={`bg-card border text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${isPremiumPlan ? 'border-amber-500 text-amber-500' : 'border-accent text-accent'}`}>
-                      ✓ Your current plan
-                    </span>
-                  </div>
-                )}
                 <div
                   className={`flex flex-col h-full p-5 rounded-lg border-2 transition-all ${
                     isCurrentPlan
