@@ -17,7 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import EditContentDialog from "@/components/EditContentDialog";
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
@@ -2255,9 +2257,23 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeletePostId(post.id)} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                  </Button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
+                                        <MoreHorizontal className="h-5 w-5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: post.id, text: post.content, table: "posts" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                 </div>
                                 <ExpandableText text={post.content} className="mt-3" />
                               </div>
@@ -2311,9 +2327,23 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(promotion.id)} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                  </Button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
+                                        <MoreHorizontal className="h-5 w-5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: promotion.id, text: promotion.description, table: "announcements" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promotion.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                 </div>
                                 <ExpandableText text={promotion.description} className="mt-3" />
                               </div>
@@ -2443,9 +2473,23 @@ const Dashboard = () => {
                                     </div>
                                   </div>
                                   
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setDeleteAnnouncementId(announcement.id)} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                                  </Button>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
+                                        <MoreHorizontal className="h-5 w-5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: announcement.id, text: announcement.description, table: "announcements" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                 </div>
                                 <ExpandableText text={announcement.description} className="mt-3" />
                                 {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) &&
