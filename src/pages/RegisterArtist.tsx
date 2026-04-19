@@ -523,11 +523,11 @@ const RegisterArtist = () => {
             {/* Terms */}
             <p className="text-center text-xs text-muted-foreground">
               By continuing, you agree to the{" "}
-              <Link to="/terms" className="text-accent hover:underline font-medium">
+              <Link to="/terms-of-service" className="text-accent hover:underline font-medium">
                 Terms & Conditions
               </Link>{" "}
               and{" "}
-              <Link to="/privacy" className="text-accent hover:underline font-medium">
+              <Link to="/privacy-policy" className="text-accent hover:underline font-medium">
                 Privacy Policy
               </Link>
             </p>
@@ -836,11 +836,11 @@ const RegisterArtist = () => {
                   />
                   <label htmlFor="artist-terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
                     {t("userRegistration.agreeToTerms", "I agree to the")}{" "}
-                    <Link to="/terms" className="text-accent hover:underline font-semibold">
+                    <Link to="/terms-of-service" className="text-accent hover:underline font-semibold">
                       {t("userRegistration.termsOfService", "Terms of Service")}
                     </Link>{" "}
                     {t("userRegistration.and", "and")}{" "}
-                    <Link to="/privacy" className="text-accent hover:underline font-semibold">
+                    <Link to="/privacy-policy" className="text-accent hover:underline font-semibold">
                       {t("userRegistration.privacyPolicy", "Privacy Policy")}
                     </Link>
                   </label>

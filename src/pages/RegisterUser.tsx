@@ -205,11 +205,11 @@ const RegisterUser = () => {
             />
             <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
               {t("userRegistration.agreeToTerms", "I agree to the")}{" "}
-              <Link to="/terms" className="text-accent hover:underline font-semibold">
+              <Link to="/terms-of-service" className="text-accent hover:underline font-semibold">
                 {t("userRegistration.termsOfService", "Terms of Service")}
               </Link>{" "}
               {t("userRegistration.and", "and")}{" "}
-              <Link to="/privacy" className="text-accent hover:underline font-semibold">
+              <Link to="/privacy-policy" className="text-accent hover:underline font-semibold">
                 {t("userRegistration.privacyPolicy", "Privacy Policy")}
               </Link>
             </label>
