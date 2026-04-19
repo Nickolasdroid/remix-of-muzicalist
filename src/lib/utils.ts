@@ -51,6 +51,26 @@ export function formatSmartDate(dateString: string): string {
  * - "Mon DD" for current year
  * - "Mon DD, YYYY" for other years
  */
+/**
+ * Sanitize a filename for use in Supabase Storage keys.
+ * Storage rejects keys with characters like •, /, parentheses, accents, etc.
+ * Keeps only alphanumerics, dot, dash, and underscore.
+ */
+export function sanitizeFileName(name: string): string {
+  const lastDot = name.lastIndexOf('.');
+  const base = lastDot > 0 ? name.slice(0, lastDot) : name;
+  const ext = lastDot > 0 ? name.slice(lastDot) : '';
+  const cleanBase = base
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^[_.-]+|[_.-]+$/g, '')
+    .slice(0, 80) || 'file';
+  const cleanExt = ext.replace(/[^a-zA-Z0-9.]/g, '').toLowerCase();
+  return `${cleanBase}${cleanExt}`;
+}
+
 export function formatDateNoYear(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
