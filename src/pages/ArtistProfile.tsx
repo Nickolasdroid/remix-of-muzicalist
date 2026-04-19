@@ -1368,7 +1368,7 @@ const ArtistProfile = () => {
                         )}
                       </Card> :
 
-                <div className="-mx-4 md:mx-0">
+                <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {(() => {
                     const promotions = announcements.filter((a) => a.is_premium && !isAdExpired(a)).map((a) => ({
@@ -1602,7 +1602,7 @@ const ArtistProfile = () => {
                         )}
                       </Card> :
 
-                <div className="-mx-4 md:mx-0">
+                <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
