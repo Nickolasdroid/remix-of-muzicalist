@@ -2148,7 +2148,7 @@ const Dashboard = () => {
                                             <X className="h-4 w-4" />
                                           </Button>
                                         </div>}
-                                      {!newPost.mediaUrl && <>
+                                      {!newPost.mediaUrl && postUploadProgress === null && <>
                                           <Label htmlFor="post-image-inner" className="cursor-pointer">
                                             <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
                                               <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
@@ -2157,6 +2157,13 @@ const Dashboard = () => {
                                           </Label>
                                           <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
                                         </>}
+                                      {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium">Uploading image…</p>
+                                            <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
+                                          </div>
+                                          <Progress value={postUploadProgress} />
+                                        </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
                                         {isSaving ? "Creating..." : "Create Post"}
                                       </Button>
