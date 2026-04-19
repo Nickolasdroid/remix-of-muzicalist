@@ -556,6 +556,18 @@ const Feed = () => {
 
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
+      <EditContentDialog
+        open={!!editItem}
+        onOpenChange={(o) => !o && setEditItem(null)}
+        table={editItem?.type === "promotion" ? "announcements" : "posts"}
+        itemId={editItem?.id ?? null}
+        initialText={editItem?.text ?? ""}
+        onSaved={(newText) => {
+          if (!editItem) return;
+          setFeedItems(items => items.map(i => i.id === editItem.id ? { ...i, content: newText } : i));
+        }}
+      />
+
       {/* Delete Post Confirmation Dialog */}
       <AlertDialog open={!!deletePostId} onOpenChange={open => !open && setDeletePostId(null)}>
         <AlertDialogContent>
