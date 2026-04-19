@@ -854,6 +854,29 @@ const Dashboard = () => {
     }
   };
 
+  const handlePostVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setIsSaving(true);
+    setPostUploadProgress(0);
+    try {
+      const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPostUploadProgress(p));
+      setNewPost({
+        ...newPost,
+        mediaUrl: publicUrl,
+        mediaType: 'video'
+      });
+      toast({ title: "Success", description: "Video uploaded!" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+      setPostUploadProgress(null);
+      e.target.value = "";
+    }
+  };
+
   // Gallery functions
   const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
