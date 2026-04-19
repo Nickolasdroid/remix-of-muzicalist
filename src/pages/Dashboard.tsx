@@ -3233,7 +3233,21 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Delete Gallery Item Confirmation Dialog */}
+      <EditContentDialog
+        open={!!editItem}
+        onOpenChange={(o) => !o && setEditItem(null)}
+        table={editItem?.table ?? "posts"}
+        itemId={editItem?.id ?? null}
+        initialText={editItem?.text ?? ""}
+        onSaved={(newText) => {
+          if (!editItem) return;
+          if (editItem.table === "posts") {
+            setPosts(items => items.map(p => p.id === editItem.id ? { ...p, content: newText } : p));
+          } else {
+            setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
+          }
+        }}
+      />
       <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
