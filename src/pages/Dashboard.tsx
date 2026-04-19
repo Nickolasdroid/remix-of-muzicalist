@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import EditContentDialog from "@/components/EditContentDialog";
 import { Switch } from "@/components/ui/switch";
@@ -2484,7 +2484,9 @@ const Dashboard = () => {
                                         <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
                                       </div>
                                       <div>
-                                        <Label htmlFor="announcement-budget-inner">Budget $ (optional)</Label>
+                                        <Label htmlFor="announcement-budget-inner" className="flex items-center gap-1">
+                                          Budget <Euro className="h-3.5 w-3.5" /> (optional)
+                                        </Label>
                                         <Input id="announcement-budget-inner" type="number" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder="e.g. 500" className="mt-1" />
                                       </div>
                                     </div>
