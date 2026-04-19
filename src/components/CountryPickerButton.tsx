@@ -27,8 +27,18 @@ const CountryList = ({
 
 }: {filtered: {dbValue: string;displayName: string;}[];selectedCountry: string | null;onSelect: (dbValue: string) => void;}) =>
 <div className="p-2 space-y-0.5">
+    <button
+      type="button"
+      onClick={() => onSelect("__all__")}
+      className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+      selectedCountry === "__all__" ? "bg-accent/20 text-accent" : "text-foreground"}`
+      }>
+      <Globe className="h-5 w-5 text-accent" />
+      <span className="flex-1 text-left font-medium">All Countries</span>
+      {selectedCountry === "__all__" && <Check className="h-5 w-5 text-accent" />}
+    </button>
     {filtered.map(({ dbValue, displayName: name }) => {
-    const isSelected = selectedCountry ?
+    const isSelected = selectedCountry && selectedCountry !== "__all__" ?
     normalizeString(getCountryName(selectedCountry)) === normalizeString(name) :
     false;
     return (
@@ -94,8 +104,9 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
   c.displayName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const flag = getCountryFlag(selectedCountry);
-  const displayName = selectedCountry ? getCountryName(selectedCountry) : null;
+  const isAll = selectedCountry === "__all__";
+  const flag = isAll ? null : getCountryFlag(selectedCountry);
+  const displayName = isAll ? "All Countries" : (selectedCountry ? getCountryName(selectedCountry) : null);
 
   const handleSelect = (dbValue: string) => {
     onCountryChange(dbValue);
