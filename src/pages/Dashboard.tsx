@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatSmartDate, formatDateNoYear, cn } from "@/lib/utils";
+import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -602,7 +602,7 @@ const Dashboard = () => {
     if (!file || !user) return;
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
       const {
         error: uploadError
       } = await supabase.storage.from('avatars').upload(fileName, file);
@@ -707,7 +707,7 @@ const Dashboard = () => {
     if (!file || !user) return;
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
       const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
@@ -825,7 +825,7 @@ const Dashboard = () => {
     if (!file || !user) return;
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/posts/${Date.now()}_${file.name}`;
+      const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
       const {
         error: uploadError
       } = await supabase.storage.from('avatars').upload(fileName, file);
