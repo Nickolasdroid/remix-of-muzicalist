@@ -74,6 +74,23 @@ const MyPlan = () => {
               </p>
             </div>
 
+            <div className="flex justify-center">
+              <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  Annual <span className="text-xs opacity-75">Save ~17%</span>
+                </button>
+              </div>
+            </div>
+
             <Separator className="hidden md:block" />
 
             <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
