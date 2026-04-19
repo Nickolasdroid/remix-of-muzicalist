@@ -2502,7 +2502,7 @@ const Dashboard = () => {
                               </Dialog>
                             </div>
                           </div>
-                          {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
