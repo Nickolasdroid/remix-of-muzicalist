@@ -1427,6 +1427,16 @@ const ArtistProfile = () => {
                                           <Flag className="h-4 w-4 mr-2" />
                                           Report Problem
                                         </DropdownMenuItem>
+                                        {isOwnProfile && <>
+                                          <DropdownMenuItem onClick={() => setEditItem({ id: promo.id, text: promo.description, table: "announcements" })}>
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Edit
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promo.id)} className="text-destructive focus:text-destructive">
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Delete
+                                          </DropdownMenuItem>
+                                        </>}
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
@@ -1503,6 +1513,16 @@ const ArtistProfile = () => {
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
+                                    {isOwnProfile && <>
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: post.id, text: post.content, table: "posts" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </>}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -1629,6 +1649,16 @@ const ArtistProfile = () => {
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
+                                    {isOwnProfile && <>
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: announcement.id, text: announcement.description, table: "announcements" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </>}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -2071,6 +2101,48 @@ const ArtistProfile = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+
+      <EditContentDialog
+        open={!!editItem}
+        onOpenChange={(o) => !o && setEditItem(null)}
+        table={editItem?.table ?? "posts"}
+        itemId={editItem?.id ?? null}
+        initialText={editItem?.text ?? ""}
+        onSaved={(newText) => {
+          if (!editItem) return;
+          if (editItem.table === "posts") {
+            setPosts(items => items.map(p => p.id === editItem.id ? { ...p, content: newText } : p));
+          } else {
+            setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
+          }
+        }}
+      />
+
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this post? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deletePostId && handleDeletePost(deletePostId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default ArtistProfile;
