@@ -1,8 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Upload a file to Supabase Storage with progress tracking via XHR.
+ * Upload a file to Supabase Storage with reliable progress tracking via XHR.
  * Returns the public URL of the uploaded file.
+ *
+ * Notes:
+ * - We do NOT set Content-Type manually; the browser sets it correctly for the raw file body.
+ * - We start with a small initial progress so the UI bar appears immediately, even before
+ *   the first onprogress event (some browsers/networks delay it for large media files).
+ * - After the body is fully sent, we hold at 95% until the server responds, then jump to 100%.
  */
 export async function uploadFileWithProgress(
   bucket: string,
@@ -13,11 +19,13 @@ export async function uploadFileWithProgress(
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
   const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
-  // Get current session token (falls back to anon key for unauthenticated)
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token ?? anonKey;
 
   const url = `${supabaseUrl}/storage/v1/object/${bucket}/${path}`;
+
+  // Show progress immediately so the user sees the bar even before the first event.
+  onProgress?.(1);
 
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -25,13 +33,30 @@ export async function uploadFileWithProgress(
     xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
     xhr.setRequestHeader("apikey", anonKey);
     xhr.setRequestHeader("x-upsert", "false");
-    if (file.type) xhr.setRequestHeader("Content-Type", file.type);
     xhr.setRequestHeader("Cache-Control", "3600");
+    // Intentionally do NOT set Content-Type — the browser sets the correct type
+    // for the raw File body, which keeps progress events firing reliably.
+
+    let lastReportedPct = 1;
 
     xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable && onProgress) {
-        const pct = Math.round((event.loaded / event.total) * 100);
-        onProgress(pct);
+      if (event.lengthComputable) {
+        // Cap at 95% during upload so we can show the final 100% only after
+        // the server confirms success.
+        const raw = (event.loaded / event.total) * 100;
+        const pct = Math.max(1, Math.min(95, Math.round(raw)));
+        if (pct !== lastReportedPct) {
+          lastReportedPct = pct;
+          onProgress?.(pct);
+        }
+      }
+    };
+
+    xhr.upload.onload = () => {
+      // Body fully sent; waiting for server response.
+      if (lastReportedPct < 95) {
+        lastReportedPct = 95;
+        onProgress?.(95);
       }
     };
 
