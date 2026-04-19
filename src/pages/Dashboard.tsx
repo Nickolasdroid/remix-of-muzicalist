@@ -2109,7 +2109,8 @@ const Dashboard = () => {
                               Upgrade
                             </Button>
                           </div> :
-                        <div className="max-w-[500px] mx-auto space-y-4">
+                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+                          <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
@@ -2413,9 +2414,10 @@ const Dashboard = () => {
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
                               <CardContent className="p-12 text-center">
                                 <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                                <p className="text-muted-foreground">No posts yet. Create your first post!</p>
+                              <p className="text-muted-foreground">No posts yet. Create your first post!</p>
                               </CardContent>
                             </Card>}
+                          </div>
                         </div>}
                       </TabsContent>
 
@@ -2433,7 +2435,8 @@ const Dashboard = () => {
                               Upgrade
                             </Button>
                           </div> :
-                        <div className="max-w-[500px] mx-auto space-y-4">
+                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+                          <div className="max-w-[500px] mx-auto space-y-4">
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
@@ -2586,6 +2589,7 @@ const Dashboard = () => {
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
                               <p className="text-sm">No announcements yet</p>
                             </div>}
+                          </div>
                         </div>}
                       </TabsContent>
 
