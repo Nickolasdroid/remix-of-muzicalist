@@ -295,7 +295,16 @@ const CategoryArtists = () => {
         // Sort by plan priority (Premium > Standard > Free)
         artistsWithAvailability.sort((a, b) => sortByPlanPriority(a, b));
         setArtists(artistsWithAvailability);
-        const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
+        // Dedupe countries by their normalized display name (e.g. "România" and "Romania" -> one entry)
+        const countryMap = new Map<string, string>();
+        for (const a of artistsWithAvailability) {
+          if (!a.country) continue;
+          const displayName = getCountryName(a.country);
+          if (!countryMap.has(displayName)) {
+            countryMap.set(displayName, a.country);
+          }
+        }
+        const countries = [...countryMap.values()].sort((x, y) => getCountryName(x).localeCompare(getCountryName(y)));
         setAvailableCountries(countries);
         const counties = [...new Set(artistsWithAvailability.map(a => a.county) || [])].sort();
         setAvailableCounties(counties);
@@ -311,8 +320,9 @@ const CategoryArtists = () => {
   // Update available counties when country filter changes
   const filteredCounties = useMemo(() => {
     if (filterCountry === "all") return availableCounties;
+    const variants = new Set(getCountryNameVariants(filterCountry));
     const countiesForCountry = [...new Set(
-      artists.filter(a => a.country === filterCountry).map(a => a.county)
+      artists.filter(a => a.country && variants.has(a.country)).map(a => a.county)
     )].sort();
     return countiesForCountry;
   }, [artists, filterCountry, availableCounties]);
@@ -321,7 +331,8 @@ const CategoryArtists = () => {
     let result = [...artists];
 
     if (filterCountry !== "all") {
-      result = result.filter(artist => artist.country === filterCountry);
+      const variants = new Set(getCountryNameVariants(filterCountry));
+      result = result.filter(artist => artist.country && variants.has(artist.country));
     }
 
     if (filterCounty !== "all") {
