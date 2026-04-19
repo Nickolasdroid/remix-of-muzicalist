@@ -2484,7 +2484,9 @@ const Dashboard = () => {
                                         <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
                                       </div>
                                       <div>
-                                        <Label htmlFor="announcement-budget-inner">Budget $ (optional)</Label>
+                                        <Label htmlFor="announcement-budget-inner" className="flex items-center gap-1">
+                                          Budget <Euro className="h-3.5 w-3.5" /> (optional)
+                                        </Label>
                                         <Input id="announcement-budget-inner" type="number" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder="e.g. 500" className="mt-1" />
                                       </div>
                                     </div>
