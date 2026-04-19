@@ -38,6 +38,8 @@ import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
+import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
+import { Progress } from "@/components/ui/progress";
 const Dashboard = () => {
   const {
     toast
@@ -174,6 +176,9 @@ const Dashboard = () => {
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
+  const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
+  const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
 
   // Post limits (plan-based)
@@ -604,17 +609,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setAnnouncementUploadProgress(0);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const {
-        error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const {
-        data: {
-          publicUrl
-        }
-      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setAnnouncementUploadProgress(p));
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       setNewAnnouncement({
         ...newAnnouncement,
@@ -633,6 +631,8 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setAnnouncementUploadProgress(null);
+      e.target.value = "";
     }
   };
   const handleAddAnnouncement = async () => {
@@ -709,11 +709,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setPromotionUploadProgress(0);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPromotionUploadProgress(p));
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       setNewPromotion({ ...newPromotion, mediaUrl: publicUrl, mediaType });
       toast({ title: "Success", description: "Media uploaded!" });
@@ -721,6 +720,8 @@ const Dashboard = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
+      setPromotionUploadProgress(null);
+      e.target.value = "";
     }
   };
 
@@ -827,17 +828,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setPostUploadProgress(0);
     try {
       const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const {
-        error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const {
-        data: {
-          publicUrl
-        }
-      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPostUploadProgress(p));
       setNewPost({
         ...newPost,
         mediaUrl: publicUrl,
@@ -855,6 +849,8 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setPostUploadProgress(null);
+      e.target.value = "";
     }
   };
 
@@ -2152,7 +2148,7 @@ const Dashboard = () => {
                                             <X className="h-4 w-4" />
                                           </Button>
                                         </div>}
-                                      {!newPost.mediaUrl && <>
+                                      {!newPost.mediaUrl && postUploadProgress === null && <>
                                           <Label htmlFor="post-image-inner" className="cursor-pointer">
                                             <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
                                               <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
@@ -2161,6 +2157,13 @@ const Dashboard = () => {
                                           </Label>
                                           <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
                                         </>}
+                                      {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium">Uploading image…</p>
+                                            <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
+                                          </div>
+                                          <Progress value={postUploadProgress} />
+                                        </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
                                         {isSaving ? "Creating..." : "Create Post"}
                                       </Button>
@@ -2212,13 +2215,22 @@ const Dashboard = () => {
                                               <X className="h-4 w-4" />
                                             </Button>
                                           </div> : <>
-                                            <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                            {promotionUploadProgress === null && <>
+                                              <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                                <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                                  <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                                  <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                                </div>
+                                              </Label>
+                                              <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                            </>}
+                                            {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3 mt-2">
+                                              <div className="flex items-center justify-between">
+                                                <p className="text-sm font-medium">Uploading media…</p>
+                                                <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
                                               </div>
-                                            </Label>
-                                            <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                              <Progress value={promotionUploadProgress} />
+                                            </div>}
                                           </>}
                                       </div>
                                       
