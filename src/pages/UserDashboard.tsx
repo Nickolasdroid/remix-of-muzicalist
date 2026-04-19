@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
+import { formatDateNoYear, formatSmartDate, sanitizeFileName } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -208,7 +208,7 @@ const UserDashboard = () => {
     if (!file || !user) return;
     setIsSaving(true);
     try {
-      const fileName = `${user.id}/announcements/${Date.now()}_${file.name}`;
+      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
       const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
       if (uploadError) throw uploadError;
       
