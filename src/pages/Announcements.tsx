@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight, Share2, Plus } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight, Share2, Plus, Pencil } from "lucide-react";
+import EditContentDialog from "@/components/EditContentDialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
@@ -32,6 +33,7 @@ const Announcements = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [adsFilter, setAdsFilter] = useState<"all" | "promoted">("all");
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -235,10 +237,16 @@ const Announcements = () => {
                           <Flag className="h-4 w-4 mr-2" />
                           Report
                         </DropdownMenuItem>
-                        {currentUserId === announcement.profile_id && <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                        {currentUserId === announcement.profile_id && <>
+                          <DropdownMenuItem onClick={() => setEditItem({ id: announcement.id, text: announcement.description })}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
-                          </DropdownMenuItem>}
+                          </DropdownMenuItem>
+                        </>}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -319,6 +327,18 @@ const Announcements = () => {
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+
+      <EditContentDialog
+        open={!!editItem}
+        onOpenChange={(o) => !o && setEditItem(null)}
+        table="announcements"
+        itemId={editItem?.id ?? null}
+        initialText={editItem?.text ?? ""}
+        onSaved={(newText) => {
+          if (!editItem) return;
+          setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
+        }}
+      />
 
       {/* Delete Announcement Confirmation Dialog */}
       <AlertDialog open={!!deleteAnnouncementId} onOpenChange={open => !open && setDeleteAnnouncementId(null)}>
