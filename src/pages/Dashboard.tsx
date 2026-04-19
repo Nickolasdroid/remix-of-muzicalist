@@ -3248,6 +3248,8 @@ const Dashboard = () => {
           }
         }}
       />
+
+      {/* Delete Gallery Item Confirmation Dialog */}
       <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
