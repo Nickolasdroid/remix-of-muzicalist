@@ -40,6 +40,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 const Dashboard = () => {
   const {
     toast
@@ -2469,7 +2470,14 @@ const Dashboard = () => {
                                     <div className="space-y-3">
                                       <div>
                                         <Label htmlFor="announcement-location-inner">Location (optional)</Label>
-                                        <Input id="announcement-location-inner" value={newAnnouncement.location} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, location: e.target.value })} placeholder="e.g. New York, NY" className="mt-1" />
+                                        <LocationAutocomplete
+                                          id="announcement-location-inner"
+                                          value={newAnnouncement.location}
+                                          onChange={(val) => setNewAnnouncement({ ...newAnnouncement, location: val })}
+                                          country={formData.country || profile?.country}
+                                          placeholder="Search a city, town or village..."
+                                          className="mt-1"
+                                        />
                                       </div>
                                       <div>
                                         <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
