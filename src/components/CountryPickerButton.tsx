@@ -104,8 +104,9 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
   c.displayName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const flag = getCountryFlag(selectedCountry);
-  const displayName = selectedCountry ? getCountryName(selectedCountry) : null;
+  const isAll = selectedCountry === "__all__";
+  const flag = isAll ? null : getCountryFlag(selectedCountry);
+  const displayName = isAll ? "All Countries" : (selectedCountry ? getCountryName(selectedCountry) : null);
 
   const handleSelect = (dbValue: string) => {
     onCountryChange(dbValue);
