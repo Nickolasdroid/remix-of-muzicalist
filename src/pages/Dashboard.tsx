@@ -828,17 +828,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setPostUploadProgress(0);
     try {
       const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const {
-        error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const {
-        data: {
-          publicUrl
-        }
-      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPostUploadProgress(p));
       setNewPost({
         ...newPost,
         mediaUrl: publicUrl,
@@ -856,6 +849,8 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setPostUploadProgress(null);
+      e.target.value = "";
     }
   };
 
