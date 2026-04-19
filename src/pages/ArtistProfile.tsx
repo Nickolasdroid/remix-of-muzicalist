@@ -1445,8 +1445,8 @@ const ArtistProfile = () => {
                                 {promo.media_url &&
                             <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })}>
                                     {promo.media_type === "video" ?
-                              <div className="relative w-full aspect-video">
-                                        <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+                              <div className="relative w-full aspect-video pointer-events-none">
+                                        <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
                                       </div> :
 
                               <img src={promo.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
@@ -1536,8 +1536,8 @@ const ArtistProfile = () => {
                             url: post.media_url!,
                             type: post.media_type === "video" ? "video" : "image"
                           })}>
-                                {post.media_type === "video" ? <div className="relative w-full aspect-video">
-                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+                                {post.media_type === "video" ? <div className="relative w-full aspect-video pointer-events-none">
+                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
                                   </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                               </div>}
 
