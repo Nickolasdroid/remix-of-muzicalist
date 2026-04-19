@@ -13,7 +13,8 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
+import EditContentDialog from "@/components/EditContentDialog";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
@@ -161,6 +162,37 @@ const ArtistProfile = () => {
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
+      if (error) throw error;
+      setPosts(items => items.filter(p => p.id !== postId));
+      toast({ title: "Post deleted", description: "Your post has been deleted." });
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      toast({ title: "Error", description: "Failed to delete post.", variant: "destructive" });
+    } finally {
+      setDeletePostId(null);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (announcementId: string) => {
+    try {
+      const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
+      if (error) throw error;
+      setAnnouncements(items => items.filter(a => a.id !== announcementId));
+      toast({ title: "Deleted", description: "Your item has been deleted." });
+    } catch (err) {
+      console.error('Error deleting announcement:', err);
+      toast({ title: "Error", description: "Failed to delete.", variant: "destructive" });
+    } finally {
+      setDeleteAnnouncementId(null);
+    }
+  };
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
@@ -1395,6 +1427,16 @@ const ArtistProfile = () => {
                                           <Flag className="h-4 w-4 mr-2" />
                                           Report Problem
                                         </DropdownMenuItem>
+                                        {isOwnProfile && <>
+                                          <DropdownMenuItem onClick={() => setEditItem({ id: promo.id, text: promo.description, table: "announcements" })}>
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Edit
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promo.id)} className="text-destructive focus:text-destructive">
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Delete
+                                          </DropdownMenuItem>
+                                        </>}
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
@@ -1471,6 +1513,16 @@ const ArtistProfile = () => {
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
+                                    {isOwnProfile && <>
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: post.id, text: post.content, table: "posts" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </>}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -1597,6 +1649,16 @@ const ArtistProfile = () => {
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
+                                    {isOwnProfile && <>
+                                      <DropdownMenuItem onClick={() => setEditItem({ id: announcement.id, text: announcement.description, table: "announcements" })}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </>}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -2039,6 +2101,48 @@ const ArtistProfile = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+
+      <EditContentDialog
+        open={!!editItem}
+        onOpenChange={(o) => !o && setEditItem(null)}
+        table={editItem?.table ?? "posts"}
+        itemId={editItem?.id ?? null}
+        initialText={editItem?.text ?? ""}
+        onSaved={(newText) => {
+          if (!editItem) return;
+          if (editItem.table === "posts") {
+            setPosts(items => items.map(p => p.id === editItem.id ? { ...p, content: newText } : p));
+          } else {
+            setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
+          }
+        }}
+      />
+
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this post? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deletePostId && handleDeletePost(deletePostId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
 export default ArtistProfile;
