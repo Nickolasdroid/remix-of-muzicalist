@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus, Pencil } from "lucide-react";
+import EditContentDialog from "@/components/EditContentDialog";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -52,6 +53,7 @@ const Feed = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "promotion" } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -387,10 +389,16 @@ const Feed = () => {
                             <Flag className="h-4 w-4 mr-2" />
                             Report
                           </DropdownMenuItem>
-                          {currentUserId === item.profile_id && <DropdownMenuItem onClick={() => setDeleteAnnouncementId(item.id)} className="text-destructive focus:text-destructive">
+                          {currentUserId === item.profile_id && <>
+                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "promotion" })}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDeleteAnnouncementId(item.id)} className="text-destructive focus:text-destructive">
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
-                            </DropdownMenuItem>}
+                            </DropdownMenuItem>
+                          </>}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -468,10 +476,16 @@ const Feed = () => {
                           <Flag className="h-4 w-4 mr-2" />
                           Report
                         </DropdownMenuItem>
-                        {currentUserId === item.profile_id && <DropdownMenuItem onClick={() => setDeletePostId(item.id)} className="text-destructive focus:text-destructive">
+                        {currentUserId === item.profile_id && <>
+                          <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "post" })}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setDeletePostId(item.id)} className="text-destructive focus:text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
-                          </DropdownMenuItem>}
+                          </DropdownMenuItem>
+                        </>}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
