@@ -2215,13 +2215,22 @@ const Dashboard = () => {
                                               <X className="h-4 w-4" />
                                             </Button>
                                           </div> : <>
-                                            <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                              <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                                <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                                <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                            {promotionUploadProgress === null && <>
+                                              <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                                <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
+                                                  <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
+                                                  <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                                </div>
+                                              </Label>
+                                              <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                            </>}
+                                            {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3 mt-2">
+                                              <div className="flex items-center justify-between">
+                                                <p className="text-sm font-medium">Uploading media…</p>
+                                                <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
                                               </div>
-                                            </Label>
-                                            <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                              <Progress value={promotionUploadProgress} />
+                                            </div>}
                                           </>}
                                       </div>
                                       
