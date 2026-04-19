@@ -131,8 +131,8 @@ const TermsOfService = () => {
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Contact</h2>
               <p>
                 For questions about these Terms of Service, please contact us at{" "}
-                <a href="mailto:contact@artistplatform.ro" className="text-accent hover:underline">
-                  contact@artistplatform.ro
+                <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">
+                  contact@muzicalist.com
                 </a>
               </p>
             </section>
