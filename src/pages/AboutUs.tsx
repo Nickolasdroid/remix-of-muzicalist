@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import heroConcert from "@/assets/hero-concert.png";
 import { PLATFORM_STATS } from "@/lib/platformStats";
-import ourStoryBand from "@/assets/our-story-band.png";
+import ourStoryBand from "@/assets/69690e7b-dd42-42c0-91f9-f4ef4d0290a5.png";
 
 const values = [
   { icon: Music, title: "Excellence in Music", description: "We connect only the best talented musical artists, ensuring clients receive outstanding performances." },
@@ -75,7 +75,7 @@ const AboutUs = () => {
                 <img
                   src={ourStoryBand}
                   alt="Concert performance"
-                  className="w-full h-full object-cover aspect-[4/3]"
+                  className="w-full h-full aspect-[4/3] object-cover"
                 />
               </div>
             </div>
