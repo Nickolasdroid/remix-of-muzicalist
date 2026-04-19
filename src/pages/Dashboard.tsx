@@ -2284,7 +2284,7 @@ const Dashboard = () => {
                               </DialogContent>
                             </Dialog>
                           </div>
-                          {posts.map((post) => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          {posts.map((post) => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-3">
