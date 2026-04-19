@@ -118,7 +118,7 @@ const RegisterUser = () => {
         </Link>
       </div>
       <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
-      <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 border-accent/20 p-4 md:p-8 bg-background">
+      <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 p-4 md:p-8 bg-background border-secondary">
         <div className="text-center mb-4 md:mb-8">
           <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
             {t("userRegistration.title")}
