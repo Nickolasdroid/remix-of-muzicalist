@@ -609,17 +609,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setAnnouncementUploadProgress(0);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const {
-        error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const {
-        data: {
-          publicUrl
-        }
-      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setAnnouncementUploadProgress(p));
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       setNewAnnouncement({
         ...newAnnouncement,
@@ -638,6 +631,8 @@ const Dashboard = () => {
       });
     } finally {
       setIsSaving(false);
+      setAnnouncementUploadProgress(null);
+      e.target.value = "";
     }
   };
   const handleAddAnnouncement = async () => {
