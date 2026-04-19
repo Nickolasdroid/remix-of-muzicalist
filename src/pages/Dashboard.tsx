@@ -174,6 +174,7 @@ const Dashboard = () => {
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
 
   // Post limits (plan-based)
   const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
