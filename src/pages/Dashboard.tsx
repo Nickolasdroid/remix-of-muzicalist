@@ -2201,16 +2201,32 @@ const Dashboard = () => {
                               })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
                                         <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
                                       </div>
-                                      <div>
-                                        <Label>Video URL (YouTube/Embed)</Label>
-                                        <Input value={newPost.mediaUrl} onChange={(e) => {
-                                setNewPost({
-                                  ...newPost,
-                                  mediaUrl: e.target.value,
-                                  mediaType: 'video'
-                                });
-                              }} placeholder="https://www.youtube.com/embed/..." className="mt-2" />
-                                      </div>
+                                      {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
+                                          <video src={newPost.mediaUrl} controls className="w-full rounded-lg max-h-48" />
+                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
+                                ...newPost,
+                                mediaUrl: "",
+                                mediaType: ""
+                              })}>
+                                            <X className="h-4 w-4" />
+                                          </Button>
+                                        </div>}
+                                      {!newPost.mediaUrl && postUploadProgress === null && <>
+                                          <Label htmlFor="post-video-inner" className="cursor-pointer">
+                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                              <p className="text-sm text-muted-foreground">Click to upload video</p>
+                                            </div>
+                                          </Label>
+                                          <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
+                                        </>}
+                                      {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium">Uploading video…</p>
+                                            <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
+                                          </div>
+                                          <Progress value={postUploadProgress} />
+                                        </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
                                         {isSaving ? "Creating..." : "Create Post"}
                                       </Button>
