@@ -1602,7 +1602,8 @@ const ArtistProfile = () => {
                         )}
                       </Card> :
 
-                <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                <div className="-mx-4 md:mx-0">
+                  <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
