@@ -1570,6 +1570,7 @@ const ArtistProfile = () => {
                         </Card>;
                   })()}
                     </div>
+                  </div>
                 }
                   </div>
                 </TabsContent>
