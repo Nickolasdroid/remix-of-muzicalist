@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, DollarSign, ArrowRight, Share2, Plus, Pencil } from "lucide-react";
+import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, Globe, MapPin, Euro, ArrowRight, Share2, Plus, Pencil } from "lucide-react";
 import EditContentDialog from "@/components/EditContentDialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -269,7 +269,7 @@ const Announcements = () => {
                       )}
                       {announcement.budget && (
                         <span className="flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
+                          <Euro className="h-3 w-3" />
                           {announcement.budget}
                         </span>
                       )}
