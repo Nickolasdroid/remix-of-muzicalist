@@ -2569,11 +2569,11 @@ const Dashboard = () => {
                                       </span>
                       }
                                     {announcement.budget &&
-                      <span className="flex items-center gap-1">
-                                        <DollarSign className="h-3 w-3" />
+                                      <span className="flex items-center gap-1">
+                                        <Euro className="h-3 w-3" />
                                         {announcement.budget}
                                       </span>
-                      }
+                                    }
                                   </div>
                     }
                               </div>

@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, DollarSign, X } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -83,7 +83,7 @@ const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDism
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
         {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{ad.location}</span>}
         {ad.event_date && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateNoYear(ad.event_date)}</span>}
-        {ad.budget && <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" />{ad.budget}</span>}
+        {ad.budget && <span className="flex items-center gap-1"><Euro className="h-3 w-3" />{ad.budget}</span>}
       </div>
     )}
   </div>
