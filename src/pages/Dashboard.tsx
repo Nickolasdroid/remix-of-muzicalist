@@ -2437,7 +2437,7 @@ const Dashboard = () => {
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              <span className="text-sm text-muted-foreground">Announcements: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
