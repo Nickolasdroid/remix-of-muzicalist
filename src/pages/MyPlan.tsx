@@ -157,11 +157,15 @@ const MyPlan = () => {
                         const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
                         const currentRank = rank[currentPlan] ?? 1;
                         const planRank = rank[plan.id] ?? 1;
-                        const action = planRank < currentRank ? 'Downgrade' : 'Upgrade';
+                        const isDowngrade = planRank < currentRank;
+                        const action = isDowngrade ? 'Downgrade' : 'Upgrade';
                         return (
                           <Button
+                            variant={isDowngrade ? "outline" : "default"}
                             className={`w-full ${
-                              isPremiumPlan
+                              isDowngrade
+                                ? "bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                : isPremiumPlan
                                 ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
                                 : "bg-accent text-accent-foreground hover:bg-accent/90"
                             }`}
