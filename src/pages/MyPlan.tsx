@@ -15,6 +15,7 @@ const MyPlan = () => {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState("Free");
+  const [isAnnual, setIsAnnual] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -73,6 +74,23 @@ const MyPlan = () => {
               </p>
             </div>
 
+            <div className="flex justify-center">
+              <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  Annual <span className="text-xs opacity-75">Save ~17%</span>
+                </button>
+              </div>
+            </div>
+
             <Separator className="hidden md:block" />
 
             <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
@@ -111,8 +129,8 @@ const MyPlan = () => {
                       <div className="text-center mb-4 mt-2">
                         <p className="text-xl font-semibold text-foreground">{plan.name}</p>
                         <div className="mt-2">
-                          <span className="text-3xl font-bold text-foreground">{formatPlanPrice(plan.monthlyPrice, false)}</span>
-                          <span className="text-sm text-muted-foreground">/month</span>
+                          <span className="text-3xl font-bold text-foreground">{formatPlanPrice(plan.monthlyPrice, isAnnual)}</span>
+                          <span className="text-sm text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
                       </div>
