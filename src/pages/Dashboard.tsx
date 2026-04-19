@@ -38,6 +38,8 @@ import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
+import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
+import { Progress } from "@/components/ui/progress";
 const Dashboard = () => {
   const {
     toast
