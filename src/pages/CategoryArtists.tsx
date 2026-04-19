@@ -295,7 +295,16 @@ const CategoryArtists = () => {
         // Sort by plan priority (Premium > Standard > Free)
         artistsWithAvailability.sort((a, b) => sortByPlanPriority(a, b));
         setArtists(artistsWithAvailability);
-        const countries = [...new Set(artistsWithAvailability.map(a => a.country).filter(Boolean) as string[] || [])].sort();
+        // Dedupe countries by their normalized display name (e.g. "România" and "Romania" -> one entry)
+        const countryMap = new Map<string, string>();
+        for (const a of artistsWithAvailability) {
+          if (!a.country) continue;
+          const displayName = getCountryName(a.country);
+          if (!countryMap.has(displayName)) {
+            countryMap.set(displayName, a.country);
+          }
+        }
+        const countries = [...countryMap.values()].sort((x, y) => getCountryName(x).localeCompare(getCountryName(y)));
         setAvailableCountries(countries);
         const counties = [...new Set(artistsWithAvailability.map(a => a.county) || [])].sort();
         setAvailableCounties(counties);
