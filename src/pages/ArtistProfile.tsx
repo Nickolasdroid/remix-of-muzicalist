@@ -1368,7 +1368,7 @@ const ArtistProfile = () => {
                         )}
                       </Card> :
 
-                <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+                <div className="relative left-1/2 right-1/2 -translate-x-1/2 w-screen md:w-full md:left-auto md:right-auto md:translate-x-0">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {(() => {
                     const promotions = announcements.filter((a) => a.is_premium && !isAdExpired(a)).map((a) => ({
