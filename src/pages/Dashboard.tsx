@@ -2542,10 +2542,6 @@ const Dashboard = () => {
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setEditItem({ id: announcement.id, text: announcement.description, table: "announcements" })}>
-                                        <Pencil className="h-4 w-4 mr-2" />
-                                        Edit
-                                      </DropdownMenuItem>
                                       <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="h-4 w-4 mr-2" />
                                         Delete
