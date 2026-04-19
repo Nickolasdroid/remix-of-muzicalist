@@ -1702,6 +1702,7 @@ const ArtistProfile = () => {
                           <p className="text-muted-foreground">No announcements yet.</p>
                         </Card>}
                     </div>
+                  </div>
                 }
                   </div>
                 </TabsContent>
