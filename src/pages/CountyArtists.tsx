@@ -150,9 +150,9 @@ const CountyArtists = () => {
                     }}
                     className="w-full max-w-7xl mx-auto"
                   >
-                    <CarouselContent className="-ml-1">
+                    <CarouselContent className="-ml-2 md:-ml-3">
                       {categoryArtists.map((artist) => (
-                        <CarouselItem key={artist.id} className="pl-1 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                        <CarouselItem key={artist.id} className="pl-2 md:pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
                           <ArtistProfileCard
                             id={artist.id}
                             stageName={artist.stage_name}
