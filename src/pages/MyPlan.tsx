@@ -15,6 +15,7 @@ const MyPlan = () => {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState("Free");
+  const [isAnnual, setIsAnnual] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
