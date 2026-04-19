@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
+import ArtistProfileCard from "@/components/ArtistProfileCard";
 
 interface Artist {
   id: string;
@@ -105,34 +106,16 @@ const CountySpecializationArtists = () => {
             No {title?.toLowerCase()} found in {county} yet.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto">
-            {artists.map((artist) => {
-              const isPremium = artist.plan === 'Premium';
-              const isFree = !artist.plan || artist.plan === 'Free';
-              const borderColor = isPremium ? "border-accent/30" : "border-burgundy/30";
-              const hoverBorderColor = isPremium ? "hover:border-accent" : "hover:border-burgundy";
-              const hoverBgColor = isPremium ? "hover:bg-accent/5" : "hover:bg-burgundy/5";
-              const avatarBorderClasses = isFree
-                ? ""
-                : isPremium
-                  ? "border-2 border-accent"
-                  : "border-2 border-burgundy";
-              
-              return (
-                <Link key={artist.id} to={`/artist/${artist.id}`}>
-                  <div className={`flex items-center gap-4 p-3 rounded-lg border ${borderColor} ${hoverBorderColor} ${hoverBgColor} transition-all duration-300`}>
-                    <div className={`w-16 h-16 rounded-full overflow-hidden ${avatarBorderClasses} flex-shrink-0`}>
-                      {artist.avatar_url ? (
-                        <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
-                      )}
-                    </div>
-                    <p className="text-lg font-semibold text-foreground">{artist.stage_name}</p>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3 max-w-7xl mx-auto">
+            {artists.map((artist) => (
+              <ArtistProfileCard
+                key={artist.id}
+                id={artist.id}
+                stageName={artist.stage_name}
+                imageUrl={artist.avatar_url}
+                plan={artist.plan}
+              />
+            ))}
           </div>
         )}
       </div>
