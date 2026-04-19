@@ -95,25 +95,6 @@ const RegisterArtist = () => {
     setCurrentStep(1);
   };
 
-  const handleGoogleSignIn = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast({
-        title: t("common.error"),
-        description: "Google sign-in failed. Please try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-    if (result.redirected) {
-      return;
-    }
-    // After successful Google auth, redirect
-    navigate("/");
-  };
-
   // Update phone prefix when country changes
   useEffect(() => {
     if (formData.country) {
