@@ -162,6 +162,37 @@ const ArtistProfile = () => {
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
+      if (error) throw error;
+      setPosts(items => items.filter(p => p.id !== postId));
+      toast({ title: "Post deleted", description: "Your post has been deleted." });
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      toast({ title: "Error", description: "Failed to delete post.", variant: "destructive" });
+    } finally {
+      setDeletePostId(null);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (announcementId: string) => {
+    try {
+      const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
+      if (error) throw error;
+      setAnnouncements(items => items.filter(a => a.id !== announcementId));
+      toast({ title: "Deleted", description: "Your item has been deleted." });
+    } catch (err) {
+      console.error('Error deleting announcement:', err);
+      toast({ title: "Error", description: "Failed to delete.", variant: "destructive" });
+    } finally {
+      setDeleteAnnouncementId(null);
+    }
+  };
   const [dateDetailDialogOpen, setDateDetailDialogOpen] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
