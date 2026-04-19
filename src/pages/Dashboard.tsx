@@ -709,11 +709,10 @@ const Dashboard = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setIsSaving(true);
+    setPromotionUploadProgress(0);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPromotionUploadProgress(p));
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       setNewPromotion({ ...newPromotion, mediaUrl: publicUrl, mediaType });
       toast({ title: "Success", description: "Media uploaded!" });
@@ -721,6 +720,8 @@ const Dashboard = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
+      setPromotionUploadProgress(null);
+      e.target.value = "";
     }
   };
 
