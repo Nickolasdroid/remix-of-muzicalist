@@ -320,8 +320,9 @@ const CategoryArtists = () => {
   // Update available counties when country filter changes
   const filteredCounties = useMemo(() => {
     if (filterCountry === "all") return availableCounties;
+    const variants = new Set(getCountryNameVariants(filterCountry));
     const countiesForCountry = [...new Set(
-      artists.filter(a => a.country === filterCountry).map(a => a.county)
+      artists.filter(a => a.country && variants.has(a.country)).map(a => a.county)
     )].sort();
     return countiesForCountry;
   }, [artists, filterCountry, availableCounties]);
@@ -330,7 +331,8 @@ const CategoryArtists = () => {
     let result = [...artists];
 
     if (filterCountry !== "all") {
-      result = result.filter(artist => artist.country === filterCountry);
+      const variants = new Set(getCountryNameVariants(filterCountry));
+      result = result.filter(artist => artist.country && variants.has(artist.country));
     }
 
     if (filterCounty !== "all") {
