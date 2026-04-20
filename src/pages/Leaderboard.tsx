@@ -796,6 +796,7 @@ const Leaderboard = () => {
                   setSelectedCountry(country);
                   setSelectedCounty("All Regions");
                 }}
+                hideAllOption
               />
               {isMobile ? (
                 <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
