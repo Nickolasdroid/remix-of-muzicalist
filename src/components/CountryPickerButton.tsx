@@ -15,18 +15,17 @@ str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 interface CountryPickerButtonProps {
   selectedCountry: string | null;
   onCountryChange: (country: string) => void;
+  hideAllOption?: boolean;
 }
 
 const CountryList = ({
   filtered,
   selectedCountry,
-  onSelect
-
-
-
-
-}: {filtered: {dbValue: string;displayName: string;}[];selectedCountry: string | null;onSelect: (dbValue: string) => void;}) =>
+  onSelect,
+  hideAllOption
+}: {filtered: {dbValue: string;displayName: string;}[];selectedCountry: string | null;onSelect: (dbValue: string) => void;hideAllOption?: boolean;}) =>
 <div className="p-2 space-y-0.5">
+    {!hideAllOption && (
     <button
       type="button"
       onClick={() => onSelect("__all__")}
@@ -37,6 +36,7 @@ const CountryList = ({
       <span className="flex-1 text-left font-medium">All Countries</span>
       {selectedCountry === "__all__" && <Check className="h-5 w-5 text-accent" />}
     </button>
+    )}
     {filtered.map(({ dbValue, displayName: name }) => {
     const isSelected = selectedCountry && selectedCountry !== "__all__" ?
     normalizeString(getCountryName(selectedCountry)) === normalizeString(name) :
@@ -64,7 +64,7 @@ const CountryList = ({
   </div>;
 
 
-const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPickerButtonProps) => {
+const CountryPickerButton = ({ selectedCountry, onCountryChange, hideAllOption }: CountryPickerButtonProps) => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [countriesWithArtists, setCountriesWithArtists] = useState<string[]>([]);
@@ -157,7 +157,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
           </div>
           <ScrollArea className="h-72">
             <div className="space-y-0.5">
-              <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} />
+              <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} hideAllOption={hideAllOption} />
             </div>
           </ScrollArea>
         </DrawerContent>
@@ -175,7 +175,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange }: CountryPicker
           {searchInput}
         </div>
         <ScrollArea className="h-64">
-          <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} />
+          <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} hideAllOption={hideAllOption} />
         </ScrollArea>
       </PopoverContent>
     </Popover>);

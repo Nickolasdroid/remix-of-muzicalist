@@ -85,6 +85,7 @@ const Counties = () => {
             <CountryPickerButton
               selectedCountry={selectedCountry}
               onCountryChange={setSelectedCountry}
+              hideAllOption
             />
           </div>
 
