@@ -13,10 +13,11 @@ import { Calendar, User, MessageCircle, MoreHorizontal, Flag, Trash2, Loader2, G
 import EditContentDialog from "@/components/EditContentDialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
@@ -38,6 +39,7 @@ const Announcements = () => {
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -145,12 +147,13 @@ const Announcements = () => {
   }, [page, fetchAnnouncements]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
+  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [announcements.length, adsFilter, loading, canCreate, page, hasMore]);
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
-      <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div className="max-w-[500px] mx-auto space-y-1">
+      <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-24' : 'pb-0'} md:pb-0 px-0`}>
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           
           {/* Filter Tabs */}
           <div className="flex gap-2 px-2 sm:px-0 py-2">

@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
@@ -30,6 +30,7 @@ import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
+import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 interface Profile {
   id: string;
   first_name: string;
@@ -165,6 +166,7 @@ const ArtistProfile = () => {
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  const profileContentRef = useRef<HTMLDivElement>(null);
 
   const handleDeletePost = async (postId: string) => {
     try {
@@ -892,11 +894,12 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
+  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
-      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
-        <div className="container mx-auto max-w-6xl px-4 md:px-0">
+      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} ${needsBottomSpacing ? 'pb-24' : 'pb-0'} md:pb-20 px-0 md:px-4`}>
+        <div ref={profileContentRef} className="container mx-auto max-w-6xl px-4 md:px-0">
           <Link to="/leaderboard">
             
           </Link>
