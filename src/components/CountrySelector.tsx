@@ -12,7 +12,6 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
-import CountryFlagIcon from "@/components/CountryFlagIcon";
 
 // Full list of countries with flags for reference
 const allCountries = [
@@ -333,7 +332,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             {value === "all" || !selectedCountry ? (
               <Globe className="h-5 w-5 text-accent" />
             ) : (
-              <span className="text-xl">{selectedCountry.flag}</span>
+              <CountryFlagIcon country={selectedCountry.code} className="h-5 w-7 rounded-sm shadow-sm" />
             )}
           </Button>
         </PopoverTrigger>
@@ -380,7 +379,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                         : "text-foreground"
                     }`}
                   >
-                    <span className="text-xl">{country.flag}</span>
+                    <CountryFlagIcon country={country.code} className="h-5 w-7 rounded-sm shadow-sm" />
                     <span className="flex-1 text-left">{country.name}</span>
                     {selectedCountry?.code === country.code && (
                       <Check className="h-4 w-4 text-accent" />
@@ -442,7 +441,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                           : "text-foreground"
                       }`}
                     >
-                      <span className="text-2xl">{country.flag}</span>
+                      <CountryFlagIcon country={country.code} className="h-6 w-8 rounded-sm shadow-sm" />
                       <span className="flex-1 text-left">{country.name}</span>
                       {selectedCountry?.code === country.code && (
                         <Check className="h-4 w-4 text-accent" />
@@ -473,7 +472,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         >
           {selectedCountry ? (
             <span className="flex items-center gap-2 min-w-0 overflow-hidden">
-              <span className="text-lg flex-shrink-0">{selectedCountry.flag}</span>
+              <CountryFlagIcon country={selectedCountry.code} className="h-4 w-6 rounded-sm shadow-sm" />
               <span className="truncate">{selectedCountry.name}</span>
             </span>
           ) : (
@@ -505,7 +504,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                       : "text-foreground"
                   }`}
                 >
-                  <span className="text-2xl">{country.flag}</span>
+                  <CountryFlagIcon country={country.code} className="h-6 w-8 rounded-sm shadow-sm" />
                   <span className="flex-1 text-left">{country.name}</span>
                   {selectedCountry?.code === country.code && (
                     <Check className="h-4 w-4 text-accent" />
