@@ -12,6 +12,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 
 // Full list of countries with flags for reference
 const allCountries = [
