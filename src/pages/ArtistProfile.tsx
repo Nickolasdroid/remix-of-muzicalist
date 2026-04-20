@@ -4,7 +4,7 @@ import ExpandableText from "@/components/ExpandableText";
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag } from "@/lib/countryFlags";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -942,7 +942,7 @@ const ArtistProfile = () => {
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm">{artist.county}</span>
-                  {artist.country && getCountryFlag(artist.country) && <span className="text-base" title={artist.country}>{getCountryFlag(artist.country)}</span>}
+                  {artist.country && <CountryFlagIcon country={artist.country} className="h-4 w-6 rounded-sm shadow-sm" />}
                 </div>
               </div>
 
@@ -1012,7 +1012,7 @@ const ArtistProfile = () => {
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-5 w-5" />
                         <span className="text-base">{artist.county}</span>
-                        {artist.country && getCountryFlag(artist.country) && <span className="text-xl" title={artist.country}>{getCountryFlag(artist.country)}</span>}
+                        {artist.country && <CountryFlagIcon country={artist.country} className="h-5 w-7 rounded-sm shadow-sm" />}
                       </div>
                     </div>
 
