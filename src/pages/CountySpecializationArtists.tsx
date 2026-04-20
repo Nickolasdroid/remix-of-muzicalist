@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getPlanBadgeStyle } from "@/lib/subscriptionStyles";
 
 interface Artist {
   id: string;
