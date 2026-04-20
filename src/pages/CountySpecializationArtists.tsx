@@ -106,15 +106,19 @@ const CountySpecializationArtists = () => {
             No {title?.toLowerCase()} found in {county} yet.
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3 max-w-7xl mx-auto">
+          <div className="max-w-2xl mx-auto space-y-2">
             {artists.map((artist) => (
-              <ArtistProfileCard
+              <Link
                 key={artist.id}
-                id={artist.id}
-                stageName={artist.stage_name}
-                imageUrl={artist.avatar_url}
-                plan={artist.plan}
-              />
+                to={`/artist/${artist.id}`}
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent/10 transition-colors"
+              >
+                <Avatar className="h-14 w-14 flex-shrink-0">
+                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                  <AvatarFallback>{artist.stage_name?.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <span className="text-base font-medium text-foreground">{artist.stage_name}</span>
+              </Link>
             ))}
           </div>
         )}
