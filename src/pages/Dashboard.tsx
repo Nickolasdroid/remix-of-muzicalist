@@ -4,7 +4,7 @@ import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import { getCountryFlag } from "@/lib/countryFlags";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1512,7 +1512,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
-                            {formData.country && getCountryFlag(formData.country) && <span className="text-base" title={formData.country}>{getCountryFlag(formData.country)}</span>}
+                            {formData.country && <CountryFlagIcon country={formData.country} className="h-4 w-6 rounded-sm shadow-sm" />}
                           </div>
                       </div>
 
@@ -1563,7 +1563,7 @@ const Dashboard = () => {
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <MapPin className="h-5 w-5" />
                                 <span className="text-base">{formData.county}</span>
-                                {formData.country && getCountryFlag(formData.country) && <span className="text-xl" title={formData.country}>{getCountryFlag(formData.country)}</span>}
+                                {formData.country && <CountryFlagIcon country={formData.country} className="h-5 w-7 rounded-sm shadow-sm" />}
                               </div>
                             </div>
 
