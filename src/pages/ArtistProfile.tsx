@@ -895,7 +895,6 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
