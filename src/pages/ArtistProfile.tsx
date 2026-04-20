@@ -167,6 +167,7 @@ const ArtistProfile = () => {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const profileContentRef = useRef<HTMLDivElement>(null);
+  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
 
   const handleDeletePost = async (postId: string) => {
     try {
@@ -894,7 +895,6 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
