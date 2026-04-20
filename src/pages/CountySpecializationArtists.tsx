@@ -106,7 +106,7 @@ const CountySpecializationArtists = () => {
             No {title?.toLowerCase()} found in {county} yet.
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto space-y-2">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-2">
             {artists.map((artist) => (
               <Link
                 key={artist.id}
