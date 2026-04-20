@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 
-const MOBILE_BOTTOM_CLEARANCE = 152;
+const MOBILE_BOTTOM_CLEARANCE = 72;
 
 export const useMobileBottomNavSpacing = <T extends HTMLElement>(containerRef: RefObject<T>, trigger?: unknown) => {
   const [needsBottomSpacing, setNeedsBottomSpacing] = useState(false);

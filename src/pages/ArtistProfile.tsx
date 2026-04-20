@@ -898,7 +898,7 @@ const ArtistProfile = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
       <Navigation />
       
-      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} ${needsBottomSpacing ? 'pb-24' : 'pb-0'} md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-20 px-0 md:px-4`}>
         <div ref={profileContentRef} className="container mx-auto max-w-6xl px-4 md:px-0">
           <Link to="/leaderboard">
             

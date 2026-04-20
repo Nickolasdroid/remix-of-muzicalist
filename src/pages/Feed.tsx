@@ -306,7 +306,7 @@ const Feed = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
-      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-24' : 'pb-0'} md:pb-0 px-0`}>
+      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           
           {/* Filter Tabs */}
