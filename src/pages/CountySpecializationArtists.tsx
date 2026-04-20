@@ -111,7 +111,7 @@ const CountySpecializationArtists = () => {
               <Link
                 key={artist.id}
                 to={`/artist/${artist.id}`}
-                className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent/10 transition-colors"
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent/10 transition-colors border"
               >
                 <Avatar className="h-14 w-14 flex-shrink-0">
                   <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
