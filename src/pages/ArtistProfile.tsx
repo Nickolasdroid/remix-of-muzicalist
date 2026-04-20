@@ -167,6 +167,7 @@ const ArtistProfile = () => {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const profileContentRef = useRef<HTMLDivElement>(null);
+  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
 
   const handleDeletePost = async (postId: string) => {
     try {
