@@ -86,8 +86,4 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-bottom: 4.5rem; /* Height of mobile bottom nav + safe area */
   }
 
-  /* Reserve space for the fixed mobile bottom navigation so content isn't covered */
-  body:has(nav.fixed.bottom-0) {
-    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0));
-  }
 }
