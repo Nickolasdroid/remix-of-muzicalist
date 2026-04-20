@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus, Pencil } from "lucide-react";
 import EditContentDialog from "@/components/EditContentDialog";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
 
@@ -58,6 +59,7 @@ const Feed = () => {
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -192,6 +194,7 @@ const Feed = () => {
   }, [page, fetchPosts]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMorePosts, hasMore);
+  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [feedItems.length, feedFilter, loading, canCreate, page, hasMore]);
 
   const handleLike = async (id: string) => {
     if (!currentUserId) {
@@ -303,8 +306,8 @@ const Feed = () => {
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
-      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div className="max-w-[500px] mx-auto space-y-1">
+      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-24' : 'pb-0'} md:pb-0 px-0`}>
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           
           {/* Filter Tabs */}
           <div className="flex gap-2 px-2 sm:px-0 py-2">

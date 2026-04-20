@@ -1,5 +1,7 @@
 import { RefObject, useEffect, useState } from "react";
 
+const MOBILE_BOTTOM_CLEARANCE = 152;
+
 export const useMobileBottomNavSpacing = <T extends HTMLElement>(containerRef: RefObject<T>, trigger?: unknown) => {
   const [needsBottomSpacing, setNeedsBottomSpacing] = useState(false);
 
@@ -17,7 +19,8 @@ export const useMobileBottomNavSpacing = <T extends HTMLElement>(containerRef: R
       }
 
       const contentBottom = element.getBoundingClientRect().bottom;
-      setNeedsBottomSpacing(contentBottom > window.innerHeight);
+      const visibleBottom = window.innerHeight - MOBILE_BOTTOM_CLEARANCE;
+      setNeedsBottomSpacing(contentBottom > visibleBottom);
     };
 
     updateSpacing();
