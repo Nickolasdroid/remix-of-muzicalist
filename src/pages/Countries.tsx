@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -7,7 +8,6 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryDisplay } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
-
 
 interface CountryData {
   original: string;
@@ -25,29 +25,26 @@ const Countries = () => {
   useEffect(() => {
     const fetchCountriesAndUser = async () => {
       setLoading(true);
-      
-      // Get artist IDs first to filter out regular users
+
       const artistIds = await fetchArtistIds();
-      
+
       if (artistIds.length === 0) {
         setCountries([]);
         setLoading(false);
         return;
       }
 
-      // Fetch distinct countries from artist profiles only
       const { data: profileCountries } = await supabase
-        .from('profiles')
-        .select('country')
-        .in('id', artistIds)
-        .not('country', 'is', null);
+        .from("profiles")
+        .select("country")
+        .in("id", artistIds)
+        .not("country", "is", null);
 
       if (profileCountries) {
-        const uniqueOriginals = [...new Set(profileCountries.map(p => p.country).filter(Boolean))] as string[];
-        
-        // Convert to display format, deduplicating by standardized name
+        const uniqueOriginals = [...new Set(profileCountries.map((p) => p.country).filter(Boolean))] as string[];
+
         const countryMap = new Map<string, CountryData>();
-        uniqueOriginals.forEach(original => {
+        uniqueOriginals.forEach((original) => {
           const display = getCountryDisplay(original);
           if (!countryMap.has(display.name)) {
             countryMap.set(display.name, {
@@ -58,22 +55,22 @@ const Countries = () => {
           }
         });
         const countryData = Array.from(countryMap.values());
-        
-        // Sort by standardized name
+
         countryData.sort((a, b) => a.name.localeCompare(b.name));
         setCountries(countryData);
       }
 
-      // Get current user's country
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('country')
-          .eq('id', session.user.id)
+          .from("profiles")
+          .select("country")
+          .eq("id", session.user.id)
           .maybeSingle();
-        
+
         if (profile?.country) {
           const display = getCountryDisplay(profile.country);
           setUserCountry({
@@ -90,34 +87,39 @@ const Countries = () => {
     fetchCountriesAndUser();
   }, []);
 
-  const filteredCountries = countries.filter(country => 
-    country.name && country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCountries = countries.filter(
+    (country) => country.name && country.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-gradient-to-br from-background to-secondary relative`}>
+    <div className={`min-h-screen ${currentUserId ? "md:ml-64" : ""} bg-gradient-to-br from-background to-secondary relative`}>
       <Navigation />
-      
-      <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
+
+      <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? "md:pt-8" : "md:pt-24"} pb-24 md:pb-20`}>
         <div className="text-center mb-8 md:mb-16">
           <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Countries</h1>
-          
-          {/* User's current country indicator */}
+
           {userCountry && (
             <div className="mb-6 flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="h-4 w-4 text-accent" />
-              <span>Your country: <span className="font-medium text-foreground">{userCountry.flag} {userCountry.name}</span></span>
+              <span className="inline-flex items-center gap-2">
+                <span>Your country:</span>
+                <span className="inline-flex items-center gap-2 font-medium text-foreground">
+                  <CountryFlagIcon country={userCountry.original} className="h-4 w-6 rounded-sm shadow-sm" />
+                  <span>{userCountry.name}</span>
+                </span>
+              </span>
             </div>
           )}
 
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-accent z-10" />
-            <Input 
-              type="text" 
-              placeholder="Search for a country..." 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card/50 backdrop-blur border-accent/20" 
+            <Input
+              type="text"
+              placeholder="Search for a country..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card/50 backdrop-blur border-accent/20"
             />
           </div>
         </div>
@@ -129,13 +131,13 @@ const Countries = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {filteredCountries.map(country => (
+              {filteredCountries.map((country) => (
                 <Link key={country.original} to={`/countries/${encodeURIComponent(country.original)}`}>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-3 md:gap-4 hover:bg-accent/10 hover:border-accent transition-all group px-4"
                   >
-                    <span className="text-2xl md:text-3xl flex-shrink-0">{country.flag}</span>
+                    <CountryFlagIcon country={country.original} className="h-6 w-8 md:h-7 md:w-10 flex-shrink-0 rounded-sm shadow-sm" />
                     <span className="text-sm md:text-base font-medium text-left">{country.name}</span>
                   </Button>
                 </Link>
