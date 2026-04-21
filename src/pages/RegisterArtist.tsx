@@ -186,6 +186,14 @@ const RegisterArtist = () => {
           });
           return false;
         }
+        if (getPasswordScore(formData.password) < 3) {
+          toast({
+            title: t("common.error"),
+            description: t("passwordStrength.tooWeak", "Please choose a stronger password (meet at least 3 of the requirements)."),
+            variant: "destructive"
+          });
+          return false;
+        }
         if (formData.password !== formData.confirmPassword) {
           toast({
             title: t("common.error"),
