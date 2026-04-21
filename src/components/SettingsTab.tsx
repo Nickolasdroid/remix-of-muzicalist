@@ -620,9 +620,9 @@ const SettingsTab = ({
                 By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Keep enabled</AlertDialogCancel>
-              <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
+            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+              <AlertDialogCancel className="mt-0 flex-1 sm:flex-none">Keep enabled</AlertDialogCancel>
+              <AlertDialogAction className="flex-1 sm:flex-none" onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -985,8 +985,8 @@ const SettingsTab = ({
                   By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Keep enabled</AlertDialogCancel>
+              <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+                <AlertDialogCancel className="mt-0">Keep enabled</AlertDialogCancel>
                 <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
