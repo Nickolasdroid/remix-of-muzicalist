@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2 } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,6 +60,39 @@ const SettingsTab = ({
   const [reportMessage, setReportMessage] = useState("");
   const [reportFile, setReportFile] = useState<File | null>(null);
   const reportFileInputRef = useRef<HTMLInputElement>(null);
+  const [allowPromotion, setAllowPromotion] = useState(true);
+  const [showPromotionInfo, setShowPromotionInfo] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("allow_promotion")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (data && typeof (data as any).allow_promotion === "boolean") {
+        setAllowPromotion((data as any).allow_promotion);
+      }
+    })();
+  }, []);
+
+  const handleTogglePromotion = async (next: boolean) => {
+    setAllowPromotion(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ allow_promotion: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setAllowPromotion(!next);
+      toast({ title: "Error", description: "Could not update promotion preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
+    }
+  };
 
   const resetPasswordForm = () => {
     setPasswordData({
@@ -831,9 +865,44 @@ const SettingsTab = ({
                     })}
                   </div>
                 </div>
+
+                <Separator />
+
+                {/* Promotion */}
+                <div className="flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowPromotionInfo(true)}
+                    className="text-left group flex-1"
+                  >
+                    <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
+                      <Megaphone className="h-4 w-4" />
+                      Allow promotion on Muzicalist channels
+                    </Label>
+                    <p className="text-sm text-muted-foreground group-hover:underline">
+                      Click to learn what this means
+                    </p>
+                  </button>
+                  <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+                </div>
               </div>
             </div>
           )}
+
+          {/* Promotion info dialog */}
+          <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Megaphone className="h-5 w-5 text-accent" />
+                  Promotion on Muzicalist channels
+                </DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
+              </p>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
