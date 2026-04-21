@@ -865,9 +865,44 @@ const SettingsTab = ({
                     })}
                   </div>
                 </div>
+
+                <Separator />
+
+                {/* Promotion */}
+                <div className="flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowPromotionInfo(true)}
+                    className="text-left group flex-1"
+                  >
+                    <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
+                      <Megaphone className="h-4 w-4" />
+                      Allow promotion on Muzicalist channels
+                    </Label>
+                    <p className="text-sm text-muted-foreground group-hover:underline">
+                      Click to learn what this means
+                    </p>
+                  </button>
+                  <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+                </div>
               </div>
             </div>
           )}
+
+          {/* Promotion info dialog */}
+          <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Megaphone className="h-5 w-5 text-accent" />
+                  Promotion on Muzicalist channels
+                </DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
+              </p>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
