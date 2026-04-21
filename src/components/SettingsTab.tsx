@@ -711,8 +711,28 @@ const SettingsTab = ({
                             >
                               {isVerifying ? "..." : currentPasswordVerified ? "✓" : "Verify"}
                             </Button>
-                          </div>
-                        </div>
+                </div>
+
+                <Separator />
+
+                {/* Promotion */}
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setShowPromotionInfo(true)}
+                    className="text-left group"
+                  >
+                    <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
+                      <Megaphone className="h-4 w-4" />
+                      Allow promotion on Muzicalist channels
+                    </Label>
+                    <p className="text-sm text-muted-foreground group-hover:underline">
+                      Click to learn what this means
+                    </p>
+                  </button>
+                  <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+                </div>
+              </div>
 
                         {/* Step 2: Set new password */}
                         <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-accent/30' : 'border-muted/30 opacity-50'}`}>
