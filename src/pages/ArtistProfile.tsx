@@ -849,7 +849,7 @@ const ArtistProfile = () => {
               Ads
             </h2>
             <div className="w-full max-w-[500px] mx-auto space-y-1">
-              {announcements.filter((a) => !isAdExpired(a)).map((ad) => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+              {announcements.filter((a) => !isAdExpired(a)).map((ad) => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                   <div className="p-4 pb-0 px-[6px] py-[3px]">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -1392,7 +1392,7 @@ const ArtistProfile = () => {
                       if (item.type === 'promotion') {
                         const promo = item as typeof promotions[0];
                         return (
-                          <Card key={`promo-${promo.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                          <Card key={`promo-${promo.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                                 <div className="p-4 pb-0 px-[6px] py-[3px]">
                                   <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
@@ -1471,7 +1471,7 @@ const ArtistProfile = () => {
 
                       const post = item as typeof postItems[0];
                       return (
-                        <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                        <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
@@ -1607,7 +1607,7 @@ const ArtistProfile = () => {
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
+                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                             {/* Header */}
                             <div className="p-4 pb-0 px-[6px] py-[3px]">
                               <div className="flex items-start justify-between">
