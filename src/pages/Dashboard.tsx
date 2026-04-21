@@ -245,7 +245,14 @@ const Dashboard = () => {
     } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
-    if (data) setAnnouncements(data);
+    if (data) {
+      const announcementsWithLikes = await Promise.all(data.map(async (announcement) => {
+        const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
+        const { data: likeData } = await (supabase as any).from('announcement_likes').select('id').eq('announcement_id', announcement.id).eq('user_id', user.id).maybeSingle();
+        return { ...announcement, likes: count || 0, isLiked: !!likeData };
+      }));
+      setAnnouncements(announcementsWithLikes);
+    }
   };
   const loadGalleryItems = async () => {
     if (!user) return;
