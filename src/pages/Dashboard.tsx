@@ -918,6 +918,11 @@ const Dashboard = () => {
   const handlePostVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    if (file.size > 500 * 1024 * 1024) {
+      toast({ title: "Error", description: "Video file size must not exceed 500 MB.", variant: "destructive" });
+      e.target.value = "";
+      return;
+    }
     setIsSaving(true);
     setPostUploadProgress(0);
     try {
