@@ -824,6 +824,7 @@ const RegisterArtist = () => {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    <PasswordStrengthIndicator password={formData.password} />
                   </div>
 
                   <div className="space-y-2">
