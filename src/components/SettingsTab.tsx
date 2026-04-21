@@ -558,6 +558,32 @@ const SettingsTab = ({
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
+        {activeSection === "promotion" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Promotion</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Allow Muzicalist to feature your profile on its channels
+              </p>
+            </div>
+            <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border">
+              <button
+                type="button"
+                onClick={() => setShowPromotionInfo(true)}
+                className="text-left flex-1"
+              >
+                <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer">
+                  <Megaphone className="h-4 w-4" />
+                  Allow promotion on Muzicalist channels
+                </Label>
+                <p className="text-sm text-muted-foreground underline mt-1">
+                  Tap to learn what this means
+                </p>
+              </button>
+              <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+            </div>
+          </div>
+        )}
         
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
