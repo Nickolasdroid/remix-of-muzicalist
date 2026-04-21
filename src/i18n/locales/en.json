@@ -149,6 +149,18 @@
     "noCountriesFound": "No countries found",
     "allCountries": "All Countries"
   },
+  "passwordStrength": {
+    "weak": "Weak",
+    "fair": "Fair",
+    "good": "Good",
+    "strong": "Strong",
+    "length": "At least 8 characters",
+    "uppercase": "One uppercase letter",
+    "lowercase": "One lowercase letter",
+    "number": "One number",
+    "special": "One special character (!@#$%...)",
+    "tooWeak": "Please choose a stronger password (meet at least 3 of the requirements)."
+  },
   "userRegistration": {
     "title": "User Registration",
     "subtitle": "Create your account to get started",
