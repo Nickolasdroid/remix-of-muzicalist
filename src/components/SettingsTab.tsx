@@ -587,6 +587,20 @@ const SettingsTab = ({
         
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
+
+        <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-accent" />
+                Promotion on Muzicalist channels
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
+            </p>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
