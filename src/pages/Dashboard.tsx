@@ -245,7 +245,14 @@ const Dashboard = () => {
     } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
-    if (data) setAnnouncements(data);
+    if (data) {
+      const announcementsWithLikes = await Promise.all(data.map(async (announcement) => {
+        const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
+        const { data: likeData } = await (supabase as any).from('announcement_likes').select('id').eq('announcement_id', announcement.id).eq('user_id', user.id).maybeSingle();
+        return { ...announcement, likes: count || 0, isLiked: !!likeData };
+      }));
+      setAnnouncements(announcementsWithLikes);
+    }
   };
   const loadGalleryItems = async () => {
     if (!user) return;
@@ -2408,7 +2415,20 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="h-2" />
+                              <div className="px-2 py-1">
+                                <div className="flex items-center justify-around">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled
+                                    aria-label="Promotion likes"
+                                    className={`flex-1 gap-2 rounded-md hover:bg-transparent ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  >
+                                    <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
+                                    {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                  </Button>
+                                </div>
+                              </div>
                             </Card>)}
                           
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">

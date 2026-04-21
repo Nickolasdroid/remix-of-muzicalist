@@ -70,6 +70,8 @@ interface Announcement {
   location: string | null;
   event_date: string | null;
   budget: string | null;
+  likes?: number;
+  isLiked?: boolean;
 }
 interface GalleryItem {
   id: string;
@@ -287,7 +289,6 @@ const ArtistProfile = () => {
       }).order('created_at', {
         ascending: false
       });
-      setAnnouncements(announcementsData || []);
 
       // Fetch gallery items
       const {
@@ -325,6 +326,17 @@ const ArtistProfile = () => {
         }
       } = await supabase.auth.getSession();
       const userId = session?.user?.id;
+
+      const announcementsWithLikes = await Promise.all((announcementsData || []).map(async (announcement) => {
+        const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
+        let isLiked = false;
+        if (userId) {
+          const { data: likeData } = await (supabase as any).from('announcement_likes').select('id').eq('announcement_id', announcement.id).eq('user_id', userId).maybeSingle();
+          isLiked = !!likeData;
+        }
+        return { ...announcement, likes: count || 0, isLiked };
+      }));
+      setAnnouncements(announcementsWithLikes);
 
       // Fetch likes count and check if current user liked each post
       const postsWithLikes = await Promise.all((postsData || []).map(async (post) => {
@@ -501,6 +513,31 @@ const ArtistProfile = () => {
         likes: post.likes
       } : p));
       console.error('Error toggling like:', error);
+    }
+  };
+  const handleAnnouncementLike = async (announcementId: string) => {
+    if (!currentUserId) {
+      toast({ title: "Login Required", description: "Please log in to like promotions." });
+      navigate('/login');
+      return;
+    }
+    const announcement = announcements.find((a) => a.id === announcementId);
+    if (!announcement) return;
+
+    setAnnouncements((items) => items.map((a) => a.id === announcementId ? {
+      ...a,
+      isLiked: !a.isLiked,
+      likes: a.isLiked ? Math.max(0, (a.likes || 0) - 1) : (a.likes || 0) + 1
+    } : a));
+    try {
+      if (announcement.isLiked) {
+        await (supabase as any).from('announcement_likes').delete().eq('announcement_id', announcementId).eq('user_id', currentUserId);
+      } else {
+        await (supabase as any).from('announcement_likes').insert({ announcement_id: announcementId, user_id: currentUserId });
+      }
+    } catch (error) {
+      setAnnouncements((items) => items.map((a) => a.id === announcementId ? announcement : a));
+      console.error('Error toggling promotion like:', error);
     }
   };
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false);
@@ -1459,6 +1496,18 @@ const ArtistProfile = () => {
                             }
                                 <div className="px-2 py-2">
                                   <div className="flex items-center justify-around">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleAnnouncementLike(promo.id)}
+                                      aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
+                                      aria-pressed={promo.isLiked}
+                                      className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                    >
+                                      <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                      {(promo.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promo.likes}</span>}
+                                    </Button>
+
                                     <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                                       <MessageCircle className="w-5 h-5" />
                                       <span className="font-medium">Contact</span>
