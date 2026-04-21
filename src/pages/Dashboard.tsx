@@ -2415,20 +2415,11 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="px-2 py-1">
-                                <div className="flex items-center justify-around">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    disabled
-                                    aria-label="Promotion likes"
-                                    className={`flex-1 gap-2 rounded-md hover:bg-transparent ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                  >
-                                    <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
-                                    {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
-                                  </Button>
-                                </div>
-                              </div>
+                              {(promotion.likes || 0) > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
+                                  <Heart className="h-4 w-4" />
+                                  <span>{promotion.likes}</span>
+                                </div>}
+                              <div className="p-4" />
                             </Card>)}
                           
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
