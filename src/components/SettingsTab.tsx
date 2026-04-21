@@ -62,6 +62,7 @@ const SettingsTab = ({
   const reportFileInputRef = useRef<HTMLInputElement>(null);
   const [allowPromotion, setAllowPromotion] = useState(true);
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
+  const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -78,7 +79,7 @@ const SettingsTab = ({
     })();
   }, []);
 
-  const handleTogglePromotion = async (next: boolean) => {
+  const applyPromotionChange = async (next: boolean) => {
     setAllowPromotion(next);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -92,6 +93,14 @@ const SettingsTab = ({
     } else {
       toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
     }
+  };
+
+  const handleTogglePromotion = (next: boolean) => {
+    if (!next) {
+      setShowDisablePromotionConfirm(true);
+      return;
+    }
+    applyPromotionChange(true);
   };
 
   const resetPasswordForm = () => {
@@ -952,6 +961,21 @@ const SettingsTab = ({
               </p>
             </DialogContent>
           </Dialog>
+
+          <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Keep enabled</AlertDialogCancel>
+                <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
