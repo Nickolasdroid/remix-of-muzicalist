@@ -23,6 +23,7 @@ import registerArtistBg from "@/assets/register-artist-bg.png";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
+import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -181,6 +182,14 @@ const RegisterArtist = () => {
           toast({
             title: t("common.error"),
             description: t("artistRegistration.validation.setPassword"),
+            variant: "destructive"
+          });
+          return false;
+        }
+        if (getPasswordScore(formData.password) < 3) {
+          toast({
+            title: t("common.error"),
+            description: t("passwordStrength.tooWeak", "Please choose a stronger password (meet at least 3 of the requirements)."),
             variant: "destructive"
           });
           return false;
@@ -815,6 +824,7 @@ const RegisterArtist = () => {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    <PasswordStrengthIndicator password={formData.password} />
                   </div>
 
                   <div className="space-y-2">

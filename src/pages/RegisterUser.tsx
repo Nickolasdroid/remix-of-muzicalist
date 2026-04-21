@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -50,6 +51,11 @@ const RegisterUser = () => {
 
     if (formData.password.length < 6) {
       toast.error(t("userRegistration.validation.passwordTooShort"));
+      return;
+    }
+
+    if (getPasswordScore(formData.password) < 3) {
+      toast.error(t("passwordStrength.tooWeak", "Please choose a stronger password (meet at least 3 of the requirements)."));
       return;
     }
 
@@ -173,6 +179,7 @@ const RegisterUser = () => {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            <PasswordStrengthIndicator password={formData.password} />
           </div>
 
           <div>

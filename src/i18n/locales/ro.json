@@ -149,6 +149,18 @@
     "noCountriesFound": "Nicio țară găsită",
     "allCountries": "Toate țările"
   },
+  "passwordStrength": {
+    "weak": "Slabă",
+    "fair": "Acceptabilă",
+    "good": "Bună",
+    "strong": "Puternică",
+    "length": "Cel puțin 8 caractere",
+    "uppercase": "O literă mare",
+    "lowercase": "O literă mică",
+    "number": "O cifră",
+    "special": "Un caracter special (!@#$%...)",
+    "tooWeak": "Te rugăm să alegi o parolă mai puternică (să îndeplinească cel puțin 3 dintre cerințe)."
+  },
   "userRegistration": {
     "title": "Înregistrare Utilizator",
     "subtitle": "Creează-ți contul pentru a începe",
