@@ -910,6 +910,7 @@ const SettingsTab = ({
                       );
                     })}
                   </div>
+                </div>
               </div>
             </div>
           )}
