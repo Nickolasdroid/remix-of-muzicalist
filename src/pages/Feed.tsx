@@ -142,8 +142,8 @@ const Feed = () => {
         .filter(a => !isAdExpired(a))
         .map(async a => {
           const [likesResult, userLikeResult] = await Promise.all([
-            supabase.from('announcement_likes').select('id', { count: 'exact' }).eq('announcement_id', a.id),
-            currentUserId ? supabase.from('announcement_likes').select('id').eq('announcement_id', a.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
+            (supabase as any).from('announcement_likes').select('id', { count: 'exact' }).eq('announcement_id', a.id),
+            currentUserId ? (supabase as any).from('announcement_likes').select('id').eq('announcement_id', a.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
           ]);
 
           return {
@@ -222,14 +222,17 @@ const Feed = () => {
     } : i));
     try {
       if (item.isLiked) {
-        const likeTable = item.type === "promotion" ? 'announcement_likes' : 'post_likes';
-        const targetColumn = item.type === "promotion" ? 'announcement_id' : 'post_id';
-        await supabase.from(likeTable).delete().eq(targetColumn, id).eq('user_id', currentUserId);
+        if (item.type === "promotion") {
+          await (supabase as any).from('announcement_likes').delete().eq('announcement_id', id).eq('user_id', currentUserId);
+        } else {
+          await supabase.from('post_likes').delete().eq('post_id', id).eq('user_id', currentUserId);
+        }
       } else {
-        const payload = item.type === "promotion"
-          ? { announcement_id: id, user_id: currentUserId }
-          : { post_id: id, user_id: currentUserId };
-        await supabase.from(item.type === "promotion" ? 'announcement_likes' : 'post_likes').insert(payload);
+        if (item.type === "promotion") {
+          await (supabase as any).from('announcement_likes').insert({ announcement_id: id, user_id: currentUserId });
+        } else {
+          await supabase.from('post_likes').insert({ post_id: id, user_id: currentUserId });
+        }
       }
     } catch (error) {
       setFeedItems(items => items.map(i => i.id === id ? {
