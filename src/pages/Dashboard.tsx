@@ -311,6 +311,46 @@ const Dashboard = () => {
       setMonthlyPostsCount(postsThisMonth.length);
     }
   };
+  const handlePostLike = async (postId: string) => {
+    if (!user) return;
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    setPosts((items) => items.map((p) => p.id === postId ? {
+      ...p,
+      isLiked: !p.isLiked,
+      likes: p.isLiked ? Math.max(0, (p.likes || 0) - 1) : (p.likes || 0) + 1
+    } : p));
+    try {
+      if (post.isLiked) {
+        await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.id);
+      } else {
+        await supabase.from('post_likes').insert({ post_id: postId, user_id: user.id });
+      }
+    } catch (error) {
+      setPosts((items) => items.map((p) => p.id === postId ? post : p));
+      console.error('Error toggling post like:', error);
+    }
+  };
+  const handleAnnouncementLike = async (announcementId: string) => {
+    if (!user) return;
+    const announcement = announcements.find((a) => a.id === announcementId);
+    if (!announcement) return;
+    setAnnouncements((items) => items.map((a) => a.id === announcementId ? {
+      ...a,
+      isLiked: !a.isLiked,
+      likes: a.isLiked ? Math.max(0, (a.likes || 0) - 1) : (a.likes || 0) + 1
+    } : a));
+    try {
+      if (announcement.isLiked) {
+        await (supabase as any).from('announcement_likes').delete().eq('announcement_id', announcementId).eq('user_id', user.id);
+      } else {
+        await (supabase as any).from('announcement_likes').insert({ announcement_id: announcementId, user_id: user.id });
+      }
+    } catch (error) {
+      setAnnouncements((items) => items.map((a) => a.id === announcementId ? announcement : a));
+      console.error('Error toggling announcement like:', error);
+    }
+  };
   const loadReviews = async () => {
     if (!user) return;
     const {
