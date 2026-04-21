@@ -138,9 +138,15 @@ const Feed = () => {
       }));
 
       // Build promotion feed items (filter expired)
-      const promoItems: FeedItem[] = (promotions || [])
+      const promoItems: FeedItem[] = await Promise.all((promotions || [])
         .filter(a => !isAdExpired(a))
-        .map(a => ({
+        .map(async a => {
+          const [likesResult, userLikeResult] = await Promise.all([
+            supabase.from('announcement_likes').select('id', { count: 'exact' }).eq('announcement_id', a.id),
+            currentUserId ? supabase.from('announcement_likes').select('id').eq('announcement_id', a.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
+          ]);
+
+          return {
           id: a.id,
           profile_id: a.profile_id,
           content: a.description,
@@ -153,10 +159,11 @@ const Feed = () => {
             specialization: a.profiles?.specialization || null,
             plan: a.profiles?.plan || 'Free',
           },
-          isLiked: false,
+          isLiked: !!userLikeResult.data,
           isSaved: false,
-          likes: 0,
+          likes: likesResult.count || 0,
           type: "promotion" as const,
+          };
         }));
 
       // Merge and sort by created_at descending
@@ -206,7 +213,7 @@ const Feed = () => {
       return;
     }
     const item = feedItems.find(i => i.id === id);
-    if (!item || item.type === "promotion") return;
+    if (!item) return;
 
     setFeedItems(items => items.map(i => i.id === id ? {
       ...i,
@@ -215,12 +222,14 @@ const Feed = () => {
     } : i));
     try {
       if (item.isLiked) {
-        await supabase.from('post_likes').delete().eq('post_id', id).eq('user_id', currentUserId);
+        const likeTable = item.type === "promotion" ? 'announcement_likes' : 'post_likes';
+        const targetColumn = item.type === "promotion" ? 'announcement_id' : 'post_id';
+        await supabase.from(likeTable).delete().eq(targetColumn, id).eq('user_id', currentUserId);
       } else {
-        await supabase.from('post_likes').insert({
-          post_id: id,
-          user_id: currentUserId
-        });
+        const payload = item.type === "promotion"
+          ? { announcement_id: id, user_id: currentUserId }
+          : { post_id: id, user_id: currentUserId };
+        await supabase.from(item.type === "promotion" ? 'announcement_likes' : 'post_likes').insert(payload);
       }
     } catch (error) {
       setFeedItems(items => items.map(i => i.id === id ? {
@@ -420,6 +429,18 @@ const Feed = () => {
                   
                   <div className="px-2 py-1">
                     <div className="flex items-center justify-around">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleLike(item.id)}
+                        aria-label={item.isLiked ? "Unlike promotion" : "Like promotion"}
+                        aria-pressed={item.isLiked}
+                        className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      >
+                        <Heart className={`w-7 h-7 ${item.isLiked ? "fill-current" : ""}`} />
+                        {item.likes > 0 && <span className="text-base font-semibold tabular-nums">{item.likes}</span>}
+                      </Button>
+
                       <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                         <MessageCircle className="w-5 h-5" />
                         <span className="font-medium">Contact</span>
