@@ -211,7 +211,7 @@ const Feed = () => {
     setFeedItems(items => items.map(i => i.id === id ? {
       ...i,
       isLiked: !i.isLiked,
-      likes: i.isLiked ? i.likes - 1 : i.likes + 1
+      likes: i.isLiked ? Math.max(0, i.likes - 1) : i.likes + 1
     } : i));
     try {
       if (item.isLiked) {
@@ -504,21 +504,18 @@ const Feed = () => {
                         <video src={item.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
-
-                <div className="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground border-b border-border/40">
-                  <div className="flex items-center gap-1.5">
-                    {item.likes > 0 && <>
-                        <Heart className="h-4 w-4" />
-                        <span>{item.likes}</span>
-                      </>}
-                  </div>
-                </div>
-
                 <div className="px-2 py-1">
                   <div className="flex items-center justify-around">
-                    <Button variant="ghost" size="sm" onClick={() => handleLike(item.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-red-500" : "text-muted-foreground"}`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLike(item.id)}
+                      aria-label={item.isLiked ? "Unlike post" : "Like post"}
+                      aria-pressed={item.isLiked}
+                      className={`flex-1 gap-1.5 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                    >
                       <Heart className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
-                      <span className="font-medium">Like</span>
+                      {item.likes > 0 && <span className="font-medium tabular-nums">{item.likes}</span>}
                     </Button>
                     
                     <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
