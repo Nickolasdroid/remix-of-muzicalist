@@ -62,6 +62,7 @@ const SettingsTab = ({
   const reportFileInputRef = useRef<HTMLInputElement>(null);
   const [allowPromotion, setAllowPromotion] = useState(true);
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
+  const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
 
   useEffect(() => {
     (async () => {
