@@ -54,6 +54,11 @@ const RegisterUser = () => {
       return;
     }
 
+    if (getPasswordScore(formData.password) < 3) {
+      toast.error(t("passwordStrength.tooWeak", "Please choose a stronger password (meet at least 3 of the requirements)."));
+      return;
+    }
+
     setIsLoading(true);
 
     try {
