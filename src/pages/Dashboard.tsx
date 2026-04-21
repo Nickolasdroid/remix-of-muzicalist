@@ -63,6 +63,7 @@ const Dashboard = () => {
     email: "Email Address",
     password: "Change Password",
     language: "Language",
+    promotion: "Promotion",
     report: "Report an Issue",
     logout: "Sign Out",
     delete: "Delete Account",

@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
 
 interface SettingsTabProps {
   formData: {
@@ -227,6 +227,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
+    { id: "promotion" as const, label: "Promotion", icon: Megaphone },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
@@ -557,9 +558,49 @@ const SettingsTab = ({
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
+        {activeSection === "promotion" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Promotion</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Allow Muzicalist to feature your profile on its channels
+              </p>
+            </div>
+            <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border">
+              <button
+                type="button"
+                onClick={() => setShowPromotionInfo(true)}
+                className="text-left flex-1"
+              >
+                <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer">
+                  <Megaphone className="h-4 w-4" />
+                  Allow promotion on Muzicalist channels
+                </Label>
+                <p className="text-sm text-muted-foreground underline mt-1">
+                  Tap to learn what this means
+                </p>
+              </button>
+              <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+            </div>
+          </div>
+        )}
         
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
+
+        <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-accent" />
+                Promotion on Muzicalist channels
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
+            </p>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
