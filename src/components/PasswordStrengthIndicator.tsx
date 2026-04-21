@@ -8,7 +8,7 @@ export interface PasswordRequirement {
   test: (pw: string) => boolean;
 }
 
-export const getPasswordRequirements = (t: (k: string, d?: string) => string): PasswordRequirement[] => [
+export const getPasswordRequirements = (t: (k: string, d?: string) => any): PasswordRequirement[] => [
   { key: "length", label: t("passwordStrength.length", "At least 8 characters"), test: (p) => p.length >= 8 },
   { key: "uppercase", label: t("passwordStrength.uppercase", "One uppercase letter"), test: (p) => /[A-Z]/.test(p) },
   { key: "lowercase", label: t("passwordStrength.lowercase", "One lowercase letter"), test: (p) => /[a-z]/.test(p) },
