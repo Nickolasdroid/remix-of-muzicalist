@@ -244,6 +244,11 @@ const SettingsTab = ({
       id: "system",
       label: "System",
       icon: Settings2
+    },
+    {
+      id: "promotion",
+      label: "Promotion",
+      icon: Megaphone
     }
   ];
 
