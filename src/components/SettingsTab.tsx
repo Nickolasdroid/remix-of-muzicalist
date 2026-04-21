@@ -929,8 +929,7 @@ const SettingsTab = ({
                   onClick={() => setShowPromotionInfo(true)}
                   className="text-left group flex-1"
                 >
-                  <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
-                    <Megaphone className="h-4 w-4" />
+                  <Label className="text-sm font-medium cursor-pointer group-hover:text-accent">
                     Allow promotion on Muzicalist channels
                   </Label>
                 </button>
