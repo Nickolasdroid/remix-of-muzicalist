@@ -2387,12 +2387,20 @@ const Dashboard = () => {
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {/* Likes count */}
-                              {post.likes > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
-                                  <Heart className="h-4 w-4" />
-                                  <span>{post.likes}</span>
-                                </div>}
-                              <div className="p-4" />
+                              {/* Like action (Feed-style) */}
+                              <div className="px-2 py-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => post.id && handlePostLike(post.id)}
+                                  aria-label={post.isLiked ? "Unlike post" : "Like post"}
+                                  aria-pressed={post.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${post.isLiked ? "fill-current" : ""}`} />
+                                  {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
 
                           {/* Promotions in Posts section */}
@@ -2457,11 +2465,20 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {(promotion.likes || 0) > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
-                                  <Heart className="h-4 w-4" />
-                                  <span>{promotion.likes}</span>
-                                </div>}
-                              <div className="p-4" />
+                              {/* Like action (Feed-style) */}
+                              <div className="px-2 py-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAnnouncementLike(promotion.id)}
+                                  aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
+                                  aria-pressed={promotion.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
+                                  {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
                           
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
