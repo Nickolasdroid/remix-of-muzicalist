@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS allow_promotion boolean NOT NULL DEFAULT true;

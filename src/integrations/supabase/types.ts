@@ -444,6 +444,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          allow_promotion: boolean
           avatar_url: string | null
           bio: string | null
           career_start_year: number | null
@@ -477,6 +478,7 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          allow_promotion?: boolean
           avatar_url?: string | null
           bio?: string | null
           career_start_year?: number | null
@@ -510,6 +512,7 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          allow_promotion?: boolean
           avatar_url?: string | null
           bio?: string | null
           career_start_year?: number | null
