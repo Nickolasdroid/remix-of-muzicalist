@@ -60,6 +60,39 @@ const SettingsTab = ({
   const [reportMessage, setReportMessage] = useState("");
   const [reportFile, setReportFile] = useState<File | null>(null);
   const reportFileInputRef = useRef<HTMLInputElement>(null);
+  const [allowPromotion, setAllowPromotion] = useState(true);
+  const [showPromotionInfo, setShowPromotionInfo] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("allow_promotion")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (data && typeof (data as any).allow_promotion === "boolean") {
+        setAllowPromotion((data as any).allow_promotion);
+      }
+    })();
+  }, []);
+
+  const handleTogglePromotion = async (next: boolean) => {
+    setAllowPromotion(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ allow_promotion: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setAllowPromotion(!next);
+      toast({ title: "Error", description: "Could not update promotion preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
+    }
+  };
 
   const resetPasswordForm = () => {
     setPasswordData({
