@@ -512,10 +512,10 @@ const Feed = () => {
                       onClick={() => handleLike(item.id)}
                       aria-label={item.isLiked ? "Unlike post" : "Like post"}
                       aria-pressed={item.isLiked}
-                      className={`flex-1 gap-1.5 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`w-5 h-5 ${item.isLiked ? "fill-current" : ""}`} />
-                      {item.likes > 0 && <span className="font-medium tabular-nums">{item.likes}</span>}
+                      <Heart className={`w-7 h-7 ${item.isLiked ? "fill-current" : ""}`} />
+                      {item.likes > 0 && <span className="text-base font-semibold tabular-nums">{item.likes}</span>}
                     </Button>
                     
                     <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
