@@ -1494,10 +1494,6 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                {(promo.likes || 0) > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-b border-border/40">
-                                    <Heart className="h-4 w-4" />
-                                    <span>{promo.likes}</span>
-                                  </div>}
                                 <div className="px-2 py-1">
                                   <div className="flex items-center justify-around">
                                     <Button
@@ -1508,8 +1504,8 @@ const ArtistProfile = () => {
                                       aria-pressed={promo.isLiked}
                                       className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                     >
-                                      <Heart className={`w-5 h-5 ${promo.isLiked ? "fill-current" : ""}`} />
-                                      <span className="font-medium">Like</span>
+                                      <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                      {(promo.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promo.likes}</span>}
                                     </Button>
 
                                     <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">

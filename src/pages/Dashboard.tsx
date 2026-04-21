@@ -287,7 +287,7 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) {
-      // Fetch likes count for each post
+      // Fetch likes count and isLiked for each post
       const postsWithLikes = await Promise.all(data.map(async (post) => {
         const {
           count
@@ -295,9 +295,11 @@ const Dashboard = () => {
           count: 'exact',
           head: true
         }).eq('post_id', post.id);
+        const { data: likeData } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', user.id).maybeSingle();
         return {
           ...post,
-          likes: count || 0
+          likes: count || 0,
+          isLiked: !!likeData
         };
       }));
       setPosts(postsWithLikes);
@@ -307,6 +309,46 @@ const Dashboard = () => {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const postsThisMonth = data.filter((post) => new Date(post.created_at) >= startOfMonth);
       setMonthlyPostsCount(postsThisMonth.length);
+    }
+  };
+  const handlePostLike = async (postId: string) => {
+    if (!user) return;
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    setPosts((items) => items.map((p) => p.id === postId ? {
+      ...p,
+      isLiked: !p.isLiked,
+      likes: p.isLiked ? Math.max(0, (p.likes || 0) - 1) : (p.likes || 0) + 1
+    } : p));
+    try {
+      if (post.isLiked) {
+        await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.id);
+      } else {
+        await supabase.from('post_likes').insert({ post_id: postId, user_id: user.id });
+      }
+    } catch (error) {
+      setPosts((items) => items.map((p) => p.id === postId ? post : p));
+      console.error('Error toggling post like:', error);
+    }
+  };
+  const handleAnnouncementLike = async (announcementId: string) => {
+    if (!user) return;
+    const announcement = announcements.find((a) => a.id === announcementId);
+    if (!announcement) return;
+    setAnnouncements((items) => items.map((a) => a.id === announcementId ? {
+      ...a,
+      isLiked: !a.isLiked,
+      likes: a.isLiked ? Math.max(0, (a.likes || 0) - 1) : (a.likes || 0) + 1
+    } : a));
+    try {
+      if (announcement.isLiked) {
+        await (supabase as any).from('announcement_likes').delete().eq('announcement_id', announcementId).eq('user_id', user.id);
+      } else {
+        await (supabase as any).from('announcement_likes').insert({ announcement_id: announcementId, user_id: user.id });
+      }
+    } catch (error) {
+      setAnnouncements((items) => items.map((a) => a.id === announcementId ? announcement : a));
+      console.error('Error toggling announcement like:', error);
     }
   };
   const loadReviews = async () => {
@@ -2345,12 +2387,20 @@ const Dashboard = () => {
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {/* Likes count */}
-                              {post.likes > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
-                                  <Heart className="h-4 w-4" />
-                                  <span>{post.likes}</span>
-                                </div>}
-                              <div className="p-4" />
+                              {/* Like action (Feed-style) */}
+                              <div className="px-2 py-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => post.id && handlePostLike(post.id)}
+                                  aria-label={post.isLiked ? "Unlike post" : "Like post"}
+                                  aria-pressed={post.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${post.isLiked ? "fill-current" : ""}`} />
+                                  {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
 
                           {/* Promotions in Posts section */}
@@ -2415,11 +2465,20 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {(promotion.likes || 0) > 0 && <div className="px-4 py-2 flex items-center gap-1.5 text-sm text-muted-foreground border-t border-border/40">
-                                  <Heart className="h-4 w-4" />
-                                  <span>{promotion.likes}</span>
-                                </div>}
-                              <div className="p-4" />
+                              {/* Like action (Feed-style) */}
+                              <div className="px-2 py-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAnnouncementLike(promotion.id)}
+                                  aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
+                                  aria-pressed={promotion.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
+                                  {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
                           
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
