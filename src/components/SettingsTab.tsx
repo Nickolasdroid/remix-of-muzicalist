@@ -244,6 +244,11 @@ const SettingsTab = ({
       id: "system",
       label: "System",
       icon: Settings2
+    },
+    {
+      id: "promotion",
+      label: "Promotion",
+      icon: Megaphone
     }
   ];
 
@@ -906,26 +911,34 @@ const SettingsTab = ({
                     })}
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
 
-                <Separator />
+          {/* Promotion Section */}
+          {activeSection === "promotion" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">Promotion</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Allow Muzicalist to feature your profile on its channels
+                </p>
+              </div>
 
-                {/* Promotion */}
-                <div className="flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowPromotionInfo(true)}
-                    className="text-left group flex-1"
-                  >
-                    <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
-                      <Megaphone className="h-4 w-4" />
-                      Allow promotion on Muzicalist channels
-                    </Label>
-                    <p className="text-sm text-muted-foreground group-hover:underline">
-                      Click to learn what this means
-                    </p>
-                  </button>
-                  <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
-                </div>
+              <Separator />
+
+              <div className="flex items-center justify-between gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowPromotionInfo(true)}
+                  className="text-left group flex-1"
+                >
+                  <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer group-hover:text-accent">
+                    <Megaphone className="h-4 w-4" />
+                    Allow promotion on Muzicalist channels
+                  </Label>
+                </button>
+                <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
               </div>
             </div>
           )}
