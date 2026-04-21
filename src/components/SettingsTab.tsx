@@ -577,13 +577,9 @@ const SettingsTab = ({
                 onClick={() => setShowPromotionInfo(true)}
                 className="text-left flex-1"
               >
-                <Label className="text-sm font-medium flex items-center gap-2 cursor-pointer">
-                  <Megaphone className="h-4 w-4" />
+                <Label className="text-sm font-medium cursor-pointer">
                   Allow promotion on Muzicalist channels
                 </Label>
-                <p className="text-sm text-muted-foreground underline mt-1">
-                  Tap to learn what this means
-                </p>
               </button>
               <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
             </div>
