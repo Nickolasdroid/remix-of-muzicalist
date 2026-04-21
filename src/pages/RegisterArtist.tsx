@@ -23,6 +23,7 @@ import registerArtistBg from "@/assets/register-artist-bg.png";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
+import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
