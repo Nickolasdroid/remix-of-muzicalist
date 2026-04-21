@@ -1607,7 +1607,7 @@ const ArtistProfile = () => {
                             {/* Actions */}
                             <div className="px-2 py-1">
                               <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => handlePostLike(post.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                <Button variant="ghost" size="sm" onClick={() => handlePostLike(post.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}>
                                   <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
                                   <span className="font-medium">Like</span>
                                 </Button>
