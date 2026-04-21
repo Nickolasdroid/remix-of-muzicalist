@@ -566,7 +566,7 @@ const SettingsTab = ({
   // Mobile view
   if (isMobile) {
     return (
-      <div className="w-full min-h-screen">
+      <div className="w-full">
         {activeSection === "main" && <MobileMainList />}
         
         {activeSection === "email" && <MobileEmailSection />}
@@ -632,7 +632,7 @@ const SettingsTab = ({
 
   // Desktop view
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full">
       <div className="flex flex-col lg:flex-row gap-8 p-6 lg:p-8 px-[9px] py-0">
         {/* Sidebar Navigation */}
         <nav className="lg:w-56 shrink-0">
