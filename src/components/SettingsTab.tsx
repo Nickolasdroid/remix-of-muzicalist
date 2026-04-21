@@ -709,6 +709,7 @@ const SettingsTab = ({
                               variant={currentPasswordVerified ? "outline" : "default"} 
                               className={currentPasswordVerified ? '' : 'bg-accent text-accent-foreground'}
                             >
+                              {isVerifying ? "..." : currentPasswordVerified ? "✓" : "Verify"}
                             </Button>
                           </div>
                         </div>
