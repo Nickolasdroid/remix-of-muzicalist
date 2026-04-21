@@ -155,7 +155,7 @@ const Notifications = () => {
               {userType !== 'user' && <p className="text-muted-foreground">
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>}
-            </Card> : <div className="border-y border-border">
+            </Card> : <div>
               {notifications.map(notification => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
