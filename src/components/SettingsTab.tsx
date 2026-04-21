@@ -611,6 +611,21 @@ const SettingsTab = ({
             </p>
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
+              <AlertDialogDescription>
+                By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep enabled</AlertDialogCancel>
+              <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
