@@ -287,7 +287,7 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) {
-      // Fetch likes count for each post
+      // Fetch likes count and isLiked for each post
       const postsWithLikes = await Promise.all(data.map(async (post) => {
         const {
           count
@@ -295,9 +295,11 @@ const Dashboard = () => {
           count: 'exact',
           head: true
         }).eq('post_id', post.id);
+        const { data: likeData } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', user.id).maybeSingle();
         return {
           ...post,
-          likes: count || 0
+          likes: count || 0,
+          isLiked: !!likeData
         };
       }));
       setPosts(postsWithLikes);
