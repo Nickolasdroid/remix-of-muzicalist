@@ -79,7 +79,7 @@ const SettingsTab = ({
     })();
   }, []);
 
-  const handleTogglePromotion = async (next: boolean) => {
+  const applyPromotionChange = async (next: boolean) => {
     setAllowPromotion(next);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -93,6 +93,14 @@ const SettingsTab = ({
     } else {
       toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
     }
+  };
+
+  const handleTogglePromotion = (next: boolean) => {
+    if (!next) {
+      setShowDisablePromotionConfirm(true);
+      return;
+    }
+    applyPromotionChange(true);
   };
 
   const resetPasswordForm = () => {
