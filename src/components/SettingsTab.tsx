@@ -976,5 +976,10 @@ const SettingsTab = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default SettingsTab;
