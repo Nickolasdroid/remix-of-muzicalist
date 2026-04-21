@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_likes: {
+        Row: {
+          announcement_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           budget: string | null
