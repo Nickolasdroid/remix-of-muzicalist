@@ -20,6 +20,7 @@ import Announcements from "./pages/Announcements";
 import About from "./pages/About";
 import AboutUs from "./pages/AboutUs";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
 import ArtistProfile from "./pages/ArtistProfile";
