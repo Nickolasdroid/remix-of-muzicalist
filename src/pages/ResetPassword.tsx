@@ -8,10 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
-import {
-  PasswordStrengthIndicator,
-  getPasswordScore,
-} from "@/components/PasswordStrengthIndicator";
+import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 
 const ResetPassword = () => {
   const { toast } = useToast();
