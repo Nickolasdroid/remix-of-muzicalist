@@ -127,7 +127,8 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
               {/* Header */}
-              <div className="text-center space-y-2">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
                 <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
                   Login to your Account
                 </h2>
