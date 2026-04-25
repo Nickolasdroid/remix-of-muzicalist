@@ -181,11 +181,45 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.quality_filter
     );
 
+    // Helper: translate a fallback English message into the user's language
+    async function localizeMessage(englishMessage: string): Promise<string> {
+      try {
+        const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-lite",
+            messages: [
+              {
+                role: "system",
+                content: `Detect the language of the user query and rewrite the given English message in that exact language. Keep the meaning, tone, and length identical. Return ONLY the rewritten message, no quotes, no explanations. If you cannot detect the language reliably, return the English message unchanged.`,
+              },
+              { role: "user", content: `User query: ${query}\n\nMessage to translate:\n${englishMessage}` },
+            ],
+          }),
+        });
+        if (resp.ok) {
+          const d = await resp.json();
+          const t = d.choices?.[0]?.message?.content?.trim();
+          if (t && t.length > 0 && t.length < 600) return t;
+        }
+      } catch (e) {
+        console.error("localizeMessage failed (non-fatal):", e);
+      }
+      return englishMessage;
+    }
+
     if (criteria.is_artist_search !== true || !hasAnyCriteria) {
       console.log("Not an artist search or no criteria extracted — returning empty results");
+      const msg = await localizeMessage(
+        "I couldn't understand your search. Try describing what kind of artist you're looking for (e.g. genre, location, instrument, or event date)."
+      );
       return new Response(
         JSON.stringify({
-          response: "I couldn't understand your search. Try describing what kind of artist you're looking for (e.g. genre, location, instrument, or event date).",
+          response: msg,
           artists: [],
           criteria,
         }),
@@ -391,7 +425,9 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     let summary = "";
     if (results.length === 0) {
-      summary = "No matching artists found. Try different keywords, a genre, location, or artist name.";
+      summary = await localizeMessage(
+        "No matching artists found. Try different keywords, a genre, location, or artist name."
+      );
     } else {
       // Build a breakdown by specialization to give the model factual data
       const breakdown: Record<string, number> = {};
