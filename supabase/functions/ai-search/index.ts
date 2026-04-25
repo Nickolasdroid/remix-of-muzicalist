@@ -425,7 +425,9 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     let summary = "";
     if (results.length === 0) {
-      summary = "No matching artists found. Try different keywords, a genre, location, or artist name.";
+      summary = await localizeMessage(
+        "No matching artists found. Try different keywords, a genre, location, or artist name."
+      );
     } else {
       // Build a breakdown by specialization to give the model factual data
       const breakdown: Record<string, number> = {};
