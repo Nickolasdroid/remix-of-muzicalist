@@ -68,7 +68,7 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
 - quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
-  * "high" -> user wants GOOD/TOP/BEST/QUALITY artists. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "professionnels", "de calitate", "renumiti", "celebri", "experimentati".
+  * "high" -> user wants GOOD/TOP/BEST/QUALITY/PROFESSIONAL artists. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "profesionist", "profesionisti", "professional", "professionals", "professionnels", "pro", "de calitate", "renumiti", "celebri", "experimentati".
   * "low" -> user explicitly wants WEAK/BAD/CHEAP/BEGINNER artists. Examples: "un solist slab", "artisti slabi", "incepatori", "ieftini", "mediocri", "bad singers".
   * null -> no quality judgment expressed.
 - is_artist_search: true ONLY when the user is clearly trying to find, search, book, hire, or filter musicians/artists/DJs/bands/singers/instrumentalists for the platform. Return false for greetings, small talk, personal questions, random questions, or anything not related to finding artists.
