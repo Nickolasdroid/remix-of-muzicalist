@@ -138,7 +138,11 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
     if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
-    if (criteria.country) q = q.ilike("country", `%${criteria.country}%`);
+    if (criteria.country) {
+      // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
+      const c = criteria.country.trim();
+      q = q.or(`country.ilike.${c},country.ilike.%${c}%`);
+    }
     if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
     if (criteria.instrument) q = q.ilike("instruments", `%${criteria.instrument}%`);
