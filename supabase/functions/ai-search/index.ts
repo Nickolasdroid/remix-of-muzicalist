@@ -123,7 +123,21 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     const aiData = await aiResp.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let criteria: Record<string, string | boolean | null> = {
+    type SearchCriteria = {
+      name: string | null;
+      specialization: string | null;
+      genre: string | null;
+      country: string | null;
+      county: string | null;
+      experience_level: string | null;
+      instrument: string | null;
+      keywords: string | null;
+      event_date: string | null;
+      event_end_date: string | null;
+      is_artist_search: boolean | null;
+    };
+
+    let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
       event_date: null, event_end_date: null, is_artist_search: null,
@@ -150,8 +164,8 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.event_date
     );
 
-    if (!hasAnyCriteria) {
-      console.log("No criteria extracted — returning empty results");
+    if (criteria.is_artist_search !== true || !hasAnyCriteria) {
+      console.log("Not an artist search or no criteria extracted — returning empty results");
       return new Response(
         JSON.stringify({
           response: "I couldn't understand your search. Try describing what kind of artist you're looking for (e.g. genre, location, instrument, or event date).",
