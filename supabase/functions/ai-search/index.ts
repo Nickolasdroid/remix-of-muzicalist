@@ -221,6 +221,15 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       console.log(`Date filter ${startDate}..${endDate}: excluded ${before - artistIds.length} busy artist(s)`);
     }
 
+    const hasHardCriteria = !!(
+      criteria.specialization ||
+      criteria.genre ||
+      criteria.county ||
+      criteria.country ||
+      criteria.instrument ||
+      criteria.experience_level
+    );
+
     // Helper to run a query against the artist subset
     const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
 
@@ -248,6 +257,13 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       );
     }
 
+    if (criteria.keywords && !hasHardCriteria && !criteria.name && !criteria.event_date) {
+      const k = criteria.keywords;
+      q = q.or(
+        `stage_name.ilike.%${k}%,first_name.ilike.%${k}%,last_name.ilike.%${k}%,bio.ilike.%${k}%,music_genres.ilike.%${k}%,instruments.ilike.%${k}%`
+      );
+    }
+
     let { data: artists, error: dbError } = await q;
     if (dbError) {
       console.error("DB error:", dbError);
@@ -256,15 +272,6 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     // Fallback: only run a broader OR search when NO hard criteria were extracted.
     // Hard criteria (specialization, genre, location, instrument, experience) must be respected strictly.
-    const hasHardCriteria = !!(
-      criteria.specialization ||
-      criteria.genre ||
-      criteria.county ||
-      criteria.country ||
-      criteria.instrument ||
-      criteria.experience_level
-    );
-
     if ((!artists || artists.length === 0) && artistIds.length > 0 && !hasHardCriteria) {
       const orParts: string[] = [];
       const terms = [criteria.name, criteria.keywords]
