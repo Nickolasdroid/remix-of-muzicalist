@@ -152,7 +152,7 @@ const Login = () => {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="h-12 bg-input border-border text-base pr-12"
-                    placeholder="••••••••"
+                    placeholder="Password"
                   />
                   <button
                     type="button"
