@@ -314,10 +314,20 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (results.length === 0) {
       summary = "No matching artists found. Try different keywords, a genre, location, or artist name.";
     } else {
-      summary = `Found ${results.length} matching artist${results.length === 1 ? "" : "s"}.`;
+      // Build a breakdown by specialization to give the model factual data
+      const breakdown: Record<string, number> = {};
+      for (const a of results) {
+        const spec = a.specialization || "Unspecified";
+        breakdown[spec] = (breakdown[spec] || 0) + 1;
+      }
+      const breakdownStr = Object.entries(breakdown)
+        .map(([spec, count]) => `${count} ${spec}`)
+        .join(", ");
 
-      // Generate an elaborated conversational reply in the user's language,
-      // ONLY if the original query has enough context to warrant it.
+      // Default fallback summary
+      summary = `Found ${results.length} matching artist${results.length === 1 ? "" : "s"} (${breakdownStr}).`;
+
+      // Generate an elaborated conversational reply in the user's language.
       try {
         const elaborateResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -330,18 +340,21 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
             messages: [
               {
                 role: "system",
-                content: `You are a helpful assistant for a music artist booking platform. The user has just searched for artists and we found ${results.length} match(es).
+                content: `You are a helpful assistant for a music artist booking platform.
 
-Your job: write a SHORT (1-2 sentences, max 220 characters) friendly, helpful reply in the SAME LANGUAGE as the user's query. 
+The user searched and we found ${results.length} artist(s). Breakdown by specialization: ${breakdownStr}.
+
+Your job: write a SHORT (1-2 sentences, max 260 characters) friendly reply in the SAME LANGUAGE as the user's query.
+
+MUST include:
+- The total number of results AND the breakdown by specialization (e.g. "2 artiști, dintre care 1 solist și 1 instrumentist").
+- If the user query has extra context (occasion, mood, event, date), add a brief helpful remark.
 
 Rules:
-- ONLY elaborate if the query contains meaningful context (event type, mood, occasion, specific need, date, etc.) that lets you say something genuinely useful (a tip, encouragement, or contextual remark).
-- If the query is just a plain filter (e.g. "jazz singers in Paris", "DJ Romania"), reply with EXACTLY an empty string "".
-- Never list the artists, never invent names, never repeat the count, never say "I found X artists".
-- No greetings, no emojis, no markdown.
-- Match the user's language exactly (Romanian -> Romanian, French -> French, etc.).
-
-Return ONLY the reply text, or empty string if no elaboration is warranted.`,
+- Match the user's language exactly (Romanian -> Romanian, French -> French, English -> English, etc.).
+- Use natural phrasing (e.g. "dintre care", "of which", "dont").
+- Do NOT list artist names. Do NOT use markdown, emojis, or greetings.
+- Return ONLY the reply text.`,
               },
               { role: "user", content: query },
             ],
@@ -351,8 +364,8 @@ Return ONLY the reply text, or empty string if no elaboration is warranted.`,
         if (elaborateResp.ok) {
           const elaborateData = await elaborateResp.json();
           const extra = elaborateData.choices?.[0]?.message?.content?.trim();
-          if (extra && extra.length > 0 && extra.length < 400) {
-            summary = `${summary} ${extra}`;
+          if (extra && extra.length > 0 && extra.length < 500) {
+            summary = extra;
           }
         }
       } catch (e) {
