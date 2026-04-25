@@ -49,7 +49,16 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
 - country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters). Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
 - county: county, region, state, or city name as written by the user (any language is fine; do not translate place names).
-- instrument: canonical English instrument name (Guitar, Piano, Drums, Violin, Saxophone, Bass, Trumpet, Flute, etc.). Translate: chitara/guitare/gitarre -> "Guitar"; pian/piano -> "Piano"; vioara/violon/geige -> "Violin"; tobe/batterie/schlagzeug -> "Drums"; etc.
+- instrument: pick the BEST MATCH from the EXACT canonical instrument list available on the platform (written exactly as listed):
+  Strings: "Acoustic Guitar", "Electric Guitar", "Bass Guitar", "Classical Guitar", "Violin", "Viola", "Cello", "Double Bass", "Harp", "Ukulele", "Banjo", "Mandolin", "Balalaika", "Sitar", "Oud"
+  Keyboard: "Piano", "Keyboard", "Synthesizer", "Organ", "Accordion", "Harpsichord", "Electric Piano"
+  Woodwind: "Flute", "Clarinet", "Saxophone", "Oboe", "Bassoon", "Recorder", "Piccolo", "Pan Flute", "Harmonica"
+  Brass: "Trumpet", "Trombone", "French Horn", "Tuba", "Cornet", "Euphonium", "Flugelhorn"
+  Percussion: "Drums", "Percussion", "Cajon", "Congas", "Bongos", "Djembe", "Timpani", "Marimba", "Xylophone", "Vibraphone", "Tambourine", "Triangle"
+  Electronic: "Drum Machine", "Sampler", "MIDI Controller"
+  Traditional/Folk: "Bagpipes", "Didgeridoo", "Tabla", "Nai", "Cimbalom", "Cobza", "Țambal"
+  Translation/synonym examples: chitara/chitară/guitare/gitarre -> "Guitar" (generic, will match all guitar variants); chitara electrica/electric guitar -> "Electric Guitar"; chitara bas/bass -> "Bass Guitar"; pian/piano -> "Piano"; vioara/violon/geige -> "Violin"; violoncel/cello -> "Cello"; tobe/batterie/schlagzeug -> "Drums"; sax -> "Saxophone"; acordeon/accordéon -> "Accordion"; nai/pan flute -> "Pan Flute"; țambal/cimbalom -> "Cimbalom"; muzicuta/harmonica -> "Harmonica".
+  IMPORTANT: When the user says a generic family name without a qualifier (e.g. just "guitar"/"chitară"), return the SHORTEST canonical keyword that the DB ilike substring match will broaden across all variants — e.g. "Guitar" matches Acoustic/Electric/Classical/Bass Guitar; "Bass" matches Bass Guitar/Double Bass. When the user is specific (e.g. "chitară clasică"), return the exact canonical name ("Classical Guitar").
 - name: artist or stage name mentioned (keep as-is, do not translate proper names).
 - keywords: any other free-text keywords (event type, vibe) translated to English.
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
