@@ -29,6 +29,7 @@ const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAIMode, setIsAIMode] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [aiArtists, setAiArtists] = useState<any[]>([]);
   const [isAILoading, setIsAILoading] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -92,6 +93,7 @@ const Search = () => {
 
     setIsAILoading(true);
     setAiResponse(null);
+    setAiArtists([]);
 
     try {
       const { data, error } = await supabase.functions.invoke("ai-search", {
@@ -110,9 +112,9 @@ const Search = () => {
         return;
       }
 
-      if (data?.response) {
-        setAiResponse(data.response);
-      } else {
+      if (data?.response) setAiResponse(data.response);
+      if (Array.isArray(data?.artists)) setAiArtists(data.artists);
+      if (!data?.response && !(Array.isArray(data?.artists) && data.artists.length)) {
         toast.error("No results found. Please try a different search.");
       }
     } catch (error) {
@@ -135,6 +137,7 @@ const Search = () => {
     setSearchQuery("");
     setSuggestions([]);
     setAiResponse(null);
+    setAiArtists([]);
   };
 
   const getSpecializationLabel = (spec: string | null) => {
@@ -255,17 +258,57 @@ const Search = () => {
           </button>
 
           {/* AI Response */}
-          {isAIMode && aiResponse && (
-            <div className="mb-6 p-4 rounded-xl bg-secondary/50 border border-border">
-              <div className="flex items-start gap-2 mb-2">
+          {isAIMode && (aiResponse || aiArtists.length > 0) && (
+            <div className="mb-6 p-4 rounded-xl bg-secondary/50 border border-border space-y-4">
+              <div className="flex items-start gap-2">
                 <Sparkles className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                 <div className="flex-1">
                   <h4 className="font-semibold text-foreground mb-2">Search Results</h4>
-                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {aiResponse}
-                  </div>
+                  {aiResponse && (
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {aiResponse}
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {aiArtists.length > 0 && (
+                <div className="space-y-2">
+                  {aiArtists.map((artist: any) => (
+                    <Link
+                      key={artist.id}
+                      to={`/artist/${artist.id}`}
+                      className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
+                    >
+                      <Avatar className="h-12 w-12 border-2 border-border">
+                        <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                        <AvatarFallback className="bg-accent/10 text-accent">
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground truncate">
+                          {artist.stage_name || `${artist.first_name ?? ""} ${artist.last_name ?? ""}`.trim()}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          {artist.specialization && (
+                            <span>{getSpecializationLabel(artist.specialization)}</span>
+                          )}
+                          {artist.specialization && artist.country && <span>•</span>}
+                          {artist.country && <span>{getCountryName(artist.country)}</span>}
+                          {artist.country && artist.county && <span>•</span>}
+                          {artist.county && <span>{artist.county}</span>}
+                        </div>
+                        {artist.music_genres && (
+                          <p className="text-xs text-muted-foreground truncate mt-0.5">
+                            {artist.music_genres}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
