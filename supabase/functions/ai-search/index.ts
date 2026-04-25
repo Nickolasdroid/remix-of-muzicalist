@@ -53,8 +53,9 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - keywords: any other free-text keywords (event type, vibe) translated to English.
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
+- is_artist_search: true ONLY when the user is clearly trying to find, search, book, hire, or filter musicians/artists/DJs/bands/singers/instrumentalists for the platform. Return false for greetings, small talk, personal questions, random questions, or anything not related to finding artists.
 
-Use null for unspecified fields. Always extract what the user explicitly mentions, regardless of the query language.`;
+Use null for unspecified fields. Do NOT put generic chit-chat or random questions into keywords. Always extract what the user explicitly mentions, regardless of the query language.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -87,8 +88,9 @@ Use null for unspecified fields. Always extract what the user explicitly mention
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
                   event_end_date: { type: ["string", "null"], description: "End of event date range in YYYY-MM-DD format" },
+                  is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date"],
+                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -121,10 +123,10 @@ Use null for unspecified fields. Always extract what the user explicitly mention
 
     const aiData = await aiResp.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let criteria: Record<string, string | null> = {
+    let criteria: Record<string, string | boolean | null> = {
       name: null, specialization: null, genre: null, country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
-      event_date: null, event_end_date: null,
+      event_date: null, event_end_date: null, is_artist_search: null,
     };
     try {
       if (toolCall?.function?.arguments) {
