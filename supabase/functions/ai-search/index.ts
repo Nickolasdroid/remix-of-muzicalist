@@ -315,6 +315,49 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       summary = "No matching artists found. Try different keywords, a genre, location, or artist name.";
     } else {
       summary = `Found ${results.length} matching artist${results.length === 1 ? "" : "s"}.`;
+
+      // Generate an elaborated conversational reply in the user's language,
+      // ONLY if the original query has enough context to warrant it.
+      try {
+        const elaborateResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash",
+            messages: [
+              {
+                role: "system",
+                content: `You are a helpful assistant for a music artist booking platform. The user has just searched for artists and we found ${results.length} match(es).
+
+Your job: write a SHORT (1-2 sentences, max 220 characters) friendly, helpful reply in the SAME LANGUAGE as the user's query. 
+
+Rules:
+- ONLY elaborate if the query contains meaningful context (event type, mood, occasion, specific need, date, etc.) that lets you say something genuinely useful (a tip, encouragement, or contextual remark).
+- If the query is just a plain filter (e.g. "jazz singers in Paris", "DJ Romania"), reply with EXACTLY an empty string "".
+- Never list the artists, never invent names, never repeat the count, never say "I found X artists".
+- No greetings, no emojis, no markdown.
+- Match the user's language exactly (Romanian -> Romanian, French -> French, etc.).
+
+Return ONLY the reply text, or empty string if no elaboration is warranted.`,
+              },
+              { role: "user", content: query },
+            ],
+          }),
+        });
+
+        if (elaborateResp.ok) {
+          const elaborateData = await elaborateResp.json();
+          const extra = elaborateData.choices?.[0]?.message?.content?.trim();
+          if (extra && extra.length > 0 && extra.length < 400) {
+            summary = `${summary} ${extra}`;
+          }
+        }
+      } catch (e) {
+        console.error("Elaboration step failed (non-fatal):", e);
+      }
     }
 
     console.log(`Returning ${results.length} artists`);
