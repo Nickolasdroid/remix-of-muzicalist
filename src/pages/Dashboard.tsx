@@ -3530,6 +3530,7 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
     </div>;
 };
 export default Dashboard;
