@@ -343,16 +343,27 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                 content: `You are a helpful assistant for a music artist booking platform.
 
 The user searched and we found ${results.length} artist(s). Breakdown by specialization: ${breakdownStr}.
+Extracted search context (refer to its meaning, not field names):
+${JSON.stringify({
+  genre: criteria.genre,
+  specialization: criteria.specialization,
+  instrument: criteria.instrument,
+  country: criteria.country,
+  county: criteria.county,
+  event_date: criteria.event_date,
+  keywords: criteria.keywords,
+}, null, 2)}
 
-Your job: write a SHORT (1-2 sentences, max 260 characters) friendly reply in the SAME LANGUAGE as the user's query.
+Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
-MUST include:
-- The total number of results AND the breakdown by specialization (e.g. "2 artiști, dintre care 1 solist și 1 instrumentist").
-- If the user query has extra context (occasion, mood, event, date), add a brief helpful remark.
+MUST:
+- State the total count AND the breakdown by specialization (e.g. "2 artiști, dintre care 1 instrumentist și 1 solist").
+- Weave in the user's specific request naturally — if they asked about a genre (e.g. "manele"), location, instrument, occasion, or date, reference it in the reply (e.g. "...care cântă acest gen de muzică", "...din această zonă", "...disponibili la această dată").
+- Make the sentence feel like a direct answer to THEIR question, not a generic summary.
 
 Rules:
 - Match the user's language exactly (Romanian -> Romanian, French -> French, English -> English, etc.).
-- Use natural phrasing (e.g. "dintre care", "of which", "dont").
+- Use natural connector phrasing ("dintre care", "of which", "dont").
 - Do NOT list artist names. Do NOT use markdown, emojis, or greetings.
 - Return ONLY the reply text.`,
               },
