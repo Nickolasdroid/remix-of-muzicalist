@@ -2399,10 +2399,13 @@ const Dashboard = () => {
                                 <ExpandableText text={post.content} className="mt-3" />
                               </div>
                               
-                              {post.media_url && <div className="mt-3 bg-muted/30">
-                                  {post.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={post.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
+                              {post.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                                url: post.media_url!,
+                                type: post.media_type === "video" ? "video" : "image"
+                              })}>
+                                  {post.media_type === "video" ? <div className="relative w-full aspect-video pointer-events-none">
+                                      <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
                               {/* Like action (Feed-style) */}
