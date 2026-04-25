@@ -491,63 +491,62 @@ const RegisterArtist = () => {
         </div>
 
         {/* Right Panel - Form */}
-        <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 py-12 md:px-12">
-          <div className="w-full max-w-md space-y-8">
-            {/* Logo on mobile hidden since it's in left panel, show on desktop right side */}
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                Create Artist Account
-              </h2>
-              <p className="text-muted-foreground">
-                Start with your email address
+        <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 pt-20 pb-12 md:py-12 md:px-12">
+          <div className="w-full max-w-md">
+            <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
+              {/* Header with logo */}
+              <div className="flex flex-col items-center text-center space-y-3">
+                <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                  Create Artist Account
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Start with your email address
+                </p>
+              </div>
+
+              {/* Email Input */}
+              <div className="space-y-2">
+                <Input
+                  id="step0-email"
+                  type="email"
+                  value={step0Email}
+                  onChange={(e) => setStep0Email(e.target.value)}
+                  placeholder="Email"
+                  className="h-12 bg-input border-border text-base"
+                  onKeyDown={(e) => e.key === "Enter" && handleStep0Continue()}
+                />
+              </div>
+
+              {/* Continue Button - Gold gradient */}
+              <Button
+                type="button"
+                onClick={handleStep0Continue}
+                className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+              >
+                Continue
+              </Button>
+
+              {/* Terms */}
+              <p className="text-center text-xs text-muted-foreground">
+                By continuing, you agree to the{" "}
+                <Link to="/terms-of-service" className="text-accent hover:underline font-medium">
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy-policy" className="text-accent hover:underline font-medium">
+                  Privacy Policy
+                </Link>
+              </p>
+
+              {/* Login link */}
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link to="/login" className="text-accent hover:underline font-semibold">
+                  Sign in
+                </Link>
               </p>
             </div>
-
-            {/* Email Input */}
-            <div className="space-y-2">
-              <Label htmlFor="step0-email" className="text-sm font-medium flex items-center gap-1.5">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                Email Address
-              </Label>
-              <Input
-                id="step0-email"
-                type="email"
-                value={step0Email}
-                onChange={(e) => setStep0Email(e.target.value)}
-                placeholder="Enter your email address"
-                className="h-12 bg-input border-border focus:border-accent text-base"
-                onKeyDown={(e) => e.key === "Enter" && handleStep0Continue()}
-              />
-            </div>
-
-            {/* Continue Button - Gold gradient */}
-            <Button
-              type="button"
-              onClick={handleStep0Continue}
-              className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
-            >
-              Continue
-            </Button>
-
-            {/* Terms */}
-            <p className="text-center text-xs text-muted-foreground">
-              By continuing, you agree to the{" "}
-              <Link to="/terms-of-service" className="text-accent hover:underline font-medium">
-                Terms & Conditions
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy-policy" className="text-accent hover:underline font-medium">
-                Privacy Policy
-              </Link>
-            </p>
-
-            {/* Login link */}
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="text-accent hover:underline font-medium">
-                Sign in
-              </Link>
-            </p>
           </div>
         </div>
       </div>
