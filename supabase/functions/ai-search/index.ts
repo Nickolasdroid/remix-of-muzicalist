@@ -40,6 +40,7 @@ Specializations available: Singer, Instrumentalist, DJ, Band.
 Experience levels: Beginner, Intermediate, Advanced.
 Common genres: Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal.
 Locations can be any country or county/region.
+For 'country', ALWAYS return the ISO 3166-1 alpha-2 code (2 uppercase letters) when a country is mentioned. Examples: "Franta"/"France"/"Franța" -> "FR", "Romania"/"România" -> "RO", "Germania"/"Germany" -> "DE", "Italia"/"Italy" -> "IT", "Spania"/"Spain" -> "ES", "UK"/"Marea Britanie" -> "GB", "SUA"/"USA" -> "US". If no country is mentioned, return null.
 Extract whatever the user explicitly mentions. Use null for unspecified fields. The 'name' field captures any artist or stage name mentioned.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -66,7 +67,7 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
                   name: { type: ["string", "null"], description: "Artist name or stage name keyword" },
                   specialization: { type: ["string", "null"], enum: ["Singer", "Instrumentalist", "DJ", "Band", null] },
                   genre: { type: ["string", "null"], description: "Music genre keyword" },
-                  country: { type: ["string", "null"] },
+                  country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
                   experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", null] },
                   instrument: { type: ["string", "null"] },
@@ -137,7 +138,11 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
     if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
-    if (criteria.country) q = q.ilike("country", `%${criteria.country}%`);
+    if (criteria.country) {
+      // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
+      const c = criteria.country.trim();
+      q = q.or(`country.ilike.${c},country.ilike.%${c}%`);
+    }
     if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
     if (criteria.instrument) q = q.ilike("instruments", `%${criteria.instrument}%`);
