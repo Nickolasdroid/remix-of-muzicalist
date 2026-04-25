@@ -140,13 +140,14 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       keywords: string | null;
       event_date: string | null;
       event_end_date: string | null;
+      quality_filter: "high" | "low" | null;
       is_artist_search: boolean | null;
     };
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
-      event_date: null, event_end_date: null, is_artist_search: null,
+      event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
     };
     try {
       if (toolCall?.function?.arguments) {
@@ -167,7 +168,8 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.experience_level ||
       criteria.instrument ||
       criteria.keywords ||
-      criteria.event_date
+      criteria.event_date ||
+      criteria.quality_filter
     );
 
     if (criteria.is_artist_search !== true || !hasAnyCriteria) {
