@@ -54,6 +54,10 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - keywords: any other free-text keywords (event type, vibe) translated to English.
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
+- quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
+  * "high" -> user wants GOOD/TOP/BEST/QUALITY artists. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "professionnels", "de calitate", "renumiti", "celebri", "experimentati".
+  * "low" -> user explicitly wants WEAK/BAD/CHEAP/BEGINNER artists. Examples: "un solist slab", "artisti slabi", "incepatori", "ieftini", "mediocri", "bad singers".
+  * null -> no quality judgment expressed.
 - is_artist_search: true ONLY when the user is clearly trying to find, search, book, hire, or filter musicians/artists/DJs/bands/singers/instrumentalists for the platform. Return false for greetings, small talk, personal questions, random questions, or anything not related to finding artists.
 
 Use null for unspecified fields. Do NOT put generic chit-chat or random questions into keywords. Always extract what the user explicitly mentions, regardless of the query language.`;
@@ -89,9 +93,10 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
                   event_end_date: { type: ["string", "null"], description: "End of event date range in YYYY-MM-DD format" },
+                  quality_filter: { type: ["string", "null"], enum: ["high", "low", null], description: "Quality judgment: 'high' for good/top artists, 'low' for weak/bad artists, null otherwise" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "is_artist_search"],
+                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -135,13 +140,14 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       keywords: string | null;
       event_date: string | null;
       event_end_date: string | null;
+      quality_filter: "high" | "low" | null;
       is_artist_search: boolean | null;
     };
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
-      event_date: null, event_end_date: null, is_artist_search: null,
+      event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
     };
     try {
       if (toolCall?.function?.arguments) {
@@ -162,7 +168,8 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.experience_level ||
       criteria.instrument ||
       criteria.keywords ||
-      criteria.event_date
+      criteria.event_date ||
+      criteria.quality_filter
     );
 
     if (criteria.is_artist_search !== true || !hasAnyCriteria) {
@@ -297,19 +304,73 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       }
     }
 
-    const results = (artists || []).map((a: any) => ({
-      id: a.id,
-      stage_name: a.stage_name,
-      first_name: a.first_name,
-      last_name: a.last_name,
-      avatar_url: a.avatar_url,
-      specialization: a.specialization,
-      music_genres: a.music_genres,
-      country: a.country,
-      county: a.county,
-      experience_level: a.experience_level,
-      plan: a.plan,
-    }));
+    let enrichedArtists = artists || [];
+
+    // Fetch reviews for the matched artists to compute quality metrics (avg rating + count)
+    const ratingMap = new Map<string, { avg: number; count: number }>();
+    if (enrichedArtists.length > 0) {
+      const ids = enrichedArtists.map((a: any) => a.id);
+      const { data: reviewRows, error: revError } = await supabase
+        .from("reviews")
+        .select("profile_id, rating")
+        .in("profile_id", ids);
+      if (revError) console.error("Reviews fetch error:", revError);
+      const acc = new Map<string, { sum: number; count: number }>();
+      for (const r of reviewRows || []) {
+        const cur = acc.get(r.profile_id) || { sum: 0, count: 0 };
+        cur.sum += Number(r.rating) || 0;
+        cur.count += 1;
+        acc.set(r.profile_id, cur);
+      }
+      for (const [pid, { sum, count }] of acc.entries()) {
+        ratingMap.set(pid, { avg: count > 0 ? sum / count : 0, count });
+      }
+    }
+
+    // Apply quality filter (high = good artists, low = weak artists)
+    if (criteria.quality_filter === "high") {
+      enrichedArtists = enrichedArtists.filter((a: any) => {
+        const r = ratingMap.get(a.id);
+        return r && r.count > 0 && r.avg >= 4;
+      });
+      // Sort best first
+      enrichedArtists.sort((a: any, b: any) => {
+        const ra = ratingMap.get(a.id) || { avg: 0, count: 0 };
+        const rb = ratingMap.get(b.id) || { avg: 0, count: 0 };
+        if (rb.avg !== ra.avg) return rb.avg - ra.avg;
+        return rb.count - ra.count;
+      });
+    } else if (criteria.quality_filter === "low") {
+      enrichedArtists = enrichedArtists.filter((a: any) => {
+        const r = ratingMap.get(a.id);
+        // "weak" = has reviews and avg below 3, OR has no reviews at all (unproven)
+        return !r || r.avg < 3;
+      });
+      enrichedArtists.sort((a: any, b: any) => {
+        const ra = ratingMap.get(a.id) || { avg: 0, count: 0 };
+        const rb = ratingMap.get(b.id) || { avg: 0, count: 0 };
+        return ra.avg - rb.avg;
+      });
+    }
+
+    const results = enrichedArtists.map((a: any) => {
+      const r = ratingMap.get(a.id) || { avg: 0, count: 0 };
+      return {
+        id: a.id,
+        stage_name: a.stage_name,
+        first_name: a.first_name,
+        last_name: a.last_name,
+        avatar_url: a.avatar_url,
+        specialization: a.specialization,
+        music_genres: a.music_genres,
+        country: a.country,
+        county: a.county,
+        experience_level: a.experience_level,
+        plan: a.plan,
+        avg_rating: Number(r.avg.toFixed(2)),
+        review_count: r.count,
+      };
+    });
 
     let summary = "";
     if (results.length === 0) {
@@ -353,7 +414,9 @@ ${JSON.stringify({
   county: criteria.county,
   event_date: criteria.event_date,
   keywords: criteria.keywords,
+  quality_filter: criteria.quality_filter,
 }, null, 2)}
+${criteria.quality_filter ? `\nNote: results were filtered/sorted by quality (${criteria.quality_filter === "high" ? "top-rated artists, avg rating >= 4 stars" : "lower-rated or unrated artists"}). Mention this naturally in the reply (e.g. "cei mai bine apreciați", "with the best reviews", "selected based on reviews").` : ""}
 
 Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
