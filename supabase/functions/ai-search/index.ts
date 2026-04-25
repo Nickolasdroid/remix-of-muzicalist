@@ -102,7 +102,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   genre: { type: ["string", "null"], description: "Music genre keyword" },
                   country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
-                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", null] },
+                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", "Professional", null] },
                   instrument: { type: ["string", "null"] },
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
