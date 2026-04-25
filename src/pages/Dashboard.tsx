@@ -41,6 +41,7 @@ import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVid
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 const Dashboard = () => {
   const {
     toast
