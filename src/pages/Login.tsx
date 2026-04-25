@@ -122,17 +122,17 @@ const Login = () => {
 
       {/* Right Panel - Login Form */}
       <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 py-12 md:px-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-              Login to your Account
-            </h2>
-          </div>
-
+        <div className="w-full max-w-md">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit}>
             <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
+              {/* Header */}
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                  Login to your Account
+                </h2>
+              </div>
+
               <div className="space-y-2">
                 <Input
                   id="email"
@@ -181,16 +181,16 @@ const Login = () => {
               >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
+
+              {/* Register link */}
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-accent hover:underline font-semibold">
+                  Register here
+                </Link>
+              </p>
             </div>
           </form>
-
-          {/* Register link */}
-          <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-accent hover:underline font-semibold">
-              Register here
-            </Link>
-          </p>
         </div>
       </div>
     </div>
