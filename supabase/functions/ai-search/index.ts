@@ -135,6 +135,31 @@ Use null for unspecified fields. Always extract what the user explicitly mention
     }
     console.log("Extracted criteria:", criteria);
 
+    // If no meaningful criteria were extracted, the query is not a valid artist search
+    const hasAnyCriteria = !!(
+      criteria.name ||
+      criteria.specialization ||
+      criteria.genre ||
+      criteria.country ||
+      criteria.county ||
+      criteria.experience_level ||
+      criteria.instrument ||
+      criteria.keywords ||
+      criteria.event_date
+    );
+
+    if (!hasAnyCriteria) {
+      console.log("No criteria extracted — returning empty results");
+      return new Response(
+        JSON.stringify({
+          response: "I couldn't understand your search. Try describing what kind of artist you're looking for (e.g. genre, location, instrument, or event date).",
+          artists: [],
+          criteria,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Get artist user IDs (no FK relationship between profiles and user_roles)
     const { data: roleRows, error: rolesError } = await supabase
       .from("user_roles")
