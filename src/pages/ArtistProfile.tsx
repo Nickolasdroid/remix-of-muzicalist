@@ -41,6 +41,7 @@ interface Profile {
   county: string;
   country: string | null;
   specialization: string | null;
+  experience_level: string | null;
   music_genres: string | null;
   career_start_year: number | null;
   number_of_events: number;
@@ -1189,6 +1190,10 @@ const ArtistProfile = () => {
                         Experience
                       </h3>
                       <div className="space-y-1 md:space-y-2 text-left">
+                        <p className="text-muted-foreground flex items-center gap-2 text-sm md:text-base">
+                          <Award className="h-4 w-4 text-accent" />
+                          Level: <span className="font-semibold text-foreground">{artist.experience_level || "Not specified"}</span>
+                        </p>
                         <p className="text-muted-foreground text-sm md:text-base">
                           <span className="font-semibold text-foreground">{getExperienceYears()} years</span> of professional experience
                         </p>
