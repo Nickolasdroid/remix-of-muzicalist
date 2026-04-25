@@ -39,11 +39,12 @@ serve(async (req) => {
 The user query may be written in ANY language (English, Romanian, French, German, Italian, Spanish, Portuguese, Polish, Russian, etc.). You MUST understand the query regardless of language and translate the extracted values to the canonical English values listed below.
 
 CANONICAL VALUES (always return these exact strings, never the localized version):
-- specialization: one of "Singer", "Instrumentalist", "DJ", "Band". Map any localized term:
+- specialization: one of "Singer", "Instrumentalist", "DJ", "Band", or null. ONLY set this when the user EXPLICITLY names a specific specialization. Map localized terms:
   * Singer = cantaret, cântăreț, solist, vocalist, chanteur, sänger, cantante, cantor, певец, etc.
   * Instrumentalist = instrumentist, musicien, musiker, musicista, músico, etc.
   * DJ = dj, disc jockey, deejay (any language)
   * Band = trupa, trupă, formatie, formație, groupe, gruppe, banda, grupo, etc.
+  * CRITICAL: Generic words like "artist", "artists", "artiști", "artisti", "musicians", "muzicieni", "performers", "interpreți", "cineva" are NOT specializations — they are umbrella terms covering ALL specializations. When the user uses these generic words, set specialization to null so results include singers, bands, DJs, and instrumentalists alike. Example: "Ce artisti canta manele?" -> specialization: null, genre: "Manele".
 - experience_level: one of "Beginner", "Intermediate", "Advanced".
 - genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
 - country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters). Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
