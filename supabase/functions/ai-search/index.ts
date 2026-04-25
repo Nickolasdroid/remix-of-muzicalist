@@ -118,11 +118,21 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
     }
     console.log("Extracted criteria:", criteria);
 
-    // Build query against profiles, joined with user_roles to ensure artists only
+    // Get artist user IDs (no FK relationship between profiles and user_roles)
+    const { data: roleRows, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("user_type", "artist");
+    if (rolesError) console.error("Roles error:", rolesError);
+    const artistIds = (roleRows || []).map((r: any) => r.user_id);
+
+    // Helper to run a query against the artist subset
+    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
+
     let q = supabase
       .from("profiles")
-      .select("id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, user_roles!inner(user_type)")
-      .eq("user_roles.user_type", "artist")
+      .select(baseSelect)
+      .in("id", artistIds.length > 0 ? artistIds : ["00000000-0000-0000-0000-000000000000"])
       .limit(24);
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
@@ -145,18 +155,33 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
       artists = [];
     }
 
-    // Fallback fuzzy search if nothing matched
-    if ((!artists || artists.length === 0) && (criteria.name || criteria.keywords)) {
-      const term = criteria.name || criteria.keywords || "";
-      const { data: fallback } = await supabase
-        .from("profiles")
-        .select("id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, user_roles!inner(user_type)")
-        .eq("user_roles.user_type", "artist")
-        .or(
-          `stage_name.ilike.%${term}%,first_name.ilike.%${term}%,last_name.ilike.%${term}%,bio.ilike.%${term}%,music_genres.ilike.%${term}%`
-        )
-        .limit(24);
-      artists = fallback || [];
+    // Fallback: broader OR search across all extracted terms if strict AND match returned nothing
+    if ((!artists || artists.length === 0) && artistIds.length > 0) {
+      const orParts: string[] = [];
+      const terms = [criteria.name, criteria.keywords, criteria.genre, criteria.county, criteria.country, criteria.instrument]
+        .filter((t): t is string => !!t);
+      for (const t of terms) {
+        orParts.push(
+          `stage_name.ilike.%${t}%`,
+          `first_name.ilike.%${t}%`,
+          `last_name.ilike.%${t}%`,
+          `bio.ilike.%${t}%`,
+          `music_genres.ilike.%${t}%`,
+          `county.ilike.%${t}%`,
+          `country.ilike.%${t}%`,
+          `instruments.ilike.%${t}%`,
+        );
+      }
+      if (orParts.length > 0) {
+        const { data: fallback, error: fbError } = await supabase
+          .from("profiles")
+          .select(baseSelect)
+          .in("id", artistIds)
+          .or(orParts.join(","))
+          .limit(24);
+        if (fbError) console.error("Fallback error:", fbError);
+        artists = fallback || [];
+      }
     }
 
     const results = (artists || []).map((a: any) => ({
