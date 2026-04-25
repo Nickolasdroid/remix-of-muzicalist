@@ -121,7 +121,7 @@ const Login = () => {
       </Link>
 
       {/* Right Panel - Login Form */}
-      <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 py-12 md:px-12">
+      <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 pt-20 pb-12 md:py-12 md:px-12">
         <div className="w-full max-w-md">
           {/* Form */}
           <form onSubmit={handleSubmit}>
