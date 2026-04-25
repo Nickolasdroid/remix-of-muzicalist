@@ -45,11 +45,12 @@ CANONICAL VALUES (always return these exact strings, never the localized version
   * DJ = dj, disc jockey, deejay (any language)
   * Band = trupa, trupă, formatie, formație, groupe, gruppe, banda, grupo, etc.
   * CRITICAL: Generic words like "artist", "artists", "artiști", "artisti", "musicians", "muzicieni", "performers", "interpreți", "cineva" are NOT specializations — they are umbrella terms covering ALL specializations. When the user uses these generic words, set specialization to null so results include singers, bands, DJs, and instrumentalists alike. Example: "Ce artisti canta manele?" -> specialization: null, genre: "Manele".
-- experience_level: one of "Beginner", "Intermediate", "Advanced", or null. ONLY set when the user EXPLICITLY references the artist's experience level / seniority / career stage using a level-specific term. Map localized terms:
+- experience_level: one of "Beginner", "Intermediate", "Advanced", "Professional", or null. The platform stores experience as a strict 4-level enum. ONLY set when the user EXPLICITLY references the artist's experience level / seniority / career stage. Map localized terms:
   * Beginner = incepator, începător, debutant, novice, junior, "la inceput de drum", "fara experienta", anfänger, principiante, débutant, новичок, etc.
   * Intermediate = intermediar, mediu, "cu ceva experienta", intermédiaire, intermedio, mittel, средний, etc.
   * Advanced = avansat, experimentat, "cu multa experienta", senior, veteran, "vechi in domeniu", expérimenté, esperto, erfahren, опытный, etc.
-  * IMPORTANT: Words like "bun"/"good"/"top"/"slab"/"bad"/"profesionist"/"professional"/"pro"/"de calitate"/"renumit"/"celebru" are QUALITY/reputation judgments — they go into quality_filter, NOT experience_level. The platform stores experience as a strict 3-level enum (Beginner/Intermediate/Advanced); "Professional" is NOT a stored level. Do NOT map "profesionist"/"professional" to Advanced. A "beginner" can still be talented; an "advanced" artist can still be poorly rated. Keep these two dimensions strictly separate.
+  * Professional = profesionist, profesionisti, profesională, professional, professionals, professionnel, professionnels, profesional, profesionales, pro, "de profesie", profi, профессионал, etc.
+  * IMPORTANT: "Professional" IS a valid stored level — map "profesionist"/"professional"/"pro" to experience_level: "Professional", NOT to quality_filter. Quality words like "bun"/"good"/"top"/"best"/"slab"/"bad"/"renumit"/"celebru"/"de calitate" are reputation judgments that go into quality_filter. Keep these two dimensions strictly separate.
 - genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
 - country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters). Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
 - county: county, region, state, or city name as written by the user (any language is fine; do not translate place names).
@@ -68,7 +69,7 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
 - quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
-  * "high" -> user wants GOOD/TOP/BEST/QUALITY/PROFESSIONAL artists. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "profesionist", "profesionisti", "professional", "professionals", "professionnels", "pro", "de calitate", "renumiti", "celebri", "experimentati".
+  * "high" -> user wants GOOD/TOP/BEST/QUALITY artists based on REPUTATION/REVIEWS. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "de calitate", "renumiti", "celebri", "experimentati", "cu recenzii bune". Do NOT trigger this on the word "profesionist"/"professional"/"pro" — those map to experience_level instead.
   * "low" -> user explicitly wants WEAK/BAD/CHEAP/BEGINNER artists. Examples: "un solist slab", "artisti slabi", "incepatori", "ieftini", "mediocri", "bad singers".
   * null -> no quality judgment expressed.
 - is_artist_search: true ONLY when the user is clearly trying to find, search, book, hire, or filter musicians/artists/DJs/bands/singers/instrumentalists for the platform. Return false for greetings, small talk, personal questions, random questions, or anything not related to finding artists.
@@ -101,7 +102,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   genre: { type: ["string", "null"], description: "Music genre keyword" },
                   country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
-                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", null] },
+                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", "Professional", null] },
                   instrument: { type: ["string", "null"] },
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
