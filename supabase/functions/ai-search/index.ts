@@ -51,6 +51,8 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - instrument: canonical English instrument name (Guitar, Piano, Drums, Violin, Saxophone, Bass, Trumpet, Flute, etc.). Translate: chitara/guitare/gitarre -> "Guitar"; pian/piano -> "Piano"; vioara/violon/geige -> "Violin"; tobe/batterie/schlagzeug -> "Drums"; etc.
 - name: artist or stage name mentioned (keep as-is, do not translate proper names).
 - keywords: any other free-text keywords (event type, vibe) translated to English.
+- event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
+- event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
 
 Use null for unspecified fields. Always extract what the user explicitly mentions, regardless of the query language.`;
 
@@ -83,8 +85,10 @@ Use null for unspecified fields. Always extract what the user explicitly mention
                   experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", null] },
                   instrument: { type: ["string", "null"] },
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
+                  event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
+                  event_end_date: { type: ["string", "null"], description: "End of event date range in YYYY-MM-DD format" },
                 },
-                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords"],
+                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date"],
                 additionalProperties: false,
               },
             },
@@ -120,6 +124,7 @@ Use null for unspecified fields. Always extract what the user explicitly mention
     let criteria: Record<string, string | null> = {
       name: null, specialization: null, genre: null, country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
+      event_date: null, event_end_date: null,
     };
     try {
       if (toolCall?.function?.arguments) {
@@ -136,7 +141,44 @@ Use null for unspecified fields. Always extract what the user explicitly mention
       .select("user_id")
       .eq("user_type", "artist");
     if (rolesError) console.error("Roles error:", rolesError);
-    const artistIds = (roleRows || []).map((r: any) => r.user_id);
+    let artistIds = (roleRows || []).map((r: any) => r.user_id);
+
+    // If user specified an event date, exclude artists who are busy on that date.
+    // Busy = has a 'blocked' calendar_events entry OR an 'accepted' booking_request on that date (or overlapping range).
+    if (criteria.event_date && artistIds.length > 0) {
+      const startDate = criteria.event_date;
+      const endDate = criteria.event_end_date || criteria.event_date;
+
+      const [{ data: busyCal }, { data: busyBookings }] = await Promise.all([
+        supabase
+          .from("calendar_events")
+          .select("profile_id")
+          .eq("status", "blocked")
+          .gte("event_date", startDate)
+          .lte("event_date", endDate)
+          .in("profile_id", artistIds),
+        supabase
+          .from("booking_requests")
+          .select("profile_id, event_date, event_end_date")
+          .eq("status", "accepted")
+          .in("profile_id", artistIds),
+      ]);
+
+      const busyIds = new Set<string>();
+      (busyCal || []).forEach((r: any) => busyIds.add(r.profile_id));
+      (busyBookings || []).forEach((r: any) => {
+        const bStart = r.event_date;
+        const bEnd = r.event_end_date || r.event_date;
+        // Overlap check: bStart <= endDate AND bEnd >= startDate
+        if (bStart <= endDate && bEnd >= startDate) {
+          busyIds.add(r.profile_id);
+        }
+      });
+
+      const before = artistIds.length;
+      artistIds = artistIds.filter((id: string) => !busyIds.has(id));
+      console.log(`Date filter ${startDate}..${endDate}: excluded ${before - artistIds.length} busy artist(s)`);
+    }
 
     // Helper to run a query against the artist subset
     const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
