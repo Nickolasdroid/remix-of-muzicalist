@@ -36,12 +36,23 @@ serve(async (req) => {
 
     // Ask AI to extract structured search criteria from the natural-language query
     const systemPrompt = `You extract artist search criteria from natural language queries for a music platform.
-Specializations available: Singer, Instrumentalist, DJ, Band.
-Experience levels: Beginner, Intermediate, Advanced.
-Common genres: Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal.
-Locations can be any country or county/region.
-For 'country', ALWAYS return the ISO 3166-1 alpha-2 code (2 uppercase letters) when a country is mentioned. Examples: "Franta"/"France"/"Franța" -> "FR", "Romania"/"România" -> "RO", "Germania"/"Germany" -> "DE", "Italia"/"Italy" -> "IT", "Spania"/"Spain" -> "ES", "UK"/"Marea Britanie" -> "GB", "SUA"/"USA" -> "US". If no country is mentioned, return null.
-Extract whatever the user explicitly mentions. Use null for unspecified fields. The 'name' field captures any artist or stage name mentioned.`;
+The user query may be written in ANY language (English, Romanian, French, German, Italian, Spanish, Portuguese, Polish, Russian, etc.). You MUST understand the query regardless of language and translate the extracted values to the canonical English values listed below.
+
+CANONICAL VALUES (always return these exact strings, never the localized version):
+- specialization: one of "Singer", "Instrumentalist", "DJ", "Band". Map any localized term:
+  * Singer = cantaret, cântăreț, solist, vocalist, chanteur, sänger, cantante, cantor, певец, etc.
+  * Instrumentalist = instrumentist, musicien, musiker, musicista, músico, etc.
+  * DJ = dj, disc jockey, deejay (any language)
+  * Band = trupa, trupă, formatie, formație, groupe, gruppe, banda, grupo, etc.
+- experience_level: one of "Beginner", "Intermediate", "Advanced".
+- genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
+- country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters). Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
+- county: county, region, state, or city name as written by the user (any language is fine; do not translate place names).
+- instrument: canonical English instrument name (Guitar, Piano, Drums, Violin, Saxophone, Bass, Trumpet, Flute, etc.). Translate: chitara/guitare/gitarre -> "Guitar"; pian/piano -> "Piano"; vioara/violon/geige -> "Violin"; tobe/batterie/schlagzeug -> "Drums"; etc.
+- name: artist or stage name mentioned (keep as-is, do not translate proper names).
+- keywords: any other free-text keywords (event type, vibe) translated to English.
+
+Use null for unspecified fields. Always extract what the user explicitly mentions, regardless of the query language.`;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
