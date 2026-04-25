@@ -155,10 +155,20 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
       artists = [];
     }
 
-    // Fallback: broader OR search across all extracted terms if strict AND match returned nothing
-    if ((!artists || artists.length === 0) && artistIds.length > 0) {
+    // Fallback: only run a broader OR search when NO hard criteria were extracted.
+    // Hard criteria (specialization, genre, location, instrument, experience) must be respected strictly.
+    const hasHardCriteria = !!(
+      criteria.specialization ||
+      criteria.genre ||
+      criteria.county ||
+      criteria.country ||
+      criteria.instrument ||
+      criteria.experience_level
+    );
+
+    if ((!artists || artists.length === 0) && artistIds.length > 0 && !hasHardCriteria) {
       const orParts: string[] = [];
-      const terms = [criteria.name, criteria.keywords, criteria.genre, criteria.county, criteria.country, criteria.instrument]
+      const terms = [criteria.name, criteria.keywords]
         .filter((t): t is string => !!t);
       for (const t of terms) {
         orParts.push(
@@ -166,10 +176,6 @@ Extract whatever the user explicitly mentions. Use null for unspecified fields. 
           `first_name.ilike.%${t}%`,
           `last_name.ilike.%${t}%`,
           `bio.ilike.%${t}%`,
-          `music_genres.ilike.%${t}%`,
-          `county.ilike.%${t}%`,
-          `country.ilike.%${t}%`,
-          `instruments.ilike.%${t}%`,
         );
       }
       if (orParts.length > 0) {
