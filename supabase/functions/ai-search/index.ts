@@ -414,7 +414,9 @@ ${JSON.stringify({
   county: criteria.county,
   event_date: criteria.event_date,
   keywords: criteria.keywords,
+  quality_filter: criteria.quality_filter,
 }, null, 2)}
+${criteria.quality_filter ? `\nNote: results were filtered/sorted by quality (${criteria.quality_filter === "high" ? "top-rated artists, avg rating >= 4 stars" : "lower-rated or unrated artists"}). Mention this naturally in the reply (e.g. "cei mai bine apreciați", "with the best reviews", "selected based on reviews").` : ""}
 
 Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
