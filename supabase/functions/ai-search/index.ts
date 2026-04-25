@@ -169,6 +169,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       specialization: string | null;
       genre: string | null;
       country: string | null;
+      excluded_country: string | null;
       county: string | null;
       experience_level: string | null;
       instrument: string | null;
@@ -180,7 +181,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     };
 
     let criteria: SearchCriteria = {
-      name: null, specialization: null, genre: null, country: null,
+      name: null, specialization: null, genre: null, country: null, excluded_country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
       event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
     };
@@ -199,6 +200,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.specialization ||
       criteria.genre ||
       criteria.country ||
+      criteria.excluded_country ||
       criteria.county ||
       criteria.experience_level ||
       criteria.instrument ||
