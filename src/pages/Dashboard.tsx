@@ -183,6 +183,7 @@ const Dashboard = () => {
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based)
   const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
