@@ -498,6 +498,7 @@ ${JSON.stringify({
   specialization: criteria.specialization,
   instrument: criteria.instrument,
   country: criteria.country,
+  excluded_country: criteria.excluded_country,
   county: criteria.county,
   event_date: criteria.event_date,
   keywords: criteria.keywords,
