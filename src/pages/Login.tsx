@@ -132,7 +132,7 @@ const Login = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="border border-border rounded-xl p-6 space-y-5 bg-popover">
+            <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
               <div className="space-y-2">
                 <Input
                   id="email"
