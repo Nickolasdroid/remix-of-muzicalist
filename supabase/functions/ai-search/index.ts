@@ -479,7 +479,8 @@ ${criteria.quality_filter ? `\nNote: results were filtered/sorted by quality (${
 Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
 MUST:
-- State the total count AND the breakdown by specialization (e.g. "2 artiști, dintre care 1 instrumentist și 1 solist").
+- State the total count AND the breakdown by specialization (e.g. "2 artiști, dintre care 1 instrumentist și 1 cântăreț").
+- Translate specialization names naturally into the user's language. For Romanian use: Singer -> "cântăreț" (NEVER "solist"), Instrumentalist -> "instrumentist", Band -> "trupă", DJ -> "DJ". Use proper plurals (cântăreți, instrumentiști, trupe, DJ).
 - Weave in the user's specific request naturally — if they asked about a genre (e.g. "manele"), location, instrument, occasion, or date, reference it in the reply (e.g. "...care cântă acest gen de muzică", "...din această zonă", "...disponibili la această dată").
 - Make the sentence feel like a direct answer to THEIR question, not a generic summary.
 
