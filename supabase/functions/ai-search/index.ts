@@ -34,6 +34,26 @@ serve(async (req) => {
 
     console.log("Processing search query:", query);
 
+    const getCountryVariants = (country: string | null) => {
+      if (!country) return [];
+      const c = country.trim();
+      const byCode: Record<string, string[]> = {
+        RO: ["RO", "Romania", "România", "Roumanie", "Rumania"],
+        GB: ["GB", "UK", "United Kingdom", "Marea Britanie", "Great Britain"],
+        US: ["US", "USA", "United States", "Statele Unite"],
+      };
+      return Array.from(new Set([c, ...(byCode[c.toUpperCase()] || [])]));
+    };
+
+    const matchesCountry = (value: string | null | undefined, variants: string[]) => {
+      if (!value) return false;
+      const normalized = value.toLowerCase();
+      return variants.some((v) => {
+        const needle = v.toLowerCase();
+        return normalized === needle || normalized.includes(needle) || needle.includes(normalized);
+      });
+    };
+
     // Ask AI to extract structured search criteria from the natural-language query
     const systemPrompt = `You extract artist search criteria from natural language queries for a music platform.
 The user query may be written in ANY language (English, Romanian, French, German, Italian, Spanish, Portuguese, Polish, Russian, etc.). You MUST understand the query regardless of language and translate the extracted values to the canonical English values listed below.
@@ -52,7 +72,8 @@ CANONICAL VALUES (always return these exact strings, never the localized version
   * Professional = profesionist, profesionisti, profesională, professional, professionals, professionnel, professionnels, profesional, profesionales, pro, "de profesie", profi, профессионал, etc.
   * IMPORTANT: "Professional" IS a valid stored level — map "profesionist"/"professional"/"pro" to experience_level: "Professional", NOT to quality_filter. Quality words like "bun"/"good"/"top"/"best"/"slab"/"bad"/"renumit"/"celebru"/"de calitate" are reputation judgments that go into quality_filter. Keep these two dimensions strictly separate.
 - genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
-- country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters). Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
+- country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters) ONLY for INCLUDED locations. Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
+- excluded_country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters) for NEGATED locations. Romanian examples: "să nu fie din România", "nu din Romania", "care nu este din România", "exceptând România" -> excluded_country: "RO" and country: null. English examples: "not from France", "outside Germany", "except Italy" -> excluded_country set, country null.
 - county: county, region, state, or city name as written by the user (any language is fine; do not translate place names).
 - instrument: pick the BEST MATCH from the EXACT canonical instrument list available on the platform (written exactly as listed):
   Strings: "Acoustic Guitar", "Electric Guitar", "Bass Guitar", "Classical Guitar", "Violin", "Viola", "Cello", "Double Bass", "Harp", "Ukulele", "Banjo", "Mandolin", "Balalaika", "Sitar", "Oud"
@@ -65,7 +86,7 @@ CANONICAL VALUES (always return these exact strings, never the localized version
   Translation/synonym examples: chitara/chitară/guitare/gitarre -> "Guitar" (generic, will match all guitar variants); chitara electrica/electric guitar -> "Electric Guitar"; chitara bas/bass -> "Bass Guitar"; pian/piano -> "Piano"; vioara/violon/geige -> "Violin"; violoncel/cello -> "Cello"; tobe/batterie/schlagzeug -> "Drums"; sax -> "Saxophone"; acordeon/accordéon -> "Accordion"; nai/pan flute -> "Pan Flute"; țambal/cimbalom -> "Cimbalom"; muzicuta/harmonica -> "Harmonica".
   IMPORTANT: When the user says a generic family name without a qualifier (e.g. just "guitar"/"chitară"), return the SHORTEST canonical keyword that the DB ilike substring match will broaden across all variants — e.g. "Guitar" matches Acoustic/Electric/Classical/Bass Guitar; "Bass" matches Bass Guitar/Double Bass. When the user is specific (e.g. "chitară clasică"), return the exact canonical name ("Classical Guitar").
 - name: artist or stage name mentioned (keep as-is, do not translate proper names).
-- keywords: any other free-text keywords (event type, vibe) translated to English.
+- keywords: any other free-text keywords (event type, vibe) translated to English. Do NOT put negation/location words like "not from", "nu din", "să nu fie din" into keywords; use excluded_country instead.
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
 - quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
@@ -101,6 +122,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   specialization: { type: ["string", "null"], enum: ["Singer", "Instrumentalist", "DJ", "Band", null] },
                   genre: { type: ["string", "null"], description: "Music genre keyword" },
                   country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
+                  excluded_country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code that must be excluded when the user says not from/outside/except a country" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
                   experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", "Professional", null] },
                   instrument: { type: ["string", "null"] },
@@ -110,7 +132,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   quality_filter: { type: ["string", "null"], enum: ["high", "low", null], description: "Quality judgment: 'high' for good/top artists, 'low' for weak/bad artists, null otherwise" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "is_artist_search"],
+                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -148,6 +170,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       specialization: string | null;
       genre: string | null;
       country: string | null;
+      excluded_country: string | null;
       county: string | null;
       experience_level: string | null;
       instrument: string | null;
@@ -159,7 +182,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     };
 
     let criteria: SearchCriteria = {
-      name: null, specialization: null, genre: null, country: null,
+      name: null, specialization: null, genre: null, country: null, excluded_country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
       event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
     };
@@ -178,6 +201,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.specialization ||
       criteria.genre ||
       criteria.country ||
+      criteria.excluded_country ||
       criteria.county ||
       criteria.experience_level ||
       criteria.instrument ||
@@ -282,6 +306,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.genre ||
       criteria.county ||
       criteria.country ||
+      criteria.excluded_country ||
       criteria.instrument ||
       criteria.experience_level
     );
@@ -299,8 +324,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
     if (criteria.country) {
       // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
-      const c = criteria.country.trim();
-      q = q.or(`country.ilike.${c},country.ilike.%${c}%`);
+      q = q.in("country", getCountryVariants(criteria.country));
     }
     if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
@@ -332,6 +356,11 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (dbError) {
       console.error("DB error:", dbError);
       artists = [];
+    }
+
+    if (criteria.excluded_country && artists) {
+      const excludedVariants = getCountryVariants(criteria.excluded_country);
+      artists = artists.filter((a: any) => !matchesCountry(a.country, excludedVariants));
     }
 
     // Fallback: only run a broader OR search when NO hard criteria were extracted.
@@ -469,6 +498,7 @@ ${JSON.stringify({
   specialization: criteria.specialization,
   instrument: criteria.instrument,
   country: criteria.country,
+  excluded_country: criteria.excluded_country,
   county: criteria.county,
   event_date: criteria.event_date,
   keywords: criteria.keywords,
