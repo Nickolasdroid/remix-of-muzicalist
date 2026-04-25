@@ -373,7 +373,7 @@ const Search = () => {
           )}
 
           {/* AI mode empty state */}
-          {isAIMode && !aiResponse && !isAILoading && (
+          {isAIMode && !aiResponse && aiArtists.length === 0 && !isAILoading && (
             <div className="text-center py-12 text-muted-foreground">
               <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-30" />
               <p>Ask anything about artists or events</p>
