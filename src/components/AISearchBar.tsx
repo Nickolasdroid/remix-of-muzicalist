@@ -1,15 +1,30 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import SimpleArtistCard from "@/components/SimpleArtistCard";
+
+interface ArtistResult {
+  id: string;
+  stage_name: string;
+  first_name: string;
+  last_name: string;
+  avatar_url?: string;
+  specialization?: string;
+  country?: string;
+  county?: string;
+  plan?: string;
+}
 
 const AISearchBar = () => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
+  const [artists, setArtists] = useState<ArtistResult[]>([]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +36,7 @@ const AISearchBar = () => {
 
     setIsLoading(true);
     setResponse(null);
+    setArtists([]);
 
     try {
       const { data, error } = await supabase.functions.invoke("ai-search", {
@@ -39,11 +55,8 @@ const AISearchBar = () => {
         return;
       }
 
-      if (data?.response) {
-        setResponse(data.response);
-      } else {
-        toast.error("No results found. Please try a different search.");
-      }
+      if (data?.response) setResponse(data.response);
+      if (Array.isArray(data?.artists)) setArtists(data.artists);
     } catch (error) {
       console.error("Search error:", error);
       toast.error("An unexpected error occurred. Please try again.");
@@ -63,10 +76,7 @@ const AISearchBar = () => {
                 AI-Powered Search
               </h3>
             </div>
-            
 
-
-            
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -91,19 +101,34 @@ const AISearchBar = () => {
             </div>
           </form>
 
-          {response &&
-          <div className="mt-6 p-4 rounded-lg bg-secondary/50 border border-border">
-              <div className="flex items-start gap-2 mb-2">
+          {(response || artists.length > 0) && (
+            <div className="mt-6 p-4 rounded-lg bg-secondary/50 border border-border space-y-4">
+              <div className="flex items-start gap-2">
                 <Sparkles className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-foreground mb-2">Search Results</h4>
-                  <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {response}
-                  </div>
+                  <h4 className="font-semibold text-foreground mb-1">Search Results</h4>
+                  {response && (
+                    <p className="text-sm text-muted-foreground">{response}</p>
+                  )}
                 </div>
               </div>
+
+              {artists.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {artists.map((a) => (
+                    <SimpleArtistCard
+                      key={a.id}
+                      id={a.id}
+                      name={`${a.first_name ?? ""} ${a.last_name ?? ""}`.trim()}
+                      stageName={a.stage_name || `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim()}
+                      imageUrl={a.avatar_url}
+                      isPremium={a.plan !== "Free"}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          }
+          )}
         </CardContent>
       </Card>
     </div>);
