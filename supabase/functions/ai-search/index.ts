@@ -306,6 +306,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.genre ||
       criteria.county ||
       criteria.country ||
+      criteria.excluded_country ||
       criteria.instrument ||
       criteria.experience_level
     );
@@ -323,8 +324,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
     if (criteria.country) {
       // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
-      const c = criteria.country.trim();
-      q = q.or(`country.ilike.${c},country.ilike.%${c}%`);
+      q = q.in("country", getCountryVariants(criteria.country));
     }
     if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
@@ -356,6 +356,11 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (dbError) {
       console.error("DB error:", dbError);
       artists = [];
+    }
+
+    if (criteria.excluded_country && artists) {
+      const excludedVariants = getCountryVariants(criteria.excluded_country);
+      artists = artists.filter((a: any) => !matchesCountry(a.country, excludedVariants));
     }
 
     // Fallback: only run a broader OR search when NO hard criteria were extracted.
