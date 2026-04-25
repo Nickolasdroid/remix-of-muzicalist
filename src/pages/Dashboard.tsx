@@ -41,6 +41,7 @@ import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVid
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 const Dashboard = () => {
   const {
     toast
@@ -182,6 +183,7 @@ const Dashboard = () => {
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based)
   const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
@@ -2397,10 +2399,13 @@ const Dashboard = () => {
                                 <ExpandableText text={post.content} className="mt-3" />
                               </div>
                               
-                              {post.media_url && <div className="mt-3 bg-muted/30">
-                                  {post.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={post.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain" />}
+                              {post.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                                url: post.media_url!,
+                                type: post.media_type === "video" ? "video" : "image"
+                              })}>
+                                  {post.media_type === "video" ? <div className="relative w-full aspect-video pointer-events-none">
+                                      <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
                               {/* Like action (Feed-style) */}
@@ -3525,6 +3530,7 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
     </div>;
 };
 export default Dashboard;
