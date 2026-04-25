@@ -132,7 +132,7 @@ const Login = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="border border-border rounded-xl p-6 space-y-5">
+            <div className="border border-border rounded-xl p-6 space-y-5 bg-popover">
               <div className="space-y-2">
                 <Input
                   id="email"
@@ -140,7 +140,7 @@ const Login = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="h-12 bg-input border-border text-base"
-                  placeholder="your@email.com"
+                  placeholder="Email"
                 />
               </div>
 
