@@ -135,9 +135,6 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="border border-border rounded-xl p-6 space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email Address
-                </Label>
                 <Input
                   id="email"
                   type="email"
