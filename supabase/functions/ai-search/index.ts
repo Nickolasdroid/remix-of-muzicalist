@@ -265,7 +265,15 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     }
     if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
-    if (criteria.instrument) q = q.ilike("instruments", `%${criteria.instrument}%`);
+    if (criteria.instrument) {
+      // Use the LAST word of the canonical instrument as a flexible substring match
+      // so "Acoustic Guitar" / "Electric Guitar" / "Bass Guitar" / "Classical Guitar" all match "Guitar".
+      // This keeps the search robust to instrument changes/removals in artist profiles.
+      const raw = criteria.instrument.trim();
+      const parts = raw.split(/\s+/);
+      const root = parts[parts.length - 1]; // "Acoustic Guitar" -> "Guitar"; "Piano" -> "Piano"
+      q = q.ilike("instruments", `%${root}%`);
+    }
 
     if (criteria.name) {
       const n = criteria.name;
