@@ -304,19 +304,73 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       }
     }
 
-    const results = (artists || []).map((a: any) => ({
-      id: a.id,
-      stage_name: a.stage_name,
-      first_name: a.first_name,
-      last_name: a.last_name,
-      avatar_url: a.avatar_url,
-      specialization: a.specialization,
-      music_genres: a.music_genres,
-      country: a.country,
-      county: a.county,
-      experience_level: a.experience_level,
-      plan: a.plan,
-    }));
+    let enrichedArtists = artists || [];
+
+    // Fetch reviews for the matched artists to compute quality metrics (avg rating + count)
+    const ratingMap = new Map<string, { avg: number; count: number }>();
+    if (enrichedArtists.length > 0) {
+      const ids = enrichedArtists.map((a: any) => a.id);
+      const { data: reviewRows, error: revError } = await supabase
+        .from("reviews")
+        .select("profile_id, rating")
+        .in("profile_id", ids);
+      if (revError) console.error("Reviews fetch error:", revError);
+      const acc = new Map<string, { sum: number; count: number }>();
+      for (const r of reviewRows || []) {
+        const cur = acc.get(r.profile_id) || { sum: 0, count: 0 };
+        cur.sum += Number(r.rating) || 0;
+        cur.count += 1;
+        acc.set(r.profile_id, cur);
+      }
+      for (const [pid, { sum, count }] of acc.entries()) {
+        ratingMap.set(pid, { avg: count > 0 ? sum / count : 0, count });
+      }
+    }
+
+    // Apply quality filter (high = good artists, low = weak artists)
+    if (criteria.quality_filter === "high") {
+      enrichedArtists = enrichedArtists.filter((a: any) => {
+        const r = ratingMap.get(a.id);
+        return r && r.count > 0 && r.avg >= 4;
+      });
+      // Sort best first
+      enrichedArtists.sort((a: any, b: any) => {
+        const ra = ratingMap.get(a.id) || { avg: 0, count: 0 };
+        const rb = ratingMap.get(b.id) || { avg: 0, count: 0 };
+        if (rb.avg !== ra.avg) return rb.avg - ra.avg;
+        return rb.count - ra.count;
+      });
+    } else if (criteria.quality_filter === "low") {
+      enrichedArtists = enrichedArtists.filter((a: any) => {
+        const r = ratingMap.get(a.id);
+        // "weak" = has reviews and avg below 3, OR has no reviews at all (unproven)
+        return !r || r.avg < 3;
+      });
+      enrichedArtists.sort((a: any, b: any) => {
+        const ra = ratingMap.get(a.id) || { avg: 0, count: 0 };
+        const rb = ratingMap.get(b.id) || { avg: 0, count: 0 };
+        return ra.avg - rb.avg;
+      });
+    }
+
+    const results = enrichedArtists.map((a: any) => {
+      const r = ratingMap.get(a.id) || { avg: 0, count: 0 };
+      return {
+        id: a.id,
+        stage_name: a.stage_name,
+        first_name: a.first_name,
+        last_name: a.last_name,
+        avatar_url: a.avatar_url,
+        specialization: a.specialization,
+        music_genres: a.music_genres,
+        country: a.country,
+        county: a.county,
+        experience_level: a.experience_level,
+        plan: a.plan,
+        avg_rating: Number(r.avg.toFixed(2)),
+        review_count: r.count,
+      };
+    });
 
     let summary = "";
     if (results.length === 0) {
