@@ -141,7 +141,44 @@ Use null for unspecified fields. Always extract what the user explicitly mention
       .select("user_id")
       .eq("user_type", "artist");
     if (rolesError) console.error("Roles error:", rolesError);
-    const artistIds = (roleRows || []).map((r: any) => r.user_id);
+    let artistIds = (roleRows || []).map((r: any) => r.user_id);
+
+    // If user specified an event date, exclude artists who are busy on that date.
+    // Busy = has a 'blocked' calendar_events entry OR an 'accepted' booking_request on that date (or overlapping range).
+    if (criteria.event_date && artistIds.length > 0) {
+      const startDate = criteria.event_date;
+      const endDate = criteria.event_end_date || criteria.event_date;
+
+      const [{ data: busyCal }, { data: busyBookings }] = await Promise.all([
+        supabase
+          .from("calendar_events")
+          .select("profile_id")
+          .eq("status", "blocked")
+          .gte("event_date", startDate)
+          .lte("event_date", endDate)
+          .in("profile_id", artistIds),
+        supabase
+          .from("booking_requests")
+          .select("profile_id, event_date, event_end_date")
+          .eq("status", "accepted")
+          .in("profile_id", artistIds),
+      ]);
+
+      const busyIds = new Set<string>();
+      (busyCal || []).forEach((r: any) => busyIds.add(r.profile_id));
+      (busyBookings || []).forEach((r: any) => {
+        const bStart = r.event_date;
+        const bEnd = r.event_end_date || r.event_date;
+        // Overlap check: bStart <= endDate AND bEnd >= startDate
+        if (bStart <= endDate && bEnd >= startDate) {
+          busyIds.add(r.profile_id);
+        }
+      });
+
+      const before = artistIds.length;
+      artistIds = artistIds.filter((id: string) => !busyIds.has(id));
+      console.log(`Date filter ${startDate}..${endDate}: excluded ${before - artistIds.length} busy artist(s)`);
+    }
 
     // Helper to run a query against the artist subset
     const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
