@@ -301,7 +301,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 </Link>
               </div>
 
-              {/* Main navigation - exclude Feed/Ads (already in bottom nav) */}
+              {/* Main navigation - exclude Home/Announcements (already in bottom nav) */}
               <div className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => (
                   <Link
