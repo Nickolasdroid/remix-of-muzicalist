@@ -353,7 +353,7 @@ const Feed = () => {
           {(() => {
             const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "announcement") : feedItems;
             return filtered.length === 0 ? <Card className="p-8 text-center">
-              <p className="text-muted-foreground">{feedFilter === "promotions" ? "No promotions yet." : "No posts yet. Be the first to share something!"}</p>
+              <p className="text-muted-foreground">{feedFilter === "promotions" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
@@ -436,7 +436,7 @@ const Feed = () => {
                   })}>
                     {item.media_type === "video" ? <div className="relative w-full aspect-video">
                         <video src={item.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={item.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
+                      </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
                   <div className="px-2 py-1">
@@ -445,7 +445,7 @@ const Feed = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleLike(item.id)}
-                        aria-label={item.isLiked ? "Unlike promotion" : "Like promotion"}
+                        aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                         aria-pressed={item.isLiked}
                         className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                       >
