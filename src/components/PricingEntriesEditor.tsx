@@ -68,6 +68,10 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
     load();
   }, [profileId]);
 
+  useEffect(() => {
+    onCountChange?.(entries.length);
+  }, [entries.length, onCountChange]);
+
   const addEntry = async () => {
     const amountNum = Number(newAmount);
     if (!newAmount || isNaN(amountNum) || amountNum <= 0) {
