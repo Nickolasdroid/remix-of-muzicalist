@@ -101,7 +101,7 @@ const Announcements = () => {
             country
           )
         `)
-        .eq('is_premium', false); // Only standard ads, no promotions
+        .eq('is_premium', false); // Only standard announcements, no promotions
       
       const { data, error } = await query
         .order("created_at", { ascending: false })
@@ -177,7 +177,7 @@ const Announcements = () => {
 
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const filteredAnnouncements = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted ads yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted announcements yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
@@ -207,7 +207,7 @@ const Announcements = () => {
                           <span>{formatSmartDate(announcement.created_at)}</span>
                           <span>·</span>
                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                            Ad
+                            Announcement
                           </Badge>
                         </div>
                       </div>
@@ -285,7 +285,7 @@ const Announcements = () => {
                         return;
                       }
                       if (currentUserId === announcement.profile_id) {
-                        toast({ title: "Cannot apply", description: "You cannot apply to your own ad." });
+                        toast({ title: "Cannot apply", description: "You cannot apply to your own announcement." });
                         return;
                       }
                       navigate(`/messages?artistId=${announcement.profile_id}&adId=${announcement.id}`);

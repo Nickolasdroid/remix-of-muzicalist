@@ -149,12 +149,12 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Ad limits (plan-based)
+  // Announcement limits (plan-based)
   const currentPlan = profile?.plan;
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Calculate used ads
+  // Calculate used announcements
   const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
   const premiumAdsUsed = announcements.filter((a) => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
@@ -2521,7 +2521,7 @@ const Dashboard = () => {
                         {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
-                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create ads</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
                             <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
                               Upgrade
                             </Button>
@@ -2538,7 +2538,7 @@ const Dashboard = () => {
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                     <Plus className="h-4 w-4 mr-1" />
-                                    New Ad
+                                    New Announcement
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-md">
@@ -2546,10 +2546,10 @@ const Dashboard = () => {
                                     <DialogTitle>Add New Announcement</DialogTitle>
                                   </DialogHeader>
                                   <p className="text-sm text-muted-foreground mt-2">
-                                    You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} ads remaining.
+                                    You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} announcements remaining.
                                   </p>
                                   <p className="text-sm text-muted-foreground mt-1">
-                                    Ads are valid for 15 days.
+                                    Announcements are valid for 15 days.
                                   </p>
                                   <div className="space-y-4 mt-4">
                                     <div>
@@ -2623,7 +2623,7 @@ const Dashboard = () => {
                                         {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Promotion
                                           </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                            Ad
+                                            Announcement
                                           </Badge>}
                                       </div>
                                     </div>
