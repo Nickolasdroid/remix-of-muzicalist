@@ -116,7 +116,7 @@ const Announcements = () => {
         setHasMore(false);
       }
       
-      // Sort by plan priority (Premium ads first)
+      // Sort by plan priority (Premium announcements first)
       const sorted = [...(data || [])].sort((a, b) => {
         const planA = getPlanPriority((a as any).profiles?.plan);
         const planB = getPlanPriority((b as any).profiles?.plan);

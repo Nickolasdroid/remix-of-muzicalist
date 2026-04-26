@@ -117,7 +117,7 @@ const RightContent = () => (
           size="sm"
           className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
         >
-          Explore Ads
+          Explore Announcements
         </Button>
       </Link>
     </div>
@@ -159,7 +159,7 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
         <p className="text-foreground/90 text-base font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
         <Link to="/announcements">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
-            Explore Ads
+            Explore Announcements
           </Button>
         </Link>
       </div>

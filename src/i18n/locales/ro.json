@@ -191,7 +191,7 @@
   },
   "userDashboard": {
     "myAds": "Profil",
-    "ads": "Anunțuri",
+    "announcements": "Anunțuri",
     "adsRemaining": "{{standard}} standard / {{premium}} premium anunțuri rămase",
     "newAd": "Nou",
     "createAd": "Creează Nou",

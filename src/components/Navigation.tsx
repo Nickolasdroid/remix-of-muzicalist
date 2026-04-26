@@ -227,7 +227,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
       ];
 
-  // Mobile bottom nav items (left to right: Feed - Ads - Messages - Profile)
+  // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
     { to: '/feed', icon: Home, label: 'Home', showBadge: false },
     { to: '/announcements', icon: Megaphone, label: 'Announcements', showBadge: false },

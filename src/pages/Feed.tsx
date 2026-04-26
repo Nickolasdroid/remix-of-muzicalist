@@ -37,7 +37,7 @@ interface FeedItem {
   isLiked: boolean;
   isSaved: boolean;
   likes: number;
-  type: "post" | "promotion";
+  type: "post" | "announcement";
 }
 
 interface MediaPreview {
@@ -47,14 +47,14 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
-  const [feedFilter, setFeedFilter] = useState<"all" | "promotions">("all");
+  const [feedFilter, setFeedFilter] = useState<"all" | "announcements">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "promotion" } | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "announcement" } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -162,7 +162,7 @@ const Feed = () => {
           isLiked: !!userLikeResult.data,
           isSaved: false,
           likes: likesResult.count || 0,
-          type: "promotion" as const,
+          type: "announcement" as const,
           };
         }));
 
@@ -222,13 +222,13 @@ const Feed = () => {
     } : i));
     try {
       if (item.isLiked) {
-        if (item.type === "promotion") {
+        if (item.type === "announcement") {
           await (supabase as any).from('announcement_likes').delete().eq('announcement_id', id).eq('user_id', currentUserId);
         } else {
           await supabase.from('post_likes').delete().eq('post_id', id).eq('user_id', currentUserId);
         }
       } else {
-        if (item.type === "promotion") {
+        if (item.type === "announcement") {
           await (supabase as any).from('announcement_likes').insert({ announcement_id: id, user_id: currentUserId });
         } else {
           await supabase.from('post_likes').insert({ post_id: id, user_id: currentUserId });
@@ -283,10 +283,10 @@ const Feed = () => {
       const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
       if (error) throw error;
       setFeedItems(items => items.filter(item => item.id !== announcementId));
-      toast({ title: "Announcement deleted", description: "Your promotion has been deleted." });
+      toast({ title: "Announcement deleted", description: "Your announcement has been deleted." });
     } catch (error) {
       console.error('Error deleting announcement:', error);
-      toast({ title: "Error", description: "Failed to delete promotion.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
     } finally {
       setDeleteAnnouncementId(null);
     }
@@ -341,21 +341,21 @@ const Feed = () => {
               All
             </Button>
             <Button
-              variant={feedFilter === "promotions" ? "default" : "outline"}
+              variant={feedFilter === "announcements" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFeedFilter("promotions")}
-              className={feedFilter === "promotions" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+              onClick={() => setFeedFilter("announcements")}
+              className={feedFilter === "announcements" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
             >
-              Promotions
+              Announcements
             </Button>
           </div>
 
           {(() => {
-            const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "promotion") : feedItems;
+            const filtered = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
             return filtered.length === 0 ? <Card className="p-8 text-center">
-              <p className="text-muted-foreground">{feedFilter === "promotions" ? "No promotions yet." : "No posts yet. Be the first to share something!"}</p>
+              <p className="text-muted-foreground">{feedFilter === "announcements" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
-              item.type === "promotion" ? (
+              item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                   <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -386,7 +386,7 @@ const Feed = () => {
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
                             <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Promotion
+                              Announcement
                             </Badge>
                           </div>
                         </div>
@@ -414,7 +414,7 @@ const Feed = () => {
                             Report
                           </DropdownMenuItem>
                           {currentUserId === item.profile_id && <>
-                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "promotion" })}>
+                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "announcement" })}>
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
@@ -436,7 +436,7 @@ const Feed = () => {
                   })}>
                     {item.media_type === "video" ? <div className="relative w-full aspect-video">
                         <video src={item.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={item.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
+                      </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
                   <div className="px-2 py-1">
@@ -445,7 +445,7 @@ const Feed = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleLike(item.id)}
-                        aria-label={item.isLiked ? "Unlike promotion" : "Like promotion"}
+                        aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                         aria-pressed={item.isLiked}
                         className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                       >
@@ -592,7 +592,7 @@ const Feed = () => {
       <EditContentDialog
         open={!!editItem}
         onOpenChange={(o) => !o && setEditItem(null)}
-        table={editItem?.type === "promotion" ? "announcements" : "posts"}
+        table={editItem?.type === "announcement" ? "announcements" : "posts"}
         itemId={editItem?.id ?? null}
         initialText={editItem?.text ?? ""}
         onSaved={(newText) => {

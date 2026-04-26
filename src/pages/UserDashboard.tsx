@@ -251,7 +251,7 @@ const UserDashboard = () => {
       await loadAnnouncements();
       setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "", location: "", eventDate: "", budget: "" });
       setShowAnnouncementDialog(false);
-      toast({ title: t("common.success"), description: "Ad posted successfully!" });
+      toast({ title: t("common.success"), description: "Announcement posted successfully!" });
     } catch (error: any) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     } finally {
@@ -265,7 +265,7 @@ const UserDashboard = () => {
       const { error } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
       await loadAnnouncements();
-      toast({ title: t("common.success"), description: "Ad deleted!" });
+      toast({ title: t("common.success"), description: "Announcement deleted!" });
     } catch (error: any) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     } finally {
@@ -343,11 +343,11 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* My Ads Section */}
+        {/* My Announcements Section */}
         <div className="mt-6 space-y-4">
           <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
             <Megaphone className="h-5 w-5 text-accent" />
-            {t("userDashboard.myAds")}
+            {t("userDashboard.announcements")}
           </h2>
           <div className="max-w-[500px] mx-auto space-y-4">
             <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
@@ -360,7 +360,7 @@ const UserDashboard = () => {
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                   <Euro className="h-4 w-4 mr-1" />
-                  Buy Ads
+                  Buy Announcements
                 </Button>
                 <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                   <DialogTrigger asChild>
@@ -422,7 +422,7 @@ const UserDashboard = () => {
               </div>
             </div>
 
-            {/* Ads List - matching public profile card format */}
+            {/* Announcements List - matching public profile card format */}
             {announcements.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />

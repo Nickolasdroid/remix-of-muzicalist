@@ -106,7 +106,7 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'conversations' | 'ads'>('conversations');
+  const [activeTab, setActiveTab] = useState<'conversations' | 'announcements'>('conversations');
   const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
@@ -176,7 +176,7 @@ const Messages = () => {
     if (!user || !artistId || loading) return;
     // If coming from an ad, switch to ads tab
     if (adId) {
-      setActiveTab('ads');
+      setActiveTab('announcements');
     }
     handleArtistContact();
   }, [user, artistId, loading, conversations]);
@@ -295,7 +295,7 @@ const Messages = () => {
       const existingAdConv = conversations.find(c => c.announcement_id === adId);
       if (existingAdConv) {
         setSelectedConversation(existingAdConv);
-        setActiveTab('ads');
+        setActiveTab('announcements');
         setPendingArtist(null);
         return;
       }
@@ -482,7 +482,7 @@ const Messages = () => {
   };
   const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
 
-  // Compute unread counts for Ads tab and sub-tabs
+  // Compute unread counts for Announcements tab and sub-tabs
   const adConvsAll = conversations.filter(c => !!c.announcement_id);
   const adsUnreadTotal = adConvsAll.reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
   const requestsUnreadTotal = adConvsAll
@@ -566,10 +566,10 @@ const Messages = () => {
                 Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
-                onClick={() => setActiveTab('ads')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('announcements')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads<UnreadBadge count={adsUnreadTotal} />
+                Announcements<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
@@ -601,7 +601,7 @@ const Messages = () => {
                   </div>;
                 });
                 })()
-              ) : (
+              ) : activeTab === 'announcements' ? (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   // Requests: ads I posted, others applied to
@@ -651,11 +651,11 @@ const Messages = () => {
                         </div>
                       </div>;
                     })}
-                  </>;
-                })()
-              )}
-            </ScrollArea>
-          </div>
+                    </>;
+                  })()
+                ) : null}
+              </ScrollArea>
+            </div>
 
           {/* Messages Area */}
           <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
@@ -762,10 +762,10 @@ const Messages = () => {
                 Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
-                onClick={() => setActiveTab('ads')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('announcements')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads<UnreadBadge count={adsUnreadTotal} />
+                Announcements<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
@@ -797,7 +797,7 @@ const Messages = () => {
                   </div>;
                 });
                 })()
-              ) : (
+              ) : activeTab === 'announcements' ? (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   const requestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
@@ -844,9 +844,9 @@ const Messages = () => {
                         </div>
                       </div>;
                     })}
-                  </>;
-                })()
-              )}
+                    </>;
+                  })()
+                ) : null}
             </div>
           </div>
 
