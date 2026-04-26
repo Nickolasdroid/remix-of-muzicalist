@@ -54,6 +54,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [isAddingPrice, setIsAddingPrice] = useState(false);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
