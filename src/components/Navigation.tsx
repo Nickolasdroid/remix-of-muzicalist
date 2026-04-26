@@ -476,14 +476,13 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 }`}
               >
                 <div className="relative">
-                  <item.icon className="h-5 w-5 mb-1" />
+                  <item.icon className="h-6 w-6" />
                   {item.showBadge && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             ))}
           </div>
