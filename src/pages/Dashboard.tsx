@@ -2257,7 +2257,7 @@ const Dashboard = () => {
                                           <Progress value={postUploadProgress} />
                                         </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create Post"}
+                                        {isSaving ? "Creating..." : "Create"}
                                       </Button>
                                     </TabsContent>
                                     
@@ -2297,7 +2297,7 @@ const Dashboard = () => {
                                           <Progress value={postUploadProgress} />
                                         </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create Post"}
+                                        {isSaving ? "Creating..." : "Create"}
                                       </Button>
                                     </TabsContent>
 
