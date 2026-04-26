@@ -73,6 +73,10 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
   }, [entries.length, onCountChange]);
 
   const addEntry = async () => {
+    if (maxEntries !== undefined && entries.length >= maxEntries) {
+      toast({ title: "Limit reached", description: `You can save up to ${maxEntries} prices.`, variant: "destructive" });
+      return;
+    }
     const amountNum = Number(newAmount);
     if (!newAmount || isNaN(amountNum) || amountNum <= 0) {
       toast({ title: "Invalid price", description: "Enter a valid amount.", variant: "destructive" });
