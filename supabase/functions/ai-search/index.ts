@@ -378,19 +378,91 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     // ---------- Budget filter (approximate match against estimated_price) ----------
     // estimated_price is free-text (e.g. "1500 RON", "2000-3000 lei", "€500", "500-800 EUR").
     // We extract numeric range + currency, normalize to a common currency, and match within ±35%.
+    // FX rates approximated to RON (used only for fuzzy budget matching, not invoicing).
     const CURRENCY_TO_RON: Record<string, number> = {
-      RON: 1,
-      LEI: 1,
-      EUR: 5,     // approximate FX
+      RON: 1, LEI: 1,
+      EUR: 5,
       USD: 4.6,
       GBP: 5.8,
+      CHF: 5.2,
+      MDL: 0.26,
+      HUF: 0.013,
+      PLN: 1.15,
+      CZK: 0.2,
+      BGN: 2.55,
+      RSD: 0.043,
+      UAH: 0.11,
+      TRY: 0.13,
+      RUB: 0.05,
+      SEK: 0.43,
+      NOK: 0.43,
+      DKK: 0.67,
+      CAD: 3.3,
+      AUD: 3,
+      NZD: 2.7,
+      JPY: 0.03,
+      CNY: 0.63,
+      INR: 0.054,
+      AED: 1.25,
+      ILS: 1.25,
+      ZAR: 0.25,
+      BRL: 0.85,
+      MXN: 0.23,
     };
+    // Symbol / keyword -> currency code (longest keyword first to avoid mismatches like "DOLAR CANADIAN" matching plain USD).
+    const CURRENCY_KEYWORDS: Array<[RegExp, string]> = [
+      // Symbols
+      [/€/, "EUR"],
+      [/£/, "GBP"],
+      [/¥|円/, "JPY"],
+      [/₹/, "INR"],
+      [/₽/, "RUB"],
+      [/₴/, "UAH"],
+      [/₺/, "TRY"],
+      [/₪/, "ILS"],
+      [/₣/, "CHF"],
+      [/﷼/, "AED"],
+      // Multi-word / qualified dollar variants must come BEFORE the generic $/USD rule
+      [/\b(CANADIAN\s*DOLLAR|DOLAR\s*CANADIAN|CAD)\b/i, "CAD"],
+      [/\b(AUSTRALIAN\s*DOLLAR|DOLAR\s*AUSTRALIAN|AUD|A\$)\b/i, "AUD"],
+      [/\b(NEW\s*ZEALAND\s*DOLLAR|NZD|NZ\$)\b/i, "NZD"],
+      // Generic dollar -> USD
+      [/\$|\b(USD|DOLLAR|DOLLARS|DOLAR|DOLARI)\b/i, "USD"],
+      // Euro spellings
+      [/\b(EUR|EURO|EUROS|EURI)\b/i, "EUR"],
+      // Pound
+      [/\b(GBP|POUND|POUNDS|LIRA\s*STERLINA|LIRĂ\s*STERLINĂ|STERLING)\b/i, "GBP"],
+      // Romanian leu / Moldovan leu
+      [/\b(MDL|LEU\s*MOLDOVENESC|LEI\s*MOLDOVENESTI|LEI\s*MOLDOVENEȘTI)\b/i, "MDL"],
+      [/\b(RON|LEI|LEU|RON\.|LEI\s*ROMANESTI|LEI\s*ROMÂNEȘTI)\b/i, "RON"],
+      // Other Europe
+      [/\b(CHF|FRANC|FRANCS|FRANCI\s*ELVETIENI|FRANCI\s*ELVEȚIENI)\b/i, "CHF"],
+      [/\b(HUF|FORINT|FORINȚI|FORINTI)\b/i, "HUF"],
+      [/\b(PLN|ZLOTY|ZŁOTY|ZLOT|ZLOȚI)\b/i, "PLN"],
+      [/\b(CZK|KORUNA|COROANE\s*CEHE)\b/i, "CZK"],
+      [/\b(BGN|LEVA|LEV)\b/i, "BGN"],
+      [/\b(RSD|DINAR\s*SARBESC|DINAR\s*SÂRBESC)\b/i, "RSD"],
+      [/\b(UAH|HRYVNIA|GRIVNA|GRIVNE)\b/i, "UAH"],
+      [/\b(TRY|LIRA\s*TURCEASCA|LIRA\s*TURCEASCĂ|LIRE\s*TURCESTI)\b/i, "TRY"],
+      [/\b(RUB|RUBLA|RUBLE|ROUBLE)\b/i, "RUB"],
+      [/\b(SEK|COROANE\s*SUEDEZE|KRONA)\b/i, "SEK"],
+      [/\b(NOK|COROANE\s*NORVEGIENE|KRONE)\b/i, "NOK"],
+      [/\b(DKK|COROANE\s*DANEZE)\b/i, "DKK"],
+      // Asia / Middle East / Other
+      [/\b(JPY|YEN|YENI)\b/i, "JPY"],
+      [/\b(CNY|YUAN|RMB|RENMINBI)\b/i, "CNY"],
+      [/\b(INR|RUPEE|RUPIA|RUPII)\b/i, "INR"],
+      [/\b(AED|DIRHAM|DIRHAMI)\b/i, "AED"],
+      [/\b(ILS|SHEKEL|SHEQEL|SHEKELI)\b/i, "ILS"],
+      [/\b(ZAR|RAND)\b/i, "ZAR"],
+      [/\b(BRL|REAL\s*BRAZILIAN|REALI)\b/i, "BRL"],
+      [/\b(MXN|PESO\s*MEXICAN|PESOS\s*MEXICANI)\b/i, "MXN"],
+    ];
     const detectCurrency = (text: string): string => {
-      const t = text.toUpperCase();
-      if (/€|EUR/.test(t)) return "EUR";
-      if (/\$|USD|DOLLAR/.test(t)) return "USD";
-      if (/£|GBP|POUND/.test(t)) return "GBP";
-      if (/RON|LEI/.test(t)) return "RON";
+      if (!text) return "RON";
+      for (const [re, code] of CURRENCY_KEYWORDS) {
+        if (re.test(text)) return code;
+      }
       return "RON";
     };
     const parsePriceRange = (text: string | null | undefined): { min: number; max: number; currency: string } | null => {
