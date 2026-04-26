@@ -375,6 +375,94 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       artists = artists.filter((a: any) => !matchesCountry(a.country, excludedVariants));
     }
 
+    // ---------- Budget filter (approximate match against estimated_price) ----------
+    // estimated_price is free-text (e.g. "1500 RON", "2000-3000 lei", "€500", "500-800 EUR").
+    // We extract numeric range + currency, normalize to a common currency, and match within ±35%.
+    const CURRENCY_TO_RON: Record<string, number> = {
+      RON: 1,
+      LEI: 1,
+      EUR: 5,     // approximate FX
+      USD: 4.6,
+      GBP: 5.8,
+    };
+    const detectCurrency = (text: string): string => {
+      const t = text.toUpperCase();
+      if (/€|EUR/.test(t)) return "EUR";
+      if (/\$|USD|DOLLAR/.test(t)) return "USD";
+      if (/£|GBP|POUND/.test(t)) return "GBP";
+      if (/RON|LEI/.test(t)) return "RON";
+      return "RON";
+    };
+    const parsePriceRange = (text: string | null | undefined): { min: number; max: number; currency: string } | null => {
+      if (!text) return null;
+      const cleaned = text.replace(/[\u00A0,]/g, " ").replace(/\s+/g, " ").trim();
+      if (!cleaned) return null;
+      const currency = detectCurrency(cleaned);
+      const nums = (cleaned.match(/\d+(?:\.\d+)?/g) || []).map(Number).filter((n) => n > 0);
+      if (nums.length === 0) return null;
+      const min = Math.min(...nums);
+      const max = Math.max(...nums);
+      return { min, max, currency };
+    };
+    const toRon = (amount: number, currency: string): number => {
+      const rate = CURRENCY_TO_RON[currency.toUpperCase()] ?? 1;
+      return amount * rate;
+    };
+
+    if (criteria.budget_amount && artists && artists.length > 0) {
+      const userBudgetRon = toRon(
+        criteria.budget_amount,
+        (criteria.budget_currency || "RON").toUpperCase()
+      );
+      // Tolerance window: artist's price range overlaps with [userBudget * 0.65, userBudget * 1.35]
+      const lowerBound = userBudgetRon * 0.65;
+      const upperBound = userBudgetRon * 1.35;
+      const before = artists.length;
+      artists = artists.filter((a: any) => {
+        const range = parsePriceRange(a.estimated_price);
+        if (!range) return false; // no price info -> can't confirm budget match
+        const minRon = toRon(range.min, range.currency);
+        const maxRon = toRon(range.max, range.currency);
+        // Overlap between [minRon, maxRon] and [lowerBound, upperBound]
+        return maxRon >= lowerBound && minRon <= upperBound;
+      });
+      console.log(`Budget filter ~${userBudgetRon} RON: kept ${artists.length}/${before}`);
+    }
+
+    // ---------- Event type filter (soft match against bio/keywords) ----------
+    if (criteria.event_type && artists && artists.length > 0) {
+      const ev = criteria.event_type.toLowerCase();
+      // Map English event type to localized synonyms used in artist bios
+      const synonyms: Record<string, string[]> = {
+        wedding: ["wedding", "nunta", "nuntă", "nunti", "nunți", "cununie", "mariage", "boda", "matrimonio"],
+        baptism: ["baptism", "botez", "botezuri", "baptême"],
+        corporate: ["corporate", "corporativ", "company", "firma", "firmă"],
+        birthday: ["birthday", "aniversare", "majorat", "ziua de nastere", "ziua de naștere", "anniversaire"],
+        anniversary: ["anniversary", "aniversare"],
+        festival: ["festival", "festivaluri"],
+        club: ["club", "cluburi", "discoteca", "discotecă"],
+        concert: ["concert", "concerte"],
+        party: ["party", "petrecere", "petreceri", "fiesta"],
+        "private party": ["private party", "petrecere privata", "petrecere privată"],
+        graduation: ["graduation", "absolvire", "banchet"],
+      };
+      const variants = synonyms[ev] || [ev];
+      // Soft filter: prefer those whose bio mentions the event type, but don't drop everyone if none match
+      const matching = artists.filter((a: any) => {
+        const hay = `${a.bio || ""}`.toLowerCase();
+        return variants.some((v) => hay.includes(v));
+      });
+      if (matching.length > 0) {
+        // Re-rank: matching artists first, then the rest
+        const matchedSet = new Set(matching.map((a: any) => a.id));
+        artists = [
+          ...matching,
+          ...artists.filter((a: any) => !matchedSet.has(a.id)),
+        ];
+        console.log(`Event type "${ev}": ${matching.length} bio match(es), boosted to top`);
+      }
+    }
+
     // Fallback: only run a broader OR search when NO hard criteria were extracted.
     // Hard criteria (specialization, genre, location, instrument, experience) must be respected strictly.
     if ((!artists || artists.length === 0) && artistIds.length > 0 && !hasHardCriteria) {
