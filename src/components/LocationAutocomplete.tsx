@@ -4,35 +4,66 @@ import { Loader2, MapPin, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCountryCode } from "@/lib/countryFlags";
 
-interface NominatimResult {
-  place_id: number;
-  display_name: string;
-  name?: string;
-  type?: string;
-  address?: Record<string, string>;
+interface PhotonFeature {
+  properties: {
+    osm_id: number;
+    osm_type?: string;
+    name?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    locality?: string;
+    suburb?: string;
+    district?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+    countrycode?: string;
+    type?: string;
+    osm_key?: string;
+    osm_value?: string;
+  };
+  geometry?: { coordinates: [number, number] };
 }
 
 interface LocationAutocompleteProps {
   id?: string;
   value: string;
   onChange: (value: string) => void;
-  /** Country name (e.g. "Romania"), used to restrict suggestions via ISO 3166-1 alpha-2. */
+  /** Country name (e.g. "Romania"), used to bias suggestions via ISO 3166-1 alpha-2. */
   country?: string | null;
   placeholder?: string;
   className?: string;
 }
 
-const ENDPOINT = "https://nominatim.openstreetmap.org/search";
+const ENDPOINT = "https://photon.komoot.io/api/";
 
-const formatLabel = (r: NominatimResult): string => {
-  const a = r.address || {};
+// Place types we care about (cities, towns, villages, hamlets, suburbs, etc.)
+const PLACE_VALUES = new Set([
+  "city",
+  "town",
+  "village",
+  "hamlet",
+  "suburb",
+  "neighbourhood",
+  "locality",
+  "municipality",
+  "quarter",
+  "borough",
+]);
+
+const formatLabel = (f: PhotonFeature): string => {
+  const p = f.properties;
   const primary =
-    a.village || a.hamlet || a.town || a.city || a.municipality ||
-    a.suburb || a.locality || a.county || r.name || r.display_name.split(",")[0];
-  const region = a.county || a.state_district || a.state || a.region;
-  const country = a.country;
+    p.name || p.city || p.town || p.village || p.hamlet || p.locality || p.suburb || p.district;
+  const region = p.county || p.state;
+  const country = p.country;
   return [primary, region, country].filter(Boolean).filter((v, i, arr) => arr.indexOf(v) === i).join(", ");
 };
+
+const featureKey = (f: PhotonFeature, idx: number) =>
+  `${f.properties.osm_type || ""}-${f.properties.osm_id || idx}-${idx}`;
 
 const LocationAutocomplete = ({
   id,
@@ -43,7 +74,7 @@ const LocationAutocomplete = ({
   className,
 }: LocationAutocompleteProps) => {
   const [query, setQuery] = useState(value);
-  const [results, setResults] = useState<NominatimResult[]>([]);
+  const [results, setResults] = useState<PhotonFeature[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -83,34 +114,39 @@ const LocationAutocomplete = ({
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const buildUrl = (withCountry: boolean) => {
-          const params = new URLSearchParams({
-            q,
-            format: "json",
-            addressdetails: "1",
-            limit: "8",
-            "accept-language": navigator.language || "en",
-          });
-          const iso = country ? getCountryCode(country) : null;
-          if (withCountry && iso) params.set("countrycodes", iso.toLowerCase());
-          return `${ENDPOINT}?${params.toString()}`;
-        };
+        const lang = (navigator.language || "en").split("-")[0];
+        const params = new URLSearchParams({
+          q,
+          limit: "15",
+          lang: ["en", "de", "fr", "it", "ru"].includes(lang) ? lang : "en",
+        });
         const iso = country ? getCountryCode(country) : null;
-        let res = await fetch(buildUrl(true), {
+        // Photon supports osm_tag filtering and country bias via lat/lon, but not
+        // strict country filtering. We filter results client-side by countrycode.
+        const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
           signal: controller.signal,
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error("Network error");
-        let data: NominatimResult[] = await res.json();
-        // Fallback: if country-restricted search returns nothing, retry globally
-        if (data.length === 0 && iso) {
-          res = await fetch(buildUrl(false), {
-            signal: controller.signal,
-            headers: { Accept: "application/json" },
-          });
-          if (res.ok) data = await res.json();
+        const json = await res.json();
+        const features: PhotonFeature[] = Array.isArray(json?.features) ? json.features : [];
+
+        // Keep only place-like results (cities/towns/villages/etc.)
+        const placeFeatures = features.filter((f) => {
+          const v = f.properties.osm_value || f.properties.type;
+          return v && PLACE_VALUES.has(v);
+        });
+
+        // Bias by country: prefer matching country, but fall back to all if none match
+        let filtered = placeFeatures;
+        if (iso) {
+          const inCountry = placeFeatures.filter(
+            (f) => (f.properties.countrycode || "").toUpperCase() === iso.toUpperCase()
+          );
+          filtered = inCountry.length > 0 ? inCountry : placeFeatures;
         }
-        setResults(data);
+
+        setResults(filtered.slice(0, 8));
         setOpen(true);
         setActiveIndex(-1);
       } catch (err) {
@@ -124,8 +160,8 @@ const LocationAutocomplete = ({
     return () => clearTimeout(handle);
   }, [query, country]);
 
-  const handleSelect = (r: NominatimResult) => {
-    const label = formatLabel(r);
+  const handleSelect = (f: PhotonFeature) => {
+    const label = formatLabel(f);
     justSelectedRef.current = true;
     setQuery(label);
     onChange(label);
@@ -196,7 +232,7 @@ const LocationAutocomplete = ({
               {results.map((r, idx) => {
                 const label = formatLabel(r);
                 return (
-                  <li key={r.place_id}>
+                  <li key={featureKey(r, idx)}>
                     <button
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
