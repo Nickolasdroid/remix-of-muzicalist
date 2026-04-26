@@ -163,7 +163,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
         <p className="text-muted-foreground italic text-sm">No prices added yet</p>
       )}
 
-      {editable && !isAdding && isAddingProp === undefined && (
+      {editable && !isAdding && isAddingProp === undefined && (maxEntries === undefined || entries.length < maxEntries) && (
         <Button size="sm" variant="outline" onClick={() => setIsAdding(true)}>
           <Plus className="h-3 w-3 mr-1" />
           Add price
