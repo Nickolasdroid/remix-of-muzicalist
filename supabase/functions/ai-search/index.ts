@@ -217,7 +217,9 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.instrument ||
       criteria.keywords ||
       criteria.event_date ||
-      criteria.quality_filter
+      criteria.quality_filter ||
+      criteria.budget_amount ||
+      criteria.event_type
     );
 
     // Helper: translate a fallback English message into the user's language
