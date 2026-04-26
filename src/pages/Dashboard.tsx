@@ -37,7 +37,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit } from "@/lib/planLimits";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
@@ -55,6 +55,7 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
+  const [pricingCount, setPricingCount] = useState(0);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
