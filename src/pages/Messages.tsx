@@ -601,7 +601,7 @@ const Messages = () => {
                   </div>;
                 });
                 })()
-              ) : (
+              ) : activeTab === 'announcements' ? (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   // Requests: ads I posted, others applied to
@@ -651,11 +651,11 @@ const Messages = () => {
                         </div>
                       </div>;
                     })}
-                  </>;
-                })()
-              )}
-            </ScrollArea>
-          </div>
+                    </>;
+                  })()
+                ) : null}
+              </ScrollArea>
+            </div>
 
           {/* Messages Area */}
           <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
@@ -797,7 +797,7 @@ const Messages = () => {
                   </div>;
                 });
                 })()
-              ) : (
+              ) : activeTab === 'announcements' ? (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   const requestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
