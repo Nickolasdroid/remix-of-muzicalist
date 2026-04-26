@@ -1939,6 +1939,16 @@ const Dashboard = () => {
                                 <DollarSign className="h-5 w-5 text-accent" />
                                 Estimated Prices
                               </h3>
+                              {canSetEstimatedPrice(currentPlan) && !isAddingPrice && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setIsAddingPrice(true)}
+                                >
+                                  <Plus className="h-3 w-3 mr-1" />
+                                  Add
+                                </Button>
+                              )}
                             </div>
                             {!canSetEstimatedPrice(currentPlan) ? (
                               <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -1950,6 +1960,8 @@ const Dashboard = () => {
                                 profileId={user?.id}
                                 country={profile?.country}
                                 editable={true}
+                                isAdding={isAddingPrice}
+                                onAddingChange={setIsAddingPrice}
                               />
                             )}
                           </div>
