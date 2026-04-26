@@ -251,8 +251,10 @@ const Feed = () => {
     } : item));
   };
 
-  const handleContact = (profileId: string) => {
-    navigate(`/artist/${profileId}`);
+  const handleContact = (profileId: string, adId?: string) => {
+    const params = new URLSearchParams({ artistId: profileId });
+    if (adId) params.set('adId', adId);
+    navigate(`/messages?${params.toString()}`);
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -444,7 +446,7 @@ const Feed = () => {
                         {item.likes > 0 && <span className="text-base font-semibold tabular-nums">{item.likes}</span>}
                       </Button>
 
-                      <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
+                      <Button variant="ghost" size="sm" onClick={() => handleContact(item.profile_id, item.id)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                         <MessageCircle className="w-5 h-5" />
                         <span className="font-medium">Contact</span>
                       </Button>
