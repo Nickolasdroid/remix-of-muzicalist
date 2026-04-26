@@ -191,7 +191,7 @@ const ArtistProfile = () => {
       const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
       if (error) throw error;
       setAnnouncements(items => items.filter(a => a.id !== announcementId));
-      toast({ title: "Deleted", description: "Your item has been deleted." });
+      toast({ title: "Deleted", description: "Your announcement has been deleted." });
     } catch (err) {
       console.error('Error deleting announcement:', err);
       toast({ title: "Error", description: "Failed to delete.", variant: "destructive" });
