@@ -604,8 +604,13 @@ ${JSON.stringify({
   event_date: criteria.event_date,
   keywords: criteria.keywords,
   quality_filter: criteria.quality_filter,
+  budget_amount: criteria.budget_amount,
+  budget_currency: criteria.budget_currency,
+  event_type: criteria.event_type,
 }, null, 2)}
 ${criteria.quality_filter ? `\nNote: results were filtered/sorted by quality (${criteria.quality_filter === "high" ? "top-rated artists, avg rating >= 4 stars" : "lower-rated or unrated artists"}). Mention this naturally in the reply (e.g. "cei mai bine apreciați", "with the best reviews", "selected based on reviews").` : ""}
+${criteria.budget_amount ? `\nNote: results were filtered to artists whose listed estimated price approximately matches the user's budget (~${criteria.budget_amount} ${criteria.budget_currency || "RON"}, tolerance ±35%). Mention this naturally (e.g. "în limita bugetului tău", "within your budget").` : ""}
+${criteria.event_type ? `\nNote: the user mentioned an event type ("${criteria.event_type}"). Reference it naturally in the reply (e.g. "potriviți pentru nuntă", "great for weddings").` : ""}
 
 Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
