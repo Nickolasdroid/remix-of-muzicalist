@@ -23,16 +23,23 @@ interface Props {
   country?: string | null;
   editable: boolean;
   onClose?: () => void;
+  isAdding?: boolean;
+  onAddingChange?: (v: boolean) => void;
 }
 
 const MAX_AMOUNT = 9999999;
 
-export default function PricingEntriesEditor({ profileId, country, editable, onClose }: Props) {
+export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange }: Props) {
   const { toast } = useToast();
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAddingState, setIsAddingState] = useState(false);
+  const isAdding = isAddingProp !== undefined ? isAddingProp : isAddingState;
+  const setIsAdding = (v: boolean) => {
+    if (onAddingChange) onAddingChange(v);
+    else setIsAddingState(v);
+  };
 
   const defaultCurrency = getCurrencyForCountry(country || undefined) || "EUR";
 
@@ -146,7 +153,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
         <p className="text-muted-foreground italic text-sm">No prices added yet</p>
       )}
 
-      {editable && !isAdding && (
+      {editable && !isAdding && isAddingProp === undefined && (
         <Button size="sm" variant="outline" onClick={() => setIsAdding(true)}>
           <Plus className="h-3 w-3 mr-1" />
           Add price
