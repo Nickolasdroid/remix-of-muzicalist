@@ -144,7 +144,14 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
         <p className="text-muted-foreground italic text-sm">No prices added yet</p>
       )}
 
-      {editable && (
+      {editable && !isAdding && (
+        <Button size="sm" variant="outline" onClick={() => setIsAdding(true)}>
+          <Plus className="h-3 w-3 mr-1" />
+          Add price
+        </Button>
+      )}
+
+      {editable && isAdding && (
         <div className="space-y-2 pt-2 border-t border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             <Input
@@ -191,13 +198,26 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
             </Select>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={addEntry} disabled={saving}>
-              <Plus className="h-3 w-3 mr-1" />
-              Add price
+            <Button size="sm" onClick={async () => { await addEntry(); }} disabled={saving}>
+              <Save className="h-3 w-3 mr-1" />
+              Save
             </Button>
-            {onClose && (
-              <Button size="sm" variant="outline" onClick={onClose}>
-                <X className="h-3 w-3 mr-1" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setIsAdding(false);
+                setNewAmount("");
+                setNewEventType("");
+                setNewCurrency(defaultCurrency);
+              }}
+            >
+              <X className="h-3 w-3 mr-1" />
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
                 Close
               </Button>
             )}
