@@ -134,7 +134,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   event_end_date: { type: ["string", "null"], description: "End of event date range in YYYY-MM-DD format" },
                   quality_filter: { type: ["string", "null"], enum: ["high", "low", null], description: "Quality judgment: 'high' for good/top artists, 'low' for weak/bad artists, null otherwise" },
                   budget_amount: { type: ["number", "null"], description: "Numeric budget the user mentioned (no currency symbols)" },
-                  budget_currency: { type: ["string", "null"], description: "Currency code: RON, EUR, USD, GBP" },
+                  budget_currency: { type: ["string", "null"], description: "ISO 4217 currency code (e.g. RON, EUR, USD, GBP, CHF, MDL, HUF, PLN, CZK, BGN, RSD, UAH, TRY, RUB, SEK, NOK, DKK, CAD, AUD, NZD, JPY, CNY, INR, AED, ILS, ZAR, BRL, MXN)" },
                   event_type: { type: ["string", "null"], description: "Canonical English event type (wedding, baptism, corporate, birthday, etc.)" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
