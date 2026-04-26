@@ -96,6 +96,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
     setEntries((prev) => [...prev, data as unknown as PricingEntry]);
     setNewAmount("");
     setNewEventType("");
+    setIsAdding(false);
   };
 
   const deleteEntry = async (id: string) => {
