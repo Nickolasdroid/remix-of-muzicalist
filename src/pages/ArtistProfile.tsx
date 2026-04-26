@@ -1681,7 +1681,7 @@ const ArtistProfile = () => {
                                       <span>{formatSmartDate(announcement.created_at)}</span>
                                       <span>·</span>
                                       <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                           Ad
+                                           Announcement
                                          </Badge>
                                     </div>
                                   </div>
