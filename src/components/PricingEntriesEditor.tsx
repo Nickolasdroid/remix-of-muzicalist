@@ -218,12 +218,6 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
           </div>
         </div>
       )}
-                Close
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
