@@ -184,13 +184,17 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       event_date: string | null;
       event_end_date: string | null;
       quality_filter: "high" | "low" | null;
+      budget_amount: number | null;
+      budget_currency: string | null;
+      event_type: string | null;
       is_artist_search: boolean | null;
     };
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null, excluded_country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
-      event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
+      event_date: null, event_end_date: null, quality_filter: null,
+      budget_amount: null, budget_currency: null, event_type: null, is_artist_search: null,
     };
     try {
       if (toolCall?.function?.arguments) {
