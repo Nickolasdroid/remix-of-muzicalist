@@ -87,19 +87,19 @@ const faqSections = [
     ],
   },
   {
-    title: "Feed & Posts",
+    title: "Home & Posts",
     icon: Megaphone,
     items: [
       {
         q: "How do I create a post?",
-        a: "Go to the Feed page and use the post creation form at the top. You can write text content and attach images or videos to share with your followers.",
+        a: "Go to the Home page and use the post creation form at the top. You can write text content and attach images or videos to share with your followers.",
       },
       {
         q: "How do likes work?",
-        a: "Any logged-in user can like posts in the Feed. The total like count is displayed on each post.",
+        a: "Any logged-in user can like posts on the Home page. The total like count is displayed on each post.",
       },
       {
-        q: "What are Announcements/Ads?",
+        q: "What are Announcements?",
         a: "Announcements are event opportunities posted by users looking for artists. Browse the Announcements page to find gigs, apply to events, and connect with organizers.",
       },
     ],
@@ -168,7 +168,7 @@ const faqSections = [
       },
       {
         q: "What benefits does Premium offer?",
-        a: "Premium artists get a verified badge, top placement in search results, advanced analytics, priority in the Leaderboard, and access to exclusive features.",
+        a: "Premium artists get a verified badge, top placement in search results, advanced analytics, priority in the Leaderboard, and access to exclusive features on the Home page.",
       },
     ],
   },
