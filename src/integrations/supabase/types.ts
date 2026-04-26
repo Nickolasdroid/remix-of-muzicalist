@@ -442,6 +442,36 @@ export type Database = {
           },
         ]
       }
+      pricing_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          event_type: string
+          id: string
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency: string
+          event_type: string
+          id?: string
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          event_type?: string
+          id?: string
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           allow_promotion: boolean
