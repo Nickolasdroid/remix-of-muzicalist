@@ -32,6 +32,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const defaultCurrency = getCurrencyForCountry(country || undefined) || "EUR";
 
