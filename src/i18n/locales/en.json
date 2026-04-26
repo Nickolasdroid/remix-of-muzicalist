@@ -13,10 +13,10 @@
     "success": "Success"
   },
   "navigation": {
-    "home": "Home",
+    "home": "Posts",
     "categories": "Categories",
     "counties": "Counties",
-    "feed": "Home",
+    "feed": "Posts",
     "dashboard": "Dashboard",
     "messages": "Messages",
     "notifications": "Notifications",

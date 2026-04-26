@@ -295,7 +295,7 @@ const Feed = () => {
         <Navigation />
         <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-20 md:pb-12`}>
           <div className="max-w-2xl mx-auto">
-            <h1 className="text-4xl font-display font-bold text-foreground mb-8">Home</h1>
+            <h1 className="text-4xl font-display font-bold text-foreground mb-8">Posts</h1>
             <div className="space-y-6">
               {[1, 2, 3].map(i => <Card key={i} className="overflow-hidden border-border/40 animate-pulse">
                   <CardContent className="p-6">

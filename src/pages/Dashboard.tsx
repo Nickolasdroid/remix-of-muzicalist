@@ -1665,7 +1665,7 @@ const Dashboard = () => {
                         </TabsTrigger>
                         <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Home</span>
+                          <span className="hidden md:inline">Posts</span>
                         </TabsTrigger>
                         <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
@@ -2166,7 +2166,7 @@ const Dashboard = () => {
                       <TabsContent value="posts" className="space-y-4">
                         <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                           <FileText className="h-5 w-5 text-accent" />
-                          My Home Posts
+                          My Posts
                         </h2>
                         {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
@@ -2505,7 +2505,7 @@ const Dashboard = () => {
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
                               <CardContent className="p-12 text-center">
                                 <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                              <p className="text-muted-foreground">No home posts yet. Create your first post!</p>
+                              <p className="text-muted-foreground">No posts yet. Create your first post!</p>
                               </CardContent>
                             </Card>}
                           </div>
