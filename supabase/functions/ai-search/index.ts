@@ -89,6 +89,9 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - keywords: any other free-text keywords (event type, vibe) translated to English. Do NOT put negation/location words like "not from", "nu din", "să nu fie din" into keywords; use excluded_country instead.
 - event_date: if the user mentions a specific date for an event/booking (e.g. "23 iunie 2026", "on June 23rd", "le 5 mai"), return it as ISO format YYYY-MM-DD. Otherwise null.
 - event_end_date: if the user mentions a date range, the end date in YYYY-MM-DD. Otherwise null.
+- budget_amount: numeric value (number, no currency symbols) when the user mentions a budget, price, or how much they want to spend. Examples: "buget 2000 lei" -> 2000; "around 500 euro" -> 500; "pana in 1500 ron" -> 1500; "between 1000 and 2000" -> use the upper bound 2000; "max 800" -> 800. Otherwise null.
+- budget_currency: ISO-like currency code derived from the user's wording: "RON"/"LEI" -> "RON"; "EUR"/"euro"/"€" -> "EUR"; "USD"/"dollar"/"$" -> "USD"; "GBP"/"pound"/"£" -> "GBP". Default to "RON" when budget_amount is set but no currency is mentioned. Otherwise null.
+- event_type: short canonical English event type when the user mentions one (e.g. "wedding", "baptism", "corporate", "birthday", "party", "festival", "club", "concert", "private event", "anniversary", "graduation"). Translate from any language: "nunta"/"nuntă" -> "wedding"; "botez" -> "baptism"; "cununie" -> "wedding"; "petrecere"/"petrecere privata" -> "private party"; "aniversare" -> "anniversary"; "majorat" -> "birthday"; "corporativ" -> "corporate". Otherwise null.
 - quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
   * "high" -> user wants GOOD/TOP/BEST/QUALITY artists based on REPUTATION/REVIEWS. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "de calitate", "renumiti", "celebri", "experimentati", "cu recenzii bune". Do NOT trigger this on the word "profesionist"/"professional"/"pro" — those map to experience_level instead.
   * "low" -> user explicitly wants WEAK/BAD/CHEAP/BEGINNER artists. Examples: "un solist slab", "artisti slabi", "incepatori", "ieftini", "mediocri", "bad singers".
@@ -130,9 +133,12 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
                   event_end_date: { type: ["string", "null"], description: "End of event date range in YYYY-MM-DD format" },
                   quality_filter: { type: ["string", "null"], enum: ["high", "low", null], description: "Quality judgment: 'high' for good/top artists, 'low' for weak/bad artists, null otherwise" },
+                  budget_amount: { type: ["number", "null"], description: "Numeric budget the user mentioned (no currency symbols)" },
+                  budget_currency: { type: ["string", "null"], description: "Currency code: RON, EUR, USD, GBP" },
+                  event_type: { type: ["string", "null"], description: "Canonical English event type (wedding, baptism, corporate, birthday, etc.)" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "is_artist_search"],
+                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "budget_amount", "budget_currency", "event_type", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -178,13 +184,17 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       event_date: string | null;
       event_end_date: string | null;
       quality_filter: "high" | "low" | null;
+      budget_amount: number | null;
+      budget_currency: string | null;
+      event_type: string | null;
       is_artist_search: boolean | null;
     };
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null, excluded_country: null,
       county: null, experience_level: null, instrument: null, keywords: null,
-      event_date: null, event_end_date: null, quality_filter: null, is_artist_search: null,
+      event_date: null, event_end_date: null, quality_filter: null,
+      budget_amount: null, budget_currency: null, event_type: null, is_artist_search: null,
     };
     try {
       if (toolCall?.function?.arguments) {
@@ -207,7 +217,9 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.instrument ||
       criteria.keywords ||
       criteria.event_date ||
-      criteria.quality_filter
+      criteria.quality_filter ||
+      criteria.budget_amount ||
+      criteria.event_type
     );
 
     // Helper: translate a fallback English message into the user's language
@@ -312,7 +324,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     );
 
     // Helper to run a query against the artist subset
-    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
+    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, estimated_price";
 
     let q = supabase
       .from("profiles")
@@ -361,6 +373,94 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     if (criteria.excluded_country && artists) {
       const excludedVariants = getCountryVariants(criteria.excluded_country);
       artists = artists.filter((a: any) => !matchesCountry(a.country, excludedVariants));
+    }
+
+    // ---------- Budget filter (approximate match against estimated_price) ----------
+    // estimated_price is free-text (e.g. "1500 RON", "2000-3000 lei", "€500", "500-800 EUR").
+    // We extract numeric range + currency, normalize to a common currency, and match within ±35%.
+    const CURRENCY_TO_RON: Record<string, number> = {
+      RON: 1,
+      LEI: 1,
+      EUR: 5,     // approximate FX
+      USD: 4.6,
+      GBP: 5.8,
+    };
+    const detectCurrency = (text: string): string => {
+      const t = text.toUpperCase();
+      if (/€|EUR/.test(t)) return "EUR";
+      if (/\$|USD|DOLLAR/.test(t)) return "USD";
+      if (/£|GBP|POUND/.test(t)) return "GBP";
+      if (/RON|LEI/.test(t)) return "RON";
+      return "RON";
+    };
+    const parsePriceRange = (text: string | null | undefined): { min: number; max: number; currency: string } | null => {
+      if (!text) return null;
+      const cleaned = text.replace(/[\u00A0,]/g, " ").replace(/\s+/g, " ").trim();
+      if (!cleaned) return null;
+      const currency = detectCurrency(cleaned);
+      const nums = (cleaned.match(/\d+(?:\.\d+)?/g) || []).map(Number).filter((n) => n > 0);
+      if (nums.length === 0) return null;
+      const min = Math.min(...nums);
+      const max = Math.max(...nums);
+      return { min, max, currency };
+    };
+    const toRon = (amount: number, currency: string): number => {
+      const rate = CURRENCY_TO_RON[currency.toUpperCase()] ?? 1;
+      return amount * rate;
+    };
+
+    if (criteria.budget_amount && artists && artists.length > 0) {
+      const userBudgetRon = toRon(
+        criteria.budget_amount,
+        (criteria.budget_currency || "RON").toUpperCase()
+      );
+      // Tolerance window: artist's price range overlaps with [userBudget * 0.65, userBudget * 1.35]
+      const lowerBound = userBudgetRon * 0.65;
+      const upperBound = userBudgetRon * 1.35;
+      const before = artists.length;
+      artists = artists.filter((a: any) => {
+        const range = parsePriceRange(a.estimated_price);
+        if (!range) return false; // no price info -> can't confirm budget match
+        const minRon = toRon(range.min, range.currency);
+        const maxRon = toRon(range.max, range.currency);
+        // Overlap between [minRon, maxRon] and [lowerBound, upperBound]
+        return maxRon >= lowerBound && minRon <= upperBound;
+      });
+      console.log(`Budget filter ~${userBudgetRon} RON: kept ${artists.length}/${before}`);
+    }
+
+    // ---------- Event type filter (soft match against bio/keywords) ----------
+    if (criteria.event_type && artists && artists.length > 0) {
+      const ev = criteria.event_type.toLowerCase();
+      // Map English event type to localized synonyms used in artist bios
+      const synonyms: Record<string, string[]> = {
+        wedding: ["wedding", "nunta", "nuntă", "nunti", "nunți", "cununie", "mariage", "boda", "matrimonio"],
+        baptism: ["baptism", "botez", "botezuri", "baptême"],
+        corporate: ["corporate", "corporativ", "company", "firma", "firmă"],
+        birthday: ["birthday", "aniversare", "majorat", "ziua de nastere", "ziua de naștere", "anniversaire"],
+        anniversary: ["anniversary", "aniversare"],
+        festival: ["festival", "festivaluri"],
+        club: ["club", "cluburi", "discoteca", "discotecă"],
+        concert: ["concert", "concerte"],
+        party: ["party", "petrecere", "petreceri", "fiesta"],
+        "private party": ["private party", "petrecere privata", "petrecere privată"],
+        graduation: ["graduation", "absolvire", "banchet"],
+      };
+      const variants = synonyms[ev] || [ev];
+      // Soft filter: prefer those whose bio mentions the event type, but don't drop everyone if none match
+      const matching = artists.filter((a: any) => {
+        const hay = `${a.bio || ""}`.toLowerCase();
+        return variants.some((v) => hay.includes(v));
+      });
+      if (matching.length > 0) {
+        // Re-rank: matching artists first, then the rest
+        const matchedSet = new Set(matching.map((a: any) => a.id));
+        artists = [
+          ...matching,
+          ...artists.filter((a: any) => !matchedSet.has(a.id)),
+        ];
+        console.log(`Event type "${ev}": ${matching.length} bio match(es), boosted to top`);
+      }
     }
 
     // Fallback: only run a broader OR search when NO hard criteria were extracted.
@@ -452,6 +552,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
         county: a.county,
         experience_level: a.experience_level,
         plan: a.plan,
+        estimated_price: a.estimated_price,
         avg_rating: Number(r.avg.toFixed(2)),
         review_count: r.count,
       };
@@ -503,8 +604,13 @@ ${JSON.stringify({
   event_date: criteria.event_date,
   keywords: criteria.keywords,
   quality_filter: criteria.quality_filter,
+  budget_amount: criteria.budget_amount,
+  budget_currency: criteria.budget_currency,
+  event_type: criteria.event_type,
 }, null, 2)}
 ${criteria.quality_filter ? `\nNote: results were filtered/sorted by quality (${criteria.quality_filter === "high" ? "top-rated artists, avg rating >= 4 stars" : "lower-rated or unrated artists"}). Mention this naturally in the reply (e.g. "cei mai bine apreciați", "with the best reviews", "selected based on reviews").` : ""}
+${criteria.budget_amount ? `\nNote: results were filtered to artists whose listed estimated price approximately matches the user's budget (~${criteria.budget_amount} ${criteria.budget_currency || "RON"}, tolerance ±35%). Mention this naturally (e.g. "în limita bugetului tău", "within your budget").` : ""}
+${criteria.event_type ? `\nNote: the user mentioned an event type ("${criteria.event_type}"). Reference it naturally in the reply (e.g. "potriviți pentru nuntă", "great for weddings").` : ""}
 
 Your job: write a SHORT (1-2 sentences, max 280 characters) friendly reply in the SAME LANGUAGE as the user's query.
 
