@@ -252,6 +252,13 @@ const Feed = () => {
   };
 
   const handleContact = (profileId: string, adId?: string) => {
+    if (!currentUserId) {
+      navigate('/login');
+      return;
+    }
+
+    if (profileId === currentUserId) return;
+
     const params = new URLSearchParams({ artistId: profileId });
     if (adId) params.set('adId', adId);
     navigate(`/messages?${params.toString()}`);
