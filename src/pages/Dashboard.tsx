@@ -2521,7 +2521,7 @@ const Dashboard = () => {
                         {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
-                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create ads</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
                             <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
                               Upgrade
                             </Button>
@@ -2538,7 +2538,7 @@ const Dashboard = () => {
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                     <Plus className="h-4 w-4 mr-1" />
-                                    New Ad
+                                    New Announcement
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-md">
@@ -2623,7 +2623,7 @@ const Dashboard = () => {
                                         {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             Promotion
                                           </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                            Ad
+                                            Announcement
                                           </Badge>}
                                       </div>
                                     </div>
