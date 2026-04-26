@@ -1941,7 +1941,7 @@ const Dashboard = () => {
                                 <DollarSign className="h-5 w-5 text-accent" />
                                 Estimated Prices
                               </h3>
-                              {canSetEstimatedPrice(currentPlan) && !isAddingPrice && (
+                              {canSetEstimatedPrice(currentPlan) && !isAddingPrice && pricingCount < getEstimatedPriceLimit(currentPlan) && (
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1958,13 +1958,22 @@ const Dashboard = () => {
                                 <span>Upgrade to Standard or Premium to display pricing</span>
                               </div>
                             ) : (
-                              <PricingEntriesEditor
-                                profileId={user?.id}
-                                country={profile?.country}
-                                editable={true}
-                                isAdding={isAddingPrice}
-                                onAddingChange={setIsAddingPrice}
-                              />
+                              <>
+                                <PricingEntriesEditor
+                                  profileId={user?.id}
+                                  country={profile?.country}
+                                  editable={true}
+                                  isAdding={isAddingPrice}
+                                  onAddingChange={setIsAddingPrice}
+                                  maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                  onCountChange={setPricingCount}
+                                />
+                                {pricingCount >= getEstimatedPriceLimit(currentPlan) && (
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
+                                  </p>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
