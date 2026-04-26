@@ -283,10 +283,10 @@ const Feed = () => {
       const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
       if (error) throw error;
       setFeedItems(items => items.filter(item => item.id !== announcementId));
-      toast({ title: "Announcement deleted", description: "Your promotion has been deleted." });
+      toast({ title: "Announcement deleted", description: "Your announcement has been deleted." });
     } catch (error) {
       console.error('Error deleting announcement:', error);
-      toast({ title: "Error", description: "Failed to delete promotion.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
     } finally {
       setDeleteAnnouncementId(null);
     }
@@ -355,7 +355,7 @@ const Feed = () => {
             return filtered.length === 0 ? <Card className="p-8 text-center">
               <p className="text-muted-foreground">{feedFilter === "promotions" ? "No promotions yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
-              item.type === "promotion" ? (
+              item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                   <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -414,7 +414,7 @@ const Feed = () => {
                             Report
                           </DropdownMenuItem>
                           {currentUserId === item.profile_id && <>
-                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "promotion" })}>
+                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "announcement" })}>
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
@@ -592,7 +592,7 @@ const Feed = () => {
       <EditContentDialog
         open={!!editItem}
         onOpenChange={(o) => !o && setEditItem(null)}
-        table={editItem?.type === "promotion" ? "announcements" : "posts"}
+        table={editItem?.type === "announcement" ? "announcements" : "posts"}
         itemId={editItem?.id ?? null}
         initialText={editItem?.text ?? ""}
         onSaved={(newText) => {
