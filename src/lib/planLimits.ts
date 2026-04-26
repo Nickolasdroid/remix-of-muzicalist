@@ -95,6 +95,15 @@ export const canSetEstimatedPrice = (plan?: string | null): boolean => {
   return getPlan(plan) !== 'Free';
 };
 
+/** Maximum number of estimated pricing entries an artist can save */
+export const getEstimatedPriceLimit = (plan?: string | null): number => {
+  switch (getPlan(plan)) {
+    case 'Premium': return 3;
+    case 'Standard': return 3;
+    default: return 0;
+  }
+};
+
 /** Whether the plan can post (posts, ads, promotions) */
 export const canPost = (plan?: string | null): boolean => {
   return getPlan(plan) !== 'Free';
