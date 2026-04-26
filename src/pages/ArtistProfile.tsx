@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
