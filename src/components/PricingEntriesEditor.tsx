@@ -31,7 +31,7 @@ interface Props {
 
 const MAX_AMOUNT = 9999999;
 
-export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange }: Props) {
+export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange, maxEntries, onCountChange }: Props) {
   const { toast } = useToast();
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
