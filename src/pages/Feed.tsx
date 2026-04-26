@@ -251,8 +251,10 @@ const Feed = () => {
     } : item));
   };
 
-  const handleContact = (profileId: string) => {
-    navigate(`/artist/${profileId}`);
+  const handleContact = (profileId: string, adId?: string) => {
+    const params = new URLSearchParams({ artistId: profileId });
+    if (adId) params.set('adId', adId);
+    navigate(`/messages?${params.toString()}`);
   };
 
   const handleDeletePost = async (postId: string) => {
