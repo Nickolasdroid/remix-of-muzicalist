@@ -149,12 +149,12 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Ad limits (plan-based)
+  // Announcement limits (plan-based)
   const currentPlan = profile?.plan;
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Calculate used ads
+  // Calculate used announcements
   const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
   const premiumAdsUsed = announcements.filter((a) => a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
