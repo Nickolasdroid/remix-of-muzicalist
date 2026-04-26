@@ -1665,7 +1665,7 @@ const Dashboard = () => {
                         </TabsTrigger>
                         <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Home</span>
+                          <span className="hidden md:inline">Posts</span>
                         </TabsTrigger>
                         <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
