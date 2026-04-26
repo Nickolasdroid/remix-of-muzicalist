@@ -351,9 +351,9 @@ const Feed = () => {
           </div>
 
           {(() => {
-            const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const filtered = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
             return filtered.length === 0 ? <Card className="p-8 text-center">
-              <p className="text-muted-foreground">{feedFilter === "promotions" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
+              <p className="text-muted-foreground">{feedFilter === "announcements" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
