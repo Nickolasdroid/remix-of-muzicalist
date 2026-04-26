@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
@@ -1208,12 +1209,14 @@ const ArtistProfile = () => {
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
                       <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                         <DollarSign className="h-5 w-5 text-accent" />
-                        Estimated Price
+                        Estimated Prices
                       </h3>
                       <div className="space-y-1 md:space-y-2 text-left">
-                        {canSetEstimatedPrice(artist.plan) && artist.estimated_price ? <Badge variant="outline" className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1">
-                            {artist.estimated_price}
-                          </Badge> : <p className="text-muted-foreground text-sm">Contact for pricing</p>}
+                        {canSetEstimatedPrice(artist.plan) ? (
+                          <PricingEntriesDisplay profileId={artist.id} />
+                        ) : (
+                          <p className="text-muted-foreground text-sm">Contact for pricing</p>
+                        )}
                       </div>
                     </div>
                   </div>
