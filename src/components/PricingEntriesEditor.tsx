@@ -25,6 +25,8 @@ interface Props {
   onClose?: () => void;
   isAdding?: boolean;
   onAddingChange?: (v: boolean) => void;
+  maxEntries?: number;
+  onCountChange?: (count: number) => void;
 }
 
 const MAX_AMOUNT = 9999999;
