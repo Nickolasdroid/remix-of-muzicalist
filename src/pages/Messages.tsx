@@ -566,10 +566,10 @@ const Messages = () => {
                 Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
-                onClick={() => setActiveTab('ads')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('announcements')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads<UnreadBadge count={adsUnreadTotal} />
+                Announcements<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <ScrollArea className="h-[calc(100%-45px)]">
@@ -762,10 +762,10 @@ const Messages = () => {
                 Conversations<UnreadBadge count={conversationsUnreadTotal} />
               </button>
               <button
-                onClick={() => setActiveTab('ads')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'ads' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
+                onClick={() => setActiveTab('announcements')}
+                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                Ads<UnreadBadge count={adsUnreadTotal} />
+                Announcements<UnreadBadge count={adsUnreadTotal} />
               </button>
             </div>
             <div className="overflow-hidden h-[calc(100%-45px)]">
