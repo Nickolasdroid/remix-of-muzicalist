@@ -37,7 +37,7 @@ interface FeedItem {
   isLiked: boolean;
   isSaved: boolean;
   likes: number;
-  type: "post" | "promotion";
+  type: "post" | "announcement";
 }
 
 interface MediaPreview {
@@ -54,7 +54,7 @@ const Feed = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "promotion" } | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "announcement" } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [userCountry, setUserCountry] = useState<string | null>(null);
@@ -162,7 +162,7 @@ const Feed = () => {
           isLiked: !!userLikeResult.data,
           isSaved: false,
           likes: likesResult.count || 0,
-          type: "promotion" as const,
+          type: "announcement" as const,
           };
         }));
 
@@ -222,13 +222,13 @@ const Feed = () => {
     } : i));
     try {
       if (item.isLiked) {
-        if (item.type === "promotion") {
+        if (item.type === "announcement") {
           await (supabase as any).from('announcement_likes').delete().eq('announcement_id', id).eq('user_id', currentUserId);
         } else {
           await supabase.from('post_likes').delete().eq('post_id', id).eq('user_id', currentUserId);
         }
       } else {
-        if (item.type === "promotion") {
+        if (item.type === "announcement") {
           await (supabase as any).from('announcement_likes').insert({ announcement_id: id, user_id: currentUserId });
         } else {
           await supabase.from('post_likes').insert({ post_id: id, user_id: currentUserId });
@@ -351,7 +351,7 @@ const Feed = () => {
           </div>
 
           {(() => {
-            const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "promotion") : feedItems;
+            const filtered = feedFilter === "promotions" ? feedItems.filter(i => i.type === "announcement") : feedItems;
             return filtered.length === 0 ? <Card className="p-8 text-center">
               <p className="text-muted-foreground">{feedFilter === "promotions" ? "No promotions yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
@@ -386,7 +386,7 @@ const Feed = () => {
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
                             <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Promotion
+                              Announcement
                             </Badge>
                           </div>
                         </div>
