@@ -106,7 +106,7 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'conversations' | 'ads'>('conversations');
+  const [activeTab, setActiveTab] = useState<'conversations' | 'announcements'>('conversations');
   const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const artistId = searchParams.get("artistId");
@@ -176,7 +176,7 @@ const Messages = () => {
     if (!user || !artistId || loading) return;
     // If coming from an ad, switch to ads tab
     if (adId) {
-      setActiveTab('ads');
+      setActiveTab('announcements');
     }
     handleArtistContact();
   }, [user, artistId, loading, conversations]);
@@ -295,7 +295,7 @@ const Messages = () => {
       const existingAdConv = conversations.find(c => c.announcement_id === adId);
       if (existingAdConv) {
         setSelectedConversation(existingAdConv);
-        setActiveTab('ads');
+        setActiveTab('announcements');
         setPendingArtist(null);
         return;
       }
@@ -482,7 +482,7 @@ const Messages = () => {
   };
   const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
 
-  // Compute unread counts for Ads tab and sub-tabs
+  // Compute unread counts for Announcements tab and sub-tabs
   const adConvsAll = conversations.filter(c => !!c.announcement_id);
   const adsUnreadTotal = adConvsAll.reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
   const requestsUnreadTotal = adConvsAll
