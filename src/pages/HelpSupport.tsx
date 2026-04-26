@@ -100,7 +100,7 @@ const faqSections = [
       },
       {
         q: "What are Announcements/Ads?",
-        a: "Announcements are event opportunities posted by users looking for artists. Browse the Ads page to find gigs, apply to events, and connect with organizers.",
+        a: "Announcements are event opportunities posted by users looking for artists. Browse the Announcements page to find gigs, apply to events, and connect with organizers.",
       },
     ],
   },
@@ -110,7 +110,7 @@ const faqSections = [
     items: [
       {
         q: "How do I message an artist?",
-        a: "Visit an artist's profile and click the message button. This creates a conversation where you can discuss event details, pricing, and availability.",
+        a: "Visit an artist's profile and click the message button. This creates a conversation where you can discuss event details, pricing, and availability. You can also contact organizers regarding their announcements.",
       },
       {
         q: "How do notifications work?",
@@ -118,7 +118,7 @@ const faqSections = [
       },
       {
         q: "Can I delete a conversation?",
-        a: "Yes, you can delete conversations from your Messages page. The conversation will be hidden from your view.",
+        a: "Yes, you can delete conversations from your Messages page. The conversation will be hidden from your view. This also applies to conversations regarding announcements.",
       },
     ],
   },
