@@ -25,11 +25,13 @@ interface Props {
   onClose?: () => void;
   isAdding?: boolean;
   onAddingChange?: (v: boolean) => void;
+  maxEntries?: number;
+  onCountChange?: (count: number) => void;
 }
 
 const MAX_AMOUNT = 9999999;
 
-export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange }: Props) {
+export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange, maxEntries, onCountChange }: Props) {
   const { toast } = useToast();
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +68,15 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
     load();
   }, [profileId]);
 
+  useEffect(() => {
+    onCountChange?.(entries.length);
+  }, [entries.length, onCountChange]);
+
   const addEntry = async () => {
+    if (maxEntries !== undefined && entries.length >= maxEntries) {
+      toast({ title: "Limit reached", description: `You can save up to ${maxEntries} prices.`, variant: "destructive" });
+      return;
+    }
     const amountNum = Number(newAmount);
     if (!newAmount || isNaN(amountNum) || amountNum <= 0) {
       toast({ title: "Invalid price", description: "Enter a valid amount.", variant: "destructive" });
@@ -153,7 +163,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
         <p className="text-muted-foreground italic text-sm">No prices added yet</p>
       )}
 
-      {editable && !isAdding && isAddingProp === undefined && (
+      {editable && !isAdding && isAddingProp === undefined && (maxEntries === undefined || entries.length < maxEntries) && (
         <Button size="sm" variant="outline" onClick={() => setIsAdding(true)}>
           <Plus className="h-3 w-3 mr-1" />
           Add price
