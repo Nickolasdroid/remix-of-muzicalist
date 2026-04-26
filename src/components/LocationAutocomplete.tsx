@@ -83,21 +83,33 @@ const LocationAutocomplete = ({
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const params = new URLSearchParams({
-          q,
-          format: "json",
-          addressdetails: "1",
-          limit: "8",
-          "accept-language": navigator.language || "en",
-        });
+        const buildUrl = (withCountry: boolean) => {
+          const params = new URLSearchParams({
+            q,
+            format: "json",
+            addressdetails: "1",
+            limit: "8",
+            "accept-language": navigator.language || "en",
+          });
+          const iso = country ? getCountryCode(country) : null;
+          if (withCountry && iso) params.set("countrycodes", iso.toLowerCase());
+          return `${ENDPOINT}?${params.toString()}`;
+        };
         const iso = country ? getCountryCode(country) : null;
-        if (iso) params.set("countrycodes", iso.toLowerCase());
-        const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
+        let res = await fetch(buildUrl(true), {
           signal: controller.signal,
-          headers: { "Accept": "application/json" },
+          headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error("Network error");
-        const data: NominatimResult[] = await res.json();
+        let data: NominatimResult[] = await res.json();
+        // Fallback: if country-restricted search returns nothing, retry globally
+        if (data.length === 0 && iso) {
+          res = await fetch(buildUrl(false), {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+          });
+          if (res.ok) data = await res.json();
+        }
         setResults(data);
         setOpen(true);
         setActiveIndex(-1);
