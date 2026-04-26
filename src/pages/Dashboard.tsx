@@ -42,6 +42,7 @@ import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 const Dashboard = () => {
   const {
     toast
@@ -1931,40 +1932,26 @@ const Dashboard = () => {
                               </div>}
                           </div>
 
-                          {/* Estimated Price */}
+                          {/* Estimated Prices */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
                               <h3 className="text-xl font-display font-bold flex items-center gap-2">
                                 <DollarSign className="h-5 w-5 text-accent" />
-                                Estimated Price
+                                Estimated Prices
                               </h3>
-                              {canSetEstimatedPrice(currentPlan) && editingField !== 'price' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('price')}>
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>}
                             </div>
-                            {!canSetEstimatedPrice(currentPlan) ? <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                            {!canSetEstimatedPrice(currentPlan) ? (
+                              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Lock className="h-4 w-4" />
                                 <span>Upgrade to Standard or Premium to display pricing</span>
-                              </div> : editingField === 'price' ? <div className="space-y-2">
-                                <Input value={formData.estimatedPrice} onChange={(e) => setFormData({
-                      ...formData,
-                      estimatedPrice: e.target.value
-                    })} placeholder={`e.g., 500-1000 ${getCurrencyForCountry(profile?.country)} per event`} />
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => saveField('price')} disabled={isSaving}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div> : <div>
-                                {formData.estimatedPrice ? <p className="text-muted-foreground">
-                                    <span className="font-semibold text-foreground text-base md:text-lg">{formData.estimatedPrice}</span>
-                                  </p> : <p className="text-muted-foreground italic text-sm">No price range added yet</p>}
-                              </div>}
+                              </div>
+                            ) : (
+                              <PricingEntriesEditor
+                                profileId={user?.id}
+                                country={profile?.country}
+                                editable={true}
+                              />
+                            )}
                           </div>
                         </div>
 
