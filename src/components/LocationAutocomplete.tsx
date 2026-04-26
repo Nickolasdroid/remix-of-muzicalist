@@ -108,7 +108,7 @@ const LocationAutocomplete = ({
       } finally {
         setLoading(false);
       }
-    }, 350);
+    }, 150);
     return () => clearTimeout(handle);
   }, [query, country]);
 
