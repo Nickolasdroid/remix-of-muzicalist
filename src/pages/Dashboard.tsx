@@ -2196,12 +2196,12 @@ const Dashboard = () => {
                               <DialogTrigger asChild>
                                 <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                   <Plus className="h-4 w-4 mr-1" />
-                                  New Post
+                                  New
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-md">
                                 <DialogHeader>
-                                  <DialogTitle>Create New Post</DialogTitle>
+                                  <DialogTitle>Create New</DialogTitle>
                                 </DialogHeader>
                                 <p className="text-sm text-muted-foreground mt-2">
                                   {postMediaType === 'promotion'
@@ -2257,7 +2257,7 @@ const Dashboard = () => {
                                           <Progress value={postUploadProgress} />
                                         </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create Post"}
+                                        {isSaving ? "Creating..." : "Create"}
                                       </Button>
                                     </TabsContent>
                                     
@@ -2297,7 +2297,7 @@ const Dashboard = () => {
                                           <Progress value={postUploadProgress} />
                                         </div>}
                                       <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create Post"}
+                                        {isSaving ? "Creating..." : "Create"}
                                       </Button>
                                     </TabsContent>
 
