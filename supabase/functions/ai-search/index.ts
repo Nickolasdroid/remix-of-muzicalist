@@ -324,7 +324,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     );
 
     // Helper to run a query against the artist subset
-    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan";
+    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, estimated_price";
 
     let q = supabase
       .from("profiles")
