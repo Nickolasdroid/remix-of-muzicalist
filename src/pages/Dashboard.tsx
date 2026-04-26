@@ -2538,12 +2538,12 @@ const Dashboard = () => {
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                     <Plus className="h-4 w-4 mr-1" />
-                                    New Announcement
+                                    New
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-md">
                                   <DialogHeader>
-                                    <DialogTitle>Add New Announcement</DialogTitle>
+                                    <DialogTitle>Add New</DialogTitle>
                                   </DialogHeader>
                                   <p className="text-sm text-muted-foreground mt-2">
                                     You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} announcements remaining.
