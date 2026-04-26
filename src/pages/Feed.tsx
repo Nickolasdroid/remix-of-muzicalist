@@ -47,7 +47,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
-  const [feedFilter, setFeedFilter] = useState<"all" | "promotions">("all");
+  const [feedFilter, setFeedFilter] = useState<"all" | "announcements">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
@@ -341,12 +341,12 @@ const Feed = () => {
               All
             </Button>
             <Button
-              variant={feedFilter === "promotions" ? "default" : "outline"}
+              variant={feedFilter === "announcements" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFeedFilter("promotions")}
-              className={feedFilter === "promotions" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+              onClick={() => setFeedFilter("announcements")}
+              className={feedFilter === "announcements" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
             >
-              Promotions
+              Announcements
             </Button>
           </div>
 
