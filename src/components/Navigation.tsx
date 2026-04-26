@@ -204,7 +204,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
-    { to: '/feed', icon: Home, label: 'Home' },
+    { to: '/feed', icon: Home, label: 'Posts' },
     { to: '/announcements', icon: Megaphone, label: 'Announcements' },
     { to: '/categories', icon: Users, label: 'Categories' },
     { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
@@ -229,7 +229,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
   // Mobile bottom nav items (left to right: Feed - Ads - Messages - Profile)
   const mobileBottomNav = [
-    { to: '/feed', icon: Home, label: 'Home', showBadge: false },
+    { to: '/feed', icon: Home, label: 'Posts', showBadge: false },
     { to: '/announcements', icon: Megaphone, label: 'Announcements', showBadge: false },
     { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
     { to: '/search', icon: Search, label: 'Search', showBadge: false },

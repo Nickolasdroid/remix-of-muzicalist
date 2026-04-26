@@ -13,10 +13,10 @@
     "success": "Succes"
   },
   "navigation": {
-    "home": "Acasă",
+    "home": "Postări",
     "categories": "Categorii",
     "counties": "Județe",
-    "feed": "Acasă",
+    "feed": "Postări",
     "dashboard": "Panou",
     "messages": "Mesaje",
     "notifications": "Notificări",
