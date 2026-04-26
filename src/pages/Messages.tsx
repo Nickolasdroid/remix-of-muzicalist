@@ -844,9 +844,9 @@ const Messages = () => {
                         </div>
                       </div>;
                     })}
-                  </>;
-                })()
-              )}
+                    </>;
+                  })()
+                ) : null}
             </div>
           </div>
 
