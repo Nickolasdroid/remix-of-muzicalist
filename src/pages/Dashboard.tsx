@@ -2223,6 +2223,7 @@ const Dashboard = () => {
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
                                 <span className="text-sm text-muted-foreground">Promotions: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                                <AdSlotInfoButton kind="promotion" />
                               </div>
                             </div>
                             <Dialog open={showPostDialog} onOpenChange={(open) => {
