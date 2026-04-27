@@ -2361,7 +2361,7 @@ const Dashboard = () => {
                                       </div>
                                       
                                       <div>
-                                        <Label>Photo/Video</Label>
+                                        
                                         {newPromotion.mediaUrl ? <div className="mt-2 relative">
                                             {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
                                             <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
