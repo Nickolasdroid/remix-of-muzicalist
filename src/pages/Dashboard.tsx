@@ -2583,12 +2583,16 @@ const Dashboard = () => {
                                   <DialogHeader>
                                     <DialogTitle>Add New</DialogTitle>
                                   </DialogHeader>
-                                  <p className="text-sm text-muted-foreground mt-2">
-                                    You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} announcements remaining.
-                                  </p>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    Announcements are valid for 7 days.
-                                  </p>
+                                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-accent-foreground">
+                                      <Megaphone className="h-3 w-3" />
+                                      <span>{Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)}/{STANDARD_AD_LIMIT} left</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      <span>Valid 7 days</span>
+                                    </div>
+                                  </div>
                                   <div className="space-y-4 mt-4">
                                     <div>
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
