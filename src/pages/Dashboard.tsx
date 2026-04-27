@@ -158,15 +158,16 @@ const Dashboard = () => {
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Consumed ad/promotion slots (rolling 30-day window).
-  // A slot stays occupied for 30 days from creation, even if the ad is deleted.
-  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string }[]>([]);
+  // Consumed ad/promotion/post slots (rolling 30-day window).
+  // A slot stays occupied for 30 days from creation, even if the item is deleted.
+  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
   const SLOT_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
   const activeConsumedSlots = consumedSlots.filter(
     (s) => Date.now() - new Date(s.consumed_at).getTime() < SLOT_COOLDOWN_MS,
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => !s.is_premium).length;
-  const premiumAdsUsed = activeConsumedSlots.filter((s) => s.is_premium).length;
+  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
+  const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
+  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
@@ -195,9 +196,9 @@ const Dashboard = () => {
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits (plan-based)
+  // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
   const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
-  const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
+  const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -258,7 +259,7 @@ const Dashboard = () => {
       supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
       (supabase as any)
         .from('consumed_ad_slots')
-        .select('is_premium, consumed_at')
+        .select('is_premium, consumed_at, kind')
         .eq('profile_id', user.id)
         .gte('consumed_at', cutoffIso),
     ]);
