@@ -2225,7 +2225,8 @@ const Dashboard = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
+                                <span className="text-sm text-muted-foreground">Posts: <span className="font-medium text-foreground">{postsUsed}/{STANDARD_POST_LIMIT}</span></span>
+                                <AdSlotInfoButton kind="post" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
@@ -2253,15 +2254,13 @@ const Dashboard = () => {
                                     <span>
                                       {postMediaType === 'promotion'
                                         ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
-                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left this month`}
+                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
                                     </span>
                                   </div>
-                                  {postMediaType === 'promotion' && (
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                                      <Clock className="h-3 w-3" />
-                                      <span>Valid 15 days</span>
-                                    </div>
-                                  )}
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                    <Clock className="h-3 w-3" />
+                                    <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Slot held 30 days'}</span>
+                                  </div>
                                 </div>
                                 <div className="space-y-4 mt-4">
                                   <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
