@@ -157,9 +157,15 @@ const Dashboard = () => {
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Calculate used announcements
-  const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
-  const premiumAdsUsed = announcements.filter((a) => a.is_premium).length;
+  // Consumed ad/promotion slots (rolling 30-day window).
+  // A slot stays occupied for 30 days from creation, even if the ad is deleted.
+  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string }[]>([]);
+  const SLOT_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
+  const activeConsumedSlots = consumedSlots.filter(
+    (s) => Date.now() - new Date(s.consumed_at).getTime() < SLOT_COOLDOWN_MS,
+  );
+  const standardAdsUsed = activeConsumedSlots.filter((s) => !s.is_premium).length;
+  const premiumAdsUsed = activeConsumedSlots.filter((s) => s.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
