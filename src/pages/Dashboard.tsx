@@ -2240,16 +2240,22 @@ const Dashboard = () => {
                                 <DialogHeader>
                                   <DialogTitle>Create New</DialogTitle>
                                 </DialogHeader>
-                                <p className="text-sm text-muted-foreground mt-2">
-                                  {postMediaType === 'promotion'
-                                    ? `You have ${Math.max(premiumAdsRemaining, 0)} of ${PREMIUM_AD_LIMIT} promotions remaining.`
-                                    : `You have ${Math.max(postsRemaining, 0)} of ${STANDARD_POST_LIMIT} posts remaining this month.`}
-                                </p>
-                                {postMediaType === 'promotion' &&
-                      <p className="text-sm text-muted-foreground mt-1">
-                                    Promotions are valid for 15 days.
-                                  </p>
-                      }
+                                <div className="flex items-center gap-2 mt-3 flex-wrap">
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-accent-foreground">
+                                    {postMediaType === 'promotion' ? <Megaphone className="h-3 w-3" /> : <Images className="h-3 w-3" />}
+                                    <span>
+                                      {postMediaType === 'promotion'
+                                        ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
+                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left this month`}
+                                    </span>
+                                  </div>
+                                  {postMediaType === 'promotion' && (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      <span>Valid 15 days</span>
+                                    </div>
+                                  )}
+                                </div>
                                 <div className="space-y-4 mt-4">
                                   <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
                                     <TabsList className="grid w-full grid-cols-3">
@@ -2583,12 +2589,16 @@ const Dashboard = () => {
                                   <DialogHeader>
                                     <DialogTitle>Add New</DialogTitle>
                                   </DialogHeader>
-                                  <p className="text-sm text-muted-foreground mt-2">
-                                    You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} announcements remaining.
-                                  </p>
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    Announcements are valid for 7 days.
-                                  </p>
+                                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-accent-foreground">
+                                      <Megaphone className="h-3 w-3" />
+                                      <span>{Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)}/{STANDARD_AD_LIMIT} left</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      <span>Valid 7 days</span>
+                                    </div>
+                                  </div>
                                   <div className="space-y-4 mt-4">
                                     <div>
                                       <Label htmlFor="announcement-text-inner">Announcement Text</Label>
