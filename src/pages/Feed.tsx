@@ -534,8 +534,8 @@ const Feed = () => {
             url: item.media_url!,
             type: item.media_type === "video" ? "video" : "image"
           })}>
-                    {item.media_type === "video" ? <div className="relative w-full aspect-video">
-                        <video src={item.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" onClick={e => e.stopPropagation()} />
+            {item.media_type === "video" ? <div className="relative w-full aspect-video">
+                        <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                 <div className="px-2 py-1">
