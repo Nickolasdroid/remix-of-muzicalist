@@ -252,11 +252,16 @@ const Dashboard = () => {
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
-    const {
-      data
-    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', {
-      ascending: false
-    });
+    const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [{ data }, slotsRes] = await Promise.all([
+      supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
+      (supabase as any)
+        .from('consumed_ad_slots')
+        .select('is_premium, consumed_at')
+        .eq('profile_id', user.id)
+        .gte('consumed_at', cutoffIso),
+    ]);
+    if (slotsRes?.data) setConsumedSlots(slotsRes.data);
     if (data) {
       const announcementsWithLikes = await Promise.all(data.map(async (announcement) => {
         const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
