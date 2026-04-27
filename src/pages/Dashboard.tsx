@@ -813,13 +813,13 @@ const Dashboard = () => {
   const handleAddPromotion = async () => {
     if (!user || !newPromotion.description) return;
     if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions.`, variant: "destructive" });
+      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per 30-day period.`, variant: "destructive" });
       return;
     }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const { error } = await supabase.from('announcements').insert({
+      const { data: inserted, error } = await supabase.from('announcements').insert({
         profile_id: user.id,
         title: "Announcement",
         date: todayDate,
@@ -827,8 +827,14 @@ const Dashboard = () => {
         is_premium: true,
         media_url: newPromotion.mediaUrl || null,
         media_type: newPromotion.mediaType || null
-      });
+      }).select('id').single();
       if (error) throw error;
+      // Record consumed slot (locks it for 30 days even if the promotion is deleted).
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: true,
+        announcement_id: inserted?.id ?? null,
+      });
       await loadAnnouncements();
       setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
       setShowPromotionDialog(false);
