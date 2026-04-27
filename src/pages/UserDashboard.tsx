@@ -373,9 +373,12 @@ const UserDashboard = () => {
                   <DialogHeader>
                     <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                   </DialogHeader>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {t("userDashboard.adValidity", "Ads are valid for 15 days.")}
-                  </p>
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{t("userDashboard.adValidity", "Valid 15 days")}</span>
+                    </div>
+                  </div>
                   <div className="space-y-4 mt-4">
 
                     <div>
