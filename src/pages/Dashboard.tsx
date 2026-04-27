@@ -852,27 +852,33 @@ const Dashboard = () => {
   const handleAddPost = async () => {
     if (!user || !newPost.content || !newPost.mediaUrl) return;
 
-    // Check monthly post limit
-    if (monthlyPostsCount >= STANDARD_POST_LIMIT) {
+    // Check post slot limit (rolling 30-day window)
+    if (postsUsed >= STANDARD_POST_LIMIT) {
       toast({
-        title: "Monthly limit reached",
-        description: `You can only create ${STANDARD_POST_LIMIT} posts per month with your subscription.`,
+        title: "Limit reached",
+        description: `You can only create ${STANDARD_POST_LIMIT} posts per 30-day window with your subscription.`,
         variant: "destructive"
       });
       return;
     }
     setIsSaving(true);
     try {
-      const {
-        error
-      } = await supabase.from('posts').insert({
+      const { data: insertedPost, error } = await supabase.from('posts').insert({
         profile_id: user.id,
         content: newPost.content,
         media_url: newPost.mediaUrl || null,
         media_type: newPost.mediaType || null
-      });
+      }).select('id').single();
       if (error) throw error;
+      // Record consumed slot (locks it for 30 days even if the post is deleted).
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: insertedPost?.id ?? null,
+        kind: 'post',
+      });
       await loadPosts();
+      await loadAnnouncements();
       setNewPost({
         content: "",
         mediaUrl: "",
