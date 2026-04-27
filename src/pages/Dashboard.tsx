@@ -2321,7 +2321,7 @@ const Dashboard = () => {
                                         <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
                                       </div>
                                       {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
-                                          <video src={newPost.mediaUrl} controls className="w-full rounded-lg max-h-48" />
+                                          <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" />
                                           <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
                                 ...newPost,
                                 mediaUrl: "",
@@ -2362,7 +2362,7 @@ const Dashboard = () => {
                                       </div>
                                       
                                       {newPromotion.mediaUrl && <div className="relative">
-                                          {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                          {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
                                           <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
                                   ...newPromotion,
                                   mediaUrl: "",
