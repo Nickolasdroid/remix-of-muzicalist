@@ -1,7 +1,7 @@
 /**
  * Ad expiration utility.
- * - Standard (text) ads expire after 15 days from the `date` field.
- * - Premium (promotion) ads expire after 30 days from the `date` field.
+ * - Standard (text) ads expire after 7 days from the `date` field.
+ * - Premium (promotion) ads expire after 15 days from the `date` field.
  * After expiration, ads remain visible only to the owner as history.
  */
 
