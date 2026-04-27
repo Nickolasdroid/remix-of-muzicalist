@@ -2569,6 +2569,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                               <span className="text-sm text-muted-foreground">Announcements: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              <AdSlotInfoButton kind="ad" />
                             </div>
                             <div className="flex items-center gap-2">
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
