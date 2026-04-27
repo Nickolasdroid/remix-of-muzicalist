@@ -2587,7 +2587,7 @@ const Dashboard = () => {
                                     You have {Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)} of {STANDARD_AD_LIMIT} announcements remaining.
                                   </p>
                                   <p className="text-sm text-muted-foreground mt-1">
-                                    Announcements are valid for 15 days.
+                                    Announcements are valid for 7 days.
                                   </p>
                                   <div className="space-y-4 mt-4">
                                     <div>
