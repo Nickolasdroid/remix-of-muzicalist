@@ -6,7 +6,7 @@
  */
 
 const STANDARD_AD_VALIDITY_DAYS = 7;
-const PREMIUM_AD_VALIDITY_DAYS = 30;
+const PREMIUM_AD_VALIDITY_DAYS = 15;
 
 export function isAdExpired(ad: { date: string; is_premium: boolean }): boolean {
   const adDate = new Date(ad.date);
