@@ -2528,7 +2528,7 @@ const Dashboard = () => {
                               
                               {promotion.media_url && <div className="mt-3 bg-muted/30">
                                   {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={promotion.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                      <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" />
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
@@ -2721,7 +2721,7 @@ const Dashboard = () => {
                               
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
                                   {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                      <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" />
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
