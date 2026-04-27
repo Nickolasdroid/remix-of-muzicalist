@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import SmoothVideoPlayer from "./SmoothVideoPlayer";
 
 interface MediaPreview {
   url: string;
@@ -42,11 +43,10 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
           {/* Media */}
           <div onClick={(e) => e.stopPropagation()}>
             {media.type === "video" ? (
-              <video
+              <SmoothVideoPlayer
                 src={media.url}
-                controls
                 autoPlay
-                className="max-w-[95vw] max-h-[90vh] object-contain"
+                className="w-[95vw] h-[90vh] max-w-[95vw] max-h-[90vh]"
               />
             ) : (
               <img

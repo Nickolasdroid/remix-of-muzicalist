@@ -43,6 +43,7 @@ import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 const Dashboard = () => {
   const {
@@ -2320,7 +2321,7 @@ const Dashboard = () => {
                                         <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
                                       </div>
                                       {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
-                                          <video src={newPost.mediaUrl} controls className="w-full rounded-lg max-h-48" />
+                                          <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" />
                                           <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
                                 ...newPost,
                                 mediaUrl: "",
@@ -2361,7 +2362,7 @@ const Dashboard = () => {
                                       </div>
                                       
                                       {newPromotion.mediaUrl && <div className="relative">
-                                          {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                          {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
                                           <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
                                   ...newPromotion,
                                   mediaUrl: "",
@@ -2527,7 +2528,7 @@ const Dashboard = () => {
                               
                               {promotion.media_url && <div className="mt-3 bg-muted/30">
                                   {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={promotion.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                      <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" />
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
@@ -2720,7 +2721,7 @@ const Dashboard = () => {
                               
                               {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
                                   {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <video src={announcement.media_url} controls className="absolute inset-0 w-full h-full object-contain bg-black" />
+                                      <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" />
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
