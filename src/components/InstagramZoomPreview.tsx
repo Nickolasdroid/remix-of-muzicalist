@@ -43,11 +43,10 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
           {/* Media */}
           <div onClick={(e) => e.stopPropagation()}>
             {media.type === "video" ? (
-              <video
+              <VideoPlayer
                 src={media.url}
-                controls
                 autoPlay
-                className="max-w-[95vw] max-h-[90vh] object-contain"
+                className="w-[95vw] h-[90vh] bg-transparent"
               />
             ) : (
               <img
