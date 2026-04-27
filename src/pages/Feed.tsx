@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
