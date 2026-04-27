@@ -187,6 +187,7 @@ export type Database = {
           created_at: string
           id: string
           is_premium: boolean
+          kind: string
           profile_id: string
         }
         Insert: {
@@ -195,6 +196,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_premium?: boolean
+          kind?: string
           profile_id: string
         }
         Update: {
@@ -203,6 +205,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_premium?: boolean
+          kind?: string
           profile_id?: string
         }
         Relationships: []
