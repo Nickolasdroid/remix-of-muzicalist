@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import VideoPlayer from "@/components/VideoPlayer";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 interface MediaPreview {
