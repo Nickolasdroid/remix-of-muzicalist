@@ -5,6 +5,7 @@ import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
+import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -157,9 +158,15 @@ const Dashboard = () => {
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Calculate used announcements
-  const standardAdsUsed = announcements.filter((a) => !a.is_premium).length;
-  const premiumAdsUsed = announcements.filter((a) => a.is_premium).length;
+  // Consumed ad/promotion slots (rolling 30-day window).
+  // A slot stays occupied for 30 days from creation, even if the ad is deleted.
+  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string }[]>([]);
+  const SLOT_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
+  const activeConsumedSlots = consumedSlots.filter(
+    (s) => Date.now() - new Date(s.consumed_at).getTime() < SLOT_COOLDOWN_MS,
+  );
+  const standardAdsUsed = activeConsumedSlots.filter((s) => !s.is_premium).length;
+  const premiumAdsUsed = activeConsumedSlots.filter((s) => s.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
@@ -246,11 +253,16 @@ const Dashboard = () => {
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
-    const {
-      data
-    } = await supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', {
-      ascending: false
-    });
+    const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [{ data }, slotsRes] = await Promise.all([
+      supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
+      (supabase as any)
+        .from('consumed_ad_slots')
+        .select('is_premium, consumed_at')
+        .eq('profile_id', user.id)
+        .gte('consumed_at', cutoffIso),
+    ]);
+    if (slotsRes?.data) setConsumedSlots(slotsRes.data);
     if (data) {
       const announcementsWithLikes = await Promise.all(data.map(async (announcement) => {
         const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
@@ -698,12 +710,14 @@ const Dashboard = () => {
   };
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
+    if (standardAdsUsed >= STANDARD_AD_LIMIT) {
+      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per 30-day period.`, variant: "destructive" });
+      return;
+    }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const {
-        error
-      } = await supabase.from('announcements').insert({
+      const { data: inserted, error } = await supabase.from('announcements').insert({
         profile_id: user.id,
         title: "Announcement",
         date: todayDate,
@@ -714,8 +728,14 @@ const Dashboard = () => {
         location: newAnnouncement.location || null,
         event_date: newAnnouncement.eventDate || null,
         budget: newAnnouncement.budget || null
-      });
+      }).select('id').single();
       if (error) throw error;
+      // Record consumed slot (locks it for 30 days even if the ad is deleted).
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: inserted?.id ?? null,
+      });
       await loadAnnouncements();
       setNewAnnouncement({
         description: "",
@@ -794,13 +814,13 @@ const Dashboard = () => {
   const handleAddPromotion = async () => {
     if (!user || !newPromotion.description) return;
     if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions.`, variant: "destructive" });
+      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per 30-day period.`, variant: "destructive" });
       return;
     }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const { error } = await supabase.from('announcements').insert({
+      const { data: inserted, error } = await supabase.from('announcements').insert({
         profile_id: user.id,
         title: "Announcement",
         date: todayDate,
@@ -808,8 +828,14 @@ const Dashboard = () => {
         is_premium: true,
         media_url: newPromotion.mediaUrl || null,
         media_type: newPromotion.mediaType || null
-      });
+      }).select('id').single();
       if (error) throw error;
+      // Record consumed slot (locks it for 30 days even if the promotion is deleted).
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: true,
+        announcement_id: inserted?.id ?? null,
+      });
       await loadAnnouncements();
       setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
       setShowPromotionDialog(false);
@@ -2197,6 +2223,7 @@ const Dashboard = () => {
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
                                 <span className="text-sm text-muted-foreground">Promotions: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                                <AdSlotInfoButton kind="promotion" />
                               </div>
                             </div>
                             <Dialog open={showPostDialog} onOpenChange={(open) => {
@@ -2542,6 +2569,7 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
                               <span className="text-sm text-muted-foreground">Announcements: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              <AdSlotInfoButton kind="ad" />
                             </div>
                             <div className="flex items-center gap-2">
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>

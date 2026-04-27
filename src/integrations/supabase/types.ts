@@ -180,6 +180,33 @@ export type Database = {
           },
         ]
       }
+      consumed_ad_slots: {
+        Row: {
+          announcement_id: string | null
+          consumed_at: string
+          created_at: string
+          id: string
+          is_premium: boolean
+          profile_id: string
+        }
+        Insert: {
+          announcement_id?: string | null
+          consumed_at?: string
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          profile_id: string
+        }
+        Update: {
+          announcement_id?: string | null
+          consumed_at?: string
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          profile_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           announcement_id: string | null
