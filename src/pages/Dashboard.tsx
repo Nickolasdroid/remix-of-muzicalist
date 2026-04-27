@@ -2360,36 +2360,32 @@ const Dashboard = () => {
                                         <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
                                       </div>
                                       
-                                      <div>
-                                        
-                                        {newPromotion.mediaUrl ? <div className="mt-2 relative">
-                                            {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                            <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
+                                      {newPromotion.mediaUrl && <div className="relative">
+                                          {newPromotion.mediaType === 'video' ? <video src={newPromotion.mediaUrl} controls className="w-full rounded-lg max-h-48" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
                                   ...newPromotion,
                                   mediaUrl: "",
                                   mediaType: ""
                                 })}>
-                                              <X className="h-4 w-4" />
-                                            </Button>
-                                          </div> : <>
-                                            {promotionUploadProgress === null && <>
-                                              <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                                <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors mt-2">
-                                                  <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                                  <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                                </div>
-                                              </Label>
-                                              <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
-                                            </>}
-                                            {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3 mt-2">
-                                              <div className="flex items-center justify-between">
-                                                <p className="text-sm font-medium">Uploading media…</p>
-                                                <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
-                                              </div>
-                                              <Progress value={promotionUploadProgress} />
-                                            </div>}
-                                          </>}
-                                      </div>
+                                            <X className="h-4 w-4" />
+                                          </Button>
+                                        </div>}
+                                      {!newPromotion.mediaUrl && promotionUploadProgress === null && <>
+                                          <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                              <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                            </div>
+                                          </Label>
+                                          <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                        </>}
+                                      {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium">Uploading media…</p>
+                                            <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
+                                          </div>
+                                          <Progress value={promotionUploadProgress} />
+                                        </div>}
                                       
                                       <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
                                         {isSaving ? "Creating..." : "Create Promotion"}
