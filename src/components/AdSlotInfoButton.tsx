@@ -3,19 +3,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 
 interface AdSlotInfoButtonProps {
-  /** "ad" for standard announcements, "promotion" for premium promotions, "post" for posts */
-  kind: "ad" | "promotion" | "post";
+  /** "ad" for standard announcements, "promotion" for premium promotions */
+  kind: "ad" | "promotion";
 }
 
 /**
- * Small info button shown next to ad/promotion/post counters.
- * Explains the 30-day slot cooldown rule when an item is deleted.
+ * Small info button shown next to ad/promotion counters.
+ * Explains the 30-day slot cooldown rule when an ad is deleted.
  */
 export const AdSlotInfoButton = ({ kind }: AdSlotInfoButtonProps) => {
-  const label =
-    kind === "promotion" ? "promotion" : kind === "post" ? "post" : "announcement";
-  const labelPlural =
-    kind === "promotion" ? "promotions" : kind === "post" ? "posts" : "announcements";
+  const label = kind === "promotion" ? "promotion" : "announcement";
+  const labelPlural = kind === "promotion" ? "promotions" : "announcements";
 
   return (
     <Popover>

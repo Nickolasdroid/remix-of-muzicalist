@@ -158,16 +158,15 @@ const Dashboard = () => {
   const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
 
-  // Consumed ad/promotion/post slots (rolling 30-day window).
-  // A slot stays occupied for 30 days from creation, even if the item is deleted.
-  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
+  // Consumed ad/promotion slots (rolling 30-day window).
+  // A slot stays occupied for 30 days from creation, even if the ad is deleted.
+  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string }[]>([]);
   const SLOT_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
   const activeConsumedSlots = consumedSlots.filter(
     (s) => Date.now() - new Date(s.consumed_at).getTime() < SLOT_COOLDOWN_MS,
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
-  const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
-  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
+  const standardAdsUsed = activeConsumedSlots.filter((s) => !s.is_premium).length;
+  const premiumAdsUsed = activeConsumedSlots.filter((s) => s.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
 
@@ -196,9 +195,9 @@ const Dashboard = () => {
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
+  // Post limits (plan-based)
   const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
-  const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
+  const postsRemaining = STANDARD_POST_LIMIT - monthlyPostsCount;
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -259,7 +258,7 @@ const Dashboard = () => {
       supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
       (supabase as any)
         .from('consumed_ad_slots')
-        .select('is_premium, consumed_at, kind')
+        .select('is_premium, consumed_at')
         .eq('profile_id', user.id)
         .gte('consumed_at', cutoffIso),
     ]);
@@ -852,33 +851,27 @@ const Dashboard = () => {
   const handleAddPost = async () => {
     if (!user || !newPost.content || !newPost.mediaUrl) return;
 
-    // Check post slot limit (rolling 30-day window)
-    if (postsUsed >= STANDARD_POST_LIMIT) {
+    // Check monthly post limit
+    if (monthlyPostsCount >= STANDARD_POST_LIMIT) {
       toast({
-        title: "Limit reached",
-        description: `You can only create ${STANDARD_POST_LIMIT} posts per 30-day window with your subscription.`,
+        title: "Monthly limit reached",
+        description: `You can only create ${STANDARD_POST_LIMIT} posts per month with your subscription.`,
         variant: "destructive"
       });
       return;
     }
     setIsSaving(true);
     try {
-      const { data: insertedPost, error } = await supabase.from('posts').insert({
+      const {
+        error
+      } = await supabase.from('posts').insert({
         profile_id: user.id,
         content: newPost.content,
         media_url: newPost.mediaUrl || null,
         media_type: newPost.mediaType || null
-      }).select('id').single();
-      if (error) throw error;
-      // Record consumed slot (locks it for 30 days even if the post is deleted).
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: insertedPost?.id ?? null,
-        kind: 'post',
       });
+      if (error) throw error;
       await loadPosts();
-      await loadAnnouncements();
       setNewPost({
         content: "",
         mediaUrl: "",
@@ -2225,8 +2218,7 @@ const Dashboard = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Posts: <span className="font-medium text-foreground">{postsUsed}/{STANDARD_POST_LIMIT}</span></span>
-                                <AdSlotInfoButton kind="post" />
+                                <span className="text-sm text-muted-foreground">Monthly Posts: <span className="font-medium text-foreground">{monthlyPostsCount}/{STANDARD_POST_LIMIT}</span></span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
@@ -2254,13 +2246,15 @@ const Dashboard = () => {
                                     <span>
                                       {postMediaType === 'promotion'
                                         ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
-                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
+                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left this month`}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                                    <Clock className="h-3 w-3" />
-                                    <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Slot held 30 days'}</span>
-                                  </div>
+                                  {postMediaType === 'promotion' && (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      <span>Valid 15 days</span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="space-y-4 mt-4">
                                   <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
