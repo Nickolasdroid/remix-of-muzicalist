@@ -46,7 +46,7 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
               <SmoothVideoPlayer
                 src={media.url}
                 autoPlay
-                className="max-w-[95vw] max-h-[90vh] w-auto h-auto"
+                className="w-[95vw] h-[90vh] max-w-[95vw] max-h-[90vh]"
               />
             ) : (
               <img
