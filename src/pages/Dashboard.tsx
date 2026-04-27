@@ -2247,7 +2247,7 @@ const Dashboard = () => {
                                 </p>
                                 {postMediaType === 'promotion' &&
                       <p className="text-sm text-muted-foreground mt-1">
-                                    Promotions are valid for 30 days.
+                                    Promotions are valid for 15 days.
                                   </p>
                       }
                                 <div className="space-y-4 mt-4">
