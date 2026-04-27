@@ -43,6 +43,7 @@ import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 const Dashboard = () => {
   const {
