@@ -709,12 +709,14 @@ const Dashboard = () => {
   };
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
+    if (standardAdsUsed >= STANDARD_AD_LIMIT) {
+      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per 30-day period.`, variant: "destructive" });
+      return;
+    }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
-      const {
-        error
-      } = await supabase.from('announcements').insert({
+      const { data: inserted, error } = await supabase.from('announcements').insert({
         profile_id: user.id,
         title: "Announcement",
         date: todayDate,
@@ -725,8 +727,14 @@ const Dashboard = () => {
         location: newAnnouncement.location || null,
         event_date: newAnnouncement.eventDate || null,
         budget: newAnnouncement.budget || null
-      });
+      }).select('id').single();
       if (error) throw error;
+      // Record consumed slot (locks it for 30 days even if the ad is deleted).
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: inserted?.id ?? null,
+      });
       await loadAnnouncements();
       setNewAnnouncement({
         description: "",
