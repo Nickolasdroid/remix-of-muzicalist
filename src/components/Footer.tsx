@@ -42,7 +42,7 @@ const Footer = () => {
     href: "#",
     label: "YouTube"
   }];
-  return <footer className="bg-card border-t border-border">
+  return <footer className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 bg-background">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
