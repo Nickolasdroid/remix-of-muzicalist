@@ -571,8 +571,6 @@ const RegisterArtist = () => {
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/95" />
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
             {/* Form Container */}
