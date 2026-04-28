@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import GuestContentGate from "@/components/GuestContentGate";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
@@ -176,7 +177,10 @@ const Announcements = () => {
           </div>
 
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
-          const filteredAnnouncements = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
+          const isGuest = !currentUserId;
+          const GUEST_PREVIEW_COUNT = 2;
+          const filteredBase = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
+          const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
           return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted announcements yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -298,18 +302,26 @@ const Announcements = () => {
               </Card>);
         })()}
           
-          {/* Infinite scroll trigger */}
-          <div ref={loadMoreRef} className="py-4 flex justify-center">
-            {isLoadingMore && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Loading more announcements...</span>
-              </div>
-            )}
-            {!hasMore && announcements.length > 0 && (
-              <p className="text-muted-foreground text-sm">No more announcements to load</p>
-            )}
-          </div>
+          {currentUserId ? (
+            <div ref={loadMoreRef} className="py-4 flex justify-center">
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading more announcements...</span>
+                </div>
+              )}
+              {!hasMore && announcements.length > 0 && (
+                <p className="text-muted-foreground text-sm">No more announcements to load</p>
+              )}
+            </div>
+          ) : (
+            announcements.length > 0 && (
+              <GuestContentGate
+                title="Sign in to see all announcements"
+                description="Create a free account or log in to browse every opportunity and apply to gigs."
+              />
+            )
+          )}
         </div>
       </div>
 

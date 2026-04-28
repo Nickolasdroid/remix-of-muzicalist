@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+import GuestContentGate from "@/components/GuestContentGate";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
@@ -352,7 +353,10 @@ const Feed = () => {
           </div>
 
           {(() => {
-            const filtered = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const filteredAll = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const GUEST_PREVIEW_COUNT = 2;
+            const isGuest = !currentUserId;
+            const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
             return filtered.length === 0 ? <Card className="p-8 text-center">
               <p className="text-muted-foreground">{feedFilter === "announcements" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
@@ -563,17 +567,26 @@ const Feed = () => {
             )
           })()}
           
-          <div ref={loadMoreRef} className="py-4 flex justify-center">
-            {isLoadingMore && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Loading more posts...</span>
-              </div>
-            )}
-            {!hasMore && feedItems.length > 0 && (
-              <p className="text-muted-foreground text-sm">No more posts to load</p>
-            )}
-          </div>
+          {currentUserId ? (
+            <div ref={loadMoreRef} className="py-4 flex justify-center">
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading more posts...</span>
+                </div>
+              )}
+              {!hasMore && feedItems.length > 0 && (
+                <p className="text-muted-foreground text-sm">No more posts to load</p>
+              )}
+            </div>
+          ) : (
+            feedItems.length > 0 && (
+              <GuestContentGate
+                title="Sign in to see the full feed"
+                description="Create a free account or log in to keep scrolling, like posts, and contact artists."
+              />
+            )
+          )}
         </div>
       </div>
 
