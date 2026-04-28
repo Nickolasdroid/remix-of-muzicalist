@@ -31,15 +31,15 @@ const Footer = () => {
   }];
   const socialLinks = [{
     icon: Facebook,
-    href: "#",
+    href: "https://www.facebook.com/p/Muzicalist-100091939989391/",
     label: "Facebook"
   }, {
     icon: Instagram,
-    href: "#",
+    href: "https://www.instagram.com/muzicalist_/",
     label: "Instagram"
   }, {
     icon: Youtube,
-    href: "#",
+    href: "https://www.youtube.com/@Muzicalist",
     label: "YouTube"
   }];
   return <footer className="border-t border-border bg-background">
@@ -52,7 +52,7 @@ const Footer = () => {
             </Link>
             
             <div className="flex gap-3">
-              {socialLinks.map(social => <a key={social.label} href={social.href} aria-label={social.label} className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300">
+              {socialLinks.map(social => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300">
                   <social.icon className="h-5 w-5" />
                 </a>)}
             </div>
