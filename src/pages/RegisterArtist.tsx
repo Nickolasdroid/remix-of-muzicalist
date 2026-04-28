@@ -687,7 +687,7 @@ const RegisterArtist = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="phone" className="text-sm">{t("artistRegistration.phone")}</Label>
                     <div className="relative">
@@ -715,14 +715,6 @@ const RegisterArtist = () => {
                         }}
                         className="bg-input border-border focus:border-accent h-9 pl-9"
                         placeholder={t("artistRegistration.placeholders.phone")} />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label htmlFor="email" className="text-sm">{t("artistRegistration.email")}</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9 read-only:opacity-70" placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
                     </div>
                   </div>
                 </div>
