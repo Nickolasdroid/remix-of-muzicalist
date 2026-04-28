@@ -567,7 +567,7 @@ const RegisterArtist = () => {
       </div>
 
       {/* Left Side - Multi-Step Form */}
-      <div className="relative w-full md:w-[55%] min-h-screen flex flex-col order-2 md:order-2 overflow-hidden">
+      <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
         {/* Background image */}
         <img
           src={artistRegisterBg}
@@ -890,34 +890,6 @@ const RegisterArtist = () => {
               }
             </form>
           </div>
-        </div>
-      </div>
-
-      {/* Right Side - Persistent Illustration (Mobile: top, Desktop: right) */}
-      <div className="relative hidden md:flex w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
-        {/* Background image */}
-        <img
-          src={artistOnboardingBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
-        {/* Subtle glow effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
-        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
-
-        {/* Content */}
-        <div className="relative z-10 text-center px-8 md:px-12 py-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white mb-4">
-            Join Muzicalist
-          </h2>
-          <p className="text-base md:text-lg text-white/80 font-medium mb-3">
-            Create your artist profile and get booked for events
-          </p>
-          <p className="text-sm md:text-base text-white/60 max-w-md mx-auto">
-            Connect with clients, showcase your talent, and grow your music career.
-          </p>
         </div>
       </div>
     </div>);
