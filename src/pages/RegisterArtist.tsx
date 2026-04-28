@@ -564,8 +564,16 @@ const RegisterArtist = () => {
       </div>
 
       {/* Left Side - Multi-Step Form */}
-      <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-2">
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
+      <div className="relative w-full md:w-[55%] min-h-screen flex flex-col order-2 md:order-2 overflow-hidden">
+        {/* Background image */}
+        <img
+          src={artistRegisterBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/95" />
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
             {/* Form Container */}
             <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl space-y-6">
@@ -875,7 +883,7 @@ const RegisterArtist = () => {
       <div className="relative hidden md:flex w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
         {/* Background image */}
         <img
-          src={artistRegisterBg}
+          src={artistOnboardingBg}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
