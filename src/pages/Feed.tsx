@@ -353,7 +353,10 @@ const Feed = () => {
           </div>
 
           {(() => {
-            const filtered = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const filteredAll = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const GUEST_PREVIEW_COUNT = 2;
+            const isGuest = !currentUserId;
+            const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
             return filtered.length === 0 ? <Card className="p-8 text-center">
               <p className="text-muted-foreground">{feedFilter === "announcements" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
             </Card> : filtered.map(item =>
