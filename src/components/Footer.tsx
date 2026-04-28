@@ -31,15 +31,15 @@ const Footer = () => {
   }];
   const socialLinks = [{
     icon: Facebook,
-    href: "#",
+    href: "https://www.facebook.com/p/Muzicalist-100091939989391/",
     label: "Facebook"
   }, {
     icon: Instagram,
-    href: "#",
+    href: "https://www.instagram.com/muzicalist_/",
     label: "Instagram"
   }, {
     icon: Youtube,
-    href: "#",
+    href: "https://www.youtube.com/@Muzicalist",
     label: "YouTube"
   }];
   return <footer className="border-t border-border bg-background">
