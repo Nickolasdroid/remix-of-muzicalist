@@ -469,8 +469,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         <Button 
           type="button"
           variant="outline" 
-          className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3 h-10 overflow-hidden"
+          className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 h-9 overflow-hidden relative"
         >
+          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           {selectedCountry ? (
             <span className="flex items-center gap-2 min-w-0 overflow-hidden">
               <CountryFlagIcon country={selectedCountry.code} className="h-4 w-6 rounded-sm shadow-sm" />
