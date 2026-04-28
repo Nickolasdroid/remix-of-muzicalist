@@ -30,7 +30,7 @@ const CountryList = ({
   onSelect: (dbValue: string) => void;
   hideAllOption?: boolean;
 }) => (
-  <div className="p-2 space-y-0.5">
+  <div className="py-2 space-y-0.5">
     {!hideAllOption && (
       <button
         type="button"
