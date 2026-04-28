@@ -35,7 +35,7 @@ const CountryList = ({
       <button
         type="button"
         onClick={() => onSelect("__all__")}
-        className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+        className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
           selectedCountry === "__all__" ? "bg-accent/20 text-accent" : "text-foreground"
         }`}
       >
@@ -56,7 +56,7 @@ const CountryList = ({
           key={dbValue}
           type="button"
           onClick={() => onSelect(dbValue)}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+          className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
             isSelected ? "bg-accent/20 text-accent" : "text-foreground"
           }`}
         >
