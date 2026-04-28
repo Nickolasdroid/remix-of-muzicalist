@@ -387,7 +387,7 @@ const Feed = () => {
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
                             <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Announcement
+                              Promotion
                             </Badge>
                           </div>
                         </div>
