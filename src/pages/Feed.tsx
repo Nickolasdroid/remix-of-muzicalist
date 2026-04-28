@@ -567,17 +567,26 @@ const Feed = () => {
             )
           })()}
           
-          <div ref={loadMoreRef} className="py-4 flex justify-center">
-            {isLoadingMore && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Loading more posts...</span>
-              </div>
-            )}
-            {!hasMore && feedItems.length > 0 && (
-              <p className="text-muted-foreground text-sm">No more posts to load</p>
-            )}
-          </div>
+          {currentUserId ? (
+            <div ref={loadMoreRef} className="py-4 flex justify-center">
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading more posts...</span>
+                </div>
+              )}
+              {!hasMore && feedItems.length > 0 && (
+                <p className="text-muted-foreground text-sm">No more posts to load</p>
+              )}
+            </div>
+          ) : (
+            feedItems.length > 0 && (
+              <GuestContentGate
+                title="Sign in to see the full feed"
+                description="Create a free account or log in to keep scrolling, like posts, and contact artists."
+              />
+            )
+          )}
         </div>
       </div>
 
