@@ -567,7 +567,7 @@ const RegisterArtist = () => {
       </div>
 
       {/* Left Side - Multi-Step Form */}
-      <div className="relative w-full md:w-[55%] min-h-screen flex flex-col order-2 md:order-2 overflow-hidden">
+      <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
         {/* Background image */}
         <img
           src={artistRegisterBg}
