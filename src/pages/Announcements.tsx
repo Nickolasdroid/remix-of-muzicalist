@@ -302,18 +302,26 @@ const Announcements = () => {
               </Card>);
         })()}
           
-          {/* Infinite scroll trigger */}
-          <div ref={loadMoreRef} className="py-4 flex justify-center">
-            {isLoadingMore && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span>Loading more announcements...</span>
-              </div>
-            )}
-            {!hasMore && announcements.length > 0 && (
-              <p className="text-muted-foreground text-sm">No more announcements to load</p>
-            )}
-          </div>
+          {currentUserId ? (
+            <div ref={loadMoreRef} className="py-4 flex justify-center">
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading more announcements...</span>
+                </div>
+              )}
+              {!hasMore && announcements.length > 0 && (
+                <p className="text-muted-foreground text-sm">No more announcements to load</p>
+              )}
+            </div>
+          ) : (
+            announcements.length > 0 && (
+              <GuestContentGate
+                title="Sign in to see all announcements"
+                description="Create a free account or log in to browse every opportunity and apply to gigs."
+              />
+            )
+          )}
         </div>
       </div>
 
