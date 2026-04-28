@@ -498,7 +498,7 @@ const RegisterArtist = () => {
               <div className="flex flex-col items-center text-center space-y-3">
                 <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
                 <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                  Create Artist Account
+                  Join Muzicalist as an Artist
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Start with your email address
@@ -571,7 +571,7 @@ const RegisterArtist = () => {
             {/* Title (inside form) */}
             <div className="text-center">
               <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
-                Create Artist Account
+                Join Muzicalist as an Artist
               </h1>
               <p className="text-sm text-muted-foreground">
                 Step {currentStep} of {totalSteps} — {
