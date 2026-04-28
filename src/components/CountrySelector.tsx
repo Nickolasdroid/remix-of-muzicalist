@@ -408,8 +408,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             <Button 
               type="button"
               variant="outline" 
-              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent px-3 overflow-hidden"
+              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 overflow-hidden relative"
             >
+              <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               {selectedCountry ? (
                 <span className="truncate">{selectedCountry.name}</span>
               ) : (
