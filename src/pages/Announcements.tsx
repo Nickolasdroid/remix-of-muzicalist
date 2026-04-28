@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import GuestContentGate from "@/components/GuestContentGate";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
