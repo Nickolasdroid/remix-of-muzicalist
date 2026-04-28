@@ -30,12 +30,12 @@ const CountryList = ({
   onSelect: (dbValue: string) => void;
   hideAllOption?: boolean;
 }) => (
-  <div className="p-2 space-y-0.5">
+  <div className="py-2 space-y-0.5">
     {!hideAllOption && (
       <button
         type="button"
         onClick={() => onSelect("__all__")}
-        className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+        className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
           selectedCountry === "__all__" ? "bg-accent/20 text-accent" : "text-foreground"
         }`}
       >
@@ -56,7 +56,7 @@ const CountryList = ({
           key={dbValue}
           type="button"
           onClick={() => onSelect(dbValue)}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
+          className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
             isSelected ? "bg-accent/20 text-accent" : "text-foreground"
           }`}
         >
@@ -146,11 +146,11 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange, hideAllOption }
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-        <DrawerContent className="px-4 pb-6" onOpenAutoFocus={(e) => e.preventDefault()}>
-          <DrawerHeader className="text-left px-0">
+        <DrawerContent className="pb-6" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DrawerHeader className="text-left">
             <DrawerTitle>Select Country</DrawerTitle>
           </DrawerHeader>
-          <div className="mb-3">{searchInput}</div>
+          <div className="mb-3 px-4">{searchInput}</div>
           <ScrollArea className="h-72">
             <div className="space-y-0.5">
               <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} hideAllOption={hideAllOption} />
