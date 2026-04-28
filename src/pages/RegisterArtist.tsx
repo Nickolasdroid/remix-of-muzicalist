@@ -566,8 +566,10 @@ const RegisterArtist = () => {
       <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-2">
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
-            {/* Title */}
-            <div className="text-center mb-6">
+            {/* Form Container */}
+            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl space-y-6">
+            {/* Title (inside form) */}
+            <div className="text-center">
               <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
                 Create Artist Account
               </h1>
@@ -581,8 +583,8 @@ const RegisterArtist = () => {
               </p>
             </div>
 
-            {/* Step Progress Bar */}
-            <div className="flex items-center justify-center gap-1 md:gap-2 mb-8">
+            {/* Step Progress Bar (inside form) */}
+            <div className="flex items-center justify-center gap-1 md:gap-2">
               {[
                 { num: 1, label: "Basic" },
                 { num: 2, label: "Professional" },
@@ -632,8 +634,6 @@ const RegisterArtist = () => {
               ))}
             </div>
 
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl">
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
@@ -704,8 +704,8 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-3">
-                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
+                <div className="flex flex-col md:flex-row md:justify-end pt-3">
+                  <Button type="button" onClick={nextStep} size="default" className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -768,11 +768,11 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3">
-                  <Button type="button" onClick={previousStep} variant="outline" size="default">
+                <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3 pt-3">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
+                  <Button type="button" onClick={nextStep} size="default" className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -800,11 +800,11 @@ const RegisterArtist = () => {
                   }
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
+                  <Button type="button" onClick={nextStep} size="default" className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -855,11 +855,11 @@ const RegisterArtist = () => {
                   </label>
                 </div>
 
-                <div className="flex justify-between">
-                  <Button type="button" onClick={previousStep} variant="outline" size="lg">
+                <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="submit" size="default" disabled={isSubmitting || !agreedToTerms} className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50">
+                  <Button type="submit" size="default" disabled={isSubmitting || !agreedToTerms} className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50">
                     {isSubmitting ? t("common.creating") : t("common.create")}
                   </Button>
                 </div>
