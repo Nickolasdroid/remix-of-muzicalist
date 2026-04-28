@@ -768,11 +768,11 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3">
-                  <Button type="button" onClick={previousStep} variant="outline" size="default">
+                <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3 pt-3">
+                  <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
+                  <Button type="button" onClick={nextStep} size="default" className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
                     {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
