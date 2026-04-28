@@ -566,8 +566,10 @@ const RegisterArtist = () => {
       <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-2">
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
-            {/* Title */}
-            <div className="text-center mb-6">
+            {/* Form Container */}
+            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl space-y-6">
+            {/* Title (inside form) */}
+            <div className="text-center">
               <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
                 Create Artist Account
               </h1>
@@ -581,8 +583,8 @@ const RegisterArtist = () => {
               </p>
             </div>
 
-            {/* Step Progress Bar */}
-            <div className="flex items-center justify-center gap-1 md:gap-2 mb-8">
+            {/* Step Progress Bar (inside form) */}
+            <div className="flex items-center justify-center gap-1 md:gap-2">
               {[
                 { num: 1, label: "Basic" },
                 { num: 2, label: "Professional" },
@@ -632,8 +634,6 @@ const RegisterArtist = () => {
               ))}
             </div>
 
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl">
             {/* Step 1: Basic Information */}
             {currentStep === 1 &&
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
