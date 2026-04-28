@@ -508,15 +508,18 @@ const RegisterArtist = () => {
 
               {/* Email Input */}
               <div className="space-y-2">
-                <Input
-                  id="step0-email"
-                  type="email"
-                  value={step0Email}
-                  onChange={(e) => setStep0Email(e.target.value)}
-                  placeholder="Email"
-                  className="h-12 bg-input border-border text-base"
-                  onKeyDown={(e) => e.key === "Enter" && handleStep0Continue()}
-                />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="step0-email"
+                    type="email"
+                    value={step0Email}
+                    onChange={(e) => setStep0Email(e.target.value)}
+                    placeholder="Email"
+                    className="h-12 bg-input border-border text-base pl-10"
+                    onKeyDown={(e) => e.key === "Enter" && handleStep0Continue()}
+                  />
+                </div>
               </div>
 
               {/* Continue Button - Gold gradient */}
@@ -646,28 +649,35 @@ const RegisterArtist = () => {
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="firstName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
-                    <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
+                    <Label htmlFor="firstName" className="text-sm">{t("artistRegistration.firstName")}</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9" placeholder={t("artistRegistration.placeholders.firstName")} />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="lastName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.lastName")}</Label>
-                    <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.lastName")} />
+                    <Label htmlFor="lastName" className="text-sm">{t("artistRegistration.lastName")}</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9" placeholder={t("artistRegistration.placeholders.lastName")} />
+                    </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="country" className="text-sm flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.country")}</Label>
+                    <Label htmlFor="country" className="text-sm">{t("artistRegistration.country")}</Label>
                     <CountrySelector
                       value={formData.country}
                       onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
                   </div>
 
                   <div className="space-y-1">
-                      <Label htmlFor="county" className="text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
+                      <Label htmlFor="county" className="text-sm">{divisionLabel}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })} disabled={!formData.country || availableRegions.length === 0}>
-                        <SelectTrigger className="bg-input border-border h-9">
+                        <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                           <SelectValue placeholder={formData.country ? t("artistRegistration.placeholders.selectCounty") : t("artistRegistration.placeholders.selectCountryFirst", "Select a country first")} />
                         </SelectTrigger>
                         <SelectContent side="bottom" avoidCollisions={false}>
@@ -679,35 +689,41 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="phone" className="text-sm flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.phone")}</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      required
-                      disabled={!formData.country}
-                      value={formData.phone}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        const prefix = getPhonePrefix(formData.country);
-                        if (prefix && !newValue.startsWith(prefix)) {
-                          return;
-                        }
-                        const afterPrefix = newValue.slice(prefix.length);
-                        if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
-                          return;
-                        }
-                        const maxLength = getMaxPhoneLength(formData.country);
-                        if (newValue.length <= maxLength) {
-                          setFormData({ ...formData, phone: newValue });
-                        }
-                      }}
-                      className="bg-input border-border focus:border-accent h-9"
-                      placeholder={t("artistRegistration.placeholders.phone")} />
+                    <Label htmlFor="phone" className="text-sm">{t("artistRegistration.phone")}</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        required
+                        disabled={!formData.country}
+                        value={formData.phone}
+                        onChange={(e) => {
+                          const newValue = e.target.value;
+                          const prefix = getPhonePrefix(formData.country);
+                          if (prefix && !newValue.startsWith(prefix)) {
+                            return;
+                          }
+                          const afterPrefix = newValue.slice(prefix.length);
+                          if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
+                            return;
+                          }
+                          const maxLength = getMaxPhoneLength(formData.country);
+                          if (newValue.length <= maxLength) {
+                            setFormData({ ...formData, phone: newValue });
+                          }
+                        }}
+                        className="bg-input border-border focus:border-accent h-9 pl-9"
+                        placeholder={t("artistRegistration.placeholders.phone")} />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="email" className="text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
-                    <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9 read-only:opacity-70" placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
+                    <Label htmlFor="email" className="text-sm">{t("artistRegistration.email")}</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9 read-only:opacity-70" placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
+                    </div>
                   </div>
                 </div>
 
@@ -724,14 +740,18 @@ const RegisterArtist = () => {
               <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="stageName" className="text-sm flex items-center gap-1.5"><Mic className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.stageName")}</Label>
-                    <Input id="stageName" required value={formData.stageName} onChange={(e) => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.stageName")} />
+                    <Label htmlFor="stageName" className="text-sm">{t("artistRegistration.stageName")}</Label>
+                    <div className="relative">
+                      <Mic className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="stageName" required value={formData.stageName} onChange={(e) => setFormData({ ...formData, stageName: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9" placeholder={t("artistRegistration.placeholders.stageName")} />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="specialization" className="text-sm flex items-center gap-1.5"><Music className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.specialization")}</Label>
+                    <Label htmlFor="specialization" className="text-sm">{t("artistRegistration.specialization")}</Label>
                     <Select value={formData.specialization} onValueChange={(value) => setFormData({ ...formData, specialization: value })}>
-                      <SelectTrigger className="bg-input border-border h-9">
+                      <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
+                        <Music className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <SelectValue placeholder={t("artistRegistration.placeholders.selectSpecialization")} />
                       </SelectTrigger>
                       <SelectContent>
@@ -746,9 +766,10 @@ const RegisterArtist = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="experienceLevel" className="text-sm flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.experienceLevel")}</Label>
+                    <Label htmlFor="experienceLevel" className="text-sm">{t("artistRegistration.experienceLevel")}</Label>
                     <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({ ...formData, experienceLevel: value })}>
-                      <SelectTrigger className="bg-input border-border h-9">
+                      <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
+                        <Award className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <SelectValue placeholder={t("artistRegistration.placeholders.experienceLevel")} />
                       </SelectTrigger>
                       <SelectContent>
@@ -761,9 +782,10 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="careerStartYear" className="text-sm flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.careerStartYear")}</Label>
+                    <Label htmlFor="careerStartYear" className="text-sm">{t("artistRegistration.careerStartYear")}</Label>
                     <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({ ...formData, careerStartYear: value })}>
-                      <SelectTrigger className="bg-input border-border h-9">
+                      <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <SelectValue placeholder={t("artistRegistration.placeholders.careerStart")} />
                       </SelectTrigger>
                       <SelectContent side="bottom" avoidCollisions={false}>
@@ -823,9 +845,10 @@ const RegisterArtist = () => {
               <div className="space-y-6 animate-in fade-in duration-500">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.password")}</Label>
+                    <Label htmlFor="password">{t("artistRegistration.password")}</Label>
                     <div className="relative">
-                      <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="bg-input border-border focus:border-accent pr-10" placeholder={t("artistRegistration.placeholders.password")} />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="bg-input border-border focus:border-accent pl-9 pr-10" placeholder={t("artistRegistration.placeholders.password")} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -834,9 +857,10 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.confirmPassword")}</Label>
+                    <Label htmlFor="confirmPassword">{t("artistRegistration.confirmPassword")}</Label>
                     <div className="relative">
-                      <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} className="bg-input border-border focus:border-accent pr-10" placeholder={t("artistRegistration.placeholders.confirmPassword")} />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                      <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} className="bg-input border-border focus:border-accent pl-9 pr-10" placeholder={t("artistRegistration.placeholders.confirmPassword")} />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
