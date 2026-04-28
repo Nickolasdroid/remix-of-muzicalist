@@ -553,114 +553,132 @@ const RegisterArtist = () => {
     );
   }
 
+  // Premium input class — gold focus ring + smooth transition
+  const premiumInput = "h-12 pl-10 bg-white/[0.03] border border-white/10 text-foreground placeholder:text-muted-foreground/60 rounded-xl transition-all duration-300 focus-visible:border-amber-500/70 focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:shadow-[0_0_0_4px_rgba(245,158,11,0.08)]";
+  const premiumTrigger = "h-12 pl-10 bg-white/[0.03] border border-white/10 text-foreground rounded-xl transition-all duration-300 data-[state=open]:border-amber-500/70 data-[state=open]:ring-2 data-[state=open]:ring-amber-500/20 focus:border-amber-500/70 focus:ring-2 focus:ring-amber-500/20";
+  const sectionLabel = "text-[10px] font-semibold tracking-[0.18em] text-amber-500/80 uppercase";
+  const fieldLabel = "text-xs font-medium text-muted-foreground";
+
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+    <div className="relative min-h-screen overflow-hidden bg-[#0f0f0f]">
+      {/* Corner glows — subtle red + gold */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-red-700/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[420px] h-[420px] rounded-full bg-red-800/15 blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/3 right-1/4 w-[260px] h-[260px] rounded-full bg-amber-500/[0.06] blur-[100px]" />
+
+      {/* Top-left logo */}
+      <div className="absolute top-0 left-0 z-50 p-4 md:px-8 md:py-5">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
         </Link>
       </div>
 
-      {/* Left Side - Multi-Step Form */}
-      <div className="w-full md:w-[55%] min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background order-2 md:order-2">
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
-          <div className="w-full max-w-xl">
-            {/* Title */}
-            <div className="text-center mb-6">
-              <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
-                Create Artist Account
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Step {currentStep} of {totalSteps} — {
-                  currentStep === 1 ? "Basic Information" :
-                  currentStep === 2 ? "Professional Details" :
-                  currentStep === 3 ? "Media Upload" :
-                  "Security Setup"
-                }
-              </p>
-            </div>
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start md:justify-center px-4 pt-20 pb-10 md:py-16">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-7 space-y-2">
+            <h1 className="text-[26px] md:text-3xl font-display font-bold text-white leading-tight">
+              Join Muzicalist as an Artist
+            </h1>
+            <p className="text-sm text-white/60">
+              Start building your presence in seconds
+            </p>
+            <p className="text-[11px] text-amber-500/70 font-medium tracking-wide">
+              ✦ Takes less than 1 minute
+            </p>
+          </div>
 
-            {/* Step Progress Bar */}
-            <div className="flex items-center justify-center gap-1 md:gap-2 mb-8">
-              {[
-                { num: 1, label: "Basic" },
-                { num: 2, label: "Professional" },
-                { num: 3, label: "Media" },
-                { num: 4, label: "Security" },
-              ].map((step, i, arr) => (
-                <div key={step.num} className="flex items-center gap-1 md:gap-2">
-                  <div className="flex flex-col items-center gap-1">
+          {/* Step indicator */}
+          <div className="flex items-center justify-center mb-8 px-2">
+            {[
+              { num: 1, label: "Basic" },
+              { num: 2, label: "Professional" },
+              { num: 3, label: "Media" },
+              { num: 4, label: "Security" },
+            ].map((step, i, arr) => {
+              const isActive = currentStep === step.num;
+              const isDone = currentStep > step.num;
+              return (
+                <div key={step.num} className="flex items-center flex-1 last:flex-none">
+                  <div className="flex flex-col items-center gap-1.5">
                     <div
                       className={cn(
-                        "w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300",
-                        currentStep === step.num
-                          ? "bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg shadow-amber-500/30"
-                          : currentStep > step.num
-                          ? "bg-gradient-to-r from-amber-500/80 to-amber-600/80 text-black"
-                          : "bg-muted/50 text-muted-foreground border border-border"
+                        "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                        isActive && "bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-[0_0_16px_rgba(245,158,11,0.45)]",
+                        isDone && "bg-amber-500/20 text-amber-400 border border-amber-500/40",
+                        !isActive && !isDone && "bg-white/[0.04] text-white/40 border border-white/10"
                       )}
                     >
-                      {currentStep > step.num ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        step.num
-                      )}
+                      {isDone ? <Check className="h-3.5 w-3.5" /> : step.num}
                     </div>
                     <span
                       className={cn(
-                        "text-[10px] md:text-xs font-medium transition-colors",
-                        currentStep === step.num
-                          ? "text-amber-500"
-                          : currentStep > step.num
-                          ? "text-amber-500/60"
-                          : "text-muted-foreground"
+                        "text-[10px] font-medium transition-colors",
+                        isActive ? "text-amber-400" : isDone ? "text-amber-500/60" : "text-white/35"
                       )}
                     >
                       {step.label}
                     </span>
                   </div>
                   {i < arr.length - 1 && (
-                    <div
-                      className={cn(
-                        "w-6 md:w-12 h-0.5 rounded-full transition-all duration-300 mb-5",
-                        currentStep > step.num ? "bg-amber-500/60" : "bg-border"
-                      )}
-                    />
+                    <div className={cn(
+                      "flex-1 h-px mx-1.5 -mt-5 transition-colors",
+                      isDone ? "bg-amber-500/40" : "bg-white/10"
+                    )} />
                   )}
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl">
+          {/* Glass card */}
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-2xl border border-amber-500/15 bg-white/[0.03] backdrop-blur-xl shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)] p-5 md:p-7"
+          >
             {/* Step 1: Basic Information */}
-            {currentStep === 1 &&
-              <div className="space-y-3 md:space-y-4 animate-in fade-in duration-500">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="firstName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.firstName")}</Label>
-                    <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.firstName")} />
+            {currentStep === 1 && (
+              <div className="space-y-7 animate-in fade-in duration-500">
+                {/* DATE PERSONALE */}
+                <div className="space-y-4">
+                  <div className={sectionLabel}>Date personale</div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="firstName" className={fieldLabel}>{t("artistRegistration.firstName")}</Label>
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <Input id="firstName" required value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className={premiumInput} placeholder="ex: Cătălin" />
+                    </div>
                   </div>
-
-                  <div className="space-y-1">
-                    <Label htmlFor="lastName" className="text-sm flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.lastName")}</Label>
-                    <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="bg-input border-border focus:border-accent h-9" placeholder={t("artistRegistration.placeholders.lastName")} />
+                  <div className="space-y-1.5">
+                    <Label htmlFor="lastName" className={fieldLabel}>{t("artistRegistration.lastName")}</Label>
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <Input id="lastName" required value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className={premiumInput} placeholder="ex: Napău" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="country" className="text-sm flex items-center gap-1.5"><Globe className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.country")}</Label>
-                    <CountrySelector
-                      value={formData.country}
-                      onChange={(value) => setFormData({ ...formData, country: value, county: "" })} />
+                {/* LOCAȚIE */}
+                <div className="space-y-4">
+                  <div className={sectionLabel}>Locație</div>
+                  <div className="space-y-1.5">
+                    <Label className={fieldLabel}>{t("artistRegistration.country")}</Label>
+                    <div className="relative">
+                      <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 z-10 pointer-events-none" />
+                      <div className="[&_button]:h-12 [&_button]:pl-10 [&_button]:bg-white/[0.03] [&_button]:border [&_button]:border-white/10 [&_button]:rounded-xl [&_button]:transition-all [&_button]:duration-300 [&_button:focus]:border-amber-500/70 [&_button:focus]:ring-2 [&_button:focus]:ring-amber-500/20">
+                        <CountrySelector
+                          value={formData.country}
+                          onChange={(value) => setFormData({ ...formData, country: value, county: "" })}
+                        />
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="space-y-1">
-                      <Label htmlFor="county" className="text-sm flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-muted-foreground" />{divisionLabel}</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="county" className={fieldLabel}>{divisionLabel}</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 z-10 pointer-events-none" />
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })} disabled={!formData.country || availableRegions.length === 0}>
-                        <SelectTrigger className="bg-input border-border h-9">
+                        <SelectTrigger className={cn(premiumTrigger, "disabled:opacity-50")}>
                           <SelectValue placeholder={formData.country ? t("artistRegistration.placeholders.selectCounty") : t("artistRegistration.placeholders.selectCountryFirst", "Select a country first")} />
                         </SelectTrigger>
                         <SelectContent side="bottom" avoidCollisions={false}>
@@ -668,49 +686,58 @@ const RegisterArtist = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="phone" className="text-sm flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.phone")}</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      required
-                      disabled={!formData.country}
-                      value={formData.phone}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        const prefix = getPhonePrefix(formData.country);
-                        if (prefix && !newValue.startsWith(prefix)) {
-                          return;
-                        }
-                        const afterPrefix = newValue.slice(prefix.length);
-                        if (afterPrefix && !/^\d*$/.test(afterPrefix)) {
-                          return;
-                        }
-                        const maxLength = getMaxPhoneLength(formData.country);
-                        if (newValue.length <= maxLength) {
-                          setFormData({ ...formData, phone: newValue });
-                        }
-                      }}
-                      className="bg-input border-border focus:border-accent h-9"
-                      placeholder={t("artistRegistration.placeholders.phone")} />
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label htmlFor="email" className="text-sm flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-muted-foreground" />{t("artistRegistration.email")}</Label>
-                    <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="bg-input border-border focus:border-accent h-9 read-only:opacity-70" placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-3">
-                  <Button type="button" onClick={nextStep} size="default" className="bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300">
-                    {t("common.next")} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                {/* CONTACT */}
+                <div className="space-y-4">
+                  <div className={sectionLabel}>Contact</div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="phone" className={fieldLabel}>{t("artistRegistration.phone")}</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        required
+                        disabled={!formData.country}
+                        value={formData.phone}
+                        onChange={(e) => {
+                          const newValue = e.target.value;
+                          const prefix = getPhonePrefix(formData.country);
+                          if (prefix && !newValue.startsWith(prefix)) return;
+                          const afterPrefix = newValue.slice(prefix.length);
+                          if (afterPrefix && !/^\d*$/.test(afterPrefix)) return;
+                          const maxLength = getMaxPhoneLength(formData.country);
+                          if (newValue.length <= maxLength) {
+                            setFormData({ ...formData, phone: newValue });
+                          }
+                        }}
+                        className={cn(premiumInput, "disabled:opacity-50")}
+                        placeholder={t("artistRegistration.placeholders.phone")}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="email" className={fieldLabel}>{t("artistRegistration.email")}</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className={cn(premiumInput, "read-only:opacity-70")} placeholder={t("artistRegistration.placeholders.email")} readOnly={!!step0Email} />
+                    </div>
+                  </div>
                 </div>
+
+                {/* CTA */}
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-black hover:from-amber-300 hover:via-amber-400 hover:to-amber-500 shadow-[0_10px_30px_-10px_rgba(245,158,11,0.6)] transition-all duration-300"
+                >
+                  Înainte
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
-              }
+            )}
 
             {/* Step 2: Professional Information */}
             {currentStep === 2 &&
