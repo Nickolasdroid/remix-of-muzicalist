@@ -21,6 +21,7 @@ import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig 
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
+import artistRegisterBg from "@/assets/artist-register-bg.jpg";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
@@ -874,7 +875,7 @@ const RegisterArtist = () => {
       <div className="relative hidden md:flex w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
         {/* Background image */}
         <img
-          src={artistOnboardingBg}
+          src={artistRegisterBg}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
