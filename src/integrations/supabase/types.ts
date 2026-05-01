@@ -729,6 +729,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
         Returns: undefined
@@ -741,7 +742,7 @@ export type Database = {
         | "Intermediate"
         | "Advanced"
         | "Professional"
-      user_type: "artist" | "user"
+      user_type: "artist" | "user" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -876,7 +877,7 @@ export const Constants = {
         "Advanced",
         "Professional",
       ],
-      user_type: ["artist", "user"],
+      user_type: ["artist", "user", "admin"],
     },
   },
 } as const
