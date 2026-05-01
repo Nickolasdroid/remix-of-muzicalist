@@ -360,7 +360,7 @@ const UserDashboard = () => {
               <div className="flex items-center gap-2">
                 <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Button size="sm" disabled={standardAdsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
                       <Plus className="h-4 w-4 mr-1" />
                       {t("userDashboard.newAd")}
                     </Button>
