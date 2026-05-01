@@ -28,7 +28,9 @@ const Login = () => {
           .eq('user_id', session.user.id)
           .maybeSingle();
         
-        if (roleData?.user_type === 'user') {
+        if ((roleData?.user_type as string) === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (roleData?.user_type === 'user') {
           navigate('/user-dashboard');
         } else {
           navigate('/dashboard');
@@ -71,7 +73,9 @@ const Login = () => {
         description: "Welcome back to Muzicalist.",
       });
 
-      if (roleData?.user_type === 'user') {
+      if ((roleData?.user_type as string) === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (roleData?.user_type === 'user') {
         navigate('/user-dashboard');
       } else {
         navigate('/dashboard');
