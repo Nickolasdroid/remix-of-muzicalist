@@ -524,9 +524,11 @@ export type Database = {
           id: string
           instagram_url: string | null
           instruments: string | null
+          is_active: boolean
           last_name: string
           music_genres: string | null
           number_of_events: number
+          pending_account_type: string | null
           phone: string
           plan: string
           specialization:
@@ -563,9 +565,11 @@ export type Database = {
           id: string
           instagram_url?: string | null
           instruments?: string | null
+          is_active?: boolean
           last_name: string
           music_genres?: string | null
           number_of_events?: number
+          pending_account_type?: string | null
           phone: string
           plan?: string
           specialization?:
@@ -602,9 +606,11 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           instruments?: string | null
+          is_active?: boolean
           last_name?: string
           music_genres?: string | null
           number_of_events?: number
+          pending_account_type?: string | null
           phone?: string
           plan?: string
           specialization?:

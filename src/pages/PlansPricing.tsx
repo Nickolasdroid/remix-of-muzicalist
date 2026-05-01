@@ -1,30 +1,32 @@
 import Navigation from "@/components/Navigation";
 
 import { Button } from "@/components/ui/button";
-import { Check, X, Crown } from "lucide-react";
+import { Check, X, Crown, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 
 const PlansPricing = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activationRequired = searchParams.get("activation") === "required";
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isArtist, setIsArtist] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(true);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
-    // Not authenticated -> send to register/auth
+    // Not authenticated -> send to register
     if (!isAuthenticated) {
-      navigate(planId === 'Free' ? '/register-artist' : '/auth');
+      navigate('/register');
       return;
     }
-    // Not an artist account -> can't subscribe to artist plans
-    if (!isArtist) {
-      navigate('/register-artist');
+    // Inactive (new Google signup) cannot pick Free — must pay to activate.
+    if (!isActive && planId === 'Free') {
       return;
     }
     // Free plan or downgrade -> manage via billing portal
@@ -34,14 +36,14 @@ const PlansPricing = () => {
       if (!ok) setLoadingPlan(null);
       return;
     }
-    // Paid plan upgrade
+    // Paid plan upgrade / activation
     setLoadingPlan(planId);
     const origin = window.location.origin;
     const ok = await startCheckout({
       plan: planId,
       billing: isAnnual ? 'yearly' : 'monthly',
       successUrl: `${origin}/dashboard?checkout=success`,
-      cancelUrl: `${origin}/plans?checkout=cancelled`,
+      cancelUrl: `${origin}/plans?checkout=cancelled${activationRequired ? '&activation=required' : ''}`,
     });
     if (!ok) setLoadingPlan(null);
   };
@@ -52,10 +54,11 @@ const PlansPricing = () => {
   const loadPlan = async (userId: string) => {
     const [{ data: roleData }, { data: profileData }] = await Promise.all([
       supabase.from('user_roles').select('user_type').eq('user_id', userId).maybeSingle(),
-      supabase.from('profiles').select('plan').eq('id', userId).maybeSingle(),
+      supabase.from('profiles').select('plan, is_active').eq('id', userId).maybeSingle(),
     ]);
-    setIsArtist(roleData?.user_type !== 'user');
+    setIsArtist(roleData?.user_type !== 'user' && roleData?.user_type !== 'admin');
     setCurrentPlan(profileData?.plan || 'Free');
+    setIsActive(Boolean((profileData as { is_active?: boolean } | null)?.is_active));
   };
 
   useEffect(() => {
@@ -83,6 +86,17 @@ const PlansPricing = () => {
 
       <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-8`}>
         <div className="max-w-5xl mx-auto">
+          {activationRequired && isAuthenticated && !isActive && (
+            <div className="mb-8 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 md:p-5 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm md:text-base text-foreground">
+                <p className="font-semibold mb-1">Activate your account to continue</p>
+                <p className="text-muted-foreground">
+                  Choose a Standard or Premium plan and complete checkout to unlock your account.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="text-center mb-10 md:mb-16">
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">
               Plans & Pricing
@@ -173,14 +187,20 @@ const PlansPricing = () => {
                     const currentRank = rank[currentPlan || 'Free'] ?? 1;
                     const planRank = rank[plan.id] ?? 1;
                     const isAuthArtist = isAuthenticated && isArtist;
-                    const isDowngrade = isAuthArtist && planRank < currentRank;
+                    const isDowngrade = isAuthArtist && isActive && planRank < currentRank;
+                    // Inactive logged-in users (new Google signups) can pick a paid plan to activate.
+                    // Free is disabled in that case.
+                    const isInactivePicking = isAuthenticated && !isActive;
+                    const freeDisabled = isInactivePicking && plan.id === 'Free';
                     return (
                       <Button
                         variant={isDowngrade ? "outline" : "default"}
-                        disabled={loadingPlan !== null}
+                        disabled={loadingPlan !== null || freeDisabled}
                         onClick={() => handleClick(plan.id, isDowngrade)}
                         className={`w-full ${
-                          isDowngrade
+                          freeDisabled
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                            : isDowngrade
                             ? 'bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                             : isPremiumPlan
                             ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
@@ -189,6 +209,8 @@ const PlansPricing = () => {
                       >
                         <Crown className="h-4 w-4 mr-2" />
                         {loadingPlan === plan.id ? 'Redirecting…' : (() => {
+                          if (freeDisabled) return 'Not available';
+                          if (isInactivePicking) return `Activate with ${plan.name}`;
                           if (!isAuthArtist) {
                             return isPremiumPlan ? 'Go Premium' : 'Get Started';
                           }
