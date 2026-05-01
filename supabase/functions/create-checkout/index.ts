@@ -37,6 +37,9 @@ Deno.serve(async (req) => {
     if (!price_id || typeof price_id !== "string") {
       return new Response(JSON.stringify({ error: "price_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+    const keyMode = stripeKey.startsWith("sk_live_") ? "live" : stripeKey.startsWith("sk_test_") ? "test" : "unknown";
+    console.log(`[create-checkout] user=${userId} mode=${keyMode} price_id=${price_id}`);
 
     const supabaseAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: profile } = await supabaseAdmin
