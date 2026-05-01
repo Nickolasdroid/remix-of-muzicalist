@@ -90,8 +90,10 @@ const RegisterUser = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
+            account_type: "user",
             first_name: formData.name,
             last_name: "",
+            full_name: formData.name,
           },
         },
       });
@@ -99,30 +101,8 @@ const RegisterUser = () => {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Insert user role
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({
-            user_id: authData.user.id,
-            user_type: "user",
-          });
-
-        if (roleError) throw roleError;
-
-        // Create basic profile with country
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: authData.user.id,
-            first_name: formData.name,
-            last_name: "",
-            email: formData.email,
-            phone: "",
-            stage_name: formData.name,
-            county: "",
-          });
-
-        if (profileError) throw profileError;
+        // Profile + user_roles rows are created automatically by the
+        // handle_new_user() trigger using the metadata above.
 
         toast.success(t("userRegistration.success"));
         navigate("/login");

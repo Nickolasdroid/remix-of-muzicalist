@@ -1,45 +1,39 @@
-# Fix: Google sign-up nu salvează profilul user-ului
+## Problem
 
-## Cauza problemei
+La înregistrarea unui cont de artist apare:
+> `duplicate key value violates unique constraint "user_roles_user_id_key"`
 
-În `RegisterUser.tsx`, profilul (`profiles`) și rolul (`user_roles`) sunt create **doar** în `handleSubmit` (flow-ul email/parolă). Funcția `handleGoogleSignUp` apelează doar `lovable.auth.signInWithOAuth("google", ...)`, care:
+## Cauza
 
-1. Redirecționează către Google
-2. La revenire, setează sesiunea Supabase
-3. **Atât.** Nu există nicio logică post-OAuth care să insereze rândurile în `profiles` și `user_roles`.
+În migrarea adăugată recent pentru Google sign-up am creat trigger-ul `handle_new_user()` care rulează automat `AFTER INSERT ON auth.users` și creează **automat**:
+- un rând în `profiles`
+- un rând în `user_roles` (default `'user'`, sau `'artist'` doar dacă `raw_user_meta_data.account_type = 'artist'`)
 
-Rezultat: utilizatorul autentificat cu Google ajunge logat în Supabase Auth, dar fără rând în `profiles` și fără rol în `user_roles` → apare ca "fantomă" în baza de date, iar `Login.tsx` nu îl poate redirecționa corect (roleData e null → cade pe `/dashboard`).
+Dar `RegisterArtist.tsx` (și `RegisterUser.tsx`) au fost scrise înainte de trigger și încă fac **manual** `INSERT` în `user_roles` și `profiles` după `signUp()`. Rezultă conflict pe cheia unică `user_roles_user_id_key`.
 
-În plus, `Login.tsx` are același buton Google — același bug se aplică și acolo dacă userul intră direct prin Login fără să fi avut cont anterior.
+În plus, `signUp` din `RegisterArtist.tsx` nu trimite `account_type: 'artist'` în metadata, deci trigger-ul ar crea greșit rolul `'user'` pentru artiști.
 
-## Soluția
+## Soluție
 
-Folosim soluția standard Supabase: **un trigger pe `auth.users`** care creează automat `profiles` + `user_roles` când apare un user nou. Avantaje:
+Aliniem fluxul cu trigger-ul (single source of truth):
 
-- Funcționează indiferent de unde se înregistrează userul (Google din RegisterUser, Google din Login, email/parolă, viitoare provideri).
-- Idempotent — folosim `ON CONFLICT DO NOTHING`, deci nu strică flow-urile email/parolă existente care fac insert manual.
-- Se bazează pe `raw_user_meta_data` pe care Google îl populează cu `full_name`, `name`, `email`, `avatar_url`.
+### 1. `RegisterArtist.tsx` — `handleSubmit`
+- La `supabase.auth.signUp(...)` adăugăm în `options.data`:
+  - `account_type: 'artist'`
+  - `first_name`, `last_name`, `full_name: stageName` (ca trigger-ul să populeze profilul corect)
+- **Eliminăm** `INSERT` manual în `user_roles` (trigger-ul îl face cu rolul corect `'artist'`).
+- Înlocuim `INSERT` în `profiles` cu **`UPDATE` (sau `upsert` cu `onConflict: 'id'`)** pentru a completa câmpurile specifice artistului (`stage_name`, `phone`, `country`, `county`, `specialization`, `experience_level`, `career_start_year`, `avatar_url`) peste rândul deja creat de trigger.
 
-### Pași
+### 2. `RegisterUser.tsx` — `handleSubmit`
+- La `supabase.auth.signUp(...)` păstrăm `data.first_name` (deja există) și adăugăm `account_type: 'user'` pentru claritate.
+- **Eliminăm** `INSERT` manual în `user_roles` (deja creat de trigger ca `'user'`).
+- **Eliminăm** `INSERT` manual în `profiles` (deja creat de trigger din metadata) — sau opțional `update` dacă vrem să suprascriem ceva (nu e cazul aici, fiindcă trigger-ul completează tot ce avem).
 
-**1. Migrare SQL** — funcție + trigger pe `auth.users`:
+### 3. Fără modificări la baza de date
+Trigger-ul curent este corect și acoperă atât signup cu email/parolă cât și Google OAuth. Nu schimbăm migrările.
 
-- `handle_new_user()` SECURITY DEFINER care:
-  - Determină numele din `raw_user_meta_data` (`full_name` sau `name` pentru Google, `first_name` pentru email/parolă, fallback pe partea din email înainte de `@`).
-  - Inserează în `public.profiles` cu `id`, `first_name`, `last_name=''`, `email`, `stage_name=name`, `phone=''`, `county=''`, `avatar_url` (din meta dacă există) — `ON CONFLICT (id) DO NOTHING`.
-  - Determină rolul: dacă `raw_user_meta_data->>'account_type' = 'artist'` → `'artist'`, altfel `'user'`. (Adminul rămâne setat manual în DB; nu se atribuie niciodată automat.)
-  - Inserează în `public.user_roles` cu `user_id` și `user_type` — `ON CONFLICT DO NOTHING` (necesită un unique index pe `user_id` — îl adăugăm dacă lipsește).
-- Trigger `AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();`
+## Rezultat
 
-**2. `src/pages/RegisterUser.tsx`** — păstrăm insert-urile manuale existente (rămân idempotente datorită `ON CONFLICT`); nicio schimbare necesară aici, dar ne asigurăm că funcționează în continuare.
-
-**3. `src/pages/Login.tsx`** — în `useEffect`-ul existent care verifică sesiunea după login, dacă `roleData` lipsește (caz extrem de race condition cu trigger-ul), așteptăm scurt și reîncercăm o dată înainte de a redirecționa.
-
-**4. RegisterArtist.tsx** — neatins. Google nu e disponibil acolo (per memoria existentă), iar flow-ul artist setează singur `pending_account_type` și inserează profilul după pasul 0; trigger-ul nu va suprascrie nimic datorită `ON CONFLICT`.
-
-## Verificare
-
-- Sign-up cu Google din `/register/user` → după redirect, în DB apare un rând în `profiles` (cu email + nume din Google) și un rând în `user_roles` cu `user_type='user'`.
-- Login.tsx îl detectează și îl trimite la `/user-dashboard`.
-- Sign-up email/parolă rămâne funcțional (insert-urile manuale nu eșuează datorită `ON CONFLICT DO NOTHING`).
-- Adminul existent nu este afectat (trigger-ul pune doar `'user'` sau `'artist'`, niciodată `'admin'`).
+- Artiști noi → trigger creează profil + rol `artist`; codul UPDATE-ează profilul cu detaliile artistului. Niciun duplicate key.
+- Useri noi → trigger creează profil + rol `user`. Niciun insert manual.
+- Google sign-up funcționează la fel ca până acum.
