@@ -345,10 +345,26 @@ const RegisterArtist = () => {
     return map[spec] || spec;
   };
 
-  const handlePlanSelect = (planName: string) => {
-    // For Free plan, just navigate. For paid plans, navigate (payment integration later).
-    if (registeredUserId) {
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const handlePlanSelect = async (planName: string) => {
+    if (!registeredUserId) return;
+
+    if (planName === "Free") {
       navigate(`/artist/${registeredUserId}`);
+      return;
+    }
+
+    if (planName === "Standard" || planName === "Premium") {
+      setCheckoutLoading(planName);
+      const origin = window.location.origin;
+      const ok = await startCheckout({
+        plan: planName,
+        billing: isAnnual ? "yearly" : "monthly",
+        successUrl: `${origin}/artist/${registeredUserId}?checkout=success`,
+        cancelUrl: `${origin}/register-artist?checkout=cancelled`,
+      });
+      if (!ok) setCheckoutLoading(null);
     }
   };
 
