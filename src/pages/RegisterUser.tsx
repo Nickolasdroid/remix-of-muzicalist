@@ -1,176 +1,249 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
-import logo from "@/assets/logo.png";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({
+  const { t } = useTranslation();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    country: "Romania",
-    county: "",
+    confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const update = (k: keyof typeof form, v: string) => setForm({ ...form, [k]: v });
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/", { replace: true });
+      } else {
+        setAuthChecking(false);
+      }
+    });
+  }, [navigate]);
+
+
+  if (authChecking) return null;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.email || !form.password || !form.firstName || !form.lastName || !form.phone || !form.county) {
-      toast({ title: "Missing fields", description: "Please fill in all fields.", variant: "destructive" });
-      return;
-    }
-    if (getPasswordScore(form.password) < 4) {
-      toast({ title: "Weak password", description: "Please use a stronger password.", variant: "destructive" });
+    
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error(t("userRegistration.validation.passwordMismatch"));
       return;
     }
 
-    setLoading(true);
+    if (formData.password.length < 6) {
+      toast.error(t("userRegistration.validation.passwordTooShort"));
+      return;
+    }
+
+    if (getPasswordScore(formData.password) < 3) {
+      toast.error(t("passwordStrength.tooWeak", "Please choose a stronger password (meet at least 3 of the requirements)."));
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const fullName = `${form.firstName} ${form.lastName}`.trim();
-      const { data, error } = await supabase.auth.signUp({
-        email: form.email,
-        password: form.password,
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: redirectUrl,
           data: {
-            first_name: form.firstName,
-            last_name: form.lastName,
+            first_name: formData.name,
+            last_name: "",
           },
         },
       });
-      if (error) throw error;
-      const userId = data.user?.id;
-      if (!userId) throw new Error("Signup did not return a user.");
 
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        email: form.email,
-        first_name: form.firstName,
-        last_name: form.lastName,
-        stage_name: fullName,
-        phone: form.phone,
-        country: form.country,
-        county: form.county,
-        plan: "Free",
-        is_active: false,
-      } as never);
-      if (profileError) throw profileError;
+      if (authError) throw authError;
 
-      const { error: roleError } = await supabase.from("user_roles").insert({
-        user_id: userId,
-        user_type: "user" as never,
-      });
-      if (roleError) throw roleError;
+      if (authData.user) {
+        // Insert user role
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .insert({
+            user_id: authData.user.id,
+            user_type: "user",
+          });
 
-      toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account, then log in.",
-      });
-      navigate("/login");
-    } catch (err: any) {
-      toast({ title: "Registration failed", description: err.message || "Try again.", variant: "destructive" });
+        if (roleError) throw roleError;
+
+        // Create basic profile with country
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert({
+            id: authData.user.id,
+            first_name: formData.name,
+            last_name: "",
+            email: formData.email,
+            phone: "",
+            stage_name: formData.name,
+            county: "",
+          });
+
+        if (profileError) throw profileError;
+
+        toast.success(t("userRegistration.success"));
+        navigate("/login");
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      toast.error(error.message || "Registration failed. Please try again.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary py-8 px-4">
-      <div className="max-w-xl mx-auto">
-        <Link to="/register" className="inline-flex items-center gap-2 mb-6">
-          <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
-          <span className="font-display font-bold text-foreground">Muzicalist</span>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Top-left logo linking to homepage */}
+      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
         </Link>
-
-        <div className="bg-card border border-border rounded-lg p-6 md:p-8">
-          <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">Register as User</h1>
-          <p className="text-sm text-muted-foreground mb-6">
-            Create your account with email & password. You'll choose a paid plan after sign-in.
+      </div>
+      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
+      <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 p-4 md:p-8 bg-background border-secondary">
+        <div className="text-center mb-4 md:mb-8">
+          <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
+            {t("userRegistration.title")}
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
+            {t("userRegistration.subtitle")}
           </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>First name</Label>
-                <Input value={form.firstName} onChange={(e) => update("firstName", e.target.value)} className="rounded-lg" />
-              </div>
-              <div>
-                <Label>Last name</Label>
-                <Input value={form.lastName} onChange={(e) => update("lastName", e.target.value)} className="rounded-lg" />
-              </div>
-            </div>
-
-            <div>
-              <Label>Email</Label>
-              <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="rounded-lg" />
-            </div>
-
-            <div>
-              <Label>Password</Label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(e) => update("password", e.target.value)}
-                  className="rounded-lg pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <PasswordStrengthIndicator password={form.password} />
-            </div>
-
-            <div>
-              <Label>Phone</Label>
-              <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="rounded-lg" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Country</Label>
-                <Input value={form.country} onChange={(e) => update("country", e.target.value)} className="rounded-lg" />
-              </div>
-              <div>
-                <Label>County / Region</Label>
-                <Input value={form.county} onChange={(e) => update("county", e.target.value)} className="rounded-lg" />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg h-12"
-            >
-              {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-              Create user account
-            </Button>
-
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="text-accent hover:underline font-semibold">
-                Sign in
-              </Link>
-            </p>
-          </form>
         </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+          <div>
+            <Label htmlFor="name">{t("userRegistration.name", "Name")}</Label>
+            <Input
+              id="name"
+              placeholder={t("userRegistration.placeholders.name", "Your name")}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="email">{t("userRegistration.email")}</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder={t("userRegistration.placeholders.email")}
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
+          </div>
+
+
+          <div>
+            <Label htmlFor="password">{t("userRegistration.password")}</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder={t("userRegistration.placeholders.password")}
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <PasswordStrengthIndicator password={formData.password} />
+          </div>
+
+          <div>
+            <Label htmlFor="confirmPassword">{t("userRegistration.confirmPassword")}</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder={t("userRegistration.placeholders.confirmPassword")}
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+            />
+            <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+              {t("userRegistration.agreeToTerms", "I agree to the")}{" "}
+              <Link to="/terms-of-service" className="text-accent hover:underline font-semibold">
+                {t("userRegistration.termsOfService", "Terms of Service")}
+              </Link>{" "}
+              {t("userRegistration.and", "and")}{" "}
+              <Link to="/privacy-policy" className="text-accent hover:underline font-semibold">
+                {t("userRegistration.privacyPolicy", "Privacy Policy")}
+              </Link>
+            </label>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={isLoading || !agreedToTerms}
+          >
+            {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
+          </Button>
+
+          <div className="mt-6 text-center">
+            <p className="text-muted-foreground text-sm">
+              {t("userRegistration.alreadyHaveAccount")}{" "}
+              <button
+                onClick={() => navigate("/login")}
+                className="text-accent hover:underline font-semibold"
+              >
+                {t("userRegistration.signIn")}
+              </button>
+            </p>
+          </div>
+        </form>
+      </div>
       </div>
     </div>
   );

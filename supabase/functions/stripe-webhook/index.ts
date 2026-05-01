@@ -71,13 +71,8 @@ async function syncSubscription(subscription: Stripe.Subscription, fallbackProfi
   if (planInfo && isActive) {
     update.plan = planInfo.plan;
     update.billing = planInfo.billing;
-    // Activate the account on first successful paid subscription.
-    update.is_active = true;
   } else if (!isActive) {
-    // Canceled / unpaid / incomplete → downgrade.
-    // Note: we intentionally do NOT flip is_active back to false here, so existing
-    // grandfathered users and previously-activated paid users keep access if their
-    // subscription lapses — they'll just be on the Free plan limits.
+    // Canceled / unpaid / incomplete → downgrade
     update.plan = "Free";
     update.billing = null;
   }
