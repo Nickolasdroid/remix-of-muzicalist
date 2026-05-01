@@ -58,7 +58,7 @@ const UserDashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
 
   // Announcement limits
-  const STANDARD_AD_LIMIT = 5;
+  const STANDARD_AD_LIMIT = 1;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
 
