@@ -461,8 +461,9 @@ const RegisterArtist = () => {
                       className={`w-full ${plan.id === 'Premium' ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
                       variant={plan.id === 'Premium' ? 'default' : (plan.highlighted ? 'default' : 'outline')}
                       onClick={() => handlePlanSelect(plan.name)}
+                      disabled={checkoutLoading !== null}
                     >
-                      {plan.registerCta}
+                      {checkoutLoading === plan.name ? 'Redirecting…' : plan.registerCta}
                     </Button>
                   </CardFooter>
                 </Card>
