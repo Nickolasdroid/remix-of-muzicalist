@@ -26,6 +26,25 @@ const RegisterUser = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error(result.error.message || "Google sign-up failed.");
+        setGoogleLoading(false);
+        return;
+      }
+      if (result.redirected) return;
+    } catch (err: any) {
+      toast.error(err?.message || "Google sign-up failed.");
+      setGoogleLoading(false);
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
