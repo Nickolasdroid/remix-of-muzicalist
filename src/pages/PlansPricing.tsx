@@ -86,6 +86,17 @@ const PlansPricing = () => {
 
       <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-8`}>
         <div className="max-w-5xl mx-auto">
+          {activationRequired && isAuthenticated && !isActive && (
+            <div className="mb-8 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 md:p-5 flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm md:text-base text-foreground">
+                <p className="font-semibold mb-1">Activate your account to continue</p>
+                <p className="text-muted-foreground">
+                  Choose a Standard or Premium plan and complete checkout to unlock your account.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="text-center mb-10 md:mb-16">
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">
               Plans & Pricing
