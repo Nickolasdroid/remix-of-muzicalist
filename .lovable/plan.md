@@ -1,37 +1,29 @@
 ## Problema
 
-Backend-ul Stripe (edge functions `create-checkout`, `stripe-webhook`, `customer-portal`) e deja deployat, dar **niciun buton nu îl apelează**:
-
-- `src/pages/RegisterArtist.tsx` — `handlePlanSelect` ignoră `planName` și navighează direct la `/artist/{id}`, indiferent ce plan alege artistul.
-- `src/pages/PlansPricing.tsx` — butoanele Upgrade/Get Started/Go Premium **nu au `onClick`** deloc.
-
-Rezultatul: după sign-up, alegerea planului doar deschide profilul, fără plată.
+Pe `/my-plan`, butoanele "Upgrade to Standard / Premium" și "Downgrade" **nu au `onClick`** — exact aceeași problemă ca cea rezolvată pe `/plans` și la înregistrare. Click → nu se întâmplă nimic.
 
 ## Soluția
 
-### 1. Helper nou `src/lib/checkout.ts`
-Funcție `startCheckout({ plan, billing })` care:
-- ia `price_id` din `PRICE_BY_PLAN` (`stripePrices.ts`)
-- invocă `supabase.functions.invoke('create-checkout', { body: { priceId } })`
-- redirecționează `window.location.href = data.url`
-- afișează toast la eroare (auth lipsă, etc.)
+În `src/pages/MyPlan.tsx`:
 
-### 2. `src/pages/RegisterArtist.tsx` — `handlePlanSelect`
-- Dacă `planName === "Free"` → rămâne navigarea către `/artist/{registeredUserId}` (comportament actual).
-- Dacă `Standard` sau `Premium` → apelează `startCheckout({ plan, billing: isAnnual ? "yearly" : "monthly" })`. Stripe redirectează la success_url care duce la `/artist/{id}` (sau `/dashboard`); webhook-ul setează planul în `profiles`.
-- Verific dacă există deja un toggle Monthly/Annual în pasul de plan-selection; dacă nu, îl adaug (același UI ca în PlansPricing) ca să putem trimite `billing` corect.
+1. **Import** helperele existente:
+   ```ts
+   import { startCheckout, openCustomerPortal } from "@/lib/checkout";
+   ```
 
-### 3. `src/pages/PlansPricing.tsx` — butoanele
-- Adaug `onClick` pe `<Button>`:
-  - **Free** sau utilizator neautentificat pe plan Free → navighează la `/register-artist` (sau `/auth` dacă nu e logat).
-  - **Standard / Premium** → apelează `startCheckout({ plan: plan.id, billing: isAnnual ? "yearly" : "monthly" })`.
-  - **Downgrade** sau gestionare abonament existent → apelează `customer-portal` și redirectează la link-ul Stripe Billing Portal.
-- State `loading` per buton ca să previn dublu-click.
+2. **State** nou pentru loading per buton: `actionLoading: string | null`.
 
-### 4. Verificare URLs în `create-checkout`
-Confirm că `success_url` / `cancel_url` din edge function pointează la rute reale (`/dashboard?checkout=success`, `/plans?checkout=cancel`). Dacă nu, le ajustez.
+3. **Handler** `handlePlanAction(planId, isDowngrade)`:
+   - Dacă `planId === 'Free'` **sau** `isDowngrade` → `openCustomerPortal(window.location.href)` (Stripe Billing Portal — utilizatorul anulează sau face downgrade de acolo, sursa de adevăr).
+   - Altfel (upgrade către Standard sau Premium) → `startCheckout({ plan, billing: isAnnual ? 'yearly' : 'monthly', successUrl: '/my-plan?checkout=success', cancelUrl: '/my-plan?checkout=cancelled' })`.
+
+4. **Conectez butonul** existent (linia ~160):
+   - `onClick={() => handlePlanAction(plan.id, isDowngrade)}`
+   - `disabled={actionLoading !== null}`
+   - Label devine `Redirecting…` cât timp `actionLoading === plan.id`.
 
 ## Rezultat
-- Click pe plan plătit (la înregistrare sau pe `/plans`) → redirect la Stripe Checkout.
-- După plată reușită → webhook actualizează `profiles.plan / billing / subscription_status` → user revine în app cu planul activ.
-- Free rămâne flow direct, fără Stripe.
+
+- Upgrade pe `/my-plan` → redirect la Stripe Checkout cu `price_id` corect (din `PRICE_BY_PLAN`).
+- Downgrade / cancel → redirect la Stripe Billing Portal.
+- După plată, webhook-ul `stripe-webhook` (deja deployat) actualizează `profiles.plan / billing / subscription_status` și utilizatorul revine pe `/my-plan` cu planul nou.
