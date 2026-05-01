@@ -1,49 +1,45 @@
-# Admin Dashboard System
+# Fix: Google sign-up nu salvează profilul user-ului
 
-Add a single-admin role and a hidden `/admin/dashboard` reachable only via normal login, with backend-enforced authorization.
+## Cauza problemei
 
-## 1. Database changes (migration)
+În `RegisterUser.tsx`, profilul (`profiles`) și rolul (`user_roles`) sunt create **doar** în `handleSubmit` (flow-ul email/parolă). Funcția `handleGoogleSignUp` apelează doar `lovable.auth.signInWithOAuth("google", ...)`, care:
 
-- Extend the `user_type` enum with a new value: `'admin'` (keeping existing `artist`, `user`).
-- Create a SECURITY DEFINER function `public.is_admin(_user_id uuid) RETURNS boolean` that checks `user_roles.user_type = 'admin'`. Used in RLS to avoid recursion.
-- Add admin RLS policies:
-  - `profiles`: admins can SELECT/UPDATE/DELETE all rows.
-  - `user_roles`: admins can SELECT/UPDATE/DELETE all rows.
-  - `subscription_events`: admins can SELECT all rows.
-- Promote the designated admin account by inserting/updating a `user_roles` row to `user_type = 'admin'`. We will ask the user which email should be the admin before running the migration.
+1. Redirecționează către Google
+2. La revenire, setează sesiunea Supabase
+3. **Atât.** Nu există nicio logică post-OAuth care să insereze rândurile în `profiles` și `user_roles`.
 
-Note: deleting an `auth.users` row cascades to most tables via `auth.users` deletion, but not all our tables have FKs. The admin "Delete user" action will call an Edge Function (see §3) that uses the service role to delete the auth user and clean up `profiles` / `user_roles`.
+Rezultat: utilizatorul autentificat cu Google ajunge logat în Supabase Auth, dar fără rând în `profiles` și fără rol în `user_roles` → apare ca "fantomă" în baza de date, iar `Login.tsx` nu îl poate redirecționa corect (roleData e null → cade pe `/dashboard`).
 
-## 2. Edge function: `admin-delete-user`
+În plus, `Login.tsx` are același buton Google — același bug se aplică și acolo dacă userul intră direct prin Login fără să fi avut cont anterior.
 
-- Verifies caller JWT, looks up caller in `user_roles`, requires `user_type = 'admin'`.
-- Uses `SUPABASE_SERVICE_ROLE_KEY` to call `auth.admin.deleteUser(targetId)` and delete related rows in `profiles`, `user_roles`, `posts`, `announcements`, etc.
-- Backend-enforced; the only path for hard user deletion.
+## Soluția
 
-## 3. Frontend — role plumbing
+Folosim soluția standard Supabase: **un trigger pe `auth.users`** care creează automat `profiles` + `user_roles` când apare un user nou. Avantaje:
 
-- `src/hooks/useUserRole.ts` (new): centralizes session + `user_roles.user_type` fetch, exposes `{ role, loading }`.
-- `src/components/Navigation.tsx`: when `role === 'admin'`, render an extra "Admin Dashboard" item in sidebar/menu (desktop + mobile). Hidden for everyone else.
-- `Login.tsx` redirect: if `role === 'admin'`, navigate to `/admin/dashboard`; otherwise keep current artist/user routing.
+- Funcționează indiferent de unde se înregistrează userul (Google din RegisterUser, Google din Login, email/parolă, viitoare provideri).
+- Idempotent — folosim `ON CONFLICT DO NOTHING`, deci nu strică flow-urile email/parolă existente care fac insert manual.
+- Se bazează pe `raw_user_meta_data` pe care Google îl populează cu `full_name`, `name`, `email`, `avatar_url`.
 
-## 4. Admin route + page
+### Pași
 
-- `src/components/AdminRoute.tsx`: wrapper that checks role via `useUserRole`. While loading → null; if not admin → render a 403 Forbidden page (no redirect leak); if admin → children.
-- `src/pages/AdminDashboard.tsx` at `/admin/dashboard` (registered in `App.tsx` inside `<AdminRoute>`):
-  - **Users tab**: table of all profiles (avatar, stage_name, email, country, plan, role, created_at). Search by name/email. Actions: Edit (inline dialog for first_name, last_name, stage_name, email, phone, country, plan), Delete (calls `admin-delete-user`).
-  - **Subscriptions tab**: list profiles with `stripe_subscription_id`, showing `plan`, `billing`, `subscription_status`, `subscription_current_period_end`. Read-only for now; link to Stripe customer portal optional later.
-  - Simple shadcn `Table` + `Tabs` + confirmation `AlertDialog` for deletes. Uses `rounded-lg` per project standards.
+**1. Migrare SQL** — funcție + trigger pe `auth.users`:
 
-## 5. Security guarantees
+- `handle_new_user()` SECURITY DEFINER care:
+  - Determină numele din `raw_user_meta_data` (`full_name` sau `name` pentru Google, `first_name` pentru email/parolă, fallback pe partea din email înainte de `@`).
+  - Inserează în `public.profiles` cu `id`, `first_name`, `last_name=''`, `email`, `stage_name=name`, `phone=''`, `county=''`, `avatar_url` (din meta dacă există) — `ON CONFLICT (id) DO NOTHING`.
+  - Determină rolul: dacă `raw_user_meta_data->>'account_type' = 'artist'` → `'artist'`, altfel `'user'`. (Adminul rămâne setat manual în DB; nu se atribuie niciodată automat.)
+  - Inserează în `public.user_roles` cu `user_id` și `user_type` — `ON CONFLICT DO NOTHING` (necesită un unique index pe `user_id` — îl adăugăm dacă lipsește).
+- Trigger `AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();`
 
-- All authorization is enforced by RLS + the edge function's role check. The hidden menu item and `AdminRoute` are UX only.
-- Non-admin users hitting `/admin/dashboard` directly see 403 and cannot read/mutate admin data even via the API (RLS blocks them).
-- Only one admin: enforced operationally (we set exactly one `user_roles` row to `admin`); no UI exposes promoting other users.
+**2. `src/pages/RegisterUser.tsx`** — păstrăm insert-urile manuale existente (rămân idempotente datorită `ON CONFLICT`); nicio schimbare necesară aici, dar ne asigurăm că funcționează în continuare.
 
-## 6. Memory updates
+**3. `src/pages/Login.tsx`** — în `useEffect`-ul existent care verifică sesiunea după login, dacă `roleData` lipsește (caz extrem de race condition cu trigger-ul), așteptăm scurt și reîncercăm o dată înainte de a redirecționa.
 
-Add a memory entry documenting: admin role uses `user_type='admin'` in `user_roles`, single admin account, hidden `/admin/dashboard` route, RLS via `is_admin()` SECURITY DEFINER function.
+**4. RegisterArtist.tsx** — neatins. Google nu e disponibil acolo (per memoria existentă), iar flow-ul artist setează singur `pending_account_type` și inserează profilul după pasul 0; trigger-ul nu va suprascrie nimic datorită `ON CONFLICT`.
 
-## Question before implementing
+## Verificare
 
-Which existing account should be the admin? Provide the email of the user to promote (must already exist in the system). If you'd rather create a new admin account from scratch, tell me the email and I'll have you sign up first, then promote it.
+- Sign-up cu Google din `/register/user` → după redirect, în DB apare un rând în `profiles` (cu email + nume din Google) și un rând în `user_roles` cu `user_type='user'`.
+- Login.tsx îl detectează și îl trimite la `/user-dashboard`.
+- Sign-up email/parolă rămâne funcțional (insert-urile manuale nu eșuează datorită `ON CONFLICT DO NOTHING`).
+- Adminul existent nu este afectat (trigger-ul pune doar `'user'` sau `'artist'`, niciodată `'admin'`).
