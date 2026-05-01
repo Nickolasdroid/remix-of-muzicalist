@@ -179,6 +179,8 @@ const MyPlan = () => {
                         return (
                           <Button
                             variant={isDowngrade ? "outline" : "default"}
+                            disabled={actionLoading !== null}
+                            onClick={() => handlePlanAction(plan.id, isDowngrade)}
                             className={`w-full ${
                               isDowngrade
                                 ? "bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -188,7 +190,7 @@ const MyPlan = () => {
                             }`}
                           >
                             <Crown className="h-4 w-4 mr-2" />
-                            {action} to {plan.name}
+                            {actionLoading === plan.id ? 'Redirecting…' : `${action} to ${plan.name}`}
                           </Button>
                         );
                       })()}
