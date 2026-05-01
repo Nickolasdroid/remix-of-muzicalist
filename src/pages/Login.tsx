@@ -18,33 +18,64 @@ const Login = () => {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const routeAfterLogin = async (userId: string) => {
+    const [{ data: roleData }, { data: profileData }] = await Promise.all([
+      supabase.from("user_roles").select("user_type").eq("user_id", userId).maybeSingle(),
+      supabase.from("profiles").select("is_active").eq("id", userId).maybeSingle(),
+    ]);
+
+    const role = roleData?.user_type as string | undefined;
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+      return;
+    }
+    const isActive = Boolean((profileData as { is_active?: boolean } | null)?.is_active);
+    if (!isActive) {
+      navigate("/plans?activation=required");
+      return;
+    }
+    if (role === "user") {
+      navigate("/user-dashboard");
+    } else {
+      navigate("/dashboard");
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('user_type')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-        
-        if ((roleData?.user_type as string) === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (roleData?.user_type === 'user') {
-          navigate('/user-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        await routeAfterLogin(session.user.id);
       }
     };
     checkAuth();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleGoogle = async () => {
+    setIsGoogleLoading(true);
+    try {
+      // If the user is on /login and clicks Google, treat them as an existing user.
+      // We do NOT set a pending_account_type here — only /register does that.
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast({ title: "Google sign-in failed", description: result.error.message, variant: "destructive" });
+        setIsGoogleLoading(false);
+      }
+    } catch (e: any) {
+      toast({ title: "Google sign-in failed", description: e?.message || "Try again", variant: "destructive" });
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       toast({
         title: "Error",
@@ -64,24 +95,12 @@ const Login = () => {
 
       if (error) throw error;
 
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('user_type')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
       toast({
         title: "Login Successful!",
         description: "Welcome back to Muzicalist.",
       });
 
-      if ((roleData?.user_type as string) === 'admin') {
-        navigate('/admin/dashboard');
-      } else if (roleData?.user_type === 'user') {
-        navigate('/user-dashboard');
-      } else {
-        navigate('/dashboard');
-      }
+      await routeAfterLogin(data.user.id);
     } catch (error: any) {
       toast({
         title: "Login Failed",
