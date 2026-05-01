@@ -93,9 +93,18 @@ const Register = () => {
                   <li className="flex items-start gap-2"><span className="text-accent mt-0.5">✓</span><span>Post announcements</span></li>
                 </ul>
                 <Button
-                  onClick={() => handleGoogle("artist")}
+                  onClick={() => navigate("/register/artist")}
                   disabled={loading}
                   className="w-full bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg"
+                  size="lg"
+                >
+                  Register with Email
+                </Button>
+                <Button
+                  onClick={() => handleGoogle("artist")}
+                  disabled={loading}
+                  variant="outline"
+                  className="w-full rounded-lg mt-2"
                   size="lg"
                 >
                   {loading && selected === "artist" ? (
@@ -127,10 +136,18 @@ const Register = () => {
                   <li className="flex items-start gap-2"><span className="text-accent mt-0.5">✓</span><span>Manage your requests</span></li>
                 </ul>
                 <Button
+                  onClick={() => navigate("/register/user")}
+                  disabled={loading}
+                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg"
+                  size="lg"
+                >
+                  Register with Email
+                </Button>
+                <Button
                   onClick={() => handleGoogle("user")}
                   disabled={loading}
-                  variant="secondary"
-                  className="w-full rounded-lg"
+                  variant="outline"
+                  className="w-full rounded-lg mt-2"
                   size="lg"
                 >
                   {loading && selected === "user" ? (
