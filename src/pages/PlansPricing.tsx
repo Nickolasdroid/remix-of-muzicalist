@@ -1,30 +1,32 @@
 import Navigation from "@/components/Navigation";
 
 import { Button } from "@/components/ui/button";
-import { Check, X, Crown } from "lucide-react";
+import { Check, X, Crown, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 
 const PlansPricing = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activationRequired = searchParams.get("activation") === "required";
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isArtist, setIsArtist] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(true);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
-    // Not authenticated -> send to register/auth
+    // Not authenticated -> send to register
     if (!isAuthenticated) {
-      navigate(planId === 'Free' ? '/register-artist' : '/auth');
+      navigate('/register');
       return;
     }
-    // Not an artist account -> can't subscribe to artist plans
-    if (!isArtist) {
-      navigate('/register-artist');
+    // Inactive (new Google signup) cannot pick Free — must pay to activate.
+    if (!isActive && planId === 'Free') {
       return;
     }
     // Free plan or downgrade -> manage via billing portal
@@ -34,14 +36,14 @@ const PlansPricing = () => {
       if (!ok) setLoadingPlan(null);
       return;
     }
-    // Paid plan upgrade
+    // Paid plan upgrade / activation
     setLoadingPlan(planId);
     const origin = window.location.origin;
     const ok = await startCheckout({
       plan: planId,
       billing: isAnnual ? 'yearly' : 'monthly',
       successUrl: `${origin}/dashboard?checkout=success`,
-      cancelUrl: `${origin}/plans?checkout=cancelled`,
+      cancelUrl: `${origin}/plans?checkout=cancelled${activationRequired ? '&activation=required' : ''}`,
     });
     if (!ok) setLoadingPlan(null);
   };
@@ -52,10 +54,11 @@ const PlansPricing = () => {
   const loadPlan = async (userId: string) => {
     const [{ data: roleData }, { data: profileData }] = await Promise.all([
       supabase.from('user_roles').select('user_type').eq('user_id', userId).maybeSingle(),
-      supabase.from('profiles').select('plan').eq('id', userId).maybeSingle(),
+      supabase.from('profiles').select('plan, is_active').eq('id', userId).maybeSingle(),
     ]);
-    setIsArtist(roleData?.user_type !== 'user');
+    setIsArtist(roleData?.user_type !== 'user' && roleData?.user_type !== 'admin');
     setCurrentPlan(profileData?.plan || 'Free');
+    setIsActive(Boolean((profileData as { is_active?: boolean } | null)?.is_active));
   };
 
   useEffect(() => {
