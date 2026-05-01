@@ -187,14 +187,20 @@ const PlansPricing = () => {
                     const currentRank = rank[currentPlan || 'Free'] ?? 1;
                     const planRank = rank[plan.id] ?? 1;
                     const isAuthArtist = isAuthenticated && isArtist;
-                    const isDowngrade = isAuthArtist && planRank < currentRank;
+                    const isDowngrade = isAuthArtist && isActive && planRank < currentRank;
+                    // Inactive logged-in users (new Google signups) can pick a paid plan to activate.
+                    // Free is disabled in that case.
+                    const isInactivePicking = isAuthenticated && !isActive;
+                    const freeDisabled = isInactivePicking && plan.id === 'Free';
                     return (
                       <Button
                         variant={isDowngrade ? "outline" : "default"}
-                        disabled={loadingPlan !== null}
+                        disabled={loadingPlan !== null || freeDisabled}
                         onClick={() => handleClick(plan.id, isDowngrade)}
                         className={`w-full ${
-                          isDowngrade
+                          freeDisabled
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                            : isDowngrade
                             ? 'bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                             : isPremiumPlan
                             ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
@@ -203,6 +209,8 @@ const PlansPricing = () => {
                       >
                         <Crown className="h-4 w-4 mr-2" />
                         {loadingPlan === plan.id ? 'Redirecting…' : (() => {
+                          if (freeDisabled) return 'Not available';
+                          if (isInactivePicking) return `Activate with ${plan.name}`;
                           if (!isAuthArtist) {
                             return isPremiumPlan ? 'Go Premium' : 'Get Started';
                           }
