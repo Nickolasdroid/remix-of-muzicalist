@@ -58,7 +58,7 @@ const UserDashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
 
   // Announcement limits
-  const STANDARD_AD_LIMIT = 5;
+  const STANDARD_AD_LIMIT = 1;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
 
@@ -231,6 +231,10 @@ const UserDashboard = () => {
 
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
+    if (standardAdsRemaining <= 0) {
+      toast({ title: t("common.error"), description: "You can only post 1 announcement.", variant: "destructive" });
+      return;
+    }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
@@ -360,7 +364,7 @@ const UserDashboard = () => {
               <div className="flex items-center gap-2">
                 <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Button size="sm" disabled={standardAdsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
                       <Plus className="h-4 w-4 mr-1" />
                       {t("userDashboard.newAd")}
                     </Button>
