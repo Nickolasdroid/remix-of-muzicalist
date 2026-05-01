@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { lovable } from "@/integrations/lovable/index";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { PENDING_ACCOUNT_TYPE_KEY } from "@/hooks/useActivation";
 import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
 
