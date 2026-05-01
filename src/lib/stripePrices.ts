@@ -4,20 +4,20 @@ export type Plan = "Free" | "Standard" | "Premium";
 export type Billing = "monthly" | "yearly";
 
 export const STRIPE_PRICES: Record<string, { plan: Exclude<Plan, "Free">; billing: Billing }> = {
-  price_1SXuaaKVhMSJTGUNuogDwKwH: { plan: "Standard", billing: "monthly" },
-  price_1SXudaKVhMSJTGUNCFkYZdXC: { plan: "Standard", billing: "yearly" },
-  price_1SXue3KVhMSJTGUNUbW6ZWLb: { plan: "Premium", billing: "monthly" },
-  price_1SXuekKVhMSJTGUNwnlTSaC8: { plan: "Premium", billing: "yearly" },
+  price_1TSEqwKBZxdkesfhjRUVTm8l: { plan: "Standard", billing: "monthly" },
+  price_1TSErCKBZxdkesfhVK7ZAABc: { plan: "Standard", billing: "yearly" },
+  price_1TSEstKBZxdkesfhvBGTOGmP: { plan: "Premium", billing: "monthly" },
+  price_1TSEtLKBZxdkesfho910v66y: { plan: "Premium", billing: "yearly" },
 };
 
 export const PRICE_BY_PLAN: Record<"Standard" | "Premium", Record<Billing, string>> = {
   Standard: {
-    monthly: "price_1SXuaaKVhMSJTGUNuogDwKwH",
-    yearly: "price_1SXudaKVhMSJTGUNCFkYZdXC",
+    monthly: "price_1TSEqwKBZxdkesfhjRUVTm8l",
+    yearly: "price_1TSErCKBZxdkesfhVK7ZAABc",
   },
   Premium: {
-    monthly: "price_1SXue3KVhMSJTGUNUbW6ZWLb",
-    yearly: "price_1SXuekKVhMSJTGUNwnlTSaC8",
+    monthly: "price_1TSEstKBZxdkesfhvBGTOGmP",
+    yearly: "price_1TSEtLKBZxdkesfho910v66y",
   },
 };
 
