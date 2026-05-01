@@ -274,17 +274,21 @@ const RegisterArtist = () => {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: redirectUrl,
+          data: {
+            account_type: "artist",
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            full_name: formData.stageName,
+          },
         }
       });
       if (authError) throw authError;
       if (!authData.user) throw new Error("User creation failed");
 
-      const { error: roleError } = await supabase.from("user_roles").insert({
-        user_id: authData.user.id,
-        user_type: "artist"
-      });
-      if (roleError) throw roleError;
+      // Note: profile + user_roles rows are created automatically by the
+      // handle_new_user() trigger. We only update the profile with the
+      // additional artist-specific details below.
 
       let avatarUrl = null;
       if (imageSrc && croppedAreaPixels) {
@@ -299,8 +303,7 @@ const RegisterArtist = () => {
         avatarUrl = publicUrl;
       }
 
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: authData.user.id,
+      const { error: profileError } = await supabase.from('profiles').update({
         first_name: formData.firstName,
         last_name: formData.lastName,
         stage_name: formData.stageName,
@@ -312,7 +315,7 @@ const RegisterArtist = () => {
         experience_level: formData.experienceLevel as any,
         career_start_year: parseInt(formData.careerStartYear),
         avatar_url: avatarUrl
-      });
+      }).eq('id', authData.user.id);
       if (profileError) throw profileError;
 
       toast({
