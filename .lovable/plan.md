@@ -1,49 +1,60 @@
-# Admin Dashboard System
 
-Add a single-admin role and a hidden `/admin/dashboard` reachable only via normal login, with backend-enforced authorization.
+## Ce s-a întâmplat
 
-## 1. Database changes (migration)
+În implementarea anterioară am interpretat greșit cerința "Google-only registration" și am eliminat complet formularele de înregistrare cu email/parolă. Concret:
 
-- Extend the `user_type` enum with a new value: `'admin'` (keeping existing `artist`, `user`).
-- Create a SECURITY DEFINER function `public.is_admin(_user_id uuid) RETURNS boolean` that checks `user_roles.user_type = 'admin'`. Used in RLS to avoid recursion.
-- Add admin RLS policies:
-  - `profiles`: admins can SELECT/UPDATE/DELETE all rows.
-  - `user_roles`: admins can SELECT/UPDATE/DELETE all rows.
-  - `subscription_events`: admins can SELECT all rows.
-- Promote the designated admin account by inserting/updating a `user_roles` row to `user_type = 'admin'`. We will ask the user which email should be the admin before running the migration.
+- `/register` — afișează doar două butoane "Continue with Google" (Artist / User)
+- `/register/artist` și `/register/user` — fac redirect forțat către `/register`
+- `/login` — **e ok**, are și email/parolă și Google (rămâne neschimbat)
 
-Note: deleting an `auth.users` row cascades to most tables via `auth.users` deletion, but not all our tables have FKs. The admin "Delete user" action will call an Edge Function (see §3) that uses the service role to delete the auth user and clean up `profiles` / `user_roles`.
+Cerința corectă, așa cum o reformulezi acum: **Google = scurtătură rapidă, email/parolă = metoda principală/completă**, atât la înregistrare cât și la login.
 
-## 2. Edge function: `admin-delete-user`
+## Ce voi modifica
 
-- Verifies caller JWT, looks up caller in `user_roles`, requires `user_type = 'admin'`.
-- Uses `SUPABASE_SERVICE_ROLE_KEY` to call `auth.admin.deleteUser(targetId)` and delete related rows in `profiles`, `user_roles`, `posts`, `announcements`, etc.
-- Backend-enforced; the only path for hard user deletion.
+### 1. `/register` (pagina de selecție tip cont)
+Rămâne pagina de "alege Artist sau User", dar pe fiecare card înlocuiesc butonul unic "Continue with Google" cu **două butoane**:
+- **"Register with Email"** (principal, galben) → navighează la `/register/artist` sau `/register/user`
+- **"Continue with Google"** (secundar, outline) → flow-ul Google existent (cu `pending_account_type` salvat în localStorage)
 
-## 3. Frontend — role plumbing
+### 2. `/register/artist` și `/register/user`
+Restaurez formularele clasice de email/parolă (le voi reconstrui pe baza câmpurilor existente în memoria proiectului — `User Registration Flow` și schema profilelor):
+- Artist: email, parolă, stage name, prenume, nume, telefon, țară, județ, specializare
+- User: email, parolă, prenume, nume, telefon, țară, județ
+- Validare parolă cu `PasswordStrengthIndicator` (deja există în proiect)
+- La submit: `supabase.auth.signUp` + insert în `profiles` și `user_roles`
+- **Important pentru regula de activare plătită**: noile conturi create cu email/parolă vor avea `is_active = false` și vor fi redirectate către `/plans?activation=required` după login (același comportament ca semnările Google noi). `ActivationGate` deja gestionează acest lucru — nu necesită modificări.
 
-- `src/hooks/useUserRole.ts` (new): centralizes session + `user_roles.user_type` fetch, exposes `{ role, loading }`.
-- `src/components/Navigation.tsx`: when `role === 'admin'`, render an extra "Admin Dashboard" item in sidebar/menu (desktop + mobile). Hidden for everyone else.
-- `Login.tsx` redirect: if `role === 'admin'`, navigate to `/admin/dashboard`; otherwise keep current artist/user routing.
+### 3. `/login`
+**Neschimbat.** Are deja ambele opțiuni corect ordonate (email/parolă principal + Google secundar).
 
-## 4. Admin route + page
+### 4. `ActivationGate` și webhook Stripe
+**Neschimbate.** Logica de activare prin plată funcționează identic indiferent dacă utilizatorul s-a înregistrat cu Google sau email/parolă. Userii grandfathered (cei dinainte) rămân `is_active = true`.
 
-- `src/components/AdminRoute.tsx`: wrapper that checks role via `useUserRole`. While loading → null; if not admin → render a 403 Forbidden page (no redirect leak); if admin → children.
-- `src/pages/AdminDashboard.tsx` at `/admin/dashboard` (registered in `App.tsx` inside `<AdminRoute>`):
-  - **Users tab**: table of all profiles (avatar, stage_name, email, country, plan, role, created_at). Search by name/email. Actions: Edit (inline dialog for first_name, last_name, stage_name, email, phone, country, plan), Delete (calls `admin-delete-user`).
-  - **Subscriptions tab**: list profiles with `stripe_subscription_id`, showing `plan`, `billing`, `subscription_status`, `subscription_current_period_end`. Read-only for now; link to Stripe customer portal optional later.
-  - Simple shadcn `Table` + `Tabs` + confirmation `AlertDialog` for deletes. Uses `rounded-lg` per project standards.
+## Ce NU se schimbă
 
-## 5. Security guarantees
+- Logica de admin bypass
+- Userii vechi grandfathered pe planul Free
+- Webhook-ul Stripe care setează `is_active = true`
+- Pagina `/plans` și banner-ul de activare
+- Login-ul (deja corect)
 
-- All authorization is enforced by RLS + the edge function's role check. The hidden menu item and `AdminRoute` are UX only.
-- Non-admin users hitting `/admin/dashboard` directly see 403 and cannot read/mutate admin data even via the API (RLS blocks them).
-- Only one admin: enforced operationally (we set exactly one `user_roles` row to `admin`); no UI exposes promoting other users.
+## Detalii tehnice
 
-## 6. Memory updates
+**Fișiere modificate:**
+- `src/pages/Register.tsx` — adaug al doilea buton "Register with Email" pe fiecare card
+- `src/pages/RegisterArtist.tsx` — restaurez formularul complet (înlocuiesc redirect-ul)
+- `src/pages/RegisterUser.tsx` — restaurez formularul complet (înlocuiesc redirect-ul)
 
-Add a memory entry documenting: admin role uses `user_type='admin'` in `user_roles`, single admin account, hidden `/admin/dashboard` route, RLS via `is_admin()` SECURITY DEFINER function.
+**Fișiere neschimbate:**
+- `src/pages/Login.tsx`
+- `src/components/ActivationGate.tsx`
+- `src/hooks/useActivation.ts`
+- `supabase/functions/stripe-webhook/index.ts`
+- Migrațiile DB (`is_active`, `pending_account_type` rămân)
 
-## Question before implementing
+**Memorie de actualizat:**
+- `mem://features/auth/google-only-paid-activation` → redenumită conceptual: Google nu mai e singura cale, e doar o scurtătură. Activarea plătită rămâne obligatorie pentru toate conturile noi (indiferent de metoda de auth).
 
-Which existing account should be the admin? Provide the email of the user to promote (must already exist in the system). If you'd rather create a new admin account from scratch, tell me the email and I'll have you sign up first, then promote it.
+## Rezultat final
+
+Pe `/register` utilizatorul va vedea exact cum era înainte (Artist/User) + în plus opțiunea Google ca scurtătură. Toate noile conturi (email sau Google) trec prin același gate de activare plătită.
