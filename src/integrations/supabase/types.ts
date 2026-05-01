@@ -506,6 +506,7 @@ export type Database = {
         Row: {
           allow_promotion: boolean
           avatar_url: string | null
+          billing: string | null
           bio: string | null
           career_start_year: number | null
           country: string | null
@@ -533,6 +534,10 @@ export type Database = {
             | null
           spotify_url: string | null
           stage_name: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_current_period_end: string | null
+          subscription_status: string | null
           tiktok_url: string | null
           updated_at: string | null
           youtube_url: string | null
@@ -540,6 +545,7 @@ export type Database = {
         Insert: {
           allow_promotion?: boolean
           avatar_url?: string | null
+          billing?: string | null
           bio?: string | null
           career_start_year?: number | null
           country?: string | null
@@ -567,6 +573,10 @@ export type Database = {
             | null
           spotify_url?: string | null
           stage_name: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
           youtube_url?: string | null
@@ -574,6 +584,7 @@ export type Database = {
         Update: {
           allow_promotion?: boolean
           avatar_url?: string | null
+          billing?: string | null
           bio?: string | null
           career_start_year?: number | null
           country?: string | null
@@ -601,6 +612,10 @@ export type Database = {
             | null
           spotify_url?: string | null
           stage_name?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
           youtube_url?: string | null
@@ -647,6 +662,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscription_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json | null
+          profile_id: string | null
+          stripe_event_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json | null
+          profile_id?: string | null
+          stripe_event_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          profile_id?: string | null
+          stripe_event_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
