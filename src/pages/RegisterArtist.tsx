@@ -347,7 +347,6 @@ const RegisterArtist = () => {
     return map[spec] || spec;
   };
 
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   const handlePlanSelect = async (planName: string) => {
     if (!registeredUserId) return;
