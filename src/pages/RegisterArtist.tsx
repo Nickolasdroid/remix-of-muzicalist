@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
+import { startCheckout } from "@/lib/checkout";
 import { lovable } from "@/integrations/lovable/index";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -345,10 +346,26 @@ const RegisterArtist = () => {
     return map[spec] || spec;
   };
 
-  const handlePlanSelect = (planName: string) => {
-    // For Free plan, just navigate. For paid plans, navigate (payment integration later).
-    if (registeredUserId) {
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const handlePlanSelect = async (planName: string) => {
+    if (!registeredUserId) return;
+
+    if (planName === "Free") {
       navigate(`/artist/${registeredUserId}`);
+      return;
+    }
+
+    if (planName === "Standard" || planName === "Premium") {
+      setCheckoutLoading(planName);
+      const origin = window.location.origin;
+      const ok = await startCheckout({
+        plan: planName,
+        billing: isAnnual ? "yearly" : "monthly",
+        successUrl: `${origin}/artist/${registeredUserId}?checkout=success`,
+        cancelUrl: `${origin}/register-artist?checkout=cancelled`,
+      });
+      if (!ok) setCheckoutLoading(null);
     }
   };
 
@@ -444,8 +461,9 @@ const RegisterArtist = () => {
                       className={`w-full ${plan.id === 'Premium' ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' : ''}`}
                       variant={plan.id === 'Premium' ? 'default' : (plan.highlighted ? 'default' : 'outline')}
                       onClick={() => handlePlanSelect(plan.name)}
+                      disabled={checkoutLoading !== null}
                     >
-                      {plan.registerCta}
+                      {checkoutLoading === plan.name ? 'Redirecting…' : plan.registerCta}
                     </Button>
                   </CardFooter>
                 </Card>

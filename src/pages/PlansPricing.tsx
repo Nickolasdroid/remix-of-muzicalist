@@ -3,14 +3,49 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Check, X, Crown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
+import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 
 const PlansPricing = () => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isArtist, setIsArtist] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+    // Not authenticated -> send to register/auth
+    if (!isAuthenticated) {
+      navigate(planId === 'Free' ? '/register-artist' : '/auth');
+      return;
+    }
+    // Not an artist account -> can't subscribe to artist plans
+    if (!isArtist) {
+      navigate('/register-artist');
+      return;
+    }
+    // Free plan or downgrade -> manage via billing portal
+    if (planId === 'Free' || isDowngrade) {
+      setLoadingPlan(planId);
+      const ok = await openCustomerPortal(window.location.href);
+      if (!ok) setLoadingPlan(null);
+      return;
+    }
+    // Paid plan upgrade
+    setLoadingPlan(planId);
+    const origin = window.location.origin;
+    const ok = await startCheckout({
+      plan: planId,
+      billing: isAnnual ? 'yearly' : 'monthly',
+      successUrl: `${origin}/dashboard?checkout=success`,
+      cancelUrl: `${origin}/plans?checkout=cancelled`,
+    });
+    if (!ok) setLoadingPlan(null);
+  };
+
 
   const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
 
@@ -142,6 +177,8 @@ const PlansPricing = () => {
                     return (
                       <Button
                         variant={isDowngrade ? "outline" : "default"}
+                        disabled={loadingPlan !== null}
+                        onClick={() => handleClick(plan.id, isDowngrade)}
                         className={`w-full ${
                           isDowngrade
                             ? 'bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -151,7 +188,7 @@ const PlansPricing = () => {
                         }`}
                       >
                         <Crown className="h-4 w-4 mr-2" />
-                        {(() => {
+                        {loadingPlan === plan.id ? 'Redirecting…' : (() => {
                           if (!isAuthArtist) {
                             return isPremiumPlan ? 'Go Premium' : 'Get Started';
                           }
