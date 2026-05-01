@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
+import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -15,6 +16,25 @@ const MyPlan = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState("Free");
   const [isAnnual, setIsAnnual] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const handlePlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+    if (planId === 'Free' || isDowngrade) {
+      setActionLoading(planId);
+      const ok = await openCustomerPortal(window.location.href);
+      if (!ok) setActionLoading(null);
+      return;
+    }
+    setActionLoading(planId);
+    const origin = window.location.origin;
+    const ok = await startCheckout({
+      plan: planId,
+      billing: isAnnual ? 'yearly' : 'monthly',
+      successUrl: `${origin}/my-plan?checkout=success`,
+      cancelUrl: `${origin}/my-plan?checkout=cancelled`,
+    });
+    if (!ok) setActionLoading(null);
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -159,6 +179,8 @@ const MyPlan = () => {
                         return (
                           <Button
                             variant={isDowngrade ? "outline" : "default"}
+                            disabled={actionLoading !== null}
+                            onClick={() => handlePlanAction(plan.id, isDowngrade)}
                             className={`w-full ${
                               isDowngrade
                                 ? "bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -168,7 +190,7 @@ const MyPlan = () => {
                             }`}
                           >
                             <Crown className="h-4 w-4 mr-2" />
-                            {action} to {plan.name}
+                            {actionLoading === plan.id ? 'Redirecting…' : `${action} to ${plan.name}`}
                           </Button>
                         );
                       })()}
