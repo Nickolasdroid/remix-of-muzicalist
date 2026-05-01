@@ -49,20 +49,27 @@ const Login = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      if (!session) return;
+
+      // Retry briefly to allow the post-signup trigger (Google OAuth) to insert the role
+      let role: string | undefined;
+      for (let i = 0; i < 4; i++) {
         const { data: roleData } = await supabase
           .from('user_roles')
           .select('user_type')
           .eq('user_id', session.user.id)
           .maybeSingle();
-        
-        if ((roleData?.user_type as string) === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (roleData?.user_type === 'user') {
-          navigate('/user-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        role = roleData?.user_type as string | undefined;
+        if (role) break;
+        await new Promise((r) => setTimeout(r, 350));
+      }
+
+      if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'user') {
+        navigate('/user-dashboard');
+      } else {
+        navigate('/dashboard');
       }
     };
     checkAuth();
