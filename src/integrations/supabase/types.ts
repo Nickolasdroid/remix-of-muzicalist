@@ -729,6 +729,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
         Returns: undefined
