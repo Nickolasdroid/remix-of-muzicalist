@@ -36,6 +36,7 @@ import MyPlan from "./pages/MyPlan";
 import HelpSupport from "./pages/HelpSupport";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
+import ActivationGate from "./components/ActivationGate";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -48,6 +49,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <ActivationGate>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/feed" element={<Feed />} />
