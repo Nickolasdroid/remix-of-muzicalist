@@ -37,6 +37,9 @@ Deno.serve(async (req) => {
     if (!price_id || typeof price_id !== "string") {
       return new Response(JSON.stringify({ error: "price_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+    const keyMode = stripeKey.startsWith("sk_live_") ? "live" : stripeKey.startsWith("sk_test_") ? "test" : "unknown";
+    console.log(`[create-checkout] user=${userId} mode=${keyMode} price_id=${price_id}`);
 
     const supabaseAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: profile } = await supabaseAdmin
@@ -70,9 +73,15 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("create-checkout error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+    const keyMode = stripeKey.startsWith("sk_live_") ? "live" : stripeKey.startsWith("sk_test_") ? "test" : "unknown";
+    let message = err?.message || "Checkout failed";
+    if (err?.code === "resource_missing" || /No such price/i.test(message)) {
+      message = `Stripe price not found in ${keyMode} mode. The price IDs in stripePriceMap.ts must match your Stripe account (and same mode as STRIPE_SECRET_KEY).`;
+    }
+    return new Response(JSON.stringify({ error: message, code: err?.code, mode: keyMode }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
