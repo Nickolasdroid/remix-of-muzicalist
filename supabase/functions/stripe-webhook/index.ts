@@ -1,0 +1,190 @@
+// Stripe webhook handler — price_id is the single source of truth
+import Stripe from "https://esm.sh/stripe@17.5.0?target=deno";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { getPlanFromPriceId } from "../_shared/stripePriceMap.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
+};
+
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+  apiVersion: "2024-12-18.acacia",
+  httpClient: Stripe.createFetchHttpClient(),
+});
+const cryptoProvider = Stripe.createSubtleCryptoProvider();
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  { auth: { persistSession: false } }
+);
+
+const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
+
+async function findProfileIdByCustomer(customerId: string): Promise<string | null> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
+async function syncSubscription(subscription: Stripe.Subscription, fallbackProfileId?: string) {
+  const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
+  let profileId = fallbackProfileId ?? (await findProfileIdByCustomer(customerId));
+
+  // If still unknown, try metadata.user_id from Stripe customer
+  if (!profileId) {
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      if (!customer.deleted && customer.metadata?.user_id) {
+        profileId = customer.metadata.user_id;
+        await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", profileId);
+      }
+    } catch (_) { /* ignore */ }
+  }
+
+  if (!profileId) {
+    console.warn("No profile found for customer", customerId);
+    return;
+  }
+
+  const item = subscription.items.data[0];
+  const priceId = item?.price?.id;
+  const planInfo = getPlanFromPriceId(priceId);
+
+  const status = subscription.status;
+  const isActive = status === "active" || status === "trialing";
+  const periodEnd = subscription.current_period_end
+    ? new Date(subscription.current_period_end * 1000).toISOString()
+    : null;
+
+  const update: Record<string, unknown> = {
+    stripe_customer_id: customerId,
+    stripe_subscription_id: subscription.id,
+    subscription_status: status,
+    subscription_current_period_end: periodEnd,
+  };
+
+  if (planInfo && isActive) {
+    update.plan = planInfo.plan;
+    update.billing = planInfo.billing;
+  } else if (!isActive) {
+    // Canceled / unpaid / incomplete → downgrade
+    update.plan = "Free";
+    update.billing = null;
+  }
+
+  const { error } = await supabase.from("profiles").update(update).eq("id", profileId);
+  if (error) console.error("Profile update error:", error);
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) return new Response("Missing signature", { status: 400 });
+
+  const body = await req.text();
+  let event: Stripe.Event;
+  try {
+    event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret, undefined, cryptoProvider);
+  } catch (err) {
+    console.error("Signature verification failed:", err);
+    return new Response(`Webhook Error: ${(err as Error).message}`, { status: 400 });
+  }
+
+  // Idempotency: log event; skip if already processed
+  const { error: logErr } = await supabase
+    .from("subscription_events")
+    .insert({ stripe_event_id: event.id, event_type: event.type, payload: event as unknown as object });
+  if (logErr && !logErr.message.includes("duplicate")) {
+    console.warn("Event log insert warning:", logErr.message);
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const profileId = session.metadata?.user_id ?? null;
+        const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
+        const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+
+        if (profileId && customerId) {
+          await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", profileId);
+        }
+        if (subscriptionId) {
+          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          await syncSubscription(sub, profileId ?? undefined);
+        }
+        break;
+      }
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        await syncSubscription(event.data.object as Stripe.Subscription);
+        break;
+      }
+      case "customer.subscription.deleted": {
+        const sub = event.data.object as Stripe.Subscription;
+        const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+        const profileId = await findProfileIdByCustomer(customerId);
+        if (profileId) {
+          await supabase.from("profiles").update({
+            plan: "Free",
+            billing: null,
+            subscription_status: "canceled",
+            stripe_subscription_id: sub.id,
+          }).eq("id", profileId);
+        }
+        break;
+      }
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice;
+        if (invoice.subscription) {
+          const subId = typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription.id;
+          const sub = await stripe.subscriptions.retrieve(subId);
+          await syncSubscription(sub);
+        }
+        break;
+      }
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+        if (customerId) {
+          const profileId = await findProfileIdByCustomer(customerId);
+          if (profileId) {
+            await supabase.from("profiles").update({ subscription_status: "past_due" }).eq("id", profileId);
+          }
+        }
+        break;
+      }
+      default:
+        // ignore other events
+        break;
+    }
+
+    // Link event row to profile if possible
+    if ("customer" in (event.data.object as Record<string, unknown>)) {
+      const obj = event.data.object as { customer?: string | { id: string } };
+      const customerId = typeof obj.customer === "string" ? obj.customer : obj.customer?.id;
+      if (customerId) {
+        const profileId = await findProfileIdByCustomer(customerId);
+        if (profileId) {
+          await supabase.from("subscription_events").update({ profile_id: profileId }).eq("stripe_event_id", event.id);
+        }
+      }
+    }
+
+    return new Response(JSON.stringify({ received: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("Webhook handler error:", err);
+    return new Response(JSON.stringify({ error: (err as Error).message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});
