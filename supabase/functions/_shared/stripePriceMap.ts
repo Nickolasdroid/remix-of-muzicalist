@@ -10,11 +10,11 @@ export interface PlanInfo {
 
 export const PRICE_MAP: Record<string, PlanInfo> = {
   // Standard
-  "price_1SXuaaKVhMSJTGUNuogDwKwH": { plan: "Standard", billing: "monthly" },
-  "price_1SXudaKVhMSJTGUNCFkYZdXC": { plan: "Standard", billing: "yearly" },
+  "price_1TSEqwKBZxdkesfhjRUVTm8l": { plan: "Standard", billing: "monthly" },
+  "price_1TSErCKBZxdkesfhVK7ZAABc": { plan: "Standard", billing: "yearly" },
   // Premium
-  "price_1SXue3KVhMSJTGUNUbW6ZWLb": { plan: "Premium", billing: "monthly" },
-  "price_1SXuekKVhMSJTGUNwnlTSaC8": { plan: "Premium", billing: "yearly" },
+  "price_1TSEstKBZxdkesfhvBGTOGmP": { plan: "Premium", billing: "monthly" },
+  "price_1TSEtLKBZxdkesfho910v66y": { plan: "Premium", billing: "yearly" },
 };
 
 export function getPlanFromPriceId(priceId: string | null | undefined): PlanInfo | null {
