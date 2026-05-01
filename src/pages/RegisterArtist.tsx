@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { supabase } from "@/integrations/supabase/client";
+import { startCheckout } from "@/lib/checkout";
 import { lovable } from "@/integrations/lovable/index";
 import { MusicGenreCombobox } from "@/components/MusicGenreCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
