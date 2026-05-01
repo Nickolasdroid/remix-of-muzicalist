@@ -177,6 +177,8 @@ const PlansPricing = () => {
                     return (
                       <Button
                         variant={isDowngrade ? "outline" : "default"}
+                        disabled={loadingPlan !== null}
+                        onClick={() => handleClick(plan.id, isDowngrade)}
                         className={`w-full ${
                           isDowngrade
                             ? 'bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -186,7 +188,7 @@ const PlansPricing = () => {
                         }`}
                       >
                         <Crown className="h-4 w-4 mr-2" />
-                        {(() => {
+                        {loadingPlan === plan.id ? 'Redirecting…' : (() => {
                           if (!isAuthArtist) {
                             return isPremiumPlan ? 'Go Premium' : 'Get Started';
                           }
