@@ -231,6 +231,10 @@ const UserDashboard = () => {
 
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
+    if (standardAdsRemaining <= 0) {
+      toast({ title: t("common.error"), description: "You can only post 1 announcement.", variant: "destructive" });
+      return;
+    }
     setIsSaving(true);
     try {
       const todayDate = new Date().toISOString().split('T')[0];
