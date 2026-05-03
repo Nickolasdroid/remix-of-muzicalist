@@ -2310,7 +2310,7 @@ const Dashboard = () => {
                               <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
                             </div>}
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
