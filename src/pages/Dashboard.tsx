@@ -45,12 +45,14 @@ import LocationAutocomplete from "@/components/LocationAutocomplete";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
+import { useUserRole } from "@/hooks/useUserRole";
 const Dashboard = () => {
   const {
     toast
   } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { isAdmin } = useUserRole();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -60,6 +62,13 @@ const Dashboard = () => {
   const [pricingCount, setPricingCount] = useState(0);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
+
+  // Force admins to allowed sections only
+  useEffect(() => {
+    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
+      setProfileSection("posts");
+    }
+  }, [isAdmin, profileSection]);
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
@@ -156,8 +165,8 @@ const Dashboard = () => {
 
   // Announcement limits (plan-based)
   const currentPlan = profile?.plan;
-  const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
-  const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
+  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
+  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
   // Consumed ad/promotion/post slots (rolling 30-day window).
   // A slot stays occupied for 30 days from creation, even if the item is deleted.
@@ -198,7 +207,7 @@ const Dashboard = () => {
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
-  const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
+  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
   // Gallery state
@@ -1604,13 +1613,15 @@ const Dashboard = () => {
                     {/* Mobile Header Layout */}
                     <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
                       {/* Top row: Rating (left) - matching public artist profile */}
-                      <div className="absolute top-0 left-0 z-10">
-                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
-                          <Star className="h-4 w-4 fill-current" />
-                          <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
-                          {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                      {!isAdmin && (
+                        <div className="absolute top-0 left-0 z-10">
+                          <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
+                            <Star className="h-4 w-4 fill-current" />
+                            <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
+                            {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Centered Avatar - with top padding to account for absolute positioned elements */}
                       <div className="relative group cursor-pointer mt-10">
@@ -1775,22 +1786,26 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-6 w-6 fill-current" />
-                            <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
-                            {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                          </div>
+                          {!isAdmin && (
+                            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                              <Star className="h-6 w-6 fill-current" />
+                              <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
+                              {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                        <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <User className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Details</span>
-                        </TabsTrigger>
+                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full`}>
+                        {!isAdmin && (
+                          <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <User className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Details</span>
+                          </TabsTrigger>
+                        )}
                         <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Posts</span>
@@ -1799,18 +1814,22 @@ const Dashboard = () => {
                           <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Announcements</span>
                         </TabsTrigger>
-                        <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <Images className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Gallery</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Calendar</span>
-                        </TabsTrigger>
+                        {!isAdmin && (
+                          <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <Images className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Gallery</span>
+                          </TabsTrigger>
+                        )}
+                        {!isAdmin && (
+                          <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Calendar</span>
+                          </TabsTrigger>
+                        )}
                       </TabsList>
 
                       {/* Details Tab */}
-                      <TabsContent value="details" className="space-y-4 md:space-y-8">
+                      {!isAdmin && <TabsContent value="details" className="space-y-4 md:space-y-8">
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
@@ -2295,7 +2314,7 @@ const Dashboard = () => {
                               <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
                             </div>}
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
@@ -2303,7 +2322,7 @@ const Dashboard = () => {
                           <FileText className="h-5 w-5 text-accent" />
                           My Posts
                         </h2>
-                        {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
@@ -2655,7 +2674,7 @@ const Dashboard = () => {
                           <Megaphone className="h-5 w-5 text-accent" />
                           My Announcements
                         </h2>
-                        {!canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
@@ -2827,7 +2846,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Gallery Tab */}
-                      <TabsContent value="gallery">
+                      {!isAdmin && <TabsContent value="gallery">
                         <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                           <Images className="h-5 w-5 text-accent" />
                           My Gallery
@@ -2932,10 +2951,10 @@ const Dashboard = () => {
                             </div>
                           </div>}
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
 
                       {/* Calendar Tab */}
-                      <TabsContent value="calendar">
+                      {!isAdmin && <TabsContent value="calendar">
                         <div>
                           <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-display font-bold flex items-center gap-2">
@@ -3385,7 +3404,7 @@ const Dashboard = () => {
                             </DialogContent>
                           </Dialog>
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
                     </Tabs>
                 </div>}
 
