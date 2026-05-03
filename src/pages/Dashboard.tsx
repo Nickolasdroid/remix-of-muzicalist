@@ -2947,7 +2947,7 @@ const Dashboard = () => {
                             </div>
                           </div>}
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
 
                       {/* Calendar Tab */}
                       <TabsContent value="calendar">
