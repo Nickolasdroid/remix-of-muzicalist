@@ -2842,7 +2842,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Gallery Tab */}
-                      <TabsContent value="gallery">
+                      {!isAdmin && <TabsContent value="gallery">
                         <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
                           <Images className="h-5 w-5 text-accent" />
                           My Gallery
