@@ -1706,6 +1706,39 @@ const Dashboard = () => {
                           </label>
                         </div>
                         <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        {profile?.avatar_url && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute bottom-1 right-1 h-9 w-9 rounded-full shadow-lg z-20"
+                                disabled={isSaving}
+                                aria-label="Remove profile picture"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="rounded-lg">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Your profile picture will be deleted. You can upload a new one anytime.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={handleRemoveAvatar}
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
 
                       <div className="flex-1 flex flex-col justify-center h-40">
