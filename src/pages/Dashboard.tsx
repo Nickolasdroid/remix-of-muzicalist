@@ -207,7 +207,7 @@ const Dashboard = () => {
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
-  const STANDARD_POST_LIMIT = getPostLimit(currentPlan);
+  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
   // Gallery state
