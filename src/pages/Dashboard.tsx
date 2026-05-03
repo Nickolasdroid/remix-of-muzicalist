@@ -3400,7 +3400,7 @@ const Dashboard = () => {
                             </DialogContent>
                           </Dialog>
                         </div>
-                      </TabsContent>
+                      </TabsContent>}
                     </Tabs>
                 </div>}
 
