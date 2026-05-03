@@ -607,6 +607,31 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      await supabase.storage.from("avatars").remove([`${user.id}/avatar.jpg`]);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: null })
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), avatar_url: null }));
+      toast({
+        title: "Success",
+        description: "Profile picture removed.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove profile picture.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const startEditing = (field: string) => {
     setEditingField(field);
   };
@@ -1601,6 +1626,39 @@ const Dashboard = () => {
                           </label>
                         </div>
                         <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        {profile?.avatar_url && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-lg z-20"
+                                disabled={isSaving}
+                                aria-label="Remove profile picture"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="rounded-lg">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Your profile picture will be deleted. You can upload a new one anytime.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={handleRemoveAvatar}
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
 
                       {/* Centered Name */}
@@ -1648,6 +1706,39 @@ const Dashboard = () => {
                           </label>
                         </div>
                         <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                        {profile?.avatar_url && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="absolute bottom-1 right-1 h-9 w-9 rounded-full shadow-lg z-20"
+                                disabled={isSaving}
+                                aria-label="Remove profile picture"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="rounded-lg">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Your profile picture will be deleted. You can upload a new one anytime.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={handleRemoveAvatar}
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
 
                       <div className="flex-1 flex flex-col justify-center h-40">
