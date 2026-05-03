@@ -1786,11 +1786,13 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-6 w-6 fill-current" />
-                            <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
-                            {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                          </div>
+                          {!isAdmin && (
+                            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
+                              <Star className="h-6 w-6 fill-current" />
+                              <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
+                              {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
