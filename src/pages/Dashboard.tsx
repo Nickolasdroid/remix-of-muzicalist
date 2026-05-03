@@ -165,8 +165,8 @@ const Dashboard = () => {
 
   // Announcement limits (plan-based)
   const currentPlan = profile?.plan;
-  const STANDARD_AD_LIMIT = getAdLimit(currentPlan);
-  const PREMIUM_AD_LIMIT = getPromotionLimit(currentPlan);
+  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
+  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
   // Consumed ad/promotion/post slots (rolling 30-day window).
   // A slot stays occupied for 30 days from creation, even if the item is deleted.
