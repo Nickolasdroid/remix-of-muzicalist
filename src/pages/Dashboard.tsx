@@ -2950,7 +2950,7 @@ const Dashboard = () => {
                       </TabsContent>}
 
                       {/* Calendar Tab */}
-                      <TabsContent value="calendar">
+                      {!isAdmin && <TabsContent value="calendar">
                         <div>
                           <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-display font-bold flex items-center gap-2">
