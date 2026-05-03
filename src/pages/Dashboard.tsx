@@ -1682,24 +1682,28 @@ const Dashboard = () => {
                         {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
                             {formData.specialization}
                           </Badge>}
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                        {!isAdmin && (
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="text-sm">{formData.county}</span>
                             {formData.country && <CountryFlagIcon country={formData.country} className="h-4 w-6 rounded-sm shadow-sm" />}
                           </div>
+                        )}
                       </div>
 
                        {/* Followers + Following count */}
-                      <div className="flex items-center justify-center gap-4">
-                        <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                          
-                          <span className="text-sm font-medium">{followersCount} followers</span>
+                      {!isAdmin && (
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
+                            
+                            <span className="text-sm font-medium">{followersCount} followers</span>
+                          </div>
+                          <span className="text-muted-foreground/50">·</span>
+                          <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                            <span className="text-sm font-medium">{followingCount} following</span>
+                          </div>
                         </div>
-                        <span className="text-muted-foreground/50">·</span>
-                        <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                          <span className="text-sm font-medium">{followingCount} following</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     {/* Desktop Header Layout */}
