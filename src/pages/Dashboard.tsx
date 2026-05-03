@@ -1795,11 +1795,13 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      <TabsList className="grid w-full grid-cols-5 mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                        <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <User className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Details</span>
-                        </TabsTrigger>
+                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-3 md:mb-8 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full`}>
+                        {!isAdmin && (
+                          <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <User className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Details</span>
+                          </TabsTrigger>
+                        )}
                         <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Posts</span>
@@ -1808,14 +1810,18 @@ const Dashboard = () => {
                           <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
                           <span className="hidden md:inline">Announcements</span>
                         </TabsTrigger>
-                        <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <Images className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Gallery</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
-                          <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Calendar</span>
-                        </TabsTrigger>
+                        {!isAdmin && (
+                          <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <Images className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Gallery</span>
+                          </TabsTrigger>
+                        )}
+                        {!isAdmin && (
+                          <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                            <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
+                            <span className="hidden md:inline">Calendar</span>
+                          </TabsTrigger>
+                        )}
                       </TabsList>
 
                       {/* Details Tab */}
