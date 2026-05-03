@@ -607,6 +607,31 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      await supabase.storage.from("avatars").remove([`${user.id}/avatar.jpg`]);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: null })
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), avatar_url: null }));
+      toast({
+        title: "Success",
+        description: "Profile picture removed.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove profile picture.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const startEditing = (field: string) => {
     setEditingField(field);
   };
