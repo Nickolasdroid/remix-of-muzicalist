@@ -1770,24 +1770,28 @@ const Dashboard = () => {
                               {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
                                 {formData.specialization}
                               </Badge>}
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-5 w-5" />
-                                <span className="text-base">{formData.county}</span>
-                                {formData.country && <CountryFlagIcon country={formData.country} className="h-5 w-7 rounded-sm shadow-sm" />}
-                              </div>
+                              {!isAdmin && (
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                  <MapPin className="h-5 w-5" />
+                                  <span className="text-base">{formData.county}</span>
+                                  {formData.country && <CountryFlagIcon country={formData.country} className="h-5 w-7 rounded-sm shadow-sm" />}
+                                </div>
+                              )}
                             </div>
 
                             {/* Followers + Following count */}
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                                
-                                <span className="text-sm font-medium">{followersCount} followers</span>
+                            {!isAdmin && (
+                              <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
+                                  
+                                  <span className="text-sm font-medium">{followersCount} followers</span>
+                                </div>
+                                <span className="text-muted-foreground/50">·</span>
+                                <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
+                                  <span className="text-sm font-medium">{followingCount} following</span>
+                                </div>
                               </div>
-                              <span className="text-muted-foreground/50">·</span>
-                              <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                                <span className="text-sm font-medium">{followingCount} following</span>
-                              </div>
-                            </div>
+                            )}
                           </div>
 
                           {!isAdmin && (
