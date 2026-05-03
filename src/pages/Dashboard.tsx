@@ -1613,13 +1613,15 @@ const Dashboard = () => {
                     {/* Mobile Header Layout */}
                     <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
                       {/* Top row: Rating (left) - matching public artist profile */}
-                      <div className="absolute top-0 left-0 z-10">
-                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
-                          <Star className="h-4 w-4 fill-current" />
-                          <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
-                          {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                      {!isAdmin && (
+                        <div className="absolute top-0 left-0 z-10">
+                          <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
+                            <Star className="h-4 w-4 fill-current" />
+                            <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
+                            {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Centered Avatar - with top padding to account for absolute positioned elements */}
                       <div className="relative group cursor-pointer mt-10">
