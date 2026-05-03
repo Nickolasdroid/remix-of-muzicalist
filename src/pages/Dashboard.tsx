@@ -62,6 +62,13 @@ const Dashboard = () => {
   const [pricingCount, setPricingCount] = useState(0);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
+
+  // Force admins to allowed sections only
+  useEffect(() => {
+    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
+      setProfileSection("posts");
+    }
+  }, [isAdmin, profileSection]);
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
