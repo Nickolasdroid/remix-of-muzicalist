@@ -1825,7 +1825,7 @@ const Dashboard = () => {
                       </TabsList>
 
                       {/* Details Tab */}
-                      <TabsContent value="details" className="space-y-4 md:space-y-8">
+                      {!isAdmin && <TabsContent value="details" className="space-y-4 md:space-y-8">
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
