@@ -167,6 +167,15 @@ const LocationAutocomplete = ({
     const iso = country ? getCountryCode(country) : null;
     const cacheKey = `${q.toLowerCase()}|${iso || ""}|${langParam}`;
 
+    if (iso === "RO") {
+      const localResults = getRomanianSuggestions(q);
+      setResults(localResults);
+      setOpen(true);
+      setActiveIndex(-1);
+      setLoading(false);
+      return;
+    }
+
     // Serve from cache instantly
     const cached = suggestionCache.get(cacheKey);
     if (cached) {
