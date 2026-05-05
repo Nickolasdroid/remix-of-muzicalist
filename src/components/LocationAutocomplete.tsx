@@ -65,6 +65,9 @@ const formatLabel = (f: PhotonFeature): string => {
 const featureKey = (f: PhotonFeature, idx: number) =>
   `${f.properties.osm_type || ""}-${f.properties.osm_id || idx}-${idx}`;
 
+// Module-level cache shared across instances (session lifetime)
+const suggestionCache = new Map<string, PhotonFeature[]>();
+
 const LocationAutocomplete = ({
   id,
   value,
