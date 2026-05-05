@@ -186,8 +186,40 @@ const LocationAutocomplete = ({
       return;
     }
 
+    // Try to derive results from a shorter cached prefix (instant, no network)
+    const qLower = q.toLowerCase();
+    for (let len = qLower.length - 1; len >= 2; len--) {
+      const prefixKey = `${qLower.slice(0, len)}|${iso || ""}|${langParam}`;
+      const prefixCached = suggestionCache.get(prefixKey);
+      if (prefixCached && prefixCached.length > 0) {
+        const qNorm = normalizeSearch(q);
+        const refined = prefixCached.filter((f) => {
+          const p = f.properties;
+          const name = p.name || p.city || p.town || p.village || p.hamlet || p.locality || p.suburb || "";
+          return normalizeSearch(name).includes(qNorm);
+        });
+        if (refined.length > 0) {
+          setResults(refined.slice(0, 8));
+          setOpen(true);
+          setActiveIndex(-1);
+          setLoading(false);
+          // Continue to fetch fresh results in background to enrich cache
+          break;
+        }
+      }
+    }
+
     setLoading(true);
     const handle = setTimeout(async () => {
+      // Re-check cache after debounce in case a sibling request populated it
+      const cachedLate = suggestionCache.get(cacheKey);
+      if (cachedLate) {
+        setResults(cachedLate);
+        setOpen(true);
+        setActiveIndex(-1);
+        setLoading(false);
+        return;
+      }
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
