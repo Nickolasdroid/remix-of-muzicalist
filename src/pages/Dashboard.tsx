@@ -2737,8 +2737,8 @@ const Dashboard = () => {
                                           id="announcement-location-inner"
                                           value={newAnnouncement.location}
                                           onChange={(val) => setNewAnnouncement({ ...newAnnouncement, location: val })}
-                                          country={formData.country || profile?.country}
-                                          placeholder="Search a city, town or village..."
+                                          country={null}
+                                          placeholder="Search any location worldwide..."
                                           className="mt-1"
                                         />
                                       </div>
