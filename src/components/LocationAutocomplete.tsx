@@ -108,21 +108,37 @@ const LocationAutocomplete = ({
       setLoading(false);
       return;
     }
+
+    const lang = (navigator.language || "en").split("-")[0];
+    const langParam = ["en", "de", "fr", "it", "ru"].includes(lang) ? lang : "en";
+    const iso = country ? getCountryCode(country) : null;
+    const cacheKey = `${q.toLowerCase()}|${iso || ""}|${langParam}`;
+
+    // Serve from cache instantly
+    const cached = suggestionCache.get(cacheKey);
+    if (cached) {
+      setResults(cached);
+      setOpen(true);
+      setActiveIndex(-1);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const handle = setTimeout(async () => {
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const lang = (navigator.language || "en").split("-")[0];
         const params = new URLSearchParams({
           q,
-          limit: "15",
-          lang: ["en", "de", "fr", "it", "ru"].includes(lang) ? lang : "en",
+          limit: "10",
+          lang: langParam,
         });
-        const iso = country ? getCountryCode(country) : null;
-        // Photon supports osm_tag filtering and country bias via lat/lon, but not
-        // strict country filtering. We filter results client-side by countrycode.
+        // Restrict to populated places to reduce payload
+        ["city", "town", "village", "hamlet", "suburb"].forEach((t) =>
+          params.append("osm_tag", `place:${t}`)
+        );
         const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
           signal: controller.signal,
           headers: { Accept: "application/json" },
@@ -131,13 +147,11 @@ const LocationAutocomplete = ({
         const json = await res.json();
         const features: PhotonFeature[] = Array.isArray(json?.features) ? json.features : [];
 
-        // Keep only place-like results (cities/towns/villages/etc.)
         const placeFeatures = features.filter((f) => {
           const v = f.properties.osm_value || f.properties.type;
           return v && PLACE_VALUES.has(v);
         });
 
-        // Bias by country: prefer matching country, but fall back to all if none match
         let filtered = placeFeatures;
         if (iso) {
           const inCountry = placeFeatures.filter(
@@ -146,7 +160,9 @@ const LocationAutocomplete = ({
           filtered = inCountry.length > 0 ? inCountry : placeFeatures;
         }
 
-        setResults(filtered.slice(0, 8));
+        const sliced = filtered.slice(0, 8);
+        suggestionCache.set(cacheKey, sliced);
+        setResults(sliced);
         setOpen(true);
         setActiveIndex(-1);
       } catch (err) {
@@ -156,7 +172,7 @@ const LocationAutocomplete = ({
       } finally {
         setLoading(false);
       }
-    }, 150);
+    }, 300);
     return () => clearTimeout(handle);
   }, [query, country]);
 
