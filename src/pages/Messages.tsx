@@ -71,11 +71,8 @@ interface AnnouncementContext {
   is_premium?: boolean;
 }
 
-const AnnouncementHeader = ({ ad, onDismiss }: { ad: AnnouncementContext; onDismiss: () => void }) => (
+const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => (
   <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
-    <button onClick={onDismiss} className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-      <X className="h-3.5 w-3.5" />
-    </button>
     <p className="text-xs font-semibold text-accent mb-1">Regarding Announcement</p>
     <p className="text-sm font-medium text-foreground pr-4">{ad.title}</p>
     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{ad.description}</p>
