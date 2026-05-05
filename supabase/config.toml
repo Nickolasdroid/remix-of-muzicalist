@@ -2,3 +2,6 @@ project_id = "ccdgoduekpiesdmkluff"
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.upload-artist-avatar]
+verify_jwt = false
