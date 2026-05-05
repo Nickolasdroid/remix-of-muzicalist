@@ -226,13 +226,9 @@ const LocationAutocomplete = ({
       try {
         const params = new URLSearchParams({
           q,
-          limit: "10",
+          limit: "20",
           lang: langParam,
         });
-        // Restrict to populated places to reduce payload
-        ["city", "town", "village", "hamlet", "suburb"].forEach((t) =>
-          params.append("osm_tag", `place:${t}`)
-        );
         const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
           signal: controller.signal,
           headers: { Accept: "application/json" },
@@ -241,17 +237,19 @@ const LocationAutocomplete = ({
         const json = await res.json();
         const features: PhotonFeature[] = Array.isArray(json?.features) ? json.features : [];
 
+        // Prefer populated places, but fall back to anything if that filter is empty
         const placeFeatures = features.filter((f) => {
           const v = f.properties.osm_value || f.properties.type;
           return v && PLACE_VALUES.has(v);
         });
+        const baseFeatures = placeFeatures.length > 0 ? placeFeatures : features;
 
-        let filtered = placeFeatures;
+        let filtered = baseFeatures;
         if (iso) {
-          const inCountry = placeFeatures.filter(
+          const inCountry = baseFeatures.filter(
             (f) => (f.properties.countrycode || "").toUpperCase() === iso.toUpperCase()
           );
-          filtered = inCountry.length > 0 ? inCountry : placeFeatures;
+          filtered = inCountry.length > 0 ? inCountry : baseFeatures;
         }
 
         const sliced = filtered.slice(0, 8);
@@ -266,7 +264,7 @@ const LocationAutocomplete = ({
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 200);
     return () => clearTimeout(handle);
   }, [query, country]);
 
