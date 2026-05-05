@@ -270,6 +270,7 @@ const RegisterArtist = () => {
     setIsSubmitting(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
+      const countryName = getCountryNameByCode(formData.country) || formData.country;
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -280,43 +281,57 @@ const RegisterArtist = () => {
             first_name: formData.firstName,
             last_name: formData.lastName,
             full_name: formData.stageName,
+            stage_name: formData.stageName,
+            phone: formData.phone,
+            country: countryName,
+            county: formData.county,
+            specialization: formData.specialization,
+            experience_level: formData.experienceLevel,
+            career_start_year: formData.careerStartYear,
           },
         }
       });
       if (authError) throw authError;
       if (!authData.user) throw new Error("User creation failed");
 
-      // Note: profile + user_roles rows are created automatically by the
-      // handle_new_user() trigger. We only update the profile with the
-      // additional artist-specific details below.
+      // The handle_new_user() trigger has populated the profile and user_role
+      // rows server-side from the metadata above. No client-side UPDATE needed.
 
-      let avatarUrl = null;
+      // Avatar upload via edge function (no session required at this point).
       if (imageSrc && croppedAreaPixels) {
-        const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-        const fileName = `${authData.user.id}/avatar.jpg`;
-        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, croppedBlob, {
-          contentType: 'image/jpeg',
-          upsert: true
-        });
-        if (uploadError) throw uploadError;
-        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
-        avatarUrl = publicUrl;
+        try {
+          const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+          const base64: string = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const result = reader.result as string;
+              resolve(result.split(",")[1] ?? "");
+            };
+            reader.onerror = () => reject(new Error("Failed to read image"));
+            reader.readAsDataURL(croppedBlob);
+          });
+          const { error: fnError } = await supabase.functions.invoke(
+            "upload-artist-avatar",
+            {
+              body: {
+                user_id: authData.user.id,
+                email: formData.email,
+                image_base64: base64,
+                content_type: "image/jpeg",
+              },
+            }
+          );
+          if (fnError) {
+            console.warn("Avatar upload failed:", fnError);
+            toast({
+              title: t("artistRegistration.success.title"),
+              description: "Account created. We couldn't upload your photo — you can add it later from your dashboard.",
+            });
+          }
+        } catch (avatarErr) {
+          console.warn("Avatar processing failed:", avatarErr);
+        }
       }
-
-      const { error: profileError } = await supabase.from('profiles').update({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        stage_name: formData.stageName,
-        email: formData.email,
-        phone: formData.phone,
-        country: getCountryNameByCode(formData.country),
-        county: formData.county,
-        specialization: formData.specialization as any,
-        experience_level: formData.experienceLevel as any,
-        career_start_year: parseInt(formData.careerStartYear),
-        avatar_url: avatarUrl
-      }).eq('id', authData.user.id);
-      if (profileError) throw profileError;
 
       toast({
         title: t("artistRegistration.success.title"),
