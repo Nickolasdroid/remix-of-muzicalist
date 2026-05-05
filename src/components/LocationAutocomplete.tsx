@@ -188,6 +188,15 @@ const LocationAutocomplete = ({
 
     setLoading(true);
     const handle = setTimeout(async () => {
+      // Re-check cache after debounce in case a sibling request populated it
+      const cachedLate = suggestionCache.get(cacheKey);
+      if (cachedLate) {
+        setResults(cachedLate);
+        setOpen(true);
+        setActiveIndex(-1);
+        setLoading(false);
+        return;
+      }
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
