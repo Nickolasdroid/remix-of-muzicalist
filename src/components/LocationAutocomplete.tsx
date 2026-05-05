@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, MapPin, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCountryCode } from "@/lib/countryFlags";
+import { romanianLocalities } from "@/data/romanianLocalities";
 
 interface PhotonFeature {
   properties: {
@@ -67,6 +68,55 @@ const featureKey = (f: PhotonFeature, idx: number) =>
 
 // Module-level cache shared across instances (session lifetime)
 const suggestionCache = new Map<string, PhotonFeature[]>();
+const localSuggestionCache = new Map<string, PhotonFeature[]>();
+
+const normalizeSearch = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[şș]/gi, "s")
+    .replace(/[ţț]/gi, "t")
+    .toLowerCase()
+    .trim();
+
+const romanianLocalityIndex = romanianLocalities.map(([name, county, population], idx) => ({
+  name,
+  county,
+  population,
+  idx,
+  nameSearch: normalizeSearch(name),
+  search: normalizeSearch(`${name} ${county}`),
+}));
+
+const getRomanianSuggestions = (q: string): PhotonFeature[] => {
+  const normalized = normalizeSearch(q);
+  const cached = localSuggestionCache.get(normalized);
+  if (cached) return cached;
+
+  const exactOrPrefix: typeof romanianLocalityIndex = [];
+  const contains: typeof romanianLocalityIndex = [];
+  for (const locality of romanianLocalityIndex) {
+    if (locality.nameSearch.startsWith(normalized)) exactOrPrefix.push(locality);
+    else if (locality.search.includes(normalized)) contains.push(locality);
+    if (exactOrPrefix.length >= 8) break;
+  }
+
+  const matches = [...exactOrPrefix, ...contains].slice(0, 8).map((locality) => ({
+    properties: {
+      osm_id: locality.idx,
+      osm_type: "local",
+      name: locality.name,
+      county: locality.county,
+      country: "Romania",
+      countrycode: "RO",
+      type: "locality",
+      osm_value: "locality",
+    },
+  }));
+
+  localSuggestionCache.set(normalized, matches);
+  return matches;
+};
 
 const LocationAutocomplete = ({
   id,
@@ -116,6 +166,15 @@ const LocationAutocomplete = ({
     const langParam = ["en", "de", "fr", "it", "ru"].includes(lang) ? lang : "en";
     const iso = country ? getCountryCode(country) : null;
     const cacheKey = `${q.toLowerCase()}|${iso || ""}|${langParam}`;
+
+    if (iso === "RO") {
+      const localResults = getRomanianSuggestions(q);
+      setResults(localResults);
+      setOpen(true);
+      setActiveIndex(-1);
+      setLoading(false);
+      return;
+    }
 
     // Serve from cache instantly
     const cached = suggestionCache.get(cacheKey);
