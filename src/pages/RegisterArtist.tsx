@@ -341,9 +341,17 @@ const RegisterArtist = () => {
       setShowPlanSelection(true);
     } catch (error: any) {
       console.error('Registration error:', error);
+      const raw = (error?.message || "").toLowerCase();
+      let description = error.message || t("artistRegistration.error.message");
+      if (raw.includes("rate limit") || raw.includes("too many") || error?.status === 429) {
+        description = t(
+          "artistRegistration.error.rateLimit",
+          "Prea multe încercări de înregistrare într-un timp scurt. Te rugăm să aștepți câteva minute și să încerci din nou. Dacă ai primit deja un email de confirmare, verifică inboxul (și folderul Spam)."
+        );
+      }
       toast({
         title: t("artistRegistration.error.title"),
-        description: error.message || t("artistRegistration.error.message"),
+        description,
         variant: "destructive"
       });
     } finally {

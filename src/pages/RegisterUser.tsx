@@ -109,7 +109,17 @@ const RegisterUser = () => {
       }
     } catch (error: any) {
       console.error("Registration error:", error);
-      toast.error(error.message || "Registration failed. Please try again.");
+      const raw = (error?.message || "").toLowerCase();
+      if (raw.includes("rate limit") || raw.includes("too many") || error?.status === 429) {
+        toast.error(
+          t(
+            "userRegistration.error.rateLimit",
+            "Prea multe încercări de înregistrare într-un timp scurt. Te rugăm să aștepți câteva minute și să încerci din nou. Dacă ai primit deja un email de confirmare, verifică inboxul (și folderul Spam)."
+          )
+        );
+      } else {
+        toast.error(error.message || "Registration failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
