@@ -11,37 +11,64 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
+const POST_SIGNUP_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
+    const body = await req.json().catch(() => ({}));
+    const { price_id, success_url, cancel_url, user_id: bodyUserId } = body ?? {};
 
-    const supabaseAuth = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userErr } = await supabaseAuth.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
-    const userId = userData.user.id;
-    const email = userData.user.email;
-
-    const { price_id, success_url, cancel_url } = await req.json();
     if (!price_id || typeof price_id !== "string") {
       return new Response(JSON.stringify({ error: "price_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+
+    let userId: string | null = null;
+    let email: string | null = null;
+
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const supabaseAuth = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const token = authHeader.replace("Bearer ", "");
+      const { data: userData } = await supabaseAuth.auth.getUser(token);
+      if (userData?.user) {
+        userId = userData.user.id;
+        email = userData.user.email ?? null;
+      }
+    }
+
+    // Fallback: post-signup (no session yet). Validate user_id server-side.
+    if (!userId && bodyUserId && typeof bodyUserId === "string") {
+      const { data: u, error: uErr } = await supabaseAdmin.auth.admin.getUserById(bodyUserId);
+      if (uErr || !u?.user) {
+        return new Response(JSON.stringify({ error: "Invalid user" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const createdAt = new Date(u.user.created_at).getTime();
+      if (Date.now() - createdAt > POST_SIGNUP_WINDOW_MS) {
+        return new Response(JSON.stringify({ error: "Sign-in required" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      userId = u.user.id;
+      email = u.user.email ?? null;
+    }
+
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
     const keyMode = stripeKey.startsWith("sk_live_") ? "live" : stripeKey.startsWith("sk_test_") ? "test" : "unknown";
     console.log(`[create-checkout] user=${userId} mode=${keyMode} price_id=${price_id}`);
 
-    const supabaseAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("stripe_customer_id, email")
@@ -51,7 +78,7 @@ Deno.serve(async (req) => {
     let customerId = profile?.stripe_customer_id ?? null;
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: profile?.email ?? email,
+        email: profile?.email ?? email ?? undefined,
         metadata: { user_id: userId },
       });
       customerId = customer.id;
