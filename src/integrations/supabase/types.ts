@@ -405,6 +405,66 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_artist_registrations: {
+        Row: {
+          avatar_base64: string | null
+          billing: string
+          career_start_year: number | null
+          country: string
+          county: string
+          created_at: string
+          email: string
+          experience_level: string | null
+          first_name: string
+          id: string
+          last_name: string
+          password_plain: string
+          phone: string
+          plan: string
+          specialization: string | null
+          stage_name: string
+          stripe_session_id: string | null
+        }
+        Insert: {
+          avatar_base64?: string | null
+          billing: string
+          career_start_year?: number | null
+          country: string
+          county: string
+          created_at?: string
+          email: string
+          experience_level?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          password_plain: string
+          phone: string
+          plan: string
+          specialization?: string | null
+          stage_name: string
+          stripe_session_id?: string | null
+        }
+        Update: {
+          avatar_base64?: string | null
+          billing?: string
+          career_start_year?: number | null
+          country?: string
+          county?: string
+          created_at?: string
+          email?: string
+          experience_level?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          password_plain?: string
+          phone?: string
+          plan?: string
+          specialization?: string | null
+          stage_name?: string
+          stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
       post_likes: {
         Row: {
           created_at: string
