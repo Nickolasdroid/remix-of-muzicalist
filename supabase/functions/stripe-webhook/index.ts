@@ -108,9 +108,85 @@ Deno.serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const profileId = session.metadata?.user_id ?? null;
         const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
         const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+        let profileId = session.metadata?.user_id ?? null;
+
+        // Handle deferred artist signup: create user from pending_artist_registrations
+        if (session.metadata?.type === "artist_signup" && session.metadata?.pending_id) {
+          const pendingId = session.metadata.pending_id;
+          const { data: pending, error: pErr } = await supabase
+            .from("pending_artist_registrations")
+            .select("*")
+            .eq("id", pendingId)
+            .maybeSingle();
+
+          if (pErr) console.error("Fetch pending failed:", pErr);
+
+          if (pending) {
+            // Create the auth user (email already confirmed since they paid)
+            const { data: created, error: cErr } = await supabase.auth.admin.createUser({
+              email: pending.email,
+              password: pending.password_plain,
+              email_confirm: true,
+              user_metadata: {
+                account_type: "artist",
+                first_name: pending.first_name,
+                last_name: pending.last_name,
+                full_name: pending.stage_name,
+                stage_name: pending.stage_name,
+                phone: pending.phone,
+                country: pending.country,
+                county: pending.county,
+                specialization: pending.specialization,
+                experience_level: pending.experience_level,
+                career_start_year: pending.career_start_year ? String(pending.career_start_year) : "",
+              },
+            });
+
+            if (cErr || !created?.user) {
+              // Maybe already created by a webhook retry — try to find it
+              const { data: prof } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("email", pending.email)
+                .maybeSingle();
+              profileId = prof?.id ?? null;
+              if (!profileId) {
+                console.error("Failed to create user for pending signup:", cErr);
+              }
+            } else {
+              profileId = created.user.id;
+            }
+
+            // Upload avatar if provided
+            if (profileId && pending.avatar_base64) {
+              try {
+                const bytes = Uint8Array.from(atob(pending.avatar_base64), (c) => c.charCodeAt(0));
+                const path = `${profileId}/avatar.jpg`;
+                const { error: upErr } = await supabase.storage
+                  .from("avatars")
+                  .upload(path, bytes, { contentType: "image/jpeg", upsert: true });
+                if (!upErr) {
+                  const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+                  if (pub?.publicUrl) {
+                    await supabase
+                      .from("profiles")
+                      .update({ avatar_url: pub.publicUrl })
+                      .eq("id", profileId);
+                  }
+                } else {
+                  console.warn("Avatar upload failed:", upErr);
+                }
+              } catch (e) {
+                console.warn("Avatar processing failed:", e);
+              }
+            }
+
+            // Cleanup pending row
+            await supabase.from("pending_artist_registrations").delete().eq("id", pendingId);
+          }
+        }
 
         if (profileId && customerId) {
           await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", profileId);
