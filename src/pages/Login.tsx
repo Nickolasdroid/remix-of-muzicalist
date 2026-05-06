@@ -47,11 +47,23 @@ const Login = () => {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("signup") === "success") {
+      const email = params.get("email");
+      if (email) {
+        setFormData((prev) => ({ ...prev, email }));
+      }
+      toast({
+        title: "Cont creat cu succes",
+        description: "Te rugăm să te autentifici pentru a continua.",
+      });
+      window.history.replaceState({}, "", "/login");
+    }
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Retry briefly to allow the post-signup trigger (Google OAuth) to insert the role
       let role: string | undefined;
       for (let i = 0; i < 4; i++) {
         const { data: roleData } = await supabase
@@ -73,7 +85,7 @@ const Login = () => {
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
