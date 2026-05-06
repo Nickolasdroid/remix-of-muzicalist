@@ -62,6 +62,27 @@ const RegisterArtist = () => {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cancelled = params.get("checkout") === "cancelled";
+    const pendingUid = sessionStorage.getItem("artist_pending_uid");
+
+    if (cancelled && pendingUid) {
+      // User came back from Stripe Checkout — restore plan selection screen.
+      setRegisteredUserId(pendingUid);
+      setShowPlanSelection(true);
+      setAuthChecking(false);
+      toast({
+        title: t("artistRegistration.checkoutCancelled.title", "Plată anulată"),
+        description: t(
+          "artistRegistration.checkoutCancelled.message",
+          "Contul tău este creat. Alege un plan pentru a finaliza."
+        ),
+      });
+      // Clean URL
+      window.history.replaceState({}, "", "/register/artist");
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/", { replace: true });
@@ -69,7 +90,7 @@ const RegisterArtist = () => {
         setAuthChecking(false);
       }
     });
-  }, [navigate]);
+  }, [navigate, t, toast]);
 
   const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
   const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
