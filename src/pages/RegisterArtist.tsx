@@ -382,6 +382,7 @@ const RegisterArtist = () => {
         billing: isAnnual ? "yearly" : "monthly",
         successUrl: `${origin}/artist/${registeredUserId}?checkout=success`,
         cancelUrl: `${origin}/register-artist?checkout=cancelled`,
+        userId: registeredUserId,
       });
       if (!ok) setCheckoutLoading(null);
     }
