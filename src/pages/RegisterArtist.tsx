@@ -399,6 +399,7 @@ const RegisterArtist = () => {
     if (!registeredUserId) return;
 
     if (planName === "Free") {
+      sessionStorage.removeItem("artist_pending_uid");
       navigate(`/artist/${registeredUserId}`);
       return;
     }
@@ -406,11 +407,12 @@ const RegisterArtist = () => {
     if (planName === "Standard" || planName === "Premium") {
       setCheckoutLoading(planName);
       const origin = window.location.origin;
+      sessionStorage.setItem("artist_pending_uid", registeredUserId);
       const ok = await startCheckout({
         plan: planName,
         billing: isAnnual ? "yearly" : "monthly",
         successUrl: `${origin}/artist/${registeredUserId}?checkout=success`,
-        cancelUrl: `${origin}/register-artist?checkout=cancelled`,
+        cancelUrl: `${origin}/register/artist?checkout=cancelled`,
         userId: registeredUserId,
       });
       if (!ok) setCheckoutLoading(null);
