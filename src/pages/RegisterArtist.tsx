@@ -36,7 +36,7 @@ const RegisterArtist = () => {
   const [step0Email, setStep0Email] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPlanSelection, setShowPlanSelection] = useState(false);
-  const [registeredUserId, setRegisteredUserId] = useState<string | null>(null);
+  
   const [isAnnual, setIsAnnual] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
