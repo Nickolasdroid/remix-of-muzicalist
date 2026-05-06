@@ -285,9 +285,46 @@ const RegisterArtist = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateStep(currentStep)) {
-      return;
+    if (!validateStep(currentStep)) return;
+    // Account is NOT created here anymore — only after Free is chosen
+    // or after Stripe confirms payment for Standard/Premium.
+    setShowPlanSelection(true);
+  };
+
+  const plans = subscriptionPlans;
+
+  const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
+
+  const getSpecializationLabel = (spec: string) => {
+    const map: Record<string, string> = {
+      Singer: t("artistRegistration.specializations.singer"),
+      Instrumentalist: t("artistRegistration.specializations.instrumentalist"),
+      DJ: t("artistRegistration.specializations.dj"),
+      Band: t("artistRegistration.specializations.band"),
+    };
+    return map[spec] || spec;
+  };
+
+  const getAvatarBase64 = async (): Promise<string | null> => {
+    if (!imageSrc || !croppedAreaPixels) return null;
+    try {
+      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          resolve(result.split(",")[1] ?? "");
+        };
+        reader.onerror = () => reject(new Error("Failed to read image"));
+        reader.readAsDataURL(croppedBlob);
+      });
+    } catch (e) {
+      console.warn("Avatar processing failed:", e);
+      return null;
     }
+  };
+
+  const handleFreeSignup = async () => {
     setIsSubmitting(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -310,112 +347,95 @@ const RegisterArtist = () => {
             experience_level: formData.experienceLevel,
             career_start_year: formData.careerStartYear,
           },
-        }
+        },
       });
       if (authError) throw authError;
       if (!authData.user) throw new Error("User creation failed");
 
-      // The handle_new_user() trigger has populated the profile and user_role
-      // rows server-side from the metadata above. No client-side UPDATE needed.
-
-      // Avatar upload via edge function (no session required at this point).
       if (imageSrc && croppedAreaPixels) {
         try {
-          const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-          const base64: string = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const result = reader.result as string;
-              resolve(result.split(",")[1] ?? "");
-            };
-            reader.onerror = () => reject(new Error("Failed to read image"));
-            reader.readAsDataURL(croppedBlob);
-          });
-          const { error: fnError } = await supabase.functions.invoke(
-            "upload-artist-avatar",
-            {
+          const base64 = await getAvatarBase64();
+          if (base64) {
+            await supabase.functions.invoke("upload-artist-avatar", {
               body: {
                 user_id: authData.user.id,
                 email: formData.email,
                 image_base64: base64,
                 content_type: "image/jpeg",
               },
-            }
-          );
-          if (fnError) {
-            console.warn("Avatar upload failed:", fnError);
-            toast({
-              title: t("artistRegistration.success.title"),
-              description: "Account created. We couldn't upload your photo — you can add it later from your dashboard.",
             });
           }
         } catch (avatarErr) {
-          console.warn("Avatar processing failed:", avatarErr);
+          console.warn("Avatar upload failed:", avatarErr);
         }
       }
 
       toast({
         title: t("artistRegistration.success.title"),
-        description: t("artistRegistration.success.message")
+        description: t("artistRegistration.success.message"),
       });
-      setRegisteredUserId(authData.user.id);
-      setShowPlanSelection(true);
+      navigate(`/login?signup=success&email=${encodeURIComponent(formData.email)}`);
     } catch (error: any) {
-      console.error('Registration error:', error);
-      const raw = (error?.message || "").toLowerCase();
-      let description = error.message || t("artistRegistration.error.message");
-      if (raw.includes("rate limit") || raw.includes("too many") || error?.status === 429) {
-        description = t(
-          "artistRegistration.error.rateLimit",
-          "Prea multe încercări de înregistrare într-un timp scurt. Te rugăm să aștepți câteva minute și să încerci din nou. Dacă ai primit deja un email de confirmare, verifică inboxul (și folderul Spam)."
-        );
-      }
+      console.error("Free signup error:", error);
       toast({
         title: t("artistRegistration.error.title"),
-        description,
-        variant: "destructive"
+        description: error?.message || t("artistRegistration.error.message"),
+        variant: "destructive",
       });
+      setCheckoutLoading(null);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const plans = subscriptionPlans;
-
-  const getPrice = (monthlyPrice: number) => formatPlanPrice(monthlyPrice, isAnnual);
-
-  const getSpecializationLabel = (spec: string) => {
-    const map: Record<string, string> = {
-      Singer: t("artistRegistration.specializations.singer"),
-      Instrumentalist: t("artistRegistration.specializations.instrumentalist"),
-      DJ: t("artistRegistration.specializations.dj"),
-      Band: t("artistRegistration.specializations.band"),
-    };
-    return map[spec] || spec;
-  };
-
-
   const handlePlanSelect = async (planName: string) => {
-    if (!registeredUserId) return;
-
     if (planName === "Free") {
-      sessionStorage.removeItem("artist_pending_uid");
-      navigate(`/artist/${registeredUserId}`);
+      setCheckoutLoading("Free");
+      await handleFreeSignup();
       return;
     }
 
     if (planName === "Standard" || planName === "Premium") {
       setCheckoutLoading(planName);
-      const origin = window.location.origin;
-      sessionStorage.setItem("artist_pending_uid", registeredUserId);
-      const ok = await startCheckout({
-        plan: planName,
-        billing: isAnnual ? "yearly" : "monthly",
-        successUrl: `${origin}/artist/${registeredUserId}?checkout=success`,
-        cancelUrl: `${origin}/register/artist?checkout=cancelled`,
-        userId: registeredUserId,
-      });
-      if (!ok) setCheckoutLoading(null);
+      try {
+        const countryName = getCountryNameByCode(formData.country) || formData.country;
+        const avatar_base64 = await getAvatarBase64();
+        const origin = window.location.origin;
+
+        const { data, error } = await supabase.functions.invoke("create-pending-artist-checkout", {
+          body: {
+            email: formData.email,
+            password: formData.password,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            stage_name: formData.stageName,
+            phone: formData.phone,
+            country: countryName,
+            county: formData.county,
+            specialization: formData.specialization,
+            experience_level: formData.experienceLevel,
+            career_start_year: formData.careerStartYear,
+            avatar_base64,
+            plan: planName,
+            billing: isAnnual ? "yearly" : "monthly",
+            success_url: `${origin}/login?signup=success&email=${encodeURIComponent(formData.email)}`,
+            cancel_url: `${origin}/register/artist?checkout=cancelled`,
+          },
+        });
+
+        if (error || !data?.url) {
+          throw new Error(data?.error || error?.message || "Could not start checkout");
+        }
+        window.location.href = data.url as string;
+      } catch (err: any) {
+        console.error("Paid plan checkout error:", err);
+        toast({
+          title: t("common.error"),
+          description: err?.message || "Could not start checkout",
+          variant: "destructive",
+        });
+        setCheckoutLoading(null);
+      }
     }
   };
 
