@@ -1,55 +1,42 @@
-## Problema confirmată
+## Problema
 
-- `mailer_autoconfirm = false` → după `supabase.auth.signUp()` userul există în `auth.users` dar **nu are sesiune** (`auth.uid()` rămâne `null` în client).
-- `RegisterArtist.tsx` încearcă apoi:
-  1. `supabase.storage.from('avatars').upload(...)` → RLS cere `auth.uid()::text = folder` → **eșuează**.
-  2. `supabase.from('profiles').update(...).eq('id', user.id)` → RLS cere `auth.uid() = id` → **eșuează**.
-- Migrarea anterioară pentru extinderea trigger-ului nu a fost commit-ată; edge function-ul pentru avatar nu a fost creat.
+După înregistrarea unui cont de artist, contul este creat dar **emailul nu este confirmat**, deci `supabase.auth.signUp` nu returnează o sesiune. Când utilizatorul apasă „Choose Premium/Standard", `startCheckout` cheamă `supabase.auth.getSession()` → nu există sesiune → afișează „Please sign in to continue".
 
-## Soluție
+Edge function-ul `create-checkout` impune `Authorization: Bearer <jwt>` și respinge orice apel fără sesiune.
 
-### 1. Migrare DB: extinde `handle_new_user()`
+## Soluția
 
-Trigger-ul deja creează `profiles` + `user_roles` din metadata. Îl extindem să mapeze și câmpurile specifice artistului din `raw_user_meta_data`:
-- `phone`, `country`, `county`
-- `specialization`, `experience_level` (cu cast la enum, cu validare)
-- `career_start_year` (cu cast la int, cu validare)
+Aplicăm același pattern ca la `upload-artist-avatar`: lăsăm edge function-ul să accepte un `user_id` direct, validând server-side că utilizatorul există și a fost creat recent (≤ 30 minute), folosind service role key. Asta permite checkout imediat după sign-up, fără să așteptăm confirmarea emailului.
 
-Astfel, la `signUp` cu metadata completă, profilul artistului e populat 100% server-side, fără să depindă de o sesiune client.
+## Modificări
 
-### 2. Edge function nouă: `upload-artist-avatar`
+### 1. `supabase/functions/create-checkout/index.ts`
+- Dacă există `Authorization: Bearer ...` valid → folosim user-ul din JWT (comportament actual, neschimbat pentru utilizatorii logați).
+- Altfel, dacă body-ul conține `user_id`:
+  - Folosim service role pentru `auth.admin.getUserById(user_id)`.
+  - Verificăm `created_at` ≤ 30 minute în urmă (fereastră post-înregistrare).
+  - Continuăm cu logica de checkout existentă (customer Stripe, sesiune, etc.).
+- Restul logicii (creare customer, sesiune Stripe) rămâne identic.
 
-- `verify_jwt = false` (userul nu are JWT încă — email neconfirmat).
-- Input: `{ user_id, email, image_base64 }`.
-- Validări (anti-abuse):
-  - Userul există în `auth.users` și e creat în ultimele 5 minute.
-  - Emailul din request match-uiește emailul userului.
-  - Imaginea ≤ 5MB, MIME `image/jpeg` sau `image/png`.
-- Acțiuni cu service role:
-  - Upload la `avatars/{user_id}/avatar.jpg` (upsert).
-  - `UPDATE profiles SET avatar_url = <publicUrl> WHERE id = user_id`.
+### 2. `supabase/config.toml`
+- Adăugăm bloc pentru `create-checkout` cu `verify_jwt = false` ca să permitem apelul fără sesiune.
 
-### 3. `RegisterArtist.tsx`
+### 3. `src/lib/checkout.ts`
+- `startCheckout` acceptă opțional `userId?: string`.
+- Dacă nu există sesiune **și** este furnizat `userId`, trimitem `user_id` în body în loc să eșuăm cu „Please sign in to continue".
 
-- La `signUp`, adaugă în `options.data` toate câmpurile artistului: `phone`, `country` (numele țării rezolvat), `county`, `specialization`, `experience_level`, `career_start_year`, plus `account_type: 'artist'`, `first_name`, `last_name`, `full_name: stageName`.
-- **Șterge** `supabase.from('profiles').update(...)` (trigger-ul face totul).
-- **Șterge** `supabase.storage.from('avatars').upload(...)` direct.
-- Dacă `imageSrc` + `croppedAreaPixels` există: convertește la base64 și apelează `supabase.functions.invoke('upload-artist-avatar', { body: { user_id, email, image_base64 } })`. Avatarul nu mai e blocant — dacă upload-ul eșuează arătăm un toast warning, dar continuăm la plan selection.
+### 4. `src/pages/RegisterArtist.tsx`
+- În `handlePlanSelect`, transmitem `userId: registeredUserId` către `startCheckout`.
 
-### 4. Test end-to-end
+## Securitate
 
-După implementare:
-- Pornesc browser-ul în preview, parcurg fluxul de înregistrare artist (4 pași + foto + parolă).
-- Verific în DB că `profiles` are toate câmpurile populate corect și `avatar_url` setat.
-- Confirm absența erorii „new row violates row-level security policy".
+- Validarea cu service role + fereastra de 30 minute previne abuzul (nu poți crea checkout pentru alt user random).
+- Pentru utilizatorii deja logați, comportamentul rămâne neschimbat (verificare JWT).
+- `customer-portal` rămâne neschimbat (necesită mereu sesiune).
 
 ## Fișiere atinse
 
-- nou: `supabase/migrations/<timestamp>_handle_new_user_artist_fields.sql`
-- nou: `supabase/functions/upload-artist-avatar/index.ts`
-- editat: `src/pages/RegisterArtist.tsx`
-
-## Note
-
-- `RegisterUser.tsx` rămâne neschimbat (nu face upload/update după signup).
-- Google OAuth continuă să funcționeze: creează sesiune normală, iar trigger-ul completează profilul de bază din metadata Google.
+- `supabase/functions/create-checkout/index.ts` (editare)
+- `supabase/config.toml` (editare)
+- `src/lib/checkout.ts` (editare)
+- `src/pages/RegisterArtist.tsx` (mică editare în `handlePlanSelect`)

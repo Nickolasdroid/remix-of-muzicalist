@@ -9,6 +9,7 @@ export async function startCheckout(opts: {
   billing: Billing;
   successUrl?: string;
   cancelUrl?: string;
+  userId?: string;
 }): Promise<boolean> {
   const price_id = PRICE_BY_PLAN[opts.plan]?.[opts.billing];
   if (!price_id) {
@@ -17,7 +18,7 @@ export async function startCheckout(opts: {
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
+  if (!session && !opts.userId) {
     toast.error("Please sign in to continue");
     return false;
   }
@@ -27,6 +28,7 @@ export async function startCheckout(opts: {
       price_id,
       success_url: opts.successUrl,
       cancel_url: opts.cancelUrl,
+      ...(session ? {} : { user_id: opts.userId }),
     },
   });
 
