@@ -145,7 +145,7 @@ const Login = () => {
       </Link>
 
       {/* Login Form - centered */}
-      <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-6 pb-12 md:py-12">
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
         <div className="w-full max-w-md">
           {/* Form */}
           <form onSubmit={handleSubmit}>
