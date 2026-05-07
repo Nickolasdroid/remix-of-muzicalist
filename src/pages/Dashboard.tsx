@@ -2991,7 +2991,7 @@ const Dashboard = () => {
                                     <span className="text-xs text-muted-foreground">Unavailable</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-5 h-5 rounded bg-accent"></div>
+                                    <div className="w-5 h-5 rounded bg-emerald-500"></div>
                                     <span className="text-xs text-muted-foreground">Available</span>
                                   </div>
                                 </div>
@@ -3062,7 +3062,7 @@ const Dashboard = () => {
                                               ? 'bg-destructive/10 text-destructive border-destructive/30'
                                               : pastEvent.status === 'blocked'
                                               ? 'bg-muted text-muted-foreground border-border'
-                                              : 'bg-accent/10 text-accent-foreground border-accent/30'
+                                              : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
                                           }`}>
                                             {pastEvent.status === 'busy' || pastEvent.status === 'booked' ? 'Booked' : pastEvent.status === 'blocked' ? 'Unavailable' : 'Available'}
                                           </div>
@@ -3200,7 +3200,7 @@ const Dashboard = () => {
                                   <span className="text-sm text-muted-foreground">Unavailable</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-accent"></div>
+                                  <div className="w-6 h-6 rounded bg-emerald-500"></div>
                                   <span className="text-sm text-muted-foreground">Available</span>
                                 </div>
                               </div>
