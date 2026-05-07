@@ -76,8 +76,8 @@ const About = () => {
       {/* Community Sections */}
       <CommunitySections />
 
-      {/* Trending Artists Section */}
-      <TrendingArtistsSection />
+      {/* Leaderboard Preview Section */}
+      <LeaderboardPreviewSection />
 
       {/* How Muzicalist Works Section */}
       <section className="py-10 md:py-20 px-4 md:px-8">
