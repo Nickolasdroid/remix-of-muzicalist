@@ -1831,7 +1831,7 @@ const ArtistProfile = () => {
                                 <span className="text-xs text-muted-foreground">Unavailable</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded bg-accent"></div>
+                                <div className="w-5 h-5 rounded bg-emerald-500"></div>
                                 <span className="text-xs text-muted-foreground">Available</span>
                               </div>
                             </div>
@@ -1859,7 +1859,7 @@ const ArtistProfile = () => {
                           day: 'numeric'
                         })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-emerald-500 text-white"}>
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
                             </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
@@ -1880,7 +1880,7 @@ const ArtistProfile = () => {
                               <span className="text-sm text-muted-foreground">Unavailable</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded bg-accent"></div>
+                              <div className="w-6 h-6 rounded bg-emerald-500"></div>
                               <span className="text-sm text-muted-foreground">Available</span>
                             </div>
                           </div>
