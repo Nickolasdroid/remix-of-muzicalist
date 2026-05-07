@@ -139,40 +139,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel - Branding */}
-      <div className="relative hidden md:flex w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex-col justify-center overflow-hidden">
-        {/* Background image */}
-        <img
-          src={artistOnboardingBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
-        {/* Subtle glow effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
-        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
-
-        {/* Content */}
-        <div className="relative z-10 px-8 md:px-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-            Welcome Back<br />to Muzicalist
-          </h1>
-          <p className="text-sm md:text-base text-white/70 max-w-md">
-            Log in and manage your artist profile, bookings and opportunities.
-          </p>
-        </div>
-
-      </div>
-
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Homepage logo - top left */}
       <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
         <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
       </Link>
 
-      {/* Right Panel - Login Form */}
-      <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 pt-20 pb-12 md:py-12 md:px-12">
+      {/* Login Form - centered */}
+      <div className="w-full min-h-screen flex items-center justify-center px-6 pt-20 pb-12 md:py-12">
         <div className="w-full max-w-md">
           {/* Form */}
           <form onSubmit={handleSubmit}>
