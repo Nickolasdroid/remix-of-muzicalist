@@ -3028,7 +3028,6 @@ const Dashboard = () => {
                         setEventNotes("");
                       }
                     }} className="rounded-lg border border-border shadow-sm pointer-events-auto" classNames={{
-                      day: "h-9 w-9 p-0 font-normal rounded-md hover:bg-emerald-500 hover:text-white aria-selected:opacity-100",
                       day_selected: "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
                       day_today: "bg-emerald-500/30 text-foreground"
                     }} modifiers={{
