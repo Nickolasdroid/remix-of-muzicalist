@@ -615,7 +615,7 @@ const RegisterArtist = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Top-left logo linking to homepage */}
       <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
         <Link to="/" className="flex items-center gap-2">
@@ -623,14 +623,8 @@ const RegisterArtist = () => {
         </Link>
       </div>
 
-      {/* Left Side - Multi-Step Form */}
-      <div className="relative w-full md:w-[55%] min-h-screen flex flex-col order-2 md:order-2 overflow-hidden">
-        {/* Background image */}
-        <img
-          src={artistRegisterBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {/* Multi-Step Form - centered */}
+      <div className="relative w-full min-h-screen flex flex-col">
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
             {/* Form Container */}
