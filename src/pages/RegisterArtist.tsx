@@ -21,8 +21,6 @@ import CountrySelector, { getCountryNameByCode } from "@/components/CountrySelec
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
-import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
-import artistRegisterBg from "@/assets/artist-register-bg.jpg";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
@@ -541,39 +539,15 @@ const RegisterArtist = () => {
   // Step 0: Split-screen onboarding
   if (currentStep === 0) {
     return (
-      <div className="min-h-screen flex flex-col md:flex-row">
+      <div className="min-h-screen flex flex-col bg-background">
         {/* Homepage logo - top left */}
         <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
         </Link>
 
-        {/* Left Panel - Branding */}
-        <div className="relative hidden md:flex w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex-col justify-center overflow-hidden">
-          {/* Background image */}
-          <img
-            src={artistOnboardingBg}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          {/* Dark overlay with gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
-          {/* Subtle glow effects */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
-          <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
-
-          {/* Content */}
-          <div className="relative z-10 px-8 md:px-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-              Join Muzicalist
-            </h1>
-            <p className="text-sm md:text-base text-white/70 max-w-md">
-              Create your artist profile and get booked for events.
-            </p>
-          </div>
-        </div>
-
-        {/* Right Panel - Form */}
-        <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 pt-20 pb-12 md:py-12 md:px-12">
+        {/* Form - centered */}
+        <div className="w-full min-h-screen flex items-center justify-center px-6 pt-20 pb-12 md:py-12">
+        
           <div className="w-full max-w-md">
             <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
               {/* Header with logo */}
@@ -639,7 +613,7 @@ const RegisterArtist = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Top-left logo linking to homepage */}
       <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
         <Link to="/" className="flex items-center gap-2">
@@ -647,14 +621,8 @@ const RegisterArtist = () => {
         </Link>
       </div>
 
-      {/* Left Side - Multi-Step Form */}
-      <div className="relative w-full md:w-[55%] min-h-screen flex flex-col order-2 md:order-2 overflow-hidden">
-        {/* Background image */}
-        <img
-          src={artistRegisterBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      {/* Multi-Step Form - centered */}
+      <div className="relative w-full min-h-screen flex flex-col">
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
           <div className="w-full max-w-xl">
             {/* Form Container */}
@@ -974,34 +942,8 @@ const RegisterArtist = () => {
         </div>
       </div>
 
-      {/* Right Side - Persistent Illustration (Mobile: top, Desktop: right) */}
-      <div className="relative hidden md:flex w-full md:w-[45%] min-h-[35vh] md:min-h-screen flex-col items-center justify-center overflow-hidden order-1 md:order-1 md:sticky md:top-0 md:h-screen">
-        {/* Background image */}
-        <img
-          src={artistOnboardingBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
-        {/* Subtle glow effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
-        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
-
-        {/* Content */}
-        <div className="relative z-10 text-center px-8 md:px-12 py-12">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white mb-4">
-            Join Muzicalist
-          </h2>
-          <p className="text-base md:text-lg text-white/80 font-medium mb-3">
-            Create your artist profile and get booked for events
-          </p>
-          <p className="text-sm md:text-base text-white/60 max-w-md mx-auto">
-            Connect with clients, showcase your talent, and grow your music career.
-          </p>
-        </div>
-      </div>
     </div>);
+
 
 };
 
