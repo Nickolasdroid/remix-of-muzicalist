@@ -21,8 +21,6 @@ import CountrySelector, { getCountryNameByCode } from "@/components/CountrySelec
 import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig } from "@/lib/countryPhoneCodes";
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
-import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
-import artistRegisterBg from "@/assets/artist-register-bg.jpg";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
