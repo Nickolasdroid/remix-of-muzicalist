@@ -8,44 +8,48 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 100% 5%;
+    /* Cinematic dark neutral base — Spotify/Apple Music inspired */
+    --background: 240 6% 5%;          /* #0B0B0C */
     --foreground: 0 0% 100%;
 
-    --card: 0 80% 15%;
+    --card: 240 5% 9%;                /* #151518 */
     --card-foreground: 0 0% 100%;
 
-    --popover: 0 80% 10%;
+    --popover: 240 6% 7%;             /* #111113 */
     --popover-foreground: 0 0% 100%;
 
-    --primary: 0 100% 27%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 45 70% 52%;            /* gold as primary action */
+    --primary-foreground: 240 10% 6%;
 
-    --secondary: 0 70% 20%;
+    --secondary: 240 5% 13%;          /* elevated dark surface */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 50% 25%;
-    --muted-foreground: 0 0% 80%;
+    --muted: 240 5% 16%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 51 100% 50%;
-    --accent-foreground: 0 100% 10%;
+    --accent: 45 75% 55%;             /* #D4AF37 / #F5C542 gold */
+    --accent-foreground: 240 10% 6%;
 
-    --burgundy: 0 60% 40%;
+    /* Ambient cinematic burgundy — used only for glow/accents */
+    --burgundy: 0 75% 19%;            /* #5A0B0B */
     --burgundy-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 70% 25%;
-    --input: 0 70% 20%;
-    --ring: 51 100% 50%;
+    --border: 240 5% 18%;
+    --input: 240 5% 14%;
+    --ring: 45 75% 55%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Custom design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(0, 100%, 27%) 0%, hsl(0, 80%, 10%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 80%, 15%) 0%, hsl(0, 70%, 10%) 100%);
-    --shadow-gold: 0 10px 40px -10px hsl(51 100% 50% / 0.3);
-    --shadow-elegant: 0 20px 60px -20px hsl(0 100% 0% / 0.5);
+    /* Custom design tokens — cinematic dark + gold */
+    --gradient-primary: linear-gradient(135deg, hsl(45 75% 55%) 0%, hsl(45 70% 42%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(240 5% 11%) 0%, hsl(240 6% 7%) 100%);
+    --gradient-cinematic: radial-gradient(ellipse at top, hsl(0 75% 19% / 0.35) 0%, transparent 60%), linear-gradient(180deg, hsl(240 6% 5%) 0%, hsl(240 6% 4%) 100%);
+    --shadow-gold: 0 10px 40px -10px hsl(45 75% 55% / 0.35);
+    --shadow-burgundy: 0 20px 60px -20px hsl(0 75% 19% / 0.6);
+    --shadow-elegant: 0 20px 60px -20px hsl(0 0% 0% / 0.7);
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
