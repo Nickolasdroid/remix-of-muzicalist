@@ -2049,7 +2049,7 @@ const ArtistProfile = () => {
                       const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                       const hasSlots = slots.length > 0;
                       let label = "Available";
-                      let cls = "bg-emerald-500 text-white";
+                      let cls = "bg-accent text-accent-foreground bg-emerald-500";
                       if (blocked) {
                         label = "Unavailable";
                         cls = "bg-muted text-muted-foreground";
