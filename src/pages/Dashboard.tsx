@@ -3027,7 +3027,10 @@ const Dashboard = () => {
                         setEventStatus('available');
                         setEventNotes("");
                       }
-                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
+                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" classNames={{
+                      day_selected: "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
+                      day_today: "bg-emerald-500/30 text-foreground"
+                    }} modifiers={{
                       busy: calendarEvents.filter((e) => e.status === 'busy').map((e) => parseYMDToLocalDate(e.event_date)),
                       blocked: calendarEvents.filter((e) => e.status === 'blocked').map((e) => parseYMDToLocalDate(e.event_date))
                     }} modifiersClassNames={{
