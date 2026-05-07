@@ -6,7 +6,7 @@ import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import AISearchShowcase from "@/components/AISearchShowcase";
 import CommunitySections from "@/components/CommunitySections";
-import TrendingArtistsSection from "@/components/TrendingArtistsSection";
+import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
 import CategoryCard from "@/components/CategoryCard";
 import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
