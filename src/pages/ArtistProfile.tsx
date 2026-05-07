@@ -2039,6 +2039,30 @@ const ArtistProfile = () => {
                     day: 'numeric'
                   })}
                     </DialogTitle>
+                    {selectedDate && (() => {
+                      const events = getEventsForDate(selectedDate);
+                      const blocked = isBlockedDate(selectedDate);
+                      const busy = isBusyDate(selectedDate);
+                      const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
+                      const hasSlots = slots.length > 0;
+                      let label = "Available";
+                      let cls = "bg-accent text-accent-foreground";
+                      if (blocked) {
+                        label = "Unavailable";
+                        cls = "bg-muted text-muted-foreground";
+                      } else if (busy && hasSlots && canUseTimeIntervals(artist?.plan)) {
+                        label = `Partially booked · ${slots.length} slot${slots.length > 1 ? "s" : ""} taken`;
+                        cls = "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30";
+                      } else if (busy) {
+                        label = "Fully booked";
+                        cls = "bg-destructive text-destructive-foreground";
+                      }
+                      return (
+                        <div className="pt-1">
+                          <Badge className={cls}>{label}</Badge>
+                        </div>
+                      );
+                    })()}
                   </DialogHeader>
                   <form onSubmit={handleBookingSubmit} className="space-y-4">
                     {canUseTimeIntervals(artist?.plan) && (
