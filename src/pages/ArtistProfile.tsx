@@ -1862,7 +1862,7 @@ const ArtistProfile = () => {
                           day: 'numeric'
                         })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-emerald-500 text-white"}>
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground bg-emerald-500"}>
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
                             </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
@@ -2049,7 +2049,7 @@ const ArtistProfile = () => {
                       const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                       const hasSlots = slots.length > 0;
                       let label = "Available";
-                      let cls = "bg-accent text-accent-foreground";
+                      let cls = "bg-accent text-accent-foreground bg-emerald-500";
                       if (blocked) {
                         label = "Unavailable";
                         cls = "bg-muted text-muted-foreground";
