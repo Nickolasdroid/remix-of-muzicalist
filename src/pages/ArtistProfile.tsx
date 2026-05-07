@@ -1839,7 +1839,10 @@ const ArtistProfile = () => {
                         </div>
                         {/* Calendar */}
                         <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
-                          <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" modifiers={{
+                          <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" classNames={{
+                      day_selected: "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
+                      day_today: "bg-emerald-500/30 text-foreground",
+                    }} modifiers={{
                       busy: getBusyDates(),
                       blocked: getBlockedDates()
                     }} modifiersClassNames={{
