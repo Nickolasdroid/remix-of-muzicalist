@@ -549,7 +549,7 @@ const RegisterArtist = () => {
 
         {/* Form - centered */}
         <div className="w-full min-h-screen flex items-center justify-center px-6 pt-20 pb-12 md:py-12">
-        <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 pt-20 pb-12 md:py-12 md:px-12">
+        
           <div className="w-full max-w-md">
             <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
               {/* Header with logo */}
