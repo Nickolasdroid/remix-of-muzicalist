@@ -546,7 +546,7 @@ const RegisterArtist = () => {
         </Link>
 
         {/* Form - centered */}
-        <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-6 pb-12 md:py-12">
+        <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
         
           <div className="w-full max-w-md">
             <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
