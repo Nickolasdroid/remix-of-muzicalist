@@ -21,6 +21,30 @@ const MyPlan = () => {
   const handlePlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     if (planId === 'Free' || isDowngrade) {
       setActionLoading(planId);
+      // Check if user has a Stripe customer; if not, downgrade directly
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('stripe_customer_id')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        if (!profile?.stripe_customer_id) {
+          const { error: updErr } = await supabase
+            .from('profiles')
+            .update({ plan: planId })
+            .eq('id', session.user.id);
+          if (updErr) {
+            toast({ title: 'Could not change plan', description: updErr.message, variant: 'destructive' });
+            setActionLoading(null);
+            return;
+          }
+          setCurrentPlan(planId);
+          toast({ title: 'Plan updated', description: `You are now on the ${planId} plan.` });
+          setActionLoading(null);
+          return;
+        }
+      }
       const ok = await openCustomerPortal(window.location.href);
       if (!ok) setActionLoading(null);
       return;
