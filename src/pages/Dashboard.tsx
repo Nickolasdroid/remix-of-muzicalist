@@ -3108,7 +3108,7 @@ const Dashboard = () => {
                                 }
                               }
                             }}>
-                                            <SelectTrigger className={showAsBooked ? "text-destructive" : ""}>
+                                            <SelectTrigger className={showAsBooked ? "text-destructive" : eventStatus === 'available' ? "text-emerald-500" : ""}>
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
