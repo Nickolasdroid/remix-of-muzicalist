@@ -97,11 +97,6 @@ const Footer = () => {
                 <Mail className="h-5 w-5 text-accent" />
                 <span>contact@muzicalist.com</span>
               </li>
-              <li className="flex items-center gap-3 text-muted-foreground">
-                <MapPin className="h-5 w-5 text-accent" />
-                <span></span>
-              </li>
-              
             </ul>
           </div>
         </div>
