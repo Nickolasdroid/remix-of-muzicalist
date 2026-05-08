@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield } from "lucide-react";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
   PopoverContent,
@@ -8,10 +9,9 @@ import {
 } from "./ui/popover";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
-import LanguageSwitcher from "./LanguageSwitcher";
+import CountrySelector from "./CountrySelector";
 
 interface NavigationProps {
   mobileTitle?: string;
@@ -23,10 +23,10 @@ interface NavigationProps {
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,13 +48,21 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      
       if (session?.user) {
+        // Fetch profile
         const { data: profileData } = await supabase
           .from('profiles')
           .select('avatar_url, stage_name, plan, country')
           .eq('id', session.user.id)
           .single();
         setProfile(profileData);
+        
+        if (profileData?.country) {
+          setSelectedCountry(profileData.country);
+        }
+        
+        // Fetch user type
         const { data: roleData } = await supabase
           .from('user_roles')
           .select('user_type')
@@ -63,102 +71,169 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         setUserType(roleData?.user_type || null);
       }
     };
+
     checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      
       if (session?.user) {
         supabase
           .from('profiles')
           .select('avatar_url, stage_name, plan, country')
           .eq('id', session.user.id)
           .single()
-          .then(({ data }) => setProfile(data));
+          .then(({ data }) => {
+            setProfile(data);
+            if (data?.country) {
+              setSelectedCountry(data.country);
+            }
+          });
+        
+        // Fetch user type
         supabase
           .from('user_roles')
           .select('user_type')
           .eq('user_id', session.user.id)
           .maybeSingle()
-          .then(({ data }) => setUserType(data?.user_type || null));
+          .then(({ data }) => {
+            setUserType(data?.user_type || null);
+          });
       } else {
         setProfile(null);
         setUserType(null);
       }
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch count of conversations with unread messages
   useEffect(() => {
     const fetchUnreadConversationsCount = async () => {
-      if (!user) { setUnreadCount(0); return; }
+      if (!user) {
+        setUnreadCount(0);
+        return;
+      }
+
       const { data: conversations } = await supabase
         .from('conversations')
         .select('id')
         .or(`artist_id.eq.${user.id},participant_id.eq.${user.id}`);
-      if (!conversations || conversations.length === 0) { setUnreadCount(0); return; }
+
+      if (!conversations || conversations.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
       const conversationIds = conversations.map(c => c.id);
+
       const { data: unreadMessages } = await supabase
         .from('messages')
         .select('conversation_id')
         .in('conversation_id', conversationIds)
         .neq('sender_id', user.id)
         .is('read_at', null);
+
       const uniqueConversations = new Set((unreadMessages || []).map(m => m.conversation_id));
       setUnreadCount(uniqueConversations.size);
     };
+
     fetchUnreadConversationsCount();
+
     const channel = supabase
       .channel('nav-unread-messages')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => fetchUnreadConversationsCount())
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          fetchUnreadConversationsCount();
+        }
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
+  // Fetch count of unread notifications
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {
-      if (!user) { setUnreadNotifications(0); return; }
+      if (!user) {
+        setUnreadNotifications(0);
+        return;
+      }
+
       const { count } = await supabase
         .from('notifications')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .is('read_at', null);
+
       setUnreadNotifications(count || 0);
     };
+
     fetchUnreadNotificationsCount();
+
     const channel = supabase
       .channel('nav-notifications')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => fetchUnreadNotificationsCount())
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications'
+        },
+        () => {
+          fetchUnreadNotificationsCount();
+        }
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
+  // Determine dashboard path based on user type
+  const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
+  
   const sidebarLinks = [
-    { to: '/feed', icon: Home, label: t('navigation.home') },
-    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements') },
-    { to: '/categories', icon: Users, label: t('navigation.categories') },
-    { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
-    { to: '/countries', icon: Globe, label: t('navigation.countries') },
-    { to: '/counties', icon: MapPin, label: t('navigation.counties') },
+    { to: '/feed', icon: Home, label: 'Home' },
+    { to: '/announcements', icon: Megaphone, label: 'Announcements' },
+    { to: '/categories', icon: Users, label: 'Categories' },
+    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+    { to: '/countries', icon: Globe, label: 'Countries' },
+    { to: '/counties', icon: MapPin, label: 'Regions' },
   ];
 
-  const userSidebarLinks = userType === 'user'
+  // User-specific sidebar links (only shown when logged in)
+  // For regular users, show different links than for artists
+  const userSidebarLinks = userType === 'user' 
     ? [
-        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
-        { to: '/user-dashboard', icon: User, label: t('navigation.profile') },
+        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+        { to: '/user-dashboard', icon: User, label: 'Profile' },
       ]
     : [
-        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
-        { to: '/my-plan', icon: Crown, label: t('navigation.myPlan') },
-        { to: '/dashboard?tab=profile', icon: User, label: t('navigation.profile') },
+        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
+        { to: '/my-plan', icon: Crown, label: 'My Plan' },
+        { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
       ];
 
+  // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
-    { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
-    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements'), showBadge: false },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
-    { to: '/search', icon: Search, label: t('navigation.search'), showBadge: false },
-    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
+    { to: '/feed', icon: Home, label: 'Home', showBadge: false },
+    { to: '/announcements', icon: Megaphone, label: 'Announcements', showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
+    { to: '/search', icon: Search, label: 'Search', showBadge: false },
+    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: 'Profile', showBadge: false },
   ];
 
   return (
@@ -172,17 +247,17 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
         </div>
+
         <div className="flex items-center gap-3">
-          <LanguageSwitcher variant="ghost" />
           <Link to="/login">
             <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
               <LogIn className="h-4 w-4 mr-2" />
-              {t('navigation.login')}
+              Login
             </Button>
           </Link>
           <Link to="/register">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-              {t('navigation.register')}
+              Register
             </Button>
           </Link>
         </div>
@@ -192,14 +267,20 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       {/* Mobile: Top Header Bar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className="flex items-center justify-between h-14 px-4">
+          {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {mobileTitle ? (
             <button
               className="p-2 text-foreground/80 hover:text-accent transition-colors"
               onClick={() => {
-                if (onMobileBack) onMobileBack();
-                else if (typeof mobileBackPath === 'number') navigate(mobileBackPath);
-                else if (mobileBackPath) navigate(mobileBackPath as string);
-                else navigate(-1);
+                if (onMobileBack) {
+                  onMobileBack();
+                } else if (typeof mobileBackPath === 'number') {
+                  navigate(mobileBackPath);
+                } else if (mobileBackPath) {
+                  navigate(mobileBackPath);
+                } else {
+                  navigate(-1);
+                }
               }}
             >
               <ArrowLeft className="h-6 w-6" />
@@ -212,12 +293,15 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               </button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 bg-background border-r border-border p-0 flex flex-col">
+              {/* Logo */}
               <div className="p-4 border-b border-border">
                 <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                   <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
                   <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
                 </Link>
               </div>
+
+              {/* Main navigation - exclude Home/Announcements (already in bottom nav) */}
               <div className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => (
                   <Link
@@ -234,73 +318,95 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 ))}
+
+                {/* My Plan (only for artist accounts) */}
                 {user && userType === 'artist' && (
                   <Link
                     to="/my-plan"
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive('/my-plan') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      isActive('/my-plan')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <Crown className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{t('navigation.myPlan')}</span>
+                    <span className="font-medium">My Plan</span>
                   </Link>
                 )}
+
+                {/* Admin Dashboard (admin only) */}
                 {user && (userType as string) === 'admin' && (
                   <Link
                     to="/admin/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive('/admin/dashboard') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      isActive('/admin/dashboard')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <Shield className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{t('navigation.adminDashboard')}</span>
+                    <span className="font-medium">Admin Dashboard</span>
                   </Link>
                 )}
+
+                {/* Settings (only when logged in) */}
                 {user && (
                   <Link
                     to="/dashboard?tab=settings"
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      location.search.includes('tab=settings') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      location.search.includes('tab=settings')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <Settings className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{t('navigation.settings')}</span>
+                    <span className="font-medium">Settings</span>
                   </Link>
                 )}
+                
+                {/* Help & Support */}
                 <Link
                   to="/help"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/help') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    isActive('/help')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
                   <HelpCircle className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">{t('navigation.helpSupport')}</span>
+                  <span className="font-medium">Help & Support</span>
                 </Link>
+
+                {/* About */}
                 <Link
                   to="/about"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/about') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    isActive('/about')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
                   <Info className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">{t('navigation.about')}</span>
+                  <span className="font-medium">About</span>
                 </Link>
-                <div className="pt-2">
-                  <LanguageSwitcher variant="outline" showLabel className="w-full justify-start" />
-                </div>
               </div>
+
+              {/* Bottom section - Logout only */}
               <div className="p-4 border-t border-border space-y-1">
                 <button
-                  onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
                   className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   <LogOut className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">{t('navigation.logout')}</span>
+                  <span className="font-medium">Logout</span>
                 </button>
               </div>
             </SheetContent>
@@ -312,22 +418,23 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             </Link>
           )}
 
+          {/* Center: Custom mobile title or page title (logged in) or nothing */}
           {mobileTitle ? (
             <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
           ) : user ? (
             <>
               {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.settingsTitle')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Settings</span>
               ) : location.pathname === '/leaderboard' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.leaderboard')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
               ) : location.pathname === '/countries' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.countries')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Countries</span>
               ) : location.pathname === '/counties' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.counties')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Regions</span>
               ) : location.pathname === '/categories' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Categories</span>
               ) : location.pathname === '/notifications' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
+                <span className="font-display font-bold text-foreground text-lg">Notifications</span>
               ) : (
                 <Link to="/feed" className="flex items-center gap-2">
                   <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
@@ -337,6 +444,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             </>
           ) : null}
 
+          {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
           <div className="flex items-center gap-1">
             {user ? (
               <button
@@ -352,16 +460,15 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               </button>
             ) : (
               <div className="flex items-center gap-2">
-                <LanguageSwitcher variant="ghost" />
                 <Link to="/login">
                   <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs px-3">
                     <LogIn className="h-3.5 w-3.5 mr-1" />
-                    {t('navigation.login')}
+                    Login
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-3">
-                    {t('navigation.register')}
+                    Register
                   </Button>
                 </Link>
               </div>
@@ -370,7 +477,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
       </nav>
 
-      {/* Mobile: Bottom Navigation Bar */}
+      {/* Mobile: Bottom Navigation Bar (only for logged-in users) */}
       {user && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
@@ -398,37 +505,48 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </nav>
       )}
 
-      {/* Desktop: Left Sidebar */}
+      {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
       <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
+        {/* Logo at top of sidebar - h-16 to align with header */}
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
             <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
           </Link>
         </div>
+        
+        {/* Main navigation links */}
         <div className="flex-1 p-4 space-y-1 overflow-y-auto">
           {sidebarLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                isActive(link.to.split('?')[0]) ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                isActive(link.to.split('?')[0])
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
               }`}
             >
               <link.icon className="h-5 w-5" />
               <span className="font-medium">{link.label}</span>
             </Link>
           ))}
+
+          {/* Search Link - between Regions and Notifications */}
           <Link
             to="/search"
             className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-              isActive('/search') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+              isActive('/search')
+                ? 'bg-accent/20 text-accent'
+                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
             }`}
           >
             <Search className="h-5 w-5" />
-            <span className="font-medium">{t('navigation.search')}</span>
+            <span className="font-medium">Search</span>
           </Link>
+
+          {/* User-specific links */}
           {user && (
             <>
               {userSidebarLinks.map((link) => (
@@ -455,12 +573,14 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             </>
           )}
         </div>
+
+        {/* More Button at bottom */}
         <div className="p-4 border-t border-border">
           <Popover>
             <PopoverTrigger asChild>
               <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
                 <MoreHorizontal className="h-5 w-5" />
-                <span className="font-medium">{t('navigation.more')}</span>
+                <span className="font-medium">More</span>
               </button>
             </PopoverTrigger>
             <PopoverContent side="top" align="start" className="w-[calc(16rem-2rem)] bg-card border-border p-2 z-50">
@@ -469,45 +589,51 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   <Link
                     to="/dashboard?tab=settings"
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      location.search.includes('tab=settings') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      location.search.includes('tab=settings')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <Settings className="h-5 w-5" />
-                    <span className="font-medium">{t('navigation.settings')}</span>
+                    <span className="font-medium">Settings</span>
                   </Link>
                 )}
                 {user && (userType as string) === 'admin' && (
                   <Link
                     to="/admin/dashboard"
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive('/admin/dashboard') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      isActive('/admin/dashboard')
+                        ? 'bg-accent/20 text-accent'
+                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
                     <Shield className="h-5 w-5" />
-                    <span className="font-medium">{t('navigation.adminDashboard')}</span>
+                    <span className="font-medium">Admin Dashboard</span>
                   </Link>
                 )}
                 <Link
                   to="/help"
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/help') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    isActive('/help')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
                   <HelpCircle className="h-5 w-5" />
-                  <span className="font-medium">{t('navigation.helpSupport')}</span>
+                  <span className="font-medium">Help & Support</span>
                 </Link>
                 <Link
                   to="/about"
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/about') ? 'bg-accent/20 text-accent' : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    isActive('/about')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
                   <Info className="h-5 w-5" />
-                  <span className="font-medium">{t('navigation.about')}</span>
+                  <span className="font-medium">About</span>
                 </Link>
-                <div className="px-3 py-2">
-                  <LanguageSwitcher variant="outline" showLabel className="w-full justify-start" />
-                </div>
+                
                 {user && (
                   <>
                     <div className="h-px bg-border my-1" />
@@ -516,7 +642,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                       className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-5 w-5" />
-                      <span className="font-medium">{t('navigation.logout')}</span>
+                      <span className="font-medium">Logout</span>
                     </button>
                   </>
                 )}
@@ -526,6 +652,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
       </aside>
       )}
+
     </>
   );
 };

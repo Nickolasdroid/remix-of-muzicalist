@@ -13,21 +13,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag, getCountryName, getCountryCode } from "@/lib/countryFlags";
 import { countryAdminDivisions } from "@/lib/countryAdminDivisions";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 const categories = ["Singer", "Instrumentalist", "DJ", "Band"] as const;
-
-const categoryKeyMap: Record<string, string> = {
-  Singer: "artistRegistration.specializations.singer",
-  Instrumentalist: "artistRegistration.specializations.instrumentalist",
-  DJ: "artistRegistration.specializations.dj",
-  Band: "artistRegistration.specializations.band",
-};
 
 const HeroSearchBar = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { t } = useTranslation();
 
   const [locationOpen, setLocationOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
@@ -60,10 +51,10 @@ const HeroSearchBar = () => {
 
   const locationLabel = selectedCountry
     ? `${getCountryFlag(selectedCountry)} ${selectedRegion || getCountryName(selectedCountry)}`
-    : t("heroSearch.location");
+    : "Location";
 
-  const categoryLabel = selectedCategory ? t(categoryKeyMap[selectedCategory] || selectedCategory) : t("heroSearch.artistType");
-  const dateLabel = selectedDate ? format(selectedDate, "MMM d, yyyy") : t("heroSearch.date");
+  const categoryLabel = selectedCategory || "Artist Type";
+  const dateLabel = selectedDate ? format(selectedDate, "MMM d, yyyy") : "Date";
 
   const handleSearch = () => {
     if (selectedCountry) {
@@ -88,7 +79,7 @@ const HeroSearchBar = () => {
   const locationContent = (
     <div className="space-y-2">
       <input
-        placeholder={t("heroSearch.searchCountry")}
+        placeholder="Search country..."
         value={countrySearch}
         onChange={(e) => setCountrySearch(e.target.value)}
         className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none"
@@ -118,7 +109,7 @@ const HeroSearchBar = () => {
       {selectedCountry && regions.length > 0 && (
         <>
           <div className="border-t border-border pt-2">
-            <p className="text-xs text-muted-foreground mb-1 px-1">{t("heroSearch.region")}</p>
+            <p className="text-xs text-muted-foreground mb-1 px-1">Region</p>
             <ScrollArea className="h-36">
               <div className="space-y-0.5">
                 <button
@@ -129,7 +120,7 @@ const HeroSearchBar = () => {
                     !selectedRegion && "bg-accent/20 text-accent"
                   )}
                 >
-                  {t("heroSearch.allRegions")}
+                  All Regions
                 </button>
                 {regions.map((r) => (
                   <button
@@ -165,7 +156,7 @@ const HeroSearchBar = () => {
             selectedCategory === cat && "bg-accent/20 text-accent"
           )}
         >
-          {t(categoryKeyMap[cat] || cat)}
+          {cat}
         </button>
       ))}
     </div>
@@ -190,7 +181,7 @@ const HeroSearchBar = () => {
             </DrawerTrigger>
             <DrawerContent className="px-4 pb-6">
               <DrawerHeader className="text-left px-0">
-                <DrawerTitle>{t("heroSearch.selectArtistType")}</DrawerTitle>
+                <DrawerTitle>Select Artist Type</DrawerTitle>
               </DrawerHeader>
               {categoryContent}
             </DrawerContent>
@@ -206,7 +197,7 @@ const HeroSearchBar = () => {
             </DrawerTrigger>
             <DrawerContent className="px-4 pb-6">
               <DrawerHeader className="text-left px-0">
-                <DrawerTitle>{t("heroSearch.selectLocation")}</DrawerTitle>
+                <DrawerTitle>Select Location</DrawerTitle>
               </DrawerHeader>
               {locationContent}
             </DrawerContent>
@@ -222,7 +213,7 @@ const HeroSearchBar = () => {
             </DrawerTrigger>
             <DrawerContent className="px-4 pb-6">
               <DrawerHeader className="text-left px-0">
-                <DrawerTitle>{t("heroSearch.selectDate")}</DrawerTitle>
+                <DrawerTitle>Select Date</DrawerTitle>
               </DrawerHeader>
               <div className="flex justify-center">
                 <Calendar
@@ -243,7 +234,7 @@ const HeroSearchBar = () => {
             className="w-full rounded-none rounded-b-2xl bg-accent text-accent-foreground hover:bg-accent/90 py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search className="h-4 w-4 mr-2" />
-            {t("heroSearch.search")}
+            Search
           </Button>
         </div>
       </div>
@@ -310,7 +301,7 @@ const HeroSearchBar = () => {
           className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 text-base font-semibold m-1.5 shadow-[var(--shadow-gold)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Search className="h-4 w-4 mr-2" />
-          {t("heroSearch.search")}
+          Search
         </Button>
       </div>
     </div>

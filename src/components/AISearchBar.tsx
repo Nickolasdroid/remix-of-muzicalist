@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Sparkles, Loader2, ArrowRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SimpleArtistCard from "@/components/SimpleArtistCard";
@@ -21,7 +21,6 @@ interface ArtistResult {
 }
 
 const AISearchBar = () => {
-  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
@@ -29,29 +28,38 @@ const AISearchBar = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!query.trim()) {
-      toast.error(t("aiSearch.errorEmpty"));
+      toast.error("Please enter a search query");
       return;
     }
+
     setIsLoading(true);
     setResponse(null);
     setArtists([]);
+
     try {
       const { data, error } = await supabase.functions.invoke("ai-search", {
-        body: { query: query.trim() },
+        body: { query: query.trim() }
       });
+
       if (error) {
         console.error("Search error:", error);
-        if (error.message.includes("429")) toast.error(t("aiSearch.errorRateLimit"));
-        else if (error.message.includes("402")) toast.error(t("aiSearch.errorService"));
-        else toast.error(t("aiSearch.errorGeneric"));
+        if (error.message.includes("429")) {
+          toast.error("Too many requests. Please try again later.");
+        } else if (error.message.includes("402")) {
+          toast.error("Service temporarily unavailable. Please contact support.");
+        } else {
+          toast.error("Failed to process search. Please try again.");
+        }
         return;
       }
+
       if (data?.response) setResponse(data.response);
       if (Array.isArray(data?.artists)) setArtists(data.artists);
     } catch (error) {
       console.error("Search error:", error);
-      toast.error(t("aiSearch.errorUnexpected"));
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -65,27 +73,30 @@ const AISearchBar = () => {
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-5 w-5 text-accent" />
               <h3 className="text-lg font-display font-bold text-foreground">
-                {t("aiSearch.title")}
+                AI-Powered Search
               </h3>
             </div>
+
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder={t("aiSearch.placeholder")}
+                placeholder="E.g., 'Find jazz singers in București' or 'Rock bands for wedding'"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-10 pr-12"
-                disabled={isLoading}
-              />
+                disabled={isLoading} />
               <Button
                 type="submit"
                 disabled={isLoading}
                 size="icon"
                 variant="ghost"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90">
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </form>
@@ -95,10 +106,13 @@ const AISearchBar = () => {
               <div className="flex items-start gap-2">
                 <Sparkles className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-foreground mb-1">{t("aiSearch.results")}</h4>
-                  {response && <p className="text-sm text-muted-foreground">{response}</p>}
+                  <h4 className="font-semibold text-foreground mb-1">Search Results</h4>
+                  {response && (
+                    <p className="text-sm text-muted-foreground">{response}</p>
+                  )}
                 </div>
               </div>
+
               {artists.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {artists.map((a) => (
@@ -117,8 +131,8 @@ const AISearchBar = () => {
           )}
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
+
 };
 
 export default AISearchBar;
