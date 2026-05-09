@@ -77,6 +77,10 @@ const MyPlan = () => {
         navigate('/user-dashboard');
         return;
       }
+      if ((roleData?.user_type as string) === 'admin') {
+        navigate('/admin/dashboard');
+        return;
+      }
 
       const { data: profileData } = await supabase
         .from('profiles')
