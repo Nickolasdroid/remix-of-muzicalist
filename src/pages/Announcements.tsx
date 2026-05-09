@@ -378,6 +378,23 @@ const Announcements = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AdminDeleteContentDialog
+        open={!!adminDeleteId}
+        onOpenChange={(o) => !o && setAdminDeleteId(null)}
+        contentType="announcement"
+        onConfirm={async (reason) => {
+          if (!adminDeleteId) return;
+          const { error } = await supabase.from("announcements").delete().eq("id", adminDeleteId);
+          if (error) {
+            toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+          } else {
+            setAnnouncements((items) => items.filter((a) => a.id !== adminDeleteId));
+            toast({ title: "Announcement removed", description: `Reason: ${reason}` });
+          }
+          setAdminDeleteId(null);
+        }}
+      />
     </div>;
 };
 export default Announcements;
