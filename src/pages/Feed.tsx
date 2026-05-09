@@ -20,6 +20,8 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
+import { useUserRole } from "@/hooks/useUserRole";
+import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 
 const POSTS_PER_PAGE = 10;
 
