@@ -2365,7 +2365,7 @@ const Dashboard = () => {
                               </DialogTrigger>
                               <DialogContent className="max-w-md">
                                 <DialogHeader>
-                                  <DialogTitle>Create New</DialogTitle>
+                                  <DialogTitle>Add New</DialogTitle>
                                 </DialogHeader>
                                 <div className="flex items-center gap-2 mt-3 flex-wrap">
                                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
