@@ -952,7 +952,7 @@ const ArtistProfile = () => {
                 {/* Rating badge - top left */}
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
                   <Star className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-bold">{getAverageRating() || 'N/A'}</span>
+                  <span className="text-sm font-bold">{getAverageRating() || 'Add'}</span>
                   {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
                 </div>
                 <div />
@@ -1090,7 +1090,7 @@ const ArtistProfile = () => {
                   {/* Rating badge */}
                   <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                     <Star className="h-6 w-6 fill-current" />
-                    <span className="text-2xl font-bold">{getAverageRating() || 'N/A'}</span>
+                    <span className="text-2xl font-bold">{getAverageRating() || 'Add'}</span>
                     {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
                   </div>
                 </div>

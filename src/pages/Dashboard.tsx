@@ -1617,7 +1617,7 @@ const Dashboard = () => {
                         <div className="absolute top-0 left-0 z-10">
                           <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
                             <Star className="h-4 w-4 fill-current" />
-                            <span className="text-sm font-bold">{getAverageRating() || 'New'}</span>
+                            <span className="text-sm font-bold">{getAverageRating() || 'Add'}</span>
                             {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
                           </div>
                         </div>
@@ -1797,7 +1797,7 @@ const Dashboard = () => {
                           {!isAdmin && (
                             <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
                               <Star className="h-6 w-6 fill-current" />
-                              <span className="text-2xl font-bold">{getAverageRating() || 'New'}</span>
+                              <span className="text-2xl font-bold">{getAverageRating() || 'Add'}</span>
                               {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
                             </div>
                           )}
@@ -2360,12 +2360,12 @@ const Dashboard = () => {
                               <DialogTrigger asChild>
                                 <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                   <Plus className="h-4 w-4 mr-1" />
-                                  New
+                                  Add
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-md">
                                 <DialogHeader>
-                                  <DialogTitle>Create New</DialogTitle>
+                                  <DialogTitle>Add New</DialogTitle>
                                 </DialogHeader>
                                 <div className="flex items-center gap-2 mt-3 flex-wrap">
                                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
@@ -2703,7 +2703,7 @@ const Dashboard = () => {
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                                     <Plus className="h-4 w-4 mr-1" />
-                                    New
+                                    Add
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="max-w-md">
