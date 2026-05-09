@@ -320,7 +320,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 ))}
 
                 {/* My Plan (only for artist accounts) */}
-                {user && userType === 'artist' && (
+                {user && userType === 'artist' && (userType as string) !== 'admin' && (
                   <Link
                     to="/my-plan"
                     onClick={() => setMobileMenuOpen(false)}
