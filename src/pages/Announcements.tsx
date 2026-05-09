@@ -254,6 +254,12 @@ const Announcements = () => {
                             Delete
                           </DropdownMenuItem>
                         </>}
+                        {isAdmin && currentUserId !== announcement.profile_id && (
+                          <DropdownMenuItem onClick={() => setAdminDeleteId(announcement.id)} className="text-destructive focus:text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete (admin)
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
