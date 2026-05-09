@@ -1,0 +1,2 @@
+CREATE POLICY "Admins can delete any post" ON public.posts FOR DELETE USING (public.is_admin(auth.uid()));
+CREATE POLICY "Admins can delete any announcement" ON public.announcements FOR DELETE USING (public.is_admin(auth.uid()));

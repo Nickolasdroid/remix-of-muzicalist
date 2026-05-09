@@ -20,6 +20,8 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
+import { useUserRole } from "@/hooks/useUserRole";
+import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 
 const POSTS_PER_PAGE = 10;
 
@@ -62,6 +64,8 @@ const Feed = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useUserRole();
+  const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -428,6 +432,12 @@ const Feed = () => {
                               Delete
                             </DropdownMenuItem>
                           </>}
+                          {isAdmin && currentUserId !== item.profile_id && (
+                            <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "announcement" })} className="text-destructive focus:text-destructive">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete (admin)
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -527,6 +537,12 @@ const Feed = () => {
                             Delete
                           </DropdownMenuItem>
                         </>}
+                        {isAdmin && currentUserId !== item.profile_id && (
+                          <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "post" })} className="text-destructive focus:text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete (admin)
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -650,6 +666,24 @@ const Feed = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AdminDeleteContentDialog
+        open={!!adminDeleteTarget}
+        onOpenChange={(o) => !o && setAdminDeleteTarget(null)}
+        contentType={adminDeleteTarget?.type ?? "post"}
+        onConfirm={async (reason) => {
+          if (!adminDeleteTarget) return;
+          const table = adminDeleteTarget.type === "post" ? "posts" : "announcements";
+          const { error } = await supabase.from(table).delete().eq("id", adminDeleteTarget.id);
+          if (error) {
+            toast({ title: "Error", description: "Failed to delete content.", variant: "destructive" });
+          } else {
+            setFeedItems((items) => items.filter((it) => it.id !== adminDeleteTarget.id));
+            toast({ title: "Content removed", description: `Reason: ${reason}` });
+          }
+          setAdminDeleteTarget(null);
+        }}
+      />
     </div>;
 };
 export default Feed;

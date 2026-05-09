@@ -20,6 +20,8 @@ import GuestContentGate from "@/components/GuestContentGate";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
+import { useUserRole } from "@/hooks/useUserRole";
+import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
@@ -41,6 +43,8 @@ const Announcements = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useUserRole();
+  const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -250,6 +254,12 @@ const Announcements = () => {
                             Delete
                           </DropdownMenuItem>
                         </>}
+                        {isAdmin && currentUserId !== announcement.profile_id && (
+                          <DropdownMenuItem onClick={() => setAdminDeleteId(announcement.id)} className="text-destructive focus:text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete (admin)
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -368,6 +378,23 @@ const Announcements = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AdminDeleteContentDialog
+        open={!!adminDeleteId}
+        onOpenChange={(o) => !o && setAdminDeleteId(null)}
+        contentType="announcement"
+        onConfirm={async (reason) => {
+          if (!adminDeleteId) return;
+          const { error } = await supabase.from("announcements").delete().eq("id", adminDeleteId);
+          if (error) {
+            toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+          } else {
+            setAnnouncements((items) => items.filter((a) => a.id !== adminDeleteId));
+            toast({ title: "Announcement removed", description: `Reason: ${reason}` });
+          }
+          setAdminDeleteId(null);
+        }}
+      />
     </div>;
 };
 export default Announcements;
