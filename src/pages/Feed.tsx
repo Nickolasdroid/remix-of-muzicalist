@@ -64,6 +64,8 @@ const Feed = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useUserRole();
+  const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
