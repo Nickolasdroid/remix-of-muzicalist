@@ -537,6 +537,12 @@ const Feed = () => {
                             Delete
                           </DropdownMenuItem>
                         </>}
+                        {isAdmin && currentUserId !== item.profile_id && (
+                          <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "post" })} className="text-destructive focus:text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete (admin)
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
