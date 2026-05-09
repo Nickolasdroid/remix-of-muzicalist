@@ -43,6 +43,8 @@ const Announcements = () => {
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useUserRole();
+  const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
