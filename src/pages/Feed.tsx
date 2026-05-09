@@ -666,6 +666,24 @@ const Feed = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AdminDeleteContentDialog
+        open={!!adminDeleteTarget}
+        onOpenChange={(o) => !o && setAdminDeleteTarget(null)}
+        contentType={adminDeleteTarget?.type ?? "post"}
+        onConfirm={async (reason) => {
+          if (!adminDeleteTarget) return;
+          const table = adminDeleteTarget.type === "post" ? "posts" : "announcements";
+          const { error } = await supabase.from(table).delete().eq("id", adminDeleteTarget.id);
+          if (error) {
+            toast({ title: "Error", description: "Failed to delete content.", variant: "destructive" });
+          } else {
+            setFeedItems((items) => items.filter((it) => it.id !== adminDeleteTarget.id));
+            toast({ title: "Content removed", description: `Reason: ${reason}` });
+          }
+          setAdminDeleteTarget(null);
+        }}
+      />
     </div>;
 };
 export default Feed;
