@@ -219,7 +219,7 @@ const Search = () => {
                   : "Type artist name..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-4 pr-12 h-14 w-full text-base rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-white border-border"
+                className="pl-4 pr-12 h-14 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-white"
                 disabled={isAILoading}
               />
               {!(isAIMode && searchQuery.trim()) && (
