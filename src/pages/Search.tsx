@@ -212,7 +212,7 @@ const Search = () => {
                 type="search"
                 placeholder={isAIMode
                   ? "E.g., 'Jazz singers in București' or 'Rock bands for wedding'"
-                  : "Type artist name..."}
+                  : "Search artists..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className={`pl-12 ${isAIMode && searchQuery.trim() ? "pr-14" : "pr-4"} h-14 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white`}
