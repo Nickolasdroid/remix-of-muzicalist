@@ -203,7 +203,7 @@ const Search = () => {
         </div>
       )}
       
-      <main className="pt-16 pb-20 md:pt-2 md:pb-8 md:pl-64">
+      <main className="pt-20 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto py-2 md:py-8 px-0">
           {/* Desktop Search Input */}
           {!isMobile && (
