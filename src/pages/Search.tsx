@@ -206,7 +206,8 @@ const Search = () => {
           {/* Desktop Search Input */}
           {!isMobile && (
           <form onSubmit={handleSubmit}>
-            <div className="relative mb-1 border rounded-2xl border-border">
+            <div className="relative mb-1">
+              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
                 type="search"
                 placeholder={isAIMode
@@ -214,19 +215,16 @@ const Search = () => {
                   : "Type artist name..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-4 pr-12 h-14 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white"
+                className={`pl-12 ${isAIMode && searchQuery.trim() ? "pr-14" : "pr-4"} h-14 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white`}
                 disabled={isAILoading}
               />
-              {!(isAIMode && searchQuery.trim()) && (
-                <SearchIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-              )}
               {isAIMode && searchQuery.trim() && (
                 <Button
                   type="submit"
                   disabled={isAILoading}
                   size="icon"
                   variant="ghost"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isAILoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
