@@ -158,7 +158,7 @@ const Search = () => {
       {/* Mobile: Custom search header */}
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-background md:hidden">
-          <form onSubmit={handleSubmit} className="flex items-center gap-3 h-16 px-3">
+          <form onSubmit={handleSubmit} className="flex items-center gap-3 h-20 px-3">
             <button
               type="button"
               onClick={() => {
