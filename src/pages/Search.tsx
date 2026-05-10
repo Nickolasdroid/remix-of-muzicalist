@@ -182,7 +182,7 @@ const Search = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
-                className="pl-10 pr-12 h-10 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white"
+                className={`pl-10 ${isAIMode && searchQuery.trim() ? "pr-12" : "pr-3"} h-10 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white`}
                 disabled={isAILoading}
               />
               {isAIMode && searchQuery.trim() && (
