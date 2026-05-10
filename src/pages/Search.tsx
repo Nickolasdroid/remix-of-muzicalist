@@ -211,7 +211,7 @@ const Search = () => {
           {/* Desktop Search Input */}
           {!isMobile && (
           <form onSubmit={handleSubmit}>
-            <div className="relative mb-1 border rounded-lg border-primary">
+            <div className="relative mb-1 border rounded-2xl border-transparent">
               <Input
                 type="search"
                 placeholder={isAIMode
