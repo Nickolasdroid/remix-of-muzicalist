@@ -158,7 +158,7 @@ const Search = () => {
       {/* Mobile: Custom search header */}
       {isMobile && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-background md:hidden">
-          <form onSubmit={handleSubmit} className="flex items-center gap-3 h-16 px-3">
+          <form onSubmit={handleSubmit} className="flex items-center gap-3 h-20 px-3">
             <button
               type="button"
               onClick={() => {
@@ -173,8 +173,7 @@ const Search = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+            <div className="relative flex-1 border rounded-2xl border-border">
               <Input
                 ref={inputRef}
                 type="search"
@@ -182,16 +181,19 @@ const Search = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
-                className={`pl-10 ${isAIMode && searchQuery.trim() ? "pr-12" : "pr-3"} h-10 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white`}
+                className="pl-4 pr-12 h-14 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white"
                 disabled={isAILoading}
               />
+              {!(isAIMode && searchQuery.trim()) && (
+                <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+              )}
               {isAIMode && searchQuery.trim() && (
                 <Button
                   type="submit"
                   disabled={isAILoading}
                   size="icon"
                   variant="ghost"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
                   {isAILoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                 </Button>
@@ -201,7 +203,7 @@ const Search = () => {
         </div>
       )}
       
-      <main className="pt-16 pb-20 md:pt-2 md:pb-8 md:pl-64">
+      <main className="pt-20 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto py-2 md:py-8 px-0">
           {/* Desktop Search Input */}
           {!isMobile && (
