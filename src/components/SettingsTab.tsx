@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,36 +6,19 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
+import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
 
-const LANGUAGE_OPTIONS = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "ro", label: "Română", flag: "🇷🇴" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "it", label: "Italiano", flag: "🇮🇹" },
-  { code: "pt", label: "Português", flag: "🇵🇹" },
-  { code: "nl", label: "Nederlands", flag: "🇳🇱" },
-  { code: "pl", label: "Polski", flag: "🇵🇱" },
-  { code: "hu", label: "Magyar", flag: "🇭🇺" },
-  { code: "bg", label: "Български", flag: "🇧🇬" },
-  { code: "uk", label: "Українська", flag: "🇺🇦" },
-  { code: "ru", label: "Русский", flag: "🇷🇺" },
-  { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-  { code: "ar", label: "العربية", flag: "🇸🇦" },
-  { code: "zh", label: "中文", flag: "🇨🇳" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
-  { code: "ko", label: "한국어", flag: "🇰🇷" },
-];
+const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
 interface SettingsTabProps {
   formData: {
