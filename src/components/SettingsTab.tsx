@@ -496,7 +496,7 @@ const SettingsTab = ({
 
   // Mobile: Language section
   const MobileLanguageSection = () => {
-    const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+    const currentLang = i18n.language?.split("-")[0] || "en";
     return (
       <div className="p-4 space-y-4">
         <div>
@@ -506,10 +506,7 @@ const SettingsTab = ({
           </p>
         </div>
         <div className="space-y-2">
-          {[
-            { code: "en", label: "English", flag: "🇬🇧" },
-            { code: "ro", label: "Română", flag: "🇷🇴" },
-          ].map((lang) => (
+          {LANGUAGE_OPTIONS.map((lang) => (
             <button
               key={lang.code}
               onClick={() => setManualLanguage(lang.code)}
@@ -934,11 +931,8 @@ const SettingsTab = ({
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    {[
-                      { code: "en", label: "🇬🇧 English" },
-                      { code: "ro", label: "🇷🇴 Română" },
-                    ].map((lang) => {
-                      const currentLang = i18n.language?.startsWith("ro") ? "ro" : "en";
+                      {LANGUAGE_OPTIONS.map((lang) => {
+                        const currentLang = i18n.language?.split("-")[0] || "en";
                       return (
                         <Button
                           key={lang.code}
@@ -947,7 +941,7 @@ const SettingsTab = ({
                           onClick={() => setManualLanguage(lang.code)}
                           className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
                         >
-                          {lang.label}
+                          {lang.flag} {lang.label}
                         </Button>
                       );
                     })}
