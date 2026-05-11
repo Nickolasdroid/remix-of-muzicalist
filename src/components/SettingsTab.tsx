@@ -491,7 +491,7 @@ const SettingsTab = ({
           ].map((lang) => (
             <button
               key={lang.code}
-              onClick={() => i18n.changeLanguage(lang.code)}
+              onClick={() => setManualLanguage(lang.code)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
                 currentLang === lang.code
                   ? "border-accent/50 bg-accent/10 text-accent"
