@@ -247,7 +247,7 @@ const Search = () => {
             }`}
           >
             <Sparkles className="h-3.5 w-3.5" />
-            AI Search {isAIMode ? "ON" : "OFF"}
+            <span data-no-translate>AI Search {isAIMode ? "ON" : "OFF"}</span>
           </button>
 
           {/* AI Response */}
