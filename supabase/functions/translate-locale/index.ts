@@ -3,13 +3,14 @@
 //
 // Request body:
 //   { targetLang: "fr", sourceLang?: "en", source: { key: "value", nested: { ... } } }
+//   { targetLang: "fr", sourceLang?: "auto", texts: ["Home", "Search"] }
 //
 // Response:
 //   { translations: { ...same shape as source, all string leaves translated... } }
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -40,6 +41,15 @@ function unflatten(map: Record<string, string>) {
   return out;
 }
 
+function safeJsonParse(content: string) {
+  try {
+    return JSON.parse(content);
+  } catch {
+    const match = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+    return match ? JSON.parse(match[0]) : null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -53,7 +63,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { targetLang, sourceLang = "en", source } = await req.json();
+    const { targetLang, sourceLang = "en", source, texts } = await req.json();
 
     if (!targetLang || typeof targetLang !== "string") {
       return new Response(JSON.stringify({ error: "targetLang required" }), {
@@ -61,6 +71,63 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    if (Array.isArray(texts)) {
+      const cleanTexts = texts
+        .filter((value) => typeof value === "string")
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .slice(0, 120);
+
+      if (cleanTexts.length === 0) {
+        return new Response(JSON.stringify({ translations: [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const systemPrompt =
+        `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
+        `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
+        `Preserve brand names such as Muzicalist, people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
+        `Return ONLY JSON in this exact shape: {"translations":["..."]}. Keep the same order and count.`;
+
+      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: JSON.stringify({ texts: cleanTexts }) },
+          ],
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!aiRes.ok) {
+        const text = await aiRes.text();
+        console.error("AI gateway error", aiRes.status, text);
+        return new Response(JSON.stringify({ error: "AI gateway error", status: aiRes.status, detail: text }), {
+          status: aiRes.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiJson = await aiRes.json();
+      const content: string = aiJson?.choices?.[0]?.message?.content ?? "{}";
+      const parsed = safeJsonParse(content);
+      const translated = Array.isArray(parsed?.translations) ? parsed.translations : [];
+      const ordered = cleanTexts.map((text, index) =>
+        typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
+      );
+
+      return new Response(JSON.stringify({ translations: ordered }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (!source || typeof source !== "object") {
       return new Response(JSON.stringify({ error: "source object required" }), {
         status: 400,
@@ -115,7 +182,7 @@ Deno.serve(async (req) => {
 
     let translatedFlat: Record<string, string>;
     try {
-      translatedFlat = JSON.parse(content);
+      translatedFlat = safeJsonParse(content);
     } catch (e) {
       console.error("Failed to parse AI JSON", content);
       return new Response(JSON.stringify({ error: "Invalid AI response" }), {
