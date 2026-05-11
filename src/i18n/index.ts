@@ -161,18 +161,42 @@ export const setManualLanguage = async (lng: string) => {
 
 export const getCurrentLanguage = () => normalizeLanguage(i18n.language);
 
+const memoryCache: Record<string, Record<string, string>> = {};
+
+const loadCache = (base: string): Record<string, string> => {
+  if (memoryCache[base]) return memoryCache[base];
+  const cacheKey = `${TEXT_TRANSLATIONS_PREFIX}${base}_v${TRANSLATIONS_VERSION}`;
+  try {
+    memoryCache[base] = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+  } catch {
+    memoryCache[base] = {};
+  }
+  return memoryCache[base];
+};
+
+const persistCache = (base: string) => {
+  const cacheKey = `${TEXT_TRANSLATIONS_PREFIX}${base}_v${TRANSLATIONS_VERSION}`;
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(memoryCache[base] || {}));
+  } catch {
+    /* quota exceeded */
+  }
+};
+
+export const translateTextsSync = (targetLang: string, texts: string[]): Record<string, string> => {
+  const base = normalizeLanguage(targetLang);
+  const uniqueTexts = [...new Set(texts.map((t) => t.trim()).filter(Boolean))];
+  if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((t) => [t, t]));
+  const cache = loadCache(base);
+  return Object.fromEntries(uniqueTexts.map((t) => [t, cache[t] || '']));
+};
+
 export const translateTexts = async (targetLang: string, texts: string[]): Promise<Record<string, string>> => {
   const base = normalizeLanguage(targetLang);
   const uniqueTexts = [...new Set(texts.map((text) => text.trim()).filter(Boolean))];
   if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((text) => [text, text]));
 
-  const cacheKey = `${TEXT_TRANSLATIONS_PREFIX}${base}_v${TRANSLATIONS_VERSION}`;
-  let cache: Record<string, string> = {};
-  try {
-    cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-  } catch {
-    cache = {};
-  }
+  const cache = loadCache(base);
 
   const missing = uniqueTexts.filter((text) => !cache[text]);
   if (missing.length) {
