@@ -68,6 +68,52 @@ const SettingsTab = ({
   const [allowPromotion, setAllowPromotion] = useState(true);
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
+  const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
+  const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
+  const [languageSearch, setLanguageSearch] = useState("");
+
+  const currentLangCode = (i18n.language || "en").toLowerCase();
+  const currentLangBase = currentLangCode.split("-")[0];
+  const currentLanguage = useMemo(
+    () =>
+      LANGUAGE_OPTIONS.find((l) => l.code.toLowerCase() === currentLangCode) ||
+      LANGUAGE_OPTIONS.find((l) => l.code.toLowerCase() === currentLangBase) ||
+      LANGUAGE_OPTIONS[0],
+    [currentLangCode, currentLangBase],
+  );
+
+  const filteredLanguages = useMemo(() => {
+    const q = languageSearch.trim().toLowerCase();
+    if (!q) return LANGUAGE_OPTIONS;
+    return LANGUAGE_OPTIONS.filter(
+      (l) =>
+        l.label.toLowerCase().includes(q) ||
+        l.english.toLowerCase().includes(q) ||
+        l.code.toLowerCase().includes(q),
+    );
+  }, [languageSearch]);
+
+  const requestLanguageChange = (code: string, label: string) => {
+    if (code.toLowerCase() === currentLanguage.code.toLowerCase()) {
+      setLanguagePopoverOpen(false);
+      return;
+    }
+    setPendingLanguage({ code, label });
+  };
+
+  const confirmLanguageChange = async () => {
+    if (!pendingLanguage) return;
+    const lang = pendingLanguage;
+    setPendingLanguage(null);
+    setLanguagePopoverOpen(false);
+    try {
+      await setManualLanguage(lang.code);
+      toast({ title: "Language changed", description: lang.label });
+    } catch (e) {
+      toast({ title: "Could not change language", variant: "destructive" });
+    }
+  };
+
 
   useEffect(() => {
     (async () => {
