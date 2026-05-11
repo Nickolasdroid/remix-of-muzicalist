@@ -2865,12 +2865,12 @@ const Dashboard = () => {
                             <DialogTrigger asChild>
                               <Button className="bg-accent text-accent-foreground hover:bg-accent/90 text-center">
                                 <Plus className="h-4 w-4 mr-2" />
-                                Add Media
+                                Add
                               </Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Add Media</DialogTitle>
+                                <DialogTitle>Add</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
                                 <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
