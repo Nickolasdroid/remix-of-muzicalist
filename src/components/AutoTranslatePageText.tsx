@@ -17,6 +17,15 @@ const SKIP_SELECTOR = [
   "[data-no-translate]",
 ].join(",");
 
+const ATTRIBUTE_SKIP_SELECTOR = [
+  "script",
+  "style",
+  "noscript",
+  "svg",
+  "canvas",
+  "[data-no-translate]",
+].join(",");
+
 const TRANSLATABLE_ATTRIBUTES = ["placeholder", "title", "aria-label"] as const;
 
 const shouldTranslateText = (value: string) => {
@@ -107,11 +116,13 @@ const AutoTranslatePageText = () => {
         textNodes.forEach((node) => {
           const original = textOriginals.current.get(node);
           if (original && translated[original.replace(/\s+/g, " ").trim()]) {
-            node.nodeValue = original.replace(original.trim(), translated[original.replace(/\s+/g, " ").trim()]);
+            const nextValue = original.replace(original.trim(), translated[original.replace(/\s+/g, " ").trim()]);
+            if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
           }
         });
         attrTargets.forEach(({ element, attr, original }) => {
-          element.setAttribute(attr, translated[original] || original);
+          const nextValue = translated[original] || original;
+          if (element.getAttribute(attr) !== nextValue) element.setAttribute(attr, nextValue);
         });
       } finally {
         translatingRef.current = false;
