@@ -16,6 +16,27 @@ import { setManualLanguage } from "@/i18n";
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
 
+const LANGUAGE_OPTIONS = [
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "ro", label: "Română", flag: "🇷🇴" },
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+  { code: "it", label: "Italiano", flag: "🇮🇹" },
+  { code: "pt", label: "Português", flag: "🇵🇹" },
+  { code: "nl", label: "Nederlands", flag: "🇳🇱" },
+  { code: "pl", label: "Polski", flag: "🇵🇱" },
+  { code: "hu", label: "Magyar", flag: "🇭🇺" },
+  { code: "bg", label: "Български", flag: "🇧🇬" },
+  { code: "uk", label: "Українська", flag: "🇺🇦" },
+  { code: "ru", label: "Русский", flag: "🇷🇺" },
+  { code: "tr", label: "Türkçe", flag: "🇹🇷" },
+  { code: "ar", label: "العربية", flag: "🇸🇦" },
+  { code: "zh", label: "中文", flag: "🇨🇳" },
+  { code: "ja", label: "日本語", flag: "🇯🇵" },
+  { code: "ko", label: "한국어", flag: "🇰🇷" },
+];
+
 interface SettingsTabProps {
   formData: {
     email: string;
