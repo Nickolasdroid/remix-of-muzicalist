@@ -973,42 +973,64 @@ const SettingsTab = ({
                       Choose your preferred language
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-lg border border-border p-2 max-h-[420px] overflow-y-auto">
-                    {LANGUAGE_OPTIONS.map((lang) => {
-                      const currentLang = i18n.language?.split("-")[0] || "en";
-                      const isActive = currentLang === lang.code;
-                      return (
-                        <button
-                          key={lang.code}
-                          type="button"
-                          onClick={() => setManualLanguage(lang.code)}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                            isActive
-                              ? "bg-accent text-accent-foreground"
-                              : "hover:bg-muted"
-                          }`}
-                        >
-                          <span className="text-xl">{lang.flag}</span>
-                          <span className="flex-1 text-sm font-medium">{lang.label}</span>
-                          {isActive && <CheckCircle className="h-4 w-4" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Promotion Section */}
-          {activeSection === "promotion" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">Promotion</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Allow Muzicalist to feature your profile on its channels
-                </p>
-              </div>
+                  <Popover open={languagePopoverOpen} onOpenChange={setLanguagePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={languagePopoverOpen}
+                        className="w-full justify-between rounded-lg h-11"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="text-xl">{currentLanguage.flag}</span>
+                          <span className="font-medium">{currentLanguage.label}</span>
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-60" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      className="w-[--radix-popover-trigger-width] p-0 rounded-lg"
+                    >
+                      <div className="p-2 border-b border-border">
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <Input
+                            value={languageSearch}
+                            onChange={(e) => setLanguageSearch(e.target.value)}
+                            placeholder="Search language…"
+                            className="pl-8 h-9 rounded-lg"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+                      <div className="max-h-[320px] overflow-y-auto p-1">
+                        {filteredLanguages.map((lang) => {
+                          const isActive = lang.code.toLowerCase() === currentLanguage.code.toLowerCase();
+                          return (
+                            <button
+                              key={lang.code}
+                              type="button"
+                              onClick={() => requestLanguageChange(lang.code, lang.label)}
+                              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                                isActive ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                              }`}
+                            >
+                              <span className="text-xl">{lang.flag}</span>
+                              <span className="flex-1 text-sm font-medium">{lang.label}</span>
+                              <span className="text-xs text-muted-foreground">{lang.english}</span>
+                              {isActive && <CheckCircle className="h-4 w-4 ml-1" />}
+                            </button>
+                          );
+                        })}
+                        {filteredLanguages.length === 0 && (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            No languages found
+                          </p>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
 
               <Separator />
 
