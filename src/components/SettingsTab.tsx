@@ -707,6 +707,8 @@ const SettingsTab = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {LanguageConfirmDialog}
       </div>
     );
   }
