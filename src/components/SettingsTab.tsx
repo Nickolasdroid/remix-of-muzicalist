@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,36 +6,19 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
+import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
 
-const LANGUAGE_OPTIONS = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "ro", label: "Română", flag: "🇷🇴" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "it", label: "Italiano", flag: "🇮🇹" },
-  { code: "pt", label: "Português", flag: "🇵🇹" },
-  { code: "nl", label: "Nederlands", flag: "🇳🇱" },
-  { code: "pl", label: "Polski", flag: "🇵🇱" },
-  { code: "hu", label: "Magyar", flag: "🇭🇺" },
-  { code: "bg", label: "Български", flag: "🇧🇬" },
-  { code: "uk", label: "Українська", flag: "🇺🇦" },
-  { code: "ru", label: "Русский", flag: "🇷🇺" },
-  { code: "tr", label: "Türkçe", flag: "🇹🇷" },
-  { code: "ar", label: "العربية", flag: "🇸🇦" },
-  { code: "zh", label: "中文", flag: "🇨🇳" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
-  { code: "ko", label: "한국어", flag: "🇰🇷" },
-];
+const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
 interface SettingsTabProps {
   formData: {
@@ -85,6 +68,71 @@ const SettingsTab = ({
   const [allowPromotion, setAllowPromotion] = useState(true);
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
+  const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
+  const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
+  const [languageSearch, setLanguageSearch] = useState("");
+
+  const currentLangCode = (i18n.language || "en").toLowerCase();
+  const currentLangBase = currentLangCode.split("-")[0];
+  const currentLanguage = useMemo(
+    () =>
+      LANGUAGE_OPTIONS.find((l) => l.code.toLowerCase() === currentLangCode) ||
+      LANGUAGE_OPTIONS.find((l) => l.code.toLowerCase() === currentLangBase) ||
+      LANGUAGE_OPTIONS[0],
+    [currentLangCode, currentLangBase],
+  );
+
+  const filteredLanguages = useMemo(() => {
+    const q = languageSearch.trim().toLowerCase();
+    if (!q) return LANGUAGE_OPTIONS;
+    return LANGUAGE_OPTIONS.filter(
+      (l) =>
+        l.label.toLowerCase().includes(q) ||
+        l.english.toLowerCase().includes(q) ||
+        l.code.toLowerCase().includes(q),
+    );
+  }, [languageSearch]);
+
+  const requestLanguageChange = (code: string, label: string) => {
+    if (code.toLowerCase() === currentLanguage.code.toLowerCase()) {
+      setLanguagePopoverOpen(false);
+      return;
+    }
+    setPendingLanguage({ code, label });
+  };
+
+  const confirmLanguageChange = async () => {
+    if (!pendingLanguage) return;
+    const lang = pendingLanguage;
+    setPendingLanguage(null);
+    setLanguagePopoverOpen(false);
+    try {
+      await setManualLanguage(lang.code);
+      toast({ title: "Language changed", description: lang.label });
+    } catch (e) {
+      toast({ title: "Could not change language", variant: "destructive" });
+    }
+  };
+
+  const LanguageConfirmDialog = (
+    <AlertDialog open={!!pendingLanguage} onOpenChange={(open) => !open && setPendingLanguage(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Change language?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {pendingLanguage
+              ? `Are you sure you want to switch the site language to ${pendingLanguage.label}? The interface will be translated automatically.`
+              : ""}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmLanguageChange}>Change language</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
 
   useEffect(() => {
     (async () => {
@@ -496,7 +544,6 @@ const SettingsTab = ({
 
   // Mobile: Language section
   const MobileLanguageSection = () => {
-    const currentLang = i18n.language?.split("-")[0] || "en";
     return (
       <div className="p-4 space-y-4">
         <div>
@@ -505,22 +552,37 @@ const SettingsTab = ({
             Choose your preferred language
           </p>
         </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            value={languageSearch}
+            onChange={(e) => setLanguageSearch(e.target.value)}
+            placeholder="Search language…"
+            className="pl-9 rounded-lg"
+          />
+        </div>
         <div className="space-y-2">
-          {LANGUAGE_OPTIONS.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => setManualLanguage(lang.code)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
-                currentLang === lang.code
-                  ? "border-accent/50 bg-accent/10 text-accent"
-                  : "border-border text-foreground hover:border-muted-foreground/50"
-              }`}
-            >
-              <span className="text-xl">{lang.flag}</span>
-              <span className="flex-1 text-left font-medium">{lang.label}</span>
-              {currentLang === lang.code && <CheckCircle className="h-5 w-5 text-accent" />}
-            </button>
-          ))}
+          {filteredLanguages.map((lang) => {
+            const isActive = lang.code.toLowerCase() === currentLanguage.code.toLowerCase();
+            return (
+              <button
+                key={lang.code}
+                onClick={() => requestLanguageChange(lang.code, lang.label)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
+                  isActive
+                    ? "border-accent/50 bg-accent/10 text-accent"
+                    : "border-border text-foreground hover:border-muted-foreground/50"
+                }`}
+              >
+                <span className="text-xl">{lang.flag}</span>
+                <span className="flex-1 text-left font-medium">{lang.label}</span>
+                {isActive && <CheckCircle className="h-5 w-5 text-accent" />}
+              </button>
+            );
+          })}
+          {filteredLanguages.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">No languages found</p>
+          )}
         </div>
       </div>
     );
@@ -645,6 +707,8 @@ const SettingsTab = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {LanguageConfirmDialog}
       </div>
     );
   }
@@ -930,44 +994,67 @@ const SettingsTab = ({
                       Choose your preferred language
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-lg border border-border p-2 max-h-[420px] overflow-y-auto">
-                    {LANGUAGE_OPTIONS.map((lang) => {
-                      const currentLang = i18n.language?.split("-")[0] || "en";
-                      const isActive = currentLang === lang.code;
-                      return (
-                        <button
-                          key={lang.code}
-                          type="button"
-                          onClick={() => setManualLanguage(lang.code)}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                            isActive
-                              ? "bg-accent text-accent-foreground"
-                              : "hover:bg-muted"
-                          }`}
-                        >
-                          <span className="text-xl">{lang.flag}</span>
-                          <span className="flex-1 text-sm font-medium">{lang.label}</span>
-                          {isActive && <CheckCircle className="h-4 w-4" />}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <Popover open={languagePopoverOpen} onOpenChange={setLanguagePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={languagePopoverOpen}
+                        className="w-full justify-between rounded-lg h-11"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="text-xl">{currentLanguage.flag}</span>
+                          <span className="font-medium">{currentLanguage.label}</span>
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-60" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      className="w-[--radix-popover-trigger-width] p-0 rounded-lg"
+                    >
+                      <div className="p-2 border-b border-border">
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <Input
+                            value={languageSearch}
+                            onChange={(e) => setLanguageSearch(e.target.value)}
+                            placeholder="Search language…"
+                            className="pl-8 h-9 rounded-lg"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+                      <div className="max-h-[320px] overflow-y-auto p-1">
+                        {filteredLanguages.map((lang) => {
+                          const isActive = lang.code.toLowerCase() === currentLanguage.code.toLowerCase();
+                          return (
+                            <button
+                              key={lang.code}
+                              type="button"
+                              onClick={() => requestLanguageChange(lang.code, lang.label)}
+                              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                                isActive ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                              }`}
+                            >
+                              <span className="text-xl">{lang.flag}</span>
+                              <span className="flex-1 text-sm font-medium">{lang.label}</span>
+                              <span className="text-xs text-muted-foreground">{lang.english}</span>
+                              {isActive && <CheckCircle className="h-4 w-4 ml-1" />}
+                            </button>
+                          );
+                        })}
+                        {filteredLanguages.length === 0 && (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            No languages found
+                          </p>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* Promotion Section */}
-          {activeSection === "promotion" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">Promotion</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Allow Muzicalist to feature your profile on its channels
-                </p>
-              </div>
-
-              <Separator />
+                <Separator />
 
               <div className="flex items-center justify-between gap-4">
                 <button
@@ -981,6 +1068,7 @@ const SettingsTab = ({
                 </button>
                 <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
               </div>
+                </div>
             </div>
           )}
 
@@ -1013,6 +1101,8 @@ const SettingsTab = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {LanguageConfirmDialog}
         </div>
       </div>
     </div>
