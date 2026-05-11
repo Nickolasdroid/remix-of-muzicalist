@@ -112,7 +112,6 @@ export const WORLD_LANGUAGES: WorldLanguage[] = [
   { code: "eo", label: "Esperanto", english: "Esperanto", flag: "🌐" },
   { code: "la", label: "Latina", english: "Latin", flag: "🇻🇦" },
   { code: "yi", label: "ייִדיש", english: "Yiddish", flag: "🇮🇱" },
-  { code: "lb", label: "Lëtzebuergesch", english: "Luxembourgish", flag: "🇱🇺" },
   { code: "fo", label: "Føroyskt", english: "Faroese", flag: "🇫🇴" },
   { code: "kl", label: "Kalaallisut", english: "Greenlandic", flag: "🇬🇱" },
   { code: "se", label: "Davvisámegiella", english: "Northern Sami", flag: "🇳🇴" },
