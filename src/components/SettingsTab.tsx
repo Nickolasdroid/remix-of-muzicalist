@@ -923,7 +923,7 @@ const SettingsTab = ({
                           key={lang.code}
                           variant={currentLang === lang.code ? "default" : "outline"}
                           size="sm"
-                          onClick={() => i18n.changeLanguage(lang.code)}
+                          onClick={() => setManualLanguage(lang.code)}
                           className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
                         >
                           {lang.label}
