@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
+import { setManualLanguage } from "@/i18n";
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
 
@@ -490,7 +491,7 @@ const SettingsTab = ({
           ].map((lang) => (
             <button
               key={lang.code}
-              onClick={() => i18n.changeLanguage(lang.code)}
+              onClick={() => setManualLanguage(lang.code)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
                 currentLang === lang.code
                   ? "border-accent/50 bg-accent/10 text-accent"
@@ -922,7 +923,7 @@ const SettingsTab = ({
                           key={lang.code}
                           variant={currentLang === lang.code ? "default" : "outline"}
                           size="sm"
-                          onClick={() => i18n.changeLanguage(lang.code)}
+                          onClick={() => setManualLanguage(lang.code)}
                           className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
                         >
                           {lang.label}
