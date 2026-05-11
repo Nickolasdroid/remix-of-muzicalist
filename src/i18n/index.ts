@@ -13,11 +13,46 @@ const STATIC_RESOURCES: Record<string, any> = {
 
 const STATIC_LANGS = Object.keys(STATIC_RESOURCES);
 
-const COUNTRY_LANG_KEY = 'i18nextCountryLang';
-const MANUAL_LANG_KEY = 'i18nextManualLang';
+const COUNTRY_LANG_KEY = 'i18nextCountryLang_v2';
+const MANUAL_LANG_KEY = 'i18nextManualLang_v2';
 const TRANSLATIONS_PREFIX = 'i18nextDynamic_';
+const TEXT_TRANSLATIONS_PREFIX = 'i18nextTextDynamic_';
 // Bump this when en.json changes meaningfully to invalidate cached AI translations.
 const TRANSLATIONS_VERSION = '1';
+
+const normalizeLanguage = (lang: string | null | undefined) => (lang || 'en').split('-')[0].toLowerCase();
+
+async function detectVisitorLanguage(): Promise<string> {
+  const cached = localStorage.getItem(COUNTRY_LANG_KEY);
+  if (cached) return cached;
+
+  const providers = [
+    async () => (await fetch('https://ipapi.co/country_code/')).text(),
+    async () => {
+      const trace = await (await fetch('https://www.cloudflare.com/cdn-cgi/trace')).text();
+      return trace.match(/loc=([A-Z]{2})/)?.[1] || '';
+    },
+    async () => {
+      const data = await (await fetch('https://ipwho.is/')).json();
+      return data?.country_code || '';
+    },
+  ];
+
+  for (const provider of providers) {
+    try {
+      const code = (await provider()).trim().toUpperCase();
+      if (code) {
+        const lang = languageForCountry(code);
+        localStorage.setItem(COUNTRY_LANG_KEY, lang);
+        return lang;
+      }
+    } catch {
+      /* try next provider */
+    }
+  }
+
+  return normalizeLanguage(navigator.languages?.[0] || navigator.language);
+}
 
 if (!i18n.isInitialized) {
   i18n
@@ -49,21 +84,7 @@ if (!i18n.isInitialized) {
         return;
       }
 
-      let lang = localStorage.getItem(COUNTRY_LANG_KEY);
-      if (!lang) {
-        try {
-          const res = await fetch('https://ipapi.co/country_code/');
-          if (res.ok) {
-            const code = (await res.text()).trim().toUpperCase();
-            lang = languageForCountry(code);
-          }
-        } catch {
-          /* network/CORS failure — keep default */
-        }
-        if (lang) localStorage.setItem(COUNTRY_LANG_KEY, lang);
-      }
-
-      if (lang) await applyLanguage(lang);
+      await applyLanguage(await detectVisitorLanguage());
     } catch (e) {
       console.warn('Auto-localization failed', e);
     }
@@ -113,7 +134,7 @@ async function loadDynamicTranslations(lang: string): Promise<Record<string, any
 }
 
 async function applyLanguage(lang: string) {
-  const base = lang.split('-')[0];
+  const base = normalizeLanguage(lang);
   if (STATIC_LANGS.includes(base)) {
     if (i18n.language?.split('-')[0] !== base) await i18n.changeLanguage(base);
     return;
@@ -136,6 +157,54 @@ export const setManualLanguage = async (lng: string) => {
     localStorage.setItem(MANUAL_LANG_KEY, lng);
   }
   await applyLanguage(lng);
+};
+
+export const getCurrentLanguage = () => normalizeLanguage(i18n.language);
+
+export const translateTexts = async (targetLang: string, texts: string[]): Promise<Record<string, string>> => {
+  const base = normalizeLanguage(targetLang);
+  const uniqueTexts = [...new Set(texts.map((text) => text.trim()).filter(Boolean))];
+  if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((text) => [text, text]));
+
+  const cacheKey = `${TEXT_TRANSLATIONS_PREFIX}${base}_v${TRANSLATIONS_VERSION}`;
+  let cache: Record<string, string> = {};
+  try {
+    cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+  } catch {
+    cache = {};
+  }
+
+  const missing = uniqueTexts.filter((text) => !cache[text]);
+  if (missing.length) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (supabaseUrl) {
+      for (let i = 0; i < missing.length; i += 80) {
+        const batch = missing.slice(i, i + 80);
+        const res = await fetch(`${supabaseUrl}/functions/v1/translate-locale`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(anonKey ? { apikey: anonKey, Authorization: `Bearer ${anonKey}` } : {}),
+          },
+          body: JSON.stringify({ targetLang: base, sourceLang: 'auto', texts: batch }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        const translated: string[] = Array.isArray(data?.translations) ? data.translations : [];
+        batch.forEach((text, index) => {
+          cache[text] = typeof translated[index] === 'string' && translated[index].trim() ? translated[index] : text;
+        });
+      }
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(cache));
+      } catch {
+        /* quota exceeded — keep in-memory result */
+      }
+    }
+  }
+
+  return Object.fromEntries(uniqueTexts.map((text) => [text, cache[text] || text]));
 };
 
 export default i18n;
