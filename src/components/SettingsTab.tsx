@@ -114,6 +114,25 @@ const SettingsTab = ({
     }
   };
 
+  const LanguageConfirmDialog = (
+    <AlertDialog open={!!pendingLanguage} onOpenChange={(open) => !open && setPendingLanguage(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Change language?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {pendingLanguage
+              ? `Are you sure you want to switch the site language to ${pendingLanguage.label}? The interface will be translated automatically.`
+              : ""}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmLanguageChange}>Change language</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
 
   useEffect(() => {
     (async () => {
