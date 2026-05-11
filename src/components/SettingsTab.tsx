@@ -1047,6 +1047,7 @@ const SettingsTab = ({
                 </button>
                 <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
               </div>
+                </div>
             </div>
           )}
 
