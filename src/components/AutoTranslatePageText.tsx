@@ -101,7 +101,7 @@ const AutoTranslatePageText = () => {
 
         const attrTargets: Array<{ element: Element; attr: (typeof TRANSLATABLE_ATTRIBUTES)[number]; original: string }> = [];
         document.querySelectorAll("[placeholder], [title], [aria-label]").forEach((element) => {
-          if (element.closest(SKIP_SELECTOR)) return;
+          if (element.closest(ATTRIBUTE_SKIP_SELECTOR)) return;
           TRANSLATABLE_ATTRIBUTES.forEach((attr) => {
             const current = element.getAttribute(attr) || "";
             const stored = attrOriginals.current.get(element)?.[attr] || current;
