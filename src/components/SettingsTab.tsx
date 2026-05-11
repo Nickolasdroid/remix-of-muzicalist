@@ -1031,8 +1031,9 @@ const SettingsTab = ({
                       </div>
                     </PopoverContent>
                   </Popover>
+                </div>
 
-              <Separator />
+                <Separator />
 
               <div className="flex items-center justify-between gap-4">
                 <button
