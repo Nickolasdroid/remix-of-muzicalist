@@ -219,6 +219,7 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
         batch.forEach((text, index) => {
           cache[text] = typeof translated[index] === 'string' && translated[index].trim() ? translated[index] : text;
         });
+      }
       persistCache(base);
     }
   }
