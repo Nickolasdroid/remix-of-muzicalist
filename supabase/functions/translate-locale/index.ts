@@ -182,7 +182,8 @@ Deno.serve(async (req) => {
 
     let translatedFlat: Record<string, string>;
     try {
-      translatedFlat = safeJsonParse(content);
+      const parsed = safeJsonParse(content);
+      translatedFlat = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
     } catch (e) {
       console.error("Failed to parse AI JSON", content);
       return new Response(JSON.stringify({ error: "Invalid AI response" }), {
