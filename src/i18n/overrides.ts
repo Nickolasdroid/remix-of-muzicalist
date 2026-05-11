@@ -16,6 +16,10 @@ export const TRANSLATION_OVERRIDES: Record<string, Record<string, string>> = {
     "bands": "formații",
     "Trupă": "Formație",
     "Trupe": "Formații",
+    "Instrumentalist": "Instrumentist",
+    "Instrumentalists": "Instrumentiști",
+    "instrumentalist": "instrumentist",
+    "instrumentalists": "instrumentiști",
   },
 };
 
