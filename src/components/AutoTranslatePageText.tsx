@@ -76,7 +76,8 @@ const AutoTranslatePageText = () => {
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
           acceptNode(node) {
             if (nearestSkippedElement(node)) return NodeFilter.FILTER_REJECT;
-            const original = textOriginals.current.get(node) || node.nodeValue || "";
+            const textNode = node as Text;
+            const original = textOriginals.current.get(textNode) || textNode.nodeValue || "";
             return shouldTranslateText(original) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
           },
         });
