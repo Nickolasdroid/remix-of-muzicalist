@@ -5,6 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import ro from './locales/ro.json';
 import { languageForCountry } from '@/lib/countryLanguages';
+import { getOverride, TRANSLATION_OVERRIDES } from './overrides';
 
 const STATIC_RESOURCES: Record<string, any> = {
   en,
@@ -188,7 +189,8 @@ export const translateTextsSync = (targetLang: string, texts: string[]): Record<
   const uniqueTexts = [...new Set(texts.map((t) => t.trim()).filter(Boolean))];
   if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((t) => [t, t]));
   const cache = loadCache(base);
-  return Object.fromEntries(uniqueTexts.map((t) => [t, cache[t] || '']));
+  const overrides = TRANSLATION_OVERRIDES[base] || {};
+  return Object.fromEntries(uniqueTexts.map((t) => [t, overrides[t] || cache[t] || '']));
 };
 
 export const translateTexts = async (targetLang: string, texts: string[]): Promise<Record<string, string>> => {
@@ -197,8 +199,9 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((text) => [text, text]));
 
   const cache = loadCache(base);
+  const overrides = TRANSLATION_OVERRIDES[base] || {};
 
-  const missing = uniqueTexts.filter((text) => !cache[text]);
+  const missing = uniqueTexts.filter((text) => !overrides[text] && !cache[text]);
   if (missing.length) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -224,7 +227,8 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
     }
   }
 
-  return Object.fromEntries(uniqueTexts.map((text) => [text, cache[text] || text]));
+  return Object.fromEntries(uniqueTexts.map((text) => [text, overrides[text] || cache[text] || text]));
 };
+
 
 export default i18n;
