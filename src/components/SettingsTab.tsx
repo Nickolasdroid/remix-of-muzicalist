@@ -923,26 +923,32 @@ const SettingsTab = ({
 
               <div className="space-y-4">
                 {/* Language */}
-                <div className="flex items-center justify-between">
+                <div className="space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Language</Label>
                     <p className="text-sm text-muted-foreground">
                       Choose your preferred language
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                      {LANGUAGE_OPTIONS.map((lang) => {
-                        const currentLang = i18n.language?.split("-")[0] || "en";
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-lg border border-border p-2 max-h-[420px] overflow-y-auto">
+                    {LANGUAGE_OPTIONS.map((lang) => {
+                      const currentLang = i18n.language?.split("-")[0] || "en";
+                      const isActive = currentLang === lang.code;
                       return (
-                        <Button
+                        <button
                           key={lang.code}
-                          variant={currentLang === lang.code ? "default" : "outline"}
-                          size="sm"
+                          type="button"
                           onClick={() => setManualLanguage(lang.code)}
-                          className={currentLang === lang.code ? "bg-accent text-accent-foreground" : ""}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
+                            isActive
+                              ? "bg-accent text-accent-foreground"
+                              : "hover:bg-muted"
+                          }`}
                         >
-                          {lang.flag} {lang.label}
-                        </Button>
+                          <span className="text-xl">{lang.flag}</span>
+                          <span className="flex-1 text-sm font-medium">{lang.label}</span>
+                          {isActive && <CheckCircle className="h-4 w-4" />}
+                        </button>
                       );
                     })}
                   </div>
