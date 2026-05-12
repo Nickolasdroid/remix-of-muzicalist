@@ -377,6 +377,8 @@ const ArtistProfile = () => {
       setFollowingCount(validFollowing.count || 0);
       if (userId) setIsFollowing(!!(followCheck as any).data);
     };
+    fetchArtistData();
+  }, [id]);
 
   // Parse all time slots from notes that can contain multiple events separated by ---
   const extractAllTimeSlotsFromNotes = (notes: string | null): {
