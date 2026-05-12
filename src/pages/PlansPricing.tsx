@@ -17,9 +17,9 @@ const PlansPricing = () => {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
-    // Not authenticated -> send to register/auth
+    // Not authenticated -> send to register artist
     if (!isAuthenticated) {
-      navigate(planId === 'Free' ? '/register-artist' : '/auth');
+      navigate('/register/artist');
       return;
     }
     // Not an artist account -> can't subscribe to artist plans
