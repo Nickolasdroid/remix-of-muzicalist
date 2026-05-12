@@ -380,6 +380,39 @@ const ArtistProfile = () => {
     fetchArtistData();
   }, [id]);
 
+  const getBusyDates = () => {
+    return calendarEvents.filter((event) => event.status === 'busy' || event.status === 'booked').map((event) => parseYMDToLocalDate(event.event_date));
+  };
+  const getBlockedDates = () => {
+    return calendarEvents.filter((event) => event.status === 'blocked' || event.status === 'unavailable').map((event) => parseYMDToLocalDate(event.event_date));
+  };
+  const isBusyDate = (date: Date) => {
+    return getBusyDates().some((busyDate: Date) => busyDate.getDate() === date.getDate() && busyDate.getMonth() === date.getMonth() && busyDate.getFullYear() === date.getFullYear());
+  };
+  const isBlockedDate = (date: Date) => {
+    return getBlockedDates().some((blockedDate: Date) => blockedDate.getDate() === date.getDate() && blockedDate.getMonth() === date.getMonth() && blockedDate.getFullYear() === date.getFullYear());
+  };
+  const getEventForDate = (date: Date) => {
+    return calendarEvents.find((event) => {
+      const eventDate = parseYMDToLocalDate(event.event_date);
+      return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+  const getEventsForDate = (date: Date) => {
+    return calendarEvents.filter((event) => {
+      const eventDate = parseYMDToLocalDate(event.event_date);
+      return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
+    });
+  };
+  const extractTimeFromNotes = (notes: string | null) => {
+    if (!notes) return null;
+    const timeMatch = notes.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+    if (timeMatch) {
+      return { startTime: timeMatch[1], endTime: timeMatch[2] };
+    }
+    return null;
+  };
+
   // Parse all time slots from notes that can contain multiple events separated by ---
   const extractAllTimeSlotsFromNotes = (notes: string | null): {
     startTime: string;
