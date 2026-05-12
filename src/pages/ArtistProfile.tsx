@@ -272,144 +272,114 @@ const ArtistProfile = () => {
     const fetchArtistData = async () => {
       if (!id) return;
 
-      // Fetch profile
-      const {
-        data: profileData,
-        error: profileError
-      } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle();
+      // STEP 1: Fetch the profile first and reveal the page immediately.
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
       if (profileError) {
         console.error('Error fetching profile:', profileError);
       } else {
         setArtist(profileData);
       }
-
-      // Fetch announcements
-      const {
-        data: announcementsData
-      } = await supabase.from('announcements').select('id, title, description, date, created_at, is_premium, media_url, media_type, location, event_date, budget').eq('profile_id', id).order('is_premium', {
-        ascending: false
-      }).order('created_at', {
-        ascending: false
-      });
-
-      // Fetch gallery items
-      const {
-        data: galleryData
-      } = await supabase.from('gallery_items').select('id, type, url, thumbnail_url').eq('profile_id', id);
-      setGalleryItems(galleryData || []);
-
-      // Fetch calendar events
-      const {
-        data: calendarData
-      } = await supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id);
-      setCalendarEvents(calendarData || []);
-
-      // Fetch reviews
-      const {
-        data: reviewsData
-      } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', id).order('created_at', {
-        ascending: false
-      });
-      // Fetch reviewer avatars
-      const reviewsWithAvatars = await enrichReviewsWithAvatars(reviewsData || []);
-      setReviews(reviewsWithAvatars);
-
-      // Fetch posts with likes count
-      const {
-        data: postsData
-      } = await supabase.from('posts').select('id, profile_id, content, media_url, media_type, created_at').eq('profile_id', id).order('created_at', {
-        ascending: false
-      });
-
-      // Get current user session for checking likes
-      const {
-        data: {
-          session
-        }
-      } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-
-      const announcementsWithLikes = await Promise.all((announcementsData || []).map(async (announcement) => {
-        const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
-        let isLiked = false;
-        if (userId) {
-          const { data: likeData } = await (supabase as any).from('announcement_likes').select('id').eq('announcement_id', announcement.id).eq('user_id', userId).maybeSingle();
-          isLiked = !!likeData;
-        }
-        return { ...announcement, likes: count || 0, isLiked };
-      }));
-      setAnnouncements(announcementsWithLikes);
-
-      // Fetch likes count and check if current user liked each post
-      const postsWithLikes = await Promise.all((postsData || []).map(async (post) => {
-        const {
-          count
-        } = await supabase.from('post_likes').select('id', {
-          count: 'exact',
-          head: true
-        }).eq('post_id', post.id);
-        let isLiked = false;
-        if (userId) {
-          const {
-            data: likeData
-          } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', userId).maybeSingle();
-          isLiked = !!likeData;
-        }
-        return {
-          ...post,
-          likes: count || 0,
-          isLiked
-        };
-      }));
-      setPosts(postsWithLikes);
-
-      // Fetch followers count (only count followers whose profiles still exist)
-      const { data: followerRows } = await supabase
-        .from('followers')
-        .select('follower_id')
-        .eq('artist_id', id);
-      if (followerRows && followerRows.length > 0) {
-        const { count: validFollowerCount } = await supabase
-          .from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .in('id', followerRows.map(f => f.follower_id));
-        setFollowersCount(validFollowerCount || 0);
-      } else {
-        setFollowersCount(0);
-      }
-
-      // Fetch following count (only count artists whose profiles still exist)
-      const { data: followingRows } = await supabase
-        .from('followers')
-        .select('artist_id')
-        .eq('follower_id', id);
-      if (followingRows && followingRows.length > 0) {
-        const { count: validFollowingCount } = await supabase
-          .from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .in('id', followingRows.map(f => f.artist_id));
-        setFollowingCount(validFollowingCount || 0);
-      } else {
-        setFollowingCount(0);
-      }
-
-
-      // Check if current user follows this artist
-      // Check if current user follows this artist
-      if (userId) {
-        const { data: followData } = await supabase.
-        from('followers').
-        select('id').
-        eq('artist_id', id).
-        eq('follower_id', userId).
-        maybeSingle();
-        setIsFollowing(!!followData);
-      }
-
       setLoading(false);
+
+      // STEP 2: Fire all secondary queries in parallel in the background.
+      const sessionPromise = supabase.auth.getSession();
+
+      const [
+        announcementsRes,
+        galleryRes,
+        calendarRes,
+        reviewsRes,
+        postsRes,
+        followerRowsRes,
+        followingRowsRes,
+        sessionRes,
+      ] = await Promise.all([
+        supabase.from('announcements')
+          .select('id, title, description, date, created_at, is_premium, media_url, media_type, location, event_date, budget')
+          .eq('profile_id', id)
+          .order('is_premium', { ascending: false })
+          .order('created_at', { ascending: false }),
+        supabase.from('gallery_items').select('id, type, url, thumbnail_url').eq('profile_id', id),
+        supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id),
+        supabase.from('reviews')
+          .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
+          .eq('profile_id', id)
+          .order('created_at', { ascending: false }),
+        supabase.from('posts')
+          .select('id, profile_id, content, media_url, media_type, created_at')
+          .eq('profile_id', id)
+          .order('created_at', { ascending: false }),
+        supabase.from('followers').select('follower_id').eq('artist_id', id),
+        supabase.from('followers').select('artist_id').eq('follower_id', id),
+        sessionPromise,
+      ]);
+
+      const announcementsData = announcementsRes.data || [];
+      const postsData = postsRes.data || [];
+      const userId = sessionRes.data.session?.user?.id;
+
+      setGalleryItems(galleryRes.data || []);
+      setCalendarEvents(calendarRes.data || []);
+
+      // Reviews + avatars (independent)
+      enrichReviewsWithAvatars(reviewsRes.data || []).then(setReviews);
+
+      // STEP 3: Batch likes in 2-4 queries instead of N+1.
+      const announcementIds = announcementsData.map(a => a.id);
+      const postIds = postsData.map(p => p.id);
+
+      const [annLikesAll, annLikesMine, postLikesAll, postLikesMine] = await Promise.all([
+        announcementIds.length
+          ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds)
+          : Promise.resolve({ data: [] }),
+        announcementIds.length && userId
+          ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds).eq('user_id', userId)
+          : Promise.resolve({ data: [] }),
+        postIds.length
+          ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        postIds.length && userId
+          ? supabase.from('post_likes').select('post_id').in('post_id', postIds).eq('user_id', userId)
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+
+      const annCount = new Map<string, number>();
+      (annLikesAll.data || []).forEach((r: any) => annCount.set(r.announcement_id, (annCount.get(r.announcement_id) || 0) + 1));
+      const annMine = new Set((annLikesMine.data || []).map((r: any) => r.announcement_id));
+      setAnnouncements(announcementsData.map(a => ({ ...a, likes: annCount.get(a.id) || 0, isLiked: annMine.has(a.id) })));
+
+      const postCount = new Map<string, number>();
+      (postLikesAll.data || []).forEach((r: any) => postCount.set(r.post_id, (postCount.get(r.post_id) || 0) + 1));
+      const postMine = new Set((postLikesMine.data || []).map((r: any) => r.post_id));
+      setPosts(postsData.map(p => ({ ...p, likes: postCount.get(p.id) || 0, isLiked: postMine.has(p.id) })));
+
+      // STEP 4: Followers/following counts (filter out deleted profiles).
+      const followerIds = (followerRowsRes.data || []).map((f: any) => f.follower_id);
+      const followingIds = (followingRowsRes.data || []).map((f: any) => f.artist_id);
+
+      const [validFollowers, validFollowing, followCheck] = await Promise.all([
+        followerIds.length
+          ? supabase.from('profiles').select('id', { count: 'exact', head: true }).in('id', followerIds)
+          : Promise.resolve({ count: 0 }),
+        followingIds.length
+          ? supabase.from('profiles').select('id', { count: 'exact', head: true }).in('id', followingIds)
+          : Promise.resolve({ count: 0 }),
+        userId
+          ? supabase.from('followers').select('id').eq('artist_id', id).eq('follower_id', userId).maybeSingle()
+          : Promise.resolve({ data: null }),
+      ]);
+
+      setFollowersCount(validFollowers.count || 0);
+      setFollowingCount(validFollowing.count || 0);
+      if (userId) setIsFollowing(!!(followCheck as any).data);
     };
     fetchArtistData();
   }, [id]);
+
   const getBusyDates = () => {
     return calendarEvents.filter((event) => event.status === 'busy' || event.status === 'booked').map((event) => parseYMDToLocalDate(event.event_date));
   };
@@ -436,13 +406,9 @@ const ArtistProfile = () => {
   };
   const extractTimeFromNotes = (notes: string | null) => {
     if (!notes) return null;
-    // Try to extract time pattern like "Time: 12:00 - 18:00" or "19:00 - Jan 18, 2026 13:15"
     const timeMatch = notes.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
     if (timeMatch) {
-      return {
-        startTime: timeMatch[1],
-        endTime: timeMatch[2]
-      };
+      return { startTime: timeMatch[1], endTime: timeMatch[2] };
     }
     return null;
   };
