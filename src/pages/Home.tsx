@@ -15,9 +15,14 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative pt-20 md:pt-32 pb-12 md:pb-20 px-4 md:px-8 overflow-hidden">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroConcert})` }}
+        <img
+          src="/hero-concert.webp"
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+          width={1920}
+          height={1080}
         />
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-background/70" />
