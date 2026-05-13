@@ -1535,10 +1535,8 @@ const ArtistProfile = () => {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => {
-                                    toast({
-                                      title: "Report submitted",
-                                      description: "Thank you for reporting this problem. We'll review it shortly."
-                                    });
+                                    if (!currentUserId) { navigate("/login"); return; }
+                                    setReportTarget({ id: post.id, type: "post" });
                                   }}>
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
