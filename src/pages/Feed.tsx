@@ -694,6 +694,12 @@ const Feed = () => {
           setAdminDeleteTarget(null);
         }}
       />
+      <ReportContentDialog
+        open={!!reportTarget}
+        onOpenChange={(o) => !o && setReportTarget(null)}
+        contentType={reportTarget?.type ?? "post"}
+        contentId={reportTarget?.id ?? null}
+      />
     </div>;
 };
 export default Feed;
