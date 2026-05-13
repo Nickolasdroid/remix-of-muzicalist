@@ -32,6 +32,7 @@ import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
+import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 interface Profile {
   id: string;
   first_name: string;
