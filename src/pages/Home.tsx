@@ -3,7 +3,6 @@ import Navigation from "@/components/Navigation";
 import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import heroConcert from "@/assets/hero-concert.png";
 import HeroSearchBar from "@/components/HeroSearchBar";
 
 
