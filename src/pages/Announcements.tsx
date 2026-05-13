@@ -398,6 +398,13 @@ const Announcements = () => {
           setAdminDeleteId(null);
         }}
       />
+
+      <ReportContentDialog
+        open={!!reportId}
+        onOpenChange={(o) => !o && setReportId(null)}
+        contentType="announcement"
+        contentId={reportId}
+      />
     </div>;
 };
 export default Announcements;
