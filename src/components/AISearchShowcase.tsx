@@ -37,7 +37,7 @@ const AISearchShowcase = () => {
             {/* Fake Input */}
             <div className="relative mb-5">
               <div className="w-full rounded-lg border border-border bg-input/60 px-4 py-3 pr-12 text-sm text-muted-foreground">
-                I need a DJ in Cluj for a wedding on June 14, budget € 1200.
+                I need a DJ in Cluj, Romania for a wedding on June 14, budget € 1200.
               </div>
               <div className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-accent flex items-center justify-center">
                 <ArrowRight className="h-4 w-4 text-accent-foreground" />
