@@ -22,6 +22,7 @@ import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
 import { useUserRole } from "@/hooks/useUserRole";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
+import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 
 const POSTS_PER_PAGE = 10;
 
@@ -66,6 +67,7 @@ const Feed = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -417,7 +419,11 @@ const Feed = () => {
                             Share
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => {
-                            toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
+                            if (!currentUserId) {
+                              navigate("/login");
+                              return;
+                            }
+                            setReportTarget({ id: item.id, type: "announcement" });
                           }}>
                             <Flag className="h-4 w-4 mr-2" />
                             Report
@@ -522,7 +528,11 @@ const Feed = () => {
                           Share
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                          toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
+                          if (!currentUserId) {
+                            navigate("/login");
+                            return;
+                          }
+                          setReportTarget({ id: item.id, type: "post" });
                         }}>
                           <Flag className="h-4 w-4 mr-2" />
                           Report
@@ -683,6 +693,12 @@ const Feed = () => {
           }
           setAdminDeleteTarget(null);
         }}
+      />
+      <ReportContentDialog
+        open={!!reportTarget}
+        onOpenChange={(o) => !o && setReportTarget(null)}
+        contentType={reportTarget?.type ?? "post"}
+        contentId={reportTarget?.id ?? null}
       />
     </div>;
 };

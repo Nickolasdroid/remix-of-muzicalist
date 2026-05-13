@@ -22,6 +22,7 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { useUserRole } from "@/hooks/useUserRole";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
+import ReportContentDialog from "@/components/ReportContentDialog";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
@@ -45,6 +46,7 @@ const Announcements = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -240,10 +242,11 @@ const Announcements = () => {
                           Share
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                      toast({
-                        title: "Report submitted",
-                        description: "Thank you for reporting this problem. We'll review it shortly."
-                      });
+                      if (!currentUserId) {
+                        navigate("/login");
+                        return;
+                      }
+                      setReportId(announcement.id);
                     }}>
                           <Flag className="h-4 w-4 mr-2" />
                           Report
@@ -394,6 +397,13 @@ const Announcements = () => {
           }
           setAdminDeleteId(null);
         }}
+      />
+
+      <ReportContentDialog
+        open={!!reportId}
+        onOpenChange={(o) => !o && setReportId(null)}
+        contentType="announcement"
+        contentId={reportId}
       />
     </div>;
 };

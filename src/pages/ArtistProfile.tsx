@@ -32,6 +32,7 @@ import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
+import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 interface Profile {
   id: string;
   first_name: string;
@@ -166,6 +167,7 @@ const ArtistProfile = () => {
     comment: ""
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
@@ -1437,7 +1439,8 @@ const ArtistProfile = () => {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => {
-                                      toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
+                                      if (!currentUserId) { navigate("/login"); return; }
+                                      setReportTarget({ id: promo.id, type: "announcement" });
                                     }}>
                                           <Flag className="h-4 w-4 mr-2" />
                                           Report Problem
@@ -1532,10 +1535,8 @@ const ArtistProfile = () => {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => {
-                                    toast({
-                                      title: "Report submitted",
-                                      description: "Thank you for reporting this problem. We'll review it shortly."
-                                    });
+                                    if (!currentUserId) { navigate("/login"); return; }
+                                    setReportTarget({ id: post.id, type: "post" });
                                   }}>
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
@@ -1664,10 +1665,8 @@ const ArtistProfile = () => {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuItem onClick={() => {
-                              toast({
-                                title: "Report submitted",
-                                description: "Thank you for reporting this problem. We'll review it shortly."
-                              });
+                              if (!currentUserId) { navigate("/login"); return; }
+                              setReportTarget({ id: announcement.id, type: "announcement" });
                             }}>
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
@@ -2190,6 +2189,13 @@ const ArtistProfile = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ReportContentDialog
+        open={!!reportTarget}
+        onOpenChange={(o) => !o && setReportTarget(null)}
+        contentType={reportTarget?.type ?? "post"}
+        contentId={reportTarget?.id ?? null}
+      />
     </div>;
 };
 export default ArtistProfile;
