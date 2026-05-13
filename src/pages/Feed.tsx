@@ -67,6 +67,7 @@ const Feed = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
