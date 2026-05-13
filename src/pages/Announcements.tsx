@@ -22,6 +22,7 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { useUserRole } from "@/hooks/useUserRole";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
+import ReportContentDialog from "@/components/ReportContentDialog";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
