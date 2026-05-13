@@ -46,6 +46,7 @@ const Announcements = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
