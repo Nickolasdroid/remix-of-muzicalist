@@ -419,7 +419,11 @@ const Feed = () => {
                             Share
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => {
-                            toast({ title: "Report submitted", description: "Thank you for reporting this problem. We'll review it shortly." });
+                            if (!currentUserId) {
+                              navigate("/login");
+                              return;
+                            }
+                            setReportTarget({ id: item.id, type: "announcement" });
                           }}>
                             <Flag className="h-4 w-4 mr-2" />
                             Report
