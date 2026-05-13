@@ -167,6 +167,7 @@ const ArtistProfile = () => {
     comment: ""
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
