@@ -41,7 +41,6 @@ const Announcements = () => {
   const [editItem, setEditItem] = useState<{ id: string; text: string } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
@@ -49,8 +48,8 @@ const Announcements = () => {
   const [reportId, setReportId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    // Run auth check in background; do NOT block the announcements fetch on it
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         setCurrentUserId(session.user.id);
         const { data: prof } = await supabase
@@ -62,9 +61,7 @@ const Announcements = () => {
           setCanCreate(true);
         }
       }
-      setUserCountry('__all__');
-    };
-    checkAuth();
+    });
   }, []);
 
   const handleDeleteAnnouncement = async (announcementId: string) => {
