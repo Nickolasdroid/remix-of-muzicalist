@@ -62,7 +62,6 @@ const Feed = () => {
   const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "announcement" } | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const [userCountry, setUserCountry] = useState<string | null>(null);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
@@ -70,8 +69,8 @@ const Feed = () => {
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    // Background auth check; doesn't block the feed fetch
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         setCurrentUserId(session.user.id);
         const { data: prof } = await supabase
@@ -83,102 +82,101 @@ const Feed = () => {
           setCanCreate(true);
         }
       }
-      setUserCountry('__all__');
-    };
-    checkAuth();
+    });
   }, []);
 
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
-    if (!userCountry) return;
-    
     try {
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
-      
-      // Fetch posts
-      let postsQuery = supabase
-        .from('posts')
-        .select(`id, profile_id, content, media_url, media_type, created_at`);
-      
-      const { data: posts, error: postsError } = await postsQuery
-        .order('created_at', { ascending: false })
-        .range(from, to);
-      
-      if (postsError) throw postsError;
 
-      // Fetch premium announcements (promotions)
-      let promoQuery = supabase
-        .from('announcements')
-        .select(`*, profiles!inner (avatar_url, stage_name, county, specialization, plan, country)`)
-        .eq('is_premium', true);
-      
-      const { data: promotions } = await promoQuery
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      // Fetch posts and premium announcements in parallel, joining the profile in one go
+      const [postsRes, promosRes] = await Promise.all([
+        supabase
+          .from('posts')
+          .select(`id, profile_id, content, media_url, media_type, created_at, profiles!inner (stage_name, avatar_url, specialization, plan)`)
+          .order('created_at', { ascending: false })
+          .range(from, to),
+        supabase
+          .from('announcements')
+          .select(`*, profiles!inner (avatar_url, stage_name, county, specialization, plan, country)`)
+          .eq('is_premium', true)
+          .order('created_at', { ascending: false })
+          .range(from, to),
+      ]);
 
-      // Check if there are more items
-      const postsCount = posts?.length || 0;
-      const promosCount = promotions?.length || 0;
-      if (postsCount < POSTS_PER_PAGE && promosCount < POSTS_PER_PAGE) {
+      if (postsRes.error) throw postsRes.error;
+
+      const posts = (postsRes.data || []) as any[];
+      const promotions = (promosRes.data || []).filter((a: any) => !isAdExpired(a)) as any[];
+
+      if (posts.length < POSTS_PER_PAGE && promotions.length < POSTS_PER_PAGE) {
         setHasMore(false);
       }
 
-      // Build post feed items
-      const postsWithProfiles = await Promise.all((posts || []).map(async post => {
-        const [profileResult, likesResult, userLikeResult] = await Promise.all([
-          supabase.from('profiles').select('stage_name, avatar_url, specialization, plan').eq('id', post.profile_id).maybeSingle(),
-          supabase.from('post_likes').select('id', { count: 'exact' }).eq('post_id', post.id),
-          currentUserId ? supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
-        ]);
-        return {
-          ...post,
-          profile: profileResult.data || {
-            stage_name: 'Unknown Artist',
-            avatar_url: null,
-            specialization: null,
-            plan: 'Free'
-          },
-          isLiked: !!userLikeResult.data,
-          isSaved: false,
-          likes: likesResult.count || 0,
-          type: "post" as const,
-        };
+      const postIds = posts.map(p => p.id);
+      const promoIds = promotions.map(p => p.id);
+
+      // Batch likes counts and (optionally) the current user's likes — eliminates N+1
+      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes] = await Promise.all([
+        postIds.length
+          ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        promoIds.length
+          ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', promoIds)
+          : Promise.resolve({ data: [] as any[] }),
+        currentUserId && postIds.length
+          ? supabase.from('post_likes').select('post_id').eq('user_id', currentUserId).in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        currentUserId && promoIds.length
+          ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', currentUserId).in('announcement_id', promoIds)
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+
+      const postLikeCounts = new Map<string, number>();
+      (postLikesRes.data || []).forEach((r: any) => postLikeCounts.set(r.post_id, (postLikeCounts.get(r.post_id) || 0) + 1));
+      const promoLikeCounts = new Map<string, number>();
+      (promoLikesRes.data || []).forEach((r: any) => promoLikeCounts.set(r.announcement_id, (promoLikeCounts.get(r.announcement_id) || 0) + 1));
+      const userPostLikes = new Set<string>((userPostLikesRes.data || []).map((r: any) => r.post_id));
+      const userPromoLikes = new Set<string>((userPromoLikesRes.data || []).map((r: any) => r.announcement_id));
+
+      const postsWithProfiles: FeedItem[] = posts.map((post: any) => ({
+        id: post.id,
+        profile_id: post.profile_id,
+        content: post.content,
+        media_url: post.media_url,
+        media_type: post.media_type,
+        created_at: post.created_at,
+        profile: post.profiles || { stage_name: 'Unknown Artist', avatar_url: null, specialization: null, plan: 'Free' },
+        isLiked: userPostLikes.has(post.id),
+        isSaved: false,
+        likes: postLikeCounts.get(post.id) || 0,
+        type: "post" as const,
       }));
 
-      // Build promotion feed items (filter expired)
-      const promoItems: FeedItem[] = await Promise.all((promotions || [])
-        .filter(a => !isAdExpired(a))
-        .map(async a => {
-          const [likesResult, userLikeResult] = await Promise.all([
-            (supabase as any).from('announcement_likes').select('id', { count: 'exact' }).eq('announcement_id', a.id),
-            currentUserId ? (supabase as any).from('announcement_likes').select('id').eq('announcement_id', a.id).eq('user_id', currentUserId).maybeSingle() : Promise.resolve({ data: null })
-          ]);
+      const promoItems: FeedItem[] = promotions.map((a: any) => ({
+        id: a.id,
+        profile_id: a.profile_id,
+        content: a.description,
+        media_url: a.media_url,
+        media_type: a.media_type,
+        created_at: a.created_at,
+        profile: {
+          stage_name: a.profiles?.stage_name || 'Unknown Artist',
+          avatar_url: a.profiles?.avatar_url || null,
+          specialization: a.profiles?.specialization || null,
+          plan: a.profiles?.plan || 'Free',
+        },
+        isLiked: userPromoLikes.has(a.id),
+        isSaved: false,
+        likes: promoLikeCounts.get(a.id) || 0,
+        type: "announcement" as const,
+      }));
 
-          return {
-          id: a.id,
-          profile_id: a.profile_id,
-          content: a.description,
-          media_url: a.media_url,
-          media_type: a.media_type,
-          created_at: a.created_at,
-          profile: {
-            stage_name: a.profiles?.stage_name || 'Unknown Artist',
-            avatar_url: a.profiles?.avatar_url || null,
-            specialization: a.profiles?.specialization || null,
-            plan: a.profiles?.plan || 'Free',
-          },
-          isLiked: !!userLikeResult.data,
-          isSaved: false,
-          likes: likesResult.count || 0,
-          type: "announcement" as const,
-          };
-        }));
-
-      // Merge and sort by created_at descending
       const combined = [...postsWithProfiles, ...promoItems].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
-      
+
       if (append) {
         setFeedItems(prev => [...prev, ...combined]);
       } else {
@@ -194,13 +192,11 @@ const Feed = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId, userCountry]);
+  }, [currentUserId]);
 
   useEffect(() => {
-    if (userCountry) {
-      fetchPosts(0);
-    }
-  }, [fetchPosts, userCountry]);
+    fetchPosts(0);
+  }, [fetchPosts]);
 
   const loadMorePosts = useCallback(async () => {
     const nextPage = page + 1;
