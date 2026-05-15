@@ -86,12 +86,10 @@ const Announcements = () => {
   };
 
   const fetchAnnouncements = useCallback(async (pageNum: number, append: boolean = false) => {
-    if (!userCountry) return;
-    
     try {
       const from = pageNum * ANNOUNCEMENTS_PER_PAGE;
       const to = from + ANNOUNCEMENTS_PER_PAGE - 1;
-      
+
       let query = supabase
         .from("announcements")
         .select(`
@@ -105,22 +103,21 @@ const Announcements = () => {
             country
           )
         `)
-        .eq('is_premium', false); // Only standard announcements, no promotions
-      
+        .eq('is_premium', false);
+
       const { data, error } = await query
         .order("created_at", { ascending: false })
         .range(from, to);
-      
+
       if (error) {
         console.error("Error fetching announcements:", error);
         return;
       }
-      
+
       if (!data || data.length < ANNOUNCEMENTS_PER_PAGE) {
         setHasMore(false);
       }
-      
-      // Sort by plan priority (Premium announcements first)
+
       const sorted = [...(data || [])].sort((a, b) => {
         const planA = getPlanPriority((a as any).profiles?.plan);
         const planB = getPlanPriority((b as any).profiles?.plan);
@@ -136,13 +133,11 @@ const Announcements = () => {
     } finally {
       setLoading(false);
     }
-  }, [userCountry]);
+  }, []);
 
   useEffect(() => {
-    if (userCountry) {
-      fetchAnnouncements(0);
-    }
-  }, [fetchAnnouncements, userCountry]);
+    fetchAnnouncements(0);
+  }, [fetchAnnouncements]);
 
   const loadMoreAnnouncements = useCallback(async () => {
     const nextPage = page + 1;
