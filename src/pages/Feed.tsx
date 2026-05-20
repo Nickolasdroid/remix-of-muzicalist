@@ -43,6 +43,7 @@ interface FeedItem {
   isLiked: boolean;
   isSaved: boolean;
   likes: number;
+  commentsCount: number;
   type: "post" | "announcement";
 }
 
