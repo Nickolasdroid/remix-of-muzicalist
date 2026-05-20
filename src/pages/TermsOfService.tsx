@@ -30,100 +30,142 @@ const TermsOfService = () => {
             <section className="space-y-4">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">1. Acceptance of Terms</h2>
               <p>
-                By accessing and using Muzicalist, you agree to be bound by these Terms of Service. 
-                If you do not agree to these terms, please do not use our platform.
+                By accessing or using Muzicalist, you agree to be bound by these Terms of Service.
+                If you do not agree, please do not use the platform.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">2. Description of Service</h2>
               <p>
-                Muzicalist is a platform that connects musical artists with clients seeking entertainment 
-                services. We provide tools for artists to showcase their talents and for clients to 
-                discover and book performers for events.
+                Muzicalist is a platform that connects musical artists with users seeking entertainment
+                services. We offer profiles, search, messaging, booking requests, calendar management,
+                posts, announcements, reviews and subscription plans.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">3. User Accounts</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">3. Eligibility & Accounts</h2>
               <ul className="list-disc pl-6 space-y-2">
                 <li>You must be at least 18 years old to create an account</li>
-                <li>You are responsible for maintaining the security of your account</li>
-                <li>You must provide accurate and complete information</li>
-                <li>You may not use another person's account without permission</li>
-                <li>You are responsible for all activities under your account</li>
+                <li>Accounts can be created with email/password or via Google sign-in</li>
+                <li>You must provide accurate information and keep it up to date</li>
+                <li>You are responsible for the security of your credentials and all activity under your account</li>
+                <li>One account per person; you may not use another person's account without permission</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">4. Artist Responsibilities</h2>
-              <p>As an artist on our platform, you agree to:</p>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">4. Paid Activation & Subscriptions</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Provide accurate information about your skills and experience</li>
-                <li>Respond promptly to booking inquiries</li>
-                <li>Honor confirmed bookings and commitments</li>
-                <li>Maintain professional conduct with clients</li>
-                <li>Only upload content you have rights to use</li>
+                <li>All newly created accounts (Artist and User) require activation through a paid subscription plan before full access is granted</li>
+                <li>Accounts created before this policy took effect are grandfathered and keep their previous access</li>
+                <li>Available tiers (Free, Standard, Premium) and their feature limits are described on the Plans page and may be updated over time</li>
+                <li>Subscriptions renew automatically until cancelled from the customer portal</li>
+                <li>Except where required by law, fees already paid are non-refundable; cancelling stops future renewals but keeps your access until the end of the current billing period</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">5. User Responsibilities</h2>
-              <p>As a user of our platform, you agree to:</p>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">5. Artist Responsibilities</h2>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Provide accurate event details when making inquiries</li>
-                <li>Communicate respectfully with artists</li>
-                <li>Honor booking agreements and payment terms</li>
-                <li>Not use the platform for unlawful purposes</li>
+                <li>Provide accurate information about your skills, experience and location</li>
+                <li>Respond to booking requests in a timely manner — unanswered requests are auto-rejected before the event date</li>
+                <li>Honor confirmed bookings and maintain professional conduct</li>
+                <li>Only upload media (photos, videos, audio) you have the right to use</li>
+                <li>Keep your calendar reasonably up to date so search results are accurate</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">6. Prohibited Conduct</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">6. User Responsibilities</h2>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Provide accurate event details in announcements and booking requests</li>
+                <li>Communicate respectfully with artists and other users</li>
+                <li>Honor agreements you make outside the platform with artists</li>
+                <li>Do not use the platform for unlawful purposes</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">7. Posts, Announcements & Content Limits</h2>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Posts, announcements, media uploads and other content are subject to limits defined by your subscription plan</li>
+                <li>Announcement slots remain consumed for 30 days from creation, even if the announcement is deleted earlier</li>
+                <li>Announcements expire automatically shortly after their event date</li>
+                <li>You may only post one review per artist (one review per email)</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">8. Prohibited Conduct</h2>
               <p>You may not:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Violate any applicable laws or regulations</li>
-                <li>Harass, abuse, or harm other users</li>
-                <li>Post false, misleading, or fraudulent content</li>
-                <li>Infringe on intellectual property rights</li>
-                <li>Attempt to gain unauthorized access to the platform</li>
-                <li>Use automated systems to access the service without permission</li>
+                <li>Harass, threaten, abuse or harm other users</li>
+                <li>Post false, misleading, fraudulent, hateful or sexually explicit content</li>
+                <li>Impersonate another person or misrepresent your affiliation</li>
+                <li>Infringe intellectual property or privacy rights</li>
+                <li>Spam, scrape, reverse-engineer or attempt to gain unauthorized access to the platform</li>
+                <li>Use the platform to send unsolicited offers or off-platform scams</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">7. Content Ownership</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">9. Reporting & Moderation</h2>
               <p>
-                You retain ownership of content you upload to the platform. By uploading content, 
-                you grant us a non-exclusive license to use, display, and distribute your content 
-                in connection with our services.
+                Users can report posts, announcements, profiles and reviews using the in-app report
+                tool, selecting a reason or writing their own. We review reports and may remove
+                content, restrict features, suspend or terminate accounts that violate these terms,
+                at our sole discretion.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">8. Limitation of Liability</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">10. Content Ownership & License</h2>
               <p>
-                Muzicalist acts as a platform connecting artists and clients. We are not responsible 
-                for the quality of services provided by artists or the conduct of users. We do not 
-                guarantee any specific outcomes from using our platform.
+                You retain ownership of the content you upload. By uploading, you grant Muzicalist a
+                worldwide, non-exclusive, royalty-free license to host, display, reproduce and
+                distribute that content as needed to operate and promote the platform. You can
+                remove your content by deleting it or your account.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">9. Termination</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Bookings Between Users</h2>
               <p>
-                We reserve the right to suspend or terminate your account at any time for violations 
-                of these terms or for any other reason at our discretion. You may also delete your 
-                account at any time through your account settings.
+                Muzicalist facilitates introductions and communication between artists and users.
+                Any contract, payment or performance arrangement is solely between the artist and
+                the user. We are not a party to those agreements and are not responsible for
+                disputes, no-shows, quality of performance or off-platform payments.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">10. Changes to Terms</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">12. Disclaimers & Limitation of Liability</h2>
               <p>
-                We may modify these terms at any time. Continued use of the platform after changes 
-                constitutes acceptance of the modified terms. We will notify users of significant 
-                changes via email or platform notification.
+                The platform is provided "as is" without warranties of any kind. To the maximum
+                extent permitted by law, Muzicalist is not liable for indirect, incidental or
+                consequential damages arising from your use of the platform.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">13. Termination</h2>
+              <p>
+                We may suspend or terminate your account for violations of these terms or other
+                conduct we reasonably consider harmful. You can delete your account at any time
+                from your dashboard settings. Some data may be retained as described in the
+                Privacy Policy.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">14. Changes to Terms</h2>
+              <p>
+                We may modify these terms from time to time. Continued use of the platform after
+                changes constitutes acceptance of the updated terms. We will notify users of
+                significant changes via email or in-app notification.
               </p>
             </section>
 
