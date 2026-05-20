@@ -120,8 +120,8 @@ const Feed = () => {
       const postIds = posts.map(p => p.id);
       const promoIds = promotions.map(p => p.id);
 
-      // Batch likes counts and (optionally) the current user's likes — eliminates N+1
-      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes] = await Promise.all([
+      // Batch likes counts, comment counts and (optionally) the current user's likes — eliminates N+1
+      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes] = await Promise.all([
         postIds.length
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
@@ -134,6 +134,12 @@ const Feed = () => {
         currentUserId && promoIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', currentUserId).in('announcement_id', promoIds)
           : Promise.resolve({ data: [] as any[] }),
+        postIds.length
+          ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        promoIds.length
+          ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', promoIds)
+          : Promise.resolve({ data: [] as any[] }),
       ]);
 
       const postLikeCounts = new Map<string, number>();
@@ -142,6 +148,10 @@ const Feed = () => {
       (promoLikesRes.data || []).forEach((r: any) => promoLikeCounts.set(r.announcement_id, (promoLikeCounts.get(r.announcement_id) || 0) + 1));
       const userPostLikes = new Set<string>((userPostLikesRes.data || []).map((r: any) => r.post_id));
       const userPromoLikes = new Set<string>((userPromoLikesRes.data || []).map((r: any) => r.announcement_id));
+      const postCommentCounts = new Map<string, number>();
+      (postCommentsRes.data || []).forEach((r: any) => postCommentCounts.set(r.post_id, (postCommentCounts.get(r.post_id) || 0) + 1));
+      const promoCommentCounts = new Map<string, number>();
+      (promoCommentsRes.data || []).forEach((r: any) => promoCommentCounts.set(r.announcement_id, (promoCommentCounts.get(r.announcement_id) || 0) + 1));
 
       const postsWithProfiles: FeedItem[] = posts.map((post: any) => ({
         id: post.id,
@@ -154,6 +164,7 @@ const Feed = () => {
         isLiked: userPostLikes.has(post.id),
         isSaved: false,
         likes: postLikeCounts.get(post.id) || 0,
+        commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
       }));
 
@@ -173,6 +184,7 @@ const Feed = () => {
         isLiked: userPromoLikes.has(a.id),
         isSaved: false,
         likes: promoLikeCounts.get(a.id) || 0,
+        commentsCount: promoCommentCounts.get(a.id) || 0,
         type: "announcement" as const,
       }));
 
