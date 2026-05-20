@@ -711,6 +711,18 @@ const Feed = () => {
         contentType={reportTarget?.type ?? "post"}
         contentId={reportTarget?.id ?? null}
       />
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(o) => !o && setCommentsTarget(null)}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          setFeedItems((items) => items.map((i) => i.id === commentsTarget.id ? { ...i, commentsCount: count } : i));
+        }}
+      />
     </div>;
 };
 export default Feed;
