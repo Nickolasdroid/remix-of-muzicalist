@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus, Pencil } from "lucide-react";
-import EditContentDialog from "@/components/EditContentDialog";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Share2, Calendar, MapPin, DollarSign, ArrowRight, Plus } from "lucide-react";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -61,7 +60,7 @@ const Feed = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<{ id: string; text: string; type: "post" | "announcement" } | null>(null);
+  
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [canCreate, setCanCreate] = useState(false);
@@ -439,16 +438,12 @@ const Feed = () => {
                             <Flag className="h-4 w-4 mr-2" />
                             Report
                           </DropdownMenuItem>
-                          {currentUserId === item.profile_id && <>
-                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "announcement" })}>
-                              <Pencil className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
+                          {currentUserId === item.profile_id && (
                             <DropdownMenuItem onClick={() => setDeleteAnnouncementId(item.id)} className="text-destructive focus:text-destructive">
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
-                          </>}
+                          )}
                           {isAdmin && currentUserId !== item.profile_id && (
                             <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "announcement" })} className="text-destructive focus:text-destructive">
                               <Trash2 className="h-4 w-4 mr-2" />
@@ -548,16 +543,12 @@ const Feed = () => {
                           <Flag className="h-4 w-4 mr-2" />
                           Report
                         </DropdownMenuItem>
-                        {currentUserId === item.profile_id && <>
-                          <DropdownMenuItem onClick={() => setEditItem({ id: item.id, text: item.content, type: "post" })}>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
+                        {currentUserId === item.profile_id && (
                           <DropdownMenuItem onClick={() => setDeletePostId(item.id)} className="text-destructive focus:text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
-                        </>}
+                        )}
                         {isAdmin && currentUserId !== item.profile_id && (
                           <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "post" })} className="text-destructive focus:text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -640,17 +631,6 @@ const Feed = () => {
 
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
-      <EditContentDialog
-        open={!!editItem}
-        onOpenChange={(o) => !o && setEditItem(null)}
-        table={editItem?.type === "announcement" ? "announcements" : "posts"}
-        itemId={editItem?.id ?? null}
-        initialText={editItem?.text ?? ""}
-        onSaved={(newText) => {
-          if (!editItem) return;
-          setFeedItems(items => items.map(i => i.id === editItem.id ? { ...i, content: newText } : i));
-        }}
-      />
 
       {/* Delete Post Confirmation Dialog */}
       <AlertDialog open={!!deletePostId} onOpenChange={open => !open && setDeletePostId(null)}>
