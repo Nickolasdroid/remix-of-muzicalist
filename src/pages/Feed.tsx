@@ -69,6 +69,7 @@ const Feed = () => {
   const { isAdmin } = useUserRole();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
 
   useEffect(() => {
     // Background auth check; doesn't block the feed fetch
