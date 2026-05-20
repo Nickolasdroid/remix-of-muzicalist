@@ -23,6 +23,7 @@ import { isAdExpired } from "@/lib/adExpiration";
 import { useUserRole } from "@/hooks/useUserRole";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
+import CommentsDialog from "@/components/CommentsDialog";
 
 const POSTS_PER_PAGE = 10;
 
@@ -42,6 +43,7 @@ interface FeedItem {
   isLiked: boolean;
   isSaved: boolean;
   likes: number;
+  commentsCount: number;
   type: "post" | "announcement";
 }
 
@@ -67,6 +69,7 @@ const Feed = () => {
   const { isAdmin } = useUserRole();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
 
   useEffect(() => {
     // Background auth check; doesn't block the feed fetch
@@ -117,8 +120,8 @@ const Feed = () => {
       const postIds = posts.map(p => p.id);
       const promoIds = promotions.map(p => p.id);
 
-      // Batch likes counts and (optionally) the current user's likes — eliminates N+1
-      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes] = await Promise.all([
+      // Batch likes counts, comment counts and (optionally) the current user's likes — eliminates N+1
+      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes] = await Promise.all([
         postIds.length
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
@@ -131,6 +134,12 @@ const Feed = () => {
         currentUserId && promoIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', currentUserId).in('announcement_id', promoIds)
           : Promise.resolve({ data: [] as any[] }),
+        postIds.length
+          ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
+        promoIds.length
+          ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', promoIds)
+          : Promise.resolve({ data: [] as any[] }),
       ]);
 
       const postLikeCounts = new Map<string, number>();
@@ -139,6 +148,10 @@ const Feed = () => {
       (promoLikesRes.data || []).forEach((r: any) => promoLikeCounts.set(r.announcement_id, (promoLikeCounts.get(r.announcement_id) || 0) + 1));
       const userPostLikes = new Set<string>((userPostLikesRes.data || []).map((r: any) => r.post_id));
       const userPromoLikes = new Set<string>((userPromoLikesRes.data || []).map((r: any) => r.announcement_id));
+      const postCommentCounts = new Map<string, number>();
+      (postCommentsRes.data || []).forEach((r: any) => postCommentCounts.set(r.post_id, (postCommentCounts.get(r.post_id) || 0) + 1));
+      const promoCommentCounts = new Map<string, number>();
+      (promoCommentsRes.data || []).forEach((r: any) => promoCommentCounts.set(r.announcement_id, (promoCommentCounts.get(r.announcement_id) || 0) + 1));
 
       const postsWithProfiles: FeedItem[] = posts.map((post: any) => ({
         id: post.id,
@@ -151,6 +164,7 @@ const Feed = () => {
         isLiked: userPostLikes.has(post.id),
         isSaved: false,
         likes: postLikeCounts.get(post.id) || 0,
+        commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
       }));
 
@@ -170,6 +184,7 @@ const Feed = () => {
         isLiked: userPromoLikes.has(a.id),
         isSaved: false,
         likes: promoLikeCounts.get(a.id) || 0,
+        commentsCount: promoCommentCounts.get(a.id) || 0,
         type: "announcement" as const,
       }));
 
@@ -470,9 +485,9 @@ const Feed = () => {
                         {item.likes > 0 && <span className="text-base font-semibold tabular-nums">{item.likes}</span>}
                       </Button>
 
-                      <Button variant="ghost" size="sm" onClick={currentUserId !== item.profile_id ? () => handleContact(item.profile_id) : undefined} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
+                      <Button variant="ghost" size="sm" onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                         <MessageCircle className="w-5 h-5" />
-                        <span className="font-medium">Contact</span>
+                        {item.commentsCount > 0 && <span className="text-base font-semibold tabular-nums">{item.commentsCount}</span>}
                       </Button>
                     </div>
                   </div>
@@ -578,9 +593,9 @@ const Feed = () => {
                       {item.likes > 0 && <span className="text-base font-semibold tabular-nums">{item.likes}</span>}
                     </Button>
                     
-                    <Button variant="ghost" size="sm" onClick={currentUserId !== item.profile_id ? () => handleContact(item.profile_id) : undefined} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
+                    <Button variant="ghost" size="sm" onClick={() => setCommentsTarget({ id: item.id, type: "post" })} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
                       <MessageCircle className="w-5 h-5" />
-                      <span className="font-medium">Contact</span>
+                      {item.commentsCount > 0 && <span className="text-base font-semibold tabular-nums">{item.commentsCount}</span>}
                     </Button>
                   </div>
                 </div>
@@ -695,6 +710,18 @@ const Feed = () => {
         onOpenChange={(o) => !o && setReportTarget(null)}
         contentType={reportTarget?.type ?? "post"}
         contentId={reportTarget?.id ?? null}
+      />
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(o) => !o && setCommentsTarget(null)}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          setFeedItems((items) => items.map((i) => i.id === commentsTarget.id ? { ...i, commentsCount: count } : i));
+        }}
       />
     </div>;
 };

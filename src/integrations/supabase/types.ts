@@ -180,6 +180,33 @@ export type Database = {
           },
         ]
       }
+      comments: {
+        Row: {
+          announcement_id: string | null
+          content: string
+          created_at: string
+          id: string
+          post_id: string | null
+          user_id: string
+        }
+        Insert: {
+          announcement_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       consumed_ad_slots: {
         Row: {
           announcement_id: string | null
