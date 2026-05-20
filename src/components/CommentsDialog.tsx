@@ -145,6 +145,107 @@ const CommentsDialog = ({
     }
   };
 
+  const isMobile = useIsMobile();
+
+  const body = (
+    <>
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-[200px]">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : comments.length === 0 ? (
+          <p className="text-center text-sm text-muted-foreground py-8">
+            No comments yet. Be the first to comment!
+          </p>
+        ) : (
+          comments.map((c) => {
+            const canDelete = currentUserId === c.user_id || isAdmin;
+            return (
+              <div key={c.id} className="flex gap-2 group">
+                <Link to={`/artist/${c.user_id}`} className="flex-shrink-0">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={c.profile?.avatar_url || ""} alt={c.profile?.stage_name || "User"} />
+                    <AvatarFallback className="text-xs bg-muted">
+                      {(c.profile?.stage_name || "U").charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <div className="flex-1 min-w-0">
+                  <div className="bg-muted rounded-lg px-3 py-2">
+                    <Link to={`/artist/${c.user_id}`} className="text-xs font-semibold hover:underline">
+                      {c.profile?.stage_name || "User"}
+                    </Link>
+                    <p className="text-sm break-words whitespace-pre-wrap">{c.content}</p>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 px-1">
+                    <span className="text-[11px] text-muted-foreground">{formatSmartDate(c.created_at)}</span>
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDelete(c.id)}
+                        className="text-[11px] text-muted-foreground hover:text-destructive md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                        aria-label="Delete comment"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="border-t p-3">
+        {currentUserId ? (
+          <div className="flex gap-2 items-end">
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value.slice(0, MAX_LENGTH))}
+              placeholder="Write a comment..."
+              rows={1}
+              maxLength={MAX_LENGTH}
+              className="rounded-lg resize-none min-h-[40px]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handlePost();
+                }
+              }}
+            />
+            <Button
+              size="icon"
+              onClick={handlePost}
+              disabled={posting || !text.trim()}
+              aria-label="Send comment"
+            >
+              {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            </Button>
+          </div>
+        ) : (
+          <Button className="w-full" onClick={() => navigate("/login")}>
+            Sign in to comment
+          </Button>
+        )}
+      </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[85vh] flex flex-col">
+          <DrawerHeader className="border-b text-left">
+            <DrawerTitle>Comments</DrawerTitle>
+            <DrawerDescription className="sr-only">View and add comments</DrawerDescription>
+          </DrawerHeader>
+          {body}
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="rounded-lg max-w-md p-0 flex flex-col max-h-[80vh]">
@@ -152,87 +253,7 @@ const CommentsDialog = ({
           <DialogTitle>Comments</DialogTitle>
           <DialogDescription className="sr-only">View and add comments</DialogDescription>
         </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-[200px]">
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-            </div>
-          ) : comments.length === 0 ? (
-            <p className="text-center text-sm text-muted-foreground py-8">
-              No comments yet. Be the first to comment!
-            </p>
-          ) : (
-            comments.map((c) => {
-              const canDelete = currentUserId === c.user_id || isAdmin;
-              return (
-                <div key={c.id} className="flex gap-2 group">
-                  <Link to={`/artist/${c.user_id}`} className="flex-shrink-0">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={c.profile?.avatar_url || ""} alt={c.profile?.stage_name || "User"} />
-                      <AvatarFallback className="text-xs bg-muted">
-                        {(c.profile?.stage_name || "U").charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Link>
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-muted rounded-lg px-3 py-2">
-                      <Link to={`/artist/${c.user_id}`} className="text-xs font-semibold hover:underline">
-                        {c.profile?.stage_name || "User"}
-                      </Link>
-                      <p className="text-sm break-words whitespace-pre-wrap">{c.content}</p>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1 px-1">
-                      <span className="text-[11px] text-muted-foreground">{formatSmartDate(c.created_at)}</span>
-                      {canDelete && (
-                        <button
-                          onClick={() => handleDelete(c.id)}
-                          className="text-[11px] text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                          aria-label="Delete comment"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <div className="border-t p-3">
-          {currentUserId ? (
-            <div className="flex gap-2 items-end">
-              <Textarea
-                value={text}
-                onChange={(e) => setText(e.target.value.slice(0, MAX_LENGTH))}
-                placeholder="Write a comment..."
-                rows={1}
-                maxLength={MAX_LENGTH}
-                className="rounded-lg resize-none min-h-[40px]"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handlePost();
-                  }
-                }}
-              />
-              <Button
-                size="icon"
-                onClick={handlePost}
-                disabled={posting || !text.trim()}
-                aria-label="Send comment"
-              >
-                {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              </Button>
-            </div>
-          ) : (
-            <Button className="w-full" onClick={() => navigate("/login")}>
-              Sign in to comment
-            </Button>
-          )}
-        </div>
+        {body}
       </DialogContent>
     </Dialog>
   );
