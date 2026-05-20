@@ -23,6 +23,7 @@ import { isAdExpired } from "@/lib/adExpiration";
 import { useUserRole } from "@/hooks/useUserRole";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
+import CommentsDialog from "@/components/CommentsDialog";
 
 const POSTS_PER_PAGE = 10;
 
