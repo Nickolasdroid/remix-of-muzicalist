@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import EditContentDialog from "@/components/EditContentDialog";
+
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
@@ -203,7 +203,7 @@ const Dashboard = () => {
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
-  const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
@@ -2549,10 +2549,6 @@ const Dashboard = () => {
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setEditItem({ id: post.id, text: post.content, table: "posts" })}>
-                                        <Pencil className="h-4 w-4 mr-2" />
-                                        Edit
-                                      </DropdownMenuItem>
                                       <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="h-4 w-4 mr-2" />
                                         Delete
@@ -2630,10 +2626,6 @@ const Dashboard = () => {
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setEditItem({ id: promotion.id, text: promotion.description, table: "announcements" })}>
-                                        <Pencil className="h-4 w-4 mr-2" />
-                                        Edit
-                                      </DropdownMenuItem>
                                       <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promotion.id)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="h-4 w-4 mr-2" />
                                         Delete
@@ -3563,21 +3555,6 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <EditContentDialog
-        open={!!editItem}
-        onOpenChange={(o) => !o && setEditItem(null)}
-        table={editItem?.table ?? "posts"}
-        itemId={editItem?.id ?? null}
-        initialText={editItem?.text ?? ""}
-        onSaved={(newText) => {
-          if (!editItem) return;
-          if (editItem.table === "posts") {
-            setPosts(items => items.map(p => p.id === editItem.id ? { ...p, content: newText } : p));
-          } else {
-            setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
-          }
-        }}
-      />
 
       {/* Delete Gallery Item Confirmation Dialog */}
       <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>

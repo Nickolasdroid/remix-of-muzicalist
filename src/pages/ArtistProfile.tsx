@@ -14,7 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
-import EditContentDialog from "@/components/EditContentDialog";
+
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import TimeSelector from "@/components/TimeSelector";
@@ -169,7 +169,7 @@ const ArtistProfile = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<{ id: string; text: string; table: "posts" | "announcements" } | null>(null);
+  
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const profileContentRef = useRef<HTMLDivElement>(null);
@@ -1445,16 +1445,12 @@ const ArtistProfile = () => {
                                           <Flag className="h-4 w-4 mr-2" />
                                           Report Problem
                                         </DropdownMenuItem>
-                                        {isOwnProfile && <>
-                                          <DropdownMenuItem onClick={() => setEditItem({ id: promo.id, text: promo.description, table: "announcements" })}>
-                                            <Pencil className="h-4 w-4 mr-2" />
-                                            Edit
-                                          </DropdownMenuItem>
+                                        {isOwnProfile && (
                                           <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promo.id)} className="text-destructive focus:text-destructive">
                                             <Trash2 className="h-4 w-4 mr-2" />
                                             Delete
                                           </DropdownMenuItem>
-                                        </>}
+                                        )}
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
@@ -1541,16 +1537,12 @@ const ArtistProfile = () => {
                                       <Flag className="h-4 w-4 mr-2" />
                                       Report Problem
                                     </DropdownMenuItem>
-                                    {isOwnProfile && <>
-                                      <DropdownMenuItem onClick={() => setEditItem({ id: post.id, text: post.content, table: "posts" })}>
-                                        <Pencil className="h-4 w-4 mr-2" />
-                                        Edit
-                                      </DropdownMenuItem>
+                                    {isOwnProfile && (
                                       <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
                                         <Trash2 className="h-4 w-4 mr-2" />
                                         Delete
                                       </DropdownMenuItem>
-                                    </>}
+                                    )}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -2148,21 +2140,6 @@ const ArtistProfile = () => {
       </AlertDialog>
 
 
-      <EditContentDialog
-        open={!!editItem}
-        onOpenChange={(o) => !o && setEditItem(null)}
-        table={editItem?.table ?? "posts"}
-        itemId={editItem?.id ?? null}
-        initialText={editItem?.text ?? ""}
-        onSaved={(newText) => {
-          if (!editItem) return;
-          if (editItem.table === "posts") {
-            setPosts(items => items.map(p => p.id === editItem.id ? { ...p, content: newText } : p));
-          } else {
-            setAnnouncements(items => items.map(a => a.id === editItem.id ? { ...a, description: newText } : a));
-          }
-        }}
-      />
 
       <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
         <AlertDialogContent className="rounded-lg">
