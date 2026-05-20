@@ -49,6 +49,11 @@ const CommentsDialog = ({
   const [text, setText] = useState("");
   const [posting, setPosting] = useState(false);
 
+  const onCountChangeRef = useRef(onCountChange);
+  useEffect(() => {
+    onCountChangeRef.current = onCountChange;
+  }, [onCountChange]);
+
   const fetchComments = useCallback(async () => {
     if (!targetId) return;
     setLoading(true);
@@ -73,13 +78,13 @@ const CommentsDialog = ({
       }
       const withProfiles = rows.map((r) => ({ ...r, profile: profileMap.get(r.user_id) || null }));
       setComments(withProfiles);
-      onCountChange?.(withProfiles.length);
+      onCountChangeRef.current?.(withProfiles.length);
     } catch (err) {
       console.error("Error fetching comments:", err);
     } finally {
       setLoading(false);
     }
-  }, [targetId, targetType, onCountChange]);
+  }, [targetId, targetType]);
 
   useEffect(() => {
     if (open && targetId) {
