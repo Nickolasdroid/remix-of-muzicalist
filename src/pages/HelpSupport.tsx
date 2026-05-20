@@ -34,15 +34,23 @@ const faqSections = [
     items: [
       {
         q: "How do I create an account?",
-        a: "Go to the Register page and choose between an Artist account or a User account. Artists can create profiles, showcase their work, and receive bookings. Users can browse artists, follow them, and post event announcements.",
+        a: "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. All new accounts require activation via a paid subscription plan before you can fully use the platform.",
       },
       {
         q: "What's the difference between an Artist and a User account?",
-        a: "Artists get a full profile with gallery, bio, social links, booking calendar, and analytics. Users can browse artists, follow their favorites, post event announcements, and send messages to artists.",
+        a: "Artists get a full public profile with gallery, bio, social links, booking calendar, reviews, and analytics (Premium). Users can browse and follow artists, post event announcements, send booking requests, and message artists.",
+      },
+      {
+        q: "Do I need to pay to use Muzicalist?",
+        a: "Yes. All new accounts (Artists and Users) must activate a subscription plan after registration. Existing accounts created before this change keep their previous access (grandfathered).",
       },
       {
         q: "How do I log in?",
-        a: "Click the Login button and enter the email and password you used during registration. Make sure to verify your email first if you haven't already.",
+        a: "Click Login and enter your email and password, or use Continue with Google. Make sure to verify your email if you signed up with email/password.",
+      },
+      {
+        q: "I forgot my password — what do I do?",
+        a: "On the Login page, click 'Forgot password?' and enter your email. We'll send you a reset link.",
       },
     ],
   },
@@ -52,19 +60,19 @@ const faqSections = [
     items: [
       {
         q: "How do I edit my artist profile?",
-        a: "Navigate to your Dashboard and go to the Profile tab. There you can update your stage name, bio, specialization, instruments, music genres, social media links, avatar, gallery, and more.",
+        a: "Open your Dashboard → Profile tab. You can update bio, specialization, instruments (Instrumentalists), music genres (max 5), social links, avatar, gallery, pricing and more. Stage name, phone number and county are read-only once registered — contact support if they need to change.",
       },
       {
         q: "How do I add photos and videos to my gallery?",
-        a: "From your Dashboard's Profile tab, scroll down to the Gallery section. You can upload images and add YouTube video links to showcase your performances.",
+        a: "From your Dashboard's Profile tab, scroll to the Gallery section. You can upload images and add YouTube links.",
       },
       {
         q: "What specializations are available?",
-        a: "You can choose from Singer, Instrumentalist, DJ, or Band as your specialization.",
+        a: "Singer, Instrumentalist, DJ, or Band. Instrumentalists can also select specific instruments they play.",
       },
       {
         q: "Can I hide my contact information?",
-        a: "Yes, from your Dashboard Settings you can toggle the visibility of your email and phone number on your public profile.",
+        a: "Yes — in Dashboard → Settings you can independently toggle phone and email visibility on your public profile.",
       },
     ],
   },
@@ -74,33 +82,45 @@ const faqSections = [
     items: [
       {
         q: "How do booking requests work?",
-        a: "Users or event organizers can send you a booking request through your artist profile. You'll receive a notification and can accept or decline the request from your Dashboard.",
+        a: "A user sends a booking request from your profile with event date, time and details. You'll be notified and can accept or decline from your Dashboard. Booking requests that aren't answered before the event date are auto-rejected by the system.",
       },
       {
         q: "How do I manage my calendar?",
-        a: "From your Dashboard, access the Calendar tab to view and manage your booked events, mark dates as unavailable, and keep track of upcoming performances.",
+        a: "Dashboard → Calendar shows your booked events and lets you mark dates unavailable. Past dates are read-only.",
+      },
+      {
+        q: "Will my profile show in search if I'm unavailable?",
+        a: "Search filters check your calendar — if you're booked or marked unavailable for the requested date, you won't appear in those results.",
       },
       {
         q: "Can I set my pricing?",
-        a: "Yes, you can set an estimated price range on your profile to give potential clients an idea of your rates.",
+        a: "Yes, you can add multiple pricing entries on your profile to give clients a clear idea of your rates.",
       },
     ],
   },
   {
-    title: "Posts",
+    title: "Posts & Announcements",
     icon: Megaphone,
     items: [
       {
-        q: "How do I create a post?",
-        a: "Go to the Posts page and use the post creation form at the top. You can write text content and attach images or videos to share with your followers.",
+        q: "What's the difference between a Post and an Announcement?",
+        a: "Posts are content shared by artists with their followers on the Feed. Announcements are event opportunities posted by users looking to hire an artist.",
+      },
+      {
+        q: "How do I create a post or announcement?",
+        a: "Artists create posts from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
+      },
+      {
+        q: "How does the announcement ad slot work?",
+        a: "Each announcement consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the announcement before then.",
       },
       {
         q: "How do likes work?",
-        a: "Any logged-in user can like posts on the Posts page. The total like count is displayed on each post.",
+        a: "Any logged-in user can like posts and announcements. Counts are visible on each card.",
       },
       {
-        q: "What are Announcements?",
-        a: "Announcements are event opportunities posted by users looking for artists. Browse the Announcements page to find gigs, apply to events, and connect with organizers.",
+        q: "How long are announcements visible?",
+        a: "Announcements stay visible until shortly after their event date, then expire automatically. Expired items remain in your dashboard history.",
       },
     ],
   },
@@ -109,16 +129,20 @@ const faqSections = [
     icon: MessageSquare,
     items: [
       {
-        q: "How do I message an artist?",
-        a: "Visit an artist's profile and click the message button. This creates a conversation where you can discuss event details, pricing, and availability. You can also contact organizers regarding their announcements.",
+        q: "How do I message someone?",
+        a: "Open an artist profile or an announcement and click the message button. A conversation thread is created — but it's only saved on both sides once you send the first message.",
+      },
+      {
+        q: "Are ad and regular conversations separate?",
+        a: "Yes. Each announcement gets its own dedicated thread per user, separate from any regular conversation you already have with that person.",
       },
       {
         q: "How do notifications work?",
-        a: "You receive notifications for new messages, booking requests, followers, reviews, and other interactions. Check the bell icon in the navigation to view your notifications.",
+        a: "You'll get notifications for new messages, booking requests and status updates, new followers, reviews and more. Check the bell icon to see them.",
       },
       {
         q: "Can I delete a conversation?",
-        a: "Yes, you can delete conversations from your Messages page. The conversation will be hidden from your view. This also applies to conversations regarding announcements.",
+        a: "Yes — deleting hides it from your view. If new messages arrive later, the conversation will reappear with full history restored.",
       },
     ],
   },
@@ -128,15 +152,15 @@ const faqSections = [
     items: [
       {
         q: "How do I find artists?",
-        a: "Use the Search page to find artists by name, specialization, or location. You can also browse by Categories, Countries, or Regions from the sidebar navigation.",
+        a: "Use the Search page to find artists by stage name, specialization, country, region, date and event type. You can also browse Categories, Countries and Regions.",
       },
       {
         q: "What is the Leaderboard?",
-        a: "The Leaderboard ranks artists based on their activity, reviews, and engagement. It's a great way to discover top-performing artists on the platform.",
+        a: "The Leaderboard ranks artists based on reviews and engagement. Artists with an average rating above 4.5 also display a Top Rated badge.",
       },
       {
-        q: "Can I filter artists by country or region?",
-        a: "Yes, use the Countries or Regions pages to browse artists filtered by their location.",
+        q: "Can I filter artists by location?",
+        a: "Yes — use Countries or Regions pages, or apply location filters in Search. On a country page, search is restricted to stage name within that country.",
       },
     ],
   },
@@ -146,11 +170,11 @@ const faqSections = [
     items: [
       {
         q: "How do I leave a review?",
-        a: "Visit an artist's profile and scroll to the Reviews section. You can rate the artist from 1 to 5 stars and leave a written comment about your experience.",
+        a: "Open the artist's profile, scroll to the Reviews section and submit your rating (1–5) with a comment. One review per email is allowed per artist.",
       },
       {
         q: "Can reviews be removed?",
-        a: "If you believe a review violates our guidelines, you can report it using the report button. Our team will review the report and take appropriate action.",
+        a: "If a review violates our guidelines, use the report button. Our team will investigate and take action where appropriate.",
       },
     ],
   },
@@ -160,29 +184,33 @@ const faqSections = [
     items: [
       {
         q: "What plans are available?",
-        a: "Muzicalist offers Free, Standard, and Premium plans. Each tier unlocks additional features like priority placement, advanced analytics, and premium badges.",
+        a: "Muzicalist offers Free, Standard and Premium tiers. Each plan unlocks more posts/announcements, additional features and priority placement. See the Plans page for current pricing.",
       },
       {
-        q: "How do I upgrade my plan?",
-        a: "Go to the My Plan page from the sidebar navigation. There you can compare plans and upgrade to Standard or Premium.",
+        q: "How do I upgrade or manage my plan?",
+        a: "Go to My Plan in the sidebar. You can compare plans, upgrade, or open the customer portal to manage billing.",
       },
       {
-        q: "What benefits does Premium offer?",
-        a: "Premium artists get a verified badge, top placement in search results, advanced analytics, priority in the Leaderboard, and access to exclusive features on the Posts page.",
+        q: "What does Premium include?",
+        a: "Premium artists get a verified badge, top placement in search and Leaderboard, advanced Analytics, higher content limits and access to exclusive features.",
       },
     ],
   },
   {
-    title: "Safety & Reporting",
+    title: "Reporting & Safety",
     icon: Flag,
     items: [
       {
-        q: "How do I report inappropriate content?",
-        a: "Use the report button available on profiles, posts, and reviews. Describe the issue and our team will investigate.",
+        q: "How do I report a post, announcement, profile or review?",
+        a: "Open the item's menu and choose Report. You can pick a predefined reason (spam, harassment, inappropriate content, scam, copyright, etc.) or write your own. Reports are sent to our moderation team for review.",
+      },
+      {
+        q: "What happens after I submit a report?",
+        a: "Our team reviews every report. If the content violates our policies, we may remove it and take action on the offending account. You won't always receive an individual reply, but every report is read.",
       },
       {
         q: "Is my personal information safe?",
-        a: "We take privacy seriously. You can control what information is visible on your profile through your Settings. Read our Privacy Policy for full details.",
+        a: "Yes. You control phone and email visibility from Settings, and we never expose your account credentials. Read our Privacy Policy for full details.",
       },
     ],
   },

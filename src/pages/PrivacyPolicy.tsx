@@ -30,15 +30,18 @@ const PrivacyPolicy = () => {
             <section className="space-y-4">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">1. Information We Collect</h2>
               <p>
-                We collect information you provide directly to us, such as when you create an account, 
-                update your profile, or communicate with us. This may include:
+                We collect information you provide directly to us, such as when you create an account,
+                update your profile, post content, send messages, or contact support. This may include:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Name, email address, and phone number</li>
-                <li>Profile information (stage name, biography, photos)</li>
-                <li>Location data (country, region)</li>
-                <li>Professional information (experience level, music genres)</li>
-                <li>Communications and messages sent through the platform</li>
+                <li>Account details: name, email, phone number, password (stored encrypted)</li>
+                <li>Profile information: stage name, biography, avatar, gallery photos and videos, social links, pricing</li>
+                <li>Professional information: specialization, instruments, music genres, experience level, career details</li>
+                <li>Location data: country and region (auto-detected from IP at signup, editable in profile)</li>
+                <li>Content you post: posts, announcements, comments, reviews, booking requests and messages</li>
+                <li>Reports you submit about other users or content (reason and optional description)</li>
+                <li>Billing information processed by our payment provider (we never store full card details)</li>
+                <li>Technical data: device, browser, IP address, and basic usage analytics</li>
               </ul>
             </section>
 
@@ -46,59 +49,88 @@ const PrivacyPolicy = () => {
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">2. How We Use Your Information</h2>
               <p>We use the information we collect to:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Provide, maintain, and improve our services</li>
-                <li>Connect artists with potential clients</li>
-                <li>Send you technical notices and support messages</li>
-                <li>Respond to your comments and questions</li>
-                <li>Monitor and analyze trends and usage</li>
+                <li>Operate and improve the platform and its features</li>
+                <li>Connect artists with users and process bookings, messages and notifications</li>
+                <li>Activate and manage your paid subscription plan</li>
+                <li>Review reports and enforce our community guidelines</li>
+                <li>Send transactional emails (account, bookings, password resets, billing)</li>
+                <li>Detect, prevent and respond to fraud, abuse and security incidents</li>
+                <li>Comply with legal obligations</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">3. Information Sharing</h2>
               <p>
-                We do not sell your personal information. We may share your information in the following circumstances:
+                We do not sell your personal information. We may share data in limited cases:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>With your consent or at your direction</li>
-                <li>With service providers who assist in our operations</li>
-                <li>To comply with legal obligations</li>
-                <li>To protect the rights and safety of our users</li>
+                <li>Publicly on your profile (only fields you choose to make visible — phone and email visibility are toggleable)</li>
+                <li>With service providers that power the platform (managed cloud backend, payment processor, email delivery, authentication providers such as Google)</li>
+                <li>With moderators reviewing reports you or others submit</li>
+                <li>To comply with legal requests or protect the rights and safety of our users</li>
+                <li>With your explicit consent or at your direction</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">4. Data Security</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">4. Payments</h2>
               <p>
-                We implement appropriate security measures to protect your personal information against 
-                unauthorized access, alteration, disclosure, or destruction. However, no method of 
-                transmission over the Internet is 100% secure.
+                Subscription payments are processed by our third-party payment provider. We receive
+                billing status and plan information but do not store full card numbers on our servers.
+                Their privacy policy also applies when you make a payment.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">5. Your Rights</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">5. Data Security</h2>
+              <p>
+                Data is stored on our managed cloud backend with row-level security, encrypted in
+                transit (HTTPS) and at rest. Authentication is handled with industry-standard tokens.
+                Despite our safeguards, no system is 100% secure — please use a strong, unique password.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">6. Your Rights</h2>
               <p>You have the right to:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Access and receive a copy of your personal data</li>
                 <li>Rectify or update your personal information</li>
-                <li>Request deletion of your account and data</li>
-                <li>Object to processing of your personal data</li>
-                <li>Withdraw consent at any time</li>
+                <li>Request deletion of your account and associated data</li>
+                <li>Control which contact details are publicly visible on your profile</li>
+                <li>Object to or restrict certain processing of your data</li>
+                <li>Withdraw consent at any time (this may limit access to the platform)</li>
               </ul>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">6. Cookies</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">7. Cookies & Local Storage</h2>
               <p>
-                We use cookies and similar technologies to collect information about your browsing 
-                activities and to personalize your experience. You can control cookies through your 
-                browser settings.
+                We use cookies and local storage to keep you signed in, remember language and UI
+                preferences, and analyze usage. You can control cookies through your browser settings.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">7. Changes to This Policy</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">8. Data Retention</h2>
+              <p>
+                We keep your data while your account is active. If you delete your account, we remove
+                or anonymize your personal data within a reasonable period, except where retention is
+                required by law (e.g. billing records) or needed to resolve disputes or enforce our terms.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">9. Children</h2>
+              <p>
+                Muzicalist is not intended for users under 18. We do not knowingly collect personal
+                information from minors. If you believe a minor has registered, please contact us.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">10. Changes to This Policy</h2>
               <p>
                 We may update this privacy policy from time to time. We will notify you of any changes 
                 by posting the new policy on this page and updating the "Last updated" date.
@@ -106,7 +138,7 @@ const PrivacyPolicy = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">8. Contact Us</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Contact Us</h2>
               <p>
                 If you have any questions about this Privacy Policy, please contact us at{" "}
                 <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">
