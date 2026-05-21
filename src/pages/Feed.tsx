@@ -466,27 +466,27 @@ const Feed = () => {
                       </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
-                  <div className="flex items-center gap-0 -mt-2">
+                  <div className="flex items-center gap-0 px-2 py-0 -mt-1">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleLike(item.id)}
                       aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                       aria-pressed={item.isLiked}
-                      className={`h-20 w-20 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`w-16 h-16 ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
-                    {item.likes > 0 && <span className="text-3xl font-semibold text-foreground -ml-1">{item.likes}</span>}
+                    {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })}
                       aria-label="Comment"
-                      className="h-20 w-20 rounded-full text-muted-foreground hover:bg-transparent"
+                      className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                     >
-                      <MessageCircle className="w-16 h-16" />
+                      <MessageCircle className="w-10 h-10" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                   </div>
@@ -574,27 +574,27 @@ const Feed = () => {
                         <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
-                <div className="flex items-center gap-0 -mt-2">
+                <div className="flex items-center gap-0 px-2 py-0 -mt-1">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleLike(item.id)}
                     aria-label={item.isLiked ? "Unlike post" : "Like post"}
                     aria-pressed={item.isLiked}
-                    className={`h-20 w-20 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`w-16 h-16 ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
-                  {item.likes > 0 && <span className="text-3xl font-semibold text-foreground -ml-1">{item.likes}</span>}
+                  {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setCommentsTarget({ id: item.id, type: "post" })}
                     aria-label="Comment"
-                    className="h-20 w-20 rounded-full text-muted-foreground hover:bg-transparent"
+                    className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                   >
-                    <MessageCircle className="w-16 h-16" />
+                    <MessageCircle className="w-10 h-10" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                 </div>
