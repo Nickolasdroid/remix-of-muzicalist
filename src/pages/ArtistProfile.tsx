@@ -1488,9 +1488,9 @@ const ArtistProfile = () => {
                                     onClick={() => handleAnnouncementLike(promo.id)}
                                     aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
                                     aria-pressed={promo.isLiked}
-                                    className={`h-11 w-11 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                    className={`h-9 w-9 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                   >
-                                    <Heart className={`w-9 h-9 ${promo.isLiked ? "fill-current" : ""}`} />
+                                    <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
                                   </Button>
                                   {(promo.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
@@ -1499,9 +1499,9 @@ const ArtistProfile = () => {
                                     size="icon"
                                     onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
                                     aria-label="Comment"
-                                    className="h-11 w-11 rounded-full text-muted-foreground hover:bg-transparent"
+                                    className="h-9 w-9 rounded-full text-muted-foreground hover:bg-transparent"
                                   >
-                                    <MessageCircle className="w-9 h-9" />
+                                    <MessageCircle className="w-7 h-7" />
                                   </Button>
                                   {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
@@ -1587,9 +1587,9 @@ const ArtistProfile = () => {
                                 onClick={() => handlePostLike(post.id)}
                                 aria-label={post.isLiked ? "Unlike post" : "Like post"}
                                 aria-pressed={post.isLiked}
-                                className={`h-11 w-11 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                className={`h-9 w-9 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
                               >
-                                <Heart className={`w-9 h-9 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
                               </Button>
                               {post.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.likes}</span>}
 
@@ -1598,9 +1598,9 @@ const ArtistProfile = () => {
                                 size="icon"
                                 onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
                                 aria-label="Comment"
-                                className="h-11 w-11 rounded-full text-muted-foreground hover:bg-transparent"
+                                className="h-9 w-9 rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-9 h-9" />
+                                <MessageCircle className="w-7 h-7" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
@@ -1736,9 +1736,9 @@ const ArtistProfile = () => {
                                 onClick={() => handleAnnouncementLike(announcement.id)}
                                 aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
                                 aria-pressed={announcement.isLiked}
-                                className={`h-11 w-11 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                className={`h-9 w-9 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                               >
-                                <Heart className={`w-9 h-9 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
                               </Button>
                               {(announcement.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.likes}</span>}
 
@@ -1747,9 +1747,9 @@ const ArtistProfile = () => {
                                 size="icon"
                                 onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
                                 aria-label="Comment"
-                                className="h-11 w-11 rounded-full text-muted-foreground hover:bg-transparent"
+                                className="h-9 w-9 rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-9 h-9" />
+                                <MessageCircle className="w-7 h-7" />
                               </Button>
                               {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
