@@ -338,7 +338,7 @@ const ArtistProfile = () => {
       const announcementIds = announcementsData.map(a => a.id);
       const postIds = postsData.map(p => p.id);
 
-      const [annLikesAll, annLikesMine, postLikesAll, postLikesMine] = await Promise.all([
+      const [annLikesAll, annLikesMine, postLikesAll, postLikesMine, annCommentsAll, postCommentsAll] = await Promise.all([
         announcementIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds)
           : Promise.resolve({ data: [] }),
@@ -351,17 +351,27 @@ const ArtistProfile = () => {
         postIds.length && userId
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds).eq('user_id', userId)
           : Promise.resolve({ data: [] as any[] }),
+        announcementIds.length
+          ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', announcementIds)
+          : Promise.resolve({ data: [] }),
+        postIds.length
+          ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] }),
       ]);
 
       const annCount = new Map<string, number>();
       (annLikesAll.data || []).forEach((r: any) => annCount.set(r.announcement_id, (annCount.get(r.announcement_id) || 0) + 1));
       const annMine = new Set((annLikesMine.data || []).map((r: any) => r.announcement_id));
-      setAnnouncements(announcementsData.map(a => ({ ...a, likes: annCount.get(a.id) || 0, isLiked: annMine.has(a.id) })));
+      const annCommentCount = new Map<string, number>();
+      (annCommentsAll.data || []).forEach((r: any) => annCommentCount.set(r.announcement_id, (annCommentCount.get(r.announcement_id) || 0) + 1));
+      setAnnouncements(announcementsData.map(a => ({ ...a, likes: annCount.get(a.id) || 0, isLiked: annMine.has(a.id), commentsCount: annCommentCount.get(a.id) || 0 })));
 
       const postCount = new Map<string, number>();
       (postLikesAll.data || []).forEach((r: any) => postCount.set(r.post_id, (postCount.get(r.post_id) || 0) + 1));
       const postMine = new Set((postLikesMine.data || []).map((r: any) => r.post_id));
-      setPosts(postsData.map(p => ({ ...p, likes: postCount.get(p.id) || 0, isLiked: postMine.has(p.id) })));
+      const postCommentCount = new Map<string, number>();
+      (postCommentsAll.data || []).forEach((r: any) => postCommentCount.set(r.post_id, (postCommentCount.get(r.post_id) || 0) + 1));
+      setPosts(postsData.map(p => ({ ...p, likes: postCount.get(p.id) || 0, isLiked: postMine.has(p.id), commentsCount: postCommentCount.get(p.id) || 0 })));
 
       // STEP 4: Followers/following counts (filter out deleted profiles).
       const followerIds = (followerRowsRes.data || []).map((f: any) => f.follower_id);
