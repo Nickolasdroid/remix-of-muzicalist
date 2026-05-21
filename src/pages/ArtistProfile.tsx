@@ -2218,6 +2218,21 @@ const ArtistProfile = () => {
         contentType={reportTarget?.type ?? "post"}
         contentId={reportTarget?.id ?? null}
       />
+
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(o) => !o && setCommentsTarget(null)}
+        contentType={commentsTarget?.type ?? "post"}
+        contentId={commentsTarget?.id ?? null}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          if (commentsTarget.type === "post") {
+            setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+          } else {
+            setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+          }
+        }}
+      />
     </div>;
 };
 export default ArtistProfile;
