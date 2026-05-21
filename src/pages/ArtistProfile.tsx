@@ -1481,7 +1481,7 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                <div className="flex items-center gap-1 px-3 py-2">
+                                <div className="flex items-center gap-1 px-2 py-1">
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -1490,7 +1490,7 @@ const ArtistProfile = () => {
                                     aria-pressed={promo.isLiked}
                                     className={`h-10 w-10 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                   >
-                                    <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                    <Heart className={`w-8 h-8 ${promo.isLiked ? "fill-current" : ""}`} />
                                   </Button>
                                   {(promo.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
@@ -1501,7 +1501,7 @@ const ArtistProfile = () => {
                                     aria-label="Comment"
                                     className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
                                   >
-                                    <MessageCircle className="w-7 h-7" />
+                                    <MessageCircle className="w-8 h-8" />
                                   </Button>
                                   {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
@@ -1580,7 +1580,7 @@ const ArtistProfile = () => {
                               </div>}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-1 px-3 py-2">
+                            <div className="flex items-center gap-1 px-2 py-1">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -1589,7 +1589,7 @@ const ArtistProfile = () => {
                                 aria-pressed={post.isLiked}
                                 className={`h-10 w-10 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
                               >
-                                <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`w-8 h-8 ${post.isLiked ? 'fill-current' : ''}`} />
                               </Button>
                               {post.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.likes}</span>}
 
@@ -1600,7 +1600,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-7 h-7" />
+                                <MessageCircle className="w-8 h-8" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
@@ -1729,7 +1729,7 @@ const ArtistProfile = () => {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex items-center gap-1 px-3 py-2">
+                            <div className="flex items-center gap-1 px-2 py-1">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -1738,7 +1738,7 @@ const ArtistProfile = () => {
                                 aria-pressed={announcement.isLiked}
                                 className={`h-10 w-10 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                               >
-                                <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                <Heart className={`w-8 h-8 ${announcement.isLiked ? "fill-current" : ""}`} />
                               </Button>
                               {(announcement.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.likes}</span>}
 
@@ -1749,7 +1749,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-7 h-7" />
+                                <MessageCircle className="w-8 h-8" />
                               </Button>
                               {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>

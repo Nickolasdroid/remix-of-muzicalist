@@ -466,7 +466,7 @@ const Feed = () => {
                       </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
-                  <div className="flex items-center gap-1 px-3 py-2">
+                  <div className="flex items-center gap-1 px-2 py-1">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -475,7 +475,7 @@ const Feed = () => {
                       aria-pressed={item.isLiked}
                       className={`h-10 w-10 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`w-7 h-7 ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`w-8 h-8 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
                     {item.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -486,7 +486,7 @@ const Feed = () => {
                       aria-label="Comment"
                       className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
                     >
-                      <MessageCircle className="w-7 h-7" />
+                      <MessageCircle className="w-8 h-8" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                   </div>
@@ -574,7 +574,7 @@ const Feed = () => {
                         <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
-                <div className="flex items-center gap-1 px-3 py-2">
+                <div className="flex items-center gap-1 px-2 py-1">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -583,7 +583,7 @@ const Feed = () => {
                     aria-pressed={item.isLiked}
                     className={`h-10 w-10 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`w-7 h-7 ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`w-8 h-8 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
                   {item.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -594,7 +594,7 @@ const Feed = () => {
                     aria-label="Comment"
                     className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
                   >
-                    <MessageCircle className="w-7 h-7" />
+                    <MessageCircle className="w-8 h-8" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                 </div>
