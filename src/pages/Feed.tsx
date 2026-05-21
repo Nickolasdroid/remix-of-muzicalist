@@ -475,7 +475,7 @@ const Feed = () => {
                       aria-pressed={item.isLiked}
                       className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`w-14 h-14 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
                     {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -486,7 +486,7 @@ const Feed = () => {
                       aria-label="Comment"
                       className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                     >
-                      <MessageCircle className="w-10 h-10" />
+                      <MessageCircle className="w-14 h-14" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                   </div>
@@ -583,7 +583,7 @@ const Feed = () => {
                     aria-pressed={item.isLiked}
                     className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`w-14 h-14 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
                   {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -594,7 +594,7 @@ const Feed = () => {
                     aria-label="Comment"
                     className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                   >
-                    <MessageCircle className="w-10 h-10" />
+                    <MessageCircle className="w-14 h-14" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                 </div>
