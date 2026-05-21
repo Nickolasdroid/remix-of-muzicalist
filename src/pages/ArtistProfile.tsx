@@ -1488,20 +1488,20 @@ const ArtistProfile = () => {
                                     onClick={() => handleAnnouncementLike(promo.id)}
                                     aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
                                     aria-pressed={promo.isLiked}
-                                    className={`h-16 w-16 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                    className={`h-[72px] w-[72px] rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                   >
-                                    <Heart className={`w-12 h-12 ${promo.isLiked ? "fill-current" : ""}`} />
+                                    <Heart className={`w-14 h-14 ${promo.isLiked ? "fill-current" : ""}`} />
                                   </Button>
-                                  {(promo.likes || 0) > 0 && <span className="text-xl font-semibold text-foreground -ml-1">{promo.likes}</span>}
+                                  {(promo.likes || 0) > 0 && <span className="text-2xl font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
                                   <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
                                     aria-label="Comment"
-                                    className="h-16 w-16 rounded-full text-muted-foreground hover:bg-transparent"
+                                    className="h-[72px] w-[72px] rounded-full text-muted-foreground hover:bg-transparent"
                                   >
-                                    <MessageCircle className="w-12 h-12" />
+                                    <MessageCircle className="w-14 h-14" />
                                   </Button>
                                   {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
@@ -1587,20 +1587,20 @@ const ArtistProfile = () => {
                                 onClick={() => handlePostLike(post.id)}
                                 aria-label={post.isLiked ? "Unlike post" : "Like post"}
                                 aria-pressed={post.isLiked}
-                                className={`h-16 w-16 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                className={`h-[72px] w-[72px] rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
                               >
-                                <Heart className={`w-12 h-12 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`w-14 h-14 ${post.isLiked ? 'fill-current' : ''}`} />
                               </Button>
-                              {post.likes > 0 && <span className="text-xl font-semibold text-foreground -ml-1">{post.likes}</span>}
+                              {post.likes > 0 && <span className="text-2xl font-semibold text-foreground -ml-1">{post.likes}</span>}
 
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
                                 aria-label="Comment"
-                                className="h-16 w-16 rounded-full text-muted-foreground hover:bg-transparent"
+                                className="h-[72px] w-[72px] rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-12 h-12" />
+                                <MessageCircle className="w-14 h-14" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
@@ -1736,20 +1736,20 @@ const ArtistProfile = () => {
                                 onClick={() => handleAnnouncementLike(announcement.id)}
                                 aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
                                 aria-pressed={announcement.isLiked}
-                                className={`h-16 w-16 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                className={`h-[72px] w-[72px] rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                               >
-                                <Heart className={`w-12 h-12 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                <Heart className={`w-14 h-14 ${announcement.isLiked ? "fill-current" : ""}`} />
                               </Button>
-                              {(announcement.likes || 0) > 0 && <span className="text-xl font-semibold text-foreground -ml-1">{announcement.likes}</span>}
+                              {(announcement.likes || 0) > 0 && <span className="text-2xl font-semibold text-foreground -ml-1">{announcement.likes}</span>}
 
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
                                 aria-label="Comment"
-                                className="h-16 w-16 rounded-full text-muted-foreground hover:bg-transparent"
+                                className="h-[72px] w-[72px] rounded-full text-muted-foreground hover:bg-transparent"
                               >
-                                <MessageCircle className="w-12 h-12" />
+                                <MessageCircle className="w-14 h-14" />
                               </Button>
                               {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
