@@ -108,6 +108,7 @@ interface Post {
   created_at: string;
   likes: number;
   isLiked: boolean;
+  commentsCount?: number;
 }
 interface MediaPreview {
   url: string;
