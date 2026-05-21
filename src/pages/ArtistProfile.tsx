@@ -2222,8 +2222,9 @@ const ArtistProfile = () => {
       <CommentsDialog
         open={!!commentsTarget}
         onOpenChange={(o) => !o && setCommentsTarget(null)}
-        contentType={commentsTarget?.type ?? "post"}
-        contentId={commentsTarget?.id ?? null}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={currentUserId}
         onCountChange={(count) => {
           if (!commentsTarget) return;
           if (commentsTarget.type === "post") {
