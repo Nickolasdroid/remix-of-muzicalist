@@ -14,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
+import CommentsDialog from "@/components/CommentsDialog";
 
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
@@ -75,6 +76,7 @@ interface Announcement {
   budget: string | null;
   likes?: number;
   isLiked?: boolean;
+  commentsCount?: number;
 }
 interface GalleryItem {
   id: string;
@@ -106,6 +108,7 @@ interface Post {
   created_at: string;
   likes: number;
   isLiked: boolean;
+  commentsCount?: number;
 }
 interface MediaPreview {
   url: string;
@@ -168,6 +171,7 @@ const ArtistProfile = () => {
   });
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
@@ -334,7 +338,7 @@ const ArtistProfile = () => {
       const announcementIds = announcementsData.map(a => a.id);
       const postIds = postsData.map(p => p.id);
 
-      const [annLikesAll, annLikesMine, postLikesAll, postLikesMine] = await Promise.all([
+      const [annLikesAll, annLikesMine, postLikesAll, postLikesMine, annCommentsAll, postCommentsAll] = await Promise.all([
         announcementIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds)
           : Promise.resolve({ data: [] }),
@@ -347,17 +351,27 @@ const ArtistProfile = () => {
         postIds.length && userId
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds).eq('user_id', userId)
           : Promise.resolve({ data: [] as any[] }),
+        announcementIds.length
+          ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', announcementIds)
+          : Promise.resolve({ data: [] }),
+        postIds.length
+          ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
+          : Promise.resolve({ data: [] }),
       ]);
 
       const annCount = new Map<string, number>();
       (annLikesAll.data || []).forEach((r: any) => annCount.set(r.announcement_id, (annCount.get(r.announcement_id) || 0) + 1));
       const annMine = new Set((annLikesMine.data || []).map((r: any) => r.announcement_id));
-      setAnnouncements(announcementsData.map(a => ({ ...a, likes: annCount.get(a.id) || 0, isLiked: annMine.has(a.id) })));
+      const annCommentCount = new Map<string, number>();
+      (annCommentsAll.data || []).forEach((r: any) => annCommentCount.set(r.announcement_id, (annCommentCount.get(r.announcement_id) || 0) + 1));
+      setAnnouncements(announcementsData.map(a => ({ ...a, likes: annCount.get(a.id) || 0, isLiked: annMine.has(a.id), commentsCount: annCommentCount.get(a.id) || 0 })));
 
       const postCount = new Map<string, number>();
       (postLikesAll.data || []).forEach((r: any) => postCount.set(r.post_id, (postCount.get(r.post_id) || 0) + 1));
       const postMine = new Set((postLikesMine.data || []).map((r: any) => r.post_id));
-      setPosts(postsData.map(p => ({ ...p, likes: postCount.get(p.id) || 0, isLiked: postMine.has(p.id) })));
+      const postCommentCount = new Map<string, number>();
+      (postCommentsAll.data || []).forEach((r: any) => postCommentCount.set(r.post_id, (postCommentCount.get(r.post_id) || 0) + 1));
+      setPosts(postsData.map(p => ({ ...p, likes: postCount.get(p.id) || 0, isLiked: postMine.has(p.id), commentsCount: postCommentCount.get(p.id) || 0 })));
 
       // STEP 4: Followers/following counts (filter out deleted profiles).
       const followerIds = (followerRowsRes.data || []).map((f: any) => f.follower_id);
@@ -1467,25 +1481,29 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                <div className="px-2 py-1">
-                                  <div className="flex items-center justify-around">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleAnnouncementLike(promo.id)}
-                                      aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
-                                      aria-pressed={promo.isLiked}
-                                      className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                    >
-                                      <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
-                                      {(promo.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promo.likes}</span>}
-                                    </Button>
+                                <div className="flex items-center gap-1 px-3 py-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleAnnouncementLike(promo.id)}
+                                    aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
+                                    aria-pressed={promo.isLiked}
+                                    className={`h-10 w-10 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  >
+                                    <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                  </Button>
+                                  {(promo.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
-                                    <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                                      <MessageCircle className="w-5 h-5" />
-                                      <span className="font-medium">Contact</span>
-                                    </Button>
-                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
+                                    aria-label="Comment"
+                                    className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                                  >
+                                    <MessageCircle className="w-7 h-7" />
+                                  </Button>
+                                  {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
                               </Card>);
 
@@ -1562,18 +1580,29 @@ const ArtistProfile = () => {
                               </div>}
 
                             {/* Actions */}
-                            <div className="px-2 py-1">
-                              <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => handlePostLike(post.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}>
-                                  <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
-                                  {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
-                                </Button>
-                                
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                                  <MessageCircle className="w-5 h-5" />
-                                  <span className="font-medium">Contact</span>
-                                </Button>
-                              </div>
+                            <div className="flex items-center gap-1 px-3 py-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handlePostLike(post.id)}
+                                aria-label={post.isLiked ? "Unlike post" : "Like post"}
+                                aria-pressed={post.isLiked}
+                                className={`h-10 w-10 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                              >
+                                <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
+                              </Button>
+                              {post.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.likes}</span>}
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
+                                aria-label="Comment"
+                                className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                              >
+                                <MessageCircle className="w-7 h-7" />
+                              </Button>
+                              {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
                           </Card>);
 
@@ -1699,14 +1728,30 @@ const ArtistProfile = () => {
                               )}
                             </div>
 
-                            {/* Action button */}
-                            <div className="px-2 py-1">
-                              <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
-                                  <ArrowRight className="w-5 h-5" />
-                                  <span className="font-medium">Apply Now</span>
-                                </Button>
-                              </div>
+                            {/* Actions */}
+                            <div className="flex items-center gap-1 px-3 py-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleAnnouncementLike(announcement.id)}
+                                aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
+                                aria-pressed={announcement.isLiked}
+                                className={`h-10 w-10 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                              >
+                                <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                              </Button>
+                              {(announcement.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.likes}</span>}
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
+                                aria-label="Comment"
+                                className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                              >
+                                <MessageCircle className="w-7 h-7" />
+                              </Button>
+                              {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
                           </Card>) : <Card className="p-8 text-center">
                           <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
@@ -2172,6 +2217,22 @@ const ArtistProfile = () => {
         onOpenChange={(o) => !o && setReportTarget(null)}
         contentType={reportTarget?.type ?? "post"}
         contentId={reportTarget?.id ?? null}
+      />
+
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(o) => !o && setCommentsTarget(null)}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={currentUserId}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          if (commentsTarget.type === "post") {
+            setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+          } else {
+            setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+          }
+        }}
       />
     </div>;
 };
