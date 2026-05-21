@@ -1481,25 +1481,29 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                <div className="px-2 py-1">
-                                  <div className="flex items-center justify-around">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleAnnouncementLike(promo.id)}
-                                      aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
-                                      aria-pressed={promo.isLiked}
-                                      className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                    >
-                                      <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
-                                      {(promo.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promo.likes}</span>}
-                                    </Button>
+                                <div className="flex items-center gap-1 px-3 py-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleAnnouncementLike(promo.id)}
+                                    aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
+                                    aria-pressed={promo.isLiked}
+                                    className={`h-10 w-10 rounded-full hover:bg-transparent ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  >
+                                    <Heart className={`w-7 h-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                  </Button>
+                                  {(promo.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
-                                    <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                                      <MessageCircle className="w-5 h-5" />
-                                      <span className="font-medium">Contact</span>
-                                    </Button>
-                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
+                                    aria-label="Comment"
+                                    className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                                  >
+                                    <MessageCircle className="w-7 h-7" />
+                                  </Button>
+                                  {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
                               </Card>);
 
