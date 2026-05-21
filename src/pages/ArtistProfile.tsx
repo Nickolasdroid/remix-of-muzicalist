@@ -1580,18 +1580,29 @@ const ArtistProfile = () => {
                               </div>}
 
                             {/* Actions */}
-                            <div className="px-2 py-1">
-                              <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => handlePostLike(post.id)} className={`flex-1 gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}>
-                                  <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
-                                  {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
-                                </Button>
-                                
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
-                                  <MessageCircle className="w-5 h-5" />
-                                  <span className="font-medium">Contact</span>
-                                </Button>
-                              </div>
+                            <div className="flex items-center gap-1 px-3 py-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handlePostLike(post.id)}
+                                aria-label={post.isLiked ? "Unlike post" : "Like post"}
+                                aria-pressed={post.isLiked}
+                                className={`h-10 w-10 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                              >
+                                <Heart className={`w-7 h-7 ${post.isLiked ? 'fill-current' : ''}`} />
+                              </Button>
+                              {post.likes > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.likes}</span>}
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
+                                aria-label="Comment"
+                                className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                              >
+                                <MessageCircle className="w-7 h-7" />
+                              </Button>
+                              {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
                           </Card>);
 
