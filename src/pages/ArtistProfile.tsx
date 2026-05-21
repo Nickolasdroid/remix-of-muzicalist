@@ -1728,14 +1728,30 @@ const ArtistProfile = () => {
                               )}
                             </div>
 
-                            {/* Action button */}
-                            <div className="px-2 py-1">
-                              <div className="flex items-center justify-around">
-                                <Button variant="ghost" size="sm" onClick={() => navigate(`/artist/${artist?.id}`)} className="flex-1 gap-2 rounded-md text-accent hover:bg-transparent hover:text-accent">
-                                  <ArrowRight className="w-5 h-5" />
-                                  <span className="font-medium">Apply Now</span>
-                                </Button>
-                              </div>
+                            {/* Actions */}
+                            <div className="flex items-center gap-1 px-3 py-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleAnnouncementLike(announcement.id)}
+                                aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
+                                aria-pressed={announcement.isLiked}
+                                className={`h-10 w-10 rounded-full hover:bg-transparent ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                              >
+                                <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                              </Button>
+                              {(announcement.likes || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.likes}</span>}
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
+                                aria-label="Comment"
+                                className="h-10 w-10 rounded-full text-muted-foreground hover:bg-transparent"
+                              >
+                                <MessageCircle className="w-7 h-7" />
+                              </Button>
+                              {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
                           </Card>) : <Card className="p-8 text-center">
                           <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
