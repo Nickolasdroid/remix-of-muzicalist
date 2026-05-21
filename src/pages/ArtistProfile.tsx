@@ -76,6 +76,7 @@ interface Announcement {
   budget: string | null;
   likes?: number;
   isLiked?: boolean;
+  commentsCount?: number;
 }
 interface GalleryItem {
   id: string;
