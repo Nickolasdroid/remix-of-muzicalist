@@ -473,20 +473,20 @@ const Feed = () => {
                       onClick={() => handleLike(item.id)}
                       aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                       aria-pressed={item.isLiked}
-                      className={`h-12 w-12 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`w-9 h-9 ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
-                    {item.likes > 0 && <span className="text-base font-semibold text-foreground -ml-1">{item.likes}</span>}
+                    {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })}
                       aria-label="Comment"
-                      className="h-12 w-12 rounded-full text-muted-foreground hover:bg-transparent"
+                      className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                     >
-                      <MessageCircle className="w-9 h-9" />
+                      <MessageCircle className="w-10 h-10" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                   </div>
@@ -581,20 +581,20 @@ const Feed = () => {
                     onClick={() => handleLike(item.id)}
                     aria-label={item.isLiked ? "Unlike post" : "Like post"}
                     aria-pressed={item.isLiked}
-                    className={`h-12 w-12 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`h-14 w-14 rounded-full hover:bg-transparent ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`w-9 h-9 ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`w-10 h-10 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
-                  {item.likes > 0 && <span className="text-base font-semibold text-foreground -ml-1">{item.likes}</span>}
+                  {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setCommentsTarget({ id: item.id, type: "post" })}
                     aria-label="Comment"
-                    className="h-12 w-12 rounded-full text-muted-foreground hover:bg-transparent"
+                    className="h-14 w-14 rounded-full text-muted-foreground hover:bg-transparent"
                   >
-                    <MessageCircle className="w-9 h-9" />
+                    <MessageCircle className="w-10 h-10" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                 </div>
