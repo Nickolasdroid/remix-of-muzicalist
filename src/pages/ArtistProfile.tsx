@@ -1587,9 +1587,9 @@ const ArtistProfile = () => {
                                 onClick={() => handlePostLike(post.id)}
                                 aria-label={post.isLiked ? "Unlike post" : "Like post"}
                                 aria-pressed={post.isLiked}
-                                className={`h-20 w-20 rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                className={`h-[100px] w-[100px] rounded-full hover:bg-transparent ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
                               >
-                                <Heart className={`w-20 h-20 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`w-[100px] h-[100px] ${post.isLiked ? 'fill-current' : ''}`} />
                               </Button>
                               {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
 
