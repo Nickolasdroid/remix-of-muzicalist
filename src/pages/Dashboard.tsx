@@ -2653,8 +2653,7 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {/* Like action (Feed-style) */}
-                              <div className="px-2 py-1">
+                              <div className="px-2 py-1 flex items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -2665,6 +2664,16 @@ const Dashboard = () => {
                                 >
                                   <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
                                   {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
+                                  aria-label="Comment"
+                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                >
+                                  <MessageCircle className="w-7 h-7" />
+                                  {(promotion.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.commentsCount}</span>}
                                 </Button>
                               </div>
                             </Card>)}
