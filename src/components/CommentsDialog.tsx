@@ -61,6 +61,7 @@ const CommentsDialog = ({
   const [posting, setPosting] = useState(false);
   const [replyTo, setReplyTo] = useState<CommentRow | null>(null);
   const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const onCountChangeRef = useRef(onCountChange);
