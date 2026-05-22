@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -51,6 +61,7 @@ const CommentsDialog = ({
   const [posting, setPosting] = useState(false);
   const [replyTo, setReplyTo] = useState<CommentRow | null>(null);
   const [expandedThreads, setExpandedThreads] = useState<Set<string>>(new Set());
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const onCountChangeRef = useRef(onCountChange);
@@ -166,16 +177,18 @@ const CommentsDialog = ({
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
-      const { error } = await (supabase as any).from("comments").delete().eq("id", id);
+      const { error } = await (supabase as any).from("comments").delete().eq("id", deleteConfirmId);
       if (error) throw error;
       setComments((prev) => {
         // Remove the comment and any of its replies (cascade in DB, mirror in UI)
-        const next = prev.filter((c) => c.id !== id && c.parent_id !== id);
+        const next = prev.filter((c) => c.id !== deleteConfirmId && c.parent_id !== deleteConfirmId);
         onCountChange?.(next.length);
         return next;
       });
+      setDeleteConfirmId(null);
     } catch (err) {
       console.error("Error deleting comment:", err);
       toast({ title: "Error", description: "Failed to delete comment.", variant: "destructive" });
@@ -229,7 +242,7 @@ const CommentsDialog = ({
             </button>
             {canDelete && (
               <button
-                onClick={() => handleDelete(c.id)}
+                onClick={() => setDeleteConfirmId(c.id)}
                 className="text-[11px] text-muted-foreground hover:text-destructive md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                 aria-label="Delete comment"
               >
@@ -340,30 +353,46 @@ const CommentsDialog = ({
     </>
   );
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[85vh] flex flex-col">
-          <DrawerHeader className="border-b text-left">
-            <DrawerTitle>Comments</DrawerTitle>
-            <DrawerDescription className="sr-only">View and add comments</DrawerDescription>
-          </DrawerHeader>
-          {body}
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-lg max-w-md p-0 flex flex-col max-h-[80vh]">
-        <DialogHeader className="px-4 pt-4 pb-2 border-b">
-          <DialogTitle>Comments</DialogTitle>
-          <DialogDescription className="sr-only">View and add comments</DialogDescription>
-        </DialogHeader>
-        {body}
-      </DialogContent>
-    </Dialog>
+    <>
+      {isMobile ? (
+        <Drawer open={open} onOpenChange={onOpenChange}>
+          <DrawerContent className="max-h-[85vh] flex flex-col">
+            <DrawerHeader className="border-b text-left">
+              <DrawerTitle>Comments</DrawerTitle>
+              <DrawerDescription className="sr-only">View and add comments</DrawerDescription>
+            </DrawerHeader>
+            {body}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent className="rounded-lg max-w-md p-0 flex flex-col max-h-[80vh]">
+            <DialogHeader className="px-4 pt-4 pb-2 border-b">
+              <DialogTitle>Comments</DialogTitle>
+              <DialogDescription className="sr-only">View and add comments</DialogDescription>
+            </DialogHeader>
+            {body}
+          </DialogContent>
+        </Dialog>
+      )}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete comment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this comment? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirmId(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
