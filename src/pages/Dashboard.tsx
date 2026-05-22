@@ -18,8 +18,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import CommentsDialog from "@/components/CommentsDialog";
 
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
@@ -56,6 +57,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
@@ -2568,8 +2570,7 @@ const Dashboard = () => {
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
-                              {/* Like action (Feed-style) */}
-                              <div className="px-2 py-1">
+                              <div className="px-2 py-1 flex items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -2580,6 +2581,16 @@ const Dashboard = () => {
                                 >
                                   <Heart className={`w-7 h-7 ${post.isLiked ? "fill-current" : ""}`} />
                                   {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => post.id && setCommentsTarget({ id: post.id, type: "post" })}
+                                  aria-label="Comment"
+                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                >
+                                  <MessageCircle className="w-7 h-7" />
+                                  {(post.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{post.commentsCount}</span>}
                                 </Button>
                               </div>
                             </Card>)}
@@ -2642,8 +2653,7 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              {/* Like action (Feed-style) */}
-                              <div className="px-2 py-1">
+                              <div className="px-2 py-1 flex items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -2654,6 +2664,16 @@ const Dashboard = () => {
                                 >
                                   <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
                                   {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
+                                  aria-label="Comment"
+                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                >
+                                  <MessageCircle className="w-7 h-7" />
+                                  {(promotion.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.commentsCount}</span>}
                                 </Button>
                               </div>
                             </Card>)}
@@ -2835,7 +2855,29 @@ const Dashboard = () => {
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="h-2" />
+                              <div className="px-2 py-1 flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAnnouncementLike(announcement.id)}
+                                  aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
+                                  aria-pressed={announcement.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                  {(announcement.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.likes}</span>}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
+                                  aria-label="Comment"
+                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                >
+                                  <MessageCircle className="w-7 h-7" />
+                                  {(announcement.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.commentsCount}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
                           {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
@@ -3680,6 +3722,22 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(open) => { if (!open) setCommentsTarget(null); }}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={user?.id ?? null}
+        isAdmin={isAdmin}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          if (commentsTarget.type === "post") {
+            setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+          } else {
+            setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+          }
+        }}
+      />
     </div>;
 };
 export default Dashboard;
