@@ -353,30 +353,46 @@ const CommentsDialog = ({
     </>
   );
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[85vh] flex flex-col">
-          <DrawerHeader className="border-b text-left">
-            <DrawerTitle>Comments</DrawerTitle>
-            <DrawerDescription className="sr-only">View and add comments</DrawerDescription>
-          </DrawerHeader>
-          {body}
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-lg max-w-md p-0 flex flex-col max-h-[80vh]">
-        <DialogHeader className="px-4 pt-4 pb-2 border-b">
-          <DialogTitle>Comments</DialogTitle>
-          <DialogDescription className="sr-only">View and add comments</DialogDescription>
-        </DialogHeader>
-        {body}
-      </DialogContent>
-    </Dialog>
+    <>
+      {isMobile ? (
+        <Drawer open={open} onOpenChange={onOpenChange}>
+          <DrawerContent className="max-h-[85vh] flex flex-col">
+            <DrawerHeader className="border-b text-left">
+              <DrawerTitle>Comments</DrawerTitle>
+              <DrawerDescription className="sr-only">View and add comments</DrawerDescription>
+            </DrawerHeader>
+            {body}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent className="rounded-lg max-w-md p-0 flex flex-col max-h-[80vh]">
+            <DialogHeader className="px-4 pt-4 pb-2 border-b">
+              <DialogTitle>Comments</DialogTitle>
+              <DialogDescription className="sr-only">View and add comments</DialogDescription>
+            </DialogHeader>
+            {body}
+          </DialogContent>
+        </Dialog>
+      )}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete comment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this comment? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirmId(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
