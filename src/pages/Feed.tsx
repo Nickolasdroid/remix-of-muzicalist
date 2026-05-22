@@ -475,7 +475,7 @@ const Feed = () => {
                       aria-pressed={item.isLiked}
                       className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`lucide lucide-heart h-[31px] w-[31px] ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`lucide lucide-heart h-[28px] w-[28px] ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
                     {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -583,7 +583,7 @@ const Feed = () => {
                     aria-pressed={item.isLiked}
                     className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`lucide lucide-heart h-[31px] w-[31px] ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`lucide lucide-heart h-[28px] w-[28px] ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
                   {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
