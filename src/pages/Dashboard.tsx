@@ -888,7 +888,8 @@ const Dashboard = () => {
       });
       await loadAnnouncements();
       setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
-      setShowPromotionDialog(false);
+      setShowPostDialog(false);
+      setPostMediaType('image');
       toast({ title: "Success", description: "Promotion created!" });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
