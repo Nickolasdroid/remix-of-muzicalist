@@ -466,14 +466,14 @@ const Feed = () => {
                       </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
-                  <div className="flex items-center gap-0 px-2 py-0 -mt-1">
+                  <div className="flex items-center gap-0 px-2 py-0 -mt-3">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleLike(item.id)}
                       aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                       aria-pressed={item.isLiked}
-                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
                       <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
@@ -484,7 +484,7 @@ const Feed = () => {
                       size="icon"
                       onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })}
                       aria-label="Comment"
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                     >
                       <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                     </Button>
@@ -574,14 +574,14 @@ const Feed = () => {
                         <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
-                <div className="flex items-center gap-0 px-2 py-0 -mt-1">
+                <div className="flex items-center gap-0 px-2 py-0 -mt-3">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleLike(item.id)}
                     aria-label={item.isLiked ? "Unlike post" : "Like post"}
                     aria-pressed={item.isLiked}
-                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
                     <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
@@ -592,7 +592,7 @@ const Feed = () => {
                     size="icon"
                     onClick={() => setCommentsTarget({ id: item.id, type: "post" })}
                     aria-label="Comment"
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                   >
                     <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                   </Button>
