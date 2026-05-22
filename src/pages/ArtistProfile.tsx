@@ -1008,7 +1008,7 @@ const ArtistProfile = () => {
                   <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className={`h-20 w-20 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
+                      <User className={`h-14 w-14 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
                     </AvatarFallback>
                   </Avatar>
                 </div>
