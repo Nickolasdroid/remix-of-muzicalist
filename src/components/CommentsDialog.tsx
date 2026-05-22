@@ -177,16 +177,18 @@ const CommentsDialog = ({
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
-      const { error } = await (supabase as any).from("comments").delete().eq("id", id);
+      const { error } = await (supabase as any).from("comments").delete().eq("id", deleteConfirmId);
       if (error) throw error;
       setComments((prev) => {
         // Remove the comment and any of its replies (cascade in DB, mirror in UI)
-        const next = prev.filter((c) => c.id !== id && c.parent_id !== id);
+        const next = prev.filter((c) => c.id !== deleteConfirmId && c.parent_id !== deleteConfirmId);
         onCountChange?.(next.length);
         return next;
       });
+      setDeleteConfirmId(null);
     } catch (err) {
       console.error("Error deleting comment:", err);
       toast({ title: "Error", description: "Failed to delete comment.", variant: "destructive" });
