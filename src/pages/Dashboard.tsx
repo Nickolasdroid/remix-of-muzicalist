@@ -277,12 +277,23 @@ const Dashboard = () => {
     ]);
     if (slotsRes?.data) setConsumedSlots(slotsRes.data);
     if (data) {
-      const announcementsWithLikes = await Promise.all(data.map(async (announcement) => {
-        const { count } = await (supabase as any).from('announcement_likes').select('id', { count: 'exact', head: true }).eq('announcement_id', announcement.id);
-        const { data: likeData } = await (supabase as any).from('announcement_likes').select('id').eq('announcement_id', announcement.id).eq('user_id', user.id).maybeSingle();
-        return { ...announcement, likes: count || 0, isLiked: !!likeData };
-      }));
-      setAnnouncements(announcementsWithLikes);
+      const announcementIds = data.map((announcement: any) => announcement.id);
+      const [likesRes, myLikesRes, commentsRes] = await Promise.all([
+        announcementIds.length ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+        announcementIds.length ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', user.id).in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+        announcementIds.length ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+      ]);
+      const likeCounts = new Map<string, number>();
+      (likesRes.data || []).forEach((r: any) => likeCounts.set(r.announcement_id, (likeCounts.get(r.announcement_id) || 0) + 1));
+      const myLikes = new Set<string>((myLikesRes.data || []).map((r: any) => r.announcement_id));
+      const commentCounts = new Map<string, number>();
+      (commentsRes.data || []).forEach((r: any) => commentCounts.set(r.announcement_id, (commentCounts.get(r.announcement_id) || 0) + 1));
+      setAnnouncements(data.map((announcement: any) => ({
+        ...announcement,
+        likes: likeCounts.get(announcement.id) || 0,
+        isLiked: myLikes.has(announcement.id),
+        commentsCount: commentCounts.get(announcement.id) || 0,
+      })));
     }
   };
   const loadGalleryItems = async () => {
@@ -318,22 +329,23 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) {
-      // Fetch likes count and isLiked for each post
-      const postsWithLikes = await Promise.all(data.map(async (post) => {
-        const {
-          count
-        } = await supabase.from('post_likes').select('id', {
-          count: 'exact',
-          head: true
-        }).eq('post_id', post.id);
-        const { data: likeData } = await supabase.from('post_likes').select('id').eq('post_id', post.id).eq('user_id', user.id).maybeSingle();
-        return {
-          ...post,
-          likes: count || 0,
-          isLiked: !!likeData
-        };
-      }));
-      setPosts(postsWithLikes);
+      const postIds = data.map((post: any) => post.id);
+      const [likesRes, myLikesRes, commentsRes] = await Promise.all([
+        postIds.length ? supabase.from('post_likes').select('post_id').in('post_id', postIds) : Promise.resolve({ data: [] }),
+        postIds.length ? supabase.from('post_likes').select('post_id').eq('user_id', user.id).in('post_id', postIds) : Promise.resolve({ data: [] }),
+        postIds.length ? (supabase as any).from('comments').select('post_id').in('post_id', postIds) : Promise.resolve({ data: [] }),
+      ]);
+      const likeCounts = new Map<string, number>();
+      (likesRes.data || []).forEach((r: any) => likeCounts.set(r.post_id, (likeCounts.get(r.post_id) || 0) + 1));
+      const myLikes = new Set<string>((myLikesRes.data || []).map((r: any) => r.post_id));
+      const commentCounts = new Map<string, number>();
+      (commentsRes.data || []).forEach((r: any) => commentCounts.set(r.post_id, (commentCounts.get(r.post_id) || 0) + 1));
+      setPosts(data.map((post: any) => ({
+        ...post,
+        likes: likeCounts.get(post.id) || 0,
+        isLiked: myLikes.has(post.id),
+        commentsCount: commentCounts.get(post.id) || 0,
+      })));
 
       // Calculate posts created this month
       const now = new Date();
@@ -2570,28 +2582,28 @@ const Dashboard = () => {
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
-                              <div className="px-2 py-1 flex items-center gap-1">
+                              <div className="flex items-center gap-0 px-2 py-0 -mt-1">
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => post.id && handlePostLike(post.id)}
                                   aria-label={post.isLiked ? "Unlike post" : "Like post"}
                                   aria-pressed={post.isLiked}
-                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
-                                  <Heart className={`w-7 h-7 ${post.isLiked ? "fill-current" : ""}`} />
-                                  {post.likes > 0 && <span className="text-base font-semibold tabular-nums">{post.likes}</span>}
+                                  <Heart className={`lucide lucide-heart h-7 w-7 ${post.isLiked ? "fill-current" : ""}`} />
                                 </Button>
+                                {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => post.id && setCommentsTarget({ id: post.id, type: "post" })}
                                   aria-label="Comment"
-                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
-                                  <MessageCircle className="w-7 h-7" />
-                                  {(post.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{post.commentsCount}</span>}
+                                  <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
                                 </Button>
+                                {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                               </div>
                             </Card>)}
 
@@ -2653,28 +2665,28 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="px-2 py-1 flex items-center gap-1">
+                              <div className="flex items-center gap-0 px-2 py-0 -mt-1">
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => handleAnnouncementLike(promotion.id)}
                                   aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
                                   aria-pressed={promotion.isLiked}
-                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
-                                  <Heart className={`w-7 h-7 ${promotion.isLiked ? "fill-current" : ""}`} />
-                                  {(promotion.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.likes}</span>}
+                                  <Heart className={`lucide lucide-heart h-7 w-7 ${promotion.isLiked ? "fill-current" : ""}`} />
                                 </Button>
+                                {(promotion.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{promotion.likes}</span>}
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
                                   aria-label="Comment"
-                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
-                                  <MessageCircle className="w-7 h-7" />
-                                  {(promotion.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{promotion.commentsCount}</span>}
+                                  <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
                                 </Button>
+                                {(promotion.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promotion.commentsCount}</span>}
                               </div>
                             </Card>)}
                           
@@ -2855,28 +2867,28 @@ const Dashboard = () => {
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="px-2 py-1 flex items-center gap-1">
+                              <div className="flex items-center gap-0 px-2 py-0 -mt-1">
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => handleAnnouncementLike(announcement.id)}
                                   aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
                                   aria-pressed={announcement.isLiked}
-                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
-                                  <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
-                                  {(announcement.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.likes}</span>}
+                                  <Heart className={`lucide lucide-heart h-7 w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
                                 </Button>
+                                {(announcement.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{announcement.likes}</span>}
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon"
                                   onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
                                   aria-label="Comment"
-                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
-                                  <MessageCircle className="w-7 h-7" />
-                                  {(announcement.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.commentsCount}</span>}
+                                  <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
                                 </Button>
+                                {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                               </div>
                             </Card>)}
                           {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
