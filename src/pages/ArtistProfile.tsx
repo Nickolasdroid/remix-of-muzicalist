@@ -1501,7 +1501,7 @@ const ArtistProfile = () => {
                                     aria-label="Comment"
                                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                   >
-                                    <MessageCircle className="lucide lucide-message-circle w-[28px] h-[28px]" />
+                                    <MessageCircle className="lucide lucide-message-circle w-[100px] h-[100px]" />
                                   </Button>
                                   {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
@@ -1600,7 +1600,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                               >
-                                <MessageCircle className="lucide lucide-message-circle w-[28px] h-[28px]" />
+                                <MessageCircle className="lucide lucide-message-circle w-[100px] h-[100px]" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
@@ -1749,7 +1749,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                               >
-                                <MessageCircle className="lucide lucide-message-circle w-[28px] h-[28px]" />
+                                <MessageCircle className="lucide lucide-message-circle w-[100px] h-[100px]" />
                               </Button>
                               {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
