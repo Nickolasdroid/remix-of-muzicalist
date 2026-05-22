@@ -466,7 +466,7 @@ const Feed = () => {
                       </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
                   
-                  <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                  <div className="flex items-center gap-0 px-2 py-0 mt-1">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -574,7 +574,7 @@ const Feed = () => {
                         <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
                       </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
                   </div>}
-                <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                <div className="flex items-center gap-0 px-2 py-0 mt-1">
                   <Button
                     variant="ghost"
                     size="icon"

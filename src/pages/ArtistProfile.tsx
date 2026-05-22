@@ -1481,7 +1481,7 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                                <div className="flex items-center gap-0 px-2 py-0 mt-1">
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -1580,7 +1580,7 @@ const ArtistProfile = () => {
                               </div>}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                            <div className="flex items-center gap-0 px-2 py-0 mt-1">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -1729,7 +1729,7 @@ const ArtistProfile = () => {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                            <div className="flex items-center gap-0 px-2 py-0 mt-1">
                               <Button
                                 variant="ghost"
                                 size="icon"

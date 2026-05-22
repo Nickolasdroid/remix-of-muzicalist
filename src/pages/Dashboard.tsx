@@ -2582,7 +2582,7 @@ const Dashboard = () => {
                                     </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
-                              <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -2665,7 +2665,7 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -2867,7 +2867,7 @@ const Dashboard = () => {
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="flex items-center gap-0 px-2 py-0 -mt-3">
+                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"
