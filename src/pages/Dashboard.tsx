@@ -3722,6 +3722,22 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(open) => { if (!open) setCommentsTarget(null); }}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={user?.id ?? null}
+        isAdmin={isAdmin}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          if (commentsTarget.type === "post") {
+            setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+          } else {
+            setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+          }
+        }}
+      />
     </div>;
 };
 export default Dashboard;
