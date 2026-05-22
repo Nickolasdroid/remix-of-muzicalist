@@ -473,9 +473,9 @@ const Feed = () => {
                       onClick={() => handleLike(item.id)}
                       aria-label={item.isLiked ? "Unlike announcement" : "Like announcement"}
                       aria-pressed={item.isLiked}
-                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                     >
-                      <Heart className={`lucide lucide-heart h-[100px] w-[100px] ${item.isLiked ? "fill-current" : ""}`} />
+                      <Heart className={`lucide lucide-heart h-7 w-7 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
                     {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -484,9 +484,9 @@ const Feed = () => {
                       size="icon"
                       onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })}
                       aria-label="Comment"
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                     >
-                      <MessageCircle className="lucide lucide-message-circle w-[100px] h-[100px]" />
+                      <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                   </div>
@@ -581,9 +581,9 @@ const Feed = () => {
                     onClick={() => handleLike(item.id)}
                     aria-label={item.isLiked ? "Unlike post" : "Like post"}
                     aria-pressed={item.isLiked}
-                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                   >
-                    <Heart className={`lucide lucide-heart h-[100px] w-[100px] ${item.isLiked ? "fill-current" : ""}`} />
+                    <Heart className={`lucide lucide-heart h-7 w-7 ${item.isLiked ? "fill-current" : ""}`} />
                   </Button>
                   {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
 
@@ -592,9 +592,9 @@ const Feed = () => {
                     size="icon"
                     onClick={() => setCommentsTarget({ id: item.id, type: "post" })}
                     aria-label="Comment"
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                   >
-                    <MessageCircle className="lucide lucide-message-circle w-[100px] h-[100px]" />
+                    <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
                 </div>
