@@ -2855,7 +2855,29 @@ const Dashboard = () => {
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
-                              <div className="h-2" />
+                              <div className="px-2 py-1 flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAnnouncementLike(announcement.id)}
+                                  aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
+                                  aria-pressed={announcement.isLiked}
+                                  className={`gap-2 rounded-md hover:bg-transparent hover:text-inherit ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                >
+                                  <Heart className={`w-7 h-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                  {(announcement.likes || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.likes}</span>}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
+                                  aria-label="Comment"
+                                  className="gap-2 rounded-md hover:bg-transparent hover:text-inherit text-muted-foreground"
+                                >
+                                  <MessageCircle className="w-7 h-7" />
+                                  {(announcement.commentsCount || 0) > 0 && <span className="text-base font-semibold tabular-nums">{announcement.commentsCount}</span>}
+                                </Button>
+                              </div>
                             </Card>)}
                           {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
