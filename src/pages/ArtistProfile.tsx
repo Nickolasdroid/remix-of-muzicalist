@@ -1490,7 +1490,7 @@ const ArtistProfile = () => {
                                     aria-pressed={promo.isLiked}
                                     className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                   >
-                                    <Heart className={`lucide lucide-heart h-7 w-7 ${promo.isLiked ? "fill-current" : ""}`} />
+                                    <Heart className={`lucide lucide-heart !h-7 !w-7 ${promo.isLiked ? "fill-current" : ""}`} />
                                   </Button>
                                   {(promo.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{promo.likes}</span>}
 
@@ -1501,7 +1501,7 @@ const ArtistProfile = () => {
                                     aria-label="Comment"
                                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                   >
-                                    <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
+                                    <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                                   </Button>
                                   {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
                                 </div>
@@ -1589,7 +1589,7 @@ const ArtistProfile = () => {
                                 aria-pressed={post.isLiked}
                                 className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
                               >
-                                <Heart className={`lucide lucide-heart h-7 w-7 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? 'fill-current' : ''}`} />
                               </Button>
                               {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
 
@@ -1600,7 +1600,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                               >
-                                <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
+                                <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
                             </div>
@@ -1738,7 +1738,7 @@ const ArtistProfile = () => {
                                 aria-pressed={announcement.isLiked}
                                 className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                               >
-                                <Heart className={`lucide lucide-heart h-7 w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
+                                <Heart className={`lucide lucide-heart !h-7 !w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
                               </Button>
                               {(announcement.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{announcement.likes}</span>}
 
@@ -1749,7 +1749,7 @@ const ArtistProfile = () => {
                                 aria-label="Comment"
                                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                               >
-                                <MessageCircle className="lucide lucide-message-circle w-7 h-7" />
+                                <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                               </Button>
                               {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
                             </div>
