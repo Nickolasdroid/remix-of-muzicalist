@@ -2589,7 +2589,7 @@ const Dashboard = () => {
                                   onClick={() => post.id && handlePostLike(post.id)}
                                   aria-label={post.isLiked ? "Unlike post" : "Like post"}
                                   aria-pressed={post.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
                                   <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? "fill-current" : ""}`} />
                                 </Button>
@@ -2599,7 +2599,7 @@ const Dashboard = () => {
                                   size="icon"
                                   onClick={() => post.id && setCommentsTarget({ id: post.id, type: "post" })}
                                   aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
                                   <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                                 </Button>
@@ -2672,7 +2672,7 @@ const Dashboard = () => {
                                   onClick={() => handleAnnouncementLike(promotion.id)}
                                   aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
                                   aria-pressed={promotion.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
                                   <Heart className={`lucide lucide-heart !h-7 !w-7 ${promotion.isLiked ? "fill-current" : ""}`} />
                                 </Button>
@@ -2682,7 +2682,7 @@ const Dashboard = () => {
                                   size="icon"
                                   onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
                                   aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
                                   <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                                 </Button>
@@ -2874,7 +2874,7 @@ const Dashboard = () => {
                                   onClick={() => handleAnnouncementLike(announcement.id)}
                                   aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
                                   aria-pressed={announcement.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
                                   <Heart className={`lucide lucide-heart !h-7 !w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
                                 </Button>
@@ -2884,7 +2884,7 @@ const Dashboard = () => {
                                   size="icon"
                                   onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
                                   aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 hover:text-accent-foreground h-20 w-20 rounded-full hover:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-20 w-20 rounded-full text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
                                   <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                                 </Button>
