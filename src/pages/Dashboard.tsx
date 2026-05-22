@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
