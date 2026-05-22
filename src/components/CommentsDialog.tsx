@@ -242,7 +242,7 @@ const CommentsDialog = ({
             </button>
             {canDelete && (
               <button
-                onClick={() => handleDelete(c.id)}
+                onClick={() => setDeleteConfirmId(c.id)}
                 className="text-[11px] text-muted-foreground hover:text-destructive md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                 aria-label="Delete comment"
               >
