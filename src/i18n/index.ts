@@ -156,6 +156,24 @@ async function applyLanguage(lang: string) {
 export const setManualLanguage = async (lng: string) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(MANUAL_LANG_KEY, lng);
+    const base = normalizeLanguage(lng);
+    const currentBase = normalizeLanguage(i18n.language);
+    if (base !== currentBase) {
+      // Hide the body during the language swap so users never see a flash of
+      // the previous language. AutoTranslatePageText removes this attribute
+      // after the sync + async translation pass completes.
+      document.documentElement.setAttribute('data-i18n-pending', 'true');
+      if (!document.getElementById('i18n-pending-style')) {
+        const style = document.createElement('style');
+        style.id = 'i18n-pending-style';
+        style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
+        document.head.appendChild(style);
+      }
+      // Safety timeout in case translation never resolves.
+      window.setTimeout(() => {
+        document.documentElement.removeAttribute('data-i18n-pending');
+      }, 4000);
+    }
   }
   await applyLanguage(lng);
 };
