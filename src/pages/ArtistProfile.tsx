@@ -501,7 +501,7 @@ const ArtistProfile = () => {
   };
   const handleAnnouncementLike = async (announcementId: string) => {
     if (!currentUserId) {
-      toast({ title: "Login Required", description: "Please log in to like promotions." });
+      toast({ title: "Autentificare necesară", description: "Te rugăm să te autentifici pentru a aprecia promovările." });
       navigate('/login');
       return;
     }
@@ -889,7 +889,7 @@ const ArtistProfile = () => {
                             <span>·</span>
                             <span>{formatSmartDate(ad.created_at)}</span>
                             <span>·</span>
-                            {ad.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
+                            {ad.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promovare</Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
                           </div>
                         </div>
                       </div>
@@ -1441,7 +1441,7 @@ const ArtistProfile = () => {
                                           <span>·</span>
                                           <span>{formatSmartDate(promo.created_at)}</span>
                                           <span>·</span>
-                                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promovare</Badge>
                                         </div>
                                       </div>
                                     </div>
@@ -1477,7 +1477,7 @@ const ArtistProfile = () => {
                                         <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
                                       </div> :
 
-                              <img src={promo.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
+                              <img src={promo.media_url} alt="Media promovare" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
                               }
                                   </div>
                             }
@@ -1486,7 +1486,7 @@ const ArtistProfile = () => {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleAnnouncementLike(promo.id)}
-                                    aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
+                                    aria-label={promo.isLiked ? "Nu mai place promovarea" : "Îmi place promovarea"}
                                     aria-pressed={promo.isLiked}
                                     className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                   >
