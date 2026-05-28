@@ -360,7 +360,9 @@ const Messages = () => {
       console.error('Error fetching messages:', error);
       return;
     }
-    setMessages(data || []);
+    const list = data || [];
+    messagesCache.current[conversationId] = list;
+    setMessages(list);
   };
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
