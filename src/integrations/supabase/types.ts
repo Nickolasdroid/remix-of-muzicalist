@@ -854,6 +854,56 @@ export type Database = {
     }
     Functions: {
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      get_my_full_profile: {
+        Args: never
+        Returns: {
+          allow_promotion: boolean
+          avatar_url: string | null
+          billing: string | null
+          bio: string | null
+          career_start_year: number | null
+          country: string | null
+          county: string
+          created_at: string | null
+          email: string
+          estimated_price: string | null
+          experience_level:
+            | Database["public"]["Enums"]["experience_level"]
+            | null
+          facebook_url: string | null
+          first_name: string
+          hide_email: boolean
+          hide_phone: boolean
+          id: string
+          instagram_url: string | null
+          instruments: string | null
+          is_active: boolean
+          last_name: string
+          music_genres: string | null
+          number_of_events: number
+          pending_account_type: string | null
+          phone: string
+          plan: string
+          specialization:
+            | Database["public"]["Enums"]["artist_specialization"]
+            | null
+          spotify_url: string | null
+          stage_name: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_current_period_end: string | null
+          subscription_status: string | null
+          tiktok_url: string | null
+          updated_at: string | null
+          youtube_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_or_create_conversation: {
         Args: {
           _announcement_id?: string
@@ -861,6 +911,13 @@ export type Database = {
           _participant_id: string
         }
         Returns: string
+      }
+      get_profile_contact: {
+        Args: { _profile_id: string }
+        Returns: {
+          email: string
+          phone: string
+        }[]
       }
       get_user_type: {
         Args: { _user_id: string }

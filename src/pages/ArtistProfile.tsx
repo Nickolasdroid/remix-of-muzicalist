@@ -242,22 +242,25 @@ const ArtistProfile = () => {
       }
       if (session?.user?.id) {
         // Try to fetch user's profile for pre-filling review and booking forms
-        const {
-          data: profileData
-        } = await supabase.from('profiles').select('first_name, last_name, email, phone').eq('id', session.user.id).maybeSingle();
-        if (profileData) {
-          setCurrentUserProfile(profileData);
-          const fullName = `${profileData.first_name} ${profileData.last_name}`.trim();
+        const [{ data: profileData }, { data: contactRows }] = await Promise.all([
+          supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).maybeSingle(),
+          (supabase as any).rpc('get_profile_contact', { _profile_id: session.user.id }),
+        ]);
+        const contact = Array.isArray(contactRows) && contactRows[0] ? contactRows[0] : { email: null, phone: null };
+        const mergedProfile = profileData ? { ...profileData, email: contact.email, phone: contact.phone } : null;
+        if (mergedProfile) {
+          setCurrentUserProfile(mergedProfile);
+          const fullName = `${mergedProfile.first_name} ${mergedProfile.last_name}`.trim();
           setReviewForm((prev) => ({
             ...prev,
             name: fullName,
-            email: profileData.email
+            email: mergedProfile.email || session.user.email || ''
           }));
           setBookingForm((prev) => ({
             ...prev,
             name: fullName,
-            email: profileData.email,
-            phone: profileData.phone || ''
+            email: mergedProfile.email || session.user.email || '',
+            phone: mergedProfile.phone || ''
           }));
         } else {
           // Fallback to auth email if no profile exists
@@ -279,15 +282,19 @@ const ArtistProfile = () => {
       if (!id) return;
 
       // STEP 1: Fetch the profile first and reveal the page immediately.
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
+      const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, first_name, last_name, stage_name, avatar_url, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, created_at, updated_at')
+          .eq('id', id)
+          .maybeSingle(),
+        (supabase as any).rpc('get_profile_contact', { _profile_id: id }),
+      ]);
+      const contact = Array.isArray(contactRows) && contactRows[0] ? contactRows[0] : { email: null, phone: null };
       if (profileError) {
         console.error('Error fetching profile:', profileError);
       } else {
-        setArtist(profileData);
+        setArtist(profileData ? { ...profileData, email: contact.email, phone: contact.phone } : null);
       }
       setLoading(false);
 

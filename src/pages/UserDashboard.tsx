@@ -91,11 +91,9 @@ const UserDashboard = () => {
       }
       setUser(session.user);
       
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
+      const { data: profileRows, error } = await (supabase as any)
+        .rpc('get_my_full_profile');
+      const profileData = Array.isArray(profileRows) ? profileRows[0] : profileRows;
       
       if (error) throw error;
       setProfile(profileData);
