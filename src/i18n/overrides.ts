@@ -20,6 +20,10 @@ export const TRANSLATION_OVERRIDES: Record<string, Record<string, string>> = {
     "Instrumentalists": "Instrumentiști",
     "instrumentalist": "instrumentist",
     "instrumentalists": "instrumentiști",
+    "Promotion": "Promovare",
+    "Promotions": "Promovări",
+    "promotion": "promovare",
+    "promotions": "promovări",
   },
 };
 
