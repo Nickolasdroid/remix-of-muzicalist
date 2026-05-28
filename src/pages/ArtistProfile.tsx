@@ -501,7 +501,7 @@ const ArtistProfile = () => {
   };
   const handleAnnouncementLike = async (announcementId: string) => {
     if (!currentUserId) {
-      toast({ title: "Login Required", description: "Please log in to like promotions." });
+      toast({ title: "Autentificare necesară", description: "Te rugăm să te autentifici pentru a aprecia promovările." });
       navigate('/login');
       return;
     }
@@ -1441,7 +1441,7 @@ const ArtistProfile = () => {
                                           <span>·</span>
                                           <span>{formatSmartDate(promo.created_at)}</span>
                                           <span>·</span>
-                                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promovare</Badge>
                                         </div>
                                       </div>
                                     </div>
