@@ -159,9 +159,9 @@ const SettingsTab = ({
       .eq("id", user.id);
     if (error) {
       setAllowPromotion(!next);
-      toast({ title: "Eroare", description: "Nu s-a putut actualiza preferința de promovare.", variant: "destructive" });
+      toast({ title: "Error", description: "Could not update promotion preference.", variant: "destructive" });
     } else {
-      toast({ title: "Salvat", description: next ? "Promovare activată." : "Promovare dezactivată." });
+      toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
     }
   };
 
@@ -306,7 +306,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
-    { id: "promotion" as const, label: "Promovare", icon: Megaphone },
+    { id: "promotion" as const, label: "Promotion", icon: Megaphone },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
@@ -326,7 +326,7 @@ const SettingsTab = ({
     },
     {
       id: "promotion",
-      label: "Promovare",
+      label: "Promotion",
       icon: Megaphone
     }
   ];
@@ -656,9 +656,9 @@ const SettingsTab = ({
         {activeSection === "promotion" && (
           <div className="p-4 space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">Promovare</h2>
+              <h2 className="text-lg font-semibold">Promotion</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Permite Muzicalist să promoveze profilul tău pe canalele sale
+                Allow Muzicalist to feature your profile on its channels
               </p>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border">
@@ -668,7 +668,7 @@ const SettingsTab = ({
                 className="text-left flex-1"
               >
                 <Label className="text-sm font-medium cursor-pointer">
-                  Permite promovarea pe canalele Muzicalist
+                  Allow promotion on Muzicalist channels
                 </Label>
               </button>
               <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
@@ -684,11 +684,11 @@ const SettingsTab = ({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Megaphone className="h-5 w-5 text-accent" />
-                Promovare pe canalele Muzicalist
+                Promotion on Muzicalist channels
               </DialogTitle>
             </DialogHeader>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Sunt de acord ca Muzicalist să folosească informațiile și materialele din profilul meu (inclusiv nume, imagini, descriere și anunțuri) în scopuri promoționale, atât pe platformă, cât și pe canalele sale de social media, fără a-mi afecta drepturile asupra conținutului.
+              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
             </p>
           </DialogContent>
         </Dialog>
@@ -696,14 +696,14 @@ const SettingsTab = ({
         <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Dezactivezi promovarea?</AlertDialogTitle>
+              <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
               <AlertDialogDescription>
-                Prin dezactivarea promovării, profilul tău nu va mai fi prezentat de Muzicalist pe canalele sale de social media sau în materialele promoționale. Acest lucru poate reduce semnificativ vizibilitatea, numărul de vizualizări ale profilului și șansele de a primi cereri de booking și de a fi descoperit de clienți noi. Ești sigur că vrei să continui?
+                By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
-              <AlertDialogCancel className="mt-0 flex-1 sm:flex-none">Păstrează activată</AlertDialogCancel>
-              <AlertDialogAction className="flex-1 sm:flex-none" onClick={() => applyPromotionChange(false)}>Dezactivează</AlertDialogAction>
+              <AlertDialogCancel className="mt-0 flex-1 sm:flex-none">Keep enabled</AlertDialogCancel>
+              <AlertDialogAction className="flex-1 sm:flex-none" onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -1063,7 +1063,7 @@ const SettingsTab = ({
                   className="text-left group flex-1"
                 >
                   <Label className="text-sm font-medium cursor-pointer group-hover:text-accent">
-                    Permite promovarea pe canalele Muzicalist
+                    Allow promotion on Muzicalist channels
                   </Label>
                 </button>
                 <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
@@ -1078,11 +1078,11 @@ const SettingsTab = ({
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Megaphone className="h-5 w-5 text-accent" />
-                  Promovare pe canalele Muzicalist
+                  Promotion on Muzicalist channels
                 </DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Sunt de acord ca Muzicalist să folosească informațiile și materialele din profilul meu (inclusiv nume, imagini, descriere și anunțuri) în scopuri promoționale, atât pe platformă, cât și pe canalele sale de social media, fără a-mi afecta drepturile asupra conținutului.
+                I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
               </p>
             </DialogContent>
           </Dialog>
@@ -1090,14 +1090,14 @@ const SettingsTab = ({
           <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Dezactivezi promovarea?</AlertDialogTitle>
+                <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Prin dezactivarea promovării, profilul tău nu va mai fi prezentat de Muzicalist pe canalele sale de social media sau în materialele promoționale. Acest lucru poate reduce semnificativ vizibilitatea, numărul de vizualizări ale profilului și șansele de a primi cereri de booking și de a fi descoperit de clienți noi. Ești sigur că vrei să continui?
+                  By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
-                <AlertDialogCancel className="mt-0">Păstrează activată</AlertDialogCancel>
-                <AlertDialogAction onClick={() => applyPromotionChange(false)}>Dezactivează</AlertDialogAction>
+                <AlertDialogCancel className="mt-0">Keep enabled</AlertDialogCancel>
+                <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
