@@ -28,6 +28,30 @@
 </head>
 
   <body>
+    <script>
+      // Hide body until first i18n translation pass completes, to avoid English flash
+      // for visitors whose language is not English. Safety timeout reveals body
+      // even if translation never completes.
+      (function () {
+        try {
+          var manual = localStorage.getItem('i18nextManualLang_v2');
+          var country = localStorage.getItem('i18nextCountryLang_v2');
+          var i18nLng = localStorage.getItem('i18nextLng');
+          var navLang = (navigator.language || 'en').split('-')[0].toLowerCase();
+          var lang = (manual || country || i18nLng || navLang).split('-')[0].toLowerCase();
+          if (lang && lang !== 'en') {
+            document.documentElement.setAttribute('data-i18n-pending', 'true');
+            var style = document.createElement('style');
+            style.id = 'i18n-pending-style';
+            style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
+            document.head.appendChild(style);
+            setTimeout(function () {
+              document.documentElement.removeAttribute('data-i18n-pending');
+            }, 2500);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
