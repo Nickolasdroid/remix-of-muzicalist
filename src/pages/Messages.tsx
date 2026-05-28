@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,6 +106,7 @@ const Messages = () => {
   const [activeTab, setActiveTab] = useState<'conversations' | 'announcements'>('conversations');
   const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
+  const messagesCache = useRef<Record<string, Message[]>>({});
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
   useEffect(() => {
@@ -179,6 +180,9 @@ const Messages = () => {
   }, [user, artistId, loading, conversations]);
   useEffect(() => {
     if (!selectedConversation || !user) return;
+    // Instant: show cached messages immediately (empty array if none) so the panel switches without delay
+    const cached = messagesCache.current[selectedConversation.id];
+    setMessages(cached || []);
     fetchMessages(selectedConversation.id);
     markMessagesAsRead(selectedConversation.id);
 
@@ -199,7 +203,11 @@ const Messages = () => {
       filter: `conversation_id=eq.${selectedConversation.id}`
     }, payload => {
       const newMsg = payload.new as Message;
-      setMessages(prev => [...prev, newMsg]);
+      setMessages(prev => {
+        const next = [...prev, newMsg];
+        messagesCache.current[selectedConversation.id] = next;
+        return next;
+      });
       // Mark as read immediately if it's from the other user
       if (newMsg.sender_id !== user.id) {
         markMessagesAsRead(selectedConversation.id);
@@ -352,7 +360,9 @@ const Messages = () => {
       console.error('Error fetching messages:', error);
       return;
     }
-    setMessages(data || []);
+    const list = data || [];
+    messagesCache.current[conversationId] = list;
+    setMessages(list);
   };
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
