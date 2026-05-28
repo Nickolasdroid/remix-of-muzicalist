@@ -106,6 +106,7 @@ const Messages = () => {
   const [activeTab, setActiveTab] = useState<'conversations' | 'announcements'>('conversations');
   const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
+  const messagesCache = useRef<Record<string, Message[]>>({});
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
   useEffect(() => {
