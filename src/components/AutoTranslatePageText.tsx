@@ -166,6 +166,7 @@ const AutoTranslatePageText = () => {
       const lang = getCurrentLanguage();
       if (lang === "en") {
         restoreEnglish();
+        revealBody();
         return;
       }
       const { textNodes, attrTargets, originals } = collect();
@@ -180,7 +181,11 @@ const AutoTranslatePageText = () => {
           hasMissing = true;
         }
       });
-      if (hasMissing) scheduleAsync();
+      if (hasMissing) {
+        scheduleAsync();
+      } else {
+        revealBody();
+      }
     };
 
     const scheduleSync = () => {
