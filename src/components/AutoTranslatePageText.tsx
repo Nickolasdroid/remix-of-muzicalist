@@ -133,20 +133,33 @@ const AutoTranslatePageText = () => {
       });
     };
 
+    const revealBody = () => {
+      if (document.documentElement.getAttribute("data-i18n-pending") === "true") {
+        document.documentElement.removeAttribute("data-i18n-pending");
+      }
+    };
+
     const flushAsync = async () => {
       const lang = getCurrentLanguage();
-      if (lang === "en") return;
+      if (lang === "en") {
+        revealBody();
+        return;
+      }
       const missing = [...pendingMissing.current];
       pendingMissing.current.clear();
-      if (!missing.length) return;
+      if (!missing.length) {
+        revealBody();
+        return;
+      }
       await translateTexts(lang, missing);
       // After fetching, re-run sync pass to apply.
       runSync();
+      revealBody();
     };
 
     const scheduleAsync = () => {
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
-      asyncTimeoutRef.current = window.setTimeout(flushAsync, 200);
+      asyncTimeoutRef.current = window.setTimeout(flushAsync, 0);
     };
 
     const runSync = () => {
