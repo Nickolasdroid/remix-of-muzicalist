@@ -80,7 +80,7 @@ const Dashboard = () => {
     email: "Email Address",
     password: "Change Password",
     language: "Language",
-    promotion: "Promotion",
+    promotion: "Promovare",
     report: "Report an Issue",
     logout: "Sign Out",
     delete: "Delete Account",
@@ -890,7 +890,7 @@ const Dashboard = () => {
       setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
       setShowPostDialog(false);
       setPostMediaType('image');
-      toast({ title: "Success", description: "Promotion created!" });
+      toast({ title: "Succes", description: "Promovare creată!" });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -2401,7 +2401,7 @@ const Dashboard = () => {
                                     <TabsList className="grid w-full grid-cols-3">
                                       <TabsTrigger value="image">Photo</TabsTrigger>
                                       <TabsTrigger value="video">Video</TabsTrigger>
-                                      <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
+                                      <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promovare</TabsTrigger>
                                     </TabsList>
                                     
                                     <TabsContent value="image" className="space-y-4">
@@ -2486,11 +2486,11 @@ const Dashboard = () => {
 
                                     <TabsContent value="promotion" className="space-y-4">
                                       <div>
-                                        <Label>Promotion Text</Label>
+                                        <Label>Text Promovare</Label>
                                         <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({
                                 ...newPromotion,
                                 description: e.target.value.slice(0, 200)
-                              })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
+                              })} placeholder="Scrie promovarea ta aici..." rows={4} maxLength={200} className="mt-2" />
                                         <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
                                       </div>
                                       
@@ -2663,7 +2663,7 @@ const Dashboard = () => {
                               {promotion.media_url && <div className="mt-3 bg-muted/30">
                                   {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
                                       <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" />
-                                    </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
+                                    </div> : <img src={promotion.media_url} alt="Media promovare" className="w-full h-auto max-h-[400px] object-contain" />}
                                 </div>}
                               
                               <div className="flex items-center gap-0 px-2 py-0 mt-1">
@@ -2671,7 +2671,7 @@ const Dashboard = () => {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleAnnouncementLike(promotion.id)}
-                                  aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
+                                  aria-label={promotion.isLiked ? "Nu mai place promovarea" : "Îmi place promovarea"}
                                   aria-pressed={promotion.isLiked}
                                   className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
                                 >
