@@ -14,7 +14,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Send, Trash2, X } from "lucide-react";
+import { Heart, Loader2, Send, Trash2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
