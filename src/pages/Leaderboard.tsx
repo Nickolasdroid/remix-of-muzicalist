@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2, MapPin } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2, MapPin, Crown } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
