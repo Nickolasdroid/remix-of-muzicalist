@@ -100,7 +100,7 @@ const AllArtists = () => {
 
               return (
                 <Link key={artist.id} to={`/artist/${artist.id}`} className="group block">
-                  <div className="overflow-hidden rounded-lg">
+                  <div className="overflow-hidden rounded-lg border border-border shadow-sm">
                     <div className="relative aspect-square overflow-hidden">
                       <PlanBadge plan={artist.plan} />
                       {artist.avatar_url ? (
