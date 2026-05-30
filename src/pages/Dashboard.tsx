@@ -2662,10 +2662,10 @@ const Dashboard = () => {
                                 <ExpandableText text={promotion.description} className="mt-3" />
                               </div>
                               
-                              {promotion.media_url && <div className="mt-3 bg-muted/30">
+                              {promotion.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promotion.media_url!, type: promotion.media_type === "video" ? "video" : "image" })}>
                                   {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" />
-                                    </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain" />}
+                                      <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
+                                    </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
                               <div className="flex items-center gap-0 px-2 py-0 mt-1">
@@ -2864,10 +2864,10 @@ const Dashboard = () => {
                     }
                               </div>
                               
-                              {announcement.is_premium && announcement.media_url && <div className="mt-3 bg-muted/30">
+                              {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: announcement.media_url!, type: announcement.media_type === "video" ? "video" : "image" })}>
                                   {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" />
-                                    </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain" />}
+                                      <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
+                                    </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
                               <div className="flex items-center gap-0 px-2 py-0 mt-1">
