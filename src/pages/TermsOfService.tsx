@@ -132,7 +132,47 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Bookings Between Users</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Promotional Use of Profile Content</h2>
+              <p>
+                When an artist creates an account on Muzicalist, they grant Muzicalist a
+                non-exclusive, worldwide, royalty-free right to use publicly available content
+                from their profile, including:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>profile photos</li>
+                <li>cover images</li>
+                <li>artist name</li>
+                <li>biography</li>
+                <li>uploaded public media</li>
+                <li>achievements, rankings and statistics displayed on the platform</li>
+              </ul>
+              <p>This content may be used by Muzicalist for:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>social media posts</li>
+                <li>promotional graphics</li>
+                <li>advertisements</li>
+                <li>artist spotlights</li>
+                <li>rankings and featured artist campaigns</li>
+                <li>marketing materials related to the Muzicalist platform</li>
+              </ul>
+              <p>
+                Artists retain full ownership of their content at all times. Artists can disable
+                participation in promotional campaigns at any time from the "Promotion" section
+                of their account settings. Disabling this option will prevent any future
+                promotional use of their profile content, but will not require the removal of
+                promotional materials already published before the opt-out date.
+              </p>
+              <p>
+                This processing is carried out on the basis of the artist's consent, given at
+                registration and renewable at any time, in accordance with the EU General Data
+                Protection Regulation (GDPR). Artists may exercise their rights of access,
+                rectification, erasure, restriction and objection by contacting us at the
+                address below.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">12. Bookings Between Users</h2>
               <p>
                 Muzicalist facilitates introductions and communication between artists and users.
                 Any contract, payment or performance arrangement is solely between the artist and
@@ -142,7 +182,7 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">12. Disclaimers & Limitation of Liability</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">13. Disclaimers & Limitation of Liability</h2>
               <p>
                 The platform is provided "as is" without warranties of any kind. To the maximum
                 extent permitted by law, Muzicalist is not liable for indirect, incidental or
@@ -151,7 +191,7 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">13. Termination</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">14. Termination</h2>
               <p>
                 We may suspend or terminate your account for violations of these terms or other
                 conduct we reasonably consider harmful. You can delete your account at any time
@@ -161,7 +201,7 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">14. Changes to Terms</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">15. Changes to Terms</h2>
               <p>
                 We may modify these terms from time to time. Continued use of the platform after
                 changes constitutes acceptance of the updated terms. We will notify users of
@@ -170,7 +210,7 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">11. Contact</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">16. Contact</h2>
               <p>
                 For questions about these Terms of Service, please contact us at{" "}
                 <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">
