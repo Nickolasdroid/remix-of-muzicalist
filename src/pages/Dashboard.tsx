@@ -2668,29 +2668,6 @@ const Dashboard = () => {
                                     </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
-                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleAnnouncementLike(promotion.id)}
-                                  aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
-                                  aria-pressed={promotion.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${promotion.isLiked ? "fill-current" : ""}`} />
-                                </Button>
-                                {(promotion.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{promotion.likes}</span>}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
-                                  aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                >
-                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                </Button>
-                                {(promotion.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promotion.commentsCount}</span>}
-                              </div>
                             </Card>)}
                           
                           {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
@@ -2870,29 +2847,6 @@ const Dashboard = () => {
                                     </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                                 </div>}
                               
-                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleAnnouncementLike(announcement.id)}
-                                  aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
-                                  aria-pressed={announcement.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
-                                </Button>
-                                {(announcement.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{announcement.likes}</span>}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
-                                  aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                >
-                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                </Button>
-                                {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
-                              </div>
                             </Card>)}
                           {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
                               <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
