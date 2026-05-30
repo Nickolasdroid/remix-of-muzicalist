@@ -92,7 +92,7 @@ const Countries = () => {
   );
 
   return (
-    <div className={`min-h-screen ${currentUserId ? "md:ml-64" : ""} bg-gradient-to-br from-background to-secondary relative`}>
+    <div className={`min-h-screen ${currentUserId ? "md:ml-64" : ""} bg-background relative`}>
       <Navigation />
 
       <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? "md:pt-8" : "md:pt-24"} pb-24 md:pb-20`}>
