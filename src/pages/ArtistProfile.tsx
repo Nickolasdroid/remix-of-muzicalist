@@ -1488,30 +1488,6 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
-                                <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleAnnouncementLike(promo.id)}
-                                    aria-label={promo.isLiked ? "Unlike promotion" : "Like promotion"}
-                                    aria-pressed={promo.isLiked}
-                                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promo.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                  >
-                                    <Heart className={`lucide lucide-heart !h-7 !w-7 ${promo.isLiked ? "fill-current" : ""}`} />
-                                  </Button>
-                                  {(promo.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{promo.likes}</span>}
-
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
-                                    aria-label="Comment"
-                                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                  >
-                                    <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                  </Button>
-                                  {(promo.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promo.commentsCount}</span>}
-                                </div>
                               </Card>);
 
                       }
@@ -1735,31 +1711,6 @@ const ArtistProfile = () => {
                               )}
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleAnnouncementLike(announcement.id)}
-                                aria-label={announcement.isLiked ? "Unlike announcement" : "Like announcement"}
-                                aria-pressed={announcement.isLiked}
-                                className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${announcement.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                              >
-                                <Heart className={`lucide lucide-heart !h-7 !w-7 ${announcement.isLiked ? "fill-current" : ""}`} />
-                              </Button>
-                              {(announcement.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{announcement.likes}</span>}
-
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setCommentsTarget({ id: announcement.id, type: "announcement" })}
-                                aria-label="Comment"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                              >
-                                <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                              </Button>
-                              {(announcement.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{announcement.commentsCount}</span>}
-                            </div>
                           </Card>) : <Card className="p-8 text-center">
                           <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                           <p className="text-muted-foreground">No announcements yet.</p>
