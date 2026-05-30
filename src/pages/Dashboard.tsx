@@ -80,6 +80,7 @@ const Dashboard = () => {
     email: "Email Address",
     password: "Change Password",
     language: "Language",
+    theme: "Theme",
     promotion: "Promotion",
     report: "Report an Issue",
     logout: "Sign Out",
