@@ -875,37 +875,149 @@ const Leaderboard = () => {
 
             {loading ? <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : currentArtists.length > 0 ? <Table className="table-fixed w-full">
-                  <TableHeader>
-                    <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
-                      <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                      <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
-                      <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
-                      <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentArtists.map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
-                        <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
-                        <TableCell className="px-2 md:px-4">
-                          <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                            <div className="relative flex-shrink-0">
-                              <Avatar className="h-9 w-9 md:h-11 md:w-11">
-                                <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                                <AvatarFallback className="bg-muted">
-                                  <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
-                                </AvatarFallback>
-                              </Avatar>
-                              <PlanBadge plan={artist.plan} size={12} className="top-0 right-0 -mt-0.5 -mr-0.5" />
+              </div> : currentArtists.length > 0 ? <>
+                {/* Podium for Top 3 */}
+                {(() => {
+                  const top3 = currentArtists.slice(0, 3);
+                  const rest = currentArtists.slice(3);
+                  const podiumStyles: Record<number, { ring: string; crown: string; badgeBg: string; gradient: string; height: string; delay: string; glow: string; }> = {
+                    1: {
+                      ring: "ring-[hsl(45_95%_55%)] shadow-[0_0_60px_hsl(45_95%_55%/0.7)]",
+                      crown: "text-[hsl(45_95%_60%)] drop-shadow-[0_0_10px_hsl(45_95%_55%/0.9)]",
+                      badgeBg: "bg-gradient-to-b from-[hsl(45_95%_60%)] to-[hsl(40_85%_45%)] text-black",
+                      gradient: "bg-gradient-to-b from-[hsl(45_95%_55%/0.9)] via-[hsl(40_85%_45%/0.7)] to-[hsl(35_70%_30%/0.4)]",
+                      glow: "bg-[hsl(45_95%_55%/0.35)]",
+                      height: "h-28 md:h-36",
+                      delay: "[animation-delay:0.1s]",
+                    },
+                    2: {
+                      ring: "ring-[hsl(0_0%_75%)] shadow-[0_0_40px_hsl(0_0%_75%/0.5)]",
+                      crown: "text-[hsl(0_0%_80%)] drop-shadow-[0_0_8px_hsl(0_0%_80%/0.8)]",
+                      badgeBg: "bg-gradient-to-b from-[hsl(0_0%_85%)] to-[hsl(0_0%_55%)] text-black",
+                      gradient: "bg-gradient-to-b from-[hsl(0_0%_80%/0.85)] via-[hsl(0_0%_55%/0.6)] to-[hsl(0_0%_25%/0.4)]",
+                      glow: "bg-[hsl(0_0%_75%/0.25)]",
+                      height: "h-20 md:h-24",
+                      delay: "[animation-delay:0.3s]",
+                    },
+                    3: {
+                      ring: "ring-[hsl(25_75%_50%)] shadow-[0_0_40px_hsl(25_75%_50%/0.5)]",
+                      crown: "text-[hsl(25_85%_55%)] drop-shadow-[0_0_8px_hsl(25_85%_55%/0.8)]",
+                      badgeBg: "bg-gradient-to-b from-[hsl(25_85%_55%)] to-[hsl(20_70%_35%)] text-black",
+                      gradient: "bg-gradient-to-b from-[hsl(25_75%_50%/0.85)] via-[hsl(20_70%_35%/0.6)] to-[hsl(15_60%_20%/0.4)]",
+                      glow: "bg-[hsl(25_75%_50%/0.25)]",
+                      height: "h-16 md:h-20",
+                      delay: "[animation-delay:0.5s]",
+                    },
+                  };
+                  // Visual order: 2nd, 1st, 3rd
+                  const visualOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
+                  return (
+                    <div className="px-4 pt-10 pb-6 md:pt-14 md:pb-10 bg-gradient-to-b from-accent/5 to-transparent">
+                      <div className="flex items-end justify-center gap-2 md:gap-6 max-w-2xl mx-auto">
+                        {visualOrder.map((artist) => {
+                          const rank = top3.indexOf(artist) + 1;
+                          const s = podiumStyles[rank];
+                          const isFirst = rank === 1;
+                          return (
+                            <div
+                              key={artist.id}
+                              className={`flex-1 flex flex-col items-center animate-podium-rise ${s.delay}`}
+                            >
+                              <Link
+                                to={`/artist/${artist.id}`}
+                                className="group flex flex-col items-center w-full"
+                              >
+                                {/* Crown */}
+                                <Crown
+                                  className={`${isFirst ? "h-7 w-7 md:h-9 md:w-9" : "h-5 w-5 md:h-7 md:w-7"} ${s.crown} animate-crown-bounce fill-current`}
+                                  strokeWidth={1.5}
+                                />
+                                {/* Floating avatar block */}
+                                <div className="relative animate-podium-float mt-1 mb-3">
+                                  {/* Glow halo */}
+                                  <div className={`absolute inset-0 rounded-full blur-2xl animate-podium-glow ${s.glow}`} />
+                                  <div className="relative">
+                                    <Avatar
+                                      className={`${isFirst ? "h-20 w-20 md:h-28 md:w-28" : "h-14 w-14 md:h-20 md:w-20"} ring-4 ${s.ring} transition-transform duration-300 group-hover:scale-105`}
+                                    >
+                                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                                      <AvatarFallback className="bg-muted">
+                                        <User className="h-8 w-8 text-muted-foreground" />
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <PlanBadge plan={artist.plan} size={isFirst ? 18 : 14} className="bottom-0 right-0" />
+                                    {/* Rank badge */}
+                                    <div className={`absolute -top-2 -left-2 ${isFirst ? "h-8 w-8 text-sm md:h-9 md:w-9 md:text-base" : "h-7 w-7 text-xs md:h-8 md:w-8 md:text-sm"} rounded-full ${s.badgeBg} font-bold flex items-center justify-center shadow-lg ring-2 ring-background`}>
+                                      {rank}
+                                    </div>
+                                  </div>
+                                </div>
+                                {/* Name + stats */}
+                                <div className="text-center w-full px-1">
+                                  <p className={`font-semibold text-foreground group-hover:text-accent transition-colors truncate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`}>
+                                    {artist.stage_name}
+                                  </p>
+                                  <div className="flex items-center justify-center gap-1 mt-1">
+                                    <Star className={`${isFirst ? "h-4 w-4" : "h-3 w-3"} text-accent fill-accent`} />
+                                    <span className={`font-semibold text-accent ${isFirst ? "text-sm md:text-base" : "text-xs md:text-sm"}`}>
+                                      {(artistRatings[artist.id] || 0).toFixed(1)}
+                                    </span>
+                                  </div>
+                                  <p className={`text-muted-foreground mt-0.5 ${isFirst ? "text-[11px] md:text-xs" : "text-[10px] md:text-xs"}`}>
+                                    {artistReviewCounts[artist.id] || 0} reviews
+                                  </p>
+                                </div>
+                              </Link>
+                              {/* Pedestal */}
+                              <div className={`mt-3 w-full ${s.height} rounded-t-lg ${s.gradient} border-t border-x border-white/10 shadow-[inset_0_2px_0_hsl(0_0%_100%/0.15)] relative overflow-hidden`}>
+                                <div className={`absolute inset-x-0 top-0 h-1 ${isFirst ? "bg-[hsl(45_95%_70%)]" : rank === 2 ? "bg-[hsl(0_0%_90%)]" : "bg-[hsl(25_85%_65%)]"} opacity-80`} />
+                                <div className={`absolute inset-0 flex items-center justify-center text-3xl md:text-5xl font-black ${isFirst ? "text-black/30" : "text-black/25"}`}>
+                                  {rank}
+                                </div>
+                              </div>
                             </div>
-                            <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
-                        <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
-                      </TableRow>)}
-                  </TableBody>
-                </Table> : <div className="text-center py-16">
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Ranks 4+ table */}
+                {currentArtists.length > 3 && (
+                  <Table className="table-fixed w-full">
+                    <TableHeader>
+                      <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
+                        <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
+                        <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
+                        <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
+                        <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentArtists.slice(3).map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
+                          <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 4}</TableCell>
+                          <TableCell className="px-2 md:px-4">
+                            <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
+                              <div className="relative flex-shrink-0">
+                                <Avatar className="h-9 w-9 md:h-11 md:w-11">
+                                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                                  <AvatarFallback className="bg-muted">
+                                    <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
+                                  </AvatarFallback>
+                                </Avatar>
+                                <PlanBadge plan={artist.plan} size={12} className="top-0 right-0 -mt-0.5 -mr-0.5" />
+                              </div>
+                              <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
+                            </Link>
+                          </TableCell>
+                          <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
+                          <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
+                        </TableRow>)}
+                    </TableBody>
+                  </Table>
+                )}
+              </> : <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
               </div>}
           </div>
