@@ -851,6 +851,11 @@ const Leaderboard = () => {
             </div>
           </div>
 
+          <div className="flex items-center gap-2 mb-3 px-4 md:px-0 md:max-w-3xl md:mx-auto">
+            <Crown className="h-5 w-5 text-accent fill-accent" />
+            <span className="text-sm md:text-base font-bold tracking-wider text-accent uppercase">Top 10 Artists</span>
+          </div>
+
           <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
