@@ -47,9 +47,10 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
 
   return (
     <Link to={`/artist/${id}`} className="group block">
-      <div className={`overflow-hidden rounded-lg ${borderClass}`}>
+      <div className="overflow-hidden rounded-lg">
         {/* Profile Image */}
         <div className="relative aspect-square overflow-hidden">
+          <PlanBadge plan={plan} />
           {imageUrl ? (
             <img 
               src={imageUrl} 
