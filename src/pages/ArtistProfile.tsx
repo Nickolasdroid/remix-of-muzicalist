@@ -1488,6 +1488,29 @@ const ArtistProfile = () => {
                               }
                                   </div>
                             }
+                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleAnnouncementLike(promo.id)}
+                                  aria-label={(promo as any).isLiked ? "Unlike promotion" : "Like promotion"}
+                                  aria-pressed={(promo as any).isLiked}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${(promo as any).isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                >
+                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${(promo as any).isLiked ? 'fill-current' : ''}`} />
+                                </Button>
+                                {((promo as any).likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{(promo as any).likes}</span>}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
+                                  aria-label="Comment"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                                >
+                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
+                                </Button>
+                                {((promo as any).commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{(promo as any).commentsCount}</span>}
+                              </div>
                               </Card>);
 
                       }
