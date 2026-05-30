@@ -2996,7 +2996,7 @@ const Dashboard = () => {
                                   >
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                  <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
                         id: item.id,
                         url: item.url,
                         type: item.type
