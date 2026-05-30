@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { User, Star, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import diamondIcon from "@/assets/diamond-icon.png";
 import { getCountryName } from "@/lib/countryFlags";
+import PlanBadge from "@/components/PlanBadge";
 
 interface ArtistProfileCardProps {
   id: string;
@@ -35,21 +35,15 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
     fetchRating();
   }, [id]);
 
-  const isFree = !plan || plan === 'Free';
-  const isPremium = plan === 'Premium';
-  const isStandard = plan === 'Standard';
 
-  const borderClass = isPremium
-    ? 'border-2 border-accent'
-    : isStandard
-      ? 'border-2 border-white'
-      : '';
+
 
   return (
     <Link to={`/artist/${id}`} className="group block">
-      <div className={`overflow-hidden rounded-lg ${borderClass}`}>
+      <div className="overflow-hidden rounded-lg">
         {/* Profile Image */}
         <div className="relative aspect-square overflow-hidden">
+          <PlanBadge plan={plan} />
           {imageUrl ? (
             <img 
               src={imageUrl} 

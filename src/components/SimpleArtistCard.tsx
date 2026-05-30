@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PlanBadge from "@/components/PlanBadge";
 
 interface SimpleArtistCardProps {
   id: string;
@@ -6,15 +7,14 @@ interface SimpleArtistCardProps {
   stageName: string;
   imageUrl?: string;
   isPremium?: boolean;
+  plan?: string | null;
 }
 
-const SimpleArtistCard = ({ id, name, stageName, imageUrl, isPremium = true }: SimpleArtistCardProps) => {
-  const borderColor = isPremium ? "border-accent" : "border-muted";
-  const hoverBorderColor = isPremium ? "hover:border-accent/80" : "hover:border-muted/80";
-  
+const SimpleArtistCard = ({ id, stageName, imageUrl, plan }: SimpleArtistCardProps) => {
   return (
     <Link to={`/artist/${id}`}>
-      <div className={`group relative aspect-square overflow-hidden rounded-lg border-2 ${borderColor} ${hoverBorderColor} transition-all duration-300 hover:shadow-[var(--shadow-gold)]`}>
+      <div className="group relative aspect-square overflow-hidden rounded-lg transition-all duration-300 hover:shadow-[var(--shadow-gold)]">
+        <PlanBadge plan={plan} />
         <div className="w-full h-full">
           {imageUrl ? (
             <img src={imageUrl} alt={stageName} className="w-full h-full object-cover" />
@@ -22,7 +22,7 @@ const SimpleArtistCard = ({ id, name, stageName, imageUrl, isPremium = true }: S
             <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
           )}
         </div>
-        
+
         <div className="absolute bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm py-3 px-4">
           <p className="text-foreground font-semibold text-center truncate">{stageName}</p>
         </div>

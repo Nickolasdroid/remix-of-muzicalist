@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
+import PlanBadge from "@/components/PlanBadge";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import { getCountryNameVariants } from "@/lib/countryFlags";
@@ -888,13 +889,14 @@ const Leaderboard = () => {
                         <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 1}</TableCell>
                         <TableCell className="px-2 md:px-4">
                           <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                            <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist.plan)} flex-shrink-0`}>
-                              <Avatar className="h-9 w-9 md:h-11 md:w-11 border-2 border-background">
+                            <div className="relative flex-shrink-0">
+                              <Avatar className="h-9 w-9 md:h-11 md:w-11">
                                 <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                                 <AvatarFallback className="bg-muted">
                                   <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
                                 </AvatarFallback>
                               </Avatar>
+                              <PlanBadge plan={artist.plan} size={12} className="top-0 right-0 -mt-0.5 -mr-0.5" />
                             </div>
                             <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
                           </Link>

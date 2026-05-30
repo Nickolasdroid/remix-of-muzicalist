@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { User, Star, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
+import PlanBadge from "@/components/PlanBadge";
 import diamondIcon from "@/assets/diamond-icon.png";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -101,6 +102,7 @@ const AllArtists = () => {
                 <Link key={artist.id} to={`/artist/${artist.id}`} className="group block">
                   <div className="overflow-hidden rounded-lg">
                     <div className="relative aspect-square overflow-hidden">
+                      <PlanBadge plan={artist.plan} />
                       {artist.avatar_url ? (
                         <img
                           src={artist.avatar_url}
