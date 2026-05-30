@@ -1070,6 +1070,37 @@ const SettingsTab = ({
 
                 <Separator />
 
+                {/* Theme */}
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Theme</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Choose between dark and light appearance
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant={theme === "dark" ? "default" : "outline"}
+                      onClick={() => toggleTheme("dark")}
+                      className="h-11 rounded-lg justify-center gap-2"
+                    >
+                      <Moon className="h-4 w-4" />
+                      Dark
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={theme === "light" ? "default" : "outline"}
+                      onClick={() => toggleTheme("light")}
+                      className="h-11 rounded-lg justify-center gap-2"
+                    >
+                      <Sun className="h-4 w-4" />
+                      Light
+                    </Button>
+                  </div>
+
+                <Separator />
+
               <div className="flex items-center justify-between gap-4">
                 <button
                   type="button"
