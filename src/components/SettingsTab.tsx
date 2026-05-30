@@ -1170,9 +1170,21 @@ const SettingsTab = ({
                   </div>
                 </div>
 
-                <Separator />
+                </div>
+            </div>
+          )}
 
+          {/* Promotion Section (desktop) */}
+          {activeSection === "promotion" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">Promotion</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage how Muzicalist promotes your profile
+                </p>
+              </div>
 
+              <Separator />
 
               <div className="flex items-center justify-between gap-4">
                 <button
@@ -1186,9 +1198,9 @@ const SettingsTab = ({
                 </button>
                 <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
               </div>
-                </div>
             </div>
           )}
+
 
           {/* Promotion info dialog */}
           <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
