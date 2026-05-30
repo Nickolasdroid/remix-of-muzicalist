@@ -1221,6 +1221,7 @@ const SettingsTab = ({
           </AlertDialog>
 
           {LanguageConfirmDialog}
+          {ThemeConfirmDialog}
         </div>
       </div>
     </div>
