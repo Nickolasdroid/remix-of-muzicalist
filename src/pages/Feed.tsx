@@ -364,7 +364,7 @@ const Feed = () => {
               onClick={() => setFeedFilter("announcements")}
               className={feedFilter === "announcements" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
             >
-              Announcements
+              Promotions
             </Button>
           </div>
 
