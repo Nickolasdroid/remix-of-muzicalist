@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,6 +71,20 @@ const SettingsTab = ({
   const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
   const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
   const [languageSearch, setLanguageSearch] = useState("");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof document !== "undefined" && document.documentElement.classList.contains("light")) return "light";
+    return "dark";
+  });
+
+  const toggleTheme = (next: "dark" | "light") => {
+    setTheme(next);
+    if (next === "light") {
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
+    }
+    try { localStorage.setItem("theme", next); } catch {}
+  };
 
   const currentLangCode = (i18n.language || "en").toLowerCase();
   const currentLangBase = currentLangCode.split("-")[0];
@@ -1055,6 +1069,40 @@ const SettingsTab = ({
                 </div>
 
                 <Separator />
+
+                {/* Theme */}
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Theme</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Choose between dark and light appearance
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant={theme === "dark" ? "default" : "outline"}
+                      onClick={() => toggleTheme("dark")}
+                      className="h-11 rounded-lg justify-center gap-2"
+                    >
+                      <Moon className="h-4 w-4" />
+                      Dark
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={theme === "light" ? "default" : "outline"}
+                      onClick={() => toggleTheme("light")}
+                      className="h-11 rounded-lg justify-center gap-2"
+                    >
+                      <Sun className="h-4 w-4" />
+                      Light
+                    </Button>
+                  </div>
+                </div>
+
+                <Separator />
+
+
 
               <div className="flex items-center justify-between gap-4">
                 <button

@@ -29,6 +29,15 @@
 
   <body>
     <script>
+      // Apply theme before paint to avoid flash
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light') document.documentElement.classList.add('light');
+        } catch (e) {}
+      })();
+    </script>
+    <script>
       // Hide body until first i18n translation pass completes, to avoid English flash
       // for visitors whose language is not English. Safety timeout reveals body
       // even if translation never completes.
