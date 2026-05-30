@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "promotion" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "report" | "logout" | "delete";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
@@ -320,6 +320,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
+    { id: "theme" as const, label: "Theme", icon: Sun },
     { id: "promotion" as const, label: "Promotion", icon: Megaphone },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
@@ -602,6 +603,39 @@ const SettingsTab = ({
     );
   };
 
+  // Mobile: Theme section
+  const MobileThemeSection = () => (
+    <div className="p-4 space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold">Theme</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose between dark and light appearance
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          variant={theme === "dark" ? "default" : "outline"}
+          onClick={() => toggleTheme("dark")}
+          className="h-11 rounded-lg justify-center gap-2"
+        >
+          <Moon className="h-4 w-4" />
+          Dark
+        </Button>
+        <Button
+          type="button"
+          variant={theme === "light" ? "default" : "outline"}
+          onClick={() => toggleTheme("light")}
+          className="h-11 rounded-lg justify-center gap-2"
+        >
+          <Sun className="h-4 w-4" />
+          Light
+        </Button>
+      </div>
+    </div>
+  );
+
+
   // Mobile: Logout section
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
@@ -667,6 +701,7 @@ const SettingsTab = ({
         {activeSection === "email" && <MobileEmailSection />}
         {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
+        {activeSection === "theme" && <MobileThemeSection />}
         {activeSection === "promotion" && (
           <div className="p-4 space-y-4">
             <div>
