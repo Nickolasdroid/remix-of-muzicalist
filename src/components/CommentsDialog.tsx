@@ -42,6 +42,8 @@ interface CommentRow {
     stage_name: string | null;
     avatar_url: string | null;
   } | null;
+  likes_count?: number;
+  liked_by_me?: boolean;
 }
 
 const MAX_LENGTH = 500;
