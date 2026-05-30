@@ -320,6 +320,7 @@ const SettingsTab = ({
     { id: "email" as const, label: "Email Address", icon: Mail },
     { id: "password" as const, label: "Change Password", icon: Lock },
     { id: "language" as const, label: "Language", icon: Languages },
+    { id: "theme" as const, label: "Theme", icon: Sun },
     { id: "promotion" as const, label: "Promotion", icon: Megaphone },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
