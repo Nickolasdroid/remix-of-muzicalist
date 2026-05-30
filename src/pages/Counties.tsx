@@ -74,7 +74,7 @@ const Counties = () => {
   );
 
   return (
-    <div className="min-h-screen md:ml-64 bg-gradient-to-br from-background to-secondary relative">
+    <div className="min-h-screen md:ml-64 bg-background relative">
       <Navigation />
       
       <div className="relative z-10 container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">
