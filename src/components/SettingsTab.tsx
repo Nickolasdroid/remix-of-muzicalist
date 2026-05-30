@@ -71,6 +71,20 @@ const SettingsTab = ({
   const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
   const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
   const [languageSearch, setLanguageSearch] = useState("");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof document !== "undefined" && document.documentElement.classList.contains("light")) return "light";
+    return "dark";
+  });
+
+  const toggleTheme = (next: "dark" | "light") => {
+    setTheme(next);
+    if (next === "light") {
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
+    }
+    try { localStorage.setItem("theme", next); } catch {}
+  };
 
   const currentLangCode = (i18n.language || "en").toLowerCase();
   const currentLangBase = currentLangCode.split("-")[0];
