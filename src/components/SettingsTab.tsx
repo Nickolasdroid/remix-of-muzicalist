@@ -1098,8 +1098,11 @@ const SettingsTab = ({
                       Light
                     </Button>
                   </div>
+                </div>
 
                 <Separator />
+
+
 
               <div className="flex items-center justify-between gap-4">
                 <button
