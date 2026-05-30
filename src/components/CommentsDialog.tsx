@@ -14,7 +14,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Send, Trash2, X } from "lucide-react";
+import { Heart, Loader2, Send, Trash2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -41,6 +42,8 @@ interface CommentRow {
     stage_name: string | null;
     avatar_url: string | null;
   } | null;
+  likes_count?: number;
+  liked_by_me?: boolean;
 }
 
 const MAX_LENGTH = 500;
@@ -83,6 +86,7 @@ const CommentsDialog = ({
 
       const rows = (data || []) as CommentRow[];
       const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+      const commentIds = rows.map((r) => r.id);
       let profileMap = new Map<string, { stage_name: string | null; avatar_url: string | null }>();
       if (userIds.length) {
         const { data: profs } = await supabase
@@ -91,7 +95,24 @@ const CommentsDialog = ({
           .in("id", userIds);
         (profs || []).forEach((p: any) => profileMap.set(p.id, { stage_name: p.stage_name, avatar_url: p.avatar_url }));
       }
-      const withProfiles = rows.map((r) => ({ ...r, profile: profileMap.get(r.user_id) || null }));
+      const countsMap = new Map<string, number>();
+      const likedSet = new Set<string>();
+      if (commentIds.length) {
+        const { data: likes } = await (supabase as any)
+          .from("comment_likes")
+          .select("comment_id, user_id")
+          .in("comment_id", commentIds);
+        (likes || []).forEach((l: any) => {
+          countsMap.set(l.comment_id, (countsMap.get(l.comment_id) || 0) + 1);
+          if (currentUserId && l.user_id === currentUserId) likedSet.add(l.comment_id);
+        });
+      }
+      const withProfiles = rows.map((r) => ({
+        ...r,
+        profile: profileMap.get(r.user_id) || null,
+        likes_count: countsMap.get(r.id) || 0,
+        liked_by_me: likedSet.has(r.id),
+      }));
       setComments(withProfiles);
       onCountChangeRef.current?.(withProfiles.length);
     } catch (err) {
@@ -99,7 +120,7 @@ const CommentsDialog = ({
     } finally {
       setLoading(false);
     }
-  }, [targetId, targetType]);
+  }, [targetId, targetType, currentUserId]);
 
   useEffect(() => {
     if (open && targetId) {
@@ -204,6 +225,56 @@ const CommentsDialog = ({
     setTimeout(() => inputRef.current?.focus(), 50);
   };
 
+  const toggleLike = async (c: CommentRow) => {
+    if (!currentUserId) {
+      navigate("/login");
+      return;
+    }
+    const wasLiked = !!c.liked_by_me;
+    // Optimistic update
+    setComments((prev) =>
+      prev.map((x) =>
+        x.id === c.id
+          ? {
+              ...x,
+              liked_by_me: !wasLiked,
+              likes_count: Math.max(0, (x.likes_count || 0) + (wasLiked ? -1 : 1)),
+            }
+          : x
+      )
+    );
+    try {
+      if (wasLiked) {
+        const { error } = await (supabase as any)
+          .from("comment_likes")
+          .delete()
+          .eq("comment_id", c.id)
+          .eq("user_id", currentUserId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any)
+          .from("comment_likes")
+          .insert({ comment_id: c.id, user_id: currentUserId });
+        if (error) throw error;
+      }
+    } catch (err) {
+      console.error("Error toggling like:", err);
+      // Revert
+      setComments((prev) =>
+        prev.map((x) =>
+          x.id === c.id
+            ? {
+                ...x,
+                liked_by_me: wasLiked,
+                likes_count: Math.max(0, (x.likes_count || 0) + (wasLiked ? 1 : -1)),
+              }
+            : x
+        )
+      );
+      toast({ title: "Error", description: "Failed to update like.", variant: "destructive" });
+    }
+  };
+
   const toggleThread = (parentId: string) => {
     setExpandedThreads((prev) => {
       const next = new Set(prev);
@@ -239,6 +310,17 @@ const CommentsDialog = ({
               className="text-[11px] font-semibold text-muted-foreground hover:text-foreground"
             >
               Reply
+            </button>
+            <button
+              onClick={() => toggleLike(c)}
+              className={cn(
+                "text-[11px] font-semibold flex items-center gap-1 transition-colors",
+                c.liked_by_me ? "text-red-500" : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-label={c.liked_by_me ? "Unlike comment" : "Like comment"}
+            >
+              <Heart className={cn("h-3 w-3", c.liked_by_me && "fill-current")} />
+              {(c.likes_count || 0) > 0 && <span>{c.likes_count}</span>}
             </button>
             {canDelete && (
               <button
