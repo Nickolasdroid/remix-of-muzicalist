@@ -168,7 +168,7 @@ const Search = () => {
                 inputRef.current?.blur();
                 navigate(-1);
               }}
-              className="flex-shrink-0 h-10 w-10 rounded-full bg-zinc-900 flex items-center justify-center text-foreground hover:bg-zinc-800 transition-colors"
+              className="flex-shrink-0 h-10 w-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-muted/80 transition-colors"
               aria-label="Back"
             >
               <ArrowLeft className="h-5 w-5" />
