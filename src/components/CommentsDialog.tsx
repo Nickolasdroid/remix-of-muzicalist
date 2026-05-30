@@ -86,6 +86,7 @@ const CommentsDialog = ({
 
       const rows = (data || []) as CommentRow[];
       const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+      const commentIds = rows.map((r) => r.id);
       let profileMap = new Map<string, { stage_name: string | null; avatar_url: string | null }>();
       if (userIds.length) {
         const { data: profs } = await supabase
@@ -94,7 +95,24 @@ const CommentsDialog = ({
           .in("id", userIds);
         (profs || []).forEach((p: any) => profileMap.set(p.id, { stage_name: p.stage_name, avatar_url: p.avatar_url }));
       }
-      const withProfiles = rows.map((r) => ({ ...r, profile: profileMap.get(r.user_id) || null }));
+      const countsMap = new Map<string, number>();
+      const likedSet = new Set<string>();
+      if (commentIds.length) {
+        const { data: likes } = await (supabase as any)
+          .from("comment_likes")
+          .select("comment_id, user_id")
+          .in("comment_id", commentIds);
+        (likes || []).forEach((l: any) => {
+          countsMap.set(l.comment_id, (countsMap.get(l.comment_id) || 0) + 1);
+          if (currentUserId && l.user_id === currentUserId) likedSet.add(l.comment_id);
+        });
+      }
+      const withProfiles = rows.map((r) => ({
+        ...r,
+        profile: profileMap.get(r.user_id) || null,
+        likes_count: countsMap.get(r.id) || 0,
+        liked_by_me: likedSet.has(r.id),
+      }));
       setComments(withProfiles);
       onCountChangeRef.current?.(withProfiles.length);
     } catch (err) {
