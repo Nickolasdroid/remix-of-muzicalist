@@ -113,10 +113,13 @@ const CountySpecializationArtists = () => {
                 to={`/artist/${artist.id}`}
                 className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent/10 transition-colors border"
               >
-                <Avatar className="h-14 w-14 flex-shrink-0">
-                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                  <AvatarFallback>{artist.stage_name?.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="relative flex-shrink-0">
+                  <Avatar className="h-14 w-14">
+                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                    <AvatarFallback>{artist.stage_name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <PlanBadge plan={artist.plan} size={14} className="top-0 right-0" />
+                </div>
                 <span className="text-base font-medium text-foreground">{artist.stage_name}</span>
               </Link>
             ))}
