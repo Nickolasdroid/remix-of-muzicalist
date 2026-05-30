@@ -2903,10 +2903,6 @@ const Dashboard = () => {
 
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
-                        <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                          <Images className="h-5 w-5 text-accent" />
-                          My Gallery
-                        </h2>
                         <div className="mb-4 items-center justify-between flex flex-col">
                           
                           <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
