@@ -225,6 +225,56 @@ const CommentsDialog = ({
     setTimeout(() => inputRef.current?.focus(), 50);
   };
 
+  const toggleLike = async (c: CommentRow) => {
+    if (!currentUserId) {
+      navigate("/login");
+      return;
+    }
+    const wasLiked = !!c.liked_by_me;
+    // Optimistic update
+    setComments((prev) =>
+      prev.map((x) =>
+        x.id === c.id
+          ? {
+              ...x,
+              liked_by_me: !wasLiked,
+              likes_count: Math.max(0, (x.likes_count || 0) + (wasLiked ? -1 : 1)),
+            }
+          : x
+      )
+    );
+    try {
+      if (wasLiked) {
+        const { error } = await (supabase as any)
+          .from("comment_likes")
+          .delete()
+          .eq("comment_id", c.id)
+          .eq("user_id", currentUserId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any)
+          .from("comment_likes")
+          .insert({ comment_id: c.id, user_id: currentUserId });
+        if (error) throw error;
+      }
+    } catch (err) {
+      console.error("Error toggling like:", err);
+      // Revert
+      setComments((prev) =>
+        prev.map((x) =>
+          x.id === c.id
+            ? {
+                ...x,
+                liked_by_me: wasLiked,
+                likes_count: Math.max(0, (x.likes_count || 0) + (wasLiked ? 1 : -1)),
+              }
+            : x
+        )
+      );
+      toast({ title: "Error", description: "Failed to update like.", variant: "destructive" });
+    }
+  };
+
   const toggleThread = (parentId: string) => {
     setExpandedThreads((prev) => {
       const next = new Set(prev);
