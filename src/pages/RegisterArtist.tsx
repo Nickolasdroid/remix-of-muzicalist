@@ -278,6 +278,14 @@ const RegisterArtist = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep(currentStep)) return;
+    if (!promotionalConsent) {
+      toast({
+        title: t("common.error"),
+        description: "Please acknowledge the promotional use of profile content to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
     // Account is NOT created here anymore — only after Free is chosen
     // or after Stripe confirms payment for Standard/Premium.
     setShowPlanSelection(true);
