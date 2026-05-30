@@ -297,10 +297,10 @@ const CommentsDialog = ({
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
+          <Link to={`/artist/${c.user_id}`} className="text-xs font-semibold hover:underline block mb-1">
+            {c.profile?.stage_name || "User"}
+          </Link>
           <div className="bg-muted rounded-lg px-3 py-2">
-            <Link to={`/artist/${c.user_id}`} className="text-xs font-semibold hover:underline">
-              {c.profile?.stage_name || "User"}
-            </Link>
             <p className="text-sm break-words whitespace-pre-wrap">{c.content}</p>
           </div>
           <div className="flex items-center gap-3 mt-1 px-1">
