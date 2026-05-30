@@ -851,7 +851,7 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 mb-3 px-4 md:px-0 md:max-w-3xl md:mx-auto">
+          <div className="flex items-center justify-start gap-2 mb-3 md:max-w-3xl md:mx-auto">
             <Crown className="h-5 w-5 text-accent fill-accent" />
             <span className="text-sm md:text-base font-bold tracking-wider text-accent uppercase">Top 10 Artists</span>
           </div>
