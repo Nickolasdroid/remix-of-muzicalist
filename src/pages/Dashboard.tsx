@@ -2960,14 +2960,17 @@ const Dashboard = () => {
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'image').map((item) => <div key={item.id} className="relative group">
-                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20">
-                                    <img src={item.url} alt="Gallery item" className="w-full h-full object-cover" />
+                                  <div
+                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer"
+                                    onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
+                                  >
+                                    <img src={item.url} alt="Gallery item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
                         id: item.id,
                         url: item.url,
                         type: item.type
-                      })} disabled={isSaving}>
+                      }); }} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
@@ -2986,14 +2989,17 @@ const Dashboard = () => {
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'video').map((item) => <div key={item.id} className="relative group">
-                                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 bg-black/80 flex items-center justify-center">
+                                  <div
+                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer"
+                                    onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
+                                  >
                                     <Play className="h-12 w-12 text-accent" />
                                   </div>
-                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteGalleryItem({
+                                  <Button size="sm" variant="destructive" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
                         id: item.id,
                         url: item.url,
                         type: item.type
-                      })} disabled={isSaving}>
+                      }); }} disabled={isSaving}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>)}
