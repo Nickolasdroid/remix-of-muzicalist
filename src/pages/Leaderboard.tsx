@@ -778,7 +778,7 @@ const Leaderboard = () => {
     );
   }
 
-  return <div className="min-h-screen md:ml-64 bg-gradient-to-br from-background to-secondary relative">
+  return <div className="min-h-screen md:ml-64 bg-background relative">
       <Navigation />
       
       <div className="relative z-10 pt-16 md:pt-8 pb-24 md:pb-20 px-0">
