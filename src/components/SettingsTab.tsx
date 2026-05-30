@@ -76,7 +76,9 @@ const SettingsTab = ({
     return "dark";
   });
 
-  const toggleTheme = (next: "dark" | "light") => {
+  const [pendingTheme, setPendingTheme] = useState<"dark" | "light" | null>(null);
+
+  const applyTheme = (next: "dark" | "light") => {
     setTheme(next);
     if (next === "light") {
       document.documentElement.classList.add("light");
@@ -85,6 +87,38 @@ const SettingsTab = ({
     }
     try { localStorage.setItem("theme", next); } catch {}
   };
+
+  const toggleTheme = (next: "dark" | "light") => {
+    if (next === theme) return;
+    setPendingTheme(next);
+  };
+
+  const confirmThemeChange = () => {
+    if (!pendingTheme) return;
+    applyTheme(pendingTheme);
+    const label = pendingTheme === "light" ? "Light" : "Dark";
+    setPendingTheme(null);
+    toast({ title: "Theme changed", description: label });
+  };
+
+  const ThemeConfirmDialog = (
+    <AlertDialog open={!!pendingTheme} onOpenChange={(open) => !open && setPendingTheme(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Change theme?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {pendingTheme
+              ? `Are you sure you want to switch the theme to ${pendingTheme === "light" ? "Light" : "Dark"}?`
+              : ""}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmThemeChange}>Change theme</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 
   const currentLangCode = (i18n.language || "en").toLowerCase();
   const currentLangBase = currentLangCode.split("-")[0];
