@@ -120,7 +120,7 @@ const CommentsDialog = ({
     } finally {
       setLoading(false);
     }
-  }, [targetId, targetType]);
+  }, [targetId, targetType, currentUserId]);
 
   useEffect(() => {
     if (open && targetId) {
