@@ -311,6 +311,17 @@ const CommentsDialog = ({
             >
               Reply
             </button>
+            <button
+              onClick={() => toggleLike(c)}
+              className={cn(
+                "text-[11px] font-semibold flex items-center gap-1 transition-colors",
+                c.liked_by_me ? "text-red-500" : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-label={c.liked_by_me ? "Unlike comment" : "Like comment"}
+            >
+              <Heart className={cn("h-3 w-3", c.liked_by_me && "fill-current")} />
+              {(c.likes_count || 0) > 0 && <span>{c.likes_count}</span>}
+            </button>
             {canDelete && (
               <button
                 onClick={() => setDeleteConfirmId(c.id)}
