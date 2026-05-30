@@ -35,15 +35,8 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
     fetchRating();
   }, [id]);
 
-  const isFree = !plan || plan === 'Free';
-  const isPremium = plan === 'Premium';
-  const isStandard = plan === 'Standard';
 
-  const borderClass = isPremium
-    ? 'border-2 border-accent'
-    : isStandard
-      ? 'border-2 border-white'
-      : '';
+
 
   return (
     <Link to={`/artist/${id}`} className="group block">
