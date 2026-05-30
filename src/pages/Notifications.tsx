@@ -111,10 +111,39 @@ const Notifications = () => {
         return <Bell className="h-5 w-5 text-muted-foreground" />;
     }
   };
+  const getNotificationRoute = (notification: Notification): string | null => {
+    const refType = notification.reference_type;
+    const type = notification.type;
+    if (type === 'follow' && notification.actor_id) {
+      return `/artist/${notification.actor_id}`;
+    }
+    if (userType === 'user') {
+      return '/user-dashboard';
+    }
+    if (refType === 'post') {
+      return '/dashboard?tab=profile&section=posts';
+    }
+    if (refType === 'announcement') {
+      return '/dashboard?tab=profile&section=announcements';
+    }
+    if (refType === 'review') {
+      return '/dashboard?tab=profile';
+    }
+    if (refType === 'booking_request' || type === 'booking_request' || type === 'booking_update') {
+      return '/dashboard?tab=profile&section=calendar';
+    }
+    if (refType === 'follower') {
+      return notification.actor_id ? `/artist/${notification.actor_id}` : '/dashboard?tab=profile';
+    }
+    return '/dashboard?tab=profile';
+  };
+
   const handleNotificationClick = async (notification: Notification) => {
-    // Only mark as read on tap (no navigation)
-    if (notification.read_at) return;
-    await markAsRead(notification.id);
+    if (!notification.read_at) {
+      await markAsRead(notification.id);
+    }
+    const route = getNotificationRoute(notification);
+    if (route) navigate(route);
   };
   const unreadCount = notifications.filter(n => !n.read_at).length;
   return <div className="min-h-screen bg-background">
