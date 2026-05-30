@@ -215,7 +215,7 @@ const Search = () => {
                   : "Search artists..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className={`pl-12 ${isAIMode && searchQuery.trim() ? "pr-14" : "pr-4"} h-14 w-full text-base rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-zinc-900 text-white`}
+                className={`pl-12 ${isAIMode && searchQuery.trim() ? "pr-14" : "pr-4"} h-14 w-full text-base rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground`}
                 disabled={isAILoading}
               />
               {isAIMode && searchQuery.trim() && (
