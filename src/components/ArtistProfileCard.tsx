@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { User, Star, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import diamondIcon from "@/assets/diamond-icon.png";
 import { getCountryName } from "@/lib/countryFlags";
+import PlanBadge from "@/components/PlanBadge";
 
 interface ArtistProfileCardProps {
   id: string;
