@@ -122,7 +122,7 @@ const AISearchBar = () => {
                       name={`${a.first_name ?? ""} ${a.last_name ?? ""}`.trim()}
                       stageName={a.stage_name || `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim()}
                       imageUrl={a.avatar_url}
-                      isPremium={a.plan !== "Free"}
+                      plan={a.plan}
                     />
                   ))}
                 </div>
