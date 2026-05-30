@@ -603,6 +603,39 @@ const SettingsTab = ({
     );
   };
 
+  // Mobile: Theme section
+  const MobileThemeSection = () => (
+    <div className="p-4 space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold">Theme</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose between dark and light appearance
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          variant={theme === "dark" ? "default" : "outline"}
+          onClick={() => toggleTheme("dark")}
+          className="h-11 rounded-lg justify-center gap-2"
+        >
+          <Moon className="h-4 w-4" />
+          Dark
+        </Button>
+        <Button
+          type="button"
+          variant={theme === "light" ? "default" : "outline"}
+          onClick={() => toggleTheme("light")}
+          className="h-11 rounded-lg justify-center gap-2"
+        >
+          <Sun className="h-4 w-4" />
+          Light
+        </Button>
+      </div>
+    </div>
+  );
+
+
   // Mobile: Logout section
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
