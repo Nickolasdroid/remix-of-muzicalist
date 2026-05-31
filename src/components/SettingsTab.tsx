@@ -1358,6 +1358,11 @@ const SettingsTab = ({
             </div>
           )}
 
+          {/* Comments Section (desktop) */}
+          {activeSection === "comments" && CommentsSectionContent}
+
+
+
 
           {/* Promotion info dialog */}
           <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
