@@ -949,6 +949,7 @@ const SettingsTab = ({
 
         {LanguageConfirmDialog}
         {ThemeConfirmDialog}
+        {DisableCommentsDialog}
       </div>
     );
   }
