@@ -410,6 +410,7 @@ const SettingsTab = ({
     { id: "language" as const, label: "Language", icon: Languages },
     { id: "theme" as const, label: "Theme", icon: Sun },
     { id: "promotion" as const, label: "Promotion", icon: Megaphone },
+    { id: "comments" as const, label: "Comments", icon: MessageCircle },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
@@ -431,6 +432,11 @@ const SettingsTab = ({
       id: "promotion",
       label: "Promotion",
       icon: Megaphone
+    },
+    {
+      id: "comments",
+      label: "Comments",
+      icon: MessageCircle
     }
   ];
 
