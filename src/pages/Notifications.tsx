@@ -114,11 +114,17 @@ const Notifications = () => {
   const getNotificationRoute = (notification: Notification): string | null => {
     const refType = notification.reference_type;
     const type = notification.type;
+    const refId = notification.reference_id;
     if (type === 'follow' && notification.actor_id) {
       return `/artist/${notification.actor_id}`;
     }
     if (userType === 'user') {
       return '/user-dashboard';
+    }
+    // Comment notifications: open the comments dialog for the target post/announcement
+    if (type === 'comment' && refId && (refType === 'post' || refType === 'announcement')) {
+      const section = refType === 'post' ? 'posts' : 'announcements';
+      return `/dashboard?tab=profile&section=${section}&commentsId=${refId}&commentsType=${refType}`;
     }
     if (refType === 'post') {
       return '/dashboard?tab=profile&section=posts';
