@@ -194,14 +194,62 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
         setAllowPromotion((data as any).allow_promotion);
       }
+      if (data && (data as any).comments_allow_from) {
+        setCommentsAllowFrom((data as any).comments_allow_from as CommentsAllowFrom);
+      }
+      if (data && typeof (data as any).comments_allow_gifs === "boolean") {
+        setCommentsAllowGifs((data as any).comments_allow_gifs);
+      }
     })();
   }, []);
+
+  const applyCommentsAllowFrom = async (next: CommentsAllowFrom) => {
+    const prev = commentsAllowFrom;
+    setCommentsAllowFrom(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ comments_allow_from: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setCommentsAllowFrom(prev);
+      toast({ title: "Error", description: "Could not update comments preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Comments preference updated." });
+    }
+  };
+
+  const handleCommentsAllowFromChange = (next: CommentsAllowFrom) => {
+    if (next === commentsAllowFrom) return;
+    if (next === "off") {
+      setShowDisableCommentsConfirm(true);
+      return;
+    }
+    applyCommentsAllowFrom(next);
+  };
+
+  const applyCommentsAllowGifs = async (next: boolean) => {
+    setCommentsAllowGifs(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ comments_allow_gifs: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setCommentsAllowGifs(!next);
+      toast({ title: "Error", description: "Could not update GIF preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: next ? "GIF comments enabled." : "GIF comments disabled." });
+    }
+  };
 
   const applyPromotionChange = async (next: boolean) => {
     setAllowPromotion(next);
