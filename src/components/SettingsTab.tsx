@@ -786,6 +786,98 @@ const SettingsTab = ({
     </div>
   );
 
+  // Shared: Comments section content (used by both mobile and desktop)
+  const CommentsSectionContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Comments</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose who can comment on your posts and announcements
+        </p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Allow comments from</Label>
+        <RadioGroup
+          value={commentsAllowFrom}
+          onValueChange={(v) => handleCommentsAllowFromChange(v as CommentsAllowFrom)}
+          className="space-y-2"
+        >
+          <label
+            htmlFor="comments-everyone"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "everyone" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="everyone" id="comments-everyone" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">Everyone</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Anyone on Muzicalist can comment</div>
+            </div>
+          </label>
+
+          <label
+            htmlFor="comments-following"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "following" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="following" id="comments-following" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">People you follow</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Only accounts you follow can comment</div>
+            </div>
+          </label>
+
+          <label
+            htmlFor="comments-off"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "off" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="off" id="comments-off" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">Off</div>
+              <div className="text-xs text-muted-foreground mt-0.5">No one can comment on your content</div>
+            </div>
+          </label>
+        </RadioGroup>
+      </div>
+
+      <Separator />
+
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <Label className="text-sm font-medium">Allow GIF comments</Label>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            People can add GIFs to comments on your posts and announcements
+          </p>
+        </div>
+        <Switch checked={commentsAllowGifs} onCheckedChange={applyCommentsAllowGifs} />
+      </div>
+    </div>
+  );
+
+  const DisableCommentsDialog = (
+    <AlertDialog open={showDisableCommentsConfirm} onOpenChange={setShowDisableCommentsConfirm}>
+      <AlertDialogContent className="rounded-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Turn off comments?</AlertDialogTitle>
+          <AlertDialogDescription>
+            No one will be able to comment on your posts or announcements. You can re-enable comments at any time.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => applyCommentsAllowFrom("off")}>Turn off</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+
   // Mobile view
   if (isMobile) {
     return (
