@@ -292,7 +292,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 bg-background border-r border-border p-0 flex flex-col">
+            <SheetContent side="left" className="w-screen max-w-none sm:max-w-none bg-background border-r border-border p-0 flex flex-col">
               {/* Logo */}
               <div className="p-4 border-b border-border">
                 <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
