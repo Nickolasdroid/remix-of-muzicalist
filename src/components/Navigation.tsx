@@ -660,7 +660,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   <>
                     <div className="h-px bg-border my-1" />
                     <button
-                      onClick={handleLogout}
+                      onClick={() => setLogoutConfirmOpen(true)}
                       className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-5 w-5" />
