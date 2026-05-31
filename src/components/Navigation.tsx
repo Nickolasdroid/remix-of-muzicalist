@@ -301,37 +301,42 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 </Link>
               </div>
 
-              {/* Main navigation - exclude Home/Announcements (already in bottom nav) */}
-              <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive(link.to.split('?')[0])
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                    }`}
-                  >
-                    <link.icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{link.label}</span>
-                  </Link>
-                ))}
+              {/* Main navigation - Instagram-style list */}
+              <div className="flex-1 overflow-y-auto">
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => {
+                  const active = isActive(link.to.split('?')[0]);
+                  return (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                        active ? 'text-accent' : 'text-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <link.icon className={`h-5 w-5 ${active ? 'text-accent' : 'text-muted-foreground'}`} />
+                        <span className="text-sm font-semibold">{link.label}</span>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    </Link>
+                  );
+                })}
 
                 {/* My Plan (only for artist accounts) */}
                 {user && userType === 'artist' && (
                   <Link
                     to="/my-plan"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive('/my-plan')
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                      isActive('/my-plan') ? 'text-accent' : 'text-foreground'
                     }`}
                   >
-                    <Crown className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">My Plan</span>
+                    <div className="flex items-center gap-3">
+                      <Crown className={`h-5 w-5 ${isActive('/my-plan') ? 'text-accent' : 'text-muted-foreground'}`} />
+                      <span className="text-sm font-semibold">My Plan</span>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
                 )}
 
@@ -340,14 +345,15 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   <Link
                     to="/admin/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      isActive('/admin/dashboard')
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                      isActive('/admin/dashboard') ? 'text-accent' : 'text-foreground'
                     }`}
                   >
-                    <Shield className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">Admin Dashboard</span>
+                    <div className="flex items-center gap-3">
+                      <Shield className={`h-5 w-5 ${isActive('/admin/dashboard') ? 'text-accent' : 'text-muted-foreground'}`} />
+                      <span className="text-sm font-semibold">Admin Dashboard</span>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
                 )}
 
@@ -356,59 +362,64 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   <Link
                     to="/dashboard?tab=settings"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                      location.search.includes('tab=settings')
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                      location.search.includes('tab=settings') ? 'text-accent' : 'text-foreground'
                     }`}
                   >
-                    <Settings className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">Settings</span>
+                    <div className="flex items-center gap-3">
+                      <Settings className={`h-5 w-5 ${location.search.includes('tab=settings') ? 'text-accent' : 'text-muted-foreground'}`} />
+                      <span className="text-sm font-semibold">Settings</span>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
                 )}
-                
+
                 {/* Help & Support */}
                 <Link
                   to="/help"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/help')
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                    isActive('/help') ? 'text-accent' : 'text-foreground'
                   }`}
                 >
-                  <HelpCircle className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">Help & Support</span>
+                  <div className="flex items-center gap-3">
+                    <HelpCircle className={`h-5 w-5 ${isActive('/help') ? 'text-accent' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-semibold">Help & Support</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
 
                 {/* About */}
                 <Link
                   to="/about"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/about')
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                    isActive('/about') ? 'text-accent' : 'text-foreground'
                   }`}
                 >
-                  <Info className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">About</span>
+                  <div className="flex items-center gap-3">
+                    <Info className={`h-5 w-5 ${isActive('/about') ? 'text-accent' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-semibold">About</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
-              </div>
 
-              {/* Bottom section - Logout only */}
-              <div className="p-4 border-t border-border space-y-1">
+                {/* Logout */}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-4 border-b border-border text-destructive active:bg-destructive/10 transition-colors"
                 >
-                  <LogOut className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">Logout</span>
+                  <div className="flex items-center gap-3">
+                    <LogOut className="h-5 w-5 text-destructive" />
+                    <span className="text-sm font-semibold">Logout</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-destructive/60" />
                 </button>
               </div>
+
             </SheetContent>
           </Sheet>
           ) : (
