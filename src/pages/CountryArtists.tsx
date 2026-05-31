@@ -328,10 +328,7 @@ const CountryArtists = () => {
             <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <p className="md:hidden text-sm text-muted-foreground">
-              {loading ? "Loading..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
-            </p>
+          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
             <FilterButton 
               filterCategory={filterCategory}
               setFilterCategory={setFilterCategory}
@@ -343,6 +340,9 @@ const CountryArtists = () => {
               setSortOrder={setSortOrder}
               counties={counties}
             />
+            <p className="md:hidden text-sm text-muted-foreground">
+              {loading ? "Loading..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
+            </p>
           </div>
         </div>
 
