@@ -119,6 +119,11 @@ const Dashboard = () => {
       if (section === 'posts') setShowPostDialog(true);
       if (section === 'announcements') setShowAnnouncementDialog(true);
     }
+    const commentsId = searchParams.get('commentsId');
+    const commentsType = searchParams.get('commentsType');
+    if (commentsId && (commentsType === 'post' || commentsType === 'announcement')) {
+      setCommentsTarget({ id: commentsId, type: commentsType });
+    }
   }, [searchParams]);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({
