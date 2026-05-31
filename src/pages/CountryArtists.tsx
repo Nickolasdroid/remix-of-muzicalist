@@ -328,17 +328,22 @@ const CountryArtists = () => {
             <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
           </div>
 
-          <FilterButton 
-            filterCategory={filterCategory}
-            setFilterCategory={setFilterCategory}
-            filterCounty={filterCounty}
-            setFilterCounty={setFilterCounty}
-            filterExperience={filterExperience}
-            setFilterExperience={setFilterExperience}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-            counties={counties}
-          />
+          <div className="flex items-center gap-3">
+            <p className="md:hidden text-sm text-muted-foreground">
+              {loading ? "Loading..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
+            </p>
+            <FilterButton 
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filterCounty={filterCounty}
+              setFilterCounty={setFilterCounty}
+              filterExperience={filterExperience}
+              setFilterExperience={setFilterExperience}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              counties={counties}
+            />
+          </div>
         </div>
 
         {urlDate && (
@@ -353,7 +358,7 @@ const CountryArtists = () => {
         )}
 
         <div className="text-center mb-6 md:mb-8">
-          <p className="text-muted-foreground mb-4">
+          <p className="hidden md:block text-muted-foreground mb-4">
             {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
           </p>
 
