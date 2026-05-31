@@ -82,6 +82,7 @@ const Dashboard = () => {
     language: "Language",
     theme: "Theme",
     promotion: "Promotion",
+    comments: "Comments",
     report: "Report an Issue",
     logout: "Sign Out",
     delete: "Delete Account",

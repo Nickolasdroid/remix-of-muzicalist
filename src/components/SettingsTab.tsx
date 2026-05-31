@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +17,9 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete";
+
+type CommentsAllowFrom = "everyone" | "following" | "off";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
@@ -68,6 +71,9 @@ const SettingsTab = ({
   const [allowPromotion, setAllowPromotion] = useState(true);
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
+  const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
+  const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
+  const [showDisableCommentsConfirm, setShowDisableCommentsConfirm] = useState(false);
   const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
   const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
   const [languageSearch, setLanguageSearch] = useState("");
@@ -188,14 +194,62 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
         setAllowPromotion((data as any).allow_promotion);
       }
+      if (data && (data as any).comments_allow_from) {
+        setCommentsAllowFrom((data as any).comments_allow_from as CommentsAllowFrom);
+      }
+      if (data && typeof (data as any).comments_allow_gifs === "boolean") {
+        setCommentsAllowGifs((data as any).comments_allow_gifs);
+      }
     })();
   }, []);
+
+  const applyCommentsAllowFrom = async (next: CommentsAllowFrom) => {
+    const prev = commentsAllowFrom;
+    setCommentsAllowFrom(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ comments_allow_from: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setCommentsAllowFrom(prev);
+      toast({ title: "Error", description: "Could not update comments preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Comments preference updated." });
+    }
+  };
+
+  const handleCommentsAllowFromChange = (next: CommentsAllowFrom) => {
+    if (next === commentsAllowFrom) return;
+    if (next === "off") {
+      setShowDisableCommentsConfirm(true);
+      return;
+    }
+    applyCommentsAllowFrom(next);
+  };
+
+  const applyCommentsAllowGifs = async (next: boolean) => {
+    setCommentsAllowGifs(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ comments_allow_gifs: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setCommentsAllowGifs(!next);
+      toast({ title: "Error", description: "Could not update GIF preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: next ? "GIF comments enabled." : "GIF comments disabled." });
+    }
+  };
 
   const applyPromotionChange = async (next: boolean) => {
     setAllowPromotion(next);
@@ -356,6 +410,7 @@ const SettingsTab = ({
     { id: "language" as const, label: "Language", icon: Languages },
     { id: "theme" as const, label: "Theme", icon: Sun },
     { id: "promotion" as const, label: "Promotion", icon: Megaphone },
+    { id: "comments" as const, label: "Comments", icon: MessageCircle },
     
     { id: "logout" as const, label: "Sign Out", icon: LogOut },
     { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
@@ -377,6 +432,11 @@ const SettingsTab = ({
       id: "promotion",
       label: "Promotion",
       icon: Megaphone
+    },
+    {
+      id: "comments",
+      label: "Comments",
+      icon: MessageCircle
     }
   ];
 
@@ -726,6 +786,98 @@ const SettingsTab = ({
     </div>
   );
 
+  // Shared: Comments section content (used by both mobile and desktop)
+  const CommentsSectionContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Comments</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose who can comment on your posts and announcements
+        </p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Allow comments from</Label>
+        <RadioGroup
+          value={commentsAllowFrom}
+          onValueChange={(v) => handleCommentsAllowFromChange(v as CommentsAllowFrom)}
+          className="space-y-2"
+        >
+          <label
+            htmlFor="comments-everyone"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "everyone" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="everyone" id="comments-everyone" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">Everyone</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Anyone on Muzicalist can comment</div>
+            </div>
+          </label>
+
+          <label
+            htmlFor="comments-following"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "following" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="following" id="comments-following" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">People you follow</div>
+              <div className="text-xs text-muted-foreground mt-0.5">Only accounts you follow can comment</div>
+            </div>
+          </label>
+
+          <label
+            htmlFor="comments-off"
+            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+              commentsAllowFrom === "off" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+            }`}
+          >
+            <RadioGroupItem value="off" id="comments-off" className="mt-0.5" />
+            <div className="flex-1">
+              <div className="text-sm font-medium">Off</div>
+              <div className="text-xs text-muted-foreground mt-0.5">No one can comment on your content</div>
+            </div>
+          </label>
+        </RadioGroup>
+      </div>
+
+      <Separator />
+
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <Label className="text-sm font-medium">Allow GIF comments</Label>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            People can add GIFs to comments on your posts and announcements
+          </p>
+        </div>
+        <Switch checked={commentsAllowGifs} onCheckedChange={applyCommentsAllowGifs} />
+      </div>
+    </div>
+  );
+
+  const DisableCommentsDialog = (
+    <AlertDialog open={showDisableCommentsConfirm} onOpenChange={setShowDisableCommentsConfirm}>
+      <AlertDialogContent className="rounded-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Turn off comments?</AlertDialogTitle>
+          <AlertDialogDescription>
+            No one will be able to comment on your posts or announcements. You can re-enable comments at any time.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => applyCommentsAllowFrom("off")}>Turn off</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+
   // Mobile view
   if (isMobile) {
     return (
@@ -757,6 +909,10 @@ const SettingsTab = ({
               <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
             </div>
           </div>
+        )}
+        
+        {activeSection === "comments" && (
+          <div className="p-4">{CommentsSectionContent}</div>
         )}
         
         {activeSection === "logout" && <MobileLogoutSection />}
@@ -793,6 +949,7 @@ const SettingsTab = ({
 
         {LanguageConfirmDialog}
         {ThemeConfirmDialog}
+        {DisableCommentsDialog}
       </div>
     );
   }
@@ -1201,6 +1358,11 @@ const SettingsTab = ({
             </div>
           )}
 
+          {/* Comments Section (desktop) */}
+          {activeSection === "comments" && CommentsSectionContent}
+
+
+
 
           {/* Promotion info dialog */}
           <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
@@ -1234,6 +1396,7 @@ const SettingsTab = ({
 
           {LanguageConfirmDialog}
           {ThemeConfirmDialog}
+          {DisableCommentsDialog}
         </div>
       </div>
     </div>
