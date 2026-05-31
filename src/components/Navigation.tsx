@@ -419,7 +419,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    handleLogout();
+                    setLogoutConfirmOpen(true);
                   }}
                   className="w-full flex items-center justify-between px-4 py-4 border-b border-border text-destructive active:bg-destructive/10 transition-colors"
                 >
