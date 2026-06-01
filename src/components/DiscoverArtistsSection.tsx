@@ -112,7 +112,6 @@ const DiscoverArtistsSection = () => {
         <Carousel opts={{ align: "start", loop: true }} className="w-full">
           <CarouselContent className="-ml-3 md:-ml-4">
             {artists.map((artist, index) => {
-              const isFree = !artist.plan || artist.plan === 'Free';
               const flag = artist.country ? getCountryFlag(artist.country) : '';
 
               return (
