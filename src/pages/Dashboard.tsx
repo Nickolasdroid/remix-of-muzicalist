@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import CommentsDialog from "@/components/CommentsDialog";
 
@@ -251,6 +251,7 @@ const Dashboard = () => {
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
   const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
+  const [awaitingRepliesCount, setAwaitingRepliesCount] = useState(0);
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
@@ -327,6 +328,27 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) setBookingRequests(data);
+  };
+  const loadAwaitingReplies = async () => {
+    if (!user) return;
+    const { data: convos } = await supabase
+      .from('conversations')
+      .select('id, artist_id, participant_id, deleted_by_artist, deleted_by_participant')
+      .or(`artist_id.eq.${user.id},participant_id.eq.${user.id}`);
+    const visibleIds = (convos || [])
+      .filter((c: any) =>
+        (c.artist_id === user.id && !c.deleted_by_artist) ||
+        (c.participant_id === user.id && !c.deleted_by_participant)
+      )
+      .map((c: any) => c.id);
+    if (!visibleIds.length) { setAwaitingRepliesCount(0); return; }
+    const { data: msgs } = await supabase
+      .from('messages')
+      .select('conversation_id')
+      .in('conversation_id', visibleIds)
+      .neq('sender_id', user.id)
+      .is('read_at', null);
+    setAwaitingRepliesCount(new Set((msgs || []).map((m: any) => m.conversation_id)).size);
   };
   const loadPosts = async () => {
     if (!user) return;
@@ -482,6 +504,7 @@ const Dashboard = () => {
       loadReviews();
       loadFollowing();
       loadFollowers();
+      loadAwaitingReplies();
     }
   }, [user]);
   const checkAuth = async () => {
@@ -2724,6 +2747,47 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
+                          {(() => {
+                            const nonPremium = announcements.filter((a) => !a.is_premium);
+                            const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
+                            const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
+                            const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
+                            return (
+                              <div className="px-4 md:px-0 space-y-3">
+                                <h3 className="text-base font-semibold text-foreground">Overview</h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
+                                    </div>
+                                    <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
+                                    </div>
+                                    <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
+                                    </div>
+                                    <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
+                                    </div>
+                                    <Repeat className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
