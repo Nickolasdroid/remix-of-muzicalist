@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { User, Star, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
-import diamondIcon from "@/assets/diamond-icon.png";
+import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
 import {
   Carousel,
