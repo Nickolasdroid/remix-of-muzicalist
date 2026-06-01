@@ -4,7 +4,7 @@ import { User, Star, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
-import diamondIcon from "@/assets/diamond-icon.png";
+
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
