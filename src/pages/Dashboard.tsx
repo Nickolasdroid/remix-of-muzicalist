@@ -2747,47 +2747,6 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
-                          {(() => {
-                            const nonPremium = announcements.filter((a) => !a.is_premium);
-                            const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
-                            const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
-                            const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
-                            return (
-                              <div className="px-4 md:px-0 space-y-3">
-                                <h3 className="text-base font-semibold text-foreground">Overview</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
-                                    </div>
-                                    <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
-                                    </div>
-                                    <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
-                                    </div>
-                                    <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
-                                    </div>
-                                    <Repeat className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })()}
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
@@ -2858,6 +2817,47 @@ const Dashboard = () => {
                               </Dialog>
                             </div>
                           </div>
+                          {(() => {
+                            const nonPremium = announcements.filter((a) => !a.is_premium);
+                            const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
+                            const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
+                            const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
+                            return (
+                              <div className="px-4 md:px-0 space-y-3">
+                                <h3 className="text-base font-semibold text-foreground">Overview</h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
+                                    </div>
+                                    <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
+                                    </div>
+                                    <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
+                                    </div>
+                                    <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                    <div className="flex flex-col">
+                                      <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
+                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
+                                    </div>
+                                    <Repeat className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
                           {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
                               <div className="p-4 pb-0 px-[6px] py-[3px]">
                                 <div className="flex items-start justify-between">
