@@ -329,6 +329,27 @@ const Dashboard = () => {
     });
     if (data) setBookingRequests(data);
   };
+  const loadAwaitingReplies = async () => {
+    if (!user) return;
+    const { data: convos } = await supabase
+      .from('conversations')
+      .select('id, artist_id, participant_id, deleted_by_artist, deleted_by_participant')
+      .or(`artist_id.eq.${user.id},participant_id.eq.${user.id}`);
+    const visibleIds = (convos || [])
+      .filter((c: any) =>
+        (c.artist_id === user.id && !c.deleted_by_artist) ||
+        (c.participant_id === user.id && !c.deleted_by_participant)
+      )
+      .map((c: any) => c.id);
+    if (!visibleIds.length) { setAwaitingRepliesCount(0); return; }
+    const { data: msgs } = await supabase
+      .from('messages')
+      .select('conversation_id')
+      .in('conversation_id', visibleIds)
+      .neq('sender_id', user.id)
+      .is('read_at', null);
+    setAwaitingRepliesCount(new Set((msgs || []).map((m: any) => m.conversation_id)).size);
+  };
   const loadPosts = async () => {
     if (!user) return;
     const {
