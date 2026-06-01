@@ -165,13 +165,6 @@ const DiscoverArtistsSection = () => {
                               {artist.rating !== null ? artist.rating.toFixed(1) : '-'}
                             </span>
                           </div>
-                          {isFree && (
-                            <img
-                              src={diamondIcon}
-                              alt="Free tier"
-                              className="h-4 w-4"
-                            />
-                          )}
                         </div>
                       </div>
                     </div>
