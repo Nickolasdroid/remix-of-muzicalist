@@ -128,6 +128,7 @@ const DiscoverArtistsSection = () => {
                   <Link to={`/artist/${artist.id}`} className="group block">
                     <div className={`overflow-hidden rounded-lg ${isPremium(artist.plan) ? 'border-2 border-accent' : isStandard(artist.plan) ? 'border-2 border-white' : ''}`}>
                       <div className="relative aspect-square overflow-hidden">
+                        <PlanBadge plan={artist.plan} />
                         {artist.avatar_url ? (
                           <img
                             src={artist.avatar_url}
@@ -146,6 +147,7 @@ const DiscoverArtistsSection = () => {
                           </div>
                         )}
                       </div>
+
 
                       <div className="bg-card border-t border-border p-2 space-y-0.5">
                         <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate">
