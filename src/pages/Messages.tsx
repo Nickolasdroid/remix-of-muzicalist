@@ -109,6 +109,13 @@ const Messages = () => {
   const messagesCache = useRef<Record<string, Message[]>>({});
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
+  const tabParam = searchParams.get("tab");
+  const subParam = searchParams.get("sub");
+
+  useEffect(() => {
+    if (tabParam === 'announcements') setActiveTab('announcements');
+    if (subParam === 'applications' || subParam === 'requests') setAdsSubTab(subParam);
+  }, [tabParam, subParam]);
   useEffect(() => {
     const checkAuth = async () => {
       const {
