@@ -2826,28 +2826,28 @@ const Dashboard = () => {
                               <div className="px-4 md:px-0 space-y-3">
                                 <h3 className="text-base font-semibold text-foreground">Overview</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                  <div onClick={() => navigate('/messages')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
                                     <div className="flex flex-col">
                                       <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
                                       <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
                                     </div>
                                     <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                                   </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
                                     <div className="flex flex-col">
                                       <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
                                       <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
                                     </div>
                                     <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                                   </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
                                     <div className="flex flex-col">
                                       <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
                                       <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
                                     </div>
                                     <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                                   </div>
-                                  <div className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px]">
+                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
                                     <div className="flex flex-col">
                                       <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
                                       <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
@@ -2858,92 +2858,94 @@ const Dashboard = () => {
                               </div>
                             );
                           })()}
-                          {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
-                              <div className="p-4 pb-0 px-[6px] py-[3px]">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
-                                      <Avatar className="w-10 h-10 border-2 border-background">
-                                        <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
-                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                          {(profile?.stage_name || "A").charAt(0)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-foreground">
-                                          {profile?.stage_name || "Artist"}
-                                        </h3>
-                                        {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                                        {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
-                                            Expired
-                                          </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
+                          <div id="announcements-list">
+                            {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
+                                <div className="p-4 pb-0 px-[6px] py-[3px]">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
+                                        <Avatar className="w-10 h-10 border-2 border-background">
+                                          <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
+                                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                                            {(profile?.stage_name || "A").charAt(0)}
+                                          </AvatarFallback>
+                                        </Avatar>
                                       </div>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span>{profile?.specialization || "User"}</span>
-                                        <span>·</span>
-                                        <span>{formatSmartDate(announcement.created_at)}</span>
-                                        <span>·</span>
-                                        {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                            Promotion
-                                          </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                            Announcement
-                                          </Badge>}
+                                      <div>
+                                        <div className="flex items-center gap-2">
+                                          <h3 className="font-semibold text-foreground">
+                                            {profile?.stage_name || "Artist"}
+                                          </h3>
+                                          {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+                                          {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
+                                              Expired
+                                            </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                          <span>{profile?.specialization || "User"}</span>
+                                          <span>·</span>
+                                          <span>{formatSmartDate(announcement.created_at)}</span>
+                                          <span>·</span>
+                                          {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                              Promotion
+                                            </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                              Announcement
+                                            </Badge>}
+                                        </div>
                                       </div>
                                     </div>
+                                    
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
+                                          <MoreHorizontal className="h-5 w-5" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                                          <Trash2 className="h-4 w-4 mr-2" />
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
                                   </div>
-                                  
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
-                                        <MoreHorizontal className="h-5 w-5" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
+                                  <ExpandableText text={announcement.description} className="mt-3" />
+                                  {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) &&
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+                                      {announcement.location &&
+                        <span className="flex items-center gap-1">
+                                          <MapPin className="h-3 w-3" />
+                                          {announcement.location}
+                                        </span>
+                        }
+                                      {announcement.event_date &&
+                        <span className="flex items-center gap-1">
+                                          <CalendarIcon className="h-3 w-3" />
+                                          {formatDateNoYear(announcement.event_date)}
+                                        </span>
+                        }
+                                      {announcement.budget &&
+                                        <span className="flex items-center gap-1">
+                                          <Euro className="h-3 w-3" />
+                                          {announcement.budget}
+                                        </span>
+                                      }
+                                    </div>
+                      }
                                 </div>
-                                <ExpandableText text={announcement.description} className="mt-3" />
-                                {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) &&
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                                    {announcement.location &&
-                      <span className="flex items-center gap-1">
-                                        <MapPin className="h-3 w-3" />
-                                        {announcement.location}
-                                      </span>
-                      }
-                                    {announcement.event_date &&
-                      <span className="flex items-center gap-1">
-                                        <CalendarIcon className="h-3 w-3" />
-                                        {formatDateNoYear(announcement.event_date)}
-                                      </span>
-                      }
-                                    {announcement.budget &&
-                                      <span className="flex items-center gap-1">
-                                        <Euro className="h-3 w-3" />
-                                        {announcement.budget}
-                                      </span>
-                                    }
-                                  </div>
-                    }
-                              </div>
-                              
-                              {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: announcement.media_url!, type: announcement.media_type === "video" ? "video" : "image" })}>
-                                  {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
-                                    </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                                </div>}
-                              
-                            </Card>)}
-                          {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
-                              <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                              <p className="text-sm">No announcements yet</p>
-                            </div>}
+                                
+                                {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: announcement.media_url!, type: announcement.media_type === "video" ? "video" : "image" })}>
+                                    {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
+                                        <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
+                                      </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                                  </div>}
+                                
+                              </Card>)}
+                            {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
+                                <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                                <p className="text-sm">No announcements yet</p>
+                              </div>}
+                          </div>
                           </div>
                         </div>}
                       </TabsContent>
