@@ -251,6 +251,7 @@ const Dashboard = () => {
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
   const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
+  const [awaitingRepliesCount, setAwaitingRepliesCount] = useState(0);
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
