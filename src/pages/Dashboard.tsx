@@ -2825,7 +2825,7 @@ const Dashboard = () => {
                               <div className="px-4 md:px-0 space-y-3">
                                 <h3 className="text-base font-semibold text-foreground">Overview</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                  <div onClick={() => navigate('/messages')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
+                                  <div onClick={() => navigate('/messages?tab=announcements&sub=requests')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
                                     <div className="flex flex-col">
                                       <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
                                       <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
