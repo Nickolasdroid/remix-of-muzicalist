@@ -1068,6 +1068,7 @@ const SettingsTab = ({
           <div className="p-4">{CommentsSectionContent}</div>
         )}
         
+        {activeSection === "report" && <MobileReportSection />}
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
         {activeSection === "help" && (
