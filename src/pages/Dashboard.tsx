@@ -245,6 +245,7 @@ const Dashboard = () => {
   const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
 
   // Calendar state
+  const isMobile = useIsMobile();
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [eventStatus, setEventStatus] = useState<'blocked' | 'available'>('available');
