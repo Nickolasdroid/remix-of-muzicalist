@@ -470,8 +470,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
       </nav>
 
-      {/* Mobile: Bottom Navigation Bar (only for logged-in users) */}
-      {user && (
+      {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
+      {user && !(location.pathname === '/dashboard' && location.search.includes('tab=settings')) && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
