@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete" | "help" | "about";
+export type SettingSection = "main" | "account" | "system" | "email" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete" | "help" | "about";
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
 
@@ -414,7 +414,7 @@ const SettingsTab = ({
       title: "Your account",
       items: [
         { id: "email", label: "Email Address", icon: Mail },
-        { id: "password", label: "Change Password", icon: Lock },
+        { id: "email", label: "Email Notifications", icon: Mail },
         { id: "comments", label: "Comments", icon: MessageCircle },
       ],
     },
@@ -573,86 +573,6 @@ const SettingsTab = ({
       setIsChangingPassword(false);
     }
   };
-
-  const MobilePasswordSection = () => (
-    <div className="px-4 pt-2 pb-8 space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Change Password</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        <div className="relative">
-          <Input
-            type={showCurrentPassword ? "text" : "password"}
-            value={passwordData.currentPassword}
-            onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-            placeholder="Current password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
-        </div>
-
-        <div className="relative">
-          <Input
-            type={showNewPassword ? "text" : "password"}
-            value={passwordData.newPassword}
-            onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-            placeholder="New password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowNewPassword(!showNewPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
-        </div>
-
-        <div className="relative">
-          <Input
-            type={showConfirmPassword ? "text" : "password"}
-            value={passwordData.confirmPassword}
-            onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-            placeholder="Re-enter new password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => navigate("/reset-password")}
-        className="text-sm font-semibold text-accent hover:underline"
-      >
-        Forgot password?
-      </button>
-
-      <Button
-        onClick={handleInstagramStyleChangePassword}
-        disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
-        className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
-      >
-        {isChangingPassword ? "Updating..." : "Change password"}
-      </Button>
-    </div>
-  );
 
   // Mobile: Report section
   const MobileReportSection = () => (
@@ -938,7 +858,6 @@ const SettingsTab = ({
         {activeSection === "main" && <MobileMainList />}
         
         {activeSection === "email" && <MobileEmailSection />}
-        {activeSection === "password" && <MobilePasswordSection />}
         {activeSection === "language" && <MobileLanguageSection />}
         {activeSection === "theme" && <MobileThemeSection />}
         {activeSection === "promotion" && (
