@@ -478,6 +478,7 @@ const SettingsTab = ({
       title: "Support",
       items: [
         { id: "help", label: "Help & Support", icon: HelpCircle },
+        { id: "report", label: "Report an Issue", icon: Flag },
         { id: "about", label: "About", icon: Info },
       ],
     },
@@ -1067,6 +1068,7 @@ const SettingsTab = ({
           <div className="p-4">{CommentsSectionContent}</div>
         )}
         
+        {activeSection === "report" && <MobileReportSection />}
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
         {activeSection === "help" && (
@@ -1391,6 +1393,45 @@ const SettingsTab = ({
     </div>
   );
 
+  const ReportContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <Flag className="h-5 w-5 text-accent" />
+          Report an Issue
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">Send us feedback or report a problem</p>
+      </div>
+      <Separator />
+      <div className="max-w-2xl space-y-3">
+        <Textarea
+          value={reportMessage}
+          onChange={(e) => setReportMessage(e.target.value)}
+          placeholder="Describe your issue or feedback..."
+          className="min-h-[150px] resize-none rounded-lg"
+        />
+        {reportFile && (
+          <p className="text-sm text-muted-foreground">Attached: {reportFile.name}</p>
+        )}
+        <div className="flex items-center gap-3">
+          <Button onClick={handleReportSubmit} className="bg-accent text-accent-foreground hover:bg-accent/90">
+            Send report
+          </Button>
+          <Button type="button" variant="outline" onClick={() => reportFileInputRef.current?.click()}>
+            <Paperclip className="h-4 w-4 mr-2" />
+            Attach file
+          </Button>
+          <input
+            ref={reportFileInputRef}
+            type="file"
+            onChange={handleReportFileChange}
+            className="hidden"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   const LogoutContent = (
     <div className="space-y-6">
       <div>
@@ -1492,6 +1533,7 @@ const SettingsTab = ({
           {effectiveSection === "theme" && ThemeContent}
           {effectiveSection === "promotion" && PromotionContent}
           {effectiveSection === "help" && HelpContent}
+          {effectiveSection === "report" && ReportContent}
           {effectiveSection === "about" && AboutContent}
           {effectiveSection === "logout" && LogoutContent}
           {effectiveSection === "delete" && DeleteContent}
