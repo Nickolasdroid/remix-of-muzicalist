@@ -403,17 +403,39 @@ const SettingsTab = ({
     }
   };
 
-  // Mobile setting items
-  const mobileSettingItems = [
-    { id: "email" as const, label: "Email Address", icon: Mail },
-    { id: "password" as const, label: "Change Password", icon: Lock },
-    { id: "language" as const, label: "Language", icon: Languages },
-    { id: "theme" as const, label: "Theme", icon: Sun },
-    { id: "promotion" as const, label: "Promotion", icon: Megaphone },
-    { id: "comments" as const, label: "Comments", icon: MessageCircle },
-    
-    { id: "logout" as const, label: "Sign Out", icon: LogOut },
-    { id: "delete" as const, label: "Delete Account", icon: Trash2, destructive: true },
+  // Mobile setting items grouped by category (Instagram-style)
+  const mobileSettingGroups: {
+    title: string;
+    items: { id: SettingSection; label: string; icon: any; destructive?: boolean }[];
+  }[] = [
+    {
+      title: "Your account",
+      items: [
+        { id: "email", label: "Email Address", icon: Mail },
+        { id: "password", label: "Change Password", icon: Lock },
+      ],
+    },
+    {
+      title: "How you use the app",
+      items: [
+        { id: "language", label: "Language", icon: Languages },
+        { id: "theme", label: "Theme", icon: Sun },
+      ],
+    },
+    {
+      title: "Who can interact with you",
+      items: [
+        { id: "promotion", label: "Promotion", icon: Megaphone },
+        { id: "comments", label: "Comments", icon: MessageCircle },
+      ],
+    },
+    {
+      title: "Login",
+      items: [
+        { id: "logout", label: "Sign Out", icon: LogOut },
+        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
+      ],
+    },
   ];
 
   // Desktop nav items
@@ -440,27 +462,38 @@ const SettingsTab = ({
     }
   ];
 
-  // Mobile: Main list view
+  // Mobile: Main list view (Instagram-style grouped sections)
   const MobileMainList = () => (
     <div className="flex flex-col">
-      {mobileSettingItems.map((item, index) => {
-        const Icon = item.icon;
-        return (
-          <button
-            key={item.id}
-            onClick={() => setActiveSection(item.id)}
-            className={`flex items-center justify-between px-4 py-4 ${
-              index !== mobileSettingItems.length - 1 ? "border-b border-border" : ""
-            } ${item.destructive ? "text-destructive" : "text-foreground"}`}
-          >
-            <div className="flex items-center gap-3">
-              <Icon className={`h-5 w-5 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} />
-              <span className="text-sm font-medium">{item.label}</span>
-            </div>
-            <ChevronRight className={`h-5 w-5 ${item.destructive ? "text-destructive/50" : "text-muted-foreground"}`} />
-          </button>
-        );
-      })}
+      {mobileSettingGroups.map((group, groupIndex) => (
+        <div key={group.title} className={groupIndex !== 0 ? "mt-2" : ""}>
+          <div className="px-4 pt-4 pb-2">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              {group.title}
+            </h3>
+          </div>
+          <div className="flex flex-col">
+            {group.items.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`flex items-center justify-between px-4 py-4 ${
+                    index !== group.items.length - 1 ? "border-b border-border" : ""
+                  } ${item.destructive ? "text-destructive" : "text-foreground"}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className={`h-5 w-5 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} />
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </div>
+                  <ChevronRight className={`h-5 w-5 ${item.destructive ? "text-destructive/50" : "text-muted-foreground"}`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 
