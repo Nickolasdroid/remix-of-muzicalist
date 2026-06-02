@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS notification_preferences jsonb NOT NULL DEFAULT '{"reviews":true,"likes":true,"comments":true,"followers":true,"booking_requests":true,"booking_updates":true,"messages":true}'::jsonb;
