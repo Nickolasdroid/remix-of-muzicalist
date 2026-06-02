@@ -950,7 +950,7 @@ const Leaderboard = () => {
                                         <User className="h-8 w-8 text-muted-foreground" />
                                       </AvatarFallback>
                                     </Avatar>
-                                    <PlanBadge plan={artist.plan} size={isFirst ? 18 : 14} className="bottom-0 right-0" />
+                                    
                                     {/* Rank badge */}
                                     <div className={`absolute -top-2 -left-2 ${isFirst ? "h-8 w-8 text-sm md:h-9 md:w-9 md:text-base" : "h-7 w-7 text-xs md:h-8 md:w-8 md:text-sm"} rounded-full ${s.badgeBg} font-bold flex items-center justify-center shadow-lg ring-2 ring-background`}>
                                       {rank}
@@ -1011,7 +1011,7 @@ const Leaderboard = () => {
                                     <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
                                   </AvatarFallback>
                                 </Avatar>
-                                <PlanBadge plan={artist.plan} size={12} className="top-0 right-0 -mt-0.5 -mr-0.5" />
+                                
                               </div>
                               <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
                             </Link>
