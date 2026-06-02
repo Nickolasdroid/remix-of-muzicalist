@@ -212,33 +212,6 @@ const faqSections = [
 ];
 
 const HelpSupport = () => {
-  const { toast } = useToast();
-  const [reportMessage, setReportMessage] = useState("");
-  const [reportFile, setReportFile] = useState<File | null>(null);
-  const reportFileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleReportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setReportFile(e.target.files[0]);
-    }
-  };
-
-  const handleReportSubmit = () => {
-    if (!reportMessage.trim()) {
-      toast({
-        title: "Error",
-        description: "Please write your report before sending.",
-        variant: "destructive",
-      });
-      return;
-    }
-    toast({
-      title: "Report Sent!",
-      description: "Thank you for your feedback. We'll review it shortly.",
-    });
-    setReportMessage("");
-    setReportFile(null);
-  };
 
   return (
     <div className="min-h-screen bg-background">
