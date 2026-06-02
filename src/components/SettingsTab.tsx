@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete" | "help" | "about";
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
 
@@ -42,6 +43,7 @@ const SettingsTab = ({
   activeSection: controlledSection,
   onSectionChange,
 }: SettingsTabProps) => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { i18n } = useTranslation();
@@ -436,6 +438,13 @@ const SettingsTab = ({
         { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
+    {
+      title: "Support",
+      items: [
+        { id: "help", label: "Help & Support", icon: HelpCircle },
+        { id: "about", label: "About", icon: Info },
+      ],
+    },
   ];
 
   // Desktop nav items
@@ -459,6 +468,16 @@ const SettingsTab = ({
       id: "comments",
       label: "Comments",
       icon: MessageCircle
+    },
+    {
+      id: "help",
+      label: "Help & Support",
+      icon: HelpCircle
+    },
+    {
+      id: "about",
+      label: "About",
+      icon: Info
     }
   ];
 
@@ -950,6 +969,40 @@ const SettingsTab = ({
         
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
+        {activeSection === "help" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Help & Support</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Find answers and get assistance
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/help')}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Go to Help & Support
+            </Button>
+          </div>
+        )}
+        {activeSection === "about" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">About</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Learn more about Muzicalist
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/about')}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <Info className="h-4 w-4 mr-2" />
+              Go to About
+            </Button>
+          </div>
+        )}
 
         <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
           <DialogContent className="sm:max-w-md">
@@ -1393,6 +1446,46 @@ const SettingsTab = ({
 
           {/* Comments Section (desktop) */}
           {activeSection === "comments" && CommentsSectionContent}
+
+          {/* Help & Support Section (desktop) */}
+          {activeSection === "help" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">Help & Support</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Find answers and get assistance
+                </p>
+              </div>
+              <Separator />
+              <Button
+                onClick={() => navigate('/help')}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Go to Help & Support
+              </Button>
+            </div>
+          )}
+
+          {/* About Section (desktop) */}
+          {activeSection === "about" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">About</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Learn more about Muzicalist
+                </p>
+              </div>
+              <Separator />
+              <Button
+                onClick={() => navigate('/about')}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <Info className="h-4 w-4 mr-2" />
+                Go to About
+              </Button>
+            </div>
+          )}
 
 
 
