@@ -681,6 +681,7 @@ export type Database = {
           is_active: boolean
           last_name: string
           music_genres: string | null
+          notification_preferences: Json
           number_of_events: number
           pending_account_type: string | null
           phone: string
@@ -724,6 +725,7 @@ export type Database = {
           is_active?: boolean
           last_name: string
           music_genres?: string | null
+          notification_preferences?: Json
           number_of_events?: number
           pending_account_type?: string | null
           phone: string
@@ -767,6 +769,7 @@ export type Database = {
           is_active?: boolean
           last_name?: string
           music_genres?: string | null
+          notification_preferences?: Json
           number_of_events?: number
           pending_account_type?: string | null
           phone?: string
@@ -909,6 +912,7 @@ export type Database = {
           is_active: boolean
           last_name: string
           music_genres: string | null
+          notification_preferences: Json
           number_of_events: number
           pending_account_type: string | null
           phone: string

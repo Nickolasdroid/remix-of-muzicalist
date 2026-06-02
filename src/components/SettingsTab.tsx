@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +18,28 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete" | "help" | "about";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about";
+
+export type NotificationPreferenceKey =
+  | "reviews"
+  | "likes"
+  | "comments"
+  | "followers"
+  | "booking_requests"
+  | "booking_updates"
+  | "messages";
+
+export type NotificationPreferences = Record<NotificationPreferenceKey, boolean>;
+
+export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
+  reviews: true,
+  likes: true,
+  comments: true,
+  followers: true,
+  booking_requests: true,
+  booking_updates: true,
+  messages: true,
+};
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
 
@@ -63,6 +84,8 @@ const SettingsTab = ({
     newPassword: "",
     confirmPassword: ""
   });
+
+  const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -196,7 +219,7 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion, comments_allow_from, comments_allow_gifs")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
@@ -208,8 +231,27 @@ const SettingsTab = ({
       if (data && typeof (data as any).comments_allow_gifs === "boolean") {
         setCommentsAllowGifs((data as any).comments_allow_gifs);
       }
+      if (data && (data as any).notification_preferences && typeof (data as any).notification_preferences === "object") {
+        setNotificationPrefs({ ...DEFAULT_NOTIFICATION_PREFERENCES, ...((data as any).notification_preferences as Partial<NotificationPreferences>) });
+      }
     })();
   }, []);
+
+  const applyNotificationPref = async (key: NotificationPreferenceKey, next: boolean) => {
+    const prev = notificationPrefs;
+    const updated = { ...prev, [key]: next };
+    setNotificationPrefs(updated);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ notification_preferences: updated } as any)
+      .eq("id", user.id);
+    if (error) {
+      setNotificationPrefs(prev);
+      toast({ title: "Error", description: "Could not update notification preference.", variant: "destructive" });
+    }
+  };
 
   const applyCommentsAllowFrom = async (next: CommentsAllowFrom) => {
     const prev = commentsAllowFrom;
@@ -415,6 +457,7 @@ const SettingsTab = ({
       items: [
         { id: "email", label: "Email Address", icon: Mail },
         { id: "password", label: "Change Password", icon: Lock },
+        { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
       ],
     },
@@ -463,6 +506,11 @@ const SettingsTab = ({
       id: "promotion",
       label: "Promotion",
       icon: Megaphone
+    },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: Bell
     },
     {
       id: "comments",
@@ -929,6 +977,54 @@ const SettingsTab = ({
     </AlertDialog>
   );
 
+  // Shared: Notifications section content (used by both mobile and desktop)
+  const notificationItems: { key: NotificationPreferenceKey; label: string; description: string; icon: any }[] = [
+    { key: "reviews", label: "Reviews", description: "When someone leaves you a review", icon: Star },
+    { key: "likes", label: "Likes", description: "When someone likes your post, announcement, or comment", icon: Heart },
+    { key: "comments", label: "Comments", description: "When someone comments on your post or announcement", icon: MessageSquare },
+    { key: "followers", label: "New followers", description: "When someone starts following you", icon: UserPlus },
+    { key: "booking_requests", label: "Booking requests", description: "When someone sends you a new booking request", icon: Calendar },
+    { key: "booking_updates", label: "Booking updates", description: "Cancellations and status changes on bookings", icon: CalendarX },
+    { key: "messages", label: "Messages", description: "When you receive a new message", icon: MessageCircle },
+  ];
+
+  const NotificationsSectionContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Notifications</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose which notifications you want to receive
+        </p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1">
+        {notificationItems.map((item, idx) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.key}>
+              <div className="flex items-center justify-between gap-4 py-3">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <Icon className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{item.label}</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={notificationPrefs[item.key]}
+                  onCheckedChange={(v) => applyNotificationPref(item.key, v)}
+                />
+              </div>
+              {idx < notificationItems.length - 1 && <Separator />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
 
   // Mobile view
   if (isMobile) {
@@ -963,6 +1059,10 @@ const SettingsTab = ({
           </div>
         )}
         
+        {activeSection === "notifications" && (
+          <div className="p-4">{NotificationsSectionContent}</div>
+        )}
+
         {activeSection === "comments" && (
           <div className="p-4">{CommentsSectionContent}</div>
         )}
@@ -1445,6 +1545,7 @@ const SettingsTab = ({
           )}
 
           {/* Comments Section (desktop) */}
+          {activeSection === "notifications" && NotificationsSectionContent}
           {activeSection === "comments" && CommentsSectionContent}
 
           {/* Help & Support Section (desktop) */}

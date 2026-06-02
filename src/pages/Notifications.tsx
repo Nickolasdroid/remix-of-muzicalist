@@ -25,6 +25,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
+  const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
   const [deleteNotificationId, setDeleteNotificationId] = useState<string | null>(null);
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,6 +42,10 @@ const Notifications = () => {
       // Check user type
       const { data: roleData } = await supabase.from('user_roles').select('user_type').eq('user_id', session.user.id).maybeSingle();
       setUserType(roleData?.user_type || null);
+      // Load notification preferences
+      const { data: profileData } = await supabase.from('profiles').select('notification_preferences').eq('id', session.user.id).maybeSingle();
+      const prefs = (profileData as any)?.notification_preferences;
+      setNotificationPrefs(prefs && typeof prefs === 'object' ? prefs as Record<string, boolean> : {});
       loadNotifications(session.user.id);
     };
     checkAuth();
@@ -151,7 +156,25 @@ const Notifications = () => {
     const route = getNotificationRoute(notification);
     if (route) navigate(route);
   };
-  const unreadCount = notifications.filter(n => !n.read_at).length;
+  const notificationTypeToPrefKey = (n: Notification): string | null => {
+    switch (n.type) {
+      case 'review': return 'reviews';
+      case 'like': return 'likes';
+      case 'comment': return 'comments';
+      case 'follow': return 'followers';
+      case 'booking_request': return 'booking_requests';
+      case 'booking_update': return 'booking_updates';
+      case 'message': return 'messages';
+      default: return null;
+    }
+  };
+  const visibleNotifications = notifications.filter(n => {
+    if (!notificationPrefs) return true;
+    const key = notificationTypeToPrefKey(n);
+    if (!key) return true;
+    return notificationPrefs[key] !== false;
+  });
+  const unreadCount = visibleNotifications.filter(n => !n.read_at).length;
   return <div className="min-h-screen bg-background">
       <Navigation />
       
@@ -184,14 +207,14 @@ const Notifications = () => {
                     </div>
                   </div>
                 </Card>)}
-            </div> : notifications.length === 0 ? <Card className="p-12 text-center">
+            </div> : visibleNotifications.length === 0 ? <Card className="p-12 text-center">
               <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
               {userType !== 'user' && <p className="text-muted-foreground">
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>}
             </Card> : <div>
-              {notifications.map(notification => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
+              {visibleNotifications.map(notification => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
                       {getNotificationIcon(notification.type)}

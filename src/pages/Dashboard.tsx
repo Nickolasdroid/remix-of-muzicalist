@@ -83,6 +83,7 @@ const Dashboard = () => {
     theme: "Theme",
     promotion: "Promotion",
     comments: "Comments",
+    notifications: "Notifications",
     report: "Report an Issue",
     logout: "Sign Out",
     delete: "Delete Account",
