@@ -415,6 +415,7 @@ const SettingsTab = ({
       items: [
         { id: "email", label: "Email Address", icon: Mail },
         { id: "password", label: "Change Password", icon: Lock },
+        { id: "comments", label: "Comments", icon: MessageCircle },
       ],
     },
     {
@@ -428,14 +429,6 @@ const SettingsTab = ({
       title: "Who can interact with you",
       items: [
         { id: "promotion", label: "Promotion", icon: Megaphone },
-        { id: "comments", label: "Comments", icon: MessageCircle },
-      ],
-    },
-    {
-      title: "Login",
-      items: [
-        { id: "logout", label: "Sign Out", icon: LogOut },
-        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
     {
@@ -443,6 +436,13 @@ const SettingsTab = ({
       items: [
         { id: "help", label: "Help & Support", icon: HelpCircle },
         { id: "about", label: "About", icon: Info },
+      ],
+    },
+    {
+      title: "Login",
+      items: [
+        { id: "logout", label: "Sign Out", icon: LogOut },
+        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
   ];
@@ -487,9 +487,9 @@ const SettingsTab = ({
       {mobileSettingGroups.map((group, groupIndex) => (
         <div
           key={group.title}
-          className={groupIndex !== 0 ? "mt-2 border-t border-border" : ""}
+          className={groupIndex !== 0 ? "border-t border-border" : ""}
         >
-          <div className="px-4 pt-4 pb-2">
+          <div className="px-4 pt-3 pb-1">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {group.title}
             </h3>
@@ -501,7 +501,7 @@ const SettingsTab = ({
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`flex items-center justify-between px-4 py-4 ${
+                  className={`flex items-center justify-between px-4 py-3 ${
                     item.destructive ? "text-destructive" : "text-foreground"
                   }`}
                 >
