@@ -42,6 +42,10 @@ const Notifications = () => {
       // Check user type
       const { data: roleData } = await supabase.from('user_roles').select('user_type').eq('user_id', session.user.id).maybeSingle();
       setUserType(roleData?.user_type || null);
+      // Load notification preferences
+      const { data: profileData } = await supabase.from('profiles').select('notification_preferences').eq('id', session.user.id).maybeSingle();
+      const prefs = (profileData as any)?.notification_preferences;
+      setNotificationPrefs(prefs && typeof prefs === 'object' ? prefs as Record<string, boolean> : {});
       loadNotifications(session.user.id);
     };
     checkAuth();
