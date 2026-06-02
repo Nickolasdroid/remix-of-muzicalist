@@ -457,6 +457,7 @@ const SettingsTab = ({
       items: [
         { id: "email", label: "Email Address", icon: Mail },
         { id: "password", label: "Change Password", icon: Lock },
+        { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
       ],
     },
