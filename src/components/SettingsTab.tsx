@@ -1447,6 +1447,46 @@ const SettingsTab = ({
           {/* Comments Section (desktop) */}
           {activeSection === "comments" && CommentsSectionContent}
 
+          {/* Help & Support Section (desktop) */}
+          {activeSection === "help" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">Help & Support</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Find answers and get assistance
+                </p>
+              </div>
+              <Separator />
+              <Button
+                onClick={() => navigate('/help')}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Go to Help & Support
+              </Button>
+            </div>
+          )}
+
+          {/* About Section (desktop) */}
+          {activeSection === "about" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">About</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Learn more about Muzicalist
+                </p>
+              </div>
+              <Separator />
+              <Button
+                onClick={() => navigate('/about')}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <Info className="h-4 w-4 mr-2" />
+                Go to About
+              </Button>
+            </div>
+          )}
+
 
 
 
