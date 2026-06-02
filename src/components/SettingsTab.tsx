@@ -537,122 +537,120 @@ const SettingsTab = ({
     </div>
   );
 
-  // Mobile: Password section
+  // Mobile: Password section (Instagram-style)
+  const handleInstagramStyleChangePassword = async () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      toast({ title: "Error", description: "Completează toate câmpurile.", variant: "destructive" });
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      toast({ title: "Error", description: "Parola trebuie să aibă cel puțin 6 caractere.", variant: "destructive" });
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({ title: "Error", description: "Parolele nu coincid.", variant: "destructive" });
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: passwordData.currentPassword,
+      });
+      if (verifyError) {
+        toast({ title: "Error", description: "Parola actuală este incorectă.", variant: "destructive" });
+        setIsChangingPassword(false);
+        return;
+      }
+      const { error } = await supabase.auth.updateUser({ password: passwordData.newPassword });
+      if (error) throw error;
+      toast({ title: "Succes", description: "Parola a fost schimbată." });
+      resetPasswordForm();
+      setActiveSection("main");
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Eroare la schimbarea parolei.", variant: "destructive" });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   const MobilePasswordSection = () => (
-    <div className="p-4 space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold">Change Password</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Update your password to keep your account secure
+    <div className="px-4 pt-2 pb-8 space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Schimbă parola</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Parola trebuie să conțină cel puțin 6 caractere și să includă o combinație de cifre, litere și caractere speciale (!$@%).
         </p>
       </div>
 
-      {/* Step 1: Verify current password */}
-      <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-green-500/50 bg-green-500/10' : 'border-accent/30'}`}>
-        <div className="flex items-center justify-between mb-3">
-          <Label className="flex items-center gap-2 text-sm">
-            {currentPasswordVerified ? <CheckCircle className="h-4 w-4 text-green-500" /> : <ShieldCheck className="h-4 w-4 text-muted-foreground" />}
-            Step 1: Verify Current Password
-          </Label>
-          {currentPasswordVerified && <span className="text-xs text-green-500 font-medium">Verified</span>}
-        </div>
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Input 
-              type={showCurrentPassword ? "text" : "password"} 
-              value={passwordData.currentPassword} 
-              onChange={e => {
-                setPasswordData({ ...passwordData, currentPassword: e.target.value });
-                if (currentPasswordVerified) setCurrentPasswordVerified(false);
-              }} 
-              placeholder="Enter current password" 
-              disabled={currentPasswordVerified} 
-              className={`pr-10 ${currentPasswordVerified ? 'bg-muted/50' : ''}`} 
-            />
-            <Button 
-              type="button" 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" 
-              onClick={() => setShowCurrentPassword(!showCurrentPassword)} 
-              disabled={currentPasswordVerified}
-            >
-              {showCurrentPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-            </Button>
-          </div>
-          <Button 
-            onClick={handleVerifyCurrentPassword} 
-            disabled={isVerifying || !passwordData.currentPassword || currentPasswordVerified} 
-            variant={currentPasswordVerified ? "outline" : "default"} 
-            className={currentPasswordVerified ? '' : 'bg-accent text-accent-foreground'}
+      <div className="space-y-3">
+        <div className="relative">
+          <Input
+            type={showCurrentPassword ? "text" : "password"}
+            value={passwordData.currentPassword}
+            onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+            placeholder="Parola actuală"
+            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
           >
-            {isVerifying ? "..." : currentPasswordVerified ? "✓" : "Verify"}
-          </Button>
+            {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <Input
+            type={showNewPassword ? "text" : "password"}
+            value={passwordData.newPassword}
+            onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+            placeholder="Parola nouă"
+            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+          />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+          >
+            {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <Input
+            type={showConfirmPassword ? "text" : "password"}
+            value={passwordData.confirmPassword}
+            onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+            placeholder="Reintrodu parola nouă"
+            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+          >
+            {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
         </div>
       </div>
 
-      {/* Step 2: Set new password */}
-      <div className={`p-4 rounded-lg border-2 ${currentPasswordVerified ? 'border-accent/30' : 'border-muted/30 opacity-50'}`}>
-        <Label className="flex items-center gap-2 mb-3 text-sm">
-          <Lock className="h-4 w-4 text-muted-foreground" />
-          Step 2: Set New Password
-        </Label>
-        <div className="space-y-3">
-          <div>
-            <Label className="text-sm text-muted-foreground">New Password</Label>
-            <div className="relative mt-1">
-              <Input 
-                type={showNewPassword ? "text" : "password"} 
-                value={passwordData.newPassword} 
-                onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} 
-                placeholder="Enter new password" 
-                disabled={!currentPasswordVerified} 
-                className="pr-10" 
-              />
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" 
-                onClick={() => setShowNewPassword(!showNewPassword)} 
-                disabled={!currentPasswordVerified}
-              >
-                {showNewPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-              </Button>
-            </div>
-          </div>
-          <div>
-            <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
-            <div className="relative mt-1">
-              <Input 
-                type={showConfirmPassword ? "text" : "password"} 
-                value={passwordData.confirmPassword} 
-                onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} 
-                placeholder="Confirm new password" 
-                disabled={!currentPasswordVerified} 
-                className="pr-10" 
-              />
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" 
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                disabled={!currentPasswordVerified}
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-              </Button>
-            </div>
-          </div>
-          <Button 
-            onClick={handleChangePassword} 
-            disabled={isChangingPassword || !currentPasswordVerified || !passwordData.newPassword || !passwordData.confirmPassword} 
-            className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-          >
-            {isChangingPassword ? "Updating..." : "Update Password"}
-          </Button>
-        </div>
-      </div>
+      <button
+        type="button"
+        onClick={() => navigate("/reset-password")}
+        className="text-sm font-semibold text-[hsl(210_100%_60%)] hover:underline"
+      >
+        Ai uitat parola?
+      </button>
+
+      <Button
+        onClick={handleInstagramStyleChangePassword}
+        disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+        className="w-full h-12 rounded-xl bg-[hsl(210_100%_55%)] text-white hover:bg-[hsl(210_100%_50%)] font-semibold disabled:opacity-40"
+      >
+        {isChangingPassword ? "Se actualizează..." : "Schimbă parola"}
+      </Button>
     </div>
   );
 
