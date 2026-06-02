@@ -483,24 +483,27 @@ const SettingsTab = ({
 
   // Mobile: Main list view (Instagram-style grouped sections)
   const MobileMainList = () => (
-    <div className="flex flex-col">
+    <div className="flex flex-col -mx-4">
       {mobileSettingGroups.map((group, groupIndex) => (
-        <div key={group.title} className={groupIndex !== 0 ? "mt-2" : ""}>
+        <div
+          key={group.title}
+          className={groupIndex !== 0 ? "mt-2 border-t border-border" : ""}
+        >
           <div className="px-4 pt-4 pb-2">
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {group.title}
             </h3>
           </div>
           <div className="flex flex-col">
-            {group.items.map((item, index) => {
+            {group.items.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
                   className={`flex items-center justify-between px-4 py-4 ${
-                    index !== group.items.length - 1 ? "border-b border-border" : ""
-                  } ${item.destructive ? "text-destructive" : "text-foreground"}`}
+                    item.destructive ? "text-destructive" : "text-foreground"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`h-5 w-5 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} />
