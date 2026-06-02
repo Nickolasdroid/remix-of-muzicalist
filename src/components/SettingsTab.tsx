@@ -577,9 +577,9 @@ const SettingsTab = ({
   const MobilePasswordSection = () => (
     <div className="px-4 pt-2 pb-8 space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Schimbă parola</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Change Password</h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Parola trebuie să conțină cel puțin 6 caractere și să includă o combinație de cifre, litere și caractere speciale (!$@%).
+          Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
         </p>
       </div>
 
@@ -589,15 +589,15 @@ const SettingsTab = ({
             type={showCurrentPassword ? "text" : "password"}
             value={passwordData.currentPassword}
             onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-            placeholder="Parola actuală"
-            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+            placeholder="Current password"
+            className="h-12 rounded-lg pr-12"
           />
           <button
             type="button"
             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
 
@@ -606,15 +606,15 @@ const SettingsTab = ({
             type={showNewPassword ? "text" : "password"}
             value={passwordData.newPassword}
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-            placeholder="Parola nouă"
-            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+            placeholder="New password"
+            className="h-12 rounded-lg pr-12"
           />
           <button
             type="button"
             onClick={() => setShowNewPassword(!showNewPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
 
@@ -623,15 +623,15 @@ const SettingsTab = ({
             type={showConfirmPassword ? "text" : "password"}
             value={passwordData.confirmPassword}
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-            placeholder="Reintrodu parola nouă"
-            className="h-14 rounded-2xl bg-transparent border-border px-4 pr-12 text-base placeholder:text-muted-foreground"
+            placeholder="Re-enter new password"
+            className="h-12 rounded-lg pr-12"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
       </div>
@@ -639,17 +639,17 @@ const SettingsTab = ({
       <button
         type="button"
         onClick={() => navigate("/reset-password")}
-        className="text-sm font-semibold text-[hsl(210_100%_60%)] hover:underline"
+        className="text-sm font-semibold text-accent hover:underline"
       >
-        Ai uitat parola?
+        Forgot password?
       </button>
 
       <Button
         onClick={handleInstagramStyleChangePassword}
         disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
-        className="w-full h-12 rounded-xl bg-[hsl(210_100%_55%)] text-white hover:bg-[hsl(210_100%_50%)] font-semibold disabled:opacity-40"
+        className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
       >
-        {isChangingPassword ? "Se actualizează..." : "Schimbă parola"}
+        {isChangingPassword ? "Updating..." : "Change password"}
       </Button>
     </div>
   );
