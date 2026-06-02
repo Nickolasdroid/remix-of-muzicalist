@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "report" | "logout" | "delete" | "help" | "about";
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
 
@@ -43,6 +43,7 @@ const SettingsTab = ({
   activeSection: controlledSection,
   onSectionChange,
 }: SettingsTabProps) => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { i18n } = useTranslation();
@@ -437,6 +438,13 @@ const SettingsTab = ({
         { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
+    {
+      title: "Support",
+      items: [
+        { id: "help", label: "Help & Support", icon: HelpCircle },
+        { id: "about", label: "About", icon: Info },
+      ],
+    },
   ];
 
   // Desktop nav items
@@ -460,6 +468,16 @@ const SettingsTab = ({
       id: "comments",
       label: "Comments",
       icon: MessageCircle
+    },
+    {
+      id: "help",
+      label: "Help & Support",
+      icon: HelpCircle
+    },
+    {
+      id: "about",
+      label: "About",
+      icon: Info
     }
   ];
 
