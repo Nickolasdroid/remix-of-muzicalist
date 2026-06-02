@@ -508,6 +508,11 @@ const SettingsTab = ({
       icon: Megaphone
     },
     {
+      id: "notifications",
+      label: "Notifications",
+      icon: Bell
+    },
+    {
       id: "comments",
       label: "Comments",
       icon: MessageCircle
