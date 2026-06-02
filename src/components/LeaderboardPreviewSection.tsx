@@ -80,7 +80,7 @@ const LeaderboardPreviewSection = () => {
           <div className="flex items-center justify-start gap-2 px-4 pt-4">
             <Crown className="h-5 w-5 text-accent fill-accent" />
             <span className="text-sm md:text-base font-bold tracking-wider text-accent uppercase">
-              Top 3 Artists
+              Top 10 Artists
             </span>
           </div>
 
