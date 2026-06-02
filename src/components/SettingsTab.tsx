@@ -1059,6 +1059,10 @@ const SettingsTab = ({
           </div>
         )}
         
+        {activeSection === "notifications" && (
+          <div className="p-4">{NotificationsSectionContent}</div>
+        )}
+
         {activeSection === "comments" && (
           <div className="p-4">{CommentsSectionContent}</div>
         )}
