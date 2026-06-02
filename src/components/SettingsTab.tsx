@@ -1545,6 +1545,7 @@ const SettingsTab = ({
           )}
 
           {/* Comments Section (desktop) */}
+          {activeSection === "notifications" && NotificationsSectionContent}
           {activeSection === "comments" && CommentsSectionContent}
 
           {/* Help & Support Section (desktop) */}
