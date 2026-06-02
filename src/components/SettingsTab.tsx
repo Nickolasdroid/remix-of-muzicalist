@@ -1533,6 +1533,7 @@ const SettingsTab = ({
           {effectiveSection === "theme" && ThemeContent}
           {effectiveSection === "promotion" && PromotionContent}
           {effectiveSection === "help" && HelpContent}
+          {effectiveSection === "report" && ReportContent}
           {effectiveSection === "about" && AboutContent}
           {effectiveSection === "logout" && LogoutContent}
           {effectiveSection === "delete" && DeleteContent}
