@@ -604,28 +604,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     <span className="font-medium">Admin Dashboard</span>
                   </Link>
                 )}
-                <Link
-                  to="/help"
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/help')
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                  }`}
-                >
-                  <HelpCircle className="h-5 w-5" />
-                  <span className="font-medium">Help & Support</span>
-                </Link>
-                <Link
-                  to="/about"
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/about')
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                  }`}
-                >
-                  <Info className="h-5 w-5" />
-                  <span className="font-medium">About</span>
-                </Link>
                 
                 {user && (
                   <>
