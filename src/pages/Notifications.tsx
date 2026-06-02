@@ -156,7 +156,25 @@ const Notifications = () => {
     const route = getNotificationRoute(notification);
     if (route) navigate(route);
   };
-  const unreadCount = notifications.filter(n => !n.read_at).length;
+  const notificationTypeToPrefKey = (n: Notification): string | null => {
+    switch (n.type) {
+      case 'review': return 'reviews';
+      case 'like': return 'likes';
+      case 'comment': return 'comments';
+      case 'follow': return 'followers';
+      case 'booking_request': return 'booking_requests';
+      case 'booking_update': return 'booking_updates';
+      case 'message': return 'messages';
+      default: return null;
+    }
+  };
+  const visibleNotifications = notifications.filter(n => {
+    if (!notificationPrefs) return true;
+    const key = notificationTypeToPrefKey(n);
+    if (!key) return true;
+    return notificationPrefs[key] !== false;
+  });
+  const unreadCount = visibleNotifications.filter(n => !n.read_at).length;
   return <div className="min-h-screen bg-background">
       <Navigation />
       
