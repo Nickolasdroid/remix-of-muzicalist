@@ -219,7 +219,7 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion, comments_allow_from, comments_allow_gifs")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
@@ -231,8 +231,27 @@ const SettingsTab = ({
       if (data && typeof (data as any).comments_allow_gifs === "boolean") {
         setCommentsAllowGifs((data as any).comments_allow_gifs);
       }
+      if (data && (data as any).notification_preferences && typeof (data as any).notification_preferences === "object") {
+        setNotificationPrefs({ ...DEFAULT_NOTIFICATION_PREFERENCES, ...((data as any).notification_preferences as Partial<NotificationPreferences>) });
+      }
     })();
   }, []);
+
+  const applyNotificationPref = async (key: NotificationPreferenceKey, next: boolean) => {
+    const prev = notificationPrefs;
+    const updated = { ...prev, [key]: next };
+    setNotificationPrefs(updated);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ notification_preferences: updated } as any)
+      .eq("id", user.id);
+    if (error) {
+      setNotificationPrefs(prev);
+      toast({ title: "Error", description: "Could not update notification preference.", variant: "destructive" });
+    }
+  };
 
   const applyCommentsAllowFrom = async (next: CommentsAllowFrom) => {
     const prev = commentsAllowFrom;
