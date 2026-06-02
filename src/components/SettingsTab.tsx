@@ -977,6 +977,54 @@ const SettingsTab = ({
     </AlertDialog>
   );
 
+  // Shared: Notifications section content (used by both mobile and desktop)
+  const notificationItems: { key: NotificationPreferenceKey; label: string; description: string; icon: any }[] = [
+    { key: "reviews", label: "Reviews", description: "When someone leaves you a review", icon: Star },
+    { key: "likes", label: "Likes", description: "When someone likes your post, announcement, or comment", icon: Heart },
+    { key: "comments", label: "Comments", description: "When someone comments on your post or announcement", icon: MessageSquare },
+    { key: "followers", label: "New followers", description: "When someone starts following you", icon: UserPlus },
+    { key: "booking_requests", label: "Booking requests", description: "When someone sends you a new booking request", icon: Calendar },
+    { key: "booking_updates", label: "Booking updates", description: "Cancellations and status changes on bookings", icon: CalendarX },
+    { key: "messages", label: "Messages", description: "When you receive a new message", icon: MessageCircle },
+  ];
+
+  const NotificationsSectionContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Notifications</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Choose which notifications you want to receive
+        </p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1">
+        {notificationItems.map((item, idx) => {
+          const Icon = item.icon;
+          return (
+            <div key={item.key}>
+              <div className="flex items-center justify-between gap-4 py-3">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <Icon className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{item.label}</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={notificationPrefs[item.key]}
+                  onCheckedChange={(v) => applyNotificationPref(item.key, v)}
+                />
+              </div>
+              {idx < notificationItems.length - 1 && <Separator />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
 
   // Mobile view
   if (isMobile) {
