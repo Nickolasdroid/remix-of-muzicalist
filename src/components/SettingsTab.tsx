@@ -478,6 +478,7 @@ const SettingsTab = ({
       title: "Support",
       items: [
         { id: "help", label: "Help & Support", icon: HelpCircle },
+        { id: "report", label: "Report an Issue", icon: Flag },
         { id: "about", label: "About", icon: Info },
       ],
     },
