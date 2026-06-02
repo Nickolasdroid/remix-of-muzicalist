@@ -847,7 +847,7 @@ const SettingsTab = ({
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-foreground">Comments</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-base text-muted-foreground mt-1">
           Choose who can comment on your posts and announcements
         </p>
       </div>
@@ -855,7 +855,7 @@ const SettingsTab = ({
       <Separator />
 
       <div className="space-y-3">
-        <Label className="text-sm font-medium">Allow comments from</Label>
+        <Label className="text-base font-medium">Allow comments from</Label>
         <RadioGroup
           value={commentsAllowFrom}
           onValueChange={(v) => handleCommentsAllowFromChange(v as CommentsAllowFrom)}
@@ -869,8 +869,8 @@ const SettingsTab = ({
           >
             <RadioGroupItem value="everyone" id="comments-everyone" className="mt-0.5" />
             <div className="flex-1">
-              <div className="text-sm font-medium">Everyone</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Anyone on Muzicalist can comment</div>
+              <div className="text-base font-medium">Everyone</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Anyone on Muzicalist can comment</div>
             </div>
           </label>
 
@@ -882,8 +882,8 @@ const SettingsTab = ({
           >
             <RadioGroupItem value="following" id="comments-following" className="mt-0.5" />
             <div className="flex-1">
-              <div className="text-sm font-medium">People you follow</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Only accounts you follow can comment</div>
+              <div className="text-base font-medium">People you follow</div>
+              <div className="text-sm text-muted-foreground mt-0.5">Only accounts you follow can comment</div>
             </div>
           </label>
 
@@ -895,8 +895,8 @@ const SettingsTab = ({
           >
             <RadioGroupItem value="off" id="comments-off" className="mt-0.5" />
             <div className="flex-1">
-              <div className="text-sm font-medium">Off</div>
-              <div className="text-xs text-muted-foreground mt-0.5">No one can comment on your content</div>
+              <div className="text-base font-medium">Off</div>
+              <div className="text-sm text-muted-foreground mt-0.5">No one can comment on your content</div>
             </div>
           </label>
         </RadioGroup>
@@ -906,8 +906,8 @@ const SettingsTab = ({
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1">
-          <Label className="text-sm font-medium">Allow GIF comments</Label>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <Label className="text-base font-medium">Allow GIF comments</Label>
+          <p className="text-base text-muted-foreground mt-0.5">
             People can add GIFs to comments on your posts and announcements
           </p>
         </div>
@@ -947,8 +947,8 @@ const SettingsTab = ({
         {activeSection === "promotion" && (
           <div className="p-4 space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">Promotion</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h2 className="text-xl font-semibold">Promotion</h2>
+              <p className="text-base text-muted-foreground mt-1">
                 Allow Muzicalist to feature your profile on its channels
               </p>
             </div>
@@ -958,7 +958,7 @@ const SettingsTab = ({
                 onClick={() => setShowPromotionInfo(true)}
                 className="text-left flex-1"
               >
-                <Label className="text-sm font-medium cursor-pointer">
+                <Label className="text-base font-medium cursor-pointer">
                   Allow promotion on Muzicalist channels
                 </Label>
               </button>
@@ -976,16 +976,16 @@ const SettingsTab = ({
         {activeSection === "help" && (
           <div className="p-4 space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">Help & Support</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h2 className="text-xl font-semibold">Help & Support</h2>
+              <p className="text-base text-muted-foreground mt-1">
                 Find answers and get assistance
               </p>
             </div>
             <Button
               onClick={() => navigate('/help')}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              <HelpCircle className="h-4 w-4 mr-2" />
+              <HelpCircle className="h-5 w-5 mr-2" />
               Go to Help & Support
             </Button>
           </div>
@@ -993,16 +993,16 @@ const SettingsTab = ({
         {activeSection === "about" && (
           <div className="p-4 space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">About</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h2 className="text-xl font-semibold">About</h2>
+              <p className="text-base text-muted-foreground mt-1">
                 Learn more about Muzicalist
               </p>
             </div>
             <Button
               onClick={() => navigate('/about')}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              <Info className="h-4 w-4 mr-2" />
+              <Info className="h-5 w-5 mr-2" />
               Go to About
             </Button>
           </div>
