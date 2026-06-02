@@ -576,12 +576,11 @@ const SettingsTab = ({
 
   const MobilePasswordSection = () => (
     <div className="px-4 pt-2 pb-8 space-y-6">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Change Password</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
-        </p>
-      </div>
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
+      </p>
+
+
 
       <div className="space-y-3">
         <div className="relative">
