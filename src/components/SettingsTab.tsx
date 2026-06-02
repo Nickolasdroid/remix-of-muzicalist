@@ -489,8 +489,8 @@ const SettingsTab = ({
           key={group.title}
           className={groupIndex !== 0 ? "border-t border-border" : ""}
         >
-          <div className="px-4 pt-3 pb-1">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          <div className="px-4 pt-4 pb-2">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
               {group.title}
             </h3>
           </div>
@@ -501,15 +501,15 @@ const SettingsTab = ({
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`flex items-center justify-between px-4 py-3 ${
+                  className={`flex items-center justify-between px-4 py-4 ${
                     item.destructive ? "text-destructive" : "text-foreground"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`h-5 w-5 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <Icon className={`h-6 w-6 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} />
+                    <span className="text-base font-medium">{item.label}</span>
                   </div>
-                  <ChevronRight className={`h-5 w-5 ${item.destructive ? "text-destructive/50" : "text-muted-foreground"}`} />
+                  <ChevronRight className={`h-6 w-6 ${item.destructive ? "text-destructive/50" : "text-muted-foreground"}`} />
                 </button>
               );
             })}
@@ -523,17 +523,17 @@ const SettingsTab = ({
   const MobileEmailSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Email Address</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="text-xl font-semibold">Email Address</h2>
+        <p className="text-base text-muted-foreground mt-1">
           Your email address is used for login and notifications
         </p>
       </div>
       <Input 
         value={formData.email} 
         disabled 
-        className="bg-muted/50 text-sm" 
+        className="bg-muted/50" 
       />
-      <p className="text-sm text-muted-foreground">Email cannot be changed</p>
+      <p className="text-base text-muted-foreground">Email cannot be changed</p>
     </div>
   );
 
@@ -756,8 +756,8 @@ const SettingsTab = ({
   const MobileThemeSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Theme</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="text-xl font-semibold">Theme</h2>
+        <p className="text-base text-muted-foreground mt-1">
           Choose between dark and light appearance
         </p>
       </div>
@@ -766,18 +766,18 @@ const SettingsTab = ({
           type="button"
           variant={theme === "dark" ? "default" : "outline"}
           onClick={() => toggleTheme("dark")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className="h-12 rounded-lg justify-center gap-2 text-base"
         >
-          <Moon className="h-4 w-4" />
+          <Moon className="h-5 w-5" />
           Dark
         </Button>
         <Button
           type="button"
           variant={theme === "light" ? "default" : "outline"}
           onClick={() => toggleTheme("light")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className="h-12 rounded-lg justify-center gap-2 text-base"
         >
-          <Sun className="h-4 w-4" />
+          <Sun className="h-5 w-5" />
           Light
         </Button>
       </div>
@@ -789,13 +789,13 @@ const SettingsTab = ({
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Sign Out</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="text-xl font-semibold">Sign Out</h2>
+        <p className="text-base text-muted-foreground mt-1">
           Sign out of your account on this device
         </p>
       </div>
-      <Button variant="outline" onClick={handleLogout} className="w-full">
-        <LogOut className="h-4 w-4 mr-2" />
+      <Button variant="outline" onClick={handleLogout} className="w-full h-12 text-base">
+        <LogOut className="h-5 w-5 mr-2" />
         Sign Out
       </Button>
     </div>
