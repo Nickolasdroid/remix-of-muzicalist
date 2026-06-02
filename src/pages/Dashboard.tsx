@@ -86,6 +86,8 @@ const Dashboard = () => {
     report: "Report an Issue",
     logout: "Sign Out",
     delete: "Delete Account",
+    help: "Help & Support",
+    about: "About",
   };
 
   const getMobileTitle = () => {

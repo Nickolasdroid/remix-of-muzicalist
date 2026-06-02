@@ -969,6 +969,40 @@ const SettingsTab = ({
         
         {activeSection === "logout" && <MobileLogoutSection />}
         {activeSection === "delete" && <MobileDeleteSection />}
+        {activeSection === "help" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Help & Support</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Find answers and get assistance
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/help')}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Go to Help & Support
+            </Button>
+          </div>
+        )}
+        {activeSection === "about" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">About</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Learn more about Muzicalist
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/about')}
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              <Info className="h-4 w-4 mr-2" />
+              Go to About
+            </Button>
+          </div>
+        )}
 
         <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
           <DialogContent className="sm:max-w-md">
