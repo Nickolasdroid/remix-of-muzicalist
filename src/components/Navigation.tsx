@@ -385,35 +385,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   </Link>
                 )}
 
-                {/* Help & Support */}
-                <Link
-                  to="/help"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                    isActive('/help') ? 'text-accent' : 'text-foreground'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <HelpCircle className={`h-5 w-5 ${isActive('/help') ? 'text-accent' : 'text-muted-foreground'}`} />
-                    <span className="text-sm font-semibold">Help & Support</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </Link>
-
-                {/* About */}
-                <Link
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                    isActive('/about') ? 'text-accent' : 'text-foreground'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Info className={`h-5 w-5 ${isActive('/about') ? 'text-accent' : 'text-muted-foreground'}`} />
-                    <span className="text-sm font-semibold">About</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </Link>
 
                 {/* Logout */}
                 <button
