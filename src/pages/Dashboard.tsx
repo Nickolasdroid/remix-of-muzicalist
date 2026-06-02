@@ -78,7 +78,6 @@ const Dashboard = () => {
     account: "Account",
     system: "System",
     email: "Email Address",
-    password: "Change Password",
     language: "Language",
     theme: "Theme",
     promotion: "Promotion",
