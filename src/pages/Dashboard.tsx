@@ -3143,14 +3143,14 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Date Details Form */}
-                            <div className="w-full lg:min-w-0 lg:w-auto">
-                              {selectedDate ? (() => {
+                            {(() => {
+                              const detailsNode = selectedDate ? (() => {
                                 const isPastDate = selectedDate < new Date(new Date().setHours(0, 0, 0, 0));
                                 const pastEvent = isPastDate ? getEventForDate(selectedDate) : null;
                                 
                                 if (isPastDate) {
                                   // Read-only view for past dates
-                                  return <Card className="p-4 h-full">
+                                  return <div>
                                     <h4 className="font-semibold text-foreground mb-3">
                                       {selectedDate.toLocaleDateString('en-US', {
                                         weekday: 'long',
@@ -3185,11 +3185,11 @@ const Dashboard = () => {
                                     ) : (
                                       <p className="text-sm text-muted-foreground">No events recorded for this date.</p>
                                     )}
-                                  </Card>;
+                                  </div>;
                                 }
                                 
                                 // Editable view for today and future dates
-                                return <Card className="p-4 h-full">
+                                return <div>
                                   <h4 className="font-semibold text-foreground mb-3">
                                     {selectedDate.toLocaleDateString('en-US', {
                           weekday: 'long',
@@ -3287,11 +3287,38 @@ const Dashboard = () => {
                                       </Button>}
                                     </div>
                                   </div>
-                                </Card>;
-                              })() : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
-                                  <p className="text-sm text-center">Select a date to set availability</p>
-                                </div>}
-                            </div>
+                                </div>;
+                              })() : null;
+
+                              if (isMobile) {
+                                return (
+                                  <Dialog open={!!selectedDate} onOpenChange={(open) => {
+                                    if (!open) {
+                                      setSelectedDate(undefined);
+                                      setUserChangedStatus(false);
+                                      setEventStatus('available');
+                                      setEventNotes("");
+                                    }
+                                  }}>
+                                    <DialogContent className="max-w-md rounded-lg p-4">
+                                      <DialogHeader className="sr-only">
+                                        <DialogTitle>Date details</DialogTitle>
+                                      </DialogHeader>
+                                      {detailsNode}
+                                    </DialogContent>
+                                  </Dialog>
+                                );
+                              }
+
+                              return (
+                                <div className="w-full lg:min-w-0 lg:w-auto">
+                                  {detailsNode ? <Card className="p-4 h-full">{detailsNode}</Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                    <p className="text-sm text-center">Select a date to set availability</p>
+                                  </div>}
+                                </div>
+                              );
+                            })()}
+
                             
                             {/* Legend - desktop only */}
                             <div className="hidden lg:block p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-48">
