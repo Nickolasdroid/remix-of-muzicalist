@@ -197,8 +197,8 @@ const Notifications = () => {
             </Button>
           </div>}
 
-          {loading ? <div className="space-y-4">
-              {[1, 2, 3].map(i => <Card key={i} className="p-4 animate-pulse">
+          {loading ? <div className="space-y-1">
+              {[1, 2, 3].map(i => <Card key={i} className="p-3 animate-pulse">
                   <div className="flex items-start gap-4">
                     <div className="h-10 w-10 rounded-full bg-muted" />
                     <div className="flex-1 space-y-2">
@@ -214,7 +214,7 @@ const Notifications = () => {
                 You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
               </p>}
             </Card> : <div>
-              {visibleNotifications.map(notification => <div key={notification.id} className={`p-4 cursor-pointer transition-colors hover:bg-accent/5 min-h-[100px] ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
+              {visibleNotifications.map(notification => <div key={notification.id} className={`py-2 px-4 cursor-pointer transition-colors hover:bg-accent/5 border-b border-border/40 last:border-b-0 ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1">
                       {getNotificationIcon(notification.type)}
