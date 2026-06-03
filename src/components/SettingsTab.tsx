@@ -841,10 +841,28 @@ const SettingsTab = ({
           Sign out of your account on this device
         </p>
       </div>
-      <Button variant="outline" onClick={handleLogout} className="w-full">
-        <LogOut className="h-4 w-4 mr-2" />
-        Sign Out
-      </Button>
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogTrigger asChild>
+          <Button variant="outline" className="w-full">
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to sign out of your account?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowLogoutConfirm(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Sign Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 
