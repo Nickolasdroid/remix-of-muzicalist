@@ -222,16 +222,18 @@ const Notifications = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className={`font-medium line-clamp-1 ${!notification.read_at ? 'text-foreground' : 'text-muted-foreground'}`}>
-                            {notification.title}
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {formatDistanceToNow(new Date(notification.created_at), {
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={`font-medium line-clamp-1 ${!notification.read_at ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
+                              {formatDistanceToNow(new Date(notification.created_at), {
                         addSuffix: true
                       })}
+                            </p>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {notification.message}
                           </p>
                         </div>
                         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={e => {
