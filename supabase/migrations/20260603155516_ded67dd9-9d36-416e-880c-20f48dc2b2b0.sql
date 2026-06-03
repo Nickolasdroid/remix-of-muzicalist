@@ -1,0 +1,2 @@
+REVOKE UPDATE (plan, subscription_status, billing, stripe_customer_id, stripe_subscription_id, subscription_current_period_end) ON public.profiles FROM authenticated;
+REVOKE UPDATE (plan, subscription_status, billing, stripe_customer_id, stripe_subscription_id, subscription_current_period_end) ON public.profiles FROM anon;
