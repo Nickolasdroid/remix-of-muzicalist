@@ -99,6 +99,7 @@ const SettingsTab = ({
   const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
   const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
   const [showDisableCommentsConfirm, setShowDisableCommentsConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [pendingLanguage, setPendingLanguage] = useState<{ code: string; label: string } | null>(null);
   const [languagePopoverOpen, setLanguagePopoverOpen] = useState(false);
   const [languageSearch, setLanguageSearch] = useState("");
