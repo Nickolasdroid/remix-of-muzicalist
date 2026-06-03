@@ -2,6 +2,7 @@
 import Stripe from "https://esm.sh/stripe@17.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getPlanFromPriceId } from "../_shared/stripePriceMap.ts";
+import { issueSmartBillInvoice } from "../_shared/smartbill.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -218,10 +219,60 @@ Deno.serve(async (req) => {
       }
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
+        let profileId: string | null = null;
         if (invoice.subscription) {
           const subId = typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription.id;
           const sub = await stripe.subscriptions.retrieve(subId);
           await syncSubscription(sub);
+          const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+          profileId = await findProfileIdByCustomer(customerId);
+        } else if (invoice.customer) {
+          const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer.id;
+          profileId = await findProfileIdByCustomer(customerId);
+        }
+
+        // Issue SmartBill invoice (idempotent via stripe_event_id unique)
+        if (profileId) {
+          const { data: existing } = await supabase
+            .from("invoices")
+            .select("id")
+            .eq("stripe_event_id", event.id)
+            .maybeSingle();
+
+          if (!existing) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", profileId)
+              .maybeSingle();
+
+            if (profile) {
+              const result = await issueSmartBillInvoice(profile as any, {
+                id: invoice.id,
+                amount_paid: invoice.amount_paid,
+                currency: invoice.currency,
+                number: invoice.number ?? undefined,
+                hosted_invoice_url: invoice.hosted_invoice_url ?? undefined,
+              });
+
+              await supabase.from("invoices").insert({
+                profile_id: profileId,
+                stripe_event_id: event.id,
+                stripe_invoice_id: invoice.id ?? null,
+                stripe_subscription_id: typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription?.id ?? null,
+                smartbill_series: result.series ?? null,
+                smartbill_number: result.number ?? null,
+                smartbill_url: result.url ?? null,
+                amount: (invoice.amount_paid ?? 0) / 100,
+                currency: (invoice.currency ?? "ron").toUpperCase(),
+                status: result.ok ? "issued" : "failed",
+                error_message: result.error ?? null,
+                issued_at: result.ok ? new Date().toISOString() : null,
+              });
+
+              if (!result.ok) console.error("SmartBill issue failed:", result.error);
+            }
+          }
         }
         break;
       }
