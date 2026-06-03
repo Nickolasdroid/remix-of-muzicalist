@@ -420,6 +420,60 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          error_message: string | null
+          id: string
+          issued_at: string | null
+          profile_id: string
+          smartbill_number: string | null
+          smartbill_series: string | null
+          smartbill_url: string | null
+          status: string
+          stripe_event_id: string
+          stripe_invoice_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          error_message?: string | null
+          id?: string
+          issued_at?: string | null
+          profile_id: string
+          smartbill_number?: string | null
+          smartbill_series?: string | null
+          smartbill_url?: string | null
+          status?: string
+          stripe_event_id: string
+          stripe_invoice_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          error_message?: string | null
+          id?: string
+          issued_at?: string | null
+          profile_id?: string
+          smartbill_number?: string | null
+          smartbill_series?: string | null
+          smartbill_url?: string | null
+          status?: string
+          stripe_event_id?: string
+          stripe_invoice_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -659,6 +713,15 @@ export type Database = {
           allow_promotion: boolean
           avatar_url: string | null
           billing: string | null
+          billing_address: string | null
+          billing_city: string | null
+          billing_country: string | null
+          billing_county: string | null
+          billing_cui: string | null
+          billing_entity_type: string | null
+          billing_name: string | null
+          billing_reg_com: string | null
+          billing_vat_payer: boolean
           bio: string | null
           career_start_year: number | null
           comments_allow_from: string
@@ -703,6 +766,15 @@ export type Database = {
           allow_promotion?: boolean
           avatar_url?: string | null
           billing?: string | null
+          billing_address?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_county?: string | null
+          billing_cui?: string | null
+          billing_entity_type?: string | null
+          billing_name?: string | null
+          billing_reg_com?: string | null
+          billing_vat_payer?: boolean
           bio?: string | null
           career_start_year?: number | null
           comments_allow_from?: string
@@ -747,6 +819,15 @@ export type Database = {
           allow_promotion?: boolean
           avatar_url?: string | null
           billing?: string | null
+          billing_address?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_county?: string | null
+          billing_cui?: string | null
+          billing_entity_type?: string | null
+          billing_name?: string | null
+          billing_reg_com?: string | null
+          billing_vat_payer?: boolean
           bio?: string | null
           career_start_year?: number | null
           comments_allow_from?: string
@@ -890,6 +971,15 @@ export type Database = {
           allow_promotion: boolean
           avatar_url: string | null
           billing: string | null
+          billing_address: string | null
+          billing_city: string | null
+          billing_country: string | null
+          billing_county: string | null
+          billing_cui: string | null
+          billing_entity_type: string | null
+          billing_name: string | null
+          billing_reg_com: string | null
+          billing_vat_payer: boolean
           bio: string | null
           career_start_year: number | null
           comments_allow_from: string
