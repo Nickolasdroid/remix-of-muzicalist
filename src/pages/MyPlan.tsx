@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
+import BillingDetailsCard from "@/components/BillingDetailsCard";
+import InvoicesCard from "@/components/InvoicesCard";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -233,6 +235,9 @@ const MyPlan = () => {
                 );
               })}
             </div>
+
+            <BillingDetailsCard />
+            <InvoicesCard />
           </div>
         </div>
       </div>
