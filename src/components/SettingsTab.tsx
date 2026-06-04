@@ -1594,6 +1594,24 @@ const SettingsTab = ({
           {effectiveSection === "about" && AboutContent}
           {effectiveSection === "logout" && LogoutContent}
           {effectiveSection === "delete" && DeleteContent}
+          {effectiveSection === "billing" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-accent" />
+                  Billing
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage your billing details and invoices
+                </p>
+              </div>
+              <Separator />
+              <div className="space-y-4 max-w-2xl">
+                <BillingDetailsCard />
+                <InvoicesCard />
+              </div>
+            </div>
+          )}
 
           {/* Promotion info dialog */}
           <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
