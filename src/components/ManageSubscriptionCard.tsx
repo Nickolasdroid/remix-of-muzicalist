@@ -33,11 +33,8 @@ const ManageSubscriptionCard = () => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const { data } = await supabase
-        .from("profiles")
-        .select("plan, subscription_status, stripe_customer_id, subscription_current_period_end, subscription_cancel_at_period_end")
-        .eq("id", session.user.id)
-        .maybeSingle();
+      const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+      const data = Array.isArray(rows) ? rows[0] : rows;
       if (data) {
         setPlan(data.plan || "Free");
         setStatus(data.subscription_status ?? null);

@@ -14,11 +14,8 @@ export default function BillingSection() {
   const load = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { setChecked(true); return; }
-    const { data } = await supabase
-      .from("profiles")
-      .select("plan, stripe_customer_id, billing_entity_type, billing_name, billing_address, billing_city, billing_country, billing_cui")
-      .eq("id", session.user.id)
-      .maybeSingle();
+    const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+    const data = Array.isArray(rows) ? rows[0] : rows;
     if (data) {
       setHasActiveSubscription(!!data.stripe_customer_id && (data.plan || "Free") !== "Free");
       const isCompany = (data as any).billing_entity_type === "company";

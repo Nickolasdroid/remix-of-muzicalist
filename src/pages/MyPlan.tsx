@@ -24,11 +24,8 @@ const MyPlan = () => {
       // Check if user has a Stripe customer; if not, downgrade directly
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('stripe_customer_id')
-          .eq('id', session.user.id)
-          .maybeSingle();
+        const { data: profileRows } = await (supabase as any).rpc('get_my_full_profile');
+        const profile = Array.isArray(profileRows) ? profileRows[0] : profileRows;
         if (!profile?.stripe_customer_id) {
           const { error: updErr } = await supabase
             .from('profiles')
