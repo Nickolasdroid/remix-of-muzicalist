@@ -465,6 +465,12 @@ const SettingsTab = ({
       ],
     },
     {
+      title: "Billing",
+      items: [
+        { id: "billing", label: "Billing", icon: CreditCard },
+      ],
+    },
+    {
       title: "How you use the app",
       items: [
         { id: "language", label: "Language", icon: Languages },
