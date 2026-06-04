@@ -1584,12 +1584,8 @@ const SettingsTab = ({
     },
   ];
 
-  const [desktopSearch, setDesktopSearch] = [
-    languageSearch, // dummy, replaced below by useState — but we already declared one. Instead use local hook below.
-    setLanguageSearch,
-  ] as any;
-  // Use a real, isolated search state for the settings nav:
-  // (Re-declared via inline IIFE pattern is messy; use the existing useState pattern instead.)
+
+
 
   return <DesktopSettingsLayout
     groups={desktopSettingGroups}
