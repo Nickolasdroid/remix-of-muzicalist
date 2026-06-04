@@ -96,6 +96,8 @@ const Dashboard = () => {
     blocked_users: "Blocked Users",
     mentions_tags: "Mentions & Tags",
     display_settings: "Display Settings",
+    privacy_policy: "Privacy Policy",
+    terms_of_service: "Terms of Service",
   };
 
   const getMobileTitle = () => {

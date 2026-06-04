@@ -1307,6 +1307,34 @@ const SettingsTab = ({
     </div>
   );
 
+  const PrivacyPolicyContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Privacy Policy</h2>
+        <p className="text-sm text-muted-foreground mt-1">How we collect, use and protect your data</p>
+      </div>
+      <Separator />
+      <Button onClick={() => navigate('/privacy-policy')} className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <FileText className="h-4 w-4 mr-2" />
+        Open Privacy Policy
+      </Button>
+    </div>
+  );
+
+  const TermsOfServiceContent = (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Terms of Service</h2>
+        <p className="text-sm text-muted-foreground mt-1">The rules and conditions for using Muzicalist</p>
+      </div>
+      <Separator />
+      <Button onClick={() => navigate('/terms-of-service')} className="bg-accent text-accent-foreground hover:bg-accent/90">
+        <FileText className="h-4 w-4 mr-2" />
+        Open Terms of Service
+      </Button>
+    </div>
+  );
+
   const ReportContent = (
     <div className="space-y-6">
       <div>
