@@ -1755,11 +1755,11 @@ const DesktopSettingsLayout = ({
     : groups;
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 px-2 lg:px-4 py-0">
-        {/* Settings navigation panel — Instagram-style */}
-        <nav className="lg:w-72 shrink-0 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
-          <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-4">
+    <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 px-2 lg:px-0 py-0 lg:h-full">
+        {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
+        <nav className="lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
+          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/60 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none p-4 lg:p-5">
             <h1 className="text-lg font-semibold text-foreground px-1 mb-3">Settings</h1>
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -1820,8 +1820,8 @@ const DesktopSettingsLayout = ({
         </nav>
 
         {/* Dynamic content panel */}
-        <div className="flex-1 min-w-0">
-          <div className="rounded-2xl border border-border bg-card/40 p-6 lg:p-8 min-h-[60vh]">
+        <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
+          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/40 lg:bg-card p-6 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
             <div key={activeSection} className="animate-fade-in">
               {contentMap[activeSection] ?? contentMap.email}
             </div>
