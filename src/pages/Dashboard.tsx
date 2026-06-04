@@ -1660,7 +1660,7 @@ const Dashboard = () => {
       />
       
       <div className={`pt-16 md:pt-8 ${activeTab === "settings" ? "pb-20 md:pb-20" : "pb-24 md:pb-20"} px-0 md:px-4`}>
-        <div className="container mx-auto max-w-6xl px-4 md:px-0">
+        <div className={`container mx-auto max-w-6xl ${activeTab === "settings" ? "px-0 md:px-0" : "px-4 md:px-0"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
