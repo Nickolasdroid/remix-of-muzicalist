@@ -98,6 +98,8 @@ Deno.serve(async (req) => {
     return new Response(`Webhook Error: ${(err as Error).message}`, { status: 400 });
   }
 
+  console.log(`[stripe-webhook] received event ${event.id} type=${event.type}`);
+
   // Idempotency: log event; skip if already processed
   const { error: logErr } = await supabase
     .from("subscription_events")
@@ -105,6 +107,57 @@ Deno.serve(async (req) => {
   if (logErr && !logErr.message.includes("duplicate")) {
     console.warn("Event log insert warning:", logErr.message);
   }
+
+  // Helper: issue a SmartBill invoice for a Stripe invoice (idempotent by stripe_event_id)
+  async function issueAndRecord(profileId: string, invoice: Stripe.Invoice, eventId: string) {
+    const { data: existing } = await supabase
+      .from("invoices")
+      .select("id")
+      .eq("stripe_event_id", eventId)
+      .maybeSingle();
+    if (existing) {
+      console.log(`[stripe-webhook] invoice already recorded for event ${eventId}, skipping`);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", profileId)
+      .maybeSingle();
+
+    if (!profile) {
+      console.error(`[stripe-webhook] profile ${profileId} not found, cannot issue invoice`);
+      return;
+    }
+
+    console.log(`[stripe-webhook] issuing SmartBill invoice for profile=${profileId} stripe_invoice=${invoice.id} amount=${invoice.amount_paid}`);
+    const result = await issueSmartBillInvoice(profile as any, {
+      id: invoice.id,
+      amount_paid: invoice.amount_paid,
+      currency: invoice.currency,
+      number: invoice.number ?? undefined,
+      hosted_invoice_url: invoice.hosted_invoice_url ?? undefined,
+    });
+
+    await supabase.from("invoices").insert({
+      profile_id: profileId,
+      stripe_event_id: eventId,
+      stripe_invoice_id: invoice.id ?? null,
+      stripe_subscription_id: typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription?.id ?? null,
+      smartbill_series: result.series ?? null,
+      smartbill_number: result.number ?? null,
+      smartbill_url: result.url ?? null,
+      amount: (invoice.amount_paid ?? 0) / 100,
+      currency: (invoice.currency ?? "ron").toUpperCase(),
+      status: result.ok ? "issued" : "failed",
+      error_message: result.error ?? null,
+      issued_at: result.ok ? new Date().toISOString() : null,
+    });
+
+    if (!result.ok) console.error("[stripe-webhook] SmartBill issue failed:", result.error);
+  }
+
 
   try {
     switch (event.type) {
