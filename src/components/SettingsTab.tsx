@@ -9,9 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard } from "lucide-react";
-import BillingDetailsCard from "@/components/BillingDetailsCard";
-import InvoicesCard from "@/components/InvoicesCard";
-import ManageSubscriptionCard from "@/components/ManageSubscriptionCard";
+import BillingSection from "@/components/BillingSection";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -1141,9 +1139,7 @@ const SettingsTab = ({
                 Manage your billing details and invoices
               </p>
             </div>
-            <ManageSubscriptionCard />
-            <BillingDetailsCard />
-            <InvoicesCard />
+            <BillingSection />
           </div>
         )}
 
@@ -1546,13 +1542,13 @@ const SettingsTab = ({
       <div className="flex flex-col lg:flex-row gap-8 p-6 lg:p-8 px-[9px] py-0">
         {/* Grouped sidebar (same structure as mobile) */}
         <nav className="lg:w-64 shrink-0">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             {mobileSettingGroups.map((group) => (
               <div key={group.title}>
-                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-3 pb-2">
+                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide px-3 pb-1">
                   {group.title}
                 </h3>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = effectiveSection === item.id;
@@ -1560,7 +1556,7 @@ const SettingsTab = ({
                       <li key={item.id}>
                         <button
                           onClick={() => setActiveSection(item.id)}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                             isActive
                               ? item.destructive
                                 ? "bg-destructive/10 text-destructive"
@@ -1608,10 +1604,8 @@ const SettingsTab = ({
                 </p>
               </div>
               <Separator />
-              <div className="space-y-4 max-w-2xl">
-                <ManageSubscriptionCard />
-                <BillingDetailsCard />
-                <InvoicesCard />
+              <div className="max-w-3xl">
+                <BillingSection />
               </div>
             </div>
           )}
