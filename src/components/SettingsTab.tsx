@@ -1674,22 +1674,26 @@ const DesktopSettingsLayout = ({
                           <li key={item.id}>
                             <button
                               onClick={() => setActiveSection(item.id)}
-                              className={`w-full flex items-center gap-3 px-2 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
+                              className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-4 lg:py-2 border-b lg:border-b-0 border-border rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
-                              <Icon
-                                className={`h-4 w-4 shrink-0 ${baseTransition} ${
-                                  isActive
-                                    ? item.destructive
-                                      ? "text-destructive"
-                                      : "text-accent"
-                                    : ""
-                                }`}
-                              />
-                              <span className="flex-1 text-left">{item.label}</span>
+                              <div className="flex items-center gap-3 min-w-0">
+                                <Icon
+                                  className={`h-5 w-5 lg:h-4 lg:w-4 shrink-0 ${baseTransition} ${
+                                    isActive
+                                      ? item.destructive
+                                        ? "text-destructive"
+                                        : "text-accent"
+                                      : item.destructive
+                                        ? "text-destructive"
+                                        : "text-muted-foreground"
+                                  }`}
+                                />
+                                <span className="flex-1 text-left truncate">{item.label}</span>
+                              </div>
                               {isMobile && (
-                                <ChevronRight className="h-5 w-5 text-muted-foreground/60 shrink-0" strokeWidth={2} />
+                                <ChevronRight className={`h-5 w-5 shrink-0 ${item.destructive ? "text-destructive/60" : "text-muted-foreground"}`} strokeWidth={2} />
                               )}
                             </button>
                           </li>
