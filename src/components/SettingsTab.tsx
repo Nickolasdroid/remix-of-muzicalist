@@ -461,6 +461,7 @@ const SettingsTab = ({
         { id: "password", label: "Change Password", icon: Lock },
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
+        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
     {
@@ -494,7 +495,6 @@ const SettingsTab = ({
       title: "Login",
       items: [
         { id: "logout", label: "Sign Out", icon: LogOut },
-        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
       ],
     },
   ];
