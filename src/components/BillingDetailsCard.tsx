@@ -52,11 +52,8 @@ export default function BillingDetailsCard({ onSaved }: Props) {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setLoading(false); return; }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("billing_entity_type, billing_name, billing_cui, billing_reg_com, billing_address, billing_city, billing_county, billing_country, billing_vat_payer")
-        .eq("id", session.user.id)
-        .maybeSingle();
+      const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+      const profile = Array.isArray(rows) ? rows[0] : rows;
       if (profile) {
         setData({
           billing_entity_type: ((profile as any).billing_entity_type as EntityType) || "individual",

@@ -36,11 +36,8 @@ export default function PaymentMethodCard() {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { setLoading(false); return; }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("stripe_customer_id")
-        .eq("id", session.user.id)
-        .maybeSingle();
+      const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+      const profile = Array.isArray(rows) ? rows[0] : rows;
       if (!profile?.stripe_customer_id) { setLoading(false); return; }
       setHasCustomer(true);
       try {
