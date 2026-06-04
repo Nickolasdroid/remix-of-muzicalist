@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard } from "lucide-react";
 import BillingDetailsCard from "@/components/BillingDetailsCard";
 import InvoicesCard from "@/components/InvoicesCard";
+import ManageSubscriptionCard from "@/components/ManageSubscriptionCard";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -1140,6 +1141,7 @@ const SettingsTab = ({
                 Manage your billing details and invoices
               </p>
             </div>
+            <ManageSubscriptionCard />
             <BillingDetailsCard />
             <InvoicesCard />
           </div>
@@ -1607,6 +1609,7 @@ const SettingsTab = ({
               </div>
               <Separator />
               <div className="space-y-4 max-w-2xl">
+                <ManageSubscriptionCard />
                 <BillingDetailsCard />
                 <InvoicesCard />
               </div>
