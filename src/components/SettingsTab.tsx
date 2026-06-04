@@ -1537,112 +1537,300 @@ const SettingsTab = ({
     </div>
   );
 
+  // Instagram-style grouped sections for the desktop settings sidebar
+  const desktopSettingGroups: {
+    title: string;
+    items: { id: SettingSection; label: string; icon: any; destructive?: boolean }[];
+  }[] = [
+    {
+      title: "Account",
+      items: [
+        { id: "edit_profile", label: "Edit Profile", icon: User },
+        { id: "password", label: "Password & Security", icon: Lock },
+        { id: "notifications", label: "Notifications", icon: Bell },
+        { id: "billing", label: "Billing & Subscription", icon: CreditCard },
+      ],
+    },
+    {
+      title: "Privacy",
+      items: [
+        { id: "profile_visibility", label: "Profile Visibility", icon: Shield },
+        { id: "blocked_users", label: "Blocked Users", icon: UserX },
+        { id: "comments", label: "Comments", icon: MessageCircle },
+        { id: "mentions_tags", label: "Mentions & Tags", icon: AtSign },
+      ],
+    },
+    {
+      title: "Preferences",
+      items: [
+        { id: "language", label: "Language", icon: Languages },
+        { id: "theme", label: "Theme", icon: Sun },
+        { id: "display_settings", label: "Display Settings", icon: Monitor },
+      ],
+    },
+    {
+      title: "Support",
+      items: [
+        { id: "help", label: "Help Center", icon: HelpCircle },
+        { id: "report", label: "Report a Problem", icon: Flag },
+        { id: "about", label: "About Muzicalist", icon: Info },
+      ],
+    },
+    {
+      title: "Danger Zone",
+      items: [
+        { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
+      ],
+    },
+  ];
+
+  const [desktopSearch, setDesktopSearch] = [
+    languageSearch, // dummy, replaced below by useState — but we already declared one. Instead use local hook below.
+    setLanguageSearch,
+  ] as any;
+  // Use a real, isolated search state for the settings nav:
+  // (Re-declared via inline IIFE pattern is messy; use the existing useState pattern instead.)
+
+  return <DesktopSettingsLayout
+    groups={desktopSettingGroups}
+    activeSection={effectiveSection}
+    setActiveSection={setActiveSection}
+    contentMap={{
+      email: EmailContent,
+      password: PasswordContent,
+      notifications: NotificationsSectionContent,
+      comments: CommentsSectionContent,
+      language: LanguageContent,
+      theme: ThemeContent,
+      promotion: PromotionContent,
+      help: HelpContent,
+      report: ReportContent,
+      about: AboutContent,
+      logout: LogoutContent,
+      delete: DeleteContent,
+      billing: (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-accent" />
+              Billing & Subscription
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage your billing details, invoices and subscription
+            </p>
+          </div>
+          <Separator />
+          <div className="max-w-3xl">
+            <BillingSection />
+          </div>
+        </div>
+      ),
+      edit_profile: (
+        <ComingSoonPanel
+          icon={User}
+          title="Edit Profile"
+          description="Update your stage name, bio, avatar, location and the rest of your public profile from the Profile tab in your dashboard."
+          actionLabel="Open Profile"
+          onAction={() => navigate("/dashboard?tab=profile")}
+        />
+      ),
+      profile_visibility: (
+        <ComingSoonPanel
+          icon={Shield}
+          title="Profile Visibility"
+          description="Control who can find and view your profile, contact details and availability. More granular visibility options are coming soon."
+        />
+      ),
+      blocked_users: (
+        <ComingSoonPanel
+          icon={UserX}
+          title="Blocked Users"
+          description="Manage the list of users you have blocked. Blocked users won't be able to view your profile, message you or interact with your content. This area is coming soon."
+        />
+      ),
+      mentions_tags: (
+        <ComingSoonPanel
+          icon={AtSign}
+          title="Mentions & Tags"
+          description="Decide who is allowed to mention or tag you in posts, announcements and comments. Configurable rules are on the way."
+        />
+      ),
+      display_settings: (
+        <ComingSoonPanel
+          icon={Monitor}
+          title="Display Settings"
+          description="Fine-tune density, font size and motion. Additional display options will appear here soon."
+        />
+      ),
+    }}
+    extraDialogs={
+      <>
+        <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-accent" />
+                Promotion on Muzicalist channels
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
+            </p>
+          </DialogContent>
+        </Dialog>
+        <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
+              <AlertDialogDescription>
+                By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
+              <AlertDialogCancel className="mt-0">Keep enabled</AlertDialogCancel>
+              <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        {LanguageConfirmDialog}
+        {ThemeConfirmDialog}
+        {DisableCommentsDialog}
+      </>
+    }
+  />;
+};
+
+// --- Desktop layout sub-components ---
+
+const ComingSoonPanel = ({
+  icon: Icon,
+  title,
+  description,
+  actionLabel,
+  onAction,
+}: {
+  icon: any;
+  title: string;
+  description: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) => (
+  <div className="space-y-6 animate-fade-in">
+    <div>
+      <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+        <Icon className="h-5 w-5 text-accent" />
+        {title}
+      </h2>
+      <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>
+    </div>
+    <Separator />
+    {actionLabel && onAction ? (
+      <Button onClick={onAction} className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg">
+        {actionLabel}
+      </Button>
+    ) : (
+      <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground max-w-2xl">
+        We're working on this section. It will be available in an upcoming update.
+      </div>
+    )}
+  </div>
+);
+
+const DesktopSettingsLayout = ({
+  groups,
+  activeSection,
+  setActiveSection,
+  contentMap,
+  extraDialogs,
+}: {
+  groups: { title: string; items: { id: SettingSection; label: string; icon: any; destructive?: boolean }[] }[];
+  activeSection: SettingSection;
+  setActiveSection: (s: SettingSection) => void;
+  contentMap: Partial<Record<SettingSection, React.ReactNode>>;
+  extraDialogs: React.ReactNode;
+}) => {
+  const [search, setSearch] = useState("");
+  const q = search.trim().toLowerCase();
+
+  const filteredGroups = q
+    ? groups
+        .map((g) => ({ ...g, items: g.items.filter((it) => it.label.toLowerCase().includes(q)) }))
+        .filter((g) => g.items.length > 0)
+    : groups;
+
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row gap-8 p-6 lg:p-8 px-[9px] py-0">
-        {/* Grouped sidebar (same structure as mobile) */}
-        <nav className="lg:w-64 shrink-0">
-          <div className="flex flex-col gap-2">
-            {mobileSettingGroups.map((group) => (
-              <div key={group.title}>
-                <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide px-3 pb-1">
-                  {group.title}
-                </h3>
-                <ul className="space-y-0.5">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = effectiveSection === item.id;
-                    return (
-                      <li key={item.id}>
-                        <button
-                          onClick={() => setActiveSection(item.id)}
-                          className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                            isActive
-                              ? item.destructive
-                                ? "bg-destructive/10 text-destructive"
-                                : "bg-accent/10 text-accent"
-                              : item.destructive
-                                ? "text-destructive hover:bg-destructive/5"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                          }`}
-                        >
-                          <Icon className="h-4 w-4" />
-                          {item.label}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 px-2 lg:px-4 py-0">
+        {/* Settings navigation panel — Instagram-style */}
+        <nav className="lg:w-72 shrink-0 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+          <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-4">
+            <h1 className="text-lg font-semibold text-foreground px-1 mb-3">Settings</h1>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search settings…"
+                className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
+              />
+            </div>
+            <div className="flex flex-col gap-4">
+              {filteredGroups.map((group) => (
+                <div key={group.title}>
+                  <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-1.5">
+                    {group.title}
+                  </h3>
+                  <ul className="space-y-0.5">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = activeSection === item.id;
+                      const baseTransition = "transition-all duration-200 ease-out";
+                      const activeCls = item.destructive
+                        ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
+                        : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
+                      const idleCls = item.destructive
+                        ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
+                      return (
+                        <li key={item.id}>
+                          <button
+                            onClick={() => setActiveSection(item.id)}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
+                              isActive ? activeCls : idleCls
+                            }`}
+                          >
+                            <Icon
+                              className={`h-4 w-4 shrink-0 ${baseTransition} ${
+                                isActive
+                                  ? item.destructive
+                                    ? "text-destructive"
+                                    : "text-accent"
+                                  : ""
+                              }`}
+                            />
+                            <span className="flex-1 text-left">{item.label}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+              {filteredGroups.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-6">No settings match "{search}"</p>
+              )}
+            </div>
           </div>
         </nav>
 
-        {/* Detail panel */}
-        <div className="flex-1 max-w-4xl">
-          {effectiveSection === "email" && EmailContent}
-          {effectiveSection === "password" && PasswordContent}
-          {effectiveSection === "notifications" && NotificationsSectionContent}
-          {effectiveSection === "comments" && CommentsSectionContent}
-          {effectiveSection === "language" && LanguageContent}
-          {effectiveSection === "theme" && ThemeContent}
-          {effectiveSection === "promotion" && PromotionContent}
-          {effectiveSection === "help" && HelpContent}
-          {effectiveSection === "report" && ReportContent}
-          {effectiveSection === "about" && AboutContent}
-          {effectiveSection === "logout" && LogoutContent}
-          {effectiveSection === "delete" && DeleteContent}
-          {effectiveSection === "billing" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-accent" />
-                  Billing
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Manage your billing details and invoices
-                </p>
-              </div>
-              <Separator />
-              <div className="max-w-3xl">
-                <BillingSection />
-              </div>
+        {/* Dynamic content panel */}
+        <div className="flex-1 min-w-0">
+          <div className="rounded-2xl border border-border bg-card/40 p-6 lg:p-8 min-h-[60vh]">
+            <div key={activeSection} className="animate-fade-in">
+              {contentMap[activeSection] ?? contentMap.email}
             </div>
-          )}
-
-          {/* Promotion info dialog */}
-          <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Megaphone className="h-5 w-5 text-accent" />
-                  Promotion on Muzicalist channels
-                </DialogTitle>
-              </DialogHeader>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
-              </p>
-            </DialogContent>
-          </Dialog>
-
-          <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
-                <AlertDialogCancel className="mt-0">Keep enabled</AlertDialogCancel>
-                <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {LanguageConfirmDialog}
-          {ThemeConfirmDialog}
-          {DisableCommentsDialog}
+            {extraDialogs}
+          </div>
         </div>
       </div>
     </div>
