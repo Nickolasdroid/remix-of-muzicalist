@@ -32,15 +32,14 @@ const ManageSubscriptionCard = () => {
       if (!session) return;
       const { data } = await supabase
         .from("profiles")
-        .select("plan, subscription_status, stripe_customer_id, cancel_at_period_end, current_period_end")
+        .select("plan, subscription_status, stripe_customer_id, subscription_current_period_end")
         .eq("id", session.user.id)
         .maybeSingle();
       if (data) {
         setPlan(data.plan || "Free");
-        setStatus((data as any).subscription_status ?? null);
+        setStatus(data.subscription_status ?? null);
         setHasCustomer(!!data.stripe_customer_id);
-        setCancelAtPeriodEnd(!!(data as any).cancel_at_period_end);
-        setPeriodEnd((data as any).current_period_end ?? null);
+        setPeriodEnd(data.subscription_current_period_end ?? null);
       }
       setLoading(false);
     })();
