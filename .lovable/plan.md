@@ -1,66 +1,57 @@
-## Obiectiv
-La fiecare plată Stripe reușită (abonament Standard/Premium, lunar/anual), Muzicalist emite automat o factură fiscală în SmartBill către clientul plătitor (persoană fizică sau juridică) și salvează linkul facturii.
+## Verification: Stripe → SmartBill for Muzicalist subscriptions
 
-## 1. Secrets de adăugat
-Voi cere prin `add_secret`:
-- `SMARTBILL_USERNAME` — email-ul contului SmartBill
-- `SMARTBILL_API_TOKEN` — tokenul API SmartBill
-- `SMARTBILL_CIF` — CIF-ul Muzicalist (ex. `RO12345678`)
-- `SMARTBILL_SERIES` — seria facturilor (ex. `MUZ`)
-- `SMARTBILL_VAT_PAYER` — `true`/`false` (plătitor TVA)
+### 1. How the real subscription flow maps Stripe → Muzicalist user
 
-## 2. Schimbări în baza de date (migrare)
-Adăugăm date de facturare pe `profiles` (toate opționale, completate de user):
-- `billing_entity_type` text — `individual` | `company`
-- `billing_name` text — nume persoană sau denumire firmă
-- `billing_cui` text — CUI/CIF (doar PJ)
-- `billing_reg_com` text — Nr. Registrul Comerțului (PJ)
-- `billing_address` text, `billing_city` text, `billing_county` text, `billing_country` text (default `Romania`)
-- `billing_vat_payer` boolean default false
+There are two checkout entry points, both attach explicit metadata so the webhook can resolve a profile:
 
-Tabel nou `invoices`:
-- `profile_id`, `stripe_event_id` (unic), `stripe_invoice_id`, `stripe_subscription_id`
-- `smartbill_series`, `smartbill_number`, `smartbill_url`
-- `amount`, `currency`, `status` (`issued` | `failed` | `skipped`)
-- `error_message`, `issued_at`
-- RLS: user vede doar facturile sale; admins văd tot; insert/update doar `service_role`.
+**A. Existing logged-in user upgrading plan — `create-checkout/index.ts`**
+- Looks up/creates a Stripe Customer with `metadata.user_id = <profiles.id>` and stores it on `profiles.stripe_customer_id`.
+- Creates a Checkout Session with:
+  - `mode: "subscription"`
+  - `customer: <stripe_customer_id>`
+  - `metadata: { user_id }`
+  - `subscription_data.metadata: { user_id }`
 
-## 3. UI — date de facturare
-În **Settings → Billing** (sau secțiune nouă "Date de facturare"):
-- Toggle PF/PJ
-- Câmpuri condiționate (CUI + RegCom doar la PJ)
-- Buton Save → update `profiles`
-- Dacă userul nu a completat, factura se va emite ca PF cu numele/emailul din profil.
+**B. New artist signup (deferred user creation) — `create-pending-artist-checkout/index.ts`**
+- Stores all signup fields in `pending_artist_registrations`.
+- Creates Checkout Session with `metadata: { type: "artist_signup", pending_id }` and same on `subscription_data.metadata`.
+- The webhook creates the auth user from the pending row, then resolves `profileId = created.user.id`.
 
-În **My Plan**, listă "Facturile mele" cu data, suma, status și buton "Descarcă PDF" (link SmartBill).
+In both flows, `session.invoice` IS set (subscription mode produces a Stripe Invoice), unlike the Payment Link test that returned `session.invoice = null`.
 
-## 4. Edge functions
-**`stripe-webhook` (existent)** — la evenimentul `invoice.payment_succeeded`:
-- Dacă există deja un rând în `invoices` cu acel `stripe_event_id` → skip (idempotență).
-- Apelează intern `smartbill-issue` cu `profile_id` + datele facturii Stripe.
+### 2. Webhook mapping logic (`stripe-webhook/index.ts`)
 
-**`smartbill-issue` (nou, `verify_jwt = false`, apelată doar server-side)**:
-- Citește profilul + datele de facturare.
-- Construiește payload SmartBill (`POST https://ws.smartbill.ro/SBORO/api/invoice`) cu Basic Auth `USERNAME:API_TOKEN`.
-- `client`: dacă PJ → `vatCode`, `name`, `regCom`, `address`, `city`, `county`, `country`, `isTaxPayer`; dacă PF → `name`, `email`, `address`, `country`, `isTaxPayer=false`, `saveToDb=false`.
-- `products`: o linie cu `name`="Abonament Muzicalist {Standard/Premium} {lunar/anual}", `price` (din Stripe, în RON dacă acceptă, altfel currency Stripe), `currency`, `isService=true`, `measuringUnitName="buc"`, `quantity=1`, cota TVA.
-- `seriesName` = `SMARTBILL_SERIES`, `companyVatCode` = `SMARTBILL_CIF`, `issueDate` = azi, `dueDate` = azi.
-- `sendEmail: true` cu emailul clientului (SmartBill trimite factura automat pe email).
-- La succes → insert în `invoices` cu seria + numărul + URL PDF (`https://ws.smartbill.ro/SBORO/api/invoice/pdf?cif=...&seriesname=...&number=...`).
-- La eroare → insert cu `status=failed` + `error_message` (pentru retry manual din admin).
+For `checkout.session.completed`:
+1. `profileId` from `session.metadata.user_id` (flow A) OR created from `pending_id` (flow B).
+2. Persists `stripe_customer_id` onto the profile.
+3. Calls `syncSubscription(...)` → updates `plan`, `billing`, `subscription_status`, period end.
+4. If `session.invoice` exists, retrieves it and calls `issueAndRecord(profileId, invoice, event.id)` → calls SmartBill and writes `invoices` row (idempotent via `stripe_event_id`).
 
-**`smartbill-list` (nou, JWT verificat)**: returnează facturile userului curent pentru UI.
+For `invoice.paid` / `invoice.payment_succeeded` (renewals + first payment fallback):
+- Resolves `profileId` via `invoice.subscription → customer → profiles.stripe_customer_id`, then issues SmartBill.
 
-## 5. Admin dashboard
-Tab nou "Facturi" — listă globală cu filtre (status, dată, user), buton "Retry" pentru cele cu status `failed`.
+Conclusion: for real Standard/Premium subscriptions the mapping is complete and SmartBill should fire on the first payment AND on every renewal.
 
-## 6. Tehnic
-- Toate cererile SmartBill prin `fetch` direct din edge function (SmartBill API e REST simplu, fără SDK necesar).
-- Sumele Stripe sunt în cenți → conversie /100 înainte de a le trimite.
-- Conversia currency: trimitem la SmartBill în aceeași monedă ca pe Stripe (SmartBill acceptă EUR/USD pe lângă RON).
-- Idempotența garantată de `unique(stripe_event_id)` pe `invoices`.
+### 3. Gaps / risks I found
 
-## Out of scope (pot fi adăugate ulterior)
-- Storno automat la refund/cancel (poate fi adăugat ușor pe `charge.refunded`).
-- E-Factura ANAF (SmartBill o trimite automat dacă e activat în contul lor — fără cod suplimentar).
-- Proforme pentru plăți manuale.
+1. **Uncaught exception in the function runtime** — logs show `Deno.core.runMicrotasks() is not supported` from a `https://deno.land/std@0.177.1/node/...` path. This comes from Stripe Node-style imports leaking the Node shim. Even though the function returned 200, async work after the response can be killed. Risk: subscription handlers can silently fail to complete. Fix: pin Stripe to a Deno-compatible build (use `npm:stripe@17` instead of `esm.sh/stripe@...?target=deno`) — eliminates the `deno.land/std/node` shim.
+2. **No end-to-end smoke test against a real subscription** has been recorded yet (`invoices` table = 0 rows). I'll trigger a controlled verification using a Stripe CLI-equivalent: invoke `smartbill-retry-invoice` for a sample synthetic invoice OR ask you to perform one real Standard subscription test in test mode.
+3. **`smartbill-retry-invoice`** exists — confirms there is already a manual path. Worth surfacing in an admin tool to backfill any failed invoice.
+
+### 4. Plan
+
+1. Re-pin Stripe import in `stripe-webhook` (and other functions that use it) from `esm.sh/stripe@17.5.0?target=deno` to `npm:stripe@17.5.0` to remove the Node shim and stop the uncaught exception.
+2. Add a `try/catch` around `issueAndRecord` so a SmartBill failure inserts a `status: 'failed'` `invoices` row (it already does) AND is logged with the exact Stripe IDs — confirm the log line already added is sufficient.
+3. Verification step (you run): trigger one real Standard-plan checkout (test mode) with a logged-in test user. Expected logs in order:
+   - `received event ... type=checkout.session.completed`
+   - `issuing SmartBill invoice for profile=<id> stripe_invoice=in_... amount=...`
+   - SmartBill request/response dump (already added)
+   - new row in `invoices` with `status='issued'` and `smartbill_number`
+   - shortly after: `received event ... type=invoice.paid` → idempotent skip (`invoice already recorded for event ...`)
+4. If SmartBill returns an error, the `invoices` row will have `status='failed'` with the SmartBill message — you can then click retry.
+
+### 5. Notes for non-technical reading
+
+- The earlier test used a Stripe Payment Link, which is a one-off payment with no customer, no subscription and no user_id attached — that's why no invoice was created. It is expected behavior.
+- The real "Choose plan" buttons in Muzicalist go through a different checkout that DOES attach the user ID and produces a Stripe Invoice — SmartBill will fire there.
+- The one real bug worth fixing now is the Stripe library import causing a runtime warning. After the import swap I'll ask you to run one real subscription checkout in test mode and we read the logs together.
