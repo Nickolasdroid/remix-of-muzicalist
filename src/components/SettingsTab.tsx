@@ -1653,13 +1653,13 @@ const DesktopSettingsLayout = ({
                   className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
                 />
               </div>
-              <div className="flex flex-col gap-2 lg:gap-4">
+              <div className="flex flex-col gap-3 lg:gap-4">
                 {filteredGroups.map((group) => (
                   <div key={group.title}>
-                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 lg:px-2 pb-1 lg:pb-1.5">
+                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 lg:px-2 pb-1.5 lg:pb-1.5">
                       {group.title}
                     </h3>
-                    <ul className="space-y-0.5">
+                    <ul className="space-y-0 lg:space-y-0.5">
                       {group.items.map((item) => {
                         const Icon = item.icon;
                         const isActive = !isMobile && activeSection === item.id;
