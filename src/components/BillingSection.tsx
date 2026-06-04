@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import ManageSubscriptionCard from "@/components/ManageSubscriptionCard";
+import PaymentMethodCard from "@/components/PaymentMethodCard";
 import BillingDetailsCard from "@/components/BillingDetailsCard";
 import InvoicesCard from "@/components/InvoicesCard";
 
@@ -53,6 +54,7 @@ export default function BillingSection() {
         </div>
       )}
       <ManageSubscriptionCard />
+      <PaymentMethodCard />
       <BillingDetailsCard onSaved={load} />
       <InvoicesCard />
     </div>
