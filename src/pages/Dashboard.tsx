@@ -90,6 +90,7 @@ const Dashboard = () => {
     delete: "Delete Account",
     help: "Help & Support",
     about: "About",
+    billing: "Billing",
   };
 
   const getMobileTitle = () => {

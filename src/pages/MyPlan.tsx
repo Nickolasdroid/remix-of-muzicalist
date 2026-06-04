@@ -8,8 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
-import BillingDetailsCard from "@/components/BillingDetailsCard";
-import InvoicesCard from "@/components/InvoicesCard";
 import ManageSubscriptionCard from "@/components/ManageSubscriptionCard";
 
 const MyPlan = () => {
@@ -238,8 +236,6 @@ const MyPlan = () => {
             </div>
 
             <ManageSubscriptionCard />
-            <BillingDetailsCard />
-            <InvoicesCard />
           </div>
         </div>
       </div>

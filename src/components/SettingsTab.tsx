@@ -8,7 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Eye, EyeOff, User, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard } from "lucide-react";
+import BillingDetailsCard from "@/components/BillingDetailsCard";
+import InvoicesCard from "@/components/InvoicesCard";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing";
 
 export type NotificationPreferenceKey =
   | "reviews"
@@ -460,6 +462,12 @@ const SettingsTab = ({
         { id: "password", label: "Change Password", icon: Lock },
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
+      ],
+    },
+    {
+      title: "Billing",
+      items: [
+        { id: "billing", label: "Billing", icon: CreditCard },
       ],
     },
     {
@@ -1124,6 +1132,18 @@ const SettingsTab = ({
             </Button>
           </div>
         )}
+        {activeSection === "billing" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Billing</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your billing details and invoices
+              </p>
+            </div>
+            <BillingDetailsCard />
+            <InvoicesCard />
+          </div>
+        )}
 
         <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
           <DialogContent className="sm:max-w-md">
@@ -1574,6 +1594,24 @@ const SettingsTab = ({
           {effectiveSection === "about" && AboutContent}
           {effectiveSection === "logout" && LogoutContent}
           {effectiveSection === "delete" && DeleteContent}
+          {effectiveSection === "billing" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-accent" />
+                  Billing
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage your billing details and invoices
+                </p>
+              </div>
+              <Separator />
+              <div className="space-y-4 max-w-2xl">
+                <BillingDetailsCard />
+                <InvoicesCard />
+              </div>
+            </div>
+          )}
 
           {/* Promotion info dialog */}
           <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
