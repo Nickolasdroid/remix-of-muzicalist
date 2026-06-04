@@ -1637,7 +1637,7 @@ const DesktopSettingsLayout = ({
   const showContent = !isMobile || activeSection !== "main";
 
   return (
-    <div className="w-full -mx-4 md:mx-0 lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
+    <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
       <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
         {showNav && (
