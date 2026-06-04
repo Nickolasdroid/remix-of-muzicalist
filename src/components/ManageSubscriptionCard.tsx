@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CreditCard, Settings, XCircle, Calendar, Tag } from "lucide-react";
+import { CreditCard, Settings, XCircle, Calendar, Tag, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { openCustomerPortal } from "@/lib/checkout";
 import { subscriptionPlans } from "@/lib/subscriptionPlans";
 
