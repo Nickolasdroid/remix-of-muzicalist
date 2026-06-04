@@ -1659,7 +1659,7 @@ const DesktopSettingsLayout = ({
                     <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 lg:px-2 pb-1 lg:pb-1.5">
                       {group.title}
                     </h3>
-                    <ul className="space-y-0.5">
+                    <ul className="space-y-0 lg:space-y-0.5 border-t border-border lg:border-t-0">
                       {group.items.map((item) => {
                         const Icon = item.icon;
                         const isActive = !isMobile && activeSection === item.id;
@@ -1668,28 +1668,30 @@ const DesktopSettingsLayout = ({
                           ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
                           : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
                         const idleCls = item.destructive
-                          ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground active:bg-muted/70";
+                          ? "text-destructive hover:bg-destructive/5 active:bg-destructive/10"
+                          : "text-foreground hover:bg-muted/50 active:bg-muted/70";
                         return (
-                          <li key={item.id}>
+                          <li key={item.id} className="border-b border-border lg:border-b-0">
                             <button
                               onClick={() => setActiveSection(item.id)}
-                              className={`w-full flex items-center gap-3 pl-4 pr-3 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
+                              className={`w-full flex items-center gap-4 lg:gap-3 px-4 lg:px-3 py-3.5 lg:py-2 rounded-none lg:rounded-lg text-[15px] lg:text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
                               <Icon
-                                className={`h-4 w-4 shrink-0 ${baseTransition} ${
+                                className={`h-5 w-5 lg:h-4 lg:w-4 shrink-0 ${baseTransition} ${
                                   isActive
                                     ? item.destructive
                                       ? "text-destructive"
                                       : "text-accent"
-                                    : ""
+                                    : item.destructive
+                                      ? "text-destructive"
+                                      : "text-foreground"
                                 }`}
                               />
                               <span className="flex-1 text-left">{item.label}</span>
                               {isMobile && (
-                                <ChevronRight className="h-5 w-5 text-muted-foreground/60 shrink-0" strokeWidth={2} />
+                                <ChevronRight className={`h-5 w-5 shrink-0 ${item.destructive ? "text-destructive" : "text-muted-foreground"}`} strokeWidth={2} />
                               )}
                             </button>
                           </li>
