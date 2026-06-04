@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Save } from "lucide-react";
+import { FileText, Save, CheckCircle2, ShieldCheck, Loader2 } from "lucide-react";
+import { verifyCompanyByCui } from "@/lib/companyLookup";
 
 type EntityType = "individual" | "company";
 
@@ -34,10 +35,17 @@ const DEFAULTS: BillingFields = {
   billing_vat_payer: false,
 };
 
-export default function BillingDetailsCard() {
+interface Props {
+  onSaved?: () => void;
+}
+
+export default function BillingDetailsCard({ onSaved }: Props) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [savedRecently, setSavedRecently] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof BillingFields, string>>>({});
   const [data, setData] = useState<BillingFields>(DEFAULTS);
 
   useEffect(() => {
@@ -66,18 +74,61 @@ export default function BillingDetailsCard() {
     })();
   }, []);
 
+  const validate = (d: BillingFields): Partial<Record<keyof BillingFields, string>> => {
+    const e: Partial<Record<keyof BillingFields, string>> = {};
+    if (!d.billing_name.trim()) e.billing_name = "Required";
+    if (!d.billing_address.trim()) e.billing_address = "Required";
+    if (!d.billing_city.trim()) e.billing_city = "Required";
+    if (!d.billing_country.trim()) e.billing_country = "Required";
+    if (d.billing_entity_type === "company") {
+      if (!d.billing_name.trim()) e.billing_name = "Company name is required";
+      if (!d.billing_cui.trim()) e.billing_cui = "CIF / VAT number is required";
+    }
+    return e;
+  };
+
+  const handleVerify = async () => {
+    if (!data.billing_cui.trim()) {
+      setErrors((p) => ({ ...p, billing_cui: "Enter a CIF to verify" }));
+      return;
+    }
+    setVerifying(true);
+    const res = await verifyCompanyByCui(data.billing_cui.trim());
+    setVerifying(false);
+    if (res.ok && res.data) {
+      setData((d) => ({
+        ...d,
+        billing_name: res.data!.name || d.billing_name,
+        billing_reg_com: res.data!.reg_com || d.billing_reg_com,
+        billing_address: res.data!.address || d.billing_address,
+        billing_city: res.data!.city || d.billing_city,
+        billing_county: res.data!.county || d.billing_county,
+        billing_country: res.data!.country || d.billing_country,
+        billing_vat_payer: res.data!.vat_payer ?? d.billing_vat_payer,
+      }));
+      toast({ title: "Company verified", description: "Details auto-filled." });
+    } else {
+      toast({
+        title: "Verification unavailable",
+        description: res.error || "Try again later.",
+      });
+    }
+  };
+
   const save = async () => {
+    const v = validate(data);
+    setErrors(v);
+    if (Object.keys(v).length > 0) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in the required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSaving(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { setSaving(false); return; }
-
-    if (data.billing_entity_type === "company") {
-      if (!data.billing_name.trim() || !data.billing_cui.trim()) {
-        toast({ title: "Date incomplete", description: "Pentru persoană juridică sunt necesare denumirea și CUI.", variant: "destructive" });
-        setSaving(false);
-        return;
-      }
-    }
 
     const { error } = await supabase
       .from("profiles")
@@ -85,24 +136,38 @@ export default function BillingDetailsCard() {
       .eq("id", session.user.id);
     setSaving(false);
     if (error) {
-      toast({ title: "Eroare", description: error.message, variant: "destructive" });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Date salvate", description: "Datele de facturare au fost actualizate." });
+    toast({ title: "Billing information updated successfully." });
+    setSavedRecently(true);
+    onSaved?.();
+    setTimeout(() => setSavedRecently(false), 4000);
   };
 
   if (loading) return null;
 
   const isCompany = data.billing_entity_type === "company";
 
+  const fieldClass = (k: keyof BillingFields) =>
+    errors[k] ? "rounded-lg border-destructive focus-visible:ring-destructive" : "rounded-lg";
+
   return (
     <div className="rounded-lg border border-border bg-card p-5 space-y-4">
-      <div className="flex items-center gap-2">
-        <FileText className="h-5 w-5 text-accent" />
-        <h2 className="text-lg font-semibold text-foreground">Date de facturare</h2>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-accent" />
+          <h2 className="text-lg font-semibold text-foreground">Billing information</h2>
+        </div>
+        {savedRecently && (
+          <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Saved
+          </span>
+        )}
       </div>
       <p className="text-sm text-muted-foreground">
-        Aceste date vor apărea pe facturile emise automat după fiecare plată.
+        These details will appear on invoices issued automatically after each payment.
       </p>
 
       <RadioGroup
@@ -122,62 +187,108 @@ export default function BillingDetailsCard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label>{isCompany ? "Denumire firmă" : "Nume complet"}</Label>
+          <Label>
+            {isCompany ? "Company name" : "Full name"} <span className="text-destructive">*</span>
+          </Label>
           <Input
             value={data.billing_name}
             onChange={(e) => setData({ ...data, billing_name: e.target.value })}
             placeholder={isCompany ? "SC Exemplu SRL" : "Ion Popescu"}
+            className={fieldClass("billing_name")}
           />
+          {errors.billing_name && <p className="text-xs text-destructive">{errors.billing_name}</p>}
         </div>
 
         {isCompany && (
           <>
             <div className="space-y-1">
-              <Label>CUI / CIF</Label>
-              <Input
-                value={data.billing_cui}
-                onChange={(e) => setData({ ...data, billing_cui: e.target.value })}
-                placeholder="RO12345678"
-              />
+              <Label>
+                CIF / VAT number <span className="text-destructive">*</span>
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={data.billing_cui}
+                  onChange={(e) => setData({ ...data, billing_cui: e.target.value })}
+                  placeholder="RO12345678"
+                  className={fieldClass("billing_cui")}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleVerify}
+                  disabled={verifying}
+                  className="rounded-lg shrink-0"
+                >
+                  {verifying ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShieldCheck className="h-4 w-4" />
+                  )}
+                  <span className="ml-2 hidden sm:inline">Verify</span>
+                </Button>
+              </div>
+              {errors.billing_cui && <p className="text-xs text-destructive">{errors.billing_cui}</p>}
             </div>
             <div className="space-y-1">
-              <Label>Nr. Reg. Comerțului</Label>
+              <Label>Trade register no.</Label>
               <Input
                 value={data.billing_reg_com}
                 onChange={(e) => setData({ ...data, billing_reg_com: e.target.value })}
                 placeholder="J40/123/2020"
+                className="rounded-lg"
               />
             </div>
           </>
         )}
 
         <div className="space-y-1 md:col-span-2">
-          <Label>Adresă</Label>
+          <Label>
+            Address <span className="text-destructive">*</span>
+          </Label>
           <Input
             value={data.billing_address}
             onChange={(e) => setData({ ...data, billing_address: e.target.value })}
             placeholder="Str. Exemplu nr. 1, bl. ..."
+            className={fieldClass("billing_address")}
+          />
+          {errors.billing_address && <p className="text-xs text-destructive">{errors.billing_address}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label>
+            City <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            value={data.billing_city}
+            onChange={(e) => setData({ ...data, billing_city: e.target.value })}
+            className={fieldClass("billing_city")}
+          />
+          {errors.billing_city && <p className="text-xs text-destructive">{errors.billing_city}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label>County / Region</Label>
+          <Input
+            value={data.billing_county}
+            onChange={(e) => setData({ ...data, billing_county: e.target.value })}
+            className="rounded-lg"
           />
         </div>
         <div className="space-y-1">
-          <Label>Oraș</Label>
-          <Input value={data.billing_city} onChange={(e) => setData({ ...data, billing_city: e.target.value })} />
-        </div>
-        <div className="space-y-1">
-          <Label>Județ</Label>
-          <Input value={data.billing_county} onChange={(e) => setData({ ...data, billing_county: e.target.value })} />
-        </div>
-        <div className="space-y-1">
-          <Label>Țară</Label>
-          <Input value={data.billing_country} onChange={(e) => setData({ ...data, billing_country: e.target.value })} />
+          <Label>
+            Country <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            value={data.billing_country}
+            onChange={(e) => setData({ ...data, billing_country: e.target.value })}
+            className={fieldClass("billing_country")}
+          />
         </div>
       </div>
 
       {isCompany && (
-        <div className="flex items-center justify-between rounded-md border border-border p-3">
+        <div className="flex items-center justify-between rounded-lg border border-border p-3">
           <div>
-            <Label>Plătitor de TVA</Label>
-            <p className="text-xs text-muted-foreground">Bifați dacă firma este înregistrată în scopuri de TVA.</p>
+            <Label>VAT registered</Label>
+            <p className="text-xs text-muted-foreground">Toggle on if the company is registered for VAT.</p>
           </div>
           <Switch
             checked={data.billing_vat_payer}
@@ -186,9 +297,9 @@ export default function BillingDetailsCard() {
         </div>
       )}
 
-      <Button onClick={save} disabled={saving}>
+      <Button onClick={save} disabled={saving} className="rounded-lg">
         <Save className="h-4 w-4 mr-2" />
-        {saving ? "Se salvează…" : "Salvează"}
+        {saving ? "Saving…" : "Save billing information"}
       </Button>
     </div>
   );
