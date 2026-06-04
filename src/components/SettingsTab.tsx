@@ -1614,12 +1614,14 @@ const DesktopSettingsLayout = ({
   setActiveSection,
   contentMap,
   extraDialogs,
+  isMobile,
 }: {
   groups: { title: string; items: { id: SettingSection; label: string; icon: any; destructive?: boolean }[] }[];
   activeSection: SettingSection;
   setActiveSection: (s: SettingSection) => void;
   contentMap: Partial<Record<SettingSection, React.ReactNode>>;
   extraDialogs: React.ReactNode;
+  isMobile: boolean;
 }) => {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
@@ -1630,80 +1632,91 @@ const DesktopSettingsLayout = ({
         .filter((g) => g.items.length > 0)
     : groups;
 
+  // Mobile master/detail: show list when "main", show content otherwise
+  const showNav = !isMobile || activeSection === "main";
+  const showContent = !isMobile || activeSection !== "main";
+
   return (
     <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 px-2 lg:px-0 py-0 lg:h-full">
+      <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
-        <nav className="lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
-          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/60 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none p-4 lg:p-5">
-            <h1 className="text-lg font-semibold text-foreground px-1 mb-3">Settings</h1>
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search settings…"
-                className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              {filteredGroups.map((group) => (
-                <div key={group.title}>
-                  <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-1.5">
-                    {group.title}
-                  </h3>
-                  <ul className="space-y-0.5">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = activeSection === item.id;
-                      const baseTransition = "transition-all duration-200 ease-out";
-                      const activeCls = item.destructive
-                        ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
-                        : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
-                      const idleCls = item.destructive
-                        ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
-                      return (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => setActiveSection(item.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
-                              isActive ? activeCls : idleCls
-                            }`}
-                          >
-                            <Icon
-                              className={`h-4 w-4 shrink-0 ${baseTransition} ${
-                                isActive
-                                  ? item.destructive
-                                    ? "text-destructive"
-                                    : "text-accent"
-                                  : ""
+        {showNav && (
+          <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
+            <div className="bg-transparent p-4 lg:p-5">
+              <h1 className="text-2xl lg:text-lg font-semibold text-foreground px-1 mb-4 lg:mb-3">Settings</h1>
+              <div className="relative mb-5 lg:mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search settings…"
+                  className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
+                />
+              </div>
+              <div className="flex flex-col gap-5 lg:gap-4">
+                {filteredGroups.map((group) => (
+                  <div key={group.title}>
+                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-2 lg:pb-1.5">
+                      {group.title}
+                    </h3>
+                    <ul className="space-y-0.5">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = !isMobile && activeSection === item.id;
+                        const baseTransition = "transition-all duration-200 ease-out";
+                        const activeCls = item.destructive
+                          ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
+                          : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
+                        const idleCls = item.destructive
+                          ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground active:bg-muted/70";
+                        return (
+                          <li key={item.id}>
+                            <button
+                              onClick={() => setActiveSection(item.id)}
+                              className={`w-full flex items-center gap-3 px-3 py-3 lg:py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
+                                isActive ? activeCls : idleCls
                               }`}
-                            />
-                            <span className="flex-1 text-left">{item.label}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-              {filteredGroups.length === 0 && (
-                <p className="text-xs text-muted-foreground text-center py-6">No settings match "{search}"</p>
-              )}
+                            >
+                              <Icon
+                                className={`h-4 w-4 shrink-0 ${baseTransition} ${
+                                  isActive
+                                    ? item.destructive
+                                      ? "text-destructive"
+                                      : "text-accent"
+                                    : ""
+                                }`}
+                              />
+                              <span className="flex-1 text-left">{item.label}</span>
+                              {isMobile && (
+                                <ChevronRight className="h-4 w-4 text-muted-foreground/60 shrink-0" />
+                              )}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+                {filteredGroups.length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-6">No settings match "{search}"</p>
+                )}
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
 
         {/* Dynamic content panel */}
-        <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/40 lg:bg-card p-6 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
-            <div key={activeSection} className="animate-fade-in">
-              {contentMap[activeSection] ?? contentMap.email}
+        {showContent && (
+          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
+            <div className="bg-transparent lg:bg-card p-4 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
+              <div key={activeSection} className="animate-fade-in">
+                {contentMap[activeSection] ?? contentMap.email}
+              </div>
+              {extraDialogs}
             </div>
-            {extraDialogs}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
