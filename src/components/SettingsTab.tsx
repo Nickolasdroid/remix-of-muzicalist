@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings";
 
 export type NotificationPreferenceKey =
   | "reviews"
