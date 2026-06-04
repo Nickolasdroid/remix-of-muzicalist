@@ -1053,134 +1053,9 @@ const SettingsTab = ({
   );
 
 
-  // Mobile view
-  if (isMobile) {
-    return (
-      <div className="w-full">
-        {activeSection === "main" && <MobileMainList />}
-        
-        {activeSection === "email" && <MobileEmailSection />}
-        {activeSection === "password" && <MobilePasswordSection />}
-        {activeSection === "language" && <MobileLanguageSection />}
-        {activeSection === "theme" && <MobileThemeSection />}
-        {activeSection === "promotion" && (
-          <div className="p-4 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold">Promotion</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Allow Muzicalist to feature your profile on its channels
-              </p>
-            </div>
-            <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border">
-              <button
-                type="button"
-                onClick={() => setShowPromotionInfo(true)}
-                className="text-left flex-1"
-              >
-                <Label className="text-sm font-medium cursor-pointer">
-                  Allow promotion on Muzicalist channels
-                </Label>
-              </button>
-              <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
-            </div>
-          </div>
-        )}
-        
-        {activeSection === "notifications" && (
-          <div className="p-4">{NotificationsSectionContent}</div>
-        )}
+  // Unified view (mobile = Instagram-style master/detail, desktop = three-column)
+  const effectiveSection: SettingSection = activeSection === "main" ? (isMobile ? "main" : "email") : activeSection;
 
-        {activeSection === "comments" && (
-          <div className="p-4">{CommentsSectionContent}</div>
-        )}
-        
-        {activeSection === "report" && <MobileReportSection />}
-        {activeSection === "logout" && <MobileLogoutSection />}
-        {activeSection === "delete" && <MobileDeleteSection />}
-        {activeSection === "help" && (
-          <div className="p-4 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold">Help & Support</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Find answers and get assistance
-              </p>
-            </div>
-            <Button
-              onClick={() => navigate('/help')}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Go to Help & Support
-            </Button>
-          </div>
-        )}
-        {activeSection === "about" && (
-          <div className="p-4 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold">About</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Learn more about Muzicalist
-              </p>
-            </div>
-            <Button
-              onClick={() => navigate('/about')}
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              <Info className="h-4 w-4 mr-2" />
-              Go to About
-            </Button>
-          </div>
-        )}
-        {activeSection === "billing" && (
-          <div className="p-4 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold">Billing</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Manage your billing details and invoices
-              </p>
-            </div>
-            <BillingSection />
-          </div>
-        )}
-
-        <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Megaphone className="h-5 w-5 text-accent" />
-                Promotion on Muzicalist channels
-              </DialogTitle>
-            </DialogHeader>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
-            </p>
-          </DialogContent>
-        </Dialog>
-
-        <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
-              <AlertDialogDescription>
-                By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
-              <AlertDialogCancel className="mt-0 flex-1 sm:flex-none">Keep enabled</AlertDialogCancel>
-              <AlertDialogAction className="flex-1 sm:flex-none" onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        {LanguageConfirmDialog}
-        {ThemeConfirmDialog}
-        {DisableCommentsDialog}
-      </div>
-    );
-  }
-
-  // Desktop view — grouped sidebar like mobile, detail panel on right
-  const effectiveSection: SettingSection = activeSection === "main" ? "email" : activeSection;
 
   const EmailContent = (
     <div className="space-y-6">
@@ -1591,6 +1466,7 @@ const SettingsTab = ({
     groups={desktopSettingGroups}
     activeSection={effectiveSection}
     setActiveSection={setActiveSection}
+    isMobile={isMobile}
     contentMap={{
       email: EmailContent,
       password: PasswordContent,
@@ -1738,12 +1614,14 @@ const DesktopSettingsLayout = ({
   setActiveSection,
   contentMap,
   extraDialogs,
+  isMobile,
 }: {
   groups: { title: string; items: { id: SettingSection; label: string; icon: any; destructive?: boolean }[] }[];
   activeSection: SettingSection;
   setActiveSection: (s: SettingSection) => void;
   contentMap: Partial<Record<SettingSection, React.ReactNode>>;
   extraDialogs: React.ReactNode;
+  isMobile: boolean;
 }) => {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
@@ -1754,80 +1632,91 @@ const DesktopSettingsLayout = ({
         .filter((g) => g.items.length > 0)
     : groups;
 
+  // Mobile master/detail: show list when "main", show content otherwise
+  const showNav = !isMobile || activeSection === "main";
+  const showContent = !isMobile || activeSection !== "main";
+
   return (
     <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 px-2 lg:px-0 py-0 lg:h-full">
+      <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
-        <nav className="lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
-          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/60 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none p-4 lg:p-5">
-            <h1 className="text-lg font-semibold text-foreground px-1 mb-3">Settings</h1>
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search settings…"
-                className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              {filteredGroups.map((group) => (
-                <div key={group.title}>
-                  <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-1.5">
-                    {group.title}
-                  </h3>
-                  <ul className="space-y-0.5">
-                    {group.items.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = activeSection === item.id;
-                      const baseTransition = "transition-all duration-200 ease-out";
-                      const activeCls = item.destructive
-                        ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
-                        : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
-                      const idleCls = item.destructive
-                        ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
-                      return (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => setActiveSection(item.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
-                              isActive ? activeCls : idleCls
-                            }`}
-                          >
-                            <Icon
-                              className={`h-4 w-4 shrink-0 ${baseTransition} ${
-                                isActive
-                                  ? item.destructive
-                                    ? "text-destructive"
-                                    : "text-accent"
-                                  : ""
+        {showNav && (
+          <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
+            <div className="bg-transparent p-4 lg:p-5">
+              <h1 className="text-2xl lg:text-lg font-semibold text-foreground px-1 mb-4 lg:mb-3">Settings</h1>
+              <div className="relative mb-5 lg:mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search settings…"
+                  className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
+                />
+              </div>
+              <div className="flex flex-col gap-5 lg:gap-4">
+                {filteredGroups.map((group) => (
+                  <div key={group.title}>
+                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-2 lg:pb-1.5">
+                      {group.title}
+                    </h3>
+                    <ul className="space-y-0.5">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = !isMobile && activeSection === item.id;
+                        const baseTransition = "transition-all duration-200 ease-out";
+                        const activeCls = item.destructive
+                          ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
+                          : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
+                        const idleCls = item.destructive
+                          ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground active:bg-muted/70";
+                        return (
+                          <li key={item.id}>
+                            <button
+                              onClick={() => setActiveSection(item.id)}
+                              className={`w-full flex items-center gap-3 px-3 py-3 lg:py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
+                                isActive ? activeCls : idleCls
                               }`}
-                            />
-                            <span className="flex-1 text-left">{item.label}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-              {filteredGroups.length === 0 && (
-                <p className="text-xs text-muted-foreground text-center py-6">No settings match "{search}"</p>
-              )}
+                            >
+                              <Icon
+                                className={`h-4 w-4 shrink-0 ${baseTransition} ${
+                                  isActive
+                                    ? item.destructive
+                                      ? "text-destructive"
+                                      : "text-accent"
+                                    : ""
+                                }`}
+                              />
+                              <span className="flex-1 text-left">{item.label}</span>
+                              {isMobile && (
+                                <ChevronRight className="h-4 w-4 text-muted-foreground/60 shrink-0" />
+                              )}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+                {filteredGroups.length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-6">No settings match "{search}"</p>
+                )}
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
 
         {/* Dynamic content panel */}
-        <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-          <div className="rounded-2xl lg:rounded-none border lg:border-0 border-border bg-card/40 lg:bg-card p-6 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
-            <div key={activeSection} className="animate-fade-in">
-              {contentMap[activeSection] ?? contentMap.email}
+        {showContent && (
+          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
+            <div className="bg-transparent lg:bg-card p-4 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
+              <div key={activeSection} className="animate-fade-in">
+                {contentMap[activeSection] ?? contentMap.email}
+              </div>
+              {extraDialogs}
             </div>
-            {extraDialogs}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
