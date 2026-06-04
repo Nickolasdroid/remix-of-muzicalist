@@ -1637,15 +1637,15 @@ const DesktopSettingsLayout = ({
   const showContent = !isMobile || activeSection !== "main";
 
   return (
-    <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
+    <div className="w-full -mx-4 md:mx-0 lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
       <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
         {showNav && (
           <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
-            <div className="bg-transparent p-4 lg:p-5">
-              <h1 className="text-2xl lg:text-lg font-semibold text-foreground px-1 mb-4 lg:mb-3">Settings</h1>
-              <div className="relative mb-5 lg:mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <div className="bg-transparent px-0 py-3 lg:p-5">
+              <h1 className="text-2xl lg:text-lg font-semibold text-foreground px-4 lg:px-1 mb-3">Settings</h1>
+              <div className="relative mb-4 px-4 lg:px-0">
+                <Search className="absolute left-7 lg:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -1653,13 +1653,13 @@ const DesktopSettingsLayout = ({
                   className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
                 />
               </div>
-              <div className="flex flex-col gap-5 lg:gap-4">
+              <div className="flex flex-col gap-4">
                 {filteredGroups.map((group) => (
                   <div key={group.title}>
-                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-2 lg:pb-1.5">
+                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 lg:px-2 pb-1.5">
                       {group.title}
                     </h3>
-                    <ul className="space-y-0.5">
+                    <ul className="space-y-0.5 lg:space-y-0.5">
                       {group.items.map((item) => {
                         const Icon = item.icon;
                         const isActive = !isMobile && activeSection === item.id;
@@ -1674,7 +1674,7 @@ const DesktopSettingsLayout = ({
                           <li key={item.id}>
                             <button
                               onClick={() => setActiveSection(item.id)}
-                              className={`w-full flex items-center gap-3 px-3 py-3 lg:py-2 rounded-lg text-sm font-medium ${baseTransition} hover:translate-x-0.5 ${
+                              className={`w-full flex items-center gap-3 px-4 lg:px-3 py-3 lg:py-2 rounded-none lg:rounded-lg text-sm font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
@@ -1709,7 +1709,7 @@ const DesktopSettingsLayout = ({
         {/* Dynamic content panel */}
         {showContent && (
           <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-            <div className="bg-transparent lg:bg-card p-4 lg:p-10 min-h-[60vh] lg:min-h-full lg:max-w-4xl lg:mx-auto">
+            <div className="bg-transparent lg:bg-card px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
               <div key={activeSection} className="animate-fade-in">
                 {contentMap[activeSection] ?? contentMap.email}
               </div>
