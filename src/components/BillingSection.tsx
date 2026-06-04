@@ -54,6 +54,7 @@ export default function BillingSection() {
         </div>
       )}
       <ManageSubscriptionCard />
+      <PaymentMethodCard />
       <BillingDetailsCard onSaved={load} />
       <InvoicesCard />
     </div>
