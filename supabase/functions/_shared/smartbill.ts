@@ -134,6 +134,7 @@ export async function issueSmartBillInvoice(
   };
 
   try {
+    console.log("[smartbill] POST /invoice payload:", JSON.stringify(payload));
     const res = await fetch(`${SMARTBILL_API_BASE}/invoice`, {
       method: "POST",
       headers: {
@@ -145,15 +146,14 @@ export async function issueSmartBillInvoice(
     });
 
     const text = await res.text();
+    console.log("[smartbill] response", res.status, text);
     let json: any = null;
     try { json = JSON.parse(text); } catch { /* not json */ }
 
     if (!res.ok || (json && json.errorText)) {
-      return {
-        ok: false,
-        error: (json?.errorText || json?.message || text || `HTTP ${res.status}`).toString().slice(0, 500),
-        raw: json ?? text,
-      };
+      const err = (json?.errorText || json?.message || text || `HTTP ${res.status}`).toString().slice(0, 500);
+      console.error("[smartbill] issue failed:", err);
+      return { ok: false, error: err, raw: json ?? text };
     }
 
     const returnedSeries = json?.series ?? series;
@@ -162,8 +162,11 @@ export async function issueSmartBillInvoice(
       ? `${SMARTBILL_API_BASE}/invoice/pdf?cif=${encodeURIComponent(cif)}&seriesname=${encodeURIComponent(returnedSeries)}&number=${encodeURIComponent(returnedNumber)}`
       : undefined;
 
+    console.log(`[smartbill] issued series=${returnedSeries} number=${returnedNumber}`);
     return { ok: true, series: returnedSeries, number: returnedNumber, url, raw: json };
   } catch (err) {
+    console.error("[smartbill] exception:", (err as Error).message);
     return { ok: false, error: (err as Error).message };
   }
 }
+
