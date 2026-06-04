@@ -1674,7 +1674,7 @@ const DesktopSettingsLayout = ({
                           <li key={item.id}>
                             <button
                               onClick={() => setActiveSection(item.id)}
-                              className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-4 lg:py-2 border-b lg:border-b-0 border-border rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
+                              className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
