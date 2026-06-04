@@ -237,6 +237,7 @@ const MyPlan = () => {
               })}
             </div>
 
+            <ManageSubscriptionCard />
             <BillingDetailsCard />
             <InvoicesCard />
           </div>
