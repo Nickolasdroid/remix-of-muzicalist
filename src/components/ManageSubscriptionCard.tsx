@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CreditCard, Settings, XCircle, Calendar, Tag } from "lucide-react";
+import { CreditCard, Settings, XCircle, Calendar, Tag, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { openCustomerPortal } from "@/lib/checkout";
 import { subscriptionPlans } from "@/lib/subscriptionPlans";
 
@@ -156,7 +157,7 @@ const ManageSubscriptionCard = () => {
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
         <Button
           variant="outline"
           onClick={handleManage}
@@ -167,15 +168,36 @@ const ManageSubscriptionCard = () => {
           {actionLoading === "manage" ? "Opening…" : "Manage billing"}
         </Button>
         {!cancelAtPeriodEnd && (
-          <Button
-            variant="destructive"
-            onClick={() => setConfirmOpen(true)}
-            disabled={actionLoading !== null}
-            className="rounded-lg"
-          >
-            <XCircle className="h-4 w-4 mr-2" />
-            Cancel subscription
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => setConfirmOpen(true)}
+              disabled={actionLoading !== null}
+              className="rounded-lg"
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Cancel subscription
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Cancellation info"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <Info className="h-3.5 w-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent side="top" className="rounded-lg w-72 text-sm">
+                <p className="font-medium text-foreground mb-1">Cancel plan</p>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  If you cancel, you will keep full access to your plan's features
+                  until the end of the current billing period. After that, your
+                  account moves to the Free plan and you will not be charged again.
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
         )}
       </div>
 
