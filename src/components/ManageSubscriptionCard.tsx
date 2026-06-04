@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -12,8 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CreditCard, Settings, XCircle } from "lucide-react";
+import { CreditCard, Settings, XCircle, Calendar, Tag } from "lucide-react";
 import { openCustomerPortal } from "@/lib/checkout";
+import { subscriptionPlans } from "@/lib/subscriptionPlans";
 
 const ManageSubscriptionCard = () => {
   const { toast } = useToast();
@@ -82,6 +84,11 @@ const ManageSubscriptionCard = () => {
   if (loading) return null;
   if (plan === "Free" || !hasCustomer) return null;
 
+  const planDef = subscriptionPlans.find((p) => p.id === plan);
+  const priceLabel = planDef && planDef.monthlyPrice > 0
+    ? `$${planDef.monthlyPrice} / month`
+    : null;
+
   const endDateLabel = periodEnd
     ? new Date(periodEnd).toLocaleDateString(undefined, {
         year: "numeric",
@@ -90,25 +97,62 @@ const ManageSubscriptionCard = () => {
       })
     : null;
 
+  const normalizedStatus = (status || "").toLowerCase();
+  const statusMeta: { label: string; tone: "success" | "warning" | "danger" | "neutral" } =
+    cancelAtPeriodEnd
+      ? { label: "Cancelled", tone: "warning" }
+      : normalizedStatus === "active" || normalizedStatus === "trialing"
+        ? { label: "Active", tone: "success" }
+        : normalizedStatus === "past_due" || normalizedStatus === "unpaid"
+          ? { label: "Past due", tone: "danger" }
+          : normalizedStatus === "canceled" || normalizedStatus === "cancelled"
+            ? { label: "Cancelled", tone: "warning" }
+            : { label: status || "Unknown", tone: "neutral" };
+
+  const toneClasses: Record<typeof statusMeta.tone, string> = {
+    success: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+    warning: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+    danger: "bg-destructive/15 text-destructive border border-destructive/30",
+    neutral: "bg-muted text-muted-foreground border border-border",
+  };
+
   return (
     <div className="rounded-lg border border-border bg-card p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <CreditCard className="h-4 w-4 text-accent" />
-        <h2 className="text-base font-semibold text-foreground">Manage subscription</h2>
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-4 w-4 text-accent" />
+          <h2 className="text-base font-semibold text-foreground">Current plan</h2>
+        </div>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${toneClasses[statusMeta.tone]}`}>
+          {statusMeta.label}
+        </span>
       </div>
 
-      <div className="text-sm text-muted-foreground space-y-1 mb-4">
-        <p>
-          Current plan: <span className="text-foreground font-medium">{plan}</span>
-          {status ? <span className="ml-2 text-xs">({status})</span> : null}
-        </p>
+      <div className="rounded-lg border border-border/60 bg-muted/30 p-4 mb-4">
+        <div className="flex items-baseline justify-between gap-3 flex-wrap">
+          <div>
+            <p className="text-xl font-semibold text-foreground">{planDef?.name ?? plan} Plan</p>
+            {priceLabel && (
+              <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5">
+                <Tag className="h-3.5 w-3.5" />
+                {priceLabel}
+              </p>
+            )}
+          </div>
+          {endDateLabel && (
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5 justify-end">
+                <Calendar className="h-3.5 w-3.5" />
+                {cancelAtPeriodEnd ? "Access until" : "Next billing"}
+              </p>
+              <p className="text-sm font-medium text-foreground mt-0.5">{endDateLabel}</p>
+            </div>
+          )}
+        </div>
         {cancelAtPeriodEnd && endDateLabel && (
-          <p className="text-amber-500">
-            Cancellation scheduled. Access remains until {endDateLabel}.
+          <p className="text-xs text-amber-400 mt-3">
+            Cancellation scheduled. Your account moves to Free after {endDateLabel}.
           </p>
-        )}
-        {!cancelAtPeriodEnd && endDateLabel && (
-          <p>Next billing date: {endDateLabel}</p>
         )}
       </div>
 
