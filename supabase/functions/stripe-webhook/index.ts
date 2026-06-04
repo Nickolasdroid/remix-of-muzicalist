@@ -1,5 +1,5 @@
 // Stripe webhook handler — price_id is the single source of truth
-import Stripe from "https://esm.sh/stripe@17.5.0?target=deno";
+import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getPlanFromPriceId } from "../_shared/stripePriceMap.ts";
 import { issueSmartBillInvoice } from "../_shared/smartbill.ts";
