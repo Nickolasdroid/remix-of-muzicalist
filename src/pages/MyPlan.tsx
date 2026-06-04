@@ -10,6 +10,7 @@ import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 import BillingDetailsCard from "@/components/BillingDetailsCard";
 import InvoicesCard from "@/components/InvoicesCard";
+import ManageSubscriptionCard from "@/components/ManageSubscriptionCard";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -236,6 +237,7 @@ const MyPlan = () => {
               })}
             </div>
 
+            <ManageSubscriptionCard />
             <BillingDetailsCard />
             <InvoicesCard />
           </div>
