@@ -139,6 +139,18 @@ const AutoTranslatePageText = () => {
       }
     };
 
+    let observer: MutationObserver | null = null;
+    const startObserver = () => {
+      if (observer) return;
+      observer = new MutationObserver(scheduleSync);
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    };
+    const stopObserver = () => {
+      if (!observer) return;
+      observer.disconnect();
+      observer = null;
+    };
+
     const flushAsync = async () => {
       const lang = getCurrentLanguage();
       if (lang === "en") {
@@ -152,7 +164,6 @@ const AutoTranslatePageText = () => {
         return;
       }
       await translateTexts(lang, missing);
-      // After fetching, re-run sync pass to apply.
       runSync();
       revealBody();
     };
@@ -169,49 +180,72 @@ const AutoTranslatePageText = () => {
         revealBody();
         return;
       }
-      const { textNodes, attrTargets, originals } = collect();
-      const map = translateTextsSync(lang, originals);
-      apply(lang, textNodes, attrTargets, map);
+      // Pause observer so our own DOM writes don't re-trigger us.
+      stopObserver();
+      try {
+        const { textNodes, attrTargets, originals } = collect();
+        const map = translateTextsSync(lang, originals);
+        apply(lang, textNodes, attrTargets, map);
 
-      // Queue any still-missing strings for async fetch.
-      let hasMissing = false;
-      originals.forEach((o) => {
-        if (!map[o]) {
-          pendingMissing.current.add(o);
-          hasMissing = true;
+        let hasMissing = false;
+        originals.forEach((o) => {
+          if (!map[o]) {
+            pendingMissing.current.add(o);
+            hasMissing = true;
+          }
+        });
+        if (hasMissing) {
+          scheduleAsync();
+        } else {
+          revealBody();
         }
-      });
-      if (hasMissing) {
-        scheduleAsync();
-      } else {
-        revealBody();
+      } finally {
+        startObserver();
       }
     };
 
+    const SYNC_DEBOUNCE_MS = 200;
+    let syncTimer: number | null = null;
     const scheduleSync = () => {
-      if (rafRef.current) return;
-      rafRef.current = window.requestAnimationFrame(() => {
-        rafRef.current = null;
-        runSync();
-      });
+      if (getCurrentLanguage() === "en") return; // no work needed on English
+      if (syncTimer) window.clearTimeout(syncTimer);
+      syncTimer = window.setTimeout(() => {
+        syncTimer = null;
+        if (rafRef.current) return;
+        rafRef.current = window.requestAnimationFrame(() => {
+          rafRef.current = null;
+          runSync();
+        });
+      }, SYNC_DEBOUNCE_MS);
     };
 
-    const observer = new MutationObserver(scheduleSync);
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    // Only attach the observer when translation is actually needed.
+    if (getCurrentLanguage() !== "en") {
+      startObserver();
+    }
     const onLanguageChanged = () => {
       pendingMissing.current.clear();
-      runSync();
+      if (getCurrentLanguage() === "en") {
+        stopObserver();
+        restoreEnglish();
+        revealBody();
+      } else {
+        startObserver();
+        runSync();
+      }
     };
     i18n.on("languageChanged", onLanguageChanged);
     runSync();
 
     return () => {
-      observer.disconnect();
+      stopObserver();
       i18n.off("languageChanged", onLanguageChanged);
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
+      if (syncTimer) window.clearTimeout(syncTimer);
     };
   }, []);
+
 
   return null;
 };
