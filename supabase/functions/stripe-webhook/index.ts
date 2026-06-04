@@ -67,6 +67,7 @@ async function syncSubscription(subscription: Stripe.Subscription, fallbackProfi
     stripe_subscription_id: subscription.id,
     subscription_status: status,
     subscription_current_period_end: periodEnd,
+    subscription_cancel_at_period_end: !!subscription.cancel_at_period_end,
   };
 
   if (planInfo && isActive) {
