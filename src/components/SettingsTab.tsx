@@ -1466,6 +1466,7 @@ const SettingsTab = ({
     groups={desktopSettingGroups}
     activeSection={effectiveSection}
     setActiveSection={setActiveSection}
+    isMobile={isMobile}
     contentMap={{
       email: EmailContent,
       password: PasswordContent,
