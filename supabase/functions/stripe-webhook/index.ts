@@ -213,6 +213,7 @@ Deno.serve(async (req) => {
             plan: "Free",
             billing: null,
             subscription_status: "canceled",
+            subscription_cancel_at_period_end: false,
             stripe_subscription_id: sub.id,
           }).eq("id", profileId);
         }
