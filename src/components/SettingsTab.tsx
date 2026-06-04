@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText } from "lucide-react";
 import BillingSection from "@/components/BillingSection";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service";
 
 export type NotificationPreferenceKey =
   | "reviews"
@@ -489,6 +489,8 @@ const SettingsTab = ({
         { id: "help", label: "Help & Support", icon: HelpCircle },
         { id: "report", label: "Report an Issue", icon: Flag },
         { id: "about", label: "About", icon: Info },
+        { id: "privacy_policy", label: "Privacy Policy", icon: FileText },
+        { id: "terms_of_service", label: "Terms of Service", icon: FileText },
       ],
     },
     {
@@ -1449,6 +1451,8 @@ const SettingsTab = ({
         { id: "help", label: "Help Center", icon: HelpCircle },
         { id: "report", label: "Report a Problem", icon: Flag },
         { id: "about", label: "About Muzicalist", icon: Info },
+        { id: "privacy_policy", label: "Privacy Policy", icon: FileText },
+        { id: "terms_of_service", label: "Terms of Service", icon: FileText },
       ],
     },
     {
@@ -1478,6 +1482,8 @@ const SettingsTab = ({
       help: HelpContent,
       report: ReportContent,
       about: AboutContent,
+      privacy_policy: PrivacyPolicyContent,
+      terms_of_service: TermsOfServiceContent,
       logout: LogoutContent,
       delete: DeleteContent,
       billing: (
