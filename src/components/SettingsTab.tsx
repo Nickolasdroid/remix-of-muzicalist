@@ -1643,7 +1643,7 @@ const DesktopSettingsLayout = ({
         {showNav && (
           <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
             <div className="bg-transparent px-0 pt-2 pb-0 lg:p-5">
-              <h1 className="text-2xl lg:text-lg font-semibold text-foreground px-4 lg:px-1 mb-3">Settings</h1>
+              <h1 className="hidden lg:block text-2xl lg:text-lg font-semibold text-foreground px-4 lg:px-1 mb-3">Settings</h1>
               <div className="relative mb-3 lg:mb-4 px-4 lg:px-0">
                 <Search className="absolute left-7 lg:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
