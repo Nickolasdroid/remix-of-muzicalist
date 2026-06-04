@@ -1132,6 +1132,18 @@ const SettingsTab = ({
             </Button>
           </div>
         )}
+        {activeSection === "billing" && (
+          <div className="p-4 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold">Billing</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your billing details and invoices
+              </p>
+            </div>
+            <BillingDetailsCard />
+            <InvoicesCard />
+          </div>
+        )}
 
         <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
           <DialogContent className="sm:max-w-md">
