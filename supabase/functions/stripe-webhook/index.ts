@@ -67,6 +67,7 @@ async function syncSubscription(subscription: Stripe.Subscription, fallbackProfi
     stripe_subscription_id: subscription.id,
     subscription_status: status,
     subscription_current_period_end: periodEnd,
+    subscription_cancel_at_period_end: !!subscription.cancel_at_period_end,
   };
 
   if (planInfo && isActive) {
@@ -212,6 +213,7 @@ Deno.serve(async (req) => {
             plan: "Free",
             billing: null,
             subscription_status: "canceled",
+            subscription_cancel_at_period_end: false,
             stripe_subscription_id: sub.id,
           }).eq("id", profileId);
         }
