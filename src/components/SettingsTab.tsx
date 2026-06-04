@@ -1656,7 +1656,7 @@ const DesktopSettingsLayout = ({
               <div className="flex flex-col gap-2 lg:gap-4">
                 {filteredGroups.map((group) => (
                   <div key={group.title}>
-                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 lg:px-2 pb-1 lg:pb-1.5">
+                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 lg:px-2 pb-1 lg:pb-1.5">
                       {group.title}
                     </h3>
                     <ul className="space-y-0.5">
@@ -1674,7 +1674,7 @@ const DesktopSettingsLayout = ({
                           <li key={item.id}>
                             <button
                               onClick={() => setActiveSection(item.id)}
-                              className={`w-full flex items-center gap-3 px-4 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
+                              className={`w-full flex items-center gap-3 px-2 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
