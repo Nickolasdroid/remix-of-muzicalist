@@ -12,8 +12,8 @@ export const PRICE_MAP: Record<string, PlanInfo> = {
   // Standard
   "price_1TSEqwKBZxdkesfhjRUVTm8l": { plan: "Standard", billing: "monthly" },
   "price_1TSErCKBZxdkesfhVK7ZAABc": { plan: "Standard", billing: "yearly" },
-  // Premium — monthly TEMP-swapped to 1 RON test price (revert to price_1TSEstKBZxdkesfhvBGTOGmP after SmartBill verification)
-  "price_1Tf2pvKBZxdkesfhWG5Irf1f": { plan: "Premium", billing: "monthly" },
+  // Premium
+  "price_1TSEstKBZxdkesfhvBGTOGmP": { plan: "Premium", billing: "monthly" },
   "price_1TSEtLKBZxdkesfho910v66y": { plan: "Premium", billing: "yearly" },
 };
 
