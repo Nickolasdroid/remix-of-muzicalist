@@ -2,7 +2,7 @@
 import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getPlanFromPriceId } from "../_shared/stripePriceMap.ts";
-import { issueSmartBillInvoice } from "../_shared/smartbill.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -108,55 +108,6 @@ Deno.serve(async (req) => {
     console.warn("Event log insert warning:", logErr.message);
   }
 
-  // Helper: issue a SmartBill invoice for a Stripe invoice (idempotent by stripe_event_id)
-  async function issueAndRecord(profileId: string, invoice: Stripe.Invoice, eventId: string) {
-    const { data: existing } = await supabase
-      .from("invoices")
-      .select("id")
-      .eq("stripe_event_id", eventId)
-      .maybeSingle();
-    if (existing) {
-      console.log(`[stripe-webhook] invoice already recorded for event ${eventId}, skipping`);
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", profileId)
-      .maybeSingle();
-
-    if (!profile) {
-      console.error(`[stripe-webhook] profile ${profileId} not found, cannot issue invoice`);
-      return;
-    }
-
-    console.log(`[stripe-webhook] issuing SmartBill invoice for profile=${profileId} stripe_invoice=${invoice.id} amount=${invoice.amount_paid}`);
-    const result = await issueSmartBillInvoice(profile as any, {
-      id: invoice.id,
-      amount_paid: invoice.amount_paid,
-      currency: invoice.currency,
-      number: invoice.number ?? undefined,
-      hosted_invoice_url: invoice.hosted_invoice_url ?? undefined,
-    });
-
-    await supabase.from("invoices").insert({
-      profile_id: profileId,
-      stripe_event_id: eventId,
-      stripe_invoice_id: invoice.id ?? null,
-      stripe_subscription_id: typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription?.id ?? null,
-      smartbill_series: result.series ?? null,
-      smartbill_number: result.number ?? null,
-      smartbill_url: result.url ?? null,
-      amount: (invoice.amount_paid ?? 0) / 100,
-      currency: (invoice.currency ?? "ron").toUpperCase(),
-      status: result.ok ? "issued" : "failed",
-      error_message: result.error ?? null,
-      issued_at: result.ok ? new Date().toISOString() : null,
-    });
-
-    if (!result.ok) console.error("[stripe-webhook] SmartBill issue failed:", result.error);
-  }
 
 
   try {
@@ -251,17 +202,6 @@ Deno.serve(async (req) => {
           await syncSubscription(sub, profileId ?? undefined);
         }
 
-        // Fallback: also issue SmartBill from checkout (covers cases where
-        // invoice.paid/invoice.payment_succeeded never reaches this endpoint).
-        if (profileId && session.invoice) {
-          try {
-            const invId = typeof session.invoice === "string" ? session.invoice : session.invoice.id;
-            const invoice = await stripe.invoices.retrieve(invId);
-            await issueAndRecord(profileId, invoice, event.id);
-          } catch (e) {
-            console.error("[stripe-webhook] checkout-invoice issue failed:", (e as Error).message);
-          }
-        }
         break;
       }
 
@@ -288,22 +228,10 @@ Deno.serve(async (req) => {
       case "invoice.paid":
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        let profileId: string | null = null;
         if (invoice.subscription) {
           const subId = typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription.id;
           const sub = await stripe.subscriptions.retrieve(subId);
           await syncSubscription(sub);
-          const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-          profileId = await findProfileIdByCustomer(customerId);
-        } else if (invoice.customer) {
-          const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer.id;
-          profileId = await findProfileIdByCustomer(customerId);
-        }
-
-        if (profileId) {
-          await issueAndRecord(profileId, invoice, event.id);
-        } else {
-          console.warn(`[stripe-webhook] no profile for invoice ${invoice.id}, cannot issue SmartBill`);
         }
         break;
       }
