@@ -228,22 +228,10 @@ Deno.serve(async (req) => {
       case "invoice.paid":
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        let profileId: string | null = null;
         if (invoice.subscription) {
           const subId = typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription.id;
           const sub = await stripe.subscriptions.retrieve(subId);
           await syncSubscription(sub);
-          const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-          profileId = await findProfileIdByCustomer(customerId);
-        } else if (invoice.customer) {
-          const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer.id;
-          profileId = await findProfileIdByCustomer(customerId);
-        }
-
-        if (profileId) {
-          await issueAndRecord(profileId, invoice, event.id);
-        } else {
-          console.warn(`[stripe-webhook] no profile for invoice ${invoice.id}, cannot issue SmartBill`);
         }
         break;
       }
