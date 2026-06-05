@@ -3,10 +3,12 @@
 export type Plan = "Free" | "Standard" | "Premium";
 export type Billing = "monthly" | "yearly";
 
+// TEMP TEST: Premium monthly swapped to 1 RON test price (price_1Tf2pvKBZxdkesfhWG5Irf1f).
+// Revert price_1Tf2pvKBZxdkesfhWG5Irf1f -> price_1TSEstKBZxdkesfhvBGTOGmP after SmartBill verification.
 export const STRIPE_PRICES: Record<string, { plan: Exclude<Plan, "Free">; billing: Billing }> = {
   price_1TSEqwKBZxdkesfhjRUVTm8l: { plan: "Standard", billing: "monthly" },
   price_1TSErCKBZxdkesfhVK7ZAABc: { plan: "Standard", billing: "yearly" },
-  price_1TSEstKBZxdkesfhvBGTOGmP: { plan: "Premium", billing: "monthly" },
+  price_1Tf2pvKBZxdkesfhWG5Irf1f: { plan: "Premium", billing: "monthly" },
   price_1TSEtLKBZxdkesfho910v66y: { plan: "Premium", billing: "yearly" },
 };
 
@@ -16,7 +18,7 @@ export const PRICE_BY_PLAN: Record<"Standard" | "Premium", Record<Billing, strin
     yearly: "price_1TSErCKBZxdkesfhVK7ZAABc",
   },
   Premium: {
-    monthly: "price_1TSEstKBZxdkesfhvBGTOGmP",
+    monthly: "price_1Tf2pvKBZxdkesfhWG5Irf1f",
     yearly: "price_1TSEtLKBZxdkesfho910v66y",
   },
 };
