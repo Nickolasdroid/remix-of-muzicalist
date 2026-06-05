@@ -202,17 +202,6 @@ Deno.serve(async (req) => {
           await syncSubscription(sub, profileId ?? undefined);
         }
 
-        // Fallback: also issue SmartBill from checkout (covers cases where
-        // invoice.paid/invoice.payment_succeeded never reaches this endpoint).
-        if (profileId && session.invoice) {
-          try {
-            const invId = typeof session.invoice === "string" ? session.invoice : session.invoice.id;
-            const invoice = await stripe.invoices.retrieve(invId);
-            await issueAndRecord(profileId, invoice, event.id);
-          } catch (e) {
-            console.error("[stripe-webhook] checkout-invoice issue failed:", (e as Error).message);
-          }
-        }
         break;
       }
 
