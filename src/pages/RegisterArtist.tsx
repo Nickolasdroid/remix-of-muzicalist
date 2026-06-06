@@ -630,12 +630,10 @@ const RegisterArtist = () => {
         </Link>
       </div>
 
-      {/* Multi-Step Form - centered */}
-      <div className="relative w-full min-h-screen flex flex-col">
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
-          <div className="w-full max-w-xl">
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl space-y-6">
+      {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
+      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
+        <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
             <div className="text-center">
               <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
