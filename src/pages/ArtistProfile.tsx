@@ -727,8 +727,16 @@ const ArtistProfile = () => {
     if (!artist?.music_genres) return [];
     return artist.music_genres.split(',').map((g) => g.trim());
   };
-  const getImages = () => galleryItems.filter((item) => item.type === 'image');
-  const getVideos = () => galleryItems.filter((item) => item.type === 'video');
+  const sortAscByCreated = <T extends { created_at?: string | null }>(arr: T[]) =>
+    arr.slice().sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return ta - tb;
+    });
+  const getImages = () =>
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'image')).slice(0, getImageLimit(artist?.plan));
+  const getVideos = () =>
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'video')).slice(0, getVideoLimit(artist?.plan));
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
