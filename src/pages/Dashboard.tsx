@@ -2399,6 +2399,8 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
+                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} />
+                          <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} />
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
