@@ -554,11 +554,9 @@ const RegisterArtist = () => {
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
         </Link>
 
-        {/* Form - centered */}
-        <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
-        
-          <div className="w-full max-w-md">
-            <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
+        {/* Form - full-screen on mobile, centered card on desktop */}
+        <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+          <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
               {/* Header with logo */}
               <div className="flex flex-col items-center text-center space-y-3">
                 <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
@@ -617,7 +615,6 @@ const RegisterArtist = () => {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 
@@ -630,12 +627,10 @@ const RegisterArtist = () => {
         </Link>
       </div>
 
-      {/* Multi-Step Form - centered */}
-      <div className="relative w-full min-h-screen flex flex-col">
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 md:px-8 lg:px-12">
-          <div className="w-full max-w-xl">
-            {/* Form Container */}
-            <form onSubmit={handleSubmit} className="border border-accent/20 rounded-2xl p-5 md:p-8 bg-card/50 backdrop-blur-sm shadow-xl space-y-6">
+      {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
+      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
+        <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
             <div className="text-center">
               <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
@@ -949,14 +944,11 @@ const RegisterArtist = () => {
                 </div>
               </div>
               }
-            </form>
-          </div>
+          </form>
         </div>
       </div>
 
     </div>);
-
-
 };
 
 export default RegisterArtist;
