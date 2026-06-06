@@ -1,4 +1,6 @@
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+
 
 import { Card } from "@/components/ui/card";
 import { Music2, Users, Target, Heart, Crown, Star, Music, UserRound, ShieldCheck, Briefcase } from "lucide-react";
@@ -367,6 +369,7 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
+      {!isAuthenticated && <Footer />}
     </div>
   );
 };
