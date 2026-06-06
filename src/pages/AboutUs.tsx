@@ -369,7 +369,7 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
-      {!isAuthenticated && <Footer />}
+      <Footer />
     </div>
   );
 };
