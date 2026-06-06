@@ -158,3 +158,49 @@ export const countFilledSocialLinks = (formData: {
   if (formData.spotifyUrl) count++;
   return count;
 };
+
+/**
+ * Gallery visibility helper.
+ *
+ * Returns the gallery item IDs that should remain visible to the public
+ * based on the artist's current plan. Rule: keep OLDEST uploads visible
+ * first; hide the most recent uploads that exceed the plan limit. Media is
+ * never deleted on downgrade — only visibility changes.
+ */
+export interface GalleryItemForVisibility {
+  id: string;
+  type: string;
+  created_at?: string | null;
+}
+
+export const computeGalleryVisibility = <T extends GalleryItemForVisibility>(
+  items: T[],
+  plan?: string | null
+): { visibleIds: Set<string>; hiddenIds: Set<string> } => {
+  const imageLimit = getImageLimit(plan);
+  const videoLimit = getVideoLimit(plan);
+
+  const sortAsc = (a: T, b: T) => {
+    const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+    return ta - tb;
+  };
+
+  const images = items.filter((i) => i.type === 'image').slice().sort(sortAsc);
+  const videos = items.filter((i) => i.type === 'video').slice().sort(sortAsc);
+
+  const visibleIds = new Set<string>();
+  const hiddenIds = new Set<string>();
+
+  images.forEach((item, idx) => {
+    if (idx < imageLimit) visibleIds.add(item.id);
+    else hiddenIds.add(item.id);
+  });
+  videos.forEach((item, idx) => {
+    if (idx < videoLimit) visibleIds.add(item.id);
+    else hiddenIds.add(item.id);
+  });
+
+  return { visibleIds, hiddenIds };
+};
+

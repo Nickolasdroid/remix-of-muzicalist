@@ -39,7 +39,7 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
@@ -252,6 +252,14 @@ const Dashboard = () => {
   const videosUsed = galleryItems.filter((item) => item.type === 'video').length;
   const imagesRemaining = STANDARD_IMAGE_LIMIT - imagesUsed;
   const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
+
+  // Visibility map: items uploaded after plan limits are kept stored but hidden
+  // from public profile view. Owner still sees them with a lock overlay.
+  const galleryVisibility = computeGalleryVisibility(galleryItems, currentPlan);
+  const galleryHiddenIds = galleryVisibility.hiddenIds;
+  const imagesOverLimit = imagesUsed > STANDARD_IMAGE_LIMIT;
+  const videosOverLimit = videosUsed > STANDARD_VIDEO_LIMIT;
+  const galleryOverLimit = imagesOverLimit || videosOverLimit;
 
   // Calendar state
   const isMobile = useIsMobile();
@@ -3016,64 +3024,113 @@ const Dashboard = () => {
                           </Dialog>
                         </div>
                         <div className="space-y-8">
+                          {galleryOverLimit && (
+                            <div
+                              className="flex items-start gap-3 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm"
+                              role="alert"
+                            >
+                              <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                              <div className="space-y-1">
+                                <p className="font-medium text-destructive">
+                                  Your gallery exceeds your current plan limits
+                                </p>
+                                <p className="text-muted-foreground">
+                                  Excess media is hidden from public view but remains stored
+                                  safely. Upgrade your subscription to restore visibility.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Photos Section */}
                           <div>
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Images className="h-5 w-5 text-accent" />
                               Photos
-                              <span className="text-muted-foreground">({imagesUsed}/{STANDARD_IMAGE_LIMIT})</span>
+                              <span className={imagesOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
+                                ({imagesUsed}/{STANDARD_IMAGE_LIMIT})
+                              </span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter((item) => item.type === 'image').map((item) => <div key={item.id} className="relative group">
-                                  <div
-                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer"
-                                    onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
-                                  >
-                                    <img src={item.url} alt="Gallery item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                              {galleryItems.filter((item) => item.type === 'image').map((item) => {
+                                const hidden = galleryHiddenIds.has(item.id);
+                                return (
+                                  <div key={item.id} className="relative group">
+                                    <div
+                                      className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer relative"
+                                      onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
+                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                    >
+                                      <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'opacity-40 grayscale' : ''}`} />
+                                      {hidden && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+                                          <div className="rounded-full bg-background/80 p-2 shadow-md">
+                                            <Lock className="h-5 w-5 text-foreground" />
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                      id: item.id,
+                                      url: item.url,
+                                      type: item.type
+                                    }); }} disabled={isSaving}>
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </div>
-                                  <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
-                        id: item.id,
-                        url: item.url,
-                        type: item.type
-                      }); }} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>)}
+                                );
+                              })}
                               {galleryItems.filter((item) => item.type === 'image').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No photos yet. Add your first image!
                                 </div>}
                             </div>
                           </div>
 
-                          {/* Videos Section - hidden for Free plan */}
-                          {STANDARD_VIDEO_LIMIT > 0 && <div>
+                          {/* Videos Section - shown if plan supports videos OR user already has videos (e.g. after downgrade) */}
+                          {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && <div>
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
-                              <span className="text-muted-foreground">({videosUsed}/{STANDARD_VIDEO_LIMIT})</span>
+                              <span className={videosOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
+                                ({videosUsed}/{STANDARD_VIDEO_LIMIT})
+                              </span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter((item) => item.type === 'video').map((item) => <div key={item.id} className="relative group">
-                                  <div
-                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer"
-                                    onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
-                                  >
-                                    <Play className="h-12 w-12 text-accent" />
+                              {galleryItems.filter((item) => item.type === 'video').map((item) => {
+                                const hidden = galleryHiddenIds.has(item.id);
+                                return (
+                                  <div key={item.id} className="relative group">
+                                    <div
+                                      className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
+                                      onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
+                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                    >
+                                      <Play className={`h-12 w-12 text-accent ${hidden ? 'opacity-40' : ''}`} />
+                                      {hidden && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+                                          <div className="rounded-full bg-background/80 p-2 shadow-md">
+                                            <Lock className="h-5 w-5 text-foreground" />
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                      id: item.id,
+                                      url: item.url,
+                                      type: item.type
+                                    }); }} disabled={isSaving}>
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </div>
-                                  <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
-                        id: item.id,
-                        url: item.url,
-                        type: item.type
-                      }); }} disabled={isSaving}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>)}
+                                );
+                              })}
                               {galleryItems.filter((item) => item.type === 'video').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
                                   No videos yet. Add your first video!
                                 </div>}
                             </div>
                           </div>}
                         </div>
+
                       </TabsContent>}
 
                       {/* Calendar Tab */}

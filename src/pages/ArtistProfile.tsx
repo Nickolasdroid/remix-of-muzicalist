@@ -31,7 +31,7 @@ import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, canUseTimeIntervals } from "@/lib/planLimits";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 interface Profile {
@@ -83,6 +83,7 @@ interface GalleryItem {
   type: string;
   url: string;
   thumbnail_url: string | null;
+  created_at?: string | null;
 }
 interface CalendarEvent {
   id: string;
@@ -316,7 +317,7 @@ const ArtistProfile = () => {
           .eq('profile_id', id)
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
-        supabase.from('gallery_items').select('id, type, url, thumbnail_url').eq('profile_id', id),
+        supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at').eq('profile_id', id),
         supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id),
         supabase.from('reviews')
           .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
@@ -726,8 +727,16 @@ const ArtistProfile = () => {
     if (!artist?.music_genres) return [];
     return artist.music_genres.split(',').map((g) => g.trim());
   };
-  const getImages = () => galleryItems.filter((item) => item.type === 'image');
-  const getVideos = () => galleryItems.filter((item) => item.type === 'video');
+  const sortAscByCreated = <T extends { created_at?: string | null }>(arr: T[]) =>
+    arr.slice().sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return ta - tb;
+    });
+  const getImages = () =>
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'image')).slice(0, getImageLimit(artist?.plan));
+  const getVideos = () =>
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'video')).slice(0, getVideoLimit(artist?.plan));
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
