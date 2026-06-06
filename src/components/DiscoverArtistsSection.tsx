@@ -125,7 +125,7 @@ const DiscoverArtistsSection = () => {
                   }}
                 >
                   <Link to={`/artist/${artist.id}`} className="group block">
-                    <div className={`overflow-hidden rounded-lg ${isPremium(artist.plan) ? 'border-2 border-accent' : isStandard(artist.plan) ? 'border-2 border-white' : ''}`}>
+                    <div className="overflow-hidden rounded-lg border border-border">
                       <div className="relative aspect-square overflow-hidden">
                         <PlanBadge plan={artist.plan} />
                         {artist.avatar_url ? (
