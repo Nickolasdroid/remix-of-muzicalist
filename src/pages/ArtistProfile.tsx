@@ -83,6 +83,7 @@ interface GalleryItem {
   type: string;
   url: string;
   thumbnail_url: string | null;
+  created_at?: string | null;
 }
 interface CalendarEvent {
   id: string;
