@@ -554,11 +554,9 @@ const RegisterArtist = () => {
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
         </Link>
 
-        {/* Form - centered */}
-        <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
-        
-          <div className="w-full max-w-md">
-            <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
+        {/* Form - full-screen on mobile, centered card on desktop */}
+        <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+          <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
               {/* Header with logo */}
               <div className="flex flex-col items-center text-center space-y-3">
                 <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
