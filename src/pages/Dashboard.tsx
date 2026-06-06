@@ -253,6 +253,14 @@ const Dashboard = () => {
   const imagesRemaining = STANDARD_IMAGE_LIMIT - imagesUsed;
   const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
 
+  // Visibility map: items uploaded after plan limits are kept stored but hidden
+  // from public profile view. Owner still sees them with a lock overlay.
+  const galleryVisibility = computeGalleryVisibility(galleryItems, currentPlan);
+  const galleryHiddenIds = galleryVisibility.hiddenIds;
+  const imagesOverLimit = imagesUsed > STANDARD_IMAGE_LIMIT;
+  const videosOverLimit = videosUsed > STANDARD_VIDEO_LIMIT;
+  const galleryOverLimit = imagesOverLimit || videosOverLimit;
+
   // Calendar state
   const isMobile = useIsMobile();
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
