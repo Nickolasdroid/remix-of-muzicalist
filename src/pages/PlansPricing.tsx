@@ -106,6 +106,15 @@ const PlansPricing = () => {
             </div>
           </div>
 
+          <div className="max-w-3xl mx-auto mb-8 rounded-lg border border-border bg-card/50 p-4 text-sm text-muted-foreground space-y-1.5">
+            <p className="font-medium text-foreground">How plan changes work</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><span className="text-foreground">Upgrades</span> take effect immediately and unlock more slots for announcements, posts and promotions.</li>
+              <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
+              <li>If your current usage exceeds the new plan limits, new content creation in that category is paused until occupied slots are automatically released (30 days after creation).</li>
+            </ul>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((plan) => {
               const isCurrentPlan = isAuthenticated && isArtist && currentPlan === plan.id;
