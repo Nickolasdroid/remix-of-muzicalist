@@ -615,7 +615,8 @@ const RegisterArtist = () => {
             </div>
           </div>
         </div>
-      </div>);
+      </div>
+    );
   }
 
   return (
