@@ -673,6 +673,7 @@ export type Database = {
             | null
           facebook_url: string | null
           first_name: string
+          gender: string | null
           hide_email: boolean
           hide_phone: boolean
           id: string
@@ -718,6 +719,7 @@ export type Database = {
             | null
           facebook_url?: string | null
           first_name: string
+          gender?: string | null
           hide_email?: boolean
           hide_phone?: boolean
           id: string
@@ -763,6 +765,7 @@ export type Database = {
             | null
           facebook_url?: string | null
           first_name?: string
+          gender?: string | null
           hide_email?: boolean
           hide_phone?: boolean
           id?: string
@@ -907,6 +910,7 @@ export type Database = {
             | null
           facebook_url: string | null
           first_name: string
+          gender: string | null
           hide_email: boolean
           hide_phone: boolean
           id: string

@@ -1531,15 +1531,8 @@ const SettingsTab = ({
           </div>
         </div>
       ),
-      edit_profile: (
-        <ComingSoonPanel
-          icon={User}
-          title="Edit Profile"
-          description="Update your stage name, bio, avatar, location and the rest of your public profile from the Profile tab in your dashboard."
-          actionLabel="Open Profile"
-          onAction={() => navigate("/dashboard?tab=profile")}
-        />
-      ),
+      edit_profile: <EditProfilePanel />,
+
       profile_visibility: (
         <ComingSoonPanel
           icon={Shield}
@@ -1641,6 +1634,118 @@ const ComingSoonPanel = ({
     )}
   </div>
 );
+
+const EditProfilePanel = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [gender, setGender] = useState<string>("prefer_not_to_say");
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      setUserId(user.id);
+      const { data } = await supabase
+        .from("profiles")
+        .select("email, first_name, last_name, gender")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (data) {
+        setEmail((data as any).email || user.email || "");
+        setFirstName((data as any).first_name || "");
+        setLastName((data as any).last_name || "");
+        setGender((data as any).gender || "prefer_not_to_say");
+      } else {
+        setEmail(user.email || "");
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  const handleSave = async () => {
+    if (!userId) return;
+    if (!firstName.trim() || !lastName.trim()) {
+      toast({ title: "Error", description: "First name and last name are required.", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ first_name: firstName.trim(), last_name: lastName.trim(), gender } as any)
+      .eq("id", userId);
+    setSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Profile updated successfully." });
+    }
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <User className="h-5 w-5 text-accent" />
+          Edit Profile
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+          Update your personal information. Email cannot be changed.
+        </p>
+      </div>
+      <Separator />
+      <div className="max-w-xl space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="ep-email">Email</Label>
+          <Input id="ep-email" type="email" value={email} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+          <p className="text-xs text-muted-foreground">Your email address cannot be modified.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="ep-first">First name</Label>
+            <Input id="ep-first" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={loading} className="rounded-lg" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ep-last">Last name</Label>
+            <Input id="ep-last" value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={loading} className="rounded-lg" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Sex</Label>
+          <RadioGroup value={gender} onValueChange={setGender} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[
+              { v: "male", l: "Male" },
+              { v: "female", l: "Female" },
+              { v: "other", l: "Other" },
+              { v: "prefer_not_to_say", l: "Prefer not to say" },
+            ].map((opt) => (
+              <label
+                key={opt.v}
+                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
+              >
+                <RadioGroupItem value={opt.v} id={`ep-gender-${opt.v}`} />
+                <span className="text-sm">{opt.l}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </div>
+        <div className="pt-2">
+          <Button
+            onClick={handleSave}
+            disabled={saving || loading}
+            className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg"
+          >
+            {saving ? "Saving..." : "Save changes"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const DesktopSettingsLayout = ({
   groups,
