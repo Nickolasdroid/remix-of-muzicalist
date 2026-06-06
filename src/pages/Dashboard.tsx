@@ -40,6 +40,7 @@ import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit } from "@/lib/planLimits";
+import OverLimitBanner from "@/components/OverLimitBanner";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
@@ -2398,16 +2399,18 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
+                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} />
+                          <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} />
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Posts: <span className="font-medium text-foreground">{postsUsed}/{STANDARD_POST_LIMIT}</span></span>
+                                <span className="text-sm text-muted-foreground">Posts: <span className={`font-medium ${postsUsed > STANDARD_POST_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{postsUsed}/{STANDARD_POST_LIMIT}</span></span>
                                 <AdSlotInfoButton kind="post" />
                               </div>
                               <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Promotions: <span className="font-medium text-foreground">{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
+                                <span className="text-sm text-muted-foreground">Promotions: <span className={`font-medium ${premiumAdsUsed > PREMIUM_AD_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
                                 <AdSlotInfoButton kind="promotion" />
                               </div>
                             </div>
@@ -2759,10 +2762,11 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
+                          <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} />
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Announcements: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+                              <span className="text-sm text-muted-foreground">Announcements: <span className={`font-medium ${standardAdsUsed > STANDARD_AD_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
                               <AdSlotInfoButton kind="ad" />
                             </div>
                             <div className="flex items-center gap-2">
