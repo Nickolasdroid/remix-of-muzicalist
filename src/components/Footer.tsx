@@ -106,6 +106,15 @@ const Footer = () => {
           <p className="text-muted-foreground text-sm">
             © {currentYear} Muzicalist. All rights reserved.
           </p>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <Link to="/privacy" className="hover:text-accent transition-colors duration-300">
+              Privacy & Policy
+            </Link>
+            <span className="text-border">|</span>
+            <Link to="/terms" className="hover:text-accent transition-colors duration-300">
+              Terms & Conditions
+            </Link>
+          </div>
         </div>
       </div>
     </footer>;
