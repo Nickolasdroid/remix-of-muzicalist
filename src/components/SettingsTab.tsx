@@ -1531,15 +1531,8 @@ const SettingsTab = ({
           </div>
         </div>
       ),
-      edit_profile: (
-        <ComingSoonPanel
-          icon={User}
-          title="Edit Profile"
-          description="Update your stage name, bio, avatar, location and the rest of your public profile from the Profile tab in your dashboard."
-          actionLabel="Open Profile"
-          onAction={() => navigate("/dashboard?tab=profile")}
-        />
-      ),
+      edit_profile: <EditProfilePanel />,
+
       profile_visibility: (
         <ComingSoonPanel
           icon={Shield}
