@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
+
 import Navigation from "@/components/Navigation";
 import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
@@ -142,8 +142,6 @@ const About = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>);
 
 };
