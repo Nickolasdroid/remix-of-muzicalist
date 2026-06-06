@@ -952,11 +952,6 @@ const RegisterArtist = () => {
       </div>
 
     </div>);
-
-
-};
-
-
 };
 
 export default RegisterArtist;
