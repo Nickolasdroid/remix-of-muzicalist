@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-
+import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Music2, Users, Target, Heart, Crown, Star, Music, UserRound, ShieldCheck, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -367,6 +367,8 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

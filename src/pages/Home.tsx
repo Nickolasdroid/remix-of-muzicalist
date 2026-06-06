@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
-
+import Footer from "@/components/Footer";
 import HeroSearchBar from "@/components/HeroSearchBar";
 
 
@@ -102,6 +102,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
