@@ -124,6 +124,22 @@ const UserDashboard = () => {
     navigate('/');
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
+      if (profileError) throw profileError;
+      await supabase.auth.signOut();
+      toast({ title: t("common.success"), description: "Your account has been permanently deleted." });
+      navigate('/');
+    } catch (error: any) {
+      toast({ title: t("common.error"), description: error.message || "Failed to delete account.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Avatar functions
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
