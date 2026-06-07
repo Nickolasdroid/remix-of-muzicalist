@@ -4,7 +4,6 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Crown, Check, X, Info } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
