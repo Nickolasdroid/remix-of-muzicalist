@@ -143,7 +143,7 @@ const MyPlan = () => {
             </div>
 
 
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center gap-2">
               <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
                 <button
                   onClick={() => setIsAnnual(false)}
@@ -158,7 +158,31 @@ const MyPlan = () => {
                   Annual <span className="text-xs opacity-75">Save ~17%</span>
                 </button>
               </div>
+              {isMobile && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      aria-label="How plan changes work"
+                    >
+                      <Info className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 text-sm" align="end">
+                    <p className="font-medium mb-2 text-foreground">How plan changes work</p>
+                    <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
+                      <li><span className="text-foreground">Upgrades</span> take effect immediately — your new slot allowance is available right away.</li>
+                      <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> All your announcements, posts and promotions stay live.</li>
+                      <li>If your current usage exceeds the new plan limits, you simply can't create new items in that category until occupied slots are automatically released (30 days after creation).</li>
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
+
 
 
             <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
