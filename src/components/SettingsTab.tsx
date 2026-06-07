@@ -28,7 +28,8 @@ export type NotificationPreferenceKey =
   | "followers"
   | "booking_requests"
   | "booking_updates"
-  | "messages";
+  | "messages"
+  | "system";
 
 export type NotificationPreferences = Record<NotificationPreferenceKey, boolean>;
 
@@ -40,6 +41,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   booking_requests: true,
   booking_updates: true,
   messages: true,
+  system: true,
 };
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
