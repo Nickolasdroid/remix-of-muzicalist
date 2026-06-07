@@ -305,7 +305,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen md:ml-64 bg-card">
+    <div className={`min-h-screen md:ml-64 ${activeTab === 'settings' ? 'bg-background' : 'bg-card'}`}>
       <Navigation
         onMobileBack={activeTab === 'settings' && settingsSection !== 'main' ? () => setSettingsSection('main') : undefined}
       />
