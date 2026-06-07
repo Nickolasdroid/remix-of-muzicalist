@@ -90,13 +90,13 @@ const Counties = () => {
           </div>
 
           <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-accent z-10" />
-            <Input 
-              type="text" 
-              placeholder="Search for a region..." 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card/50 backdrop-blur border-accent/20" 
+            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+            <Input
+              type="search"
+              placeholder="Search for a region..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-10 md:pl-12 pr-3 md:pr-4 h-10 md:h-14 w-full text-base rounded-2xl md:rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
