@@ -1,7 +1,8 @@
 import Navigation from "@/components/Navigation";
 
 import { Button } from "@/components/ui/button";
-import { Check, X, Crown } from "lucide-react";
+import { Check, X, Crown, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,9 +85,31 @@ const PlansPricing = () => {
       <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-8`}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10 md:mb-16">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-6">
-              Plans & Pricing
-            </h1>
+            <div className="flex items-center justify-center gap-2 mb-3 md:mb-6">
+              <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
+                Plans & Pricing
+              </h1>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="How plan changes work"
+                  >
+                    <Info className="h-5 w-5" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 rounded-lg text-sm space-y-2" align="center">
+                  <p className="font-medium text-foreground">How plan changes work</p>
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    <li><span className="text-foreground">Upgrades</span> take effect immediately and unlock more slots for announcements, posts and promotions.</li>
+                    <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
+                    <li>If your current usage exceeds the new plan limits, new content creation in that category is paused until occupied slots are automatically released (30 days after creation).</li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            </div>
             <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
               Choose the plan that best fits your needs
             </p>
@@ -104,15 +127,6 @@ const PlansPricing = () => {
                 Annual <span className="text-xs opacity-75">Save ~17%</span>
               </button>
             </div>
-          </div>
-
-          <div className="max-w-3xl mx-auto mb-8 rounded-lg border border-border bg-card/50 p-4 text-sm text-muted-foreground space-y-1.5">
-            <p className="font-medium text-foreground">How plan changes work</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li><span className="text-foreground">Upgrades</span> take effect immediately and unlock more slots for announcements, posts and promotions.</li>
-              <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
-              <li>If your current usage exceeds the new plan limits, new content creation in that category is paused until occupied slots are automatically released (30 days after creation).</li>
-            </ul>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
