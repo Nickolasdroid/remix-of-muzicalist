@@ -553,6 +553,7 @@ const UserDashboard = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
