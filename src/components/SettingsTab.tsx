@@ -1795,11 +1795,11 @@ const DesktopSettingsLayout = ({
   const showContent = !isMobile || activeSection !== "main";
 
   return (
-    <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 lg:bg-card">
+    <div className="w-full lg:fixed lg:inset-y-0 lg:left-64 lg:right-0 lg:z-20 bg-card">
       <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
         {showNav && (
-          <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border lg:bg-background">
+          <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border bg-background">
             <div className="bg-transparent px-0 pt-2 pb-0 lg:p-5">
               <h1 className="hidden lg:block text-2xl lg:text-lg font-semibold text-foreground px-4 lg:px-1 mb-3">Settings</h1>
               <div className="relative mb-3 lg:mb-4 px-4 lg:px-0">
@@ -1871,7 +1871,7 @@ const DesktopSettingsLayout = ({
         {/* Dynamic content panel */}
         {showContent && (
           <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-            <div className="bg-transparent lg:bg-card px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
+            <div className="bg-card px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
               <div key={activeSection} className="animate-fade-in">
                 {contentMap[activeSection] ?? contentMap.email}
               </div>
