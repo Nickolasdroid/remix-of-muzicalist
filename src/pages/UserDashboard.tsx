@@ -334,6 +334,21 @@ const UserDashboard = () => {
         </div>
       )}
 
+      {activeTab === 'settings' ? (
+        <div className="pt-16 md:pt-8 pb-20 md:pb-20 px-0 md:px-4">
+          <div className="container mx-auto max-w-6xl px-0 md:px-0">
+            <SettingsTab
+              accountType="user"
+              formData={{ email: profile?.email || user?.email || "" }}
+              handleLogout={handleLogout}
+              handleDeleteAccount={handleDeleteAccount}
+              isSaving={isSaving}
+              activeSection={settingsSection}
+              onSectionChange={setSettingsSection}
+            />
+          </div>
+        </div>
+      ) : (
       <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]">
         {/* Profile Header - matching public user profile format */}
         <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
