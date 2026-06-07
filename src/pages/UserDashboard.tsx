@@ -306,7 +306,9 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen md:ml-64 bg-card">
-      <Navigation />
+      <Navigation
+        onMobileBack={activeTab === 'settings' && settingsSection !== 'main' ? () => setSettingsSection('main') : undefined}
+      />
 
       {/* Avatar Cropper Dialog */}
       {showCropper && imageSrc && (
