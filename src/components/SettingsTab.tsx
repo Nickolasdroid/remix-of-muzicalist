@@ -55,6 +55,7 @@ interface SettingsTabProps {
   isSaving: boolean;
   activeSection?: SettingSection;
   onSectionChange?: (section: SettingSection) => void;
+  accountType?: "user" | "artist";
 }
 
 const SettingsTab = ({
@@ -64,6 +65,7 @@ const SettingsTab = ({
   isSaving,
   activeSection: controlledSection,
   onSectionChange,
+  accountType = "artist",
 }: SettingsTabProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -1056,7 +1058,8 @@ const SettingsTab = ({
 
 
   // Unified view (mobile = Instagram-style master/detail, desktop = three-column)
-  const effectiveSection: SettingSection = activeSection === "main" ? (isMobile ? "main" : "email") : activeSection;
+  const defaultDesktopSection: SettingSection = accountType === "user" ? "edit_profile" : "email";
+  const effectiveSection: SettingSection = activeSection === "main" ? (isMobile ? "main" : defaultDesktopSection) : activeSection;
 
 
   const EmailContent = (
@@ -1491,11 +1494,27 @@ const SettingsTab = ({
     },
   ];
 
+  // For regular User accounts, hide artist/subscription-only sections to keep
+  // the settings menu minimal and focused on essential account management.
+  const userHiddenSections = new Set<SettingSection>([
+    "billing",
+    "comments",
+    "mentions_tags",
+    "display_settings",
+    "about",
+    "promotion",
+  ]);
+  const visibleGroups = accountType === "user"
+    ? desktopSettingGroups
+        .map((g) => ({ ...g, items: g.items.filter((i) => !userHiddenSections.has(i.id)) }))
+        .filter((g) => g.items.length > 0)
+    : desktopSettingGroups;
+
 
 
 
   return <DesktopSettingsLayout
-    groups={desktopSettingGroups}
+    groups={visibleGroups}
     activeSection={effectiveSection}
     setActiveSection={setActiveSection}
     isMobile={isMobile}

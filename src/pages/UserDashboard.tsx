@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { formatDateNoYear, formatSmartDate, sanitizeFileName } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import SettingsTab, { SettingSection } from "@/components/SettingsTab";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,9 @@ const UserDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'settings' ? 'settings' : 'profile';
+  const [settingsSection, setSettingsSection] = useState<SettingSection>('main');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -118,6 +122,22 @@ const UserDashboard = () => {
       console.log('Logout completed');
     }
     navigate('/');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
+      if (profileError) throw profileError;
+      await supabase.auth.signOut();
+      toast({ title: t("common.success"), description: "Your account has been permanently deleted." });
+      navigate('/');
+    } catch (error: any) {
+      toast({ title: t("common.error"), description: error.message || "Failed to delete account.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Avatar functions
@@ -286,7 +306,9 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen md:ml-64 bg-card">
-      <Navigation />
+      <Navigation
+        onMobileBack={activeTab === 'settings' && settingsSection !== 'main' ? () => setSettingsSection('main') : undefined}
+      />
 
       {/* Avatar Cropper Dialog */}
       {showCropper && imageSrc && (
@@ -314,6 +336,21 @@ const UserDashboard = () => {
         </div>
       )}
 
+      {activeTab === 'settings' ? (
+        <div className="pt-16 md:pt-8 pb-20 md:pb-20 px-0 md:px-4">
+          <div className="container mx-auto max-w-6xl px-0 md:px-0">
+            <SettingsTab
+              accountType="user"
+              formData={{ email: profile?.email || user?.email || "" }}
+              handleLogout={handleLogout}
+              handleDeleteAccount={handleDeleteAccount}
+              isSaving={isSaving}
+              activeSection={settingsSection}
+              onSectionChange={setSettingsSection}
+            />
+          </div>
+        </div>
+      ) : (
       <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]">
         {/* Profile Header - matching public user profile format */}
         <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
@@ -518,6 +555,7 @@ const UserDashboard = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />

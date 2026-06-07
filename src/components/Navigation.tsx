@@ -371,7 +371,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 {/* Settings (only when logged in) */}
                 {user && (
                   <Link
-                    to="/dashboard?tab=settings"
+                    to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
                       location.search.includes('tab=settings') ? 'text-accent' : 'text-foreground'
@@ -416,7 +416,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
           ) : user ? (
             <>
-              {location.pathname === '/dashboard' && location.search.includes('tab=settings') ? (
+              {(location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings') ? (
                 <span className="font-display font-bold text-foreground text-lg">Settings</span>
               ) : location.pathname === '/leaderboard' ? (
                 <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
@@ -471,7 +471,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       </nav>
 
       {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
-      {user && !(location.pathname === '/dashboard' && location.search.includes('tab=settings')) && (
+      {user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings')) && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
@@ -580,7 +580,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               <div className="space-y-1">
                 {user && (
                   <Link
-                    to="/dashboard?tab=settings"
+                    to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       location.search.includes('tab=settings')
                         ? 'bg-accent/20 text-accent'
