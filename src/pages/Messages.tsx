@@ -571,7 +571,7 @@ const Messages = () => {
         {/* Desktop: Grid layout */}
         <div className="hidden md:grid md:grid-cols-3 h-screen">
           {/* Conversations List */}
-          <div className="md:col-span-1 p-0 overflow-hidden bg-card border-r border-border">
+          <div className="md:col-span-1 p-0 overflow-hidden bg-background border-r border-border">
             <div className="flex border-b border-border">
               <button
                 onClick={() => setActiveTab('conversations')}
@@ -672,7 +672,7 @@ const Messages = () => {
             </div>
 
           {/* Messages Area */}
-          <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-card">
+          <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-background">
             {selectedConversation || pendingArtist ? <>
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center gap-3">
@@ -767,7 +767,7 @@ const Messages = () => {
 
         {/* Mobile: Full-width conversation list */}
         <div className="md:hidden h-full">
-          <div className="p-0 overflow-hidden bg-card h-full border-t border-border">
+          <div className="p-0 overflow-hidden bg-background h-full border-t border-border">
             <div className="flex border-b border-border">
               <button
                 onClick={() => setActiveTab('conversations')}
@@ -869,7 +869,7 @@ const Messages = () => {
           {(selectedConversation || pendingArtist) && <div className="fixed top-14 bottom-16 left-0 right-0 z-40 bg-background">
               <div className="flex flex-col h-full">
                 {/* Header */}
-                <div className="p-3 border-b border-border flex items-center gap-3 bg-card">
+                <div className="p-3 border-b border-border flex items-center gap-3 bg-background">
                   <Button variant="ghost" size="icon" onClick={() => {
                 setSelectedConversation(null);
                 setPendingArtist(null);
@@ -909,7 +909,7 @@ const Messages = () => {
                 {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-4 bg-card">
+                <ScrollArea className="flex-1 p-4 bg-background">
                   <div className="space-y-4">
                     {messages.length === 0 && pendingArtist && <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
                         Send a message to start the conversation
@@ -948,11 +948,11 @@ const Messages = () => {
 
                 {/* Input */}
                 {isAdConversationLocked ? (
-                  <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-card">
+                  <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-background">
                     This ad has been deleted or has expired. You can no longer send messages.
                   </div>
                 ) : (
-                <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-card">
+                <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-background">
                   <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} className="text-base" />
                   <Button type="submit" disabled={sending || !newMessage.trim()} size="icon">
                     <Send className="h-4 w-4" />
