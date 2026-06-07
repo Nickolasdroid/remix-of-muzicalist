@@ -371,7 +371,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 {/* Settings (only when logged in) */}
                 {user && (
                   <Link
-                    to="/dashboard?tab=settings"
+                    to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
                       location.search.includes('tab=settings') ? 'text-accent' : 'text-foreground'
@@ -580,7 +580,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               <div className="space-y-1">
                 {user && (
                   <Link
-                    to="/dashboard?tab=settings"
+                    to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       location.search.includes('tab=settings')
                         ? 'bg-accent/20 text-accent'
