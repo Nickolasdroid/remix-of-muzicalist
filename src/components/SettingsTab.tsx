@@ -28,7 +28,8 @@ export type NotificationPreferenceKey =
   | "followers"
   | "booking_requests"
   | "booking_updates"
-  | "messages";
+  | "messages"
+  | "system";
 
 export type NotificationPreferences = Record<NotificationPreferenceKey, boolean>;
 
@@ -40,6 +41,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   booking_requests: true,
   booking_updates: true,
   messages: true,
+  system: true,
 };
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
@@ -1009,7 +1011,7 @@ const SettingsTab = ({
   );
 
   // Shared: Notifications section content (used by both mobile and desktop)
-  const notificationItems: { key: NotificationPreferenceKey; label: string; description: string; icon: any }[] = [
+  const artistNotificationItems: { key: NotificationPreferenceKey; label: string; description: string; icon: any }[] = [
     { key: "reviews", label: "Reviews", description: "When someone leaves you a review", icon: Star },
     { key: "likes", label: "Likes", description: "When someone likes your post, announcement, or comment", icon: Heart },
     { key: "comments", label: "Comments", description: "When someone comments on your post or announcement", icon: MessageSquare },
@@ -1018,6 +1020,16 @@ const SettingsTab = ({
     { key: "booking_updates", label: "Booking updates", description: "Cancellations and status changes on bookings", icon: CalendarX },
     { key: "messages", label: "Messages", description: "When you receive a new message", icon: MessageCircle },
   ];
+
+  const userNotificationItems: { key: NotificationPreferenceKey; label: string; description: string; icon: any }[] = [
+    { key: "comments", label: "Announcement comments", description: "When someone comments on one of your announcements.", icon: MessageSquare },
+    { key: "messages", label: "Messages", description: "When you receive a new private message.", icon: MessageCircle },
+    { key: "booking_requests", label: "Booking request status", description: "When an artist accepts or rejects your booking request.", icon: Calendar },
+    { key: "booking_updates", label: "Booking status updates", description: "When there is an update regarding one of your booking requests.", icon: CalendarX },
+    { key: "system", label: "System notifications", description: "Important updates regarding your account, security, policies, or platform changes.", icon: Bell },
+  ];
+
+  const notificationItems = accountType === "user" ? userNotificationItems : artistNotificationItems;
 
   const NotificationsSectionContent = (
     <div className="space-y-6">
