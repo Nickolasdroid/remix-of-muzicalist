@@ -1,7 +1,8 @@
 import Navigation from "@/components/Navigation";
 
 import { Button } from "@/components/ui/button";
-import { Check, X, Crown } from "lucide-react";
+import { Check, X, Crown, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
