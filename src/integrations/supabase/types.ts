@@ -890,6 +890,44 @@ export type Database = {
     }
     Functions: {
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      get_my_calendar_event_for_date: {
+        Args: { _event_date: string }
+        Returns: {
+          created_at: string
+          event_date: string
+          event_type: string | null
+          id: string
+          notes: string | null
+          profile_id: string
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "calendar_events"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_my_calendar_events: {
+        Args: never
+        Returns: {
+          created_at: string
+          event_date: string
+          event_type: string | null
+          id: string
+          notes: string | null
+          profile_id: string
+          status: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "calendar_events"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_my_full_profile: {
         Args: never
         Returns: {

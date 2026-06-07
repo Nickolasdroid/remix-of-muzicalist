@@ -339,7 +339,7 @@ const Dashboard = () => {
     if (!user) return;
     const {
       data
-    } = await supabase.from('calendar_events').select('*').eq('profile_id', user.id);
+    } = await (supabase as any).rpc('get_my_calendar_events');
     if (data) setCalendarEvents(data);
   };
   const loadBookingRequests = async () => {
@@ -1540,8 +1540,9 @@ const Dashboard = () => {
       for (const date of datesToBook) {
         // Check if there's an existing calendar event for this date
         const {
-          data: existingEvent
-        } = await supabase.from('calendar_events').select('*').eq('profile_id', user!.id).eq('event_date', date).maybeSingle();
+          data: existingRows
+        } = await (supabase as any).rpc('get_my_calendar_event_for_date', { _event_date: date });
+        const existingEvent = Array.isArray(existingRows) && existingRows[0] ? existingRows[0] : null;
         let updatedNotes = newBookingEntry;
         if (datesToBook.length > 1) {
           updatedNotes += `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})`;
