@@ -337,7 +337,7 @@ const UserDashboard = () => {
       )}
 
       {activeTab === 'settings' ? (
-        <div className="pt-16 md:pt-8 pb-20 md:pb-20 px-0 md:px-0 py-0">
+        <div className="pt-16 md:pt-8 pb-20 md:pb-20 px-0 md:px-0 bg-background">
           <div className="container mx-auto max-w-6xl px-0 md:px-0">
             <SettingsTab
               accountType="user"
