@@ -1871,7 +1871,7 @@ const DesktopSettingsLayout = ({
         {/* Dynamic content panel */}
         {showContent && (
           <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-            <div className="bg-card px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
+            <div className="bg-background px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
               <div key={activeSection} className="animate-fade-in">
                 {contentMap[activeSection] ?? contentMap.email}
               </div>
