@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { formatDateNoYear, formatSmartDate, sanitizeFileName } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import SettingsTab, { SettingSection } from "@/components/SettingsTab";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,9 @@ const UserDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'settings' ? 'settings' : 'profile';
+  const [settingsSection, setSettingsSection] = useState<SettingSection>('main');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
