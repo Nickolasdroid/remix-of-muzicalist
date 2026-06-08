@@ -1,54 +1,30 @@
-## Goal
+## Curățare completă SmartBill
 
-Make subscription upgrade/downgrade behavior explicit and user-visible for slot-based resources (Announcements, Posts, Promotions). Existing content must never be touched on downgrade; only new creation is gated until consumed slots expire (30-day cooldown).
+Eliminăm definitiv toate urmele integrării SmartBill din proiect. Nu există cod activ care să folosească SmartBill — doar artefacte rămase.
 
-## Current state (no change needed)
+### 1. Ștergere secrete Supabase
+Elimin cele 5 secrete neutilizate:
+- `SMARTBILL_API_TOKEN`
+- `SMARTBILL_CIF`
+- `SMARTBILL_SERIES`
+- `SMARTBILL_USERNAME`
+- `SMARTBILL_VAT_PAYER`
 
-- Slots are tracked in `consumed_ad_slots` per creation, released after 30 days regardless of deletion.
-- Counters in `Dashboard.tsx` already use `consumed_ad_slots` count vs `getAdLimit / getPostLimit / getPromotionLimit` from `planLimits.ts`.
-- Creation guards already use `usedSlots >= limit` (announcements line 806, promotions 909, posts 949).
-- Therefore upgrade automatically unlocks new capacity, and downgrade automatically leaves existing content alone — no content/DB mutation required.
+### 2. Eliminare fișier migrare neaplicat
+Șterg fișierul `supabase/migrations/20260603173828_d121df14-7033-491a-8757-6227dd6c4664.sql` care definește tabelul `invoices` (cu coloane SmartBill) și câmpuri `billing_*` pe `profiles`. Tabelul `invoices` nu există în DB, iar câmpurile billing nu sunt folosite în UI. Migrarea e doar fișier orfan în repo.
 
-## What to add
+### 3. Verificare finală
+Rulez `rg -i "smartbill"` peste tot proiectul pentru a confirma 0 rezultate după curățare.
 
-### 1. `src/lib/planLimits.ts`
-Add a small helper:
-- `isOverLimit(used, plan, kind)` returning boolean
-- `getOverLimitMessage(kind)` returning the standard warning copy (i18n-ready string).
+### Ce NU se atinge
+- `stripe-webhook` — deja curat de logica SmartBill
+- Restul fluxului de abonare Stripe — neafectat
+- Codul frontend — nicio referință SmartBill
 
-### 2. New component `src/components/OverLimitBanner.tsx`
-Shared warning card shown when `used > limit`. Props: `kind` ("announcements" | "posts" | "promotions"), `used`, `limit`. Uses `bg-destructive/10 border-destructive/40 text-destructive-foreground`, `rounded-lg`, with an `AlertTriangle` icon. Copy:
+### Detalii tehnice
+- Secretele se șterg cu `secrets--delete_secret`
+- Fișierul migrare se șterge cu `rm` (nu rulează în DB)
+- Nu e nevoie de migrare nouă — schema actuală nu conține nimic SmartBill
 
-> "Your current subscription allows fewer slots than you are currently using. Your existing content remains active, but you cannot create new ones until enough slots are automatically released."
-
-### 3. `src/pages/Dashboard.tsx`
-For each of the three tabs (posts, announcements, promotions section inside posts tab):
-- Render `<OverLimitBanner>` above the list when `used > limit`.
-- When over limit, render the counter in destructive color (e.g. `text-destructive`) instead of `text-foreground`. Keep the `X/Y` format.
-- The existing creation buttons are already disabled by `used >= limit` checks — no logic change.
-
-### 4. `src/pages/MyPlan.tsx`
-Add an info block under the billing toggle (or under the plan grid) explaining:
-- Upgrades take effect immediately and increase your available slots.
-- Downgrades never delete or hide existing content.
-- If your usage exceeds the new plan limits, you simply cannot create new content in that category until occupied slots expire naturally (30 days after creation).
-
-Also show an `<OverLimitBanner>` summary at the top of MyPlan when the user is currently over limit on any of the three categories (fetch counts via the same `consumed_ad_slots` query).
-
-### 5. `src/pages/PlansPricing.tsx`
-Add the same short explanation paragraph in the comparison/FAQ area so prospective subscribers see the rule before purchasing.
-
-## Out of scope / explicitly not doing
-
-- No DB migrations. No changes to `consumed_ad_slots`, RLS, or webhook handlers.
-- No content deletion, hiding, unpublishing, or auto-unpromote on downgrade.
-- No backfill — historical content remains visible exactly as it is.
-- Stripe checkout/portal flow unchanged.
-
-## Files touched
-
-- `src/lib/planLimits.ts` (add helpers)
-- `src/components/OverLimitBanner.tsx` (new)
-- `src/pages/Dashboard.tsx` (banners + destructive counter color)
-- `src/pages/MyPlan.tsx` (explanation block + optional summary banner)
-- `src/pages/PlansPricing.tsx` (explanation paragraph)
+### Rezultat
+Proiect 100% curat de SmartBill: 0 secrete, 0 cod, 0 migrări, 0 referințe.
