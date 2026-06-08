@@ -510,7 +510,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
-          password_plain: string
+          password_encrypted: string | null
           phone: string
           plan: string
           specialization: string | null
@@ -529,7 +529,7 @@ export type Database = {
           first_name: string
           id?: string
           last_name: string
-          password_plain: string
+          password_encrypted?: string | null
           phone: string
           plan: string
           specialization?: string | null
@@ -548,7 +548,7 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
-          password_plain?: string
+          password_encrypted?: string | null
           phone?: string
           plan?: string
           specialization?: string | null
