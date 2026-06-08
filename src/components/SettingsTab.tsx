@@ -461,7 +461,7 @@ const SettingsTab = ({
     {
       title: "Your account",
       items: [
-        { id: "email", label: "Email Address", icon: Mail },
+        
         { id: "password", label: "Change Password", icon: Lock },
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
@@ -1070,7 +1070,7 @@ const SettingsTab = ({
 
 
   // Unified view (mobile = Instagram-style master/detail, desktop = three-column)
-  const defaultDesktopSection: SettingSection = accountType === "user" ? "edit_profile" : "email";
+  const defaultDesktopSection: SettingSection = "edit_profile";
   const effectiveSection: SettingSection = activeSection === "main" ? (isMobile ? "main" : defaultDesktopSection) : activeSection;
 
 
@@ -1531,7 +1531,7 @@ const SettingsTab = ({
     setActiveSection={setActiveSection}
     isMobile={isMobile}
     contentMap={{
-      email: EmailContent,
+      
       password: PasswordContent,
       notifications: NotificationsSectionContent,
       comments: CommentsSectionContent,
@@ -1885,7 +1885,7 @@ const DesktopSettingsLayout = ({
           <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
             <div className="bg-background px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
               <div key={activeSection} className="animate-fade-in">
-                {contentMap[activeSection] ?? contentMap.email}
+                {contentMap[activeSection] ?? contentMap.edit_profile}
               </div>
               {extraDialogs}
             </div>
