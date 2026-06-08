@@ -1,0 +1,1 @@
+ALTER TABLE public.pending_artist_registrations ADD COLUMN IF NOT EXISTS password_encrypted text; ALTER TABLE public.pending_artist_registrations ALTER COLUMN password_plain DROP NOT NULL; UPDATE public.pending_artist_registrations SET password_plain = NULL WHERE password_plain IS NOT NULL; ALTER TABLE public.pending_artist_registrations DROP COLUMN password_plain;

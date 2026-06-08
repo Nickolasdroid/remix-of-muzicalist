@@ -130,10 +130,20 @@ Deno.serve(async (req) => {
           if (pErr) console.error("Fetch pending failed:", pErr);
 
           if (pending) {
+            // Decrypt the password that was stored at checkout creation time
+            let pendingPassword: string;
+            try {
+              const { decryptPassword } = await import("../_shared/passwordCrypto.ts");
+              pendingPassword = await decryptPassword(pending.password_encrypted);
+            } catch (e) {
+              console.error("Failed to decrypt pending password:", e);
+              break;
+            }
+
             // Create the auth user (email already confirmed since they paid)
             const { data: created, error: cErr } = await supabase.auth.admin.createUser({
               email: pending.email,
-              password: pending.password_plain,
+              password: pendingPassword,
               email_confirm: true,
               user_metadata: {
                 account_type: "artist",

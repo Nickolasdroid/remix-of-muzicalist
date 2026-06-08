@@ -1,6 +1,7 @@
 import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { PRICE_MAP } from "../_shared/stripePriceMap.ts";
+import { encryptPassword } from "../_shared/passwordCrypto.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -63,12 +64,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Encrypt the password before persisting so plaintext never lands in the DB
+    const password_encrypted = await encryptPassword(String(password));
+
     // Insert pending row
     const { data: pending, error: insErr } = await admin
       .from("pending_artist_registrations")
       .insert({
         email: normalizedEmail,
-        password_plain: password,
+        password_encrypted,
         first_name, last_name, stage_name, phone,
         country, county, specialization, experience_level,
         career_start_year: career_start_year ? Number(career_start_year) : null,
