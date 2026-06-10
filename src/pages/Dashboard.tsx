@@ -2148,8 +2148,7 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               </div> : <div>
-                                {/* Mobile: 3-column compact card */}
-                                <div className="md:hidden rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
+                                <div className="rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
                                   <div className="flex flex-col items-center justify-center text-center px-2">
                                     <Award className="h-4 w-4 text-accent mb-1" />
                                     <span className="text-base font-bold text-foreground leading-tight">{formData.experienceLevel || '—'}</span>
@@ -2165,19 +2164,6 @@ const Dashboard = () => {
                                     <span className="text-base font-bold text-foreground leading-tight">{formData.careerStartYear ? `Since ${formData.careerStartYear}` : '—'}</span>
                                     <span className="text-xs text-muted-foreground mt-0.5">Active</span>
                                   </div>
-                                </div>
-                                {/* Desktop: original list */}
-                                <div className="hidden md:block space-y-2 text-sm md:text-base">
-                                  <p className="text-muted-foreground">
-                                    Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
-                                  </p>
-                                  <p className="text-muted-foreground flex items-center gap-2">
-                                    <Award className="h-4 w-4 text-accent" />
-                                    <span className="font-semibold text-foreground">{acceptedEventsCount}</span> events performed
-                                  </p>
-                                  <p className="text-muted-foreground">
-                                    Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
-                                  </p>
                                 </div>
                               </div>}
 
