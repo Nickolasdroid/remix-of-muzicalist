@@ -225,6 +225,10 @@ const Dashboard = () => {
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
+  const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promoted'>('all');
+  const [postSearch, setPostSearch] = useState("");
+  const [showPostSearch, setShowPostSearch] = useState(false);
+  
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
