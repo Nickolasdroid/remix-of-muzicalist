@@ -2464,7 +2464,7 @@ const Dashboard = () => {
                               className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                             >
                               <Plus className="h-4 w-4 mr-1" />
-                              Add Post
+                              Add
                             </Button>
                           </div>
 
