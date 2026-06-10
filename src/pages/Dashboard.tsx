@@ -2398,10 +2398,6 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
-                        <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                          <FileText className="h-5 w-5 text-accent" />
-                          My Posts
-                        </h2>
                         {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
@@ -2409,354 +2405,436 @@ const Dashboard = () => {
                             <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
                               Upgrade
                             </Button>
-                          </div> :
-                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                          <div className="max-w-[500px] mx-auto space-y-4">
+                          </div> : (() => {
+                          // Build unified list
+                          const promoItems = announcements.filter((a) => a.is_premium).map((a) => ({
+                            ...a,
+                            __kind: 'promotion' as const,
+                            __text: a.description || '',
+                            __date: a.created_at,
+                            __mediaType: a.media_type || null,
+                            __mediaUrl: a.media_url || null,
+                          }));
+                          const postItems = posts.map((p) => ({
+                            ...p,
+                            __kind: 'post' as const,
+                            __text: p.content || '',
+                            __date: p.created_at,
+                            __mediaType: p.media_type || null,
+                            __mediaUrl: p.media_url || null,
+                          }));
+                          const merged = [...postItems, ...promoItems].sort((a, b) =>
+                            new Date(b.__date).getTime() - new Date(a.__date).getTime()
+                          );
+                          const filtered = merged.filter((it) => {
+                            if (postFilter === 'photos' && !(it.__kind === 'post' && it.__mediaType === 'image')) return false;
+                            if (postFilter === 'videos' && !(it.__kind === 'post' && it.__mediaType === 'video')) return false;
+                            if (postFilter === 'promoted' && it.__kind !== 'promotion') return false;
+                            if (postSearch.trim()) {
+                              const q = postSearch.trim().toLowerCase();
+                              if (!it.__text.toLowerCase().includes(q)) return false;
+                            }
+                            return true;
+                          });
+                          const getTitle = (text: string) => {
+                            const t = (text || '').trim();
+                            if (!t) return 'Untitled post';
+                            const firstLine = t.split('\n')[0];
+                            return firstLine.length > 60 ? firstLine.slice(0, 60) + '…' : firstLine;
+                          };
+                          const formatTime = (iso: string) => {
+                            try {
+                              return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            } catch { return ''; }
+                          };
+                          return (
+                        <div className="space-y-4">
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} />
-                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Posts: <span className={`font-medium ${postsUsed > STANDARD_POST_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{postsUsed}/{STANDARD_POST_LIMIT}</span></span>
-                                <AdSlotInfoButton kind="post" />
+
+                          {/* Header card */}
+                          <div className="flex items-start justify-between gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
+                            <div className="flex items-start gap-3 min-w-0">
+                              <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                                <FileText className="h-5 w-5 text-accent" />
                               </div>
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Promotions: <span className={`font-medium ${premiumAdsUsed > PREMIUM_AD_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{premiumAdsUsed}/{PREMIUM_AD_LIMIT}</span></span>
-                                <AdSlotInfoButton kind="promotion" />
+                              <div className="min-w-0">
+                                <h2 className="text-lg font-display font-bold text-foreground">My Posts</h2>
+                                <p className="text-sm text-muted-foreground mt-0.5">Share updates, photos, videos and more with your audience.</p>
                               </div>
                             </div>
-                            <Dialog open={showPostDialog} onOpenChange={(open) => {
-                    setShowPostDialog(open);
-                    if (!open) setPostMediaType('image');
-                  }}>
-                              <DialogTrigger asChild>
-                                <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Add
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Add New</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
-                                    {postMediaType === 'promotion' ? <Megaphone className="h-3 w-3" /> : <Images className="h-3 w-3" />}
-                                    <span>
-                                      {postMediaType === 'promotion'
-                                        ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
-                                        : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                                    <Clock className="h-3 w-3" />
-                                    <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Slot held 30 days'}</span>
-                                  </div>
-                                </div>
-                                <div className="space-y-4 mt-4">
-                                  <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
-                                    <TabsList className="grid w-full grid-cols-3">
-                                      <TabsTrigger value="image">Photo</TabsTrigger>
-                                      <TabsTrigger value="video">Video</TabsTrigger>
-                                      <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
-                                    </TabsList>
-                                    
-                                    <TabsContent value="image" className="space-y-4">
-                                      <div>
-                                        <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={(e) => setNewPost({
-                                ...newPost,
-                                content: e.target.value.slice(0, 200)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                      </div>
-                                      {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
-                                          <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                ...newPost,
-                                mediaUrl: "",
-                                mediaType: ""
-                              })}>
-                                            <X className="h-4 w-4" />
-                                          </Button>
-                                        </div>}
-                                      {!newPost.mediaUrl && postUploadProgress === null && <>
-                                          <Label htmlFor="post-image-inner" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                            </div>
-                                          </Label>
-                                          <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
-                                        </>}
-                                      {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                          <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium">Uploading image…</p>
-                                            <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
-                                          </div>
-                                          <Progress value={postUploadProgress} />
-                                        </div>}
-                                      <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create"}
-                                      </Button>
-                                    </TabsContent>
-                                    
-                                    <TabsContent value="video" className="space-y-4">
-                                      <div>
-                                        <Label>Post Content</Label>
-                                        <Textarea value={newPost.content} onChange={(e) => setNewPost({
-                                ...newPost,
-                                content: e.target.value.slice(0, 200)
-                              })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                      </div>
-                                      {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
-                                          <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" />
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({
-                                ...newPost,
-                                mediaUrl: "",
-                                mediaType: ""
-                              })}>
-                                            <X className="h-4 w-4" />
-                                          </Button>
-                                        </div>}
-                                      {!newPost.mediaUrl && postUploadProgress === null && <>
-                                          <Label htmlFor="post-video-inner" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload video</p>
-                                            </div>
-                                          </Label>
-                                          <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
-                                        </>}
-                                      {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                          <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium">Uploading video…</p>
-                                            <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
-                                          </div>
-                                          <Progress value={postUploadProgress} />
-                                        </div>}
-                                      <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create"}
-                                      </Button>
-                                    </TabsContent>
-
-                                    <TabsContent value="promotion" className="space-y-4">
-                                      <div>
-                                        <Label>Promotion Text</Label>
-                                        <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({
-                                ...newPromotion,
-                                description: e.target.value.slice(0, 200)
-                              })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
-                                        <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
-                                      </div>
-                                      
-                                      {newPromotion.mediaUrl && <div className="relative">
-                                          {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                          <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({
-                                  ...newPromotion,
-                                  mediaUrl: "",
-                                  mediaType: ""
-                                })}>
-                                            <X className="h-4 w-4" />
-                                          </Button>
-                                        </div>}
-                                      {!newPromotion.mediaUrl && promotionUploadProgress === null && <>
-                                          <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                            <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                              <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                              <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                            </div>
-                                          </Label>
-                                          <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
-                                        </>}
-                                      {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                          <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium">Uploading media…</p>
-                                            <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
-                                          </div>
-                                          <Progress value={promotionUploadProgress} />
-                                        </div>}
-                                      
-                                      <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
-                                        {isSaving ? "Creating..." : "Create Promotion"}
-                                      </Button>
-                                    </TabsContent>
-                                  </Tabs>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                            <Button
+                              size="sm"
+                              onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                              className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add Post
+                            </Button>
                           </div>
-                          {posts.map((post) => <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
-                              <div className="p-4 pb-0 px-[6px] py-[3px]">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
-                                      <Avatar className="w-10 h-10 border-2 border-background">
-                                        <AvatarImage src={profile?.avatar_url || undefined} alt={formData.stageName} />
-                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                          {formData.stageName.charAt(0)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-foreground">
-                                          {formData.stageName}
-                                        </h3>
-                                        {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                                      </div>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span>{formData.specialization || 'Artist'}</span>
-                                        <span>·</span>
-                                        <span>{formatPostDate(post.created_at)}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
-                                        <MoreHorizontal className="h-5 w-5" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </div>
-                                <ExpandableText text={post.content} className="mt-3" />
-                              </div>
-                              
-                              {post.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                                url: post.media_url!,
-                                type: post.media_type === "video" ? "video" : "image"
-                              })}>
-                                  {post.media_type === "video" ? <div className="relative w-full aspect-video pointer-events-none">
-                                      <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                    </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                                </div>}
-                              
-                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => post.id && handlePostLike(post.id)}
-                                  aria-label={post.isLiked ? "Unlike post" : "Like post"}
-                                  aria-pressed={post.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? "fill-current" : ""}`} />
-                                </Button>
-                                {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => post.id && setCommentsTarget({ id: post.id, type: "post" })}
-                                  aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                >
-                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                </Button>
-                                {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
-                              </div>
-                            </Card>)}
 
-                          {/* Promotions in Posts section */}
-                          {announcements.filter((a) => a.is_premium).map((promotion) => <Card key={`promo-${promotion.id}`} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
-                              <div className="p-4 pb-0 px-[6px] py-[3px]">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
-                                      <Avatar className="w-10 h-10 border-2 border-background">
-                                        <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
-                                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                          {(profile?.stage_name || "A").charAt(0)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-foreground">
-                                          {profile?.stage_name || "Artist"}
-                                        </h3>
-                                        {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
-                                        {isAdExpired(promotion) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
-                                            Expired
-                                          </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(promotion)}d left</Badge>}
-                                      </div>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <span>{profile?.specialization || "User"}</span>
-                                        <span>·</span>
-                                        <span>{formatSmartDate(promotion.created_at)}</span>
-                                        <span>·</span>
-                                        <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                          Promotion
-                                        </Badge>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
-                                        <MoreHorizontal className="h-5 w-5" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promotion.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </div>
-                                <ExpandableText text={promotion.description} className="mt-3" />
+                          {/* Stats card */}
+                          <div className="grid grid-cols-2 divide-x divide-border/50 p-4 bg-card/50 rounded-lg border border-border/50">
+                            <div className="pr-4">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Active Posts</span>
+                                <AdSlotInfoButton kind="post" />
                               </div>
-                              
-                              {promotion.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promotion.media_url!, type: promotion.media_type === "video" ? "video" : "image" })}>
-                                  {promotion.media_type === "video" ? <div className="relative w-full aspect-video">
-                                      <SmoothVideoPlayer src={promotion.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
-                                    </div> : <img src={promotion.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                                </div>}
-                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleAnnouncementLike(promotion.id)}
-                                  aria-label={promotion.isLiked ? "Unlike promotion" : "Like promotion"}
-                                  aria-pressed={promotion.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${promotion.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${promotion.isLiked ? "fill-current" : ""}`} />
-                                </Button>
-                                {(promotion.likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{promotion.likes}</span>}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setCommentsTarget({ id: promotion.id, type: "announcement" })}
-                                  aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                >
-                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                </Button>
-                                {(promotion.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{promotion.commentsCount}</span>}
+                              <div className="mt-1.5 text-2xl font-display font-bold">
+                                <span className={postsUsed > STANDARD_POST_LIMIT ? 'text-destructive' : 'text-foreground'}>{postsUsed}</span>
+                                <span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span>
                               </div>
-                            </Card>)}
-                          
-                          {posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 && <Card className="border-2 border-dashed border-accent/30">
+                            </div>
+                            <div className="pl-4">
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-accent" />
+                                <span className="text-sm text-muted-foreground">Active Promotions</span>
+                                <AdSlotInfoButton kind="promotion" />
+                              </div>
+                              <div className="mt-1.5 text-2xl font-display font-bold">
+                                <span className={premiumAdsUsed > PREMIUM_AD_LIMIT ? 'text-destructive' : 'text-foreground'}>{premiumAdsUsed}</span>
+                                <span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Filter pills + search */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {([
+                              { id: 'all', label: 'All' },
+                              { id: 'photos', label: 'Photos' },
+                              { id: 'videos', label: 'Videos' },
+                              { id: 'promoted', label: 'Promoted' },
+                            ] as const).map((f) => (
+                              <button
+                                key={f.id}
+                                onClick={() => setPostFilter(f.id)}
+                                className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                                  postFilter === f.id
+                                    ? 'border-accent text-accent bg-accent/5'
+                                    : 'border-border text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                {f.label}
+                              </button>
+                            ))}
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="ml-auto h-9 w-9 rounded-lg"
+                              onClick={() => setShowPostSearch((v) => !v)}
+                              aria-label="Search posts"
+                            >
+                              <Search className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          {showPostSearch && (
+                            <Input
+                              autoFocus
+                              value={postSearch}
+                              onChange={(e) => setPostSearch(e.target.value)}
+                              placeholder="Search posts..."
+                              className="rounded-lg"
+                            />
+                          )}
+
+                          {/* Post list */}
+                          {filtered.length === 0 ? (
+                            <Card className="border-2 border-dashed border-accent/30">
                               <CardContent className="p-12 text-center">
                                 <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                              <p className="text-muted-foreground">No posts yet. Create your first post!</p>
+                                <p className="text-muted-foreground">
+                                  {postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
+                                </p>
                               </CardContent>
-                            </Card>}
+                            </Card>
+                          ) : (
+                            <div className="space-y-3">
+                              {filtered.map((item) => {
+                                const isPromo = item.__kind === 'promotion';
+                                const expired = isPromo ? isAdExpired(item as any) : false;
+                                const daysLeft = isPromo ? getDaysRemaining(item as any) : 0;
+                                const expirationLabel = isPromo && !expired
+                                  ? `Promotion active until ${new Date(getAdExpirationDateLocal(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+                                  : null;
+                                return (
+                                  <Card key={`${item.__kind}-${item.id}`} className="overflow-hidden rounded-lg border-border/50">
+                                    <div className="flex gap-3 p-3">
+                                      {/* Thumbnail */}
+                                      <button
+                                        type="button"
+                                        onClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
+                                        className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-lg overflow-hidden bg-muted/40 group"
+                                      >
+                                        {item.__mediaUrl ? (
+                                          item.__mediaType === 'video' ? (
+                                            <>
+                                              <video src={item.__mediaUrl} className="w-full h-full object-cover" />
+                                              <span className="absolute bottom-1.5 right-1.5 h-5 w-5 rounded bg-black/60 flex items-center justify-center text-accent">
+                                                <VideoIcon className="h-3 w-3" />
+                                              </span>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <img src={item.__mediaUrl} alt="" className="w-full h-full object-cover" />
+                                              <span className="absolute bottom-1.5 right-1.5 h-5 w-5 rounded bg-black/60 flex items-center justify-center text-accent">
+                                                {isPromo ? <Megaphone className="h-3 w-3" /> : <ImageIcon className="h-3 w-3" />}
+                                              </span>
+                                            </>
+                                          )
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center">
+                                            <FileText className="h-6 w-6 text-muted-foreground" />
+                                          </div>
+                                        )}
+                                      </button>
+
+                                      {/* Content */}
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                          <h3 className="font-semibold text-foreground line-clamp-1 break-words">
+                                            {getTitle(item.__text)}
+                                          </h3>
+                                          <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full -mt-1 -mr-1 shrink-0" disabled={isSaving}>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                              </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                              <DropdownMenuItem
+                                                onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
+                                                className="text-destructive focus:text-destructive"
+                                              >
+                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                Delete
+                                              </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                          </DropdownMenu>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 flex-wrap">
+                                          <span>{new Date(item.__date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                          <span>·</span>
+                                          <span>{formatTime(item.__date)}</span>
+                                        </div>
+                                        <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                                          {isPromo ? (
+                                            expired ? (
+                                              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                                                Expired
+                                              </span>
+                                            ) : (
+                                              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                                                Promoted
+                                              </span>
+                                            )
+                                          ) : (
+                                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-500">
+                                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                              Published
+                                            </span>
+                                          )}
+                                        </div>
+                                        {isPromo && !expired && expirationLabel && (
+                                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10 border border-accent/20 text-[11px] font-medium text-accent">
+                                            <Megaphone className="h-3 w-3" />
+                                            {expirationLabel}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Stats row */}
+                                    <div className="grid grid-cols-4 border-t border-border/50 px-3 py-2 text-center">
+                                      <button
+                                        type="button"
+                                        onClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
+                                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                                      >
+                                        <Eye className="h-4 w-4" />
+                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).views || 0}</span>
+                                        <span className="text-[10px] uppercase tracking-wide">Views</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
+                                        className={`flex flex-col items-center gap-0.5 transition-colors ${(item as any).isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+                                      >
+                                        <Heart className={`h-4 w-4 ${(item as any).isLiked ? 'fill-current' : ''}`} />
+                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).likes || 0}</span>
+                                        <span className="text-[10px] uppercase tracking-wide">Likes</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
+                                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                                      >
+                                        <MessageCircle className="h-4 w-4" />
+                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).commentsCount || 0}</span>
+                                        <span className="text-[10px] uppercase tracking-wide">Comments</span>
+                                      </button>
+                                      <div className="flex flex-col items-center gap-0.5 text-muted-foreground">
+                                        <Share2 className="h-4 w-4" />
+                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).shares || 0}</span>
+                                        <span className="text-[10px] uppercase tracking-wide">Shares</span>
+                                      </div>
+                                    </div>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Tip banner */}
+                          <div className="flex items-start gap-2 p-3 rounded-lg border border-border/50 bg-card/50">
+                            <Lightbulb className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                            <p className="text-sm text-muted-foreground">
+                              <span className="font-semibold text-foreground">Tip:</span> Engage regularly with your audience to grow your reach.
+                            </p>
                           </div>
-                        </div>}
+
+                          {/* Add Post dialog (controlled) */}
+                          <Dialog open={showPostDialog} onOpenChange={(open) => {
+                            setShowPostDialog(open);
+                            if (!open) setPostMediaType('image');
+                          }}>
+                            <DialogContent className="max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Add New</DialogTitle>
+                              </DialogHeader>
+                              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
+                                  {postMediaType === 'promotion' ? <Megaphone className="h-3 w-3" /> : <Images className="h-3 w-3" />}
+                                  <span>
+                                    {postMediaType === 'promotion'
+                                      ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
+                                      : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                                  <Clock className="h-3 w-3" />
+                                  <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Slot held 30 days'}</span>
+                                </div>
+                              </div>
+                              <div className="space-y-4 mt-4">
+                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
+                                  <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="image">Photo</TabsTrigger>
+                                    <TabsTrigger value="video">Video</TabsTrigger>
+                                    <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
+                                  </TabsList>
+
+                                  <TabsContent value="image" className="space-y-4">
+                                    <div>
+                                      <Label>Post Content</Label>
+                                      <Textarea value={newPost.content} onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                    </div>
+                                    {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
+                                        <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
+                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}>
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>}
+                                    {!newPost.mediaUrl && postUploadProgress === null && <>
+                                        <Label htmlFor="post-image-inner" className="cursor-pointer">
+                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                            <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                          </div>
+                                        </Label>
+                                        <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                      </>}
+                                    {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sm font-medium">Uploading image…</p>
+                                          <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
+                                        </div>
+                                        <Progress value={postUploadProgress} />
+                                      </div>}
+                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Creating..." : "Create"}
+                                    </Button>
+                                  </TabsContent>
+
+                                  <TabsContent value="video" className="space-y-4">
+                                    <div>
+                                      <Label>Post Content</Label>
+                                      <Textarea value={newPost.content} onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                    </div>
+                                    {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
+                                        <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" />
+                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}>
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>}
+                                    {!newPost.mediaUrl && postUploadProgress === null && <>
+                                        <Label htmlFor="post-video-inner" className="cursor-pointer">
+                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                            <p className="text-sm text-muted-foreground">Click to upload video</p>
+                                          </div>
+                                        </Label>
+                                        <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
+                                      </>}
+                                    {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sm font-medium">Uploading video…</p>
+                                          <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
+                                        </div>
+                                        <Progress value={postUploadProgress} />
+                                      </div>}
+                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Creating..." : "Create"}
+                                    </Button>
+                                  </TabsContent>
+
+                                  <TabsContent value="promotion" className="space-y-4">
+                                    <div>
+                                      <Label>Promotion Text</Label>
+                                      <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({ ...newPromotion, description: e.target.value.slice(0, 200) })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
+                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
+                                    </div>
+
+                                    {newPromotion.mediaUrl && <div className="relative">
+                                        {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
+                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({ ...newPromotion, mediaUrl: "", mediaType: "" })}>
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>}
+                                    {!newPromotion.mediaUrl && promotionUploadProgress === null && <>
+                                        <Label htmlFor="promotion-media-input" className="cursor-pointer">
+                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                            <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                                          </div>
+                                        </Label>
+                                        <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
+                                      </>}
+                                    {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sm font-medium">Uploading media…</p>
+                                          <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
+                                        </div>
+                                        <Progress value={promotionUploadProgress} />
+                                      </div>}
+
+                                    <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
+                                      {isSaving ? "Creating..." : "Create Promotion"}
+                                    </Button>
+                                  </TabsContent>
+                                </Tabs>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                          );
+                        })()}
                       </TabsContent>
 
                       {/* Announcements Tab */}
