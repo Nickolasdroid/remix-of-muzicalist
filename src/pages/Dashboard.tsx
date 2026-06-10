@@ -23,7 +23,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { Switch } from "@/components/ui/switch";
-import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
+import { isAdExpired, getDaysRemaining, getAdExpirationDate } from "@/lib/adExpiration";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import InstrumentSelector from "@/components/InstrumentSelector";
