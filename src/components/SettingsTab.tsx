@@ -1681,11 +1681,8 @@ const EditProfilePanel = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
       setUserId(user.id);
-      const { data } = await supabase
-        .from("profiles")
-        .select("email, first_name, last_name, gender")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+      const data = Array.isArray(rows) ? rows[0] : null;
       if (data) {
         setEmail((data as any).email || user.email || "");
         setFirstName((data as any).first_name || "");

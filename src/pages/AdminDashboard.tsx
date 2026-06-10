@@ -65,16 +65,11 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [{ data: profilesData }, { data: rolesData }] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select(
-          "id, first_name, last_name, stage_name, email, phone, country, county, plan, avatar_url, created_at, stripe_subscription_id, subscription_status, subscription_current_period_end, billing"
-        )
-        .order("created_at", { ascending: false }),
+    const [profilesRes, { data: rolesData }] = await Promise.all([
+      (supabase as any).rpc("admin_list_profiles"),
       supabase.from("user_roles").select("user_id, user_type"),
     ]);
-    setProfiles((profilesData as AdminProfile[]) ?? []);
+    setProfiles((profilesRes?.data as AdminProfile[]) ?? []);
     const map: Record<string, string> = {};
     ((rolesData as RoleRow[]) ?? []).forEach((r) => {
       map[r.user_id] = r.user_type;

@@ -889,6 +889,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_profiles: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          billing: string
+          country: string
+          county: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          plan: string
+          stage_name: string
+          stripe_subscription_id: string
+          subscription_current_period_end: string
+          subscription_status: string
+        }[]
+      }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
       get_my_calendar_event_for_date: {
         Args: { _event_date: string }
