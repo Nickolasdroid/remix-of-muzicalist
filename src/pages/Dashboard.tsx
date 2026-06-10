@@ -2452,17 +2452,12 @@ const Dashboard = () => {
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} />
 
-                          {/* Header card */}
-                          <div className="flex items-start justify-between gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="flex items-start gap-3 min-w-0">
-                              <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                                <FileText className="h-5 w-5 text-accent" />
-                              </div>
-                              <div className="min-w-0">
-                                <h2 className="text-lg font-display font-bold text-foreground">My Posts</h2>
-                                <p className="text-sm text-muted-foreground mt-0.5">Share updates, photos, videos and more with your audience.</p>
-                              </div>
-                            </div>
+                          {/* Header */}
+                          <div className="flex items-center justify-between gap-3">
+                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                              <FileText className="h-5 w-5 text-accent" />
+                              My Posts
+                            </h2>
                             <Button
                               size="sm"
                               onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
