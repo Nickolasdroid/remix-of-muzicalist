@@ -211,6 +211,7 @@ const ArtistProfile = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const {
     toast
   } = useToast();
@@ -298,6 +299,11 @@ const ArtistProfile = () => {
         setArtist(profileData ? { ...profileData, email: contact.email, phone: contact.phone } : null);
       }
       setLoading(false);
+
+      // Fetch count of accepted booking requests (events performed via Muzicalist)
+      (supabase as any)
+        .rpc('get_accepted_events_count', { _profile_id: id })
+        .then(({ data }: any) => setAcceptedEventsCount(typeof data === 'number' ? data : 0));
 
       // STEP 2: Fire all secondary queries in parallel in the background.
       const sessionPromise = supabase.auth.getSession();
@@ -1198,7 +1204,7 @@ const ArtistProfile = () => {
                         </p>
                         <p className="text-muted-foreground flex items-center gap-2 text-sm md:text-base">
                           <Award className="h-4 w-4 text-accent" />
-                          <span className="font-semibold text-foreground">{artist.number_of_events}+</span> events performed
+                          <span className="font-semibold text-foreground">{acceptedEventsCount}</span> events performed
                         </p>
                       </div>
                     </div>

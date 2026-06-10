@@ -910,6 +910,10 @@ export type Database = {
         }[]
       }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      get_accepted_events_count: {
+        Args: { _profile_id: string }
+        Returns: number
+      }
       get_my_calendar_event_for_date: {
         Args: { _event_date: string }
         Returns: {
