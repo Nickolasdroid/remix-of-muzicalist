@@ -64,6 +64,7 @@ const Dashboard = () => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
   const [pricingCount, setPricingCount] = useState(0);
+  const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
 
@@ -575,6 +576,14 @@ const Dashboard = () => {
         hidePhone: profileData.hide_phone || false,
         hideEmail: profileData.hide_email || false
       });
+
+      // Count accepted booking requests for this artist
+      const { count: acceptedCount } = await supabase
+        .from('booking_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('profile_id', profileData.id)
+        .eq('status', 'accepted');
+      setAcceptedEventsCount(acceptedCount || 0);
     } catch (error: any) {
       console.error('Auth check error:', error);
       toast({
@@ -2128,10 +2137,6 @@ const Dashboard = () => {
                                     <SelectItem value="Professional">Professional</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Input type="number" value={formData.numberOfEvents} onChange={(e) => setFormData({
-                      ...formData,
-                      numberOfEvents: e.target.value
-                    })} placeholder="Number of Events" />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
                                     <Save className="h-3 w-3 mr-1" />
@@ -2149,7 +2154,7 @@ const Dashboard = () => {
                                   </p>
                                   <p className="text-muted-foreground flex items-center gap-2">
                                     <Award className="h-4 w-4 text-accent" />
-                                    <span className="font-semibold text-foreground">{formData.numberOfEvents}+</span> events performed
+                                    <span className="font-semibold text-foreground">{acceptedEventsCount}</span> events performed
                                   </p>
                                   <p className="text-muted-foreground">
                                     Career started in <span className="font-semibold text-foreground">{formData.careerStartYear}</span>
