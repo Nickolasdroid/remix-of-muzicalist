@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { isAdExpired } from "@/lib/adExpiration";
@@ -1197,14 +1197,17 @@ const ArtistProfile = () => {
                       {/* Mobile: 3-column compact card */}
                       <div className="md:hidden rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
                         <div className="flex flex-col items-center justify-center text-center px-2">
+                          <Award className="h-4 w-4 text-accent mb-1" />
                           <span className="text-base font-bold text-foreground leading-tight">{artist.experience_level || '—'}</span>
                           <span className="text-xs text-muted-foreground mt-0.5">Level</span>
                         </div>
                         <div className="flex flex-col items-center justify-center text-center px-2">
+                          <CalendarCheck className="h-4 w-4 text-accent mb-1" />
                           <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
                           <span className="text-xs text-muted-foreground mt-0.5">Events</span>
                         </div>
                         <div className="flex flex-col items-center justify-center text-center px-2">
+                          <Clock className="h-4 w-4 text-accent mb-1" />
                           <span className="text-base font-bold text-foreground leading-tight">{artist.career_start_year ? `Since ${artist.career_start_year}` : '—'}</span>
                           <span className="text-xs text-muted-foreground mt-0.5">Active</span>
                         </div>

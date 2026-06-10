@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import CommentsDialog from "@/components/CommentsDialog";
 
@@ -2151,14 +2151,17 @@ const Dashboard = () => {
                                 {/* Mobile: 3-column compact card */}
                                 <div className="md:hidden rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
                                   <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <Award className="h-4 w-4 text-accent mb-1" />
                                     <span className="text-base font-bold text-foreground leading-tight">{formData.experienceLevel || '—'}</span>
                                     <span className="text-xs text-muted-foreground mt-0.5">Level</span>
                                   </div>
                                   <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <CalendarCheck className="h-4 w-4 text-accent mb-1" />
                                     <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
                                     <span className="text-xs text-muted-foreground mt-0.5">Events</span>
                                   </div>
                                   <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <Clock className="h-4 w-4 text-accent mb-1" />
                                     <span className="text-base font-bold text-foreground leading-tight">{formData.careerStartYear ? `Since ${formData.careerStartYear}` : '—'}</span>
                                     <span className="text-xs text-muted-foreground mt-0.5">Active</span>
                                   </div>
