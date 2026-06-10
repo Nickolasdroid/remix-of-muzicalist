@@ -2557,7 +2557,7 @@ const Dashboard = () => {
                                 const expired = isPromo ? isAdExpired(item as any) : false;
                                 const daysLeft = isPromo ? getDaysRemaining(item as any) : 0;
                                 const expirationLabel = isPromo && !expired
-                                  ? `Promotion active until ${new Date(getAdExpirationDateLocal(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+                                  ? `Promotion active until ${new Date(getAdExpirationDate(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
                                   : null;
                                 return (
                                   <Card key={`${item.__kind}-${item.id}`} className="overflow-hidden rounded-lg border-border/50">
