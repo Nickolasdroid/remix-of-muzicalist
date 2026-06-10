@@ -2148,7 +2148,23 @@ const Dashboard = () => {
                                   </Button>
                                 </div>
                               </div> : <div>
-                                <div className="space-y-2 text-sm md:text-base">
+                                {/* Mobile: 3-column compact card */}
+                                <div className="md:hidden rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
+                                  <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <span className="text-base font-bold text-foreground leading-tight">{formData.experienceLevel || '—'}</span>
+                                    <span className="text-xs text-muted-foreground mt-0.5">Level</span>
+                                  </div>
+                                  <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
+                                    <span className="text-xs text-muted-foreground mt-0.5">Events</span>
+                                  </div>
+                                  <div className="flex flex-col items-center justify-center text-center px-2">
+                                    <span className="text-base font-bold text-foreground leading-tight">{formData.careerStartYear ? `Since ${formData.careerStartYear}` : '—'}</span>
+                                    <span className="text-xs text-muted-foreground mt-0.5">Active</span>
+                                  </div>
+                                </div>
+                                {/* Desktop: original list */}
+                                <div className="hidden md:block space-y-2 text-sm md:text-base">
                                   <p className="text-muted-foreground">
                                     Experience Level: <span className="font-semibold text-foreground">{formData.experienceLevel}</span>
                                   </p>
@@ -2161,6 +2177,7 @@ const Dashboard = () => {
                                   </p>
                                 </div>
                               </div>}
+
                           </div>
 
                           {/* Estimated Prices */}

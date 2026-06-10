@@ -1194,7 +1194,23 @@ const ArtistProfile = () => {
                         <CalendarIcon className="h-5 w-5 text-accent" />
                         Experience
                       </h3>
-                      <div className="space-y-1 md:space-y-2 text-left">
+                      {/* Mobile: 3-column compact card */}
+                      <div className="md:hidden rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
+                        <div className="flex flex-col items-center justify-center text-center px-2">
+                          <span className="text-base font-bold text-foreground leading-tight">{artist.experience_level || '—'}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Level</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center text-center px-2">
+                          <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Events</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center text-center px-2">
+                          <span className="text-base font-bold text-foreground leading-tight">{artist.career_start_year ? `Since ${artist.career_start_year}` : '—'}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Active</span>
+                        </div>
+                      </div>
+                      {/* Desktop: original list */}
+                      <div className="hidden md:block space-y-1 md:space-y-2 text-left">
                         <p className="text-muted-foreground flex items-center gap-2 text-sm md:text-base">
                           <Award className="h-4 w-4 text-accent" />
                           Level: <span className="font-semibold text-foreground">{artist.experience_level || "Not specified"}</span>
@@ -1207,6 +1223,7 @@ const ArtistProfile = () => {
                           <span className="font-semibold text-foreground">{acceptedEventsCount}</span> events performed
                         </p>
                       </div>
+
                     </div>
 
                     {/* Estimated Prices */}
