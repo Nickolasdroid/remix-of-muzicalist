@@ -76,6 +76,22 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     let customerId = profile?.stripe_customer_id ?? null;
+
+    // Validate existing customer exists in current Stripe mode; otherwise recreate
+    if (customerId) {
+      try {
+        const existing = await stripe.customers.retrieve(customerId);
+        if ((existing as any).deleted) customerId = null;
+      } catch (e: any) {
+        if (e?.code === "resource_missing") {
+          console.log(`[create-checkout] stale customer ${customerId} not in ${keyMode} mode, recreating`);
+          customerId = null;
+        } else {
+          throw e;
+        }
+      }
+    }
+
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: profile?.email ?? email ?? undefined,
