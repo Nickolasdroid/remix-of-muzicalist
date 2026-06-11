@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
-import artistOnboardingBg from "@/assets/artist-onboarding-bg.jpg";
 import logo from "@/assets/logo.png";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 
@@ -129,40 +128,12 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Panel */}
-      <div className="relative hidden md:flex w-full md:w-1/2 min-h-[40vh] md:min-h-screen flex-col justify-center overflow-hidden">
-        <img
-          src={artistOnboardingBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-red-950/80 via-red-900/60 to-black/90" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-red-600/20 blur-[100px]" />
-        <div className="absolute bottom-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-amber-500/10 blur-[80px]" />
-
-        <div className="relative z-10 px-8 md:px-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-            {mode === "request" ? (
-              <>Reset your<br />Password</>
-            ) : (
-              <>Set a new<br />Password</>
-            )}
-          </h1>
-          <p className="text-sm md:text-base text-white/70 max-w-md">
-            {mode === "request"
-              ? "Enter your email and we'll send you a link to reset your password."
-              : "Choose a strong new password to secure your account."}
-          </p>
-        </div>
-      </div>
-
+    <div className="min-h-screen flex flex-col bg-background">
       <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
         <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
       </Link>
 
-      {/* Right Panel */}
-      <div className="w-full md:w-1/2 min-h-[60vh] md:min-h-screen flex items-center justify-center bg-background px-6 py-12 md:px-12">
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
             <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
