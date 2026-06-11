@@ -35,6 +35,7 @@ import PlansPricing from "./pages/PlansPricing";
 import MyPlan from "./pages/MyPlan";
 import HelpSupport from "./pages/HelpSupport";
 import AdminDashboard from "./pages/AdminDashboard";
+import BookingRequests from "./pages/BookingRequests";
 import AdminRoute from "./components/AdminRoute";
 import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import NotFound from "./pages/NotFound";
