@@ -38,13 +38,30 @@ Deno.serve(async (req) => {
       .eq("id", userId)
       .maybeSingle();
 
-    if (!profile?.stripe_customer_id) {
-      return new Response(JSON.stringify({ error: "No Stripe customer" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    let customerId = profile?.stripe_customer_id ?? null;
+
+    // Validate the customer exists in current Stripe mode
+    if (customerId) {
+      try {
+        const existing = await stripe.customers.retrieve(customerId);
+        if ((existing as any).deleted) customerId = null;
+      } catch (e: any) {
+        if (e?.code === "resource_missing") {
+          await supabaseAdmin.from("profiles").update({ stripe_customer_id: null }).eq("id", userId);
+          customerId = null;
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    if (!customerId) {
+      return new Response(JSON.stringify({ error: "No active subscription found. Please subscribe first." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const origin = req.headers.get("origin") ?? "https://muzicalist.com";
     const portal = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
+      customer: customerId,
       return_url: `${origin}/dashboard`,
     });
 
