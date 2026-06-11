@@ -64,7 +64,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     emoji: '🟡',
     description: 'Get discovered. Attract more clients. Grow your bookings.',
     features: [
-      { text: 'Professional artist profile customization', included: true },
+      { text: 'Standard Artist Badge', included: true },
       { text: 'Gallery: up to 10 images & 2 videos', included: true },
       { text: 'Select your music genres', included: true },
       { text: 'Set your experience level', included: true },
@@ -94,7 +94,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     emoji: '🔶',
     description: 'Maximize your visibility. Build authority. Get booked consistently.',
     features: [
-      { text: 'Verified Premium Artist Badge', included: true },
+      { text: 'Premium Artist Badge', included: true },
       { text: 'Gallery: up to 15 images & 5 videos', included: true },
       { text: 'Select your music genres', included: true },
       { text: 'Set your experience level', included: true },
