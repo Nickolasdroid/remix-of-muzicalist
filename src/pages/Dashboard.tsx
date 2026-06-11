@@ -226,7 +226,7 @@ const Dashboard = () => {
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
-  const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promoted'>('all');
+  const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
   
@@ -2440,7 +2440,7 @@ const Dashboard = () => {
                           const filtered = merged.filter((it) => {
                             if (postFilter === 'photos' && !(it.__kind === 'post' && it.__mediaType === 'image')) return false;
                             if (postFilter === 'videos' && !(it.__kind === 'post' && it.__mediaType === 'video')) return false;
-                            if (postFilter === 'promoted' && it.__kind !== 'promotion') return false;
+                            if (postFilter === 'promotions' && it.__kind !== 'promotion') return false;
                             if (postSearch.trim()) {
                               const q = postSearch.trim().toLowerCase();
                               if (!it.__text.toLowerCase().includes(q)) return false;
@@ -2511,7 +2511,7 @@ const Dashboard = () => {
                               { id: 'all', label: 'All' },
                               { id: 'photos', label: 'Photos' },
                               { id: 'videos', label: 'Videos' },
-                              { id: 'promoted', label: 'Promoted' },
+                              { id: 'promotions', label: 'Promotions' },
                             ] as const).map((f) => (
                               <button
                                 key={f.id}
