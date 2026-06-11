@@ -98,6 +98,8 @@ Deno.serve(async (req) => {
       metadata: { type: "artist_signup", pending_id: pending.id },
       subscription_data: { metadata: { type: "artist_signup", pending_id: pending.id } },
       allow_promotion_codes: true,
+      billing_address_collection: "required",
+      tax_id_collection: { enabled: true },
     });
 
     // Save session id on pending row

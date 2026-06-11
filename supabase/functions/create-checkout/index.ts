@@ -111,6 +111,9 @@ Deno.serve(async (req) => {
       metadata: { user_id: userId },
       subscription_data: { metadata: { user_id: userId } },
       allow_promotion_codes: true,
+      billing_address_collection: "required",
+      customer_update: { address: "auto", name: "auto" },
+      tax_id_collection: { enabled: true },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
