@@ -10,7 +10,7 @@ export interface PlanInfo {
 
 export const PRICE_MAP: Record<string, PlanInfo> = {
   // Standard
-  "price_1TehLJKBZxdkesfhhiBU1I2T": { plan: "Standard", billing: "monthly" },
+  "price_1ThD6rKBZxdkesfh0Ck3P5Hr": { plan: "Standard", billing: "monthly" },
   "price_1TSErCKBZxdkesfhVK7ZAABc": { plan: "Standard", billing: "yearly" },
   // Premium
   "price_1TSEstKBZxdkesfhvBGTOGmP": { plan: "Premium", billing: "monthly" },
