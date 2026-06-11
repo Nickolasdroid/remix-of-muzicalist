@@ -164,21 +164,21 @@ const Announcements = () => {
               All
             </Button>
             <Button
-              variant={adsFilter === "promoted" ? "default" : "outline"}
+              variant={adsFilter === "promotions" ? "default" : "outline"}
               size="sm"
-              onClick={() => setAdsFilter("promoted")}
-              className={adsFilter === "promoted" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
+              onClick={() => setAdsFilter("promotions")}
+              className={adsFilter === "promotions" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
             >
-              Promoted
+              Promotions
             </Button>
           </div>
 
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const isGuest = !currentUserId;
           const GUEST_PREVIEW_COUNT = 2;
-          const filteredBase = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promoted" ? a.is_premium : true);
+          const filteredBase = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promotions" ? a.is_premium : true);
           const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promoted" ? "No promoted announcements yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promotions" ? "No promotions yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                 {/* Header */}
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
