@@ -16,7 +16,7 @@ export const PRICE_BY_PLAN: Record<"Standard" | "Premium", Record<Billing, strin
     yearly: "price_1TSErCKBZxdkesfhVK7ZAABc",
   },
   Premium: {
-    monthly: "price_1TSEstKBZxdkesfhvBGTOGmP",
+    monthly: "price_1ThCmNKBZxdkesfhZpGJso7s",
     yearly: "price_1TSEtLKBZxdkesfho910v66y",
   },
 };
