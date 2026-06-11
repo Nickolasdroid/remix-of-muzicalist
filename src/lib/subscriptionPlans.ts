@@ -47,7 +47,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Cannot publish posts', included: false },
       { text: 'Cannot publish announcements', included: false },
       { text: 'Display your estimated pricing → higher conversion rate', included: false },
-      { text: 'Periodic promotion on Muzicalist social media', included: false },
+      { text: 'Eligible for social media promotion opportunities', included: false },
       { text: 'Limited visibility in search results', included: false },
       { text: 'Advanced analytics dashboard', included: false },
       { text: 'Featured on homepage', included: false },
