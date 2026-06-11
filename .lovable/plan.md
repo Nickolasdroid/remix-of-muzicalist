@@ -1,30 +1,8 @@
-# Redesign secțiune Experience (mobil)
+## Change
+On `src/pages/ResetPassword.tsx`, remove the entire left panel (concert image + gradient overlays + heading) and switch the layout to a single centered column matching the Login page style.
 
-Aplic același layout cu 3 coloane pe carduri compacte, vizibile DOAR pe mobil. Pe desktop păstrez stilul actual neschimbat.
-
-## Locații
-- `src/pages/Dashboard.tsx` ~linia 2150-2163 (modul vizualizare, nu editare)
-- `src/pages/ArtistProfile.tsx` ~linia 1197-1209
-
-## Design nou (mobil)
-Container cu `rounded-lg border border-border bg-secondary/30 p-3`, grid `grid-cols-3 divide-x divide-border`. Fiecare coloană centrată vertical, text centrat:
-
-```
-┌─────────────┬─────────────┬─────────────┐
-│ Profesional │     0       │   Din 2020  │
-│   Nivel     │  Evenimente │    Activ    │
-└─────────────┴─────────────┴─────────────┘
-```
-
-- **Stânga**: `experience_level` (mare, bold, accent) + label „Nivel"
-- **Mijloc**: `acceptedEventsCount` (mare, bold, accent) + label „Evenimente"
-- **Dreapta**: `Din {careerStartYear}` (mare, bold, accent) + label „Activ"
-
-Valori: `text-base font-bold text-foreground`. Labels: `text-xs text-muted-foreground mt-0.5`.
-
-Folosesc `md:hidden` pentru noul layout și `hidden md:block` pentru lista veche cu iconițe (păstrată pe desktop).
-
-## Note
-- Textele rămân în engleză ca în restul aplicației (`Level`, `Events`, `Since`) — exemplele RO din imagini sunt doar referință vizuală.
-- Fără modificări la backend, modul de editare sau la datele afișate.
-- Iconul ✏️ de editare (Dashboard) rămâne neschimbat în header-ul secțiunii.
+## Details
+- Drop the left `<div>` (lines 134-158) and the `artistOnboardingBg` import.
+- Change the root container from a two-column flex (`md:flex-row`, `md:w-1/2`) to a single full-width centered column.
+- Keep the logo link top-left, the form card, and the "Back to login" link unchanged.
+- Both modes (`request` for email entry and `update` for new password) keep the same heading/subtext, now shown above the form on all screen sizes.
