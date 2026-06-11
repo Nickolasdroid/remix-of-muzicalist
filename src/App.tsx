@@ -35,6 +35,7 @@ import PlansPricing from "./pages/PlansPricing";
 import MyPlan from "./pages/MyPlan";
 import HelpSupport from "./pages/HelpSupport";
 import AdminDashboard from "./pages/AdminDashboard";
+import BookingRequests from "./pages/BookingRequests";
 import AdminRoute from "./components/AdminRoute";
 import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import NotFound from "./pages/NotFound";
@@ -81,6 +82,7 @@ const App = () => (
           <Route path="/plans" element={<PlansPricing />} />
           <Route path="/my-plan" element={<MyPlan />} />
           <Route path="/help" element={<HelpSupport />} />
+          <Route path="/booking-requests" element={<BookingRequests />} />
           <Route
             path="/admin/dashboard"
             element={
