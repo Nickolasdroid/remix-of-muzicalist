@@ -78,7 +78,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Appear in Leaderboard rankings', included: true },
       { text: 'Appear in Posts & Announcements (opportunities)', included: true },
       { text: 'Priority placement in search results → more visibility', included: true },
-      { text: 'Periodic promotion on Muzicalist social media', included: true },
+      { text: 'Eligible for social media promotion opportunities', included: true },
       { text: 'Advanced analytics dashboard', included: false },
       { text: 'Featured on homepage', included: false },
     ],
