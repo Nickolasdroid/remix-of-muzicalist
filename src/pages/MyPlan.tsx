@@ -309,6 +309,58 @@ const MyPlan = () => {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={downgradeTarget !== null} onOpenChange={(open) => !open && setDowngradeTarget(null)}>
+        <AlertDialogContent className="rounded-lg max-h-[85vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {downgradeTarget === 'Free'
+                ? `Sigur vrei să faci downgrade la planul Free?`
+                : `Sigur vrei să faci downgrade la planul ${downgradeTarget}?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm">
+                <p>
+                  Treci de la planul <span className="font-medium text-foreground">{currentPlan}</span> la{" "}
+                  <span className="font-medium text-foreground">{downgradeTarget}</span>. Această schimbare are următoarele consecințe:
+                </p>
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Conținutul existent (anunțuri, postări, promovări) <span className="font-medium text-foreground">nu va fi șters</span> și rămâne vizibil.</li>
+                  <li>Dacă utilizarea curentă depășește noile limite, nu vei putea crea elemente noi în acea categorie până când sloturile ocupate sunt eliberate automat (la 30 de zile de la creare).</li>
+                  {lostFeatures.length > 0 && (
+                    <li>
+                      Vei <span className="font-medium text-foreground">pierde accesul</span> la următoarele beneficii:
+                      <ul className="list-disc pl-5 mt-1.5 space-y-1 text-muted-foreground">
+                        {lostFeatures.map((f, i) => (
+                          <li key={i}>{f.text}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  )}
+                  <li>Plățile viitoare se vor face conform noului plan începând cu următoarea perioadă de facturare.</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading !== null}>Anulează</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (downgradeTarget) {
+                  const target = downgradeTarget;
+                  setDowngradeTarget(null);
+                  performPlanAction(target, true);
+                }
+              }}
+              disabled={actionLoading !== null}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Da, fă downgrade
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
