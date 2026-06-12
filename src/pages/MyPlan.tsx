@@ -9,6 +9,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -18,11 +28,11 @@ const MyPlan = () => {
   const [currentPlan, setCurrentPlan] = useState("Free");
   const [isAnnual, setIsAnnual] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [downgradeTarget, setDowngradeTarget] = useState<'Free' | 'Standard' | 'Premium' | null>(null);
 
-  const handlePlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+  const performPlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     if (planId === 'Free' || isDowngrade) {
       setActionLoading(planId);
-      // Check if user has a Stripe customer; if not, downgrade directly
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const { data: profileRows } = await (supabase as any).rpc('get_my_full_profile');
@@ -57,6 +67,22 @@ const MyPlan = () => {
     });
     if (!ok) setActionLoading(null);
   };
+
+  const handlePlanAction = (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+    if (isDowngrade) {
+      setDowngradeTarget(planId);
+      return;
+    }
+    performPlanAction(planId, isDowngrade);
+  };
+
+  const downgradePlanDef = downgradeTarget ? subscriptionPlans.find(p => p.id === downgradeTarget) : null;
+  const currentPlanDef = subscriptionPlans.find(p => p.id === currentPlan);
+  const lostFeatures = downgradePlanDef && currentPlanDef
+    ? currentPlanDef.features
+        .filter(f => f.included)
+        .filter(cf => !downgradePlanDef.features.some(df => df.included && df.text === cf.text))
+    : [];
 
   useEffect(() => {
     const checkAuth = async () => {
