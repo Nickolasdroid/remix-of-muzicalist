@@ -9,6 +9,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const MyPlan = () => {
   const navigate = useNavigate();
@@ -18,11 +28,11 @@ const MyPlan = () => {
   const [currentPlan, setCurrentPlan] = useState("Free");
   const [isAnnual, setIsAnnual] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [downgradeTarget, setDowngradeTarget] = useState<'Free' | 'Standard' | 'Premium' | null>(null);
 
-  const handlePlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+  const performPlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     if (planId === 'Free' || isDowngrade) {
       setActionLoading(planId);
-      // Check if user has a Stripe customer; if not, downgrade directly
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const { data: profileRows } = await (supabase as any).rpc('get_my_full_profile');
@@ -57,6 +67,22 @@ const MyPlan = () => {
     });
     if (!ok) setActionLoading(null);
   };
+
+  const handlePlanAction = (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
+    if (isDowngrade) {
+      setDowngradeTarget(planId);
+      return;
+    }
+    performPlanAction(planId, isDowngrade);
+  };
+
+  const downgradePlanDef = downgradeTarget ? subscriptionPlans.find(p => p.id === downgradeTarget) : null;
+  const currentPlanDef = subscriptionPlans.find(p => p.id === currentPlan);
+  const lostFeatures = downgradePlanDef && currentPlanDef
+    ? currentPlanDef.features
+        .filter(f => f.included)
+        .filter(cf => !downgradePlanDef.features.some(df => df.included && df.text === cf.text))
+    : [];
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -283,6 +309,58 @@ const MyPlan = () => {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={downgradeTarget !== null} onOpenChange={(open) => !open && setDowngradeTarget(null)}>
+        <AlertDialogContent className="rounded-lg max-h-[85vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {downgradeTarget === 'Free'
+                ? `Sigur vrei să faci downgrade la planul Free?`
+                : `Sigur vrei să faci downgrade la planul ${downgradeTarget}?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm">
+                <p>
+                  Treci de la planul <span className="font-medium text-foreground">{currentPlan}</span> la{" "}
+                  <span className="font-medium text-foreground">{downgradeTarget}</span>. Această schimbare are următoarele consecințe:
+                </p>
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Conținutul existent (anunțuri, postări, promovări) <span className="font-medium text-foreground">nu va fi șters</span> și rămâne vizibil.</li>
+                  <li>Dacă utilizarea curentă depășește noile limite, nu vei putea crea elemente noi în acea categorie până când sloturile ocupate sunt eliberate automat (la 30 de zile de la creare).</li>
+                  {lostFeatures.length > 0 && (
+                    <li>
+                      Vei <span className="font-medium text-foreground">pierde accesul</span> la următoarele beneficii:
+                      <ul className="list-disc pl-5 mt-1.5 space-y-1 text-muted-foreground">
+                        {lostFeatures.map((f, i) => (
+                          <li key={i}>{f.text}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  )}
+                  <li>Plățile viitoare se vor face conform noului plan începând cu următoarea perioadă de facturare.</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading !== null}>Anulează</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (downgradeTarget) {
+                  const target = downgradeTarget;
+                  setDowngradeTarget(null);
+                  performPlanAction(target, true);
+                }
+              }}
+              disabled={actionLoading !== null}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Da, fă downgrade
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
