@@ -220,6 +220,7 @@
     "redirecting": "Se redirecționează…",
     "upgradeTo": "Upgrade la {{plan}}",
     "downgradeTo": "Downgrade la {{plan}}",
+    "planUpdated": "Acum ești pe planul {{plan}}.",
     "howPlanChangesWork": "Cum funcționează schimbarea planului",
     "upgradesLabel": "Upgrade-urile",
     "downgradesLabel": "Downgrade-urile",
