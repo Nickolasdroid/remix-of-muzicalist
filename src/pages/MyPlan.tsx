@@ -300,7 +300,7 @@ const MyPlan = () => {
 
                       {isCurrentPlan && (
                         <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
-                          Your current plan
+                          {t('myPlan.currentPlan')}
                         </div>
                       )}
                     </div>
