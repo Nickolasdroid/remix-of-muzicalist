@@ -267,6 +267,24 @@ const faqSections = [
       },
     ],
   },
+  {
+    title: "Company & Contact",
+    icon: Building2,
+    items: [
+      {
+        q: "Who operates Muzicalist?",
+        a: "Muzicalist is operated by FUTURE CRAFT SRL (CUI 54307625), with registered address at Str. Principală, Nr. 39, Sat Sohodol, Comuna Sohodol, Romania.",
+      },
+      {
+        q: "How can I contact support?",
+        a: "Email us at contact@muzicalist.com for any account, billing or platform issue. We typically respond within a few business days.",
+      },
+      {
+        q: "Where can I read the legal documents?",
+        a: "The Privacy Policy and Terms of Service are linked at the bottom of every page and from the Useful Links section below.",
+      },
+    ],
+  },
 ];
 
 const HelpSupport = () => {
