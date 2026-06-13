@@ -317,21 +317,19 @@ const MyPlan = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {downgradeTarget === 'Free'
-                ? `Sigur vrei să faci downgrade la planul Free?`
-                : `Sigur vrei să faci downgrade la planul ${downgradeTarget}?`}
+                ? t('myPlan.downgradeConfirmTitle_free')
+                : t('myPlan.downgradeConfirmTitle_plan', { plan: downgradeTarget })}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>
-                  Vei trece de la planul <span className="font-medium text-foreground">{currentPlan}</span> la{" "}
-                  <span className="font-medium text-foreground">{downgradeTarget}</span>. 
-                  Vei pierde modificările și funcționalitățile active din planul curent.
+                  {t('myPlan.downgradeConfirmDescription', { current: currentPlan, target: downgradeTarget })}
                 </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading !== null}>Anulează</AlertDialogCancel>
+            <AlertDialogCancel disabled={actionLoading !== null}>{t('myPlan.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
@@ -344,7 +342,7 @@ const MyPlan = () => {
               disabled={actionLoading !== null}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Da, fă downgrade
+              {t('myPlan.confirmDowngrade')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
