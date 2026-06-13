@@ -322,14 +322,14 @@ const MyPlan = () => {
               <div className="space-y-3 text-sm">
                 <p>
                   Treci de la planul <span className="font-medium text-foreground">{currentPlan}</span> la{" "}
-                  <span className="font-medium text-foreground">{downgradeTarget}</span>. Vei pierde modificările și funcționalitățile active din planul curent.
+                  <span className="font-medium text-foreground">{downgradeTarget}</span>. Această schimbare are următoarele consecințe:
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5">
-                  <li>Conținutul existent nu va fi șters, dar nu vei putea crea elemente noi dacă depășești noile limite.</li>
-                  <li>Sloturile ocupate se eliberează automat la 30 de zile de la creare.</li>
+                  <li>Conținutul existent (anunțuri, postări, promovări) <span className="font-medium text-foreground">nu va fi șters</span> și rămâne vizibil.</li>
+                  <li>Dacă utilizarea curentă depășește noile limite, nu vei putea crea elemente noi în acea categorie până când sloturile ocupate sunt eliberate automat (la 30 de zile de la creare).</li>
                   {lostFeatures.length > 0 && (
                     <li>
-                      Vei pierde accesul la:
+                      Vei <span className="font-medium text-foreground">pierde accesul</span> la următoarele beneficii:
                       <ul className="list-disc pl-5 mt-1.5 space-y-1 text-muted-foreground">
                         {lostFeatures.map((f, i) => (
                           <li key={i}>{f.text}</li>
@@ -337,6 +337,7 @@ const MyPlan = () => {
                       </ul>
                     </li>
                   )}
+                  <li>Plățile viitoare se vor face conform noului plan începând cu următoarea perioadă de facturare.</li>
                 </ul>
               </div>
             </AlertDialogDescription>
