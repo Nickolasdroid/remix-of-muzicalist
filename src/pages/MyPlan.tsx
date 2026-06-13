@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Crown, Check, X, Info } from "lucide-react";
@@ -22,6 +23,7 @@ import {
 
 const MyPlan = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
@@ -43,12 +45,12 @@ const MyPlan = () => {
             .update({ plan: planId })
             .eq('id', session.user.id);
           if (updErr) {
-            toast({ title: 'Could not change plan', description: updErr.message, variant: 'destructive' });
+            toast({ title: t('common.error'), description: updErr.message, variant: 'destructive' });
             setActionLoading(null);
             return;
           }
           setCurrentPlan(planId);
-          toast({ title: 'Plan updated', description: `You are now on the ${planId} plan.` });
+          toast({ title: t('common.success'), description: t('myPlan.planUpdated', { plan: planId }) });
           setActionLoading(null);
           return;
         }
@@ -122,7 +124,7 @@ const MyPlan = () => {
   if (isLoading) {
     return (
       <>
-        <Navigation mobileTitle="My Plan" mobileBackPath={-1} />
+        <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
         <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
@@ -134,13 +136,13 @@ const MyPlan = () => {
 
   return (
     <>
-      <Navigation mobileTitle="My Plan" mobileBackPath={-1} />
+      <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
       <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
         <div className="max-w-5xl mx-auto">
           <div className="space-y-6">
             <div className={isMobile ? 'hidden' : ''}>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-foreground">My Plan</h1>
+                <h1 className="text-xl font-semibold text-foreground">{t('myPlan.title')}</h1>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -148,23 +150,23 @@ const MyPlan = () => {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                      aria-label="How plan changes work"
+                      aria-label={t('myPlan.howPlanChangesWork')}
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96 text-sm" align="start">
-                    <p className="font-medium mb-2 text-foreground">How plan changes work</p>
+                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
                     <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">Upgrades</span> take effect immediately — your new slot allowance is available right away.</li>
-                      <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> All your announcements, posts and promotions stay live.</li>
-                      <li>If your current usage exceeds the new plan limits, you simply can't create new items in that category until occupied slots are automatically released (30 days after creation).</li>
+                      <li><span className="text-foreground">{t('myPlan.upgradesLabel', 'Upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
+                      <li><span className="text-foreground">{t('myPlan.downgradesLabel', 'Downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                      <li>{t('myPlan.exceedsLimit')}</li>
                     </ul>
                   </PopoverContent>
                 </Popover>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                Choose the plan that fits your needs
+                {t('myPlan.choosePlan')}
               </p>
             </div>
 
@@ -175,13 +177,13 @@ const MyPlan = () => {
                   onClick={() => setIsAnnual(false)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  Monthly
+                  {t('myPlan.monthly')}
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  Annual <span className="text-xs opacity-75">Save ~17%</span>
+                  {t('myPlan.annual')} <span className="text-xs opacity-75">{t('myPlan.annualSave')}</span>
                 </button>
               </div>
               {isMobile && (
@@ -192,17 +194,17 @@ const MyPlan = () => {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      aria-label="How plan changes work"
+                      aria-label={t('myPlan.howPlanChangesWork')}
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80 text-sm" align="end">
-                    <p className="font-medium mb-2 text-foreground">How plan changes work</p>
+                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
                     <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">Upgrades</span> take effect immediately — your new slot allowance is available right away.</li>
-                      <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> All your announcements, posts and promotions stay live.</li>
-                      <li>If your current usage exceeds the new plan limits, you simply can't create new items in that category until occupied slots are automatically released (30 days after creation).</li>
+                      <li><span className="text-foreground">{t('myPlan.upgradesLabel')}</span> {t('myPlan.upgradesImmediate')}</li>
+                      <li><span className="text-foreground">{t('myPlan.downgradesLabel')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                      <li>{t('myPlan.exceedsLimit')}</li>
                     </ul>
                   </PopoverContent>
                 </Popover>
@@ -221,14 +223,14 @@ const MyPlan = () => {
                     {!isCurrentPlan && plan.highlighted && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                         <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          Most Popular
+                          {t('myPlan.mostPopular', 'Most Popular')}
                         </span>
                       </div>
                     )}
                     {!isCurrentPlan && isPremiumPlan && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                         <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          ⭐ Best for Professionals
+                          {t('myPlan.bestForProfessionals', '⭐ Best for Professionals')}
                         </span>
                       </div>
                     )}
@@ -276,7 +278,7 @@ const MyPlan = () => {
                         const currentRank = rank[currentPlan] ?? 1;
                         const planRank = rank[plan.id] ?? 1;
                         const isDowngrade = planRank < currentRank;
-                        const action = isDowngrade ? 'Downgrade' : 'Upgrade';
+                        const actionKey = isDowngrade ? 'myPlan.downgradeTo' : 'myPlan.upgradeTo';
                         return (
                           <Button
                             variant={isDowngrade ? "outline" : "default"}
@@ -291,14 +293,14 @@ const MyPlan = () => {
                             }`}
                           >
                             <Crown className="h-4 w-4 mr-2" />
-                            {actionLoading === plan.id ? 'Redirecting…' : `${action} to ${plan.name}`}
+                            {actionLoading === plan.id ? t('myPlan.redirecting') : t(actionKey, { plan: plan.name })}
                           </Button>
                         );
                       })()}
 
                       {isCurrentPlan && (
                         <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
-                          Your current plan
+                          {t('myPlan.currentPlan')}
                         </div>
                       )}
                     </div>
@@ -315,21 +317,19 @@ const MyPlan = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>
               {downgradeTarget === 'Free'
-                ? `Sigur vrei să faci downgrade la planul Free?`
-                : `Sigur vrei să faci downgrade la planul ${downgradeTarget}?`}
+                ? t('myPlan.downgradeConfirmTitle_free')
+                : t('myPlan.downgradeConfirmTitle_plan', { plan: downgradeTarget })}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>
-                  Vei trece de la planul <span className="font-medium text-foreground">{currentPlan}</span> la{" "}
-                  <span className="font-medium text-foreground">{downgradeTarget}</span>. 
-                  Vei pierde modificările și funcționalitățile active din planul curent.
+                  {t('myPlan.downgradeConfirmDescription', { current: currentPlan, target: downgradeTarget })}
                 </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading !== null}>Anulează</AlertDialogCancel>
+            <AlertDialogCancel disabled={actionLoading !== null}>{t('myPlan.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
@@ -342,7 +342,7 @@ const MyPlan = () => {
               disabled={actionLoading !== null}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Da, fă downgrade
+              {t('myPlan.confirmDowngrade')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
