@@ -1,21 +1,20 @@
-## Obiectiv
-La checkout, Stripe va cere obligatoriu utilizatorului adresa completă (țară, județ, oraș, stradă, cod poștal), astfel încât SmartBill să poată genera facturi conforme.
+Add the legal entity operating Muzicalist to both the Privacy Policy and Terms of Service pages so users can identify the company behind the platform.
 
-## Modificări
+## Details to insert
+- Company name: **FUTURE CRAFT SRL**
+- CUI: **54307625**
+- Location: Sat Sohodol, Comuna Sohodol
+- Address: Str. Principală, Nr. 39
 
-### 1. `supabase/functions/create-checkout/index.ts`
-În apelul `stripe.checkout.sessions.create({...})` (linia 105) adaug:
-- `billing_address_collection: "required"` — forțează completarea adresei complete (inclusiv județ / state).
-- `customer_update: { address: "auto", name: "auto" }` — salvează adresa și numele pe Customer-ul Stripe (necesar pentru clienții deja existenți, altfel Stripe dă eroare când există `customer`).
-- `tax_id_collection: { enabled: true }` — opțional dar recomandat pentru firme (CUI/VAT), util la facturare.
+## Proposed changes
 
-### 2. `supabase/functions/create-pending-artist-checkout/index.ts`
-Aceleași 3 opțiuni adăugate la `sessions.create` (linia 92), pentru ca și înregistrarea artistului să colecteze adresa.
+### 1. Privacy Policy (`src/pages/PrivacyPolicy.tsx`)
+- Insert a new section **"Company Information / Data Controller"** near the top (after the introductory paragraph or before section 1). 
+- Include: company name, CUI, registered address, and email contact.
+- Rationale: GDPR Art. 13/14 requires the data controller's identity and contact details.
 
-## Note tehnice
-- Stripe trimite adresa în `customer.address` (line1, city, state, postal_code, country). Integrarea SmartBill o va citi de acolo (sau din `session.customer_details.address` în webhook).
-- `state` este județul (ex. „Cluj”, „B” pentru București). Dacă SmartBill cere format specific, mapăm ulterior.
-- Nu sunt necesare modificări în frontend — Stripe Checkout afișează automat câmpurile.
+### 2. Terms of Service (`src/pages/TermsOfService.tsx`)
+- Expand the existing **"Contact"** section (currently section 16) to also list the operator's legal identity: company name, CUI, and address, in addition to the email.
+- Optional: add a short **"Operator Identity"** paragraph at the top of the document (e.g., "Muzicalist is operated by...") so users immediately know who they are contracting with.
 
-## Întrebare
-Vrei să activez și `tax_id_collection` (CUI pentru persoane juridice), sau doar adresa?
+Both edits are static text updates only — no new components, no logic changes, no dependencies.
