@@ -221,6 +221,8 @@
     "upgradeTo": "Upgrade to {{plan}}",
     "downgradeTo": "Downgrade to {{plan}}",
     "planUpdated": "You are now on the {{plan}} plan.",
+    "mostPopular": "Most Popular",
+    "bestForProfessionals": "⭐ Best for Professionals",
     "howPlanChangesWork": "How plan changes work",
     "upgradesLabel": "Upgrades",
     "downgradesLabel": "Downgrades",
