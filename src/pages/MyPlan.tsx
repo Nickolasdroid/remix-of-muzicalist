@@ -223,14 +223,14 @@ const MyPlan = () => {
                     {!isCurrentPlan && plan.highlighted && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                         <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          Most Popular
+                          {t('myPlan.mostPopular', 'Most Popular')}
                         </span>
                       </div>
                     )}
                     {!isCurrentPlan && isPremiumPlan && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                         <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          ⭐ Best for Professionals
+                          {t('myPlan.bestForProfessionals', '⭐ Best for Professionals')}
                         </span>
                       </div>
                     )}
