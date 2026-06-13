@@ -158,8 +158,8 @@ const MyPlan = () => {
                   <PopoverContent className="w-96 text-sm" align="start">
                     <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
                     <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">{t('common.upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
-                      <li><span className="text-foreground">{t('common.downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                      <li><span className="text-foreground">{t('myPlan.upgradesLabel', 'Upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
+                      <li><span className="text-foreground">{t('myPlan.downgradesLabel', 'Downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
                       <li>{t('myPlan.exceedsLimit')}</li>
                     </ul>
                   </PopoverContent>
