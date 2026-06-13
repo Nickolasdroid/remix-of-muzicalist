@@ -45,12 +45,12 @@ const MyPlan = () => {
             .update({ plan: planId })
             .eq('id', session.user.id);
           if (updErr) {
-            toast({ title: 'Could not change plan', description: updErr.message, variant: 'destructive' });
+            toast({ title: t('common.error'), description: updErr.message, variant: 'destructive' });
             setActionLoading(null);
             return;
           }
           setCurrentPlan(planId);
-          toast({ title: 'Plan updated', description: `You are now on the ${planId} plan.` });
+          toast({ title: t('common.success'), description: t('myPlan.planUpdated', { plan: planId }) });
           setActionLoading(null);
           return;
         }
