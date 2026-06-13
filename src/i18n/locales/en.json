@@ -220,6 +220,7 @@
     "redirecting": "Redirecting…",
     "upgradeTo": "Upgrade to {{plan}}",
     "downgradeTo": "Downgrade to {{plan}}",
+    "planUpdated": "You are now on the {{plan}} plan.",
     "howPlanChangesWork": "How plan changes work",
     "upgradesLabel": "Upgrades",
     "downgradesLabel": "Downgrades",
