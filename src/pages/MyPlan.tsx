@@ -177,13 +177,13 @@ const MyPlan = () => {
                   onClick={() => setIsAnnual(false)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  Monthly
+                  {t('myPlan.monthly')}
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  Annual <span className="text-xs opacity-75">Save ~17%</span>
+                  {t('myPlan.annual')} <span className="text-xs opacity-75">{t('myPlan.annualSave')}</span>
                 </button>
               </div>
               {isMobile && (
@@ -194,17 +194,17 @@ const MyPlan = () => {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      aria-label="How plan changes work"
+                      aria-label={t('myPlan.howPlanChangesWork')}
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80 text-sm" align="end">
-                    <p className="font-medium mb-2 text-foreground">How plan changes work</p>
+                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
                     <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">Upgrades</span> take effect immediately — your new slot allowance is available right away.</li>
-                      <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> All your announcements, posts and promotions stay live.</li>
-                      <li>If your current usage exceeds the new plan limits, you simply can't create new items in that category until occupied slots are automatically released (30 days after creation).</li>
+                      <li><span className="text-foreground">{t('myPlan.upgradesLabel')}</span> {t('myPlan.upgradesImmediate')}</li>
+                      <li><span className="text-foreground">{t('myPlan.downgradesLabel')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                      <li>{t('myPlan.exceedsLimit')}</li>
                     </ul>
                   </PopoverContent>
                 </Popover>
