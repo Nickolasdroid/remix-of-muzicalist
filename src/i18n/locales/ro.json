@@ -209,5 +209,25 @@
     "delete": "Șterge",
     "adsPublished": "{{count}} anunțuri publicate",
     "memberSince": "Membru din {{date}}"
+  },
+  "myPlan": {
+    "title": "Planul Meu",
+    "choosePlan": "Alege planul care ți se potrivește",
+    "monthly": "Lunar",
+    "annual": "Anual",
+    "annualSave": "Economisește ~17%",
+    "currentPlan": "Planul tău curent",
+    "redirecting": "Se redirecționează…",
+    "upgradeTo": "Upgrade la {{plan}}",
+    "downgradeTo": "Downgrade la {{plan}}",
+    "howPlanChangesWork": "Cum funcționează schimbarea planului",
+    "upgradesImmediate": "Upgrade-urile au efect imediat — noul număr de sloturi devine disponibil instant.",
+    "downgradesKeepContent": "Downgrade-urile nu șterg și nu ascund conținutul existent. Toate anunțurile, postările și promoțiile tale rămân active.",
+    "exceedsLimit": "Dacă utilizarea curentă depășește limitele noului plan, nu vei putea crea elemente noi în acea categorie până când sloturile ocupate sunt eliberate automat (la 30 de zile de la creare).",
+    "downgradeConfirmTitle_free": "Sigur vrei să faci downgrade la planul Free?",
+    "downgradeConfirmTitle_plan": "Sigur vrei să faci downgrade la planul {{plan}}?",
+    "downgradeConfirmDescription": "Vei trece de la planul {{current}} la planul {{target}}. Vei pierde modificările și funcționalitățile active din planul curent.",
+    "cancel": "Anulează",
+    "confirmDowngrade": "Da, fă downgrade"
   }
 }
