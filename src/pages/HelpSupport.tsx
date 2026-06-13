@@ -200,8 +200,8 @@ const faqSections = [
         a: "Premium artists get a verified badge, top placement in search and Leaderboard, advanced Analytics, higher content limits and access to exclusive features.",
       },
       {
-        q: "What happens when I downgrade my plan?",
-        a: "Before any downgrade, we show a confirmation dialog listing the features you will lose. Existing content stays visible, but the new limits apply to future creations and future billing follows the new plan.",
+       q: "What happens when I downgrade my plan?",
+       a: "Before any downgrade, we show a short confirmation dialog warning that you will lose the modifications and features active in your current plan. Existing content stays visible, but you cannot create new items beyond the new limits, and occupied slots are freed automatically 30 days after creation.",
       },
       {
         q: "Can I cancel my subscription?",
