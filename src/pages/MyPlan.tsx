@@ -23,6 +23,7 @@ import {
 
 const MyPlan = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
