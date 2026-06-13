@@ -278,7 +278,7 @@ const MyPlan = () => {
                         const currentRank = rank[currentPlan] ?? 1;
                         const planRank = rank[plan.id] ?? 1;
                         const isDowngrade = planRank < currentRank;
-                        const action = isDowngrade ? 'Downgrade' : 'Upgrade';
+                        const actionKey = isDowngrade ? 'myPlan.downgradeTo' : 'myPlan.upgradeTo';
                         return (
                           <Button
                             variant={isDowngrade ? "outline" : "default"}
@@ -293,7 +293,7 @@ const MyPlan = () => {
                             }`}
                           >
                             <Crown className="h-4 w-4 mr-2" />
-                            {actionLoading === plan.id ? 'Redirecting…' : `${action} to ${plan.name}`}
+                            {actionLoading === plan.id ? t('myPlan.redirecting') : t(actionKey, { plan: plan.name })}
                           </Button>
                         );
                       })()}
