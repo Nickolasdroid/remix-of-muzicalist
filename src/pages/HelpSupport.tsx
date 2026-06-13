@@ -104,19 +104,23 @@ const faqSections = [
     items: [
       {
         q: "What's the difference between a Post and an Announcement?",
-        a: "Posts are content shared by artists with their followers on the Feed. Announcements are event opportunities posted by users looking to hire an artist.",
+        a: "Posts are content shared by artists with their followers on the Feed (text + media, with likes and comments). Announcements are event opportunities posted by users looking to hire an artist — text-only with structured details such as location, price and date, and without likes or comments.",
       },
       {
-        q: "How do I create a post or announcement?",
-        a: "Artists create posts from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
+        q: "What is a Promotion and how is it different from an Announcement?",
+        a: "Promotions are premium artist content combining media and text, with likes and comments enabled — used to showcase work or special offers. Announcements are user-side event opportunities, simpler in format and used for hiring artists.",
       },
       {
-        q: "How does the announcement ad slot work?",
-        a: "Each announcement consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the announcement before then.",
+        q: "How do I create a post, promotion or announcement?",
+        a: "Artists create posts and promotions from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
       },
       {
-        q: "How do likes work?",
-        a: "Any logged-in user can like posts and announcements. Counts are visible on each card.",
+        q: "How does the announcement/promotion ad slot work?",
+        a: "Each announcement or promotion consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the item before then.",
+      },
+      {
+        q: "How do likes and comments work?",
+        a: "Any logged-in user can like and comment on posts and promotions. Announcements do not support likes or comments — they're meant for direct contact via messaging.",
       },
       {
         q: "How long are announcements visible?",
@@ -124,6 +128,7 @@ const faqSections = [
       },
     ],
   },
+
   {
     title: "Messages & Notifications",
     icon: MessageSquare,
