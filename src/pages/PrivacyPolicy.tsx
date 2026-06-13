@@ -28,6 +28,20 @@ const PrivacyPolicy = () => {
             </p>
 
             <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">Data Controller</h2>
+              <p>
+                Muzicalist is operated by <strong className="text-foreground">FUTURE CRAFT SRL</strong>,
+                the data controller responsible for the processing of your personal data under this policy.
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong className="text-foreground">Company:</strong> FUTURE CRAFT SRL</li>
+                <li><strong className="text-foreground">CUI:</strong> 54307625</li>
+                <li><strong className="text-foreground">Registered address:</strong> Str. Principală, Nr. 39, Sat Sohodol, Comuna Sohodol, Romania</li>
+                <li><strong className="text-foreground">Email:</strong> <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">contact@muzicalist.com</a></li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">1. Information We Collect</h2>
               <p>
                 We collect information you provide directly to us, such as when you create an account,

@@ -210,7 +210,15 @@ const TermsOfService = () => {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">16. Contact</h2>
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">16. Operator & Contact</h2>
+              <p>
+                Muzicalist is operated by the following legal entity:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong className="text-foreground">Company:</strong> FUTURE CRAFT SRL</li>
+                <li><strong className="text-foreground">CUI:</strong> 54307625</li>
+                <li><strong className="text-foreground">Registered address:</strong> Str. Principală, Nr. 39, Sat Sohodol, Comuna Sohodol, Romania</li>
+              </ul>
               <p>
                 For questions about these Terms of Service, please contact us at{" "}
                 <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">
