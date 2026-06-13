@@ -19,7 +19,12 @@ import {
   Star,
   Calendar,
   Flag,
+  Sparkles,
+  Receipt,
+  Building2,
+  Globe,
 } from "lucide-react";
+
 
 
 const faqSections = [
