@@ -199,6 +199,54 @@ const faqSections = [
         q: "What does Premium include?",
         a: "Premium artists get a verified badge, top placement in search and Leaderboard, advanced Analytics, higher content limits and access to exclusive features.",
       },
+      {
+        q: "What happens when I downgrade my plan?",
+        a: "Before any downgrade, we show a confirmation dialog listing the features you will lose. Existing content stays visible, but the new limits apply to future creations and future billing follows the new plan.",
+      },
+      {
+        q: "Can I cancel my subscription?",
+        a: "Yes — open My Plan → Manage subscription to access the customer portal. Cancelling stops future renewals; access continues until the end of the current billing period.",
+      },
+    ],
+  },
+  {
+    title: "Billing & Invoicing",
+    icon: Receipt,
+    items: [
+      {
+        q: "How are payments processed?",
+        a: "All payments are processed securely via our payment provider (Stripe). We never store full card numbers on our servers.",
+      },
+      {
+        q: "Will I receive an invoice?",
+        a: "Yes. Invoices are generated automatically for every payment and are compliant with Romanian tax requirements through our integrated invoicing system.",
+      },
+      {
+        q: "Why do I need to provide my address at checkout?",
+        a: "Romanian invoicing law requires a complete billing address (city, county/state, country) on every invoice. At checkout you'll be asked to fill in those fields so the invoice is legally valid.",
+      },
+      {
+        q: "I get an error trying to upgrade — what should I check?",
+        a: "Most checkout errors come from currency mismatches on an existing subscription. If you previously had a subscription in a different currency, cancel it from the customer portal first, then retry the upgrade. If the issue persists, contact support.",
+      },
+      {
+        q: "Are refunds available?",
+        a: "Except where required by law, fees already paid are non-refundable. Cancelling stops future renewals but you keep access until the end of the current billing period.",
+      },
+    ],
+  },
+  {
+    title: "Language & Localization",
+    icon: Globe,
+    items: [
+      {
+        q: "What languages does Muzicalist support?",
+        a: "The interface is available in multiple languages. We auto-detect your language based on your country/browser at first visit, and you can switch it manually anytime.",
+      },
+      {
+        q: "How do I change the language?",
+        a: "Use the language switcher in the navigation. Your preference is remembered across sessions.",
+      },
     ],
   },
   {
