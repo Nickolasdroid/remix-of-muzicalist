@@ -136,13 +136,13 @@ const MyPlan = () => {
 
   return (
     <>
-      <Navigation mobileTitle="My Plan" mobileBackPath={-1} />
+      <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
       <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
         <div className="max-w-5xl mx-auto">
           <div className="space-y-6">
             <div className={isMobile ? 'hidden' : ''}>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-foreground">My Plan</h1>
+                <h1 className="text-xl font-semibold text-foreground">{t('myPlan.title')}</h1>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -150,23 +150,23 @@ const MyPlan = () => {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                      aria-label="How plan changes work"
+                      aria-label={t('myPlan.howPlanChangesWork')}
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96 text-sm" align="start">
-                    <p className="font-medium mb-2 text-foreground">How plan changes work</p>
+                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
                     <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">Upgrades</span> take effect immediately — your new slot allowance is available right away.</li>
-                      <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> All your announcements, posts and promotions stay live.</li>
-                      <li>If your current usage exceeds the new plan limits, you simply can't create new items in that category until occupied slots are automatically released (30 days after creation).</li>
+                      <li><span className="text-foreground">{t('common.upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
+                      <li><span className="text-foreground">{t('common.downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                      <li>{t('myPlan.exceedsLimit')}</li>
                     </ul>
                   </PopoverContent>
                 </Popover>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                Choose the plan that fits your needs
+                {t('myPlan.choosePlan')}
               </p>
             </div>
 
