@@ -19,7 +19,12 @@ import {
   Star,
   Calendar,
   Flag,
+  Sparkles,
+  Receipt,
+  Building2,
+  Globe,
 } from "lucide-react";
+
 
 
 const faqSections = [
@@ -99,19 +104,23 @@ const faqSections = [
     items: [
       {
         q: "What's the difference between a Post and an Announcement?",
-        a: "Posts are content shared by artists with their followers on the Feed. Announcements are event opportunities posted by users looking to hire an artist.",
+        a: "Posts are content shared by artists with their followers on the Feed (text + media, with likes and comments). Announcements are event opportunities posted by users looking to hire an artist — text-only with structured details such as location, price and date, and without likes or comments.",
       },
       {
-        q: "How do I create a post or announcement?",
-        a: "Artists create posts from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
+        q: "What is a Promotion and how is it different from an Announcement?",
+        a: "Promotions are premium artist content combining media and text, with likes and comments enabled — used to showcase work or special offers. Announcements are user-side event opportunities, simpler in format and used for hiring artists.",
       },
       {
-        q: "How does the announcement ad slot work?",
-        a: "Each announcement consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the announcement before then.",
+        q: "How do I create a post, promotion or announcement?",
+        a: "Artists create posts and promotions from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
       },
       {
-        q: "How do likes work?",
-        a: "Any logged-in user can like posts and announcements. Counts are visible on each card.",
+        q: "How does the announcement/promotion ad slot work?",
+        a: "Each announcement or promotion consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the item before then.",
+      },
+      {
+        q: "How do likes and comments work?",
+        a: "Any logged-in user can like and comment on posts and promotions. Announcements do not support likes or comments — they're meant for direct contact via messaging.",
       },
       {
         q: "How long are announcements visible?",
@@ -119,6 +128,7 @@ const faqSections = [
       },
     ],
   },
+
   {
     title: "Messages & Notifications",
     icon: MessageSquare,
@@ -189,6 +199,54 @@ const faqSections = [
         q: "What does Premium include?",
         a: "Premium artists get a verified badge, top placement in search and Leaderboard, advanced Analytics, higher content limits and access to exclusive features.",
       },
+      {
+        q: "What happens when I downgrade my plan?",
+        a: "Before any downgrade, we show a confirmation dialog listing the features you will lose. Existing content stays visible, but the new limits apply to future creations and future billing follows the new plan.",
+      },
+      {
+        q: "Can I cancel my subscription?",
+        a: "Yes — open My Plan → Manage subscription to access the customer portal. Cancelling stops future renewals; access continues until the end of the current billing period.",
+      },
+    ],
+  },
+  {
+    title: "Billing & Invoicing",
+    icon: Receipt,
+    items: [
+      {
+        q: "How are payments processed?",
+        a: "All payments are processed securely via our payment provider (Stripe). We never store full card numbers on our servers.",
+      },
+      {
+        q: "Will I receive an invoice?",
+        a: "Yes. Invoices are generated automatically for every payment and are compliant with Romanian tax requirements through our integrated invoicing system.",
+      },
+      {
+        q: "Why do I need to provide my address at checkout?",
+        a: "Romanian invoicing law requires a complete billing address (city, county/state, country) on every invoice. At checkout you'll be asked to fill in those fields so the invoice is legally valid.",
+      },
+      {
+        q: "I get an error trying to upgrade — what should I check?",
+        a: "Most checkout errors come from currency mismatches on an existing subscription. If you previously had a subscription in a different currency, cancel it from the customer portal first, then retry the upgrade. If the issue persists, contact support.",
+      },
+      {
+        q: "Are refunds available?",
+        a: "Except where required by law, fees already paid are non-refundable. Cancelling stops future renewals but you keep access until the end of the current billing period.",
+      },
+    ],
+  },
+  {
+    title: "Language & Localization",
+    icon: Globe,
+    items: [
+      {
+        q: "What languages does Muzicalist support?",
+        a: "The interface is available in multiple languages. We auto-detect your language based on your country/browser at first visit, and you can switch it manually anytime.",
+      },
+      {
+        q: "How do I change the language?",
+        a: "Use the language switcher in the navigation. Your preference is remembered across sessions.",
+      },
     ],
   },
   {
@@ -206,6 +264,24 @@ const faqSections = [
       {
         q: "Is my personal information safe?",
         a: "Yes. You control phone and email visibility from Settings, and we never expose your account credentials. Read our Privacy Policy for full details.",
+      },
+    ],
+  },
+  {
+    title: "Company & Contact",
+    icon: Building2,
+    items: [
+      {
+        q: "Who operates Muzicalist?",
+        a: "Muzicalist is operated by FUTURE CRAFT SRL (CUI 54307625), with registered address at Str. Principală, Nr. 39, Sat Sohodol, Comuna Sohodol, Romania.",
+      },
+      {
+        q: "How can I contact support?",
+        a: "Email us at contact@muzicalist.com for any account, billing or platform issue. We typically respond within a few business days.",
+      },
+      {
+        q: "Where can I read the legal documents?",
+        a: "The Privacy Policy and Terms of Service are linked at the bottom of every page and from the Useful Links section below.",
       },
     ],
   },
