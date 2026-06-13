@@ -124,7 +124,7 @@ const MyPlan = () => {
   if (isLoading) {
     return (
       <>
-        <Navigation mobileTitle="My Plan" mobileBackPath={-1} />
+        <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
         <div className={`${isMobile ? 'pt-14 pb-20 px-4' : 'md:ml-64 pt-8 px-8'}`}>
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
