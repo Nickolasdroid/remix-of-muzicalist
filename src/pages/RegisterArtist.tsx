@@ -65,14 +65,32 @@ const RegisterArtist = () => {
     const cancelled = params.get("checkout") === "cancelled";
 
     if (cancelled) {
+      try {
+        const raw = sessionStorage.getItem("artistRegistrationDraft");
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (draft.formData) setFormData(draft.formData);
+          if (typeof draft.isAnnual === "boolean") setIsAnnual(draft.isAnnual);
+          if (draft.imageSrc) setImageSrc(draft.imageSrc);
+          if (draft.croppedAreaPixels) setCroppedAreaPixels(draft.croppedAreaPixels);
+          if (typeof draft.agreedToTerms === "boolean") setAgreedToTerms(draft.agreedToTerms);
+          if (typeof draft.promotionalConsent === "boolean") setPromotionalConsent(draft.promotionalConsent);
+          setCurrentStep(typeof draft.currentStep === "number" ? draft.currentStep : 4);
+          setShowPlanSelection(true);
+        }
+      } catch (e) {
+        console.warn("Failed to restore registration draft:", e);
+      }
       toast({
         title: t("artistRegistration.checkoutCancelled.title", "Plată anulată"),
         description: t(
           "artistRegistration.checkoutCancelled.message",
-          "Plata a fost anulată. Reia înregistrarea pentru a alege un plan."
+          "Plata a fost anulată. Alege un alt plan pentru a continua."
         ),
       });
       window.history.replaceState({}, "", "/register/artist");
+      setAuthChecking(false);
+      return;
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -83,6 +101,7 @@ const RegisterArtist = () => {
       }
     });
   }, [navigate, t, toast]);
+
 
   const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
   const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
@@ -370,11 +389,22 @@ const RegisterArtist = () => {
         }
       }
 
+      try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
+
       toast({
         title: t("artistRegistration.success.title"),
         description: t("artistRegistration.success.message"),
       });
-      navigate(`/login?signup=success&email=${encodeURIComponent(formData.email)}`);
+
+      // If signUp returned an active session (email confirmation disabled),
+      // take the artist straight to their dashboard. Otherwise fall back to
+      // the login page so they can verify and sign in.
+      if (authData.session) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate(`/login?signup=success&email=${encodeURIComponent(formData.email)}`);
+      }
+
     } catch (error: any) {
       console.error("Free signup error:", error);
       toast({
@@ -402,6 +432,24 @@ const RegisterArtist = () => {
         const avatar_base64 = await getAvatarBase64();
         const origin = window.location.origin;
 
+        // Persist registration draft so user can resume if they cancel checkout
+        try {
+          sessionStorage.setItem(
+            "artistRegistrationDraft",
+            JSON.stringify({
+              formData,
+              isAnnual,
+              imageSrc,
+              croppedAreaPixels,
+              agreedToTerms,
+              promotionalConsent,
+              currentStep,
+            })
+          );
+        } catch (e) {
+          console.warn("Failed to persist registration draft:", e);
+        }
+
         const { data, error } = await supabase.functions.invoke("create-pending-artist-checkout", {
           body: {
             email: formData.email,
@@ -427,6 +475,7 @@ const RegisterArtist = () => {
           throw new Error(data?.error || error?.message || "Could not start checkout");
         }
         window.location.href = data.url as string;
+
       } catch (err: any) {
         console.error("Paid plan checkout error:", err);
         toast({
