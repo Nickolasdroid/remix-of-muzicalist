@@ -421,6 +421,24 @@ const RegisterArtist = () => {
         const avatar_base64 = await getAvatarBase64();
         const origin = window.location.origin;
 
+        // Persist registration draft so user can resume if they cancel checkout
+        try {
+          sessionStorage.setItem(
+            "artistRegistrationDraft",
+            JSON.stringify({
+              formData,
+              isAnnual,
+              imageSrc,
+              croppedAreaPixels,
+              agreedToTerms,
+              promotionalConsent,
+              currentStep,
+            })
+          );
+        } catch (e) {
+          console.warn("Failed to persist registration draft:", e);
+        }
+
         const { data, error } = await supabase.functions.invoke("create-pending-artist-checkout", {
           body: {
             email: formData.email,
@@ -446,6 +464,7 @@ const RegisterArtist = () => {
           throw new Error(data?.error || error?.message || "Could not start checkout");
         }
         window.location.href = data.url as string;
+
       } catch (err: any) {
         console.error("Paid plan checkout error:", err);
         toast({
