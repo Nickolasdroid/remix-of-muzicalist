@@ -65,14 +65,32 @@ const RegisterArtist = () => {
     const cancelled = params.get("checkout") === "cancelled";
 
     if (cancelled) {
+      try {
+        const raw = sessionStorage.getItem("artistRegistrationDraft");
+        if (raw) {
+          const draft = JSON.parse(raw);
+          if (draft.formData) setFormData(draft.formData);
+          if (typeof draft.isAnnual === "boolean") setIsAnnual(draft.isAnnual);
+          if (draft.imageSrc) setImageSrc(draft.imageSrc);
+          if (draft.croppedAreaPixels) setCroppedAreaPixels(draft.croppedAreaPixels);
+          if (typeof draft.agreedToTerms === "boolean") setAgreedToTerms(draft.agreedToTerms);
+          if (typeof draft.promotionalConsent === "boolean") setPromotionalConsent(draft.promotionalConsent);
+          setCurrentStep(typeof draft.currentStep === "number" ? draft.currentStep : 4);
+          setShowPlanSelection(true);
+        }
+      } catch (e) {
+        console.warn("Failed to restore registration draft:", e);
+      }
       toast({
         title: t("artistRegistration.checkoutCancelled.title", "Plată anulată"),
         description: t(
           "artistRegistration.checkoutCancelled.message",
-          "Plata a fost anulată. Reia înregistrarea pentru a alege un plan."
+          "Plata a fost anulată. Alege un alt plan pentru a continua."
         ),
       });
       window.history.replaceState({}, "", "/register/artist");
+      setAuthChecking(false);
+      return;
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -83,6 +101,7 @@ const RegisterArtist = () => {
       }
     });
   }, [navigate, t, toast]);
+
 
   const availableRegions = formData.country ? getCountryRegions(formData.country) : [];
   const divisionLabel = formData.country ? getDivisionName(formData.country) : t("artistRegistration.county");
