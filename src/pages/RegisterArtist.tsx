@@ -63,6 +63,48 @@ const RegisterArtist = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const cancelled = params.get("checkout") === "cancelled";
+    const success = params.get("checkout") === "success";
+
+    if (success) {
+      (async () => {
+        let email = params.get("email") || "";
+        let password = "";
+        try {
+          const raw = sessionStorage.getItem("artistRegistrationDraft");
+          if (raw) {
+            const draft = JSON.parse(raw);
+            email = email || draft?.formData?.email || "";
+            password = draft?.formData?.password || "";
+          }
+        } catch {}
+
+        window.history.replaceState({}, "", "/register/artist");
+
+        if (!email || !password) {
+          navigate(`/login?signup=success${email ? `&email=${encodeURIComponent(email)}` : ""}`, { replace: true });
+          return;
+        }
+
+        // Retry sign-in while the Stripe webhook provisions the user
+        const maxAttempts = 20;
+        for (let i = 0; i < maxAttempts; i++) {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (!error && data.session) {
+            try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
+            toast({
+              title: t("artistRegistration.success.title", "Cont creat cu succes"),
+              description: t("artistRegistration.success.message", "Bun venit pe Muzicalist!"),
+            });
+            navigate("/dashboard", { replace: true });
+            return;
+          }
+          await new Promise((r) => setTimeout(r, 1500));
+        }
+        // Fallback: send to login
+        navigate(`/login?signup=success&email=${encodeURIComponent(email)}`, { replace: true });
+      })();
+      return;
+    }
 
     if (cancelled) {
       try {
