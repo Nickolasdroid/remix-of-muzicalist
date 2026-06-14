@@ -466,7 +466,7 @@ const RegisterArtist = () => {
             avatar_base64,
             plan: planName,
             billing: isAnnual ? "yearly" : "monthly",
-            success_url: `${origin}/login?signup=success&email=${encodeURIComponent(formData.email)}`,
+            success_url: `${origin}/register/artist?checkout=success&email=${encodeURIComponent(formData.email)}`,
             cancel_url: `${origin}/register/artist?checkout=cancelled`,
           },
         });
