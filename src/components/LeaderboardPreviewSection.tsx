@@ -9,9 +9,9 @@ interface PreviewArtist {
 }
 
 const FICTIONAL_TOP3: PreviewArtist[] = [
-  { stage_name: "Luna Vox", review_count: 248, rating: 4.9 },
-  { stage_name: "DJ Nyx", review_count: 215, rating: 4.8 },
-  { stage_name: "The Velvet Echo", review_count: 187, rating: 4.8 },
+  { stage_name: "Artist 1", review_count: 248, rating: 4.9 },
+  { stage_name: "Artist 2", review_count: 215, rating: 4.8 },
+  { stage_name: "Artist 3", review_count: 187, rating: 4.8 },
 ];
 
 const podiumStyles: Record<number, {
