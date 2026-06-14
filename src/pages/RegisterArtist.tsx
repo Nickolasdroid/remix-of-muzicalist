@@ -389,11 +389,22 @@ const RegisterArtist = () => {
         }
       }
 
+      try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
+
       toast({
         title: t("artistRegistration.success.title"),
         description: t("artistRegistration.success.message"),
       });
-      navigate(`/login?signup=success&email=${encodeURIComponent(formData.email)}`);
+
+      // If signUp returned an active session (email confirmation disabled),
+      // take the artist straight to their dashboard. Otherwise fall back to
+      // the login page so they can verify and sign in.
+      if (authData.session) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate(`/login?signup=success&email=${encodeURIComponent(formData.email)}`);
+      }
+
     } catch (error: any) {
       console.error("Free signup error:", error);
       toast({
