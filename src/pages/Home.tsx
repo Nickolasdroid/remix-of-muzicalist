@@ -4,7 +4,6 @@ import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import HeroSearchBar from "@/components/HeroSearchBar";
-import CommunitySections from "@/components/CommunitySections";
 
 
 const Home = () => {
@@ -80,9 +79,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Posts & Event Opportunities */}
-      <CommunitySections />
 
       {/* CTA Section */}
       <section className="py-6 md:py-10 px-4 md:px-8">
