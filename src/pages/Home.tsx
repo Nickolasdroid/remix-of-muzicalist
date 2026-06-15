@@ -81,6 +81,9 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Posts & Event Opportunities */}
+      <CommunitySections />
+
       {/* CTA Section */}
       <section className="py-6 md:py-10 px-4 md:px-8">
         <div className="container mx-auto px-0">
