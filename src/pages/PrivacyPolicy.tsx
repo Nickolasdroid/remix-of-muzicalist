@@ -164,7 +164,7 @@ const PrivacyPolicy = () => {
         </div>
       </div>
 
-      <Footer />
+      {!user && <Footer />}
     </div>
   );
 };
