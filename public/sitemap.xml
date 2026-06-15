@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://muzicalist.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://muzicalist.com/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://muzicalist.com/feed</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://muzicalist.com/announcements</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://muzicalist.com/leaderboard</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://muzicalist.com/categories</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://muzicalist.com/countries</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://muzicalist.com/counties</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://muzicalist.com/artists</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://muzicalist.com/search</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://muzicalist.com/plans</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://muzicalist.com/help</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://muzicalist.com/register</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://muzicalist.com/register/artist</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://muzicalist.com/register/user</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://muzicalist.com/login</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://muzicalist.com/privacy-policy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://muzicalist.com/terms-of-service</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

@@ -12,3 +12,14 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /user-dashboard
+Disallow: /messages
+Disallow: /notifications
+Disallow: /my-plan
+Disallow: /booking-requests
+Disallow: /analytics
+Disallow: /reset-password
+
+Sitemap: https://muzicalist.com/sitemap.xml
