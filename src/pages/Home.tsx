@@ -4,6 +4,7 @@ import AISearchBar from "@/components/AISearchBar";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import HeroSearchBar from "@/components/HeroSearchBar";
+import CommunitySections from "@/components/CommunitySections";
 
 
 const Home = () => {
