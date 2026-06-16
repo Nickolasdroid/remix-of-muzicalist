@@ -2118,54 +2118,26 @@ const Dashboard = () => {
                                 <CalendarIcon className="h-5 w-5 text-accent" />
                                 Experience
                               </h3>
-                              {editingField !== 'experience' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('experience')}>
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>}
                             </div>
-                            {editingField === 'experience' ? <div className="space-y-3">
-                                <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({
-                      ...formData,
-                      experienceLevel: value
-                    })}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Experience Level" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Beginner">Beginner</SelectItem>
-                                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                    <SelectItem value="Advanced">Advanced</SelectItem>
-                                    <SelectItem value="Professional">Professional</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => saveField('experience')} disabled={isSaving}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
+                            <div>
+                              <div className="rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
+                                <div className="flex flex-col items-center justify-center text-center px-2">
+                                  <Clock className="h-4 w-4 text-accent mb-1" />
+                                  <span className="text-base font-bold text-foreground leading-tight">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}</span>
+                                  <span className="text-xs text-muted-foreground mt-0.5">Member since</span>
                                 </div>
-                              </div> : <div>
-                                <div className="rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
-                                  <div className="flex flex-col items-center justify-center text-center px-2">
-                                    <Award className="h-4 w-4 text-accent mb-1" />
-                                    <span className="text-base font-bold text-foreground leading-tight">{formData.experienceLevel || '—'}</span>
-                                    <span className="text-xs text-muted-foreground mt-0.5">Level</span>
-                                  </div>
-                                  <div className="flex flex-col items-center justify-center text-center px-2">
-                                    <CalendarCheck className="h-4 w-4 text-accent mb-1" />
-                                    <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
-                                    <span className="text-xs text-muted-foreground mt-0.5">Events</span>
-                                  </div>
-                                  <div className="flex flex-col items-center justify-center text-center px-2">
-                                    <Clock className="h-4 w-4 text-accent mb-1" />
-                                    <span className="text-base font-bold text-foreground leading-tight">{formData.careerStartYear ? `Since ${formData.careerStartYear}` : '—'}</span>
-                                    <span className="text-xs text-muted-foreground mt-0.5">Active</span>
-                                  </div>
+                                <div className="flex flex-col items-center justify-center text-center px-2">
+                                  <CalendarCheck className="h-4 w-4 text-accent mb-1" />
+                                  <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
+                                  <span className="text-xs text-muted-foreground mt-0.5">Events</span>
                                 </div>
-                              </div>}
+                                <div className="flex flex-col items-center justify-center text-center px-2">
+                                  <Award className="h-4 w-4 text-accent mb-1" />
+                                  <span className="text-base font-bold text-foreground leading-tight">{formData.careerStartYear ? `Since ${formData.careerStartYear}` : '—'}</span>
+                                  <span className="text-xs text-muted-foreground mt-0.5">Active</span>
+                                </div>
+                              </div>
+                            </div>
 
                           </div>
 
