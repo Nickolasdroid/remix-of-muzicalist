@@ -905,23 +905,7 @@ const RegisterArtist = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="experienceLevel" className="text-sm">{t("artistRegistration.experienceLevel")}</Label>
-                    <Select value={formData.experienceLevel} onValueChange={(value) => setFormData({ ...formData, experienceLevel: value })}>
-                      <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
-                        <Award className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <SelectValue placeholder={t("artistRegistration.placeholders.experienceLevel")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Beginner">{t("artistRegistration.experienceLevels.beginner")}</SelectItem>
-                        <SelectItem value="Intermediate">{t("artistRegistration.experienceLevels.intermediate")}</SelectItem>
-                        <SelectItem value="Advanced">{t("artistRegistration.experienceLevels.advanced")}</SelectItem>
-                        <SelectItem value="Professional">{t("artistRegistration.experienceLevels.professional")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+                <div className="grid grid-cols-1 gap-3 md:gap-4">
                   <div className="space-y-1">
                     <Label htmlFor="careerStartYear" className="text-sm">{t("artistRegistration.careerStartYear")}</Label>
                     <Select value={formData.careerStartYear} onValueChange={(value) => setFormData({ ...formData, careerStartYear: value })}>
@@ -937,6 +921,7 @@ const RegisterArtist = () => {
                     </Select>
                   </div>
                 </div>
+
 
                 <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3 pt-3">
                   <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
