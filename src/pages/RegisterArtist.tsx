@@ -235,7 +235,7 @@ const RegisterArtist = () => {
         }
         break;
       case 2:
-        if (!formData.stageName || !formData.specialization || !formData.experienceLevel || !formData.careerStartYear) {
+        if (!formData.stageName || !formData.specialization || !formData.careerStartYear) {
           toast({
             title: t("common.error"),
             description: t("artistRegistration.validation.completeStep2"),
