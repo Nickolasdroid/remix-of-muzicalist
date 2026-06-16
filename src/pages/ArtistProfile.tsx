@@ -1196,9 +1196,9 @@ const ArtistProfile = () => {
                       </h3>
                       <div className="rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
                         <div className="flex flex-col items-center justify-center text-center px-2">
-                          <Award className="h-4 w-4 text-accent mb-1" />
-                          <span className="text-base font-bold text-foreground leading-tight">{artist.experience_level || '—'}</span>
-                          <span className="text-xs text-muted-foreground mt-0.5">Level</span>
+                          <Clock className="h-4 w-4 text-accent mb-1" />
+                          <span className="text-base font-bold text-foreground leading-tight">{artist.created_at ? new Date(artist.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Member since</span>
                         </div>
                         <div className="flex flex-col items-center justify-center text-center px-2">
                           <CalendarCheck className="h-4 w-4 text-accent mb-1" />
@@ -1206,7 +1206,7 @@ const ArtistProfile = () => {
                           <span className="text-xs text-muted-foreground mt-0.5">Events</span>
                         </div>
                         <div className="flex flex-col items-center justify-center text-center px-2">
-                          <Clock className="h-4 w-4 text-accent mb-1" />
+                          <Award className="h-4 w-4 text-accent mb-1" />
                           <span className="text-base font-bold text-foreground leading-tight">{artist.career_start_year ? `Since ${artist.career_start_year}` : '—'}</span>
                           <span className="text-xs text-muted-foreground mt-0.5">Active</span>
                         </div>
