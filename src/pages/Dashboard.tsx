@@ -2128,7 +2128,7 @@ const Dashboard = () => {
                                 <div className="flex flex-col items-center justify-center text-center px-2">
                                   <Award className="h-4 w-4 text-accent mb-1" />
                                   <span className="text-base font-bold text-foreground leading-tight">
-                                    {formData.careerStartYear ? `${new Date().getFullYear() - Number(formData.careerStartYear)} years` : '—'}
+                                    {formData.careerStartYear ? `${Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear))} years` : '—'}
                                   </span>
                                   <span className="text-xs text-muted-foreground mt-0.5">Experience</span>
                                 </div>
