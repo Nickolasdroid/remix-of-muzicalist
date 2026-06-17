@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Youtube, Mail, MapPin } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
 import logo from "@/assets/logo.png";
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.68 2.87 2.87 0 01-2.1-5.11 2.87 2.87 0 012.1-.87h.3V9.6a6.33 6.33 0 00-.3 0A6.24 6.24 0 003.91 16a6.24 6.24 0 006.24 6.24 6.24 6.24 0 006.24-6.24V8.91a8.17 8.17 0 004.77 1.52V7a4.81 4.81 0 01-1.57-.31z" />
+  </svg>
+);
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const quickLinks = [{
