@@ -47,6 +47,10 @@ const Footer = () => {
     icon: Youtube,
     href: "https://www.youtube.com/@Muzicalist",
     label: "YouTube"
+  }, {
+    icon: TikTokIcon,
+    href: "https://www.tiktok.com/@muzicalist",
+    label: "TikTok"
   }];
   return <footer className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 bg-background">
