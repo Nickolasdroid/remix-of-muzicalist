@@ -1200,8 +1200,10 @@ const ArtistProfile = () => {
                         </div>
                         <div className="flex flex-col items-center justify-center text-center px-2">
                           <Award className="h-4 w-4 text-accent mb-1" />
-                          <span className="text-base font-bold text-foreground leading-tight">{artist.career_start_year ? `Since ${artist.career_start_year}` : '—'}</span>
-                          <span className="text-xs text-muted-foreground mt-0.5">Active</span>
+                          <span className="text-base font-bold text-foreground leading-tight">
+                            {artist.career_start_year ? `${new Date().getFullYear() - artist.career_start_year} years` : '—'}
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-0.5">Experience</span>
                         </div>
                       </div>
 
