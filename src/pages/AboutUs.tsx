@@ -8,6 +8,7 @@ import { Search, GitCompare, MessageCircle, TrendingUp, Check, X, ArrowRight, Sp
 import logo from "@/assets/logo.png";
 import heroConcert from "@/assets/about-hero-concert.jpg";
 import storyLive from "@/assets/about-story-live.jpg";
+import storyNetwork from "@/assets/about-story-network.jpg";
 import worldNetwork from "@/assets/about-world-network.jpg";
 import { PLATFORM_STATS } from "@/lib/platformStats";
 
