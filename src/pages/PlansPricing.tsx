@@ -103,9 +103,9 @@ const PlansPricing = () => {
                 <PopoverContent className="w-80 rounded-lg text-sm space-y-2" align="center">
                   <p className="font-medium text-foreground">How plan changes work</p>
                   <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    <li><span className="text-foreground">Upgrades</span> take effect immediately and unlock more slots for announcements, posts and promotions.</li>
+                    <li><span className="text-foreground">Upgrades</span> take effect immediately — your new monthly allowance for announcements, posts and promotions is available right away.</li>
                     <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
-                    <li>If your current usage exceeds the new plan limits, new content creation in that category is paused until occupied slots are automatically released (30 days after creation).</li>
+                    <li>Limits reset automatically at the start of every new billing cycle. If your current usage exceeds the new plan limits, new content creation in that category is paused until your next renewal.</li>
                   </ul>
                 </PopoverContent>
               </Popover>

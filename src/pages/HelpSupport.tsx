@@ -115,8 +115,8 @@ const faqSections = [
         a: "Artists create posts and promotions from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
       },
       {
-        q: "How does the announcement/promotion ad slot work?",
-        a: "Each announcement or promotion consumes a slot from your plan. Slots remain consumed for 30 days from the creation date, even if you delete the item before then.",
+        q: "How do post / announcement / promotion limits work?",
+        a: "Each plan includes a fixed monthly allowance (e.g. Standard: 15 posts, 5 announcements, 2 promotions; Premium: 30 / 10 / 5). Counters reset automatically at the start of every new billing cycle. Upgrading mid-cycle increases your limit immediately and preserves what you've already used.",
       },
       {
         q: "How do likes and comments work?",
