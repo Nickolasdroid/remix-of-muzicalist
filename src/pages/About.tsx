@@ -8,7 +8,7 @@ import AISearchShowcase from "@/components/AISearchShowcase";
 import CommunitySections from "@/components/CommunitySections";
 import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
 import CategoryCard from "@/components/CategoryCard";
-import heroConcert from "@/assets/hero-concert.png";
+
 import HeroSearchBar from "@/components/HeroSearchBar";
 import { PLATFORM_STATS } from "@/lib/platformStats";
 
@@ -18,14 +18,8 @@ const About = () => {
       <Navigation />
       
       {/* Hero Section + Stats Bar */}
-      <section className="relative pt-20 md:pt-32 pb-0 md:pb-10 px-0 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroConcert})` }} />
-
-        <div className="absolute inset-0 bg-background/70" />
-        
-        <div className="container mx-auto text-center px-4 md:px-8 relative z-10 pb-10 md:pb-20">
+      <section className="pt-20 md:pt-32 pb-0 md:pb-10 px-0">
+        <div className="container mx-auto text-center px-4 md:px-8 pb-10 md:pb-20">
           <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-3 md:mb-6 text-foreground">
             The Global Stage for
             <span className="text-accent block mt-1 md:mt-2">Musical Artists</span>
