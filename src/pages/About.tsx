@@ -8,7 +8,7 @@ import AISearchShowcase from "@/components/AISearchShowcase";
 import CommunitySections from "@/components/CommunitySections";
 import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
 import CategoryCard from "@/components/CategoryCard";
-import heroConcert from "@/assets/hero-concert.png";
+
 import HeroSearchBar from "@/components/HeroSearchBar";
 import { PLATFORM_STATS } from "@/lib/platformStats";
 
