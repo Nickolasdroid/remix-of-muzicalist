@@ -366,6 +366,25 @@ const SettingsTab = ({
     if (isMobile) setActiveSection("main");
   };
 
+  const verifyCurrentPasswordInline = async (value: string) => {
+    if (!value || !formData.email) {
+      setCurrentPasswordValid(null);
+      return;
+    }
+    setIsCheckingCurrentPassword(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: value,
+      });
+      setCurrentPasswordValid(!error);
+    } catch {
+      setCurrentPasswordValid(false);
+    } finally {
+      setIsCheckingCurrentPassword(false);
+    }
+  };
+
   const handleVerifyCurrentPassword = async () => {
     if (!passwordData.currentPassword) {
       toast({
