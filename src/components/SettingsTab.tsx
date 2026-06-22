@@ -752,7 +752,7 @@ const SettingsTab = ({
 
       <Button
         onClick={handleInstagramStyleChangePassword}
-        disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+        disabled={isChangingPassword || currentPasswordValid !== true || !passwordData.newPassword || !passwordData.confirmPassword}
         className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
       >
         {isChangingPassword ? "Updating..." : "Change password"}
