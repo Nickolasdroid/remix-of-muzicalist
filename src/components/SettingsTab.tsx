@@ -366,24 +366,28 @@ const SettingsTab = ({
     if (isMobile) setActiveSection("main");
   };
 
-  const verifyCurrentPasswordInline = async (value: string) => {
+  useEffect(() => {
+    const value = passwordData.currentPassword;
     if (!value || !formData.email) {
       setCurrentPasswordValid(null);
       return;
     }
     setIsCheckingCurrentPassword(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: value,
-      });
-      setCurrentPasswordValid(!error);
-    } catch {
-      setCurrentPasswordValid(false);
-    } finally {
-      setIsCheckingCurrentPassword(false);
-    }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: value,
+        });
+        setCurrentPasswordValid(!error);
+      } catch {
+        setCurrentPasswordValid(false);
+      } finally {
+        setIsCheckingCurrentPassword(false);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [passwordData.currentPassword, formData.email]);
 
   const handleVerifyCurrentPassword = async () => {
     if (!passwordData.currentPassword) {
@@ -676,7 +680,6 @@ const SettingsTab = ({
                 setPasswordData({ ...passwordData, currentPassword: e.target.value });
                 setCurrentPasswordValid(null);
               }}
-              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
               placeholder="Current password"
               className="h-12 rounded-lg pr-20"
             />
@@ -1158,7 +1161,6 @@ const SettingsTab = ({
                 setPasswordData({ ...passwordData, currentPassword: e.target.value });
                 setCurrentPasswordValid(null);
               }}
-              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
               placeholder="Current password"
               className="h-12 rounded-lg pr-20"
             />
