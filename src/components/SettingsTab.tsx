@@ -1734,6 +1734,11 @@ const EditProfilePanel = () => {
           <Input id="ep-email" type="email" value={email} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
           <p className="text-xs text-muted-foreground">Your email address cannot be modified.</p>
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="ep-phone">Phone</Label>
+          <Input id="ep-phone" type="tel" value={phone} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+          <p className="text-xs text-muted-foreground">Your phone number cannot be modified.</p>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="ep-first">First name</Label>
