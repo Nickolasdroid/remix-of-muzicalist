@@ -1686,6 +1686,7 @@ const EditProfilePanel = () => {
       const data = Array.isArray(rows) ? rows[0] : null;
       if (data) {
         setEmail((data as any).email || user.email || "");
+        setPhone((data as any).phone || "");
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setGender((data as any).gender || "prefer_not_to_say");
