@@ -84,6 +84,8 @@ const SettingsTab = ({
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [currentPasswordVerified, setCurrentPasswordVerified] = useState(false);
+  const [currentPasswordValid, setCurrentPasswordValid] = useState<null | boolean>(null);
+  const [isCheckingCurrentPassword, setIsCheckingCurrentPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
