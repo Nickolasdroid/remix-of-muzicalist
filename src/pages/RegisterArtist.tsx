@@ -388,7 +388,7 @@ const RegisterArtist = () => {
   const handleFreeSignup = async () => {
     setIsSubmitting(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/login`;
       const countryName = getCountryNameByCode(formData.country) || formData.country;
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
