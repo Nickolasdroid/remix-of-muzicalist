@@ -366,24 +366,28 @@ const SettingsTab = ({
     if (isMobile) setActiveSection("main");
   };
 
-  const verifyCurrentPasswordInline = async (value: string) => {
+  useEffect(() => {
+    const value = passwordData.currentPassword;
     if (!value || !formData.email) {
       setCurrentPasswordValid(null);
       return;
     }
     setIsCheckingCurrentPassword(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: value,
-      });
-      setCurrentPasswordValid(!error);
-    } catch {
-      setCurrentPasswordValid(false);
-    } finally {
-      setIsCheckingCurrentPassword(false);
-    }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: value,
+        });
+        setCurrentPasswordValid(!error);
+      } catch {
+        setCurrentPasswordValid(false);
+      } finally {
+        setIsCheckingCurrentPassword(false);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [passwordData.currentPassword, formData.email]);
 
   const handleVerifyCurrentPassword = async () => {
     if (!passwordData.currentPassword) {
