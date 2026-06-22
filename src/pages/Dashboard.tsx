@@ -40,6 +40,7 @@ import { Area } from "react-easy-crop";
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
+import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
@@ -191,12 +192,13 @@ const Dashboard = () => {
   const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
-  // Consumed ad/promotion/post slots (rolling 30-day window).
-  // A slot stays occupied for 30 days from creation, even if the item is deleted.
+  // Per-billing-period usage counters. Counters reset automatically at the
+  // start of each new subscription cycle (monthly or yearly).
   const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
-  const SLOT_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
+  const periodStart = getPeriodStart(profile);
+  const periodEnd = getPeriodEnd(profile);
   const activeConsumedSlots = consumedSlots.filter(
-    (s) => Date.now() - new Date(s.consumed_at).getTime() < SLOT_COOLDOWN_MS,
+    (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
   const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
@@ -233,7 +235,7 @@ const Dashboard = () => {
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits (plan-based) — slot-based with 30-day cooldown (same as ads)
+  // Post limits (plan-based) — counted per billing period, resets each cycle.
   const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
@@ -301,7 +303,8 @@ const Dashboard = () => {
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
-    const cutoffIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    // Pull usage rows since the start of the current billing period.
+    const cutoffIso = getPeriodStartIso(profile);
     const [{ data }, slotsRes] = await Promise.all([
       supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
       (supabase as any)
@@ -826,7 +829,7 @@ const Dashboard = () => {
   const handleAddAnnouncement = async () => {
     if (!user || !newAnnouncement.description) return;
     if (standardAdsUsed >= STANDARD_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per 30-day period.`, variant: "destructive" });
+      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -845,7 +848,7 @@ const Dashboard = () => {
         budget: newAnnouncement.budget || null
       }).select('id').single();
       if (error) throw error;
-      // Record consumed slot (locks it for 30 days even if the ad is deleted).
+      // Record usage for this billing period.
       await (supabase as any).from('consumed_ad_slots').insert({
         profile_id: user.id,
         is_premium: false,
@@ -929,7 +932,7 @@ const Dashboard = () => {
   const handleAddPromotion = async () => {
     if (!user || !newPromotion.description) return;
     if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per 30-day period.`, variant: "destructive" });
+      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -945,7 +948,7 @@ const Dashboard = () => {
         media_type: newPromotion.mediaType || null
       }).select('id').single();
       if (error) throw error;
-      // Record consumed slot (locks it for 30 days even if the promotion is deleted).
+      // Record usage for this billing period.
       await (supabase as any).from('consumed_ad_slots').insert({
         profile_id: user.id,
         is_premium: true,
@@ -967,11 +970,11 @@ const Dashboard = () => {
   const handleAddPost = async () => {
     if (!user || !newPost.content || !newPost.mediaUrl) return;
 
-    // Check post slot limit (rolling 30-day window)
+    // Check post limit (per billing period, resets at renewal)
     if (postsUsed >= STANDARD_POST_LIMIT) {
       toast({
         title: "Limit reached",
-        description: `You can only create ${STANDARD_POST_LIMIT} posts per 30-day window with your subscription.`,
+        description: `You can only create ${STANDARD_POST_LIMIT} posts per billing period. Your counter resets at the next renewal.`,
         variant: "destructive"
       });
       return;
@@ -985,7 +988,7 @@ const Dashboard = () => {
         media_type: newPost.mediaType || null
       }).select('id').single();
       if (error) throw error;
-      // Record consumed slot (locks it for 30 days even if the post is deleted).
+      // Record usage for this billing period.
       await (supabase as any).from('consumed_ad_slots').insert({
         profile_id: user.id,
         is_premium: false,
@@ -2691,7 +2694,7 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
                                   <Clock className="h-3 w-3" />
-                                  <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Slot held 30 days'}</span>
+                                  <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Resets at renewal'}</span>
                                 </div>
                               </div>
                               <div className="space-y-4 mt-4">
