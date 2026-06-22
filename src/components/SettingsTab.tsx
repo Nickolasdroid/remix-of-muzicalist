@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText, Check, X as XIcon, Loader2 } from "lucide-react";
 import BillingSection from "@/components/BillingSection";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -84,6 +84,8 @@ const SettingsTab = ({
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [currentPasswordVerified, setCurrentPasswordVerified] = useState(false);
+  const [currentPasswordValid, setCurrentPasswordValid] = useState<null | boolean>(null);
+  const [isCheckingCurrentPassword, setIsCheckingCurrentPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -362,6 +364,25 @@ const SettingsTab = ({
     setReportFile(null);
     setShowReportDialog(false);
     if (isMobile) setActiveSection("main");
+  };
+
+  const verifyCurrentPasswordInline = async (value: string) => {
+    if (!value || !formData.email) {
+      setCurrentPasswordValid(null);
+      return;
+    }
+    setIsCheckingCurrentPassword(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: value,
+      });
+      setCurrentPasswordValid(!error);
+    } catch {
+      setCurrentPasswordValid(false);
+    } finally {
+      setIsCheckingCurrentPassword(false);
+    }
   };
 
   const handleVerifyCurrentPassword = async () => {
@@ -646,21 +667,42 @@ const SettingsTab = ({
 
 
       <div className="space-y-3">
-        <div className="relative">
-          <Input
-            type={showCurrentPassword ? "text" : "password"}
-            value={passwordData.currentPassword}
-            onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-            placeholder="Current password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+        <div>
+          <div className="relative">
+            <Input
+              type={showCurrentPassword ? "text" : "password"}
+              value={passwordData.currentPassword}
+              onChange={e => {
+                setPasswordData({ ...passwordData, currentPassword: e.target.value });
+                setCurrentPasswordValid(null);
+              }}
+              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
+              placeholder="Current password"
+              className="h-12 rounded-lg pr-20"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {isCheckingCurrentPassword ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : currentPasswordValid === true ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : currentPasswordValid === false ? (
+                <XIcon className="h-4 w-4 text-destructive" />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          {currentPasswordValid === false && (
+            <p className="mt-1.5 text-xs text-destructive">Current password is incorrect.</p>
+          )}
+          {currentPasswordValid === true && (
+            <p className="mt-1.5 text-xs text-green-500">Current password verified.</p>
+          )}
         </div>
 
         <div className="relative">
@@ -669,7 +711,8 @@ const SettingsTab = ({
             value={passwordData.newPassword}
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
             placeholder="New password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
@@ -686,7 +729,8 @@ const SettingsTab = ({
             value={passwordData.confirmPassword}
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
             placeholder="Re-enter new password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
@@ -708,7 +752,7 @@ const SettingsTab = ({
 
       <Button
         onClick={handleInstagramStyleChangePassword}
-        disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+        disabled={isChangingPassword || currentPasswordValid !== true || !passwordData.newPassword || !passwordData.confirmPassword}
         className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
       >
         {isChangingPassword ? "Updating..." : "Change password"}
@@ -1105,21 +1149,42 @@ const SettingsTab = ({
       </div>
       <Separator />
       <div className="space-y-3 max-w-md">
-        <div className="relative">
-          <Input
-            type={showCurrentPassword ? "text" : "password"}
-            value={passwordData.currentPassword}
-            onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-            placeholder="Current password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+        <div>
+          <div className="relative">
+            <Input
+              type={showCurrentPassword ? "text" : "password"}
+              value={passwordData.currentPassword}
+              onChange={e => {
+                setPasswordData({ ...passwordData, currentPassword: e.target.value });
+                setCurrentPasswordValid(null);
+              }}
+              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
+              placeholder="Current password"
+              className="h-12 rounded-lg pr-20"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {isCheckingCurrentPassword ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : currentPasswordValid === true ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : currentPasswordValid === false ? (
+                <XIcon className="h-4 w-4 text-destructive" />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          {currentPasswordValid === false && (
+            <p className="mt-1.5 text-xs text-destructive">Current password is incorrect.</p>
+          )}
+          {currentPasswordValid === true && (
+            <p className="mt-1.5 text-xs text-green-500">Current password verified.</p>
+          )}
         </div>
         <div className="relative">
           <Input
@@ -1127,7 +1192,8 @@ const SettingsTab = ({
             value={passwordData.newPassword}
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
             placeholder="New password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
@@ -1143,7 +1209,8 @@ const SettingsTab = ({
             value={passwordData.confirmPassword}
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
             placeholder="Re-enter new password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
@@ -1162,7 +1229,7 @@ const SettingsTab = ({
         </button>
         <Button
           onClick={handleInstagramStyleChangePassword}
-          disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+          disabled={isChangingPassword || currentPasswordValid !== true || !passwordData.newPassword || !passwordData.confirmPassword}
           className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
         >
           {isChangingPassword ? "Updating..." : "Change password"}
