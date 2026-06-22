@@ -21,6 +21,7 @@ import { subscriptionPlans } from "@/lib/subscriptionPlans";
 
 const ManageSubscriptionCard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [plan, setPlan] = useState<string>("Free");
   const [status, setStatus] = useState<string | null>(null);
