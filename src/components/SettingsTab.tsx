@@ -680,7 +680,6 @@ const SettingsTab = ({
                 setPasswordData({ ...passwordData, currentPassword: e.target.value });
                 setCurrentPasswordValid(null);
               }}
-              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
               placeholder="Current password"
               className="h-12 rounded-lg pr-20"
             />
