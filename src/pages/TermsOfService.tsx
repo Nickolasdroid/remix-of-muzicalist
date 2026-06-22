@@ -91,7 +91,7 @@ const TermsOfService = () => {
               <h2 className="text-xl md:text-2xl font-semibold text-foreground">7. Posts, Announcements & Content Limits</h2>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Posts, announcements, media uploads and other content are subject to limits defined by your subscription plan</li>
-                <li>Announcement slots remain consumed for 30 days from creation, even if the announcement is deleted earlier</li>
+                <li>Posts, announcements and promotions counters reset automatically at the start of each new billing cycle</li>
                 <li>Announcements expire automatically shortly after their event date</li>
                 <li>You may only post one review per artist (one review per email)</li>
               </ul>
