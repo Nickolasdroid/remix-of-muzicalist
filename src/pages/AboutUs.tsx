@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import heroConcert from "@/assets/hero-concert.png";
 import { PLATFORM_STATS } from "@/lib/platformStats";
-import ourStoryBand from "@/assets/69690e7b-dd42-42c0-91f9-f4ef4d0290a5.png";
+
 
 const values = [
   { icon: Music, title: "Excellence in Music", description: "We connect only the best talented musical artists, ensuring clients receive outstanding performances." },
@@ -52,34 +52,25 @@ const AboutUs = () => {
       <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-8`}>
         <div className="container mx-auto px-0">
           <div className="max-w-5xl mx-auto mb-10 md:mb-20">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 items-start">
-              <div>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-4 md:mb-6">
-                  Our Story
-                </h1>
-                <p className="text-sm md:text-base text-muted-foreground mb-4">
-                  Muzicalist was created to solve a simple problem: finding talented and reliable musicians for events was difficult, time-consuming, and often uncertain.
-                </p>
-                <p className="text-sm md:text-base text-muted-foreground mb-4">
-                  At the same time, many talented artists struggled to promote themselves professionally and connect with the right opportunities.
-                </p>
-                <p className="text-sm md:text-base text-muted-foreground mb-4">
-                  Muzicalist bridges this gap — bringing artists and clients together in one trusted, professional platform.
-                </p>
-                <p className="text-sm md:text-base font-semibold text-foreground mb-2">
-                  Our goal is simple:
-                </p>
-                <p className="text-sm md:text-base text-muted-foreground">
-                  To make discovering musical talent easier, faster, and more reliable.
-                </p>
-              </div>
-              <div className="rounded-xl overflow-hidden border border-border/50 shadow-lg">
-                <img
-                  src={ourStoryBand}
-                  alt="Concert performance"
-                  className="w-full h-full aspect-[4/3] object-cover"
-                />
-              </div>
+            <div className="max-w-2xl">
+              <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-4 md:mb-6">
+                Our Story
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
+                Muzicalist was created to solve a simple problem: finding talented and reliable musicians for events was difficult, time-consuming, and often uncertain.
+              </p>
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
+                At the same time, many talented artists struggled to promote themselves professionally and connect with the right opportunities.
+              </p>
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
+                Muzicalist bridges this gap — bringing artists and clients together in one trusted, professional platform.
+              </p>
+              <p className="text-sm md:text-base font-semibold text-foreground mb-2">
+                Our goal is simple:
+              </p>
+              <p className="text-sm md:text-base text-muted-foreground">
+                To make discovering musical talent easier, faster, and more reliable.
+              </p>
             </div>
           </div>
 
