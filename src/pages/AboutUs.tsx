@@ -152,7 +152,7 @@ const AboutUs = () => {
         </div>
       </section>
 
-      <Footer />
+      {!isAuthenticated && <Footer />}
     </div>
   );
 };
