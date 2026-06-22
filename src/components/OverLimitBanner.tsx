@@ -4,6 +4,8 @@ interface OverLimitBannerProps {
   kind: "announcements" | "posts" | "promotions";
   used: number;
   limit: number;
+  /** Optional next billing reset date; shown to the user when provided. */
+  resetDate?: Date | null;
   className?: string;
 }
 
@@ -14,13 +16,16 @@ const LABELS: Record<OverLimitBannerProps["kind"], string> = {
 };
 
 /**
- * Warning shown when a user is over the slot limit for a given resource
- * (typically after a plan downgrade). Existing content is preserved; only
- * new creations are blocked until consumed slots expire after 30 days.
+ * Warning shown when a user is over the per-billing-period limit
+ * (typically right after a plan downgrade). Existing content is preserved;
+ * new creations are paused until the next billing-cycle reset.
  */
-export const OverLimitBanner = ({ kind, used, limit, className = "" }: OverLimitBannerProps) => {
+export const OverLimitBanner = ({ kind, used, limit, resetDate, className = "" }: OverLimitBannerProps) => {
   if (used <= limit) return null;
   const label = LABELS[kind];
+  const formattedReset = resetDate
+    ? resetDate.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+    : null;
   return (
     <div
       className={`flex items-start gap-3 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm ${className}`}
@@ -32,9 +37,10 @@ export const OverLimitBanner = ({ kind, used, limit, className = "" }: OverLimit
           {label}: {used}/{limit} — over your plan limit
         </p>
         <p className="text-muted-foreground">
-          Your current subscription allows fewer slots than you are currently using.
-          Your existing content remains active, but you cannot create new {label.toLowerCase()}{" "}
-          until enough slots are automatically released (30 days after creation).
+          Your current subscription allows fewer {label.toLowerCase()} than you've already
+          used this period. Existing content stays live, but you can't create new{" "}
+          {label.toLowerCase()} until your counter resets at the next billing cycle
+          {formattedReset ? ` (${formattedReset})` : ""}.
         </p>
       </div>
     </div>
