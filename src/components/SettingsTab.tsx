@@ -667,21 +667,42 @@ const SettingsTab = ({
 
 
       <div className="space-y-3">
-        <div className="relative">
-          <Input
-            type={showCurrentPassword ? "text" : "password"}
-            value={passwordData.currentPassword}
-            onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-            placeholder="Current password"
-            className="h-12 rounded-lg pr-12"
-          />
-          <button
-            type="button"
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
+        <div>
+          <div className="relative">
+            <Input
+              type={showCurrentPassword ? "text" : "password"}
+              value={passwordData.currentPassword}
+              onChange={e => {
+                setPasswordData({ ...passwordData, currentPassword: e.target.value });
+                setCurrentPasswordValid(null);
+              }}
+              onBlur={e => verifyCurrentPasswordInline(e.target.value)}
+              placeholder="Current password"
+              className="h-12 rounded-lg pr-20"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {isCheckingCurrentPassword ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : currentPasswordValid === true ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : currentPasswordValid === false ? (
+                <XIcon className="h-4 w-4 text-destructive" />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          {currentPasswordValid === false && (
+            <p className="mt-1.5 text-xs text-destructive">Current password is incorrect.</p>
+          )}
+          {currentPasswordValid === true && (
+            <p className="mt-1.5 text-xs text-green-500">Current password verified.</p>
+          )}
         </div>
 
         <div className="relative">
@@ -690,7 +711,8 @@ const SettingsTab = ({
             value={passwordData.newPassword}
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
             placeholder="New password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
@@ -707,7 +729,8 @@ const SettingsTab = ({
             value={passwordData.confirmPassword}
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
             placeholder="Re-enter new password"
-            className="h-12 rounded-lg pr-12"
+            disabled={currentPasswordValid !== true}
+            className="h-12 rounded-lg pr-12 disabled:opacity-60"
           />
           <button
             type="button"
