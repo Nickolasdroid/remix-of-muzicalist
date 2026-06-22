@@ -1671,6 +1671,7 @@ const EditProfilePanel = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState<string>("prefer_not_to_say");
@@ -1685,6 +1686,7 @@ const EditProfilePanel = () => {
       const data = Array.isArray(rows) ? rows[0] : null;
       if (data) {
         setEmail((data as any).email || user.email || "");
+        setPhone((data as any).phone || "");
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setGender((data as any).gender || "prefer_not_to_say");
@@ -1731,6 +1733,11 @@ const EditProfilePanel = () => {
           <Label htmlFor="ep-email">Email</Label>
           <Input id="ep-email" type="email" value={email} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
           <p className="text-xs text-muted-foreground">Your email address cannot be modified.</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="ep-phone">Phone</Label>
+          <Input id="ep-phone" type="tel" value={phone} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+          <p className="text-xs text-muted-foreground">Your phone number cannot be modified.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
