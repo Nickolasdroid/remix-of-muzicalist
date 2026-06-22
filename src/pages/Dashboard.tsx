@@ -886,6 +886,8 @@ const Dashboard = () => {
         error
       } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
       await loadAnnouncements();
       toast({
         title: "Success",
@@ -1025,7 +1027,10 @@ const Dashboard = () => {
         error
       } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
       await loadPosts();
+      await loadAnnouncements();
       toast({
         title: "Success",
         description: "Post deleted!"
@@ -2431,8 +2436,8 @@ const Dashboard = () => {
                           };
                           return (
                         <div className="space-y-4">
-                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} />
-                          <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} />
+                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
+                          <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
 
                           {/* Header */}
                           <div className="flex items-center justify-between gap-3">
@@ -2830,7 +2835,7 @@ const Dashboard = () => {
                           </div> :
                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                           <div className="max-w-[500px] mx-auto space-y-4">
-                          <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} />
+                          <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
                           <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-muted-foreground" />
