@@ -12,7 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import heroConcert from "@/assets/hero-concert.png";
+
 import { PLATFORM_STATS } from "@/lib/platformStats";
 import ourStoryBand from "@/assets/69690e7b-dd42-42c0-91f9-f4ef4d0290a5.png";
 
@@ -275,10 +275,6 @@ const AboutUs = () => {
 
             {/* Trusted by Artists Banner */}
             <div className="relative rounded-xl overflow-hidden border border-border/50">
-              <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${heroConcert})` }}
-              />
               <div className="absolute inset-0 bg-background/80" />
               <div className="relative z-10 py-8 md:py-12 px-4 md:px-10 text-center">
                 <h3 className="text-lg md:text-2xl font-display font-bold text-foreground mb-2">
@@ -309,10 +305,6 @@ const AboutUs = () => {
           {/* What We Aim For Section */}
           <div className="max-w-5xl mx-auto mb-10 md:mb-20">
             <div className="relative rounded-xl overflow-hidden border border-border/50">
-              <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${heroConcert})` }}
-              />
               <div className="absolute inset-0 bg-background/80" />
               <div className="relative z-10 py-8 md:py-12 px-6 md:px-10">
                 <h3 className="text-lg md:text-2xl font-display font-bold text-foreground mb-6 md:mb-8 text-center">
@@ -340,10 +332,6 @@ const AboutUs = () => {
           {/* Join Muzicalist Today CTA */}
           <div className="max-w-5xl mx-auto mb-10 md:mb-0">
             <div className="relative rounded-xl overflow-hidden border border-border/50">
-              <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${heroConcert})` }}
-              />
               <div className="absolute inset-0 bg-background/75" />
               <div className="relative z-10 py-10 md:py-16 px-4 md:px-10 text-center">
                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-3 md:mb-4">
