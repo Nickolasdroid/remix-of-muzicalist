@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +14,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CreditCard, Settings, XCircle, Calendar, Tag, Info } from "lucide-react";
+import { CreditCard, Settings, XCircle, Calendar, Tag, Info, Sparkles, ArrowRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { openCustomerPortal } from "@/lib/checkout";
 import { subscriptionPlans } from "@/lib/subscriptionPlans";
 
 const ManageSubscriptionCard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [plan, setPlan] = useState<string>("Free");
   const [status, setStatus] = useState<string | null>(null);
@@ -81,7 +83,45 @@ const ManageSubscriptionCard = () => {
   };
 
   if (loading) return null;
-  if (plan === "Free" || !hasCustomer) return null;
+
+  // Free plan message
+  if (plan === "Free" || !hasCustomer) {
+    const freePlan = subscriptionPlans.find((p) => p.id === "Free");
+    return (
+      <div className="rounded-lg border border-border bg-card p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="h-4 w-4 text-accent" />
+          <h2 className="text-base font-semibold text-foreground">Current plan</h2>
+        </div>
+
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 mb-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <p className="text-xl font-semibold text-foreground">{freePlan?.name ?? "Free"} Plan</p>
+              <p className="text-sm text-muted-foreground mt-0.5">No billing — free forever</p>
+            </div>
+            <Badge variant="outline" className="border-accent/30 text-accent bg-accent/10">
+              Active
+            </Badge>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-accent/20 bg-accent/5 p-4 mb-4">
+          <p className="text-sm text-foreground leading-relaxed">
+            You are currently on the <span className="font-semibold">Free plan</span>. Upgrade to a paid subscription to unlock more features: publish posts and announcements, display your pricing, get priority in search results, analytics, and more.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => navigate("/plans")}
+          className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+        >
+          <ArrowRight className="h-4 w-4 mr-2" />
+          Upgrade plan
+        </Button>
+      </div>
+    );
+  }
 
   const planDef = subscriptionPlans.find((p) => p.id === plan);
   const priceLabel = planDef && planDef.monthlyPrice > 0
