@@ -381,7 +381,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Settings className={`h-5 w-5 ${location.search.includes('tab=settings') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">Settings</span>
+                      <span className="text-sm font-semibold">{t('navigation.settings')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -398,7 +398,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 >
                   <div className="flex items-center gap-3">
                     <LogOut className="h-5 w-5 text-destructive" />
-                    <span className="text-sm font-semibold">Logout</span>
+                    <span className="text-sm font-semibold">{t('navigation.logout')}</span>
                   </div>
                   <ChevronRight className="h-5 w-5 text-destructive/60" />
                 </button>
@@ -419,17 +419,17 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : user ? (
             <>
               {(location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings') ? (
-                <span className="font-display font-bold text-foreground text-lg">Settings</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.settings')}</span>
               ) : location.pathname === '/leaderboard' ? (
-                <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.leaderboard')}</span>
               ) : location.pathname === '/countries' ? (
-                <span className="font-display font-bold text-foreground text-lg">Countries</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.countries', 'Countries')}</span>
               ) : location.pathname === '/counties' ? (
-                <span className="font-display font-bold text-foreground text-lg">Regions</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.regions', 'Regions')}</span>
               ) : location.pathname === '/categories' ? (
-                <span className="font-display font-bold text-foreground text-lg">Categories</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
               ) : location.pathname === '/notifications' ? (
-                <span className="font-display font-bold text-foreground text-lg">Notifications</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
                 <Link to="/feed" className="flex items-center gap-2">
                   <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
