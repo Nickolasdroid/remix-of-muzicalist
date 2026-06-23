@@ -45,12 +45,23 @@ const nearestSkippedElement = (node: Node) => {
 
 type AttrTarget = { element: Element; attr: (typeof TRANSLATABLE_ATTRIBUTES)[number]; original: string };
 
+const ensurePendingStyle = () => {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("i18n-pending-style")) return;
+  const style = document.createElement("style");
+  style.id = "i18n-pending-style";
+  style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
+  document.head.appendChild(style);
+};
+
 const AutoTranslatePageText = () => {
+  const location = useLocation();
   const textOriginals = useRef(new WeakMap<Text, string>());
   const attrOriginals = useRef(new WeakMap<Element, Partial<Record<(typeof TRANSLATABLE_ATTRIBUTES)[number], string>>>());
   const rafRef = useRef<number | null>(null);
   const asyncTimeoutRef = useRef<number | null>(null);
   const pendingMissing = useRef<Set<string>>(new Set());
+  const runSyncRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
