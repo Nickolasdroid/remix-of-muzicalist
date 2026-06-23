@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import SmoothVideoPlayer from "./SmoothVideoPlayer";
+import { getEmbedInfo } from "@/lib/mediaEmbed";
 
 interface MediaPreview {
   url: string;
@@ -43,11 +44,37 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
           {/* Media */}
           <div onClick={(e) => e.stopPropagation()}>
             {media.type === "video" ? (
-              <SmoothVideoPlayer
-                src={media.url}
-                autoPlay
-                className="w-[95vw] h-[90vh] max-w-[95vw] max-h-[90vh]"
-              />
+              (() => {
+                const info = getEmbedInfo(media.url);
+                if (info && info.provider !== "direct") {
+                  const isAudio = info.aspect === "audio";
+                  return (
+                    <div
+                      className={
+                        isAudio
+                          ? "w-[95vw] max-w-2xl"
+                          : "w-[95vw] max-w-5xl aspect-video"
+                      }
+                    >
+                      <iframe
+                        src={info.embedUrl + (info.provider === "youtube" ? "&autoplay=1" : "")}
+                        title="Embedded media"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowFullScreen
+                        className="w-full rounded-lg border-0"
+                        style={isAudio ? { height: info.provider === "spotify" ? 352 : 166 } : { height: "100%" }}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <SmoothVideoPlayer
+                    src={media.url}
+                    autoPlay
+                    className="w-[95vw] h-[90vh] max-w-[95vw] max-h-[90vh]"
+                  />
+                );
+              })()
             ) : (
               <img
                 src={media.url}

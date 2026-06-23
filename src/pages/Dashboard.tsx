@@ -48,6 +48,7 @@ import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 const Dashboard = () => {
@@ -1218,6 +1219,14 @@ const Dashboard = () => {
   };
   const handleAddVideo = async () => {
     if (!user || !videoUrl) return;
+    if (!isSupportedEmbed(videoUrl)) {
+      toast({
+        title: "Unsupported link",
+        description: "Paste a valid YouTube, SoundCloud, Spotify or Vimeo URL.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsSaving(true);
     try {
       const {
@@ -1225,7 +1234,7 @@ const Dashboard = () => {
       } = await supabase.from('gallery_items').insert({
         profile_id: user.id,
         type: 'video',
-        url: videoUrl
+        url: videoUrl.trim()
       });
       if (error) throw error;
       await loadGalleryItems();
@@ -1233,7 +1242,7 @@ const Dashboard = () => {
       setShowGalleryDialog(false);
       toast({
         title: "Success",
-        description: "Video added!"
+        description: "Embed added!"
       });
     } catch (error: any) {
       toast({
@@ -3072,15 +3081,38 @@ const Dashboard = () => {
                                     <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
                                   </TabsContent>
                                   <TabsContent value="video" className="space-y-4">
-                                    <div>
-                                      <Label htmlFor="gallery-video-upload" className="cursor-pointer">
-                                        <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors">
-                                          <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                          <p className="text-sm text-muted-foreground">Click to upload video</p>
-                                          <p className="text-xs text-muted-foreground mt-1">Max 500 MB</p>
-                                        </div>
-                                      </Label>
-                                      <Input id="gallery-video-upload" type="file" accept="video/*" onChange={handleGalleryVideoUpload} className="hidden" />
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
+                                        <Input
+                                          id="gallery-video-url"
+                                          type="url"
+                                          placeholder="https://www.youtube.com/watch?v=…"
+                                          value={videoUrl}
+                                          onChange={(e) => setVideoUrl(e.target.value)}
+                                          className="mt-1.5"
+                                        />
+                                        {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-destructive mt-1.5">
+                                            Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
+                                          </p>
+                                        )}
+                                        {videoUrl && isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-muted-foreground mt-1.5">
+                                            Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
+                                          </p>
+                                        )}
+                                      </div>
+                                      <Button
+                                        onClick={handleAddVideo}
+                                        disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                      >
+                                        {isSaving ? "Adding…" : "Embed link"}
+                                      </Button>
+                                      <p className="text-xs text-muted-foreground text-center">
+                                        Streamed directly from the source — no file is uploaded to our servers.
+                                      </p>
                                     </div>
                                   </TabsContent>
                                 </Tabs>
@@ -3163,14 +3195,23 @@ const Dashboard = () => {
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'video').map((item) => {
                                 const hidden = galleryHiddenIds.has(item.id);
+                                const info = getEmbedInfo(item.url);
                                 return (
                                   <div key={item.id} className="relative group">
                                     <div
                                       className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
                                       onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
-                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
                                     >
-                                      <Play className={`h-12 w-12 text-accent ${hidden ? 'opacity-40' : ''}`} />
+                                      {info?.thumbnail ? (
+                                        <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'opacity-30 grayscale' : 'opacity-80'}`} />
+                                      ) : null}
+                                      <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
+                                      {info && info.provider !== 'direct' && (
+                                        <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
+                                          {providerLabel(info.provider)}
+                                        </span>
+                                      )}
                                       {hidden && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
                                           <div className="rounded-full bg-background/80 p-2 shadow-md">
