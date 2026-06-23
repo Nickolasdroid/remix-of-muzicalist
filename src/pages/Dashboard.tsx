@@ -1219,6 +1219,14 @@ const Dashboard = () => {
   };
   const handleAddVideo = async () => {
     if (!user || !videoUrl) return;
+    if (!isSupportedEmbed(videoUrl)) {
+      toast({
+        title: "Unsupported link",
+        description: "Paste a valid YouTube, SoundCloud, Spotify or Vimeo URL.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsSaving(true);
     try {
       const {
@@ -1226,7 +1234,7 @@ const Dashboard = () => {
       } = await supabase.from('gallery_items').insert({
         profile_id: user.id,
         type: 'video',
-        url: videoUrl
+        url: videoUrl.trim()
       });
       if (error) throw error;
       await loadGalleryItems();
@@ -1234,7 +1242,7 @@ const Dashboard = () => {
       setShowGalleryDialog(false);
       toast({
         title: "Success",
-        description: "Video added!"
+        description: "Embed added!"
       });
     } catch (error: any) {
       toast({
