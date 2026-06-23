@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import i18n, { getCurrentLanguage, translateTexts, translateTextsSync } from "@/i18n";
 
 const SKIP_SELECTOR = [
@@ -44,12 +45,23 @@ const nearestSkippedElement = (node: Node) => {
 
 type AttrTarget = { element: Element; attr: (typeof TRANSLATABLE_ATTRIBUTES)[number]; original: string };
 
+const ensurePendingStyle = () => {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("i18n-pending-style")) return;
+  const style = document.createElement("style");
+  style.id = "i18n-pending-style";
+  style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
+  document.head.appendChild(style);
+};
+
 const AutoTranslatePageText = () => {
+  const location = useLocation();
   const textOriginals = useRef(new WeakMap<Text, string>());
   const attrOriginals = useRef(new WeakMap<Element, Partial<Record<(typeof TRANSLATABLE_ATTRIBUTES)[number], string>>>());
   const rafRef = useRef<number | null>(null);
   const asyncTimeoutRef = useRef<number | null>(null);
   const pendingMissing = useRef<Set<string>>(new Set());
+  const runSyncRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -235,17 +247,40 @@ const AutoTranslatePageText = () => {
       }
     };
     i18n.on("languageChanged", onLanguageChanged);
+    runSyncRef.current = runSync;
     runSync();
 
     return () => {
       stopObserver();
       i18n.off("languageChanged", onLanguageChanged);
+      runSyncRef.current = null;
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
       if (syncTimer) window.clearTimeout(syncTimer);
     };
   }, []);
 
+  // On every route change, hide the body BEFORE paint when a non-English
+  // language is active, then translate the freshly mounted DOM synchronously
+  // (using the cached translations) so the user never sees the English flash.
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    if (getCurrentLanguage() === "en") return;
+    ensurePendingStyle();
+    document.documentElement.setAttribute("data-i18n-pending", "true");
+    // Safety: never leave the page hidden indefinitely.
+    const safety = window.setTimeout(() => {
+      document.documentElement.removeAttribute("data-i18n-pending");
+    }, 2000);
+    // Translate after the new route's DOM is committed.
+    const raf = window.requestAnimationFrame(() => {
+      runSyncRef.current?.();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(safety);
+    };
+  }, [location.pathname]);
 
   return null;
 };
