@@ -3073,15 +3073,38 @@ const Dashboard = () => {
                                     <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
                                   </TabsContent>
                                   <TabsContent value="video" className="space-y-4">
-                                    <div>
-                                      <Label htmlFor="gallery-video-upload" className="cursor-pointer">
-                                        <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 text-center hover:border-accent transition-colors">
-                                          <Upload className="h-10 w-10 mx-auto mb-2 text-accent" />
-                                          <p className="text-sm text-muted-foreground">Click to upload video</p>
-                                          <p className="text-xs text-muted-foreground mt-1">Max 500 MB</p>
-                                        </div>
-                                      </Label>
-                                      <Input id="gallery-video-upload" type="file" accept="video/*" onChange={handleGalleryVideoUpload} className="hidden" />
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
+                                        <Input
+                                          id="gallery-video-url"
+                                          type="url"
+                                          placeholder="https://www.youtube.com/watch?v=…"
+                                          value={videoUrl}
+                                          onChange={(e) => setVideoUrl(e.target.value)}
+                                          className="mt-1.5"
+                                        />
+                                        {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-destructive mt-1.5">
+                                            Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
+                                          </p>
+                                        )}
+                                        {videoUrl && isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-muted-foreground mt-1.5">
+                                            Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
+                                          </p>
+                                        )}
+                                      </div>
+                                      <Button
+                                        onClick={handleAddVideo}
+                                        disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                      >
+                                        {isSaving ? "Adding…" : "Embed link"}
+                                      </Button>
+                                      <p className="text-xs text-muted-foreground text-center">
+                                        Streamed directly from the source — no file is uploaded to our servers.
+                                      </p>
                                     </div>
                                   </TabsContent>
                                 </Tabs>
