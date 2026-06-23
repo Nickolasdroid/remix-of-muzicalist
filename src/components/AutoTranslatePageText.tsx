@@ -272,12 +272,10 @@ const AutoTranslatePageText = () => {
     const safety = window.setTimeout(() => {
       document.documentElement.removeAttribute("data-i18n-pending");
     }, 2000);
-    // Translate after the new route's DOM is committed.
-    const raf = window.requestAnimationFrame(() => {
-      runSyncRef.current?.();
-    });
+    // Translate the freshly-committed DOM synchronously, BEFORE the browser
+    // paints — this is what eliminates the English flash on navigation.
+    runSyncRef.current?.();
     return () => {
-      window.cancelAnimationFrame(raf);
       window.clearTimeout(safety);
     };
   }, [location.pathname]);
