@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
+import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
