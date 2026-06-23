@@ -36,6 +36,17 @@
     "logOutQuestion": "Log out?",
     "logOutDescription": "Are you sure you want to log out of your account?"
   },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "forArtists": "For Artists",
+    "contactUs": "Contact Us",
+    "registerAsArtist": "Register as Artist",
+    "aboutUs": "About Us",
+    "plansPricing": "Plans & Pricing",
+    "allRightsReserved": "All rights reserved.",
+    "privacyPolicy": "Privacy & Policy",
+    "termsConditions": "Terms & Conditions"
+  },
   "auth": {
     "login": {
       "title": "Welcome Back",
