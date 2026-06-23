@@ -22,13 +22,19 @@
     "notifications": "Notificări",
     "announcements": "Anunțuri",
     "leaderboard": "Clasament",
+    "countries": "Țări",
+    "regions": "Regiuni",
     "about": "Despre",
     "login": "Autentificare",
     "register": "Înregistrare",
     "logout": "Deconectare",
     "profile": "Profil",
     "settings": "Setări",
-    "more": "Mai mult"
+    "more": "Mai mult",
+    "myPlan": "Planul meu",
+    "adminDashboard": "Panou admin",
+    "logOutQuestion": "Te deconectezi?",
+    "logOutDescription": "Sigur vrei să te deconectezi de la contul tău?"
   },
   "auth": {
     "login": {
