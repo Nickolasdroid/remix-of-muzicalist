@@ -160,7 +160,7 @@ const DiscoverArtistsSection = () => {
                           {artist.specialization}{artist.county ? ` · ${artist.county}` : ''} {flag}
                         </p>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between min-h-[20px]">
                           {artist.rating !== null ? (
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 text-accent fill-accent" />
@@ -168,11 +168,11 @@ const DiscoverArtistsSection = () => {
                                 {artist.rating.toFixed(1)}
                               </span>
                             </div>
-                          ) : (
+                          ) : (Date.now() - new Date(artist.created_at).getTime() < NEW_ARTIST_WINDOW_MS) ? (
                             <span className="text-xs font-medium text-accent/80">
                               New artist
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>
