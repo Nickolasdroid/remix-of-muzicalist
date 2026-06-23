@@ -265,12 +265,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           <Link to="/login">
             <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
               <LogIn className="h-4 w-4 mr-2" />
-              Login
+              {t('navigation.login')}
             </Button>
           </Link>
           <Link to="/register">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-              Register
+              {t('navigation.register')}
             </Button>
           </Link>
         </div>
@@ -347,7 +347,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Crown className={`h-5 w-5 ${isActive('/my-plan') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">My Plan</span>
+                      <span className="text-sm font-semibold">{t('navigation.myPlan', 'My Plan')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -364,7 +364,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Shield className={`h-5 w-5 ${isActive('/admin/dashboard') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">Admin Dashboard</span>
+                      <span className="text-sm font-semibold">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
