@@ -23,6 +23,25 @@ const TRANSLATIONS_VERSION = '1';
 
 const normalizeLanguage = (lang: string | null | undefined) => (lang || 'en').split('-')[0].toLowerCase();
 
+const getStoredLanguage = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return (
+      localStorage.getItem(MANUAL_LANG_KEY) ||
+      localStorage.getItem(COUNTRY_LANG_KEY) ||
+      localStorage.getItem('i18nextLng') ||
+      null
+    );
+  } catch {
+    return null;
+  }
+};
+
+const getInitialLanguage = () => {
+  if (typeof window === 'undefined') return 'en';
+  return normalizeLanguage(getStoredLanguage() || navigator.languages?.[0] || navigator.language);
+};
+
 async function detectVisitorLanguage(): Promise<string> {
   const cached = localStorage.getItem(COUNTRY_LANG_KEY);
   if (cached) return cached;
@@ -65,6 +84,7 @@ if (!i18n.isInitialized) {
         ro: { translation: ro },
       },
       fallbackLng: 'en',
+      lng: getInitialLanguage(),
       // Allow any language at runtime; we add resources dynamically.
       supportedLngs: false as any,
       interpolation: { escapeValue: false },
@@ -172,13 +192,13 @@ export const setManualLanguage = async (lng: string) => {
       // Safety timeout in case translation never resolves.
       window.setTimeout(() => {
         document.documentElement.removeAttribute('data-i18n-pending');
-      }, 4000);
+      }, 15000);
     }
   }
   await applyLanguage(lng);
 };
 
-export const getCurrentLanguage = () => normalizeLanguage(i18n.language);
+export const getCurrentLanguage = () => normalizeLanguage(getStoredLanguage() || i18n.language);
 
 const memoryCache: Record<string, Record<string, string>> = {};
 
