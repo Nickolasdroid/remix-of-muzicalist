@@ -216,19 +216,16 @@ const AutoTranslatePageText = () => {
       }
     };
 
-    const SYNC_DEBOUNCE_MS = 200;
-    let syncTimer: number | null = null;
+    // Coalesce mutations to the next animation frame only — translating before
+    // the next paint prevents the previously-visible "flash of English" on
+    // async-loaded content (data fetches that resolve after navigation).
     const scheduleSync = () => {
       if (getCurrentLanguage() === "en") return; // no work needed on English
-      if (syncTimer) window.clearTimeout(syncTimer);
-      syncTimer = window.setTimeout(() => {
-        syncTimer = null;
-        if (rafRef.current) return;
-        rafRef.current = window.requestAnimationFrame(() => {
-          rafRef.current = null;
-          runSync();
-        });
-      }, SYNC_DEBOUNCE_MS);
+      if (rafRef.current) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+        runSync();
+      });
     };
 
     // Only attach the observer when translation is actually needed.
@@ -256,7 +253,6 @@ const AutoTranslatePageText = () => {
       runSyncRef.current = null;
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
-      if (syncTimer) window.clearTimeout(syncTimer);
     };
   }, []);
 
@@ -272,12 +268,10 @@ const AutoTranslatePageText = () => {
     const safety = window.setTimeout(() => {
       document.documentElement.removeAttribute("data-i18n-pending");
     }, 2000);
-    // Translate after the new route's DOM is committed.
-    const raf = window.requestAnimationFrame(() => {
-      runSyncRef.current?.();
-    });
+    // Translate the freshly-committed DOM synchronously, BEFORE the browser
+    // paints — this is what eliminates the English flash on navigation.
+    runSyncRef.current?.();
     return () => {
-      window.cancelAnimationFrame(raf);
       window.clearTimeout(safety);
     };
   }, [location.pathname]);
