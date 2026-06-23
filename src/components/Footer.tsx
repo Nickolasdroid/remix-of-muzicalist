@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
+import { getCurrentLanguage } from "@/i18n";
 import logo from "@/assets/logo.png";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -10,6 +11,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 );
 const Footer = () => {
   const { t } = useTranslation();
+  const skipAutoTranslate = getCurrentLanguage() === "ro";
   const currentYear = new Date().getFullYear();
   const quickLinks = [{
     title: t("navigation.home"),
@@ -54,7 +56,7 @@ const Footer = () => {
     href: "https://www.tiktok.com/@muzicalist",
     label: "TikTok"
   }];
-  return <footer data-no-translate className="border-t border-border bg-background">
+  return <footer data-no-translate={skipAutoTranslate ? true : undefined} className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 bg-background">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
