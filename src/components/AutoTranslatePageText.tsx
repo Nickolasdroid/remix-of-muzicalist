@@ -14,6 +14,7 @@ const SKIP_SELECTOR = [
   "textarea",
   "select",
   "option",
+  "[aria-live]",
   "[contenteditable='true']",
   "[data-no-translate]",
 ].join(",");
@@ -24,6 +25,8 @@ const ATTRIBUTE_SKIP_SELECTOR = [
   "noscript",
   "svg",
   "canvas",
+  "[aria-live]",
+  "[role='region']",
   "[data-no-translate]",
 ].join(",");
 
