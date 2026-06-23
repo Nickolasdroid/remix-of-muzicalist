@@ -247,17 +247,40 @@ const AutoTranslatePageText = () => {
       }
     };
     i18n.on("languageChanged", onLanguageChanged);
+    runSyncRef.current = runSync;
     runSync();
 
     return () => {
       stopObserver();
       i18n.off("languageChanged", onLanguageChanged);
+      runSyncRef.current = null;
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
       if (syncTimer) window.clearTimeout(syncTimer);
     };
   }, []);
 
+  // On every route change, hide the body BEFORE paint when a non-English
+  // language is active, then translate the freshly mounted DOM synchronously
+  // (using the cached translations) so the user never sees the English flash.
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    if (getCurrentLanguage() === "en") return;
+    ensurePendingStyle();
+    document.documentElement.setAttribute("data-i18n-pending", "true");
+    // Safety: never leave the page hidden indefinitely.
+    const safety = window.setTimeout(() => {
+      document.documentElement.removeAttribute("data-i18n-pending");
+    }, 2000);
+    // Translate after the new route's DOM is committed.
+    const raf = window.requestAnimationFrame(() => {
+      runSyncRef.current?.();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(safety);
+    };
+  }, [location.pathname]);
 
   return null;
 };
