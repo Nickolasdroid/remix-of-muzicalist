@@ -253,7 +253,6 @@ const AutoTranslatePageText = () => {
       runSyncRef.current = null;
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
       if (asyncTimeoutRef.current) window.clearTimeout(asyncTimeoutRef.current);
-      if (syncTimer) window.clearTimeout(syncTimer);
     };
   }, []);
 
