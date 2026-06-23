@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import SmoothVideoPlayer from "./SmoothVideoPlayer";
+import { getEmbedInfo } from "@/lib/mediaEmbed";
 
 interface MediaPreview {
   url: string;
