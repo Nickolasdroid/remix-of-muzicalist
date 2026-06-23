@@ -56,7 +56,7 @@ const DiscoverArtistsSection = () => {
     const fetchArtists = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, stage_name, avatar_url, specialization, county, country, plan')
+        .select('id, stage_name, avatar_url, specialization, county, country, plan, created_at')
         .not('specialization', 'is', null)
         .limit(12);
 
