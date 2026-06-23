@@ -1658,17 +1658,15 @@ const Dashboard = () => {
     if (!user) return;
     setIsSaving(true);
     try {
-      // Delete user's data from tables
-      const {
-        error: profileError
-      } = await supabase.from('profiles').delete().eq('id', user.id);
-      if (profileError) throw profileError;
+      const { data, error } = await supabase.functions.invoke('delete-my-account');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
-      // Sign out and delete auth user
-      const {
-        error: authError
-      } = await supabase.auth.signOut();
-      if (authError) throw authError;
+      // Invalidate any local session
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch {}
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch {}
+      try { localStorage.clear(); } catch {}
+
       toast({
         title: "Account Deleted",
         description: "Your account has been permanently deleted."
