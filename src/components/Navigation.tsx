@@ -458,12 +458,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <Link to="/login">
                   <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs px-3">
                     <LogIn className="h-3.5 w-3.5 mr-1" />
-                    Login
+                    {t('navigation.login')}
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-3">
-                    Register
+                    {t('navigation.register')}
                   </Button>
                 </Link>
               </div>
@@ -538,7 +538,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             }`}
           >
             <Search className="h-5 w-5" />
-            <span className="font-medium">Search</span>
+            <span className="font-medium">{t('common.search')}</span>
           </Link>
 
           {/* User-specific links */}
@@ -575,7 +575,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             <PopoverTrigger asChild>
               <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
                 <MoreHorizontal className="h-5 w-5" />
-                <span className="font-medium">More</span>
+                <span className="font-medium">{t('navigation.more')}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent side="top" align="start" className="w-[calc(16rem-2rem)] bg-card border-border p-2 z-50">
@@ -590,7 +590,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     }`}
                   >
                     <Settings className="h-5 w-5" />
-                    <span className="font-medium">Settings</span>
+                    <span className="font-medium">{t('navigation.settings')}</span>
                   </Link>
                 )}
                 {user && (userType as string) === 'admin' && (
@@ -603,7 +603,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     }`}
                   >
                     <Shield className="h-5 w-5" />
-                    <span className="font-medium">Admin Dashboard</span>
+                    <span className="font-medium">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
                   </Link>
                 )}
                 
@@ -615,7 +615,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                       className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-5 w-5" />
-                      <span className="font-medium">Logout</span>
+                      <span className="font-medium">{t('navigation.logout')}</span>
                     </button>
                   </>
                 )}
