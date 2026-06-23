@@ -1788,18 +1788,26 @@ const ArtistProfile = () => {
                         Videos
                       </h2>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getVideos().length > 0 ? getVideos().map((video, index) => <Dialog key={video.id}>
-                              <DialogTrigger asChild>
-                                <div className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center">
-                                  <Play className="h-10 w-10 md:h-12 md:w-12 text-accent" />
-                                </div>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-[95vw] md:max-w-4xl p-2 md:p-6">
-                                <div className="aspect-video">
-                                  <iframe src={video.url} className="w-full h-full rounded-lg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                                </div>
-                              </DialogContent>
-                            </Dialog>) : <div className="col-span-full text-center text-muted-foreground py-8">
+                        {getVideos().length > 0 ? getVideos().map((video, index) => {
+                          const info = getEmbedInfo(video.url);
+                          return (
+                            <div
+                              key={video.id}
+                              className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center relative"
+                              onClick={() => setMediaPreview({ url: video.url, type: "video" })}
+                            >
+                              {info?.thumbnail ? (
+                                <img src={info.thumbnail} alt={`Video ${index + 1}`} className="absolute inset-0 w-full h-full object-cover opacity-80 hover:scale-110 transition-transform duration-300" />
+                              ) : null}
+                              <Play className="relative h-10 w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />
+                              {info && info.provider !== "direct" && (
+                                <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
+                                  {providerLabel(info.provider)}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        }) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No videos available yet.
                           </div>}
                       </div>
