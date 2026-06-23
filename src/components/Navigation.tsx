@@ -627,7 +627,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
-        <AlertDialogContent className="rounded-lg">
+        <AlertDialogContent data-no-translate className="rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>{t('navigation.logOutQuestion', 'Log out?')}</AlertDialogTitle>
             <AlertDialogDescription>
