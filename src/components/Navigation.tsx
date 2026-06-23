@@ -21,6 +21,7 @@ import {
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentLanguage } from "@/i18n";
 import logo from "@/assets/logo.png";
 import CountrySelector from "./CountrySelector";
 
@@ -35,6 +36,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const skipAutoTranslate = getCurrentLanguage() === 'ro';
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
@@ -253,7 +255,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     <>
       {/* Desktop: Top Header Bar - Only when NOT logged in */}
       {!user && (
-      <nav data-no-translate className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
@@ -278,7 +280,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav data-no-translate className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className="flex items-center justify-between h-14 px-4">
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {mobileTitle ? (
@@ -474,7 +476,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
       {user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings')) && (
-        <nav data-no-translate className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+        <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
               <Link
@@ -502,7 +504,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside data-no-translate className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
         {/* Logo at top of sidebar - h-16 to align with header */}
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
@@ -627,7 +629,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
-        <AlertDialogContent data-no-translate className="rounded-lg">
+        <AlertDialogContent data-no-translate={skipAutoTranslate ? true : undefined} className="rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>{t('navigation.logOutQuestion', 'Log out?')}</AlertDialogTitle>
             <AlertDialogDescription>
