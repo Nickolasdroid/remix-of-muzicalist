@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 import CountrySelector from "./CountrySelector";
@@ -33,6 +34,7 @@ interface NavigationProps {
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
@@ -215,36 +217,36 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
-    { to: '/feed', icon: Home, label: 'Home' },
-    { to: '/announcements', icon: Megaphone, label: 'Announcements' },
-    { to: '/categories', icon: Users, label: 'Categories' },
-    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-    { to: '/countries', icon: Globe, label: 'Countries' },
-    { to: '/counties', icon: MapPin, label: 'Regions' },
+    { to: '/feed', icon: Home, label: t('navigation.home') },
+    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements') },
+    { to: '/categories', icon: Users, label: t('navigation.categories') },
+    { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
+    { to: '/countries', icon: Globe, label: t('navigation.countries', 'Countries') },
+    { to: '/counties', icon: MapPin, label: t('navigation.regions', 'Regions') },
   ];
 
   // User-specific sidebar links (only shown when logged in)
   // For regular users, show different links than for artists
   const userSidebarLinks = userType === 'user' 
     ? [
-        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        { to: '/user-dashboard', icon: User, label: 'Profile' },
+        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        { to: '/user-dashboard', icon: User, label: t('navigation.profile') },
       ]
     : [
-        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        ...(userType === 'admin' ? [] : [{ to: '/my-plan', icon: Crown, label: 'My Plan' }]),
-        { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        ...(userType === 'admin' ? [] : [{ to: '/my-plan', icon: Crown, label: t('navigation.myPlan', 'My Plan') }]),
+        { to: '/dashboard?tab=profile', icon: User, label: t('navigation.profile') },
       ];
 
   // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
-    { to: '/feed', icon: Home, label: 'Home', showBadge: false },
-    { to: '/announcements', icon: Megaphone, label: 'Announcements', showBadge: false },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
-    { to: '/search', icon: Search, label: 'Search', showBadge: false },
-    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: 'Profile', showBadge: false },
+    { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
+    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements'), showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
+    { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
+    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
   return (
