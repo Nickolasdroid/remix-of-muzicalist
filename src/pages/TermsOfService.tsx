@@ -280,10 +280,20 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
   },
 };
 
+const getStoredTermsLanguage = () => {
+  if (typeof window === "undefined") return null;
+  return (
+    localStorage.getItem("i18nextManualLang_v2") ||
+    localStorage.getItem("i18nextCountryLang_v2") ||
+    localStorage.getItem("i18nextLng")
+  );
+};
+
 const TermsOfService = () => {
   const [user, setUser] = useState<any>(null);
   const { i18n } = useTranslation();
-  const lang = i18n.language?.split("-")[0]?.toLowerCase() === "ro" ? "ro" : "en";
+  const activeLanguage = getStoredTermsLanguage() || i18n.language;
+  const lang = activeLanguage?.split("-")[0]?.toLowerCase() === "ro" ? "ro" : "en";
   const copy = TERMS_COPY[lang];
 
   useEffect(() => {
@@ -298,11 +308,11 @@ const TermsOfService = () => {
       
       <div className={`pt-20 ${user ? 'md:pt-8' : 'md:pt-24'} pb-12 px-4 md:px-8`}>
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
+          <h1 data-no-translate className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
             {copy.title}
           </h1>
           
-          <div className="prose prose-lg dark:prose-invert max-w-none space-y-8 text-muted-foreground">
+          <div data-no-translate className="prose prose-lg dark:prose-invert max-w-none space-y-8 text-muted-foreground">
             <p className="text-sm text-muted-foreground">
               {copy.updated}: {new Date().toLocaleDateString(copy.locale, { month: 'long', day: 'numeric', year: 'numeric' })}
             </p>
