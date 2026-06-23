@@ -216,19 +216,16 @@ const AutoTranslatePageText = () => {
       }
     };
 
-    const SYNC_DEBOUNCE_MS = 200;
-    let syncTimer: number | null = null;
+    // Coalesce mutations to the next animation frame only — translating before
+    // the next paint prevents the previously-visible "flash of English" on
+    // async-loaded content (data fetches that resolve after navigation).
     const scheduleSync = () => {
       if (getCurrentLanguage() === "en") return; // no work needed on English
-      if (syncTimer) window.clearTimeout(syncTimer);
-      syncTimer = window.setTimeout(() => {
-        syncTimer = null;
-        if (rafRef.current) return;
-        rafRef.current = window.requestAnimationFrame(() => {
-          rafRef.current = null;
-          runSync();
-        });
-      }, SYNC_DEBOUNCE_MS);
+      if (rafRef.current) return;
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = null;
+        runSync();
+      });
     };
 
     // Only attach the observer when translation is actually needed.
