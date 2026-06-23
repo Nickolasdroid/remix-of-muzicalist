@@ -502,7 +502,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
+      <aside data-no-translate className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
         {/* Logo at top of sidebar - h-16 to align with header */}
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
