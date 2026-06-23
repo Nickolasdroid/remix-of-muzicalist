@@ -4,7 +4,22 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
-const TERMS_COPY = {
+type TermsSection = {
+  title: string;
+  paragraphs?: string[];
+  items?: string[];
+  afterItems?: string[];
+};
+
+type TermsCopy = {
+  title: string;
+  updated: string;
+  locale: string;
+  contactIntro: string;
+  sections: TermsSection[];
+};
+
+const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
   en: {
     title: "Terms of Service",
     updated: "Last updated",
