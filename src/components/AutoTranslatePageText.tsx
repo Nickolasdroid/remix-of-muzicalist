@@ -267,7 +267,7 @@ const AutoTranslatePageText = () => {
     // Safety: never leave the page hidden indefinitely.
     const safety = window.setTimeout(() => {
       document.documentElement.removeAttribute("data-i18n-pending");
-    }, 2000);
+    }, 15000);
     // Translate the freshly-committed DOM synchronously, BEFORE the browser
     // paints — this is what eliminates the English flash on navigation.
     runSyncRef.current?.();
