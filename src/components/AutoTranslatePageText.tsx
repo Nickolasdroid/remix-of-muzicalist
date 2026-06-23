@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import i18n, { getCurrentLanguage, translateTexts, translateTextsSync } from "@/i18n";
 
 const SKIP_SELECTOR = [
