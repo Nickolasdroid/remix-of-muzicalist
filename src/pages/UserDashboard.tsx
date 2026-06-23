@@ -128,9 +128,14 @@ const UserDashboard = () => {
     if (!user) return;
     setIsSaving(true);
     try {
-      const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
-      if (profileError) throw profileError;
-      await supabase.auth.signOut();
+      const { data, error } = await supabase.functions.invoke('delete-my-account');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch {}
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch {}
+      try { localStorage.clear(); } catch {}
+
       toast({ title: t("common.success"), description: "Your account has been permanently deleted." });
       navigate('/');
     } catch (error: any) {
