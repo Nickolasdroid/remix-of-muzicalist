@@ -308,11 +308,11 @@ const TermsOfService = () => {
       
       <div className={`pt-20 ${user ? 'md:pt-8' : 'md:pt-24'} pb-12 px-4 md:px-8`}>
         <div className="container mx-auto max-w-4xl">
-          <h1 data-no-translate className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
+          <h1 data-no-translate={lang === "ro" ? true : undefined} className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
             {copy.title}
           </h1>
           
-          <div data-no-translate className="prose prose-lg dark:prose-invert max-w-none space-y-8 text-muted-foreground">
+          <div data-no-translate={lang === "ro" ? true : undefined} className="prose prose-lg dark:prose-invert max-w-none space-y-8 text-muted-foreground">
             <p className="text-sm text-muted-foreground">
               {copy.updated}: {new Date().toLocaleDateString(copy.locale, { month: 'long', day: 'numeric', year: 'numeric' })}
             </p>
