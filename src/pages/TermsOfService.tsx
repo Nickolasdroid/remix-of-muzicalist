@@ -282,11 +282,15 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
 
 const getStoredTermsLanguage = () => {
   if (typeof window === "undefined") return null;
-  return (
-    localStorage.getItem("i18nextManualLang_v2") ||
-    localStorage.getItem("i18nextCountryLang_v2") ||
-    localStorage.getItem("i18nextLng")
-  );
+  try {
+    return (
+      localStorage.getItem("i18nextManualLang_v2") ||
+      localStorage.getItem("i18nextCountryLang_v2") ||
+      localStorage.getItem("i18nextLng")
+    );
+  } catch {
+    return null;
+  }
 };
 
 const TermsOfService = () => {
