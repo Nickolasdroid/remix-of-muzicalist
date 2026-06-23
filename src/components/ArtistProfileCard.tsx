@@ -89,7 +89,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
               </span>
             </p>
           )}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-h-[20px]">
             {rating !== null ? (
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-accent fill-accent" />
@@ -97,11 +97,11 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
                   {rating.toFixed(1)}
                 </span>
               </div>
-            ) : (
+            ) : isNew ? (
               <span className="text-xs font-medium text-accent/80">
                 New artist
               </span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
