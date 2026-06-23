@@ -16,23 +16,29 @@ interface ArtistProfileCardProps {
   searchDate?: string | null;
 }
 
+const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
 const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
+  const [isNew, setIsNew] = useState(false);
 
   useEffect(() => {
-    const fetchRating = async () => {
-      const { data } = await supabase
-        .from('reviews')
-        .select('rating')
-        .eq('profile_id', id);
-      
-      if (data && data.length > 0) {
-        const avg = data.reduce((sum, r) => sum + r.rating, 0) / data.length;
+    const fetchData = async () => {
+      const [{ data: reviews }, { data: profile }] = await Promise.all([
+        supabase.from('reviews').select('rating').eq('profile_id', id),
+        supabase.from('profiles').select('created_at').eq('id', id).maybeSingle(),
+      ]);
+
+      if (reviews && reviews.length > 0) {
+        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
         setRating(Math.round(avg * 10) / 10);
       }
+      if (profile?.created_at) {
+        setIsNew(Date.now() - new Date(profile.created_at).getTime() < NEW_ARTIST_WINDOW_MS);
+      }
     };
-    
-    fetchRating();
+
+    fetchData();
   }, [id]);
 
 
@@ -83,7 +89,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
               </span>
             </p>
           )}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-h-[20px]">
             {rating !== null ? (
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-accent fill-accent" />
@@ -91,11 +97,11 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
                   {rating.toFixed(1)}
                 </span>
               </div>
-            ) : (
+            ) : isNew ? (
               <span className="text-xs font-medium text-accent/80">
                 New artist
               </span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
