@@ -3195,14 +3195,23 @@ const Dashboard = () => {
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'video').map((item) => {
                                 const hidden = galleryHiddenIds.has(item.id);
+                                const info = getEmbedInfo(item.url);
                                 return (
                                   <div key={item.id} className="relative group">
                                     <div
                                       className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
                                       onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
-                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
                                     >
-                                      <Play className={`h-12 w-12 text-accent ${hidden ? 'opacity-40' : ''}`} />
+                                      {info?.thumbnail ? (
+                                        <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'opacity-30 grayscale' : 'opacity-80'}`} />
+                                      ) : null}
+                                      <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
+                                      {info && info.provider !== 'direct' && (
+                                        <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
+                                          {providerLabel(info.provider)}
+                                        </span>
+                                      )}
                                       {hidden && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
                                           <div className="rounded-full bg-background/80 p-2 shadow-md">
