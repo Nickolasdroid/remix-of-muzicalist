@@ -22,13 +22,19 @@
     "notifications": "Notifications",
     "announcements": "Announcements",
     "leaderboard": "Leaderboard",
+    "countries": "Countries",
+    "regions": "Regions",
     "about": "About",
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
     "profile": "Profile",
     "settings": "Settings",
-    "more": "More"
+    "more": "More",
+    "myPlan": "My Plan",
+    "adminDashboard": "Admin Dashboard",
+    "logOutQuestion": "Log out?",
+    "logOutDescription": "Are you sure you want to log out of your account?"
   },
   "auth": {
     "login": {
