@@ -19,7 +19,9 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentLanguage } from "@/i18n";
 import logo from "@/assets/logo.png";
 import CountrySelector from "./CountrySelector";
 
@@ -33,6 +35,8 @@ interface NavigationProps {
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+  const skipAutoTranslate = getCurrentLanguage() === 'ro';
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
@@ -215,43 +219,43 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
-    { to: '/feed', icon: Home, label: 'Home' },
-    { to: '/announcements', icon: Megaphone, label: 'Announcements' },
-    { to: '/categories', icon: Users, label: 'Categories' },
-    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-    { to: '/countries', icon: Globe, label: 'Countries' },
-    { to: '/counties', icon: MapPin, label: 'Regions' },
+    { to: '/feed', icon: Home, label: t('navigation.home') },
+    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements') },
+    { to: '/categories', icon: Users, label: t('navigation.categories') },
+    { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
+    { to: '/countries', icon: Globe, label: t('navigation.countries', 'Countries') },
+    { to: '/counties', icon: MapPin, label: t('navigation.regions', 'Regions') },
   ];
 
   // User-specific sidebar links (only shown when logged in)
   // For regular users, show different links than for artists
   const userSidebarLinks = userType === 'user' 
     ? [
-        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        { to: '/user-dashboard', icon: User, label: 'Profile' },
+        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        { to: '/user-dashboard', icon: User, label: t('navigation.profile') },
       ]
     : [
-        { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: 'Messages', badge: unreadCount },
-        ...(userType === 'admin' ? [] : [{ to: '/my-plan', icon: Crown, label: 'My Plan' }]),
-        { to: '/dashboard?tab=profile', icon: User, label: 'Profile' },
+        { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
+        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        ...(userType === 'admin' ? [] : [{ to: '/my-plan', icon: Crown, label: t('navigation.myPlan', 'My Plan') }]),
+        { to: '/dashboard?tab=profile', icon: User, label: t('navigation.profile') },
       ];
 
   // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
-    { to: '/feed', icon: Home, label: 'Home', showBadge: false },
-    { to: '/announcements', icon: Megaphone, label: 'Announcements', showBadge: false },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: 'Messages', showBadge: true },
-    { to: '/search', icon: Search, label: 'Search', showBadge: false },
-    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: 'Profile', showBadge: false },
+    { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
+    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements'), showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
+    { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
+    { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
   return (
     <>
       {/* Desktop: Top Header Bar - Only when NOT logged in */}
       {!user && (
-      <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
@@ -263,12 +267,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           <Link to="/login">
             <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
               <LogIn className="h-4 w-4 mr-2" />
-              Login
+              {t('navigation.login')}
             </Button>
           </Link>
           <Link to="/register">
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-              Register
+              {t('navigation.register')}
             </Button>
           </Link>
         </div>
@@ -276,7 +280,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className="flex items-center justify-between h-14 px-4">
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {mobileTitle ? (
@@ -345,7 +349,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Crown className={`h-5 w-5 ${isActive('/my-plan') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">My Plan</span>
+                      <span className="text-sm font-semibold">{t('navigation.myPlan', 'My Plan')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -362,7 +366,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Shield className={`h-5 w-5 ${isActive('/admin/dashboard') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">Admin Dashboard</span>
+                      <span className="text-sm font-semibold">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -379,7 +383,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   >
                     <div className="flex items-center gap-3">
                       <Settings className={`h-5 w-5 ${location.search.includes('tab=settings') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">Settings</span>
+                      <span className="text-sm font-semibold">{t('navigation.settings')}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -396,7 +400,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 >
                   <div className="flex items-center gap-3">
                     <LogOut className="h-5 w-5 text-destructive" />
-                    <span className="text-sm font-semibold">Logout</span>
+                    <span className="text-sm font-semibold">{t('navigation.logout')}</span>
                   </div>
                   <ChevronRight className="h-5 w-5 text-destructive/60" />
                 </button>
@@ -417,17 +421,17 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : user ? (
             <>
               {(location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings') ? (
-                <span className="font-display font-bold text-foreground text-lg">Settings</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.settings')}</span>
               ) : location.pathname === '/leaderboard' ? (
-                <span className="font-display font-bold text-foreground text-lg">Leaderboard</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.leaderboard')}</span>
               ) : location.pathname === '/countries' ? (
-                <span className="font-display font-bold text-foreground text-lg">Countries</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.countries', 'Countries')}</span>
               ) : location.pathname === '/counties' ? (
-                <span className="font-display font-bold text-foreground text-lg">Regions</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.regions', 'Regions')}</span>
               ) : location.pathname === '/categories' ? (
-                <span className="font-display font-bold text-foreground text-lg">Categories</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
               ) : location.pathname === '/notifications' ? (
-                <span className="font-display font-bold text-foreground text-lg">Notifications</span>
+                <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
                 <Link to="/feed" className="flex items-center gap-2">
                   <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
@@ -456,12 +460,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <Link to="/login">
                   <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs px-3">
                     <LogIn className="h-3.5 w-3.5 mr-1" />
-                    Login
+                    {t('navigation.login')}
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-3">
-                    Register
+                    {t('navigation.register')}
                   </Button>
                 </Link>
               </div>
@@ -472,7 +476,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
       {user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings')) && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+        <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
               <Link
@@ -500,7 +504,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
         {/* Logo at top of sidebar - h-16 to align with header */}
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
@@ -536,7 +540,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             }`}
           >
             <Search className="h-5 w-5" />
-            <span className="font-medium">Search</span>
+            <span className="font-medium">{t('common.search')}</span>
           </Link>
 
           {/* User-specific links */}
@@ -573,7 +577,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             <PopoverTrigger asChild>
               <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
                 <MoreHorizontal className="h-5 w-5" />
-                <span className="font-medium">More</span>
+                <span className="font-medium">{t('navigation.more')}</span>
               </button>
             </PopoverTrigger>
             <PopoverContent side="top" align="start" className="w-[calc(16rem-2rem)] bg-card border-border p-2 z-50">
@@ -588,7 +592,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     }`}
                   >
                     <Settings className="h-5 w-5" />
-                    <span className="font-medium">Settings</span>
+                    <span className="font-medium">{t('navigation.settings')}</span>
                   </Link>
                 )}
                 {user && (userType as string) === 'admin' && (
@@ -601,7 +605,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     }`}
                   >
                     <Shield className="h-5 w-5" />
-                    <span className="font-medium">Admin Dashboard</span>
+                    <span className="font-medium">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
                   </Link>
                 )}
                 
@@ -613,7 +617,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                       className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
                     >
                       <LogOut className="h-5 w-5" />
-                      <span className="font-medium">Logout</span>
+                      <span className="font-medium">{t('navigation.logout')}</span>
                     </button>
                   </>
                 )}
@@ -625,20 +629,20 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
-        <AlertDialogContent className="rounded-lg">
+        <AlertDialogContent data-no-translate={skipAutoTranslate ? true : undefined} className="rounded-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Log out?</AlertDialogTitle>
+            <AlertDialogTitle>{t('navigation.logOutQuestion', 'Log out?')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to log out of your account?
+              {t('navigation.logOutDescription', 'Are you sure you want to log out of your account?')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleLogout}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Log out
+              {t('navigation.logout')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

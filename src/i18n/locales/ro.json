@@ -22,13 +22,30 @@
     "notifications": "Notificări",
     "announcements": "Anunțuri",
     "leaderboard": "Clasament",
+    "countries": "Țări",
+    "regions": "Regiuni",
     "about": "Despre",
     "login": "Autentificare",
     "register": "Înregistrare",
     "logout": "Deconectare",
     "profile": "Profil",
     "settings": "Setări",
-    "more": "Mai mult"
+    "more": "Mai mult",
+    "myPlan": "Planul meu",
+    "adminDashboard": "Panou admin",
+    "logOutQuestion": "Te deconectezi?",
+    "logOutDescription": "Sigur vrei să te deconectezi de la contul tău?"
+  },
+  "footer": {
+    "quickLinks": "Linkuri rapide",
+    "forArtists": "Pentru artiști",
+    "contactUs": "Contact",
+    "registerAsArtist": "Înregistrare ca artist",
+    "aboutUs": "Despre noi",
+    "plansPricing": "Planuri și prețuri",
+    "allRightsReserved": "Toate drepturile rezervate.",
+    "privacyPolicy": "Politica de confidențialitate",
+    "termsConditions": "Termeni și condiții"
   },
   "auth": {
     "login": {

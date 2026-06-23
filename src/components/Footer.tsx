@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
+import { getCurrentLanguage } from "@/i18n";
 import logo from "@/assets/logo.png";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -8,31 +10,33 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 const Footer = () => {
+  const { t } = useTranslation();
+  const skipAutoTranslate = getCurrentLanguage() === "ro";
   const currentYear = new Date().getFullYear();
   const quickLinks = [{
-    title: "Home",
+    title: t("navigation.home"),
     href: "/"
   }, {
-    title: "Categories",
+    title: t("navigation.categories"),
     href: "/categories"
   }, {
-    title: "Countries",
+    title: t("navigation.countries", "Countries"),
     href: "/countries"
   }, {
-    title: "Leaderboard",
+    title: t("navigation.leaderboard"),
     href: "/leaderboard"
   }];
   const artistLinks = [{
-    title: "Register as Artist",
+    title: t("footer.registerAsArtist", "Register as Artist"),
     href: "/register"
   }, {
-    title: "Login",
+    title: t("navigation.login"),
     href: "/login"
   }, {
-    title: "About Us",
+    title: t("footer.aboutUs", "About Us"),
     href: "/about"
   }, {
-    title: "Plans & Pricing",
+    title: t("footer.plansPricing", "Plans & Pricing"),
     href: "/plans"
   }];
   const socialLinks = [{
@@ -52,7 +56,7 @@ const Footer = () => {
     href: "https://www.tiktok.com/@muzicalist",
     label: "TikTok"
   }];
-  return <footer className="border-t border-border bg-background">
+  return <footer data-no-translate={skipAutoTranslate ? true : undefined} className="border-t border-border bg-background">
       <div className="container mx-auto px-4 py-12 bg-background">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -72,7 +76,7 @@ const Footer = () => {
           <div className="flex flex-row gap-8 md:contents">
             <div>
               <h3 className="font-display font-bold text-lg text-foreground mb-4">
-                Quick Links
+                {t("footer.quickLinks", "Quick Links")}
               </h3>
               <ul className="space-y-2">
                 {quickLinks.map(link => <li key={link.title}>
@@ -85,7 +89,7 @@ const Footer = () => {
 
             <div>
               <h3 className="font-display font-bold text-lg text-foreground mb-4">
-                For Artists
+                {t("footer.forArtists", "For Artists")}
               </h3>
               <ul className="space-y-2">
                 {artistLinks.map(link => <li key={link.title}>
@@ -100,7 +104,7 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h3 className="font-display font-bold text-lg text-foreground mb-4">
-              Contact Us
+              {t("footer.contactUs", "Contact Us")}
             </h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-muted-foreground">
@@ -114,15 +118,15 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © {currentYear} Muzicalist. All rights reserved.
+            © {currentYear} Muzicalist. {t("footer.allRightsReserved", "All rights reserved.")}
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link to="/privacy-policy" className="hover:text-accent transition-colors duration-300">
-              Privacy & Policy
+              {t("footer.privacyPolicy", "Privacy & Policy")}
             </Link>
             <span className="text-border">|</span>
             <Link to="/terms-of-service" className="hover:text-accent transition-colors duration-300">
-              Terms & Conditions
+              {t("footer.termsConditions", "Terms & Conditions")}
             </Link>
           </div>
         </div>
