@@ -84,12 +84,18 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
             </p>
           )}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-accent fill-accent" />
-              <span className="text-sm font-medium text-muted-foreground">
-                {rating !== null ? rating.toFixed(1) : '-'}
+            {rating !== null ? (
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-accent fill-accent" />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {rating.toFixed(1)}
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs font-medium text-accent/80">
+                New artist
               </span>
-            </div>
+            )}
           </div>
         </div>
       </div>
