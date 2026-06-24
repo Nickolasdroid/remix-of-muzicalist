@@ -1893,9 +1893,13 @@ const Dashboard = () => {
                           <div className="flex flex-col items-center justify-center text-center px-1">
                             <div className="flex items-center gap-1.5 md:gap-2">
                               <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              <span className="text-base md:text-2xl font-bold text-foreground">{responseRate !== null ? `${responseRate}%` : '—'}</span>
+                              <span className="text-base md:text-2xl font-bold text-foreground">
+                                {formData.careerStartYear
+                                  ? `${Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear))} ani`
+                                  : '—'}
+                              </span>
                             </div>
-                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Răspuns rapid</span>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experiență</span>
                           </div>
                         </div>
 
