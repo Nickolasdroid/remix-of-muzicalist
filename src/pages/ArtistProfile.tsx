@@ -958,7 +958,7 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <Navigation />
       
       <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
