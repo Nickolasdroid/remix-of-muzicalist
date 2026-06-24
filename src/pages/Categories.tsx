@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones } from "lucide-react";
-import bandIcon from "@/assets/band-icon.png.asset.json";
+import BandIcon from "@/components/icons/BandIcon";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
@@ -104,7 +104,7 @@ const Categories = () => {
     count: counts.DJ,
     href: `/categories/DJs${countryParam}`
   }, {
-    iconImage: bandIcon.url,
+    icon: BandIcon as any,
     title: "Band",
     description: "Complete musical groups for your events",
     count: counts.Band,
