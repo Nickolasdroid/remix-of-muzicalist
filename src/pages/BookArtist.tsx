@@ -218,7 +218,7 @@ const BookArtist = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-6 max-w-3xl">
+      <div className="container mx-auto px-4 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4 -ml-2">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
