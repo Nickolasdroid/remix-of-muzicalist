@@ -58,6 +58,29 @@ const RegisterUser = () => {
     });
   }, [navigate]);
 
+  // Auto-detect if email is already registered (debounced)
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const email = formData.email.trim();
+    if (!email || !emailRegex.test(email)) {
+      setEmailTaken(false);
+      setEmailChecking(false);
+      return;
+    }
+    setEmailChecking(true);
+    const handle = setTimeout(async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", email.toLowerCase())
+        .maybeSingle();
+      setEmailTaken(!!data);
+      setEmailChecking(false);
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [formData.email]);
+
+
 
   if (authChecking) return null;
 
