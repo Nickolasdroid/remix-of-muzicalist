@@ -791,6 +791,19 @@ const Dashboard = () => {
       setIsUploadingCover(false);
     }
   };
+  const handleSelectCoverTheme = async (themeId: string) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ cover_theme: themeId } as any)
+        .eq("id", user.id);
+      if (error) throw error;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_theme: themeId }));
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to update theme.", variant: "destructive" });
+    }
+  };
   const startEditing = (field: string) => {
 
     setEditingField(field);
