@@ -32,6 +32,8 @@ const RegisterArtist = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [step0Email, setStep0Email] = useState("");
+  const [step0EmailChecking, setStep0EmailChecking] = useState(false);
+  const [step0EmailTaken, setStep0EmailTaken] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPlanSelection, setShowPlanSelection] = useState(false);
   
