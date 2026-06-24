@@ -1792,8 +1792,11 @@ const Dashboard = () => {
                           {profile?.cover_url ? (
                             <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
                           ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-                              Add a cover image to personalize your profile
+                            <div
+                              className="absolute inset-0 flex items-center justify-center text-white/80 text-sm"
+                              style={{ background: getCoverGradient(profile?.cover_theme) }}
+                            >
+                              {!profile?.cover_theme && 'Add a cover image or pick a theme'}
                             </div>
                           )}
                           {/* Bottom dark blur gradient */}
@@ -1801,6 +1804,49 @@ const Dashboard = () => {
 
                           {/* Cover edit controls (top-right) */}
                           <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors"
+                                >
+                                  <Palette className="h-3.5 w-3.5" />
+                                  Theme
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent align="end" className="w-64 p-3 rounded-lg">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
+                                <div className="grid grid-cols-5 gap-2">
+                                  {COVER_THEMES.map((theme) => {
+                                    const selected = profile?.cover_theme === theme.id;
+                                    return (
+                                      <button
+                                        key={theme.id}
+                                        type="button"
+                                        onClick={() => handleSelectCoverTheme(theme.id)}
+                                        title={theme.label}
+                                        aria-label={theme.label}
+                                        className={`relative h-10 w-10 rounded-lg border-2 transition-all ${selected ? 'border-accent ring-2 ring-accent/40' : 'border-border hover:border-accent/60'}`}
+                                        style={{ background: theme.gradient }}
+                                      >
+                                        {selected && (
+                                          <Check className="absolute inset-0 m-auto h-4 w-4 text-white drop-shadow" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                {profile?.cover_theme && !profile?.cover_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSelectCoverTheme('')}
+                                    className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                  >
+                                    Reset theme
+                                  </button>
+                                )}
+                              </PopoverContent>
+                            </Popover>
                             <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
                               <Camera className="h-3.5 w-3.5" />
                               {profile?.cover_url ? 'Change cover' : 'Add cover'}
