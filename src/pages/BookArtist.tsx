@@ -218,7 +218,7 @@ const BookArtist = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation mobileTitle="Book Artist" mobileBackPath={-1} />
-      <div className="container mx-auto px-4 py-6 pb-32 md:pb-12 max-w-3xl">
+      <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4 -ml-2 hidden md:inline-flex">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
