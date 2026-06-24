@@ -1881,16 +1881,14 @@ const Dashboard = () => {
                           </div>
                           <div className="flex flex-col items-center justify-center text-center px-1">
                             <div className="flex items-center gap-1.5 md:gap-2">
-                              <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               <span className="text-base md:text-2xl font-bold text-foreground">
-                                {formData.careerStartYear
-                                  ? `Din ${formData.careerStartYear}`
-                                  : profile?.created_at
-                                    ? `Din ${new Date(profile.created_at).getFullYear()}`
-                                    : '—'}
+                                {profile?.created_at
+                                  ? new Date(profile.created_at).toLocaleDateString('ro-RO', { month: 'short', year: 'numeric' }).replace('.', '')
+                                  : '—'}
                               </span>
                             </div>
-                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Activ din</span>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Membru din</span>
                           </div>
                           <div className="flex flex-col items-center justify-center text-center px-1">
                             <div className="flex items-center gap-1.5 md:gap-2">
