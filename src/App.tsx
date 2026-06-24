@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
 import ArtistProfile from "./pages/ArtistProfile";
+import BookArtist from "./pages/BookArtist";
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Search from "./pages/Search";
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/artist/:id" element={<ArtistProfile />} />
+          <Route path="/book/:id" element={<BookArtist />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/search" element={<Search />} />

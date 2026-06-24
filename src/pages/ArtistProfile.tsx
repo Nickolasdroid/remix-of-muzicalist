@@ -1058,10 +1058,7 @@ const ArtistProfile = () => {
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
-                      setActiveTab('calendar');
-                      requestAnimationFrame(() => {
-                        profileContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      });
+                      navigate(`/book/${artist.id}`);
                     }}
                     className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
                   >
