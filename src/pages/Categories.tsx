@@ -103,7 +103,7 @@ const Categories = () => {
     count: counts.DJ,
     href: `/categories/DJs${countryParam}`
   }, {
-    icon: Users,
+    icon: Users2,
     title: "Band",
     description: "Complete musical groups for your events",
     count: counts.Band,
