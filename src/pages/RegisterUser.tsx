@@ -190,8 +190,19 @@ const RegisterUser = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
+              aria-invalid={emailTaken}
+              className={emailTaken ? "border-destructive focus-visible:ring-destructive" : ""}
             />
+            {emailChecking && (
+              <p className="text-xs text-muted-foreground mt-1">Checking email…</p>
+            )}
+            {emailTaken && !emailChecking && (
+              <p className="text-xs text-destructive mt-1">
+                {t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email.")}
+              </p>
+            )}
           </div>
+
 
 
           <div>
