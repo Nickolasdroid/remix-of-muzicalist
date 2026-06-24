@@ -67,6 +67,7 @@ const Dashboard = () => {
   const [isAddingPrice, setIsAddingPrice] = useState(false);
   const [pricingCount, setPricingCount] = useState(0);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
+  const [responseRate, setResponseRate] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
 
