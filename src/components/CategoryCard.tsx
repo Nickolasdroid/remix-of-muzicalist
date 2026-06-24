@@ -21,8 +21,8 @@ const CategoryCard = ({
         <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         <div className="relative z-10 flex flex-col items-center justify-center h-full gap-2 md:gap-4 p-4 md:p-8 px-0">
-          <div className="flex items-center justify-center w-16 h-16 md:w-32 md:h-32 rounded-full bg-accent/20 group-hover:bg-accent group-hover:scale-110 transition-all duration-500">
-            {iconImage ? <img src={iconImage} alt={title} className="h-12 w-12 md:h-24 md:w-24 object-contain invert group-hover:invert-0 transition-all" /> : Icon ? <Icon className="h-10 w-10 md:h-20 md:w-20 text-accent group-hover:text-accent-foreground transition-colors" /> : null}
+          <div className="flex items-center justify-center">
+            {iconImage ? <img src={iconImage} alt={title} className="h-16 w-16 md:h-32 md:w-32 object-contain invert group-hover:invert-0 transition-all" /> : Icon ? <Icon className="h-14 w-14 md:h-28 md:w-28 text-accent transition-colors" /> : null}
           </div>
           
           <h3 className="text-base md:text-2xl font-display font-bold text-center text-foreground group-hover:text-accent transition-colors">
