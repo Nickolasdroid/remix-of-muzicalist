@@ -22,6 +22,7 @@ import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIc
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
+import i18n from "@/i18n";
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { Switch } from "@/components/ui/switch";
