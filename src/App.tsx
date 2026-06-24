@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
 import ArtistProfile from "./pages/ArtistProfile";
+import BookArtist from "./pages/BookArtist";
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Search from "./pages/Search";
