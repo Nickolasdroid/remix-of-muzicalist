@@ -1756,7 +1756,7 @@ const Dashboard = () => {
         </div>
       </div>;
   }
-  return <div className={`min-h-screen md:ml-64 ${activeTab === "settings" ? "bg-background" : "bg-card"}`}>
+  return <div className={`min-h-screen md:ml-64 bg-background`}>
       <Navigation 
         mobileTitle={getMobileTitle()} 
         mobileBackPath={getMobileBackPath()}
