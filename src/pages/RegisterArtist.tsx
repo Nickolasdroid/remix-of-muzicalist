@@ -32,6 +32,8 @@ const RegisterArtist = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [step0Email, setStep0Email] = useState("");
+  const [step0EmailChecking, setStep0EmailChecking] = useState(false);
+  const [step0EmailTaken, setStep0EmailTaken] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPlanSelection, setShowPlanSelection] = useState(false);
   
@@ -160,7 +162,10 @@ const RegisterArtist = () => {
       });
       return;
     }
+    setStep0EmailChecking(true);
     const emailExists = await checkEmailExists(step0Email);
+    setStep0EmailChecking(false);
+    setStep0EmailTaken(emailExists);
     if (emailExists) {
       toast({
         title: t("common.error"),
@@ -172,6 +177,24 @@ const RegisterArtist = () => {
     setFormData(prev => ({ ...prev, email: step0Email }));
     setCurrentStep(1);
   };
+
+  // Auto-detect if email is already registered (debounced)
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!step0Email || !emailRegex.test(step0Email)) {
+      setStep0EmailTaken(false);
+      setStep0EmailChecking(false);
+      return;
+    }
+    setStep0EmailChecking(true);
+    const handle = setTimeout(async () => {
+      const exists = await checkEmailExists(step0Email);
+      setStep0EmailTaken(exists);
+      setStep0EmailChecking(false);
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [step0Email]);
+
 
   // Update phone prefix when country changes
   useEffect(() => {
@@ -669,20 +692,31 @@ const RegisterArtist = () => {
                     value={step0Email}
                     onChange={(e) => setStep0Email(e.target.value)}
                     placeholder="Email"
-                    className="h-12 bg-input border-border text-base pl-10"
-                    onKeyDown={(e) => e.key === "Enter" && handleStep0Continue()}
+                    className={`h-12 bg-input text-base pl-10 ${step0EmailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
+                    onKeyDown={(e) => e.key === "Enter" && !step0EmailTaken && !step0EmailChecking && handleStep0Continue()}
+                    aria-invalid={step0EmailTaken}
                   />
                 </div>
+                {step0EmailChecking && (
+                  <p className="text-xs text-muted-foreground">Checking email…</p>
+                )}
+                {step0EmailTaken && !step0EmailChecking && (
+                  <p className="text-xs text-destructive">
+                    {t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email.")}
+                  </p>
+                )}
               </div>
 
               {/* Continue Button - Gold gradient */}
               <Button
                 type="button"
                 onClick={handleStep0Continue}
-                className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+                disabled={step0EmailTaken || step0EmailChecking}
+                className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continue
+                {step0EmailChecking ? "Checking…" : "Continue"}
               </Button>
+
 
               {/* Terms */}
               <p className="text-center text-xs text-muted-foreground">

@@ -27,6 +27,8 @@ const RegisterUser = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailTaken, setEmailTaken] = useState(false);
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true);
@@ -56,18 +58,46 @@ const RegisterUser = () => {
     });
   }, [navigate]);
 
+  // Auto-detect if email is already registered (debounced)
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const email = formData.email.trim();
+    if (!email || !emailRegex.test(email)) {
+      setEmailTaken(false);
+      setEmailChecking(false);
+      return;
+    }
+    setEmailChecking(true);
+    const handle = setTimeout(async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", email.toLowerCase())
+        .maybeSingle();
+      setEmailTaken(!!data);
+      setEmailChecking(false);
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [formData.email]);
+
+
 
   if (authChecking) return null;
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    
+
+    if (emailTaken) {
+      toast.error(t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email."));
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error(t("userRegistration.validation.passwordMismatch"));
       return;
     }
+
 
     if (formData.password.length < 6) {
       toast.error(t("userRegistration.validation.passwordTooShort"));
@@ -165,8 +195,19 @@ const RegisterUser = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
+              aria-invalid={emailTaken}
+              className={emailTaken ? "border-destructive focus-visible:ring-destructive" : ""}
             />
+            {emailChecking && (
+              <p className="text-xs text-muted-foreground mt-1">Checking email…</p>
+            )}
+            {emailTaken && !emailChecking && (
+              <p className="text-xs text-destructive mt-1">
+                {t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email.")}
+              </p>
+            )}
           </div>
+
 
 
           <div>
@@ -236,7 +277,7 @@ const RegisterUser = () => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isLoading || !agreedToTerms}
+            disabled={isLoading || !agreedToTerms || emailTaken || emailChecking}
           >
             {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
