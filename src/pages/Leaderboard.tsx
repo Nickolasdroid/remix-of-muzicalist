@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, Users, User, Star, Loader2, MapPin, Crown } from "lucide-react";
+import { Trophy, ChevronDown, Search, Mic, Guitar, Headphones, User, Star, Loader2, MapPin, Crown } from "lucide-react";
+import BandIcon from "@/components/icons/BandIcon";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
@@ -872,7 +873,7 @@ const Leaderboard = () => {
                   <span className="hidden md:inline">DJs</span>
                 </TabsTrigger>
                 <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Users className="h-5 w-5 md:h-4 md:w-4" />
+                  <BandIcon size={20} className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Bands</span>
                 </TabsTrigger>
               </TabsList>
