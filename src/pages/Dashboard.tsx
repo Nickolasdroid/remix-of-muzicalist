@@ -590,6 +590,18 @@ const Dashboard = () => {
         .eq('profile_id', profileData.id)
         .eq('status', 'accepted');
       setAcceptedEventsCount(acceptedCount || 0);
+
+      // Response rate
+      const { data: allReqs } = await supabase
+        .from('booking_requests')
+        .select('status')
+        .eq('profile_id', profileData.id);
+      if (!allReqs || allReqs.length === 0) {
+        setResponseRate(null);
+      } else {
+        const responded = allReqs.filter((r: any) => r.status && r.status !== 'pending').length;
+        setResponseRate(Math.round((responded / allReqs.length) * 100));
+      }
     } catch (error: any) {
       console.error('Auth check error:', error);
       toast({
