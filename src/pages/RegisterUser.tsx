@@ -87,12 +87,17 @@ const RegisterUser = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    
+
+    if (emailTaken) {
+      toast.error(t("artistRegistration.validation.emailExists", "This email address is already registered. Please use a different email."));
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error(t("userRegistration.validation.passwordMismatch"));
       return;
     }
+
 
     if (formData.password.length < 6) {
       toast.error(t("userRegistration.validation.passwordTooShort"));
