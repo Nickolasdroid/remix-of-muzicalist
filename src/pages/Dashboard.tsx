@@ -149,6 +149,7 @@ const Dashboard = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showCropper, setShowCropper] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -724,7 +725,59 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Cover image must be under 8MB.", variant: "destructive" });
+      return;
+    }
+    setIsUploadingCover(true);
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const fileName = `${user.id}/cover.${ext === 'png' ? 'png' : 'jpg'}`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
+        contentType: file.type || "image/jpeg",
+        cacheControl: "0",
+        upsert: true,
+      });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: freshUrl } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: freshUrl }));
+      toast({ title: "Success", description: "Cover image updated." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to upload cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+  const handleRemoveCover = async () => {
+    if (!user) return;
+    setIsUploadingCover(true);
+    try {
+      await supabase.storage.from("avatars").remove([`${user.id}/cover.jpg`, `${user.id}/cover.png`]);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: null } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: null }));
+      toast({ title: "Success", description: "Cover image removed." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to remove cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
   const startEditing = (field: string) => {
+
     setEditingField(field);
   };
   const cancelEditing = () => {
