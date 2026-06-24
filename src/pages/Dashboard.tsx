@@ -1770,233 +1770,173 @@ const Dashboard = () => {
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
-                    {/* Cover Image - artists only */}
-                    {!isAdmin && profile?.specialization && (
-                      <div className="relative w-full aspect-[16/7] md:aspect-[16/5] -mx-4 md:mx-0 md:rounded-xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
-                        {profile?.cover_url ? (
-                          <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-                            Add a cover image to personalize your profile
-                          </div>
-                        )}
-                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-                        <div className="absolute top-2 right-2 flex gap-2 z-10">
-                          <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
-                            <Camera className="h-3.5 w-3.5" />
-                            {profile?.cover_url ? 'Change cover' : 'Add cover'}
-                          </label>
-                          <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
-                          {profile?.cover_url && (
-                            <button
-                              type="button"
-                              onClick={handleRemoveCover}
-                              disabled={isUploadingCover}
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
-                              aria-label="Remove cover"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                    {/* Hero Header: Cover + overlapping avatar/name/meta — responsive (owner view) */}
+                    {!isAdmin && (
+                      <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+                        <div className="relative w-full aspect-[16/10] md:aspect-[16/6] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
+                          {profile?.cover_url ? (
+                            <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
+                              Add a cover image to personalize your profile
+                            </div>
                           )}
+                          {/* Bottom dark blur gradient */}
+                          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
+
+                          {/* Cover edit controls (top-right) */}
+                          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                              <Camera className="h-3.5 w-3.5" />
+                              {profile?.cover_url ? 'Change cover' : 'Add cover'}
+                            </label>
+                            <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
+                            {profile?.cover_url && (
+                              <button
+                                type="button"
+                                onClick={handleRemoveCover}
+                                disabled={isUploadingCover}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
+                                aria-label="Remove cover"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Avatar + name + meta */}
+                          <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5 z-10">
+                            <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
+                              <Avatar className="w-20 h-20 md:w-32 md:h-32 border-2 md:border-4 border-background">
+                                <AvatarImage src={profile?.avatar_url} />
+                                <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                                  <User className="h-10 w-10 md:h-14 md:w-14 text-accent" />
+                                </AvatarFallback>
+                              </Avatar>
+                              <label htmlFor="avatar-upload" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
+                                <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                              </label>
+                              <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                              {profile?.avatar_url && (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      size="icon"
+                                      variant="destructive"
+                                      className="absolute -bottom-1 -right-1 h-7 w-7 md:h-9 md:w-9 rounded-full shadow-lg"
+                                      disabled={isSaving}
+                                      aria-label="Remove profile picture"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent className="rounded-lg">
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Your profile picture will be deleted. You can upload a new one anytime.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        onClick={handleRemoveAvatar}
+                                      >
+                                        Remove
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                              <h1 className="text-xl md:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                                {formData.stageName}
+                              </h1>
+                              <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-base mt-0.5 md:mt-1">
+                                {formData.specialization && <span className="font-medium">{formData.specialization}</span>}
+                                {formData.specialization && formData.county && <span className="opacity-70">•</span>}
+                                {formData.county && <span className="truncate">{formData.county}</span>}
+                                {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-5 md:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                              </div>
+                              <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                                <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                                <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
+                                <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Stats card row */}
+                        <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Evenimente</span>
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <CalendarIcon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">
+                                {formData.careerStartYear
+                                  ? `Din ${formData.careerStartYear}`
+                                  : profile?.created_at
+                                    ? `Din ${new Date(profile.created_at).getFullYear()}`
+                                    : '—'}
+                              </span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Activ din</span>
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">{responseRate !== null ? `${responseRate}%` : '—'}</span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Răspuns rapid</span>
+                          </div>
+                        </div>
+
+                        {/* Followers row */}
+                        <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center gap-3 text-sm text-muted-foreground">
+                          <button onClick={() => setShowFollowersDialog(true)} className="hover:text-foreground transition-colors">
+                            <span className="font-semibold text-foreground">{followersCount}</span> followers
+                          </button>
+                          <span className="opacity-50">·</span>
+                          <button onClick={() => setShowFollowingDialog(true)} className="hover:text-foreground transition-colors">
+                            <span className="font-semibold text-foreground">{followingCount}</span> following
+                          </button>
                         </div>
                       </div>
                     )}
 
-                    {/* Mobile Header Layout */}
-                    <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
-
-                      {/* Top row: Rating (left) - matching public artist profile */}
-                      {!isAdmin && (
-                        <div className="absolute top-0 left-0 z-10">
-                          <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
-                            <Star className="h-4 w-4 fill-current" />
-                            {getAverageRating() && <span className="text-sm font-bold">{getAverageRating()}</span>}
-                            {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
+                    {/* Admin compact header */}
+                    {isAdmin && (
+                      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+                        <div className="relative group cursor-pointer">
+                          <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
+                            <Avatar className="w-24 h-24 md:w-32 md:h-32 border-3 border-background shadow-lg">
+                              <AvatarImage src={profile?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                                <User className="h-12 w-12 text-accent" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <label htmlFor="avatar-upload-admin" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
+                              <Camera className="h-6 w-6 text-white" />
+                            </label>
                           </div>
+                          <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
-                      )}
-
-                      {/* Centered Avatar - with top padding to account for absolute positioned elements */}
-                      <div className="relative group cursor-pointer mt-10">
-                        <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
-                          <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
-                            <AvatarImage src={profile?.avatar_url} />
-                            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                              <User className="h-12 w-12 text-accent" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <label htmlFor="avatar-upload-mobile" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                            <Camera className="h-6 w-6 text-white" />
-                          </label>
-                        </div>
-                        <input id="avatar-upload-mobile" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                        {profile?.avatar_url && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                type="button"
-                                size="icon"
-                                variant="destructive"
-                                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-lg z-20"
-                                disabled={isSaving}
-                                aria-label="Remove profile picture"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="rounded-lg">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Your profile picture will be deleted. You can upload a new one anytime.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  onClick={handleRemoveAvatar}
-                                >
-                                  Remove
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
+                        <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground text-center md:text-left">
+                          {formData.stageName}
+                        </h1>
                       </div>
+                    )}
 
-                      {/* Centered Name */}
-                      <h1 className="text-2xl font-display font-bold text-foreground text-center -mb-2">
-                        {formData.stageName}
-                      </h1>
-
-                      {/* Centered Category + Location */}
-                      <div className="flex flex-wrap items-center justify-center gap-3 -mb-2">
-                        {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
-                            {formData.specialization}
-                          </Badge>}
-                        {!isAdmin && (
-                          <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <MapPin className="h-4 w-4 flex-shrink-0" />
-                            <span className="text-sm">{formData.county}</span>
-                            {formData.country && <CountryFlagIcon country={formData.country} className="h-4 w-6 rounded-sm shadow-sm" />}
-                          </div>
-                        )}
-                      </div>
-
-                       {/* Followers + Following count */}
-                      {!isAdmin && (
-                        <div className="flex items-center justify-center gap-4">
-                          <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                            
-                            <span className="text-sm font-medium">{followersCount} followers</span>
-                          </div>
-                          <span className="text-muted-foreground/50">·</span>
-                          <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                            <span className="text-sm font-medium">{followingCount} following</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Desktop Header Layout */}
-                    <div className="hidden md:flex flex-row gap-8 mb-8">
-                      <div className="flex-shrink-0 relative group cursor-pointer">
-                        <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
-                          <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
-                            <AvatarImage src={profile?.avatar_url} />
-                            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                              <User className="h-20 w-20 text-accent" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                            <Camera className="h-8 w-8 text-white" />
-                          </label>
-                        </div>
-                        <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                        {profile?.avatar_url && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                type="button"
-                                size="icon"
-                                variant="destructive"
-                                className="absolute bottom-1 right-1 h-9 w-9 rounded-full shadow-lg z-20"
-                                disabled={isSaving}
-                                aria-label="Remove profile picture"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="rounded-lg">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Your profile picture will be deleted. You can upload a new one anytime.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  onClick={handleRemoveAvatar}
-                                >
-                                  Remove
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-                      </div>
-
-                      <div className="flex-1 flex flex-col justify-center h-40">
-                        <div className="flex flex-row items-start justify-between gap-4">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <h1 className="text-4xl font-display font-bold text-foreground">
-                                {formData.stageName}
-                              </h1>
-                            </div>
-                            
-                            {/* Category + Location on same line */}
-                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                              {formData.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
-                                {formData.specialization}
-                              </Badge>}
-                              {!isAdmin && (
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                  <MapPin className="h-5 w-5" />
-                                  <span className="text-base">{formData.county}</span>
-                                  {formData.country && <CountryFlagIcon country={formData.country} className="h-5 w-7 rounded-sm shadow-sm" />}
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Followers + Following count */}
-                            {!isAdmin && (
-                              <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowersDialog(true)}>
-                                  
-                                  <span className="text-sm font-medium">{followersCount} followers</span>
-                                </div>
-                                <span className="text-muted-foreground/50">·</span>
-                                <div className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowFollowingDialog(true)}>
-                                  <span className="text-sm font-medium">{followingCount} following</span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {!isAdmin && (
-                            <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                              <Star className="h-6 w-6 fill-current" />
-                              {getAverageRating() && <span className="text-2xl font-bold">{getAverageRating()}</span>}
-                              {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
