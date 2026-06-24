@@ -1871,7 +1871,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Stats card row */}
-                        <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 dark:bg-black p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
+                        <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 [html:not(.light)_&]:bg-black p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
                           <div className="flex flex-col items-center justify-center text-center px-1">
                             <div className="flex items-center gap-1.5 md:gap-2">
                               <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
