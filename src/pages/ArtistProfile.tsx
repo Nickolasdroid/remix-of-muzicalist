@@ -214,6 +214,8 @@ const ArtistProfile = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<string>("details");
+  const [responseRate, setResponseRate] = useState<number | null>(null);
   const {
     toast
   } = useToast();
@@ -1104,7 +1106,7 @@ const ArtistProfile = () => {
             </div>
 
               {/* Tabs Section */}
-              <Tabs defaultValue="details" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                     <User className="h-5 w-5 md:h-4 md:w-4" />
