@@ -979,7 +979,10 @@ const ArtistProfile = () => {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-card to-secondary" />
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: getCoverGradient((artist as any).cover_theme) }}
+                  />
                 )}
 
                 {/* Bottom dark blur gradient */}
