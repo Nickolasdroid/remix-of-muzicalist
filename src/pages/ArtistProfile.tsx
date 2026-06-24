@@ -35,6 +35,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
+import { getCoverGradient } from "@/lib/coverThemes";
 interface Profile {
   id: string;
   first_name: string;
