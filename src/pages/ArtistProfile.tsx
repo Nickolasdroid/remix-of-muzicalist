@@ -1066,7 +1066,7 @@ const ArtistProfile = () => {
                     className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
-                    Rezervă Artist
+                    Book Artist
                   </Button>
                   <Button
                     onClick={() => {
@@ -1077,7 +1077,7 @@ const ArtistProfile = () => {
                     className="w-full h-12 border-accent text-accent hover:bg-accent/10 font-semibold rounded-lg"
                   >
                     <MessageCircle className="mr-2 h-5 w-5" />
-                    Trimite mesaj
+                    Send Message
                   </Button>
                 </div>
               )}
