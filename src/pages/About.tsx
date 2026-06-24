@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Star, Mic, Guitar, Headphones, Users } from "lucide-react";
+import { Star, Mic, Guitar, Headphones } from "lucide-react";
+import BandIcon from "@/components/icons/BandIcon";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import AISearchShowcase from "@/components/AISearchShowcase";
 import CommunitySections from "@/components/CommunitySections";
@@ -117,7 +118,7 @@ const About = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
             <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/categories/Singers" />
             <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/categories/DJs" />
-            <CategoryCard title="Band" description="Musical groups" icon={Users} href="/categories/Bands" />
+            <CategoryCard title="Band" description="Musical groups" icon={BandIcon as any} href="/categories/Bands" />
             <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/categories/Instrumentalists" />
           </div>
         </div>
