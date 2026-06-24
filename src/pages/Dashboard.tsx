@@ -3042,7 +3042,7 @@ const Dashboard = () => {
                                           <h3 className="font-semibold text-foreground">
                                             {profile?.stage_name || "Artist"}
                                           </h3>
-                                          {profile?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+
                                           {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
                                               Expired
                                             </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}

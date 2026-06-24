@@ -399,7 +399,7 @@ const Feed = () => {
                                 {item.profile.stage_name}
                               </h3>
                             </Link>
-                            {item.profile.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+
                           </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <span>{getSpecializationLabel(item.profile.specialization)}</span>
@@ -508,7 +508,7 @@ const Feed = () => {
                         <h3 className="font-medium text-foreground cursor-pointer hover:underline" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                             {item.profile.stage_name}
                           </h3>
-                          {item.profile.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{getSpecializationLabel(item.profile.specialization)}</span>
