@@ -309,6 +309,22 @@ const ArtistProfile = () => {
         .rpc('get_accepted_events_count', { _profile_id: id })
         .then(({ data }: any) => setAcceptedEventsCount(typeof data === 'number' ? data : 0));
 
+      // Compute response rate from booking_requests (non-pending / total)
+      supabase
+        .from('booking_requests')
+        .select('status', { count: 'exact', head: false })
+        .eq('profile_id', id)
+        .then(({ data }) => {
+          if (!data || data.length === 0) {
+            setResponseRate(null);
+            return;
+          }
+          const responded = data.filter((r: any) => r.status && r.status !== 'pending').length;
+          setResponseRate(Math.round((responded / data.length) * 100));
+        });
+
+
+
       // STEP 2: Fire all secondary queries in parallel in the background.
       const sessionPromise = supabase.auth.getSession();
 
