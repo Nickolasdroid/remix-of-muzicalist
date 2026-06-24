@@ -277,7 +277,7 @@ const RegisterUser = () => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isLoading || !agreedToTerms}
+            disabled={isLoading || !agreedToTerms || emailTaken || emailChecking}
           >
             {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
