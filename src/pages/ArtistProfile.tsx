@@ -1183,33 +1183,6 @@ const ArtistProfile = () => {
                       </div>
                     </div>
 
-                    {/* Experience */}
-                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <CalendarIcon className="h-5 w-5 text-accent" />
-                        Experience
-                      </h3>
-                      <div className="rounded-lg border border-border bg-secondary/30 p-3 grid grid-cols-3 divide-x divide-border">
-                        <div className="flex flex-col items-center justify-center text-center px-2">
-                          <Clock className="h-4 w-4 text-accent mb-1" />
-                          <span className="text-base font-bold text-foreground leading-tight">{artist.created_at ? new Date(artist.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}</span>
-                          <span className="text-xs text-muted-foreground mt-0.5">Member since</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-center px-2">
-                          <CalendarCheck className="h-4 w-4 text-accent mb-1" />
-                          <span className="text-base font-bold text-foreground leading-tight">{acceptedEventsCount}</span>
-                          <span className="text-xs text-muted-foreground mt-0.5">Events</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-center px-2">
-                          <Award className="h-4 w-4 text-accent mb-1" />
-                          <span className="text-base font-bold text-foreground leading-tight">
-                            {artist.career_start_year ? `${Math.max(1, new Date().getFullYear() - artist.career_start_year)} years` : '—'}
-                          </span>
-                          <span className="text-xs text-muted-foreground mt-0.5">Experience</span>
-                        </div>
-                      </div>
-
-                    </div>
 
                     {/* Estimated Prices */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
