@@ -972,7 +972,7 @@ const ArtistProfile = () => {
           <div className="space-y-6 md:space-y-8">
             {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
             <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
-              <div className="relative w-full aspect-[16/10] md:aspect-[16/6] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+              <div className="relative w-full aspect-[16/7] md:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
                   <img
                     src={artist.cover_url}
