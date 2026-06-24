@@ -1025,16 +1025,14 @@ const ArtistProfile = () => {
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
                   <div className="flex items-center gap-1.5 md:gap-2">
-                    <CalendarDays className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                     <span className="text-base md:text-2xl font-bold text-foreground">
-                      {artist.career_start_year
-                        ? `Din ${artist.career_start_year}`
-                        : artist.created_at
-                          ? `Din ${new Date(artist.created_at).getFullYear()}`
-                          : '—'}
+                      {artist.created_at
+                        ? new Date(artist.created_at).toLocaleDateString('ro-RO', { month: 'short', year: 'numeric' }).replace('.', '')
+                        : '—'}
                     </span>
                   </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Activ din</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Membru din</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
                   <div className="flex items-center gap-1.5 md:gap-2">
