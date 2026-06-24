@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import CategoryCard from "@/components/CategoryCard";
-import { Mic, Guitar, Headphones, Users } from "lucide-react";
+import { Mic, Guitar, Headphones, Users2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
@@ -103,7 +103,7 @@ const Categories = () => {
     count: counts.DJ,
     href: `/categories/DJs${countryParam}`
   }, {
-    icon: Users,
+    icon: Users2,
     title: "Band",
     description: "Complete musical groups for your events",
     count: counts.Band,
