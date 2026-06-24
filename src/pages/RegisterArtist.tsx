@@ -162,7 +162,10 @@ const RegisterArtist = () => {
       });
       return;
     }
+    setStep0EmailChecking(true);
     const emailExists = await checkEmailExists(step0Email);
+    setStep0EmailChecking(false);
+    setStep0EmailTaken(emailExists);
     if (emailExists) {
       toast({
         title: t("common.error"),
@@ -174,6 +177,24 @@ const RegisterArtist = () => {
     setFormData(prev => ({ ...prev, email: step0Email }));
     setCurrentStep(1);
   };
+
+  // Auto-detect if email is already registered (debounced)
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!step0Email || !emailRegex.test(step0Email)) {
+      setStep0EmailTaken(false);
+      setStep0EmailChecking(false);
+      return;
+    }
+    setStep0EmailChecking(true);
+    const handle = setTimeout(async () => {
+      const exists = await checkEmailExists(step0Email);
+      setStep0EmailTaken(exists);
+      setStep0EmailChecking(false);
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [step0Email]);
+
 
   // Update phone prefix when country changes
   useEffect(() => {
