@@ -35,6 +35,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
+import { getCoverGradient } from "@/lib/coverThemes";
 interface Profile {
   id: string;
   first_name: string;
@@ -979,7 +980,10 @@ const ArtistProfile = () => {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-card to-secondary" />
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: getCoverGradient((artist as any).cover_theme) }}
+                  />
                 )}
 
                 {/* Bottom dark blur gradient */}

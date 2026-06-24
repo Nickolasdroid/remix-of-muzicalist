@@ -18,8 +18,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { Switch } from "@/components/ui/switch";
@@ -787,6 +789,19 @@ const Dashboard = () => {
       toast({ title: "Error", description: err.message || "Failed to remove cover.", variant: "destructive" });
     } finally {
       setIsUploadingCover(false);
+    }
+  };
+  const handleSelectCoverTheme = async (themeId: string) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ cover_theme: themeId } as any)
+        .eq("id", user.id);
+      if (error) throw error;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_theme: themeId }));
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to update theme.", variant: "destructive" });
     }
   };
   const startEditing = (field: string) => {
@@ -1777,8 +1792,11 @@ const Dashboard = () => {
                           {profile?.cover_url ? (
                             <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
                           ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-                              Add a cover image to personalize your profile
+                            <div
+                              className="absolute inset-0 flex items-center justify-center text-white/80 text-sm"
+                              style={{ background: getCoverGradient(profile?.cover_theme) }}
+                            >
+                              {!profile?.cover_theme && 'Add a cover image or pick a theme'}
                             </div>
                           )}
                           {/* Bottom dark blur gradient */}
@@ -1786,6 +1804,49 @@ const Dashboard = () => {
 
                           {/* Cover edit controls (top-right) */}
                           <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors"
+                                >
+                                  <Palette className="h-3.5 w-3.5" />
+                                  Theme
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent align="end" className="w-64 p-3 rounded-lg">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
+                                <div className="grid grid-cols-5 gap-2">
+                                  {COVER_THEMES.map((theme) => {
+                                    const selected = profile?.cover_theme === theme.id;
+                                    return (
+                                      <button
+                                        key={theme.id}
+                                        type="button"
+                                        onClick={() => handleSelectCoverTheme(theme.id)}
+                                        title={theme.label}
+                                        aria-label={theme.label}
+                                        className={`relative h-10 w-10 rounded-lg border-2 transition-all ${selected ? 'border-accent ring-2 ring-accent/40' : 'border-border hover:border-accent/60'}`}
+                                        style={{ background: theme.gradient }}
+                                      >
+                                        {selected && (
+                                          <Check className="absolute inset-0 m-auto h-4 w-4 text-white drop-shadow" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                {profile?.cover_theme && !profile?.cover_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSelectCoverTheme('')}
+                                    className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                  >
+                                    Reset theme
+                                  </button>
+                                )}
+                              </PopoverContent>
+                            </Popover>
                             <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
                               <Camera className="h-3.5 w-3.5" />
                               {profile?.cover_url ? 'Change cover' : 'Add cover'}
