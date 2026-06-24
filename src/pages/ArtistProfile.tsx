@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { isAdExpired } from "@/lib/adExpiration";
@@ -51,6 +51,7 @@ interface Profile {
   number_of_events: number;
   bio: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   plan: string;
   estimated_price: string | null;
   facebook_url: string | null;
@@ -213,6 +214,8 @@ const ArtistProfile = () => {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<string>("details");
+  const [responseRate, setResponseRate] = useState<number | null>(null);
   const {
     toast
   } = useToast();
@@ -288,7 +291,7 @@ const ArtistProfile = () => {
       const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, first_name, last_name, stage_name, avatar_url, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, created_at, updated_at')
+          .select('id, first_name, last_name, stage_name, avatar_url, cover_url, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, created_at, updated_at')
           .eq('id', id)
           .maybeSingle(),
         (supabase as any).rpc('get_profile_contact', { _profile_id: id }),
@@ -305,6 +308,22 @@ const ArtistProfile = () => {
       (supabase as any)
         .rpc('get_accepted_events_count', { _profile_id: id })
         .then(({ data }: any) => setAcceptedEventsCount(typeof data === 'number' ? data : 0));
+
+      // Compute response rate from booking_requests (non-pending / total)
+      supabase
+        .from('booking_requests')
+        .select('status', { count: 'exact', head: false })
+        .eq('profile_id', id)
+        .then(({ data }) => {
+          if (!data || data.length === 0) {
+            setResponseRate(null);
+            return;
+          }
+          const responded = data.filter((r: any) => r.status && r.status !== 'pending').length;
+          setResponseRate(Math.round((responded / data.length) * 100));
+        });
+
+
 
       // STEP 2: Fire all secondary queries in parallel in the background.
       const sessionPromise = supabase.auth.getSession();
@@ -951,77 +970,132 @@ const ArtistProfile = () => {
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
             {/* Mobile Header Layout */}
-            <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
-              {/* Top row: Rating (left) and Contact (right) */}
-              <div className="absolute top-0 left-0 right-0 flex items-start justify-between z-10">
-                {/* Rating badge - top left */}
-                <div className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground shadow-lg">
-                  <Star className="h-4 w-4 fill-current" />
-                  {getAverageRating() && <span className="text-sm font-bold">{getAverageRating()}</span>}
-                  {reviews.length > 0 && <span className="text-xs opacity-80">({reviews.length})</span>}
-                </div>
-                <div />
-              </div>
+            <div className="flex md:hidden flex-col gap-4 mb-6 -mx-4">
+              {/* Cover image with avatar + name overlapping bottom */}
+              <div className="relative w-full aspect-[16/11] overflow-hidden bg-gradient-to-br from-card to-secondary">
+                {artist.cover_url ? (
+                  <img
+                    src={artist.cover_url}
+                    alt={`${artist.stage_name} cover`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-card to-secondary" />
+                )}
 
-              {/* Centered Avatar - with top padding to account for absolute positioned elements */}
-              <div className={`mt-10 p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)}`}>
-                <Avatar className="w-24 h-24 border-3 border-background shadow-lg">
-                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                  <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                    <User className={`h-12 w-12 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
+                {/* Bottom dark blur gradient for text legibility */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/55 to-transparent backdrop-blur-[2px]" />
 
-              {/* Centered Name */}
-              <h1 className="text-2xl font-display font-bold text-foreground text-center -mb-2">
-                {artist.stage_name}
-              </h1>
-
-              {/* Centered Category + Location */}
-              <div className="flex flex-wrap items-center justify-center gap-3 -mb-2">
-                {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-3 py-1 text-sm font-semibold">
-                    {artist.specialization}
-                  </Badge>}
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <MapPin className="h-4 w-4 flex-shrink-0" />
-                  <span className="text-sm">{artist.county}</span>
-                  {artist.country && <CountryFlagIcon country={artist.country} className="h-4 w-6 rounded-sm shadow-sm" />}
-                </div>
-              </div>
-
-              {/* Followers + Following counts */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <span className="text-sm font-semibold">{followersCount}</span>
-                  <span className="text-sm">followers</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <span className="text-sm font-semibold">{followingCount}</span>
-                  <span className="text-sm">following</span>
+                {/* Avatar + name + meta overlaid at bottom */}
+                <div className="absolute inset-x-0 bottom-0 p-4 flex items-end gap-3">
+                  <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
+                    <Avatar className="w-20 h-20 border-2 border-background">
+                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                      <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                        <User className="h-10 w-10 text-accent" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex-1 min-w-0 pb-1">
+                    <h1 className="text-xl font-display font-bold text-white truncate drop-shadow-lg">
+                      {artist.stage_name}
+                    </h1>
+                    <div className="flex items-center gap-1.5 text-white/90 text-sm mt-0.5">
+                      {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
+                      {artist.specialization && artist.county && <span className="opacity-70">•</span>}
+                      {artist.county && <span className="truncate">{artist.county}</span>}
+                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 rounded-sm shadow-sm flex-shrink-0" />}
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <Star className="h-3.5 w-3.5 fill-accent text-accent" />
+                      <span className="text-white text-sm font-semibold">{getAverageRating() || '—'}</span>
+                      <span className="text-white/70 text-xs">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Follow + Contact buttons */}
-              <div className="flex items-center gap-3">
-                {!isOwnProfile &&
-              <Button
-                onClick={handleFollowToggle}
-                variant={isFollowing ? "outline" : "default"}
-                size="sm"
-                className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
+              {/* Stats card row */}
+              <div className="mx-4 rounded-xl border border-border bg-secondary/40 p-3 grid grid-cols-3 divide-x divide-border">
+                <div className="flex flex-col items-center justify-center text-center px-1">
+                  <div className="flex items-center gap-1.5">
+                    <CalendarCheck className="h-4 w-4 text-accent" />
+                    <span className="text-base font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">Evenimente</span>
+                </div>
+                <div className="flex flex-col items-center justify-center text-center px-1">
+                  <div className="flex items-center gap-1.5">
+                    <CalendarDays className="h-4 w-4 text-accent" />
+                    <span className="text-base font-bold text-foreground">
+                      {artist.career_start_year
+                        ? `Din ${artist.career_start_year}`
+                        : artist.created_at
+                          ? `Din ${new Date(artist.created_at).getFullYear()}`
+                          : '—'}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">Activ din</span>
+                </div>
+                <div className="flex flex-col items-center justify-center text-center px-1">
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="h-4 w-4 text-accent" />
+                    <span className="text-base font-bold text-foreground">{responseRate !== null ? `${responseRate}%` : '—'}</span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground mt-0.5">Răspuns rapid</span>
+                </div>
+              </div>
+
+              {/* Action buttons: Rezervă Artist + Trimite mesaj */}
+              {!isOwnProfile && (
+                <div className="mx-4 flex flex-col gap-2">
+                  <Button
+                    onClick={() => {
+                      if (!currentUserId) {
+                        navigate('/login');
+                        return;
+                      }
+                      setActiveTab('calendar');
+                      requestAnimationFrame(() => {
+                        profileContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      });
+                    }}
+                    className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
+                  >
+                    <CalendarIcon className="mr-2 h-5 w-5" />
+                    Rezervă Artist
                   </Button>
-              }
-                {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    Contact
-                  </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')} size="sm">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    Contact
-                  </Button> : null}
-              </div>
+                  <Button
+                    onClick={() => {
+                      if (!currentUserId) {
+                        navigate('/login');
+                        return;
+                      }
+                      navigate(`/messages?artistId=${artist.id}`);
+                    }}
+                    variant="outline"
+                    className="w-full h-12 border-accent text-accent hover:bg-accent/10 font-semibold rounded-lg"
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Trimite mesaj
+                  </Button>
+                  {!isOwnProfile && (
+                    <Button
+                      onClick={handleFollowToggle}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-muted-foreground hover:text-accent"
+                    >
+                      {isFollowing
+                        ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following · {followersCount}</>
+                        : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow · {followersCount}</>}
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
+
+
 
             {/* Desktop Header Layout */}
             <div className="hidden md:flex flex-row gap-8 mb-8">
@@ -1103,7 +1177,7 @@ const ArtistProfile = () => {
             </div>
 
               {/* Tabs Section */}
-              <Tabs defaultValue="details" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                     <User className="h-5 w-5 md:h-4 md:w-4" />

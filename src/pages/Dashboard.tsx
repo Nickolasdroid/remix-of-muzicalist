@@ -149,6 +149,7 @@ const Dashboard = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showCropper, setShowCropper] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -724,7 +725,59 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Cover image must be under 8MB.", variant: "destructive" });
+      return;
+    }
+    setIsUploadingCover(true);
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const fileName = `${user.id}/cover.${ext === 'png' ? 'png' : 'jpg'}`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
+        contentType: file.type || "image/jpeg",
+        cacheControl: "0",
+        upsert: true,
+      });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: freshUrl } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: freshUrl }));
+      toast({ title: "Success", description: "Cover image updated." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to upload cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+  const handleRemoveCover = async () => {
+    if (!user) return;
+    setIsUploadingCover(true);
+    try {
+      await supabase.storage.from("avatars").remove([`${user.id}/cover.jpg`, `${user.id}/cover.png`]);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: null } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: null }));
+      toast({ title: "Success", description: "Cover image removed." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to remove cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
   const startEditing = (field: string) => {
+
     setEditingField(field);
   };
   const cancelEditing = () => {
@@ -1704,10 +1757,41 @@ const Dashboard = () => {
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
-                    {/* Header Section */}
-                    
+                    {/* Cover Image - artists only */}
+                    {!isAdmin && profile?.specialization && (
+                      <div className="relative w-full aspect-[16/7] md:aspect-[16/5] -mx-4 md:mx-0 md:rounded-xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
+                        {profile?.cover_url ? (
+                          <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
+                            Add a cover image to personalize your profile
+                          </div>
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+                        <div className="absolute top-2 right-2 flex gap-2 z-10">
+                          <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <Camera className="h-3.5 w-3.5" />
+                            {profile?.cover_url ? 'Change cover' : 'Add cover'}
+                          </label>
+                          <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
+                          {profile?.cover_url && (
+                            <button
+                              type="button"
+                              onClick={handleRemoveCover}
+                              disabled={isUploadingCover}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
+                              aria-label="Remove cover"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Mobile Header Layout */}
                     <div className="flex md:hidden flex-col items-center gap-4 mb-6 relative">
+
                       {/* Top row: Rating (left) - matching public artist profile */}
                       {!isAdmin && (
                         <div className="absolute top-0 left-0 z-10">
