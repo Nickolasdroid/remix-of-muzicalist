@@ -36,6 +36,7 @@ import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, can
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
+import i18n from "@/i18n";
 interface Profile {
   id: string;
   first_name: string;
@@ -1025,29 +1026,29 @@ const ArtistProfile = () => {
                     <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                     <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
                   </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Evenimente</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Events</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                     <span className="text-base md:text-2xl font-bold text-foreground">
                       {artist.created_at
-                        ? new Date(artist.created_at).toLocaleDateString('ro-RO', { month: 'short', year: 'numeric' }).replace('.', '')
+                        ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
                         : '—'}
                     </span>
                   </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Membru din</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Member since</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                     <span className="text-base md:text-2xl font-bold text-foreground">
                       {artist.career_start_year
-                        ? `${Math.max(1, new Date().getFullYear() - artist.career_start_year)} ani`
+                        ? `${Math.max(1, new Date().getFullYear() - artist.career_start_year)} ${Math.max(1, new Date().getFullYear() - artist.career_start_year) === 1 ? 'year' : 'years'}`
                         : '—'}
                     </span>
                   </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experiență</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experience</span>
                 </div>
               </div>
 
@@ -1065,7 +1066,7 @@ const ArtistProfile = () => {
                     className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
-                    Rezervă Artist
+                    Book Artist
                   </Button>
                   <Button
                     onClick={() => {
@@ -1076,7 +1077,7 @@ const ArtistProfile = () => {
                     className="w-full h-12 border-accent text-accent hover:bg-accent/10 font-semibold rounded-lg"
                   >
                     <MessageCircle className="mr-2 h-5 w-5" />
-                    Trimite mesaj
+                    Send Message
                   </Button>
                 </div>
               )}
