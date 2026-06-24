@@ -27,6 +27,8 @@ const RegisterUser = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailTaken, setEmailTaken] = useState(false);
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true);
