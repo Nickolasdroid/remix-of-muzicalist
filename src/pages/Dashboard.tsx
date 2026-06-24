@@ -1794,11 +1794,10 @@ const Dashboard = () => {
                             <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
                           ) : (
                             <div
-                              className="absolute inset-0 flex items-center justify-center text-white/80 text-sm"
+                              className="absolute inset-0"
                               style={{ background: getCoverGradient(profile?.cover_theme) }}
-                            >
-                              {!profile?.cover_theme && 'Add a cover image or pick a theme'}
-                            </div>
+                            />
+
                           )}
                           {/* Bottom dark blur gradient */}
                           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
