@@ -200,7 +200,7 @@ const Announcements = () => {
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>
-                          {announcement.profiles?.plan === 'Premium' && <span className="text-accent text-xs">✓</span>}
+
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>{announcement.profiles?.specialization || "User"}</span>
