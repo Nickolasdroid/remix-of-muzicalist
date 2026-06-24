@@ -969,10 +969,9 @@ const ArtistProfile = () => {
 
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
-            {/* Mobile Header Layout */}
-            <div className="flex md:hidden flex-col gap-4 mb-6 -mx-4">
-              {/* Cover image with avatar + name overlapping bottom */}
-              <div className="relative w-full aspect-[16/11] overflow-hidden bg-gradient-to-br from-card to-secondary">
+            {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
+            <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+              <div className="relative w-full aspect-[16/10] md:aspect-[16/6] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
                   <img
                     src={artist.cover_url}
@@ -983,51 +982,51 @@ const ArtistProfile = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-card to-secondary" />
                 )}
 
-                {/* Bottom dark blur gradient for text legibility */}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/55 to-transparent backdrop-blur-[2px]" />
+                {/* Bottom dark blur gradient */}
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
 
                 {/* Avatar + name + meta overlaid at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-4 flex items-end gap-3">
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5">
                   <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
-                    <Avatar className="w-20 h-20 border-2 border-background">
+                    <Avatar className="w-20 h-20 md:w-32 md:h-32 border-2 md:border-4 border-background">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                       <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                        <User className="h-10 w-10 text-accent" />
+                        <User className="h-10 w-10 md:h-14 md:w-14 text-accent" />
                       </AvatarFallback>
                     </Avatar>
                   </div>
-                  <div className="flex-1 min-w-0 pb-1">
-                    <h1 className="text-xl font-display font-bold text-white truncate drop-shadow-lg">
+                  <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                    <h1 className="text-xl md:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
                       {artist.stage_name}
                     </h1>
-                    <div className="flex items-center gap-1.5 text-white/90 text-sm mt-0.5">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-base mt-0.5 md:mt-1">
                       {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
                       {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                       {artist.county && <span className="truncate">{artist.county}</span>}
-                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 rounded-sm shadow-sm flex-shrink-0" />}
+                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-5 md:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      <Star className="h-3.5 w-3.5 fill-accent text-accent" />
-                      <span className="text-white text-sm font-semibold">{getAverageRating() || '—'}</span>
-                      <span className="text-white/70 text-xs">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                      <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                      <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
+                      <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Stats card row */}
-              <div className="mx-4 rounded-xl border border-border bg-secondary/40 p-3 grid grid-cols-3 divide-x divide-border">
+              <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
                 <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5">
-                    <CalendarCheck className="h-4 w-4 text-accent" />
-                    <span className="text-base font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">Evenimente</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Evenimente</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5">
-                    <CalendarDays className="h-4 w-4 text-accent" />
-                    <span className="text-base font-bold text-foreground">
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <CalendarDays className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <span className="text-base md:text-2xl font-bold text-foreground">
                       {artist.career_start_year
                         ? `Din ${artist.career_start_year}`
                         : artist.created_at
@@ -1035,26 +1034,23 @@ const ArtistProfile = () => {
                           : '—'}
                     </span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">Activ din</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Activ din</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="h-4 w-4 text-accent" />
-                    <span className="text-base font-bold text-foreground">{responseRate !== null ? `${responseRate}%` : '—'}</span>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Zap className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <span className="text-base md:text-2xl font-bold text-foreground">{responseRate !== null ? `${responseRate}%` : '—'}</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">Răspuns rapid</span>
+                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Răspuns rapid</span>
                 </div>
               </div>
 
-              {/* Action buttons: Rezervă Artist + Trimite mesaj */}
+              {/* Action buttons */}
               {!isOwnProfile && (
-                <div className="mx-4 flex flex-col gap-2">
+                <div className="mx-4 md:mx-0 mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                   <Button
                     onClick={() => {
-                      if (!currentUserId) {
-                        navigate('/login');
-                        return;
-                      }
+                      if (!currentUserId) { navigate('/login'); return; }
                       setActiveTab('calendar');
                       requestAnimationFrame(() => {
                         profileContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1067,10 +1063,7 @@ const ArtistProfile = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      if (!currentUserId) {
-                        navigate('/login');
-                        return;
-                      }
+                      if (!currentUserId) { navigate('/login'); return; }
                       navigate(`/messages?artistId=${artist.id}`);
                     }}
                     variant="outline"
@@ -1079,102 +1072,29 @@ const ArtistProfile = () => {
                     <MessageCircle className="mr-2 h-5 w-5" />
                     Trimite mesaj
                   </Button>
-                  {!isOwnProfile && (
-                    <Button
-                      onClick={handleFollowToggle}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-muted-foreground hover:text-accent"
-                    >
-                      {isFollowing
-                        ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following · {followersCount}</>
-                        : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow · {followersCount}</>}
-                    </Button>
-                  )}
+                </div>
+              )}
+
+              {/* Follow + followers row */}
+              {!isOwnProfile && (
+                <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span><span className="font-semibold text-foreground">{followersCount}</span> followers</span>
+                    <span className="opacity-50">·</span>
+                    <span><span className="font-semibold text-foreground">{followingCount}</span> following</span>
+                  </div>
+                  <Button
+                    onClick={handleFollowToggle}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                  >
+                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
+                  </Button>
                 </div>
               )}
             </div>
 
-
-
-            {/* Desktop Header Layout */}
-            <div className="hidden md:flex flex-row gap-8 mb-8">
-              {/* Avatar */}
-              <div className="flex-shrink-0">
-                <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)}`}>
-                  <Avatar className="w-40 h-40 border-4 border-background shadow-lg">
-                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className={`h-14 w-14 ${isPremium ? 'text-accent' : 'text-burgundy'}`} />
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </div>
-
-              {/* Info section */}
-              <div className="flex-1 flex flex-col justify-center h-40">
-                <div className="flex flex-row items-start justify-between gap-4">
-                  <div>
-                    {/* Stage name */}
-                    <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-4xl font-display font-bold text-foreground">
-                        {artist.stage_name}
-                      </h1>
-                    </div>
-                    
-                    {/* Category + Location */}
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      {artist.specialization && <Badge className="bg-muted text-muted-foreground border border-border px-4 py-1.5 text-base font-semibold">
-                          {artist.specialization}
-                        </Badge>}
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-5 w-5" />
-                        <span className="text-base">{artist.county}</span>
-                        {artist.country && <CountryFlagIcon country={artist.country} className="h-5 w-7 rounded-sm shadow-sm" />}
-                      </div>
-                    </div>
-
-                    {/* Followers + Following counts */}
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <span className="text-base font-semibold">{followersCount}</span>
-                        <span className="text-base">followers</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <span className="text-base font-semibold">{followingCount}</span>
-                        <span className="text-base">following</span>
-                      </div>
-                    </div>
-
-                    {/* Follow + Contact buttons */}
-                    <div className="flex items-center gap-3 mt-3">
-                      {!isOwnProfile &&
-                    <Button
-                      onClick={handleFollowToggle}
-                      variant={isFollowing ? "outline" : "default"}
-                      className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}>
-                          {isFollowing ? <><UserCheck className="mr-2 h-4 w-4" /> Following</> : <><UserPlus className="mr-2 h-4 w-4" /> Follow</>}
-                        </Button>
-                    }
-                      {currentUserId && currentUserId !== artist.id ? <Button onClick={() => navigate(`/messages?artistId=${artist.id}`)} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                          <MessageCircle className="mr-2 h-4 w-4" />
-                          Contact
-                        </Button> : !currentUserId ? <Button className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => navigate('/login')}>
-                          <MessageCircle className="mr-2 h-4 w-4" />
-                          Contact
-                        </Button> : null}
-                    </div>
-                  </div>
-
-                  {/* Rating badge */}
-                  <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-foreground shadow-lg">
-                    <Star className="h-6 w-6 fill-current" />
-                    {getAverageRating() && <span className="text-2xl font-bold">{getAverageRating()}</span>}
-                    {reviews.length > 0 && <span className="text-sm opacity-80">({reviews.length})</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
