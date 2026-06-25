@@ -1102,24 +1102,24 @@ const ArtistProfile = () => {
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                  <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-foreground text-background data-[state=active]:text-foreground">
+                  <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4 text-background data-[state=active]:bg-muted data-[state=active]:text-foreground">
                     <User className="h-5 w-5 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Details</span>
                   </TabsTrigger>
-                  <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                  <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4 text-background data-[state=active]:bg-muted data-[state=active]:text-foreground">
                     <FileText className="h-5 w-5 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Posts</span>
                   </TabsTrigger>
-                  <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                  <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4 text-background data-[state=active]:bg-muted data-[state=active]:text-foreground">
                     <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Announcements</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                  <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4 text-background data-[state=active]:bg-muted data-[state=active]:text-foreground">
                     <Images className="h-5 w-5 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Gallery</span>
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
+                  <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4 text-background data-[state=active]:bg-muted data-[state=active]:text-foreground">
                     <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
                     <span className="hidden md:inline">Calendar</span>
                   </TabsTrigger>
