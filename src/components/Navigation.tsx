@@ -270,11 +270,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               {t('navigation.login')}
             </Button>
           </Link>
-          <Link to="/register">
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg hover:shadow-[var(--shadow-gold)]">
-              {t('navigation.register')}
-            </Button>
-          </Link>
         </div>
       </nav>
       )}
@@ -461,11 +456,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground text-xs px-3">
                     <LogIn className="h-3.5 w-3.5 mr-1" />
                     {t('navigation.login')}
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-3">
-                    {t('navigation.register')}
                   </Button>
                 </Link>
               </div>
