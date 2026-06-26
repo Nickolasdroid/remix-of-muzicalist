@@ -259,7 +259,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
-            <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+            <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
         </div>
 
@@ -312,7 +312,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               <div className="p-4 border-b border-border">
                 <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                   <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
-                  <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+                  <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
                 </Link>
               </div>
 
@@ -411,7 +411,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : (
             <Link to="/" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
-              <span className="font-display font-bold text-foreground">Muzicalist</span>
+              <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
             </Link>
           )}
 
@@ -435,7 +435,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               ) : (
                 <Link to="/feed" className="flex items-center gap-2">
                   <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
-                  <span className="font-display font-bold text-foreground">Muzicalist</span>
+                  <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
                 </Link>
               )}
             </>
@@ -509,7 +509,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
-            <span className="font-display font-bold text-lg text-foreground">Muzicalist</span>
+            <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Oswald, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
         </div>
         
