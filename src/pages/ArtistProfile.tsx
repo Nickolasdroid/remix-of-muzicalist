@@ -964,7 +964,7 @@ const ArtistProfile = () => {
       <Navigation />
       
       <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
-        <div ref={profileContentRef} className="container mx-auto max-w-6xl px-4 md:px-0">
+        <div ref={profileContentRef} className="container mx-auto max-w-4xl px-4 md:px-0">
           <Link to="/leaderboard">
             
           </Link>
