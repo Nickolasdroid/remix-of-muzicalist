@@ -1983,6 +1983,9 @@ const Dashboard = () => {
                             <span className="font-semibold text-foreground">{followingCount}</span> following
                           </button>
                         </div>
+
+                        {/* Identity verification card */}
+                        {user?.id && <VerificationCard profileId={user.id} />}
                       </div>
                     )}
 
