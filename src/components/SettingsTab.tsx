@@ -18,8 +18,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
+import VerificationCard from "@/components/VerificationCard";
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification";
 
 export type NotificationPreferenceKey =
   | "reviews"
@@ -488,6 +489,7 @@ const SettingsTab = ({
       items: [
         
         { id: "password", label: "Change Password", icon: Lock },
+        ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
         { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
@@ -1536,6 +1538,7 @@ const SettingsTab = ({
       items: [
         { id: "edit_profile", label: "Edit Profile", icon: User },
         { id: "password", label: "Password & Security", icon: Lock },
+        ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "billing", label: "Billing & Subscription", icon: CreditCard },
       ],
@@ -1591,7 +1594,29 @@ const SettingsTab = ({
         .filter((g) => g.items.length > 0)
     : desktopSettingGroups;
 
-
+  const VerificationPanel = () => {
+    const [uid, setUid] = useState<string | null>(null);
+    useEffect(() => {
+      supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
+    }, []);
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-accent" />
+            Identity Verification
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Verify your identity to earn a verified badge on your public profile and build trust with clients.
+          </p>
+        </div>
+        <Separator />
+        <div className="max-w-3xl -mx-4 md:mx-0">
+          {uid ? <VerificationCard profileId={uid} /> : null}
+        </div>
+      </div>
+    );
+  };
 
 
   return <DesktopSettingsLayout
@@ -1661,6 +1686,7 @@ const SettingsTab = ({
           description="Fine-tune density, font size and motion. Additional display options will appear here soon."
         />
       ),
+      verification: <VerificationPanel />,
     }}
     extraDialogs={
       <>
