@@ -1018,6 +1018,13 @@ const ArtistProfile = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Verified badge — bottom-right corner */}
+                {(artist as any).is_verified && (
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                    <VerifiedBadge size="md" />
+                  </div>
+                )}
               </div>
 
               {/* Stats card row */}
