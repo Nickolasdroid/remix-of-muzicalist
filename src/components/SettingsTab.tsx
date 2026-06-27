@@ -1664,6 +1664,7 @@ const SettingsTab = ({
           description="Fine-tune density, font size and motion. Additional display options will appear here soon."
         />
       ),
+      verification: <VerificationPanel />,
     }}
     extraDialogs={
       <>
