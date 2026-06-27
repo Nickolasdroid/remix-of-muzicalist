@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
@@ -65,6 +66,7 @@ interface Profile {
   created_at: string | null;
   hide_phone: boolean;
   hide_email: boolean;
+  is_verified?: boolean;
 }
 interface Announcement {
   id: string;
@@ -293,7 +295,7 @@ const ArtistProfile = () => {
       const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, created_at, updated_at')
+          .select('id, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
           .eq('id', id)
           .maybeSingle(),
         (supabase as any).rpc('get_profile_contact', { _profile_id: id }),
@@ -1017,6 +1019,13 @@ const ArtistProfile = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Verified badge — bottom-right corner */}
+                {(artist as any).is_verified && (
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                    <VerifiedBadge size="md" />
+                  </div>
+                )}
               </div>
 
               {/* Stats card row */}

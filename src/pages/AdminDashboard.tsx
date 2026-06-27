@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2, Loader2, Search } from "lucide-react";
+import AdminVerificationsTab from "@/components/AdminVerificationsTab";
 
 interface AdminProfile {
   id: string;
@@ -156,6 +157,7 @@ const AdminDashboard = () => {
             <TabsList className="rounded-lg">
               <TabsTrigger value="users">Users ({profiles.length})</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
+              <TabsTrigger value="verifications">Verifications</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users" className="mt-4">
@@ -302,6 +304,10 @@ const AdminDashboard = () => {
                   </TableBody>
                 </Table>
               </div>
+            </TabsContent>
+
+            <TabsContent value="verifications" className="mt-4">
+              <AdminVerificationsTab />
             </TabsContent>
           </Tabs>
         </div>

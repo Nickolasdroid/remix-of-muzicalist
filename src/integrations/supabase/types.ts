@@ -682,6 +682,7 @@ export type Database = {
           instagram_url: string | null
           instruments: string | null
           is_active: boolean
+          is_verified: boolean
           last_name: string
           music_genres: string | null
           notification_preferences: Json
@@ -701,6 +702,7 @@ export type Database = {
           subscription_status: string | null
           tiktok_url: string | null
           updated_at: string | null
+          verification_status: string
           youtube_url: string | null
         }
         Insert: {
@@ -730,6 +732,7 @@ export type Database = {
           instagram_url?: string | null
           instruments?: string | null
           is_active?: boolean
+          is_verified?: boolean
           last_name: string
           music_genres?: string | null
           notification_preferences?: Json
@@ -749,6 +752,7 @@ export type Database = {
           subscription_status?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
+          verification_status?: string
           youtube_url?: string | null
         }
         Update: {
@@ -778,6 +782,7 @@ export type Database = {
           instagram_url?: string | null
           instruments?: string | null
           is_active?: boolean
+          is_verified?: boolean
           last_name?: string
           music_genres?: string | null
           notification_preferences?: Json
@@ -797,6 +802,7 @@ export type Database = {
           subscription_status?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
+          verification_status?: string
           youtube_url?: string | null
         }
         Relationships: []
@@ -889,6 +895,53 @@ export type Database = {
           user_type?: Database["public"]["Enums"]["user_type"]
         }
         Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          id_document_path: string
+          profile_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          selfie_path: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          id_document_path: string
+          profile_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_path: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          id_document_path?: string
+          profile_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_path?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_requests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -987,6 +1040,7 @@ export type Database = {
           instagram_url: string | null
           instruments: string | null
           is_active: boolean
+          is_verified: boolean
           last_name: string
           music_genres: string | null
           notification_preferences: Json
@@ -1006,6 +1060,7 @@ export type Database = {
           subscription_status: string | null
           tiktok_url: string | null
           updated_at: string | null
+          verification_status: string
           youtube_url: string | null
         }[]
         SetofOptions: {

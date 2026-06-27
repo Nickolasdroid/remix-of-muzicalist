@@ -24,6 +24,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
 import i18n from "@/i18n";
 import CommentsDialog from "@/components/CommentsDialog";
+import VerificationCard from "@/components/VerificationCard";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 import { Switch } from "@/components/ui/switch";
 import { isAdExpired, getDaysRemaining, getAdExpirationDate } from "@/lib/adExpiration";
@@ -1865,6 +1867,13 @@ const Dashboard = () => {
                             )}
                           </div>
 
+                          {/* Verified badge — bottom-right corner */}
+                          {profile?.is_verified && (
+                            <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                              <VerifiedBadge size="md" />
+                            </div>
+                          )}
+
                           {/* Avatar + name + meta */}
                           <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5 z-10">
                             <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
@@ -1974,6 +1983,9 @@ const Dashboard = () => {
                             <span className="font-semibold text-foreground">{followingCount}</span> following
                           </button>
                         </div>
+
+                        {/* Identity verification card */}
+                        {user?.id && <VerificationCard profileId={user.id} />}
                       </div>
                     )}
 
