@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Star, Mic, Guitar, Headphones } from "lucide-react";
+import { Star, Mic, Guitar, Headphones, Users, Calendar, ShieldCheck, Globe } from "lucide-react";
 import BandIcon from "@/components/icons/BandIcon";
 import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
 import AISearchShowcase from "@/components/AISearchShowcase";
@@ -36,28 +36,28 @@ const About = () => {
           <HeroSearchBar />
         </div>
 
-        {/* Stats Bar */}
+        {/* Features Bar */}
         <div className="relative z-10 px-0 md:px-8 py-0 md:py-10">
           <div className="container mx-auto max-w-5xl px-0 md:px-4">
             <div className="flex items-center justify-between bg-background backdrop-blur-sm rounded-none md:rounded-2xl border-y md:border border-border/50 px-4 py-6 md:px-10 md:py-5 shadow-lg h-full">
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.countries}</span>
-                <span className="text-[10px] md:text-sm text-muted-foreground">Countries</span>
+              <div className="flex flex-col items-center gap-1.5 md:gap-2">
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-accent" strokeWidth={1.5} />
+                <span className="text-[10px] md:text-sm text-muted-foreground">Connect</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.artists}</span>
-                <span className="text-[10px] md:text-sm text-muted-foreground">Artists</span>
+              <div className="flex flex-col items-center gap-1.5 md:gap-2">
+                <Calendar className="h-6 w-6 md:h-8 md:w-8 text-accent" strokeWidth={1.5} />
+                <span className="text-[10px] md:text-sm text-muted-foreground">Book</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
-              <div className="flex flex-col items-center gap-0.5">
-<span className="text-lg md:text-2xl font-bold text-accent flex items-center gap-1">{PLATFORM_STATS.averageRating} <Star className="h-3.5 w-3.5 md:h-5 md:w-5 fill-accent text-accent" /></span>
-                <span className="text-[10px] md:text-sm text-muted-foreground">Average Rating</span>
+              <div className="flex flex-col items-center gap-1.5 md:gap-2">
+                <ShieldCheck className="h-6 w-6 md:h-8 md:w-8 text-accent" strokeWidth={1.5} />
+                <span className="text-[10px] md:text-sm text-muted-foreground">Trusted</span>
               </div>
               <div className="w-px h-8 bg-border/50" />
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-lg md:text-2xl font-bold text-accent">{PLATFORM_STATS.eventsBooked}</span>
-                <span className="text-[10px] md:text-sm text-muted-foreground">Events Booked</span>
+              <div className="flex flex-col items-center gap-1.5 md:gap-2">
+                <Globe className="h-6 w-6 md:h-8 md:w-8 text-accent" strokeWidth={1.5} />
+                <span className="text-[10px] md:text-sm text-muted-foreground">Global</span>
               </div>
             </div>
           </div>
