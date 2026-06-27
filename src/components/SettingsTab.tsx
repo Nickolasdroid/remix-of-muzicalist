@@ -1536,6 +1536,7 @@ const SettingsTab = ({
       items: [
         { id: "edit_profile", label: "Edit Profile", icon: User },
         { id: "password", label: "Password & Security", icon: Lock },
+        ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "billing", label: "Billing & Subscription", icon: CreditCard },
       ],
