@@ -32,10 +32,6 @@ const About = () => {
             <span className="text-accent block mt-1 md:mt-2">Musical Artists</span>
           </h1>
           
-          <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed px-2">
-            The premier platform connecting talented musicians with clients. 
-            Search, discover, and book professional artists for your events.
-          </p>
 
           <HeroSearchBar />
         </div>
