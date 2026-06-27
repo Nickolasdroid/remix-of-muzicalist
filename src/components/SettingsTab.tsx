@@ -488,6 +488,7 @@ const SettingsTab = ({
       items: [
         
         { id: "password", label: "Change Password", icon: Lock },
+        ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "comments", label: "Comments", icon: MessageCircle },
         { id: "delete", label: "Delete Account", icon: Trash2, destructive: true },
