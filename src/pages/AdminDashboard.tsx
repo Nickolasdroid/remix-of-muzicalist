@@ -305,6 +305,10 @@ const AdminDashboard = () => {
                 </Table>
               </div>
             </TabsContent>
+
+            <TabsContent value="verifications" className="mt-4">
+              <AdminVerificationsTab />
+            </TabsContent>
           </Tabs>
         </div>
       </main>
