@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2, Loader2, Search } from "lucide-react";
+import AdminVerificationsTab from "@/components/AdminVerificationsTab";
 
 interface AdminProfile {
   id: string;
