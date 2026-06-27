@@ -1594,7 +1594,29 @@ const SettingsTab = ({
         .filter((g) => g.items.length > 0)
     : desktopSettingGroups;
 
-
+  const VerificationPanel = () => {
+    const [uid, setUid] = useState<string | null>(null);
+    useEffect(() => {
+      supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
+    }, []);
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-accent" />
+            Identity Verification
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Verify your identity to earn a verified badge on your public profile and build trust with clients.
+          </p>
+        </div>
+        <Separator />
+        <div className="max-w-3xl -mx-4 md:mx-0">
+          {uid ? <VerificationCard profileId={uid} /> : null}
+        </div>
+      </div>
+    );
+  };
 
 
   return <DesktopSettingsLayout
