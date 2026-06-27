@@ -84,10 +84,10 @@ const BookArtist = () => {
       if (!mounted) return;
       setCurrentUserId(user.id);
 
-      const [{ data: artistData }, { data: eventData }, { data: prof }] = await Promise.all([
+      const [{ data: artistData }, { data: eventData }, { data: profRows }] = await Promise.all([
         supabase.from("profiles").select("id, stage_name, avatar_url, plan").eq("id", id).maybeSingle(),
         supabase.from("calendar_events").select("id, event_date, status, notes").eq("profile_id", id),
-        supabase.from("profiles").select("first_name, last_name, email, phone").eq("id", user.id).maybeSingle(),
+        (supabase as any).rpc("get_my_full_profile"),
       ]);
 
       if (!mounted) return;
@@ -98,6 +98,7 @@ const BookArtist = () => {
       }
       setArtist(artistData as ArtistLite);
       setEvents((eventData as CalendarEvent[]) || []);
+      const prof = Array.isArray(profRows) ? profRows[0] : profRows;
       if (prof) setCurrentUserProfile(prof as any);
       setLoading(false);
     })();
