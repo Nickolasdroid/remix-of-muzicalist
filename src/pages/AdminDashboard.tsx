@@ -157,6 +157,7 @@ const AdminDashboard = () => {
             <TabsList className="rounded-lg">
               <TabsTrigger value="users">Users ({profiles.length})</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
+              <TabsTrigger value="verifications">Verifications</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users" className="mt-4">
