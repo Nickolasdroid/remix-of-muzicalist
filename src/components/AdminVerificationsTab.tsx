@@ -36,9 +36,19 @@ const AdminVerificationsTab = () => {
     setLoading(true);
     const { data } = await supabase
       .from("verification_requests" as any)
-      .select("*, profiles!verification_requests_profile_id_fkey(stage_name, email, avatar_url)")
+      .select("*")
       .order("created_at", { ascending: false });
-    setRows((data as any[]) ?? []);
+    const list = (data as any[]) ?? [];
+    const ids = Array.from(new Set(list.map((r) => r.profile_id)));
+    let profMap: Record<string, any> = {};
+    if (ids.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, stage_name, email, avatar_url")
+        .in("id", ids);
+      (profs ?? []).forEach((p: any) => { profMap[p.id] = p; });
+    }
+    setRows(list.map((r) => ({ ...r, profiles: profMap[r.profile_id] ?? null })));
     setLoading(false);
   };
 
