@@ -65,6 +65,7 @@ interface Profile {
   created_at: string | null;
   hide_phone: boolean;
   hide_email: boolean;
+  is_verified?: boolean;
 }
 interface Announcement {
   id: string;
