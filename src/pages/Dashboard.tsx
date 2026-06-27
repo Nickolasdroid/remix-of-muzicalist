@@ -1867,6 +1867,13 @@ const Dashboard = () => {
                             )}
                           </div>
 
+                          {/* Verified badge — bottom-right corner */}
+                          {profile?.is_verified && (
+                            <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                              <VerifiedBadge size="md" />
+                            </div>
+                          )}
+
                           {/* Avatar + name + meta */}
                           <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5 z-10">
                             <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
