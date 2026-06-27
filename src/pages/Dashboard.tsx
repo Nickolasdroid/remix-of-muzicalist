@@ -1985,8 +1985,6 @@ const Dashboard = () => {
                           </button>
                         </div>
 
-                        {/* Identity verification card */}
-                        {user?.id && <VerificationCard profileId={user.id} />}
                       </div>
                     )}
 
