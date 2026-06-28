@@ -1841,6 +1841,30 @@ const EditProfilePanel = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
+            <Label htmlFor="ep-country">Country</Label>
+            <Input
+              id="ep-country"
+              value={country ? getCountryName(country) : ""}
+              disabled
+              readOnly
+              placeholder="—"
+              className="rounded-lg bg-muted/40 cursor-not-allowed"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ep-county">Region</Label>
+            <Input
+              id="ep-county"
+              value={county}
+              disabled
+              readOnly
+              placeholder="—"
+              className="rounded-lg bg-muted/40 cursor-not-allowed"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
             <Label htmlFor="ep-first">First name</Label>
             <Input id="ep-first" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={loading} className="rounded-lg" />
           </div>
