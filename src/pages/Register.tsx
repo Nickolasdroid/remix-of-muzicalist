@@ -27,7 +27,7 @@ const Register = () => {
       <div className="h-16 flex items-center px-4 md:px-8">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          <span className="font-display font-bold text-foreground md:text-lg">Muzicalist</span>
+          <span className="font-bold text-foreground md:text-lg uppercase" style={{ fontFamily: "Montserrat, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
         </Link>
       </div>
 
