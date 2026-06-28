@@ -42,10 +42,7 @@ const AdminVerificationsTab = () => {
     const ids = Array.from(new Set(list.map((r) => r.profile_id)));
     let profMap: Record<string, any> = {};
     if (ids.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("id, stage_name, email, avatar_url")
-        .in("id", ids);
+      const { data: profs } = await (supabase as any).rpc("admin_get_profiles_basic", { _ids: ids });
       (profs ?? []).forEach((p: any) => { profMap[p.id] = p; });
     }
     setRows(list.map((r) => ({ ...r, profiles: profMap[r.profile_id] ?? null })));
