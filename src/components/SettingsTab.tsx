@@ -1770,6 +1770,8 @@ const EditProfilePanel = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState<string>("prefer_not_to_say");
+  const [country, setCountry] = useState("");
+  const [county, setCounty] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1785,6 +1787,8 @@ const EditProfilePanel = () => {
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setGender((data as any).gender || "prefer_not_to_say");
+        setCountry((data as any).country || "");
+        setCounty((data as any).county || "");
       } else {
         setEmail(user.email || "");
       }
