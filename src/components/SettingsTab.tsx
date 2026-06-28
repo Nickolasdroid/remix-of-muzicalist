@@ -1847,7 +1847,7 @@ const EditProfilePanel = () => {
               value={country ? getCountryName(country) : ""}
               disabled
               readOnly
-              placeholder="—"
+              placeholder="Not set"
               className="rounded-lg bg-muted/40 cursor-not-allowed"
             />
           </div>
@@ -1855,10 +1855,10 @@ const EditProfilePanel = () => {
             <Label htmlFor="ep-county">Region</Label>
             <Input
               id="ep-county"
-              value={county}
+              value={county || ""}
               disabled
               readOnly
-              placeholder="—"
+              placeholder="Not set"
               className="rounded-lg bg-muted/40 cursor-not-allowed"
             />
           </div>

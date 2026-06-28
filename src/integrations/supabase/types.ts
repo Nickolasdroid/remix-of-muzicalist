@@ -664,7 +664,7 @@ export type Database = {
           comments_allow_from: string
           comments_allow_gifs: boolean
           country: string | null
-          county: string
+          county: string | null
           cover_theme: string | null
           cover_url: string | null
           created_at: string | null
@@ -714,7 +714,7 @@ export type Database = {
           comments_allow_from?: string
           comments_allow_gifs?: boolean
           country?: string | null
-          county: string
+          county?: string | null
           cover_theme?: string | null
           cover_url?: string | null
           created_at?: string | null
@@ -764,7 +764,7 @@ export type Database = {
           comments_allow_from?: string
           comments_allow_gifs?: boolean
           country?: string | null
-          county?: string
+          county?: string | null
           cover_theme?: string | null
           cover_url?: string | null
           created_at?: string | null
@@ -1022,7 +1022,7 @@ export type Database = {
           comments_allow_from: string
           comments_allow_gifs: boolean
           country: string | null
-          county: string
+          county: string | null
           cover_theme: string | null
           cover_url: string | null
           created_at: string | null
