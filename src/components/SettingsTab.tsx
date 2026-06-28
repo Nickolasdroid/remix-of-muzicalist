@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
+import { getCountryName } from "@/lib/countryFlags";
 import VerificationCard from "@/components/VerificationCard";
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification";
@@ -1770,6 +1771,8 @@ const EditProfilePanel = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState<string>("prefer_not_to_say");
+  const [country, setCountry] = useState("");
+  const [county, setCounty] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1785,6 +1788,8 @@ const EditProfilePanel = () => {
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setGender((data as any).gender || "prefer_not_to_say");
+        setCountry((data as any).country || "");
+        setCounty((data as any).county || "");
       } else {
         setEmail(user.email || "");
       }
@@ -1833,6 +1838,30 @@ const EditProfilePanel = () => {
           <Label htmlFor="ep-phone">Phone</Label>
           <Input id="ep-phone" type="tel" value={phone} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
           <p className="text-xs text-muted-foreground">Your phone number cannot be modified.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="ep-country">Country</Label>
+            <Input
+              id="ep-country"
+              value={country ? getCountryName(country) : ""}
+              disabled
+              readOnly
+              placeholder="—"
+              className="rounded-lg bg-muted/40 cursor-not-allowed"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ep-county">Region</Label>
+            <Input
+              id="ep-county"
+              value={county}
+              disabled
+              readOnly
+              placeholder="—"
+              className="rounded-lg bg-muted/40 cursor-not-allowed"
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
