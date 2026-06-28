@@ -948,6 +948,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_get_profiles_basic: {
+        Args: { _ids: string[] }
+        Returns: {
+          avatar_url: string
+          email: string
+          id: string
+          stage_name: string
+        }[]
+      }
       admin_list_profiles: {
         Args: never
         Returns: {
