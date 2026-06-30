@@ -43,7 +43,7 @@ const Home = () => {
       </section>
 
       {/* AI Search Section */}
-      <section className="py-10 md:py-20 px-4 md:px-8 bg-muted/30">
+      <section className="py-10 md:py-14 lg:py-20 px-4 md:px-6 lg:px-8 bg-muted/30">
         <div className="container mx-auto px-0">
           <div className="text-center mb-6 md:mb-12 px-2">
             <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
@@ -59,7 +59,7 @@ const Home = () => {
 
 
       {/* Search Artists Worldwide Section */}
-      <section className="py-10 md:py-20 px-4 md:px-8 pb-24 md:pb-20 bg-muted/30">
+      <section className="py-10 md:py-14 lg:py-20 px-4 md:px-6 lg:px-8 pb-24 md:pb-16 lg:pb-20 bg-muted/30">
         <div className="container mx-auto px-0">
           <div className="text-center px-2">
             <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">
@@ -81,7 +81,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-6 md:py-10 px-4 md:px-8">
+      <section className="py-6 md:py-10 px-4 md:px-6 lg:px-8">
         <div className="container mx-auto px-0">
           <div className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-card to-secondary p-6 md:p-12 border-2 border-accent/30 shadow-[var(--shadow-elegant)] text-center mx-2 md:mx-0">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 md:mb-6 text-foreground">
