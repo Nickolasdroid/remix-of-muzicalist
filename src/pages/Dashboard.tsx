@@ -2019,27 +2019,27 @@ const Dashboard = () => {
                         {!isAdmin && (
                           <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4">
                             <User className="h-5 w-5 md:h-4 md:w-4" />
-                            <span className="hidden md:inline">Details</span>
+                            <span className="hidden lg:inline">Details</span>
                           </TabsTrigger>
                         )}
                         <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <FileText className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Posts</span>
+                          <span className="hidden lg:inline">Posts</span>
                         </TabsTrigger>
                         <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4">
                           <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
-                          <span className="hidden md:inline">Announcements</span>
+                          <span className="hidden lg:inline">Announcements</span>
                         </TabsTrigger>
                         {!isAdmin && (
                           <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4">
                             <Images className="h-5 w-5 md:h-4 md:w-4" />
-                            <span className="hidden md:inline">Gallery</span>
+                            <span className="hidden lg:inline">Gallery</span>
                           </TabsTrigger>
                         )}
                         {!isAdmin && (
                           <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4">
                             <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
-                            <span className="hidden md:inline">Calendar</span>
+                            <span className="hidden lg:inline">Calendar</span>
                           </TabsTrigger>
                         )}
                       </TabsList>
