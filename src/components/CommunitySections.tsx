@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone, Newspaper } from "lucide-react";
 import artistFeedImg from "@/assets/artist-feed-mockup.png";
