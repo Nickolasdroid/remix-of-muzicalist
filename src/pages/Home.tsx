@@ -28,7 +28,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-background/70" />
         
         <div className="container mx-auto text-center px-0 relative z-10">
-          <h1 className="text-3xl md:text-6xl lg:text-7xl font-display font-bold mb-4 md:mb-6 text-foreground">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-4 md:mb-6 text-foreground">
             The Global Stage for
             <span className="text-accent block mt-2">Musical Artists</span>
           </h1>
