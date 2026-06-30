@@ -13,7 +13,7 @@ const Home = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative pt-20 md:pt-32 pb-12 md:pb-20 px-4 md:px-8 overflow-hidden">
+      <section className="relative pt-20 md:pt-24 lg:pt-32 pb-12 md:pb-16 lg:pb-20 px-4 md:px-6 lg:px-8 overflow-hidden">
         {/* Background Image */}
         <img
           src="/hero-concert.webp"
