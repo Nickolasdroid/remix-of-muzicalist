@@ -1877,12 +1877,12 @@ const Dashboard = () => {
                           )}
 
                           {/* Avatar + name + meta */}
-                          <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5 z-10">
+                          <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5 z-10">
                             <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
-                              <Avatar className="w-20 h-20 md:w-32 md:h-32 border-2 md:border-4 border-background">
+                              <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                                 <AvatarImage src={profile?.avatar_url} />
                                 <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                                  <User className="h-10 w-10 md:h-14 md:w-14 text-accent" />
+                                  <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
                                 </AvatarFallback>
                               </Avatar>
                               <label htmlFor="avatar-upload" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
@@ -1924,14 +1924,14 @@ const Dashboard = () => {
                               )}
                             </div>
                             <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                              <h1 className="text-xl md:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                              <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
                                 {formData.stageName}
                               </h1>
-                              <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-base mt-0.5 md:mt-1">
+                              <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
                                 {formData.specialization && <span className="font-medium">{formData.specialization}</span>}
                                 {formData.specialization && formData.county && <span className="opacity-70">•</span>}
                                 {formData.county && <span className="truncate">{formData.county}</span>}
-                                {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-5 md:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                                {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                               </div>
                               <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
                                 <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
