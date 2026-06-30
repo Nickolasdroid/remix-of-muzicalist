@@ -83,7 +83,7 @@ const AuthenticatedView = () => (
             Numbers that matter.
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
           {[
             { label: "Artists", value: PLATFORM_STATS.artists },
             { label: "Countries", value: PLATFORM_STATS.countries },
