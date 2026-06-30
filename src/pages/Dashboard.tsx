@@ -2134,7 +2134,7 @@ const Dashboard = () => {
                         <Separator />
 
                         {/* Details Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">

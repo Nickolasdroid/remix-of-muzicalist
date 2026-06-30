@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone, Newspaper } from "lucide-react";
 import artistFeedImg from "@/assets/artist-feed-mockup.png";
@@ -168,14 +169,22 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
 };
 
 const CommunitySections = () => {
-  const isMobile = useIsMobile();
+  const [isCompact, setIsCompact] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 1023px)");
+    const onChange = () => setIsCompact(mql.matches);
+    onChange();
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   return (
-    <section className="py-12 md:py-28 px-4 md:px-8 relative overflow-hidden">
+    <section className="py-12 md:py-20 lg:py-28 px-4 md:px-6 lg:px-8 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--accent)/0.08)_0%,transparent_70%)]" />
 
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-8 md:mb-16">
+        <div className="text-center mb-8 md:mb-12 lg:mb-16">
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
             Posts & Event Opportunities
           </h2>
@@ -184,21 +193,11 @@ const CommunitySections = () => {
           </p>
         </div>
 
-        {isMobile ? (
-          <Carousel opts={{ align: "start", loop: false }} className="w-full -mx-4">
-            <CarouselContent className="-ml-2">
-              <CarouselItem className="pl-2 basis-[88%]">
-                <div className="pr-2">
-                  <MobileCard type="feed" />
-                </div>
-              </CarouselItem>
-              <CarouselItem className="pl-2 basis-[88%]">
-                <div className="pr-2">
-                  <MobileCard type="events" />
-                </div>
-              </CarouselItem>
-            </CarouselContent>
-          </Carousel>
+        {isCompact ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+            <MobileCard type="feed" />
+            <MobileCard type="events" />
+          </div>
         ) : (
           <div className="flex items-center justify-center gap-12 lg:gap-20 max-w-5xl mx-auto">
             <PhoneMockup />

@@ -111,7 +111,7 @@ const Counties = () => {
               <p className="text-muted-foreground text-base md:text-lg">No regions with registered artists yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
               {filteredCounties.map(county => (
                 <Link key={county} to={`/counties/${county}`}>
                   <Button 

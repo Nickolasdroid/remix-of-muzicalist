@@ -172,7 +172,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
 
       {editable && isAdding && (
         <div className="space-y-2 pt-2 border-t border-border">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <Input
               type="number"
               inputMode="numeric"

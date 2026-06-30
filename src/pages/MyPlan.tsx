@@ -213,7 +213,7 @@ const MyPlan = () => {
 
 
 
-            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
+            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
               {subscriptionPlans.map((plan) => {
                 const isCurrentPlan = currentPlan === plan.id;
                 const isPremiumPlan = plan.id === "Premium";

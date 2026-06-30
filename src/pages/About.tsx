@@ -82,7 +82,7 @@ const About = () => {
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground text-center mb-6 md:mb-12">
             How Muzicalist Works
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {[
             { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
             { step: 2, title: "Connect", description: "Chat and finalize event details directly." },

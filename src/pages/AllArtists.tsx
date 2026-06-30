@@ -85,7 +85,7 @@ const AllArtists = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
             ))}
@@ -93,7 +93,7 @@ const AllArtists = () => {
         ) : artists.length === 0 ? (
           <p className="text-muted-foreground text-center py-20">No artists found.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
             {artists.map((artist) => {
               const isFree = !artist.plan || artist.plan === "Free";
               const flag = artist.country ? getCountryFlag(artist.country) : "";

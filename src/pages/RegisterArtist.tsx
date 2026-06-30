@@ -594,7 +594,7 @@ const RegisterArtist = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl w-full mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl w-full mx-auto">
             {plans.map((plan) => (
               <div key={plan.id} className="relative mt-4">
                 {plan.highlighted && (
