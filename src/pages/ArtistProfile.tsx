@@ -975,7 +975,7 @@ const ArtistProfile = () => {
           <div className="space-y-6 md:space-y-8">
             {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
             <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
-              <div className="relative w-full aspect-[16/7] md:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+              <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
                   <img
                     src={artist.cover_url}
@@ -993,24 +993,24 @@ const ArtistProfile = () => {
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
 
                 {/* Avatar + name + meta overlaid at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 flex items-end gap-3 md:gap-5">
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                   <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
-                    <Avatar className="w-20 h-20 md:w-32 md:h-32 border-2 md:border-4 border-background">
+                    <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                       <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                        <User className="h-10 w-10 md:h-14 md:w-14 text-accent" />
+                        <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
                       </AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                    <h1 className="text-xl md:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
                       {artist.stage_name}
                     </h1>
-                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-base mt-0.5 md:mt-1">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
                       {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
                       {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                       {artist.county && <span className="truncate">{artist.county}</span>}
-                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-5 md:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
                     <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
                       <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
