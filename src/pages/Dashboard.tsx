@@ -1889,39 +1889,6 @@ const Dashboard = () => {
                                 <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
                               </label>
                               <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                              {profile?.avatar_url && (
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button
-                                      type="button"
-                                      size="icon"
-                                      variant="destructive"
-                                      className="absolute -bottom-1 -right-1 h-7 w-7 md:h-9 md:w-9 rounded-full shadow-lg"
-                                      disabled={isSaving}
-                                      aria-label="Remove profile picture"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent className="rounded-lg">
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Remove profile picture?</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Your profile picture will be deleted. You can upload a new one anytime.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        onClick={handleRemoveAvatar}
-                                      >
-                                        Remove
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
                             </div>
                             <div className="flex-1 min-w-0 pb-1 md:pb-2">
                               <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
