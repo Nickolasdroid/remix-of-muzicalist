@@ -1024,6 +1024,28 @@ const ArtistProfile = () => {
                 {/* Bottom dark blur gradient */}
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
 
+                {/* Follow button — top-right corner, aligned with header */}
+                {!isOwnProfile && (
+                  <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
+                    <Button
+                      onClick={handleFollowToggle}
+                      size="sm"
+                      variant={isFollowing ? "outline" : "default"}
+                      className={
+                        isFollowing
+                          ? "h-9 rounded-full border-accent/60 bg-black/40 text-accent backdrop-blur-md hover:bg-black/60"
+                          : "h-9 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20"
+                      }
+                    >
+                      {isFollowing ? (
+                        <><UserCheck className="mr-1.5 h-4 w-4" /> Following</>
+                      ) : (
+                        <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
                 {/* Avatar + name + meta overlaid at bottom */}
                 <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                   <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
@@ -1044,10 +1066,37 @@ const ArtistProfile = () => {
                       {artist.county && <span className="truncate">{artist.county}</span>}
                       {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
-                      <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                      <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                      <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                    {/* Social stats — inline row */}
+                    <div className="flex items-center gap-2 md:gap-2.5 mt-1.5 md:mt-2 text-white/85 text-xs md:text-sm">
+                      <button
+                        type="button"
+                        onClick={() => openConnections('followers')}
+                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+                      >
+                        <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-accent/90" />
+                        <span className="font-semibold text-white">{followersCount}</span>
+                        <span className="text-white/70">Followers</span>
+                      </button>
+                      <span className="text-white/40">•</span>
+                      <button
+                        type="button"
+                        onClick={() => openConnections('following')}
+                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+                      >
+                        <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-accent/90" />
+                        <span className="font-semibold text-white">{followingCount}</span>
+                        <span className="text-white/70">Following</span>
+                      </button>
+                      <span className="text-white/40">•</span>
+                      <button
+                        type="button"
+                        onClick={scrollToReviews}
+                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+                      >
+                        <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                        <span className="font-semibold text-white">{reviews.length}</span>
+                        <span className="text-white/70">Reviews</span>
+                      </button>
                     </div>
                   </div>
                 </div>
