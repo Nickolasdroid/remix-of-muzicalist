@@ -2031,7 +2031,7 @@ const ArtistProfile = () => {
                       const events = getEventsForDate(selectedDate);
                       const blocked = isBlockedDate(selectedDate);
                       const busy = isBusyDate(selectedDate);
-                      const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
+                      const slots = events.flatMap((e) => e.slots || []);
                       const hasSlots = slots.length > 0;
                       let label = "Available";
                       let cls = "bg-accent text-accent-foreground bg-emerald-500";
