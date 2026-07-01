@@ -1024,8 +1024,30 @@ const ArtistProfile = () => {
                 {/* Bottom dark blur gradient */}
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
 
+                {/* Follow button — top-right corner, aligned with header */}
+                {!isOwnProfile && (
+                  <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
+                    <Button
+                      onClick={handleFollowToggle}
+                      size="sm"
+                      variant={isFollowing ? "outline" : "default"}
+                      className={
+                        isFollowing
+                          ? "h-9 rounded-full border-accent/60 bg-black/40 text-accent backdrop-blur-md hover:bg-black/60"
+                          : "h-9 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20"
+                      }
+                    >
+                      {isFollowing ? (
+                        <><UserCheck className="mr-1.5 h-4 w-4" /> Following</>
+                      ) : (
+                        <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
                 {/* Avatar + name + meta overlaid at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-3 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                   <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
                     <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
@@ -1034,38 +1056,18 @@ const ArtistProfile = () => {
                       </AvatarFallback>
                     </Avatar>
                   </div>
-                  <div className="flex-1 min-w-0 pb-0.5 md:pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
-                        {artist.stage_name}
-                      </h1>
-                      {!isOwnProfile && (
-                        <Button
-                          onClick={handleFollowToggle}
-                          size="sm"
-                          variant={isFollowing ? "outline" : "default"}
-                          className={
-                            isFollowing
-                              ? "h-7 md:h-8 px-3 text-xs rounded-full border-accent/60 bg-black/40 text-accent backdrop-blur-md hover:bg-black/60 flex-shrink-0"
-                              : "h-7 md:h-8 px-3 text-xs rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-md shadow-accent/20 flex-shrink-0"
-                          }
-                        >
-                          {isFollowing ? (
-                            <><UserCheck className="mr-1 h-3.5 w-3.5" /> Following</>
-                          ) : (
-                            <><UserPlus className="mr-1 h-3.5 w-3.5" /> Follow</>
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 flex-wrap">
+                  <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                      {artist.stage_name}
+                    </h1>
+                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
                       {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
                       {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                       {artist.county && <span className="truncate">{artist.county}</span>}
                       {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
                     {/* Social stats — inline row */}
-                    <div className="flex items-center gap-2 md:gap-2.5 mt-1 text-white/85 text-xs md:text-sm">
+                    <div className="flex items-center gap-2 md:gap-2.5 mt-1.5 md:mt-2 text-white/85 text-xs md:text-sm">
                       <button
                         type="button"
                         onClick={() => openConnections('followers')}
@@ -1098,7 +1100,6 @@ const ArtistProfile = () => {
                     </div>
                   </div>
                 </div>
-
 
                 {/* Verified badge — bottom-right corner */}
                 {(artist as any).is_verified && (
