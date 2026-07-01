@@ -608,6 +608,37 @@ const ArtistProfile = () => {
       console.error('Error unfollowing:', error);
     }
   };
+
+  const openConnections = async (kind: 'followers' | 'following') => {
+    if (!id) return;
+    setConnectionsDialog(kind);
+    setConnectionsLoading(true);
+    setConnectionsList([]);
+    try {
+      const col = kind === 'followers' ? 'follower_id' : 'artist_id';
+      const filterCol = kind === 'followers' ? 'artist_id' : 'follower_id';
+      const { data: rows } = await supabase.from('followers').select(col).eq(filterCol, id);
+      const ids = (rows || []).map((r: any) => r[col]).filter(Boolean);
+      if (ids.length === 0) {
+        setConnectionsList([]);
+      } else {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, stage_name, avatar_url')
+          .in('id', ids);
+        setConnectionsList((profs as any) || []);
+      }
+    } finally {
+      setConnectionsLoading(false);
+    }
+  };
+
+  const scrollToReviews = () => {
+    setActiveTab('details');
+    setTimeout(() => {
+      document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (!date) return;
