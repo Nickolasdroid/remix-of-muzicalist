@@ -1367,7 +1367,7 @@ const ArtistProfile = () => {
                   <Separator />
 
                   {/* Reviews Section */}
-                  <div>
+                  <div id="reviews-section" className="scroll-mt-24">
                     <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
                       <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
                         <Star className="h-5 w-5 text-accent" />
