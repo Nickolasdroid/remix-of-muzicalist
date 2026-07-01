@@ -667,25 +667,24 @@ const ArtistProfile = () => {
     if (bookingForm.startTime && bookingForm.endTime) {
       const event = getEventForDate(selectedDate);
       if (event && (event.status === 'busy' || event.status === 'booked')) {
-        const existingTime = extractTimeFromNotes(event.notes);
-        if (existingTime) {
-          // Check if requested time overlaps with existing busy time
-          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, existingTime.startTime, existingTime.endTime)) {
-            toast({
-              title: "Time Slot Conflict",
-              description: `This time slot overlaps with an existing booking (${existingTime.startTime} - ${existingTime.endTime}). Please select a different time.`,
-              variant: "destructive"
-            });
-            return;
-          }
-        } else {
-          // No specific time in notes means the entire day is booked
+        const existingSlots = event.slots || [];
+        if (existingSlots.length === 0) {
           toast({
             title: "Date Unavailable",
             description: "This date is fully booked. Please select a different date.",
             variant: "destructive"
           });
           return;
+        }
+        for (const s of existingSlots) {
+          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, s.startTime, s.endTime)) {
+            toast({
+              title: "Time Slot Conflict",
+              description: `This time slot overlaps with an existing booking (${s.startTime} - ${s.endTime}). Please select a different time.`,
+              variant: "destructive"
+            });
+            return;
+          }
         }
       }
     }
