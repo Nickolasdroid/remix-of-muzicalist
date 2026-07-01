@@ -1094,6 +1094,14 @@ export type Database = {
           phone: string
         }[]
       }
+      get_public_calendar: {
+        Args: { _profile_id: string }
+        Returns: {
+          event_date: string
+          slots: Json
+          status: string
+        }[]
+      }
       get_user_type: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
