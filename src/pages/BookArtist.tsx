@@ -201,7 +201,7 @@ const BookArtist = () => {
   }
 
   const selectedEvent = selectedDate ? getEventForDate(selectedDate) : null;
-  const selectedSlots = selectedEvent ? extractAllTimeSlotsFromNotes(selectedEvent.notes) : [];
+  const selectedSlots = selectedEvent ? (selectedEvent.slots || []) : [];
   const supportsTimeIntervals = canUseTimeIntervals(artist.plan);
 
   return (
