@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, Users } from "lucide-react";
+import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 
 import { isAdExpired } from "@/lib/adExpiration";
@@ -92,9 +92,10 @@ interface GalleryItem {
   created_at?: string | null;
 }
 interface CalendarEvent {
+  id: string;
   event_date: string;
   status: string;
-  slots: { startTime: string; endTime: string }[];
+  notes: string | null;
 }
 interface Review {
   id: string;
@@ -216,9 +217,6 @@ const ArtistProfile = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [connectionsDialog, setConnectionsDialog] = useState<null | 'followers' | 'following'>(null);
-  const [connectionsList, setConnectionsList] = useState<{ id: string; stage_name: string | null; avatar_url: string | null }[]>([]);
-  const [connectionsLoading, setConnectionsLoading] = useState(false);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
   const [responseRate, setResponseRate] = useState<number | null>(null);
@@ -350,7 +348,7 @@ const ArtistProfile = () => {
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
         supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at').eq('profile_id', id),
-        (supabase as any).rpc('get_public_calendar', { _profile_id: id }),
+        supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id),
         supabase.from('reviews')
           .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
           .eq('profile_id', id)
@@ -608,37 +606,6 @@ const ArtistProfile = () => {
       console.error('Error unfollowing:', error);
     }
   };
-
-  const openConnections = async (kind: 'followers' | 'following') => {
-    if (!id) return;
-    setConnectionsDialog(kind);
-    setConnectionsLoading(true);
-    setConnectionsList([]);
-    try {
-      const col = kind === 'followers' ? 'follower_id' : 'artist_id';
-      const filterCol = kind === 'followers' ? 'artist_id' : 'follower_id';
-      const { data: rows } = await supabase.from('followers').select(col).eq(filterCol, id);
-      const ids = (rows || []).map((r: any) => r[col]).filter(Boolean);
-      if (ids.length === 0) {
-        setConnectionsList([]);
-      } else {
-        const { data: profs } = await supabase
-          .from('profiles')
-          .select('id, stage_name, avatar_url')
-          .in('id', ids);
-        setConnectionsList((profs as any) || []);
-      }
-    } finally {
-      setConnectionsLoading(false);
-    }
-  };
-
-  const scrollToReviews = () => {
-    setActiveTab('details');
-    setTimeout(() => {
-      document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  };
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (!date) return;
@@ -701,24 +668,25 @@ const ArtistProfile = () => {
     if (bookingForm.startTime && bookingForm.endTime) {
       const event = getEventForDate(selectedDate);
       if (event && (event.status === 'busy' || event.status === 'booked')) {
-        const existingSlots = event.slots || [];
-        if (existingSlots.length === 0) {
+        const existingTime = extractTimeFromNotes(event.notes);
+        if (existingTime) {
+          // Check if requested time overlaps with existing busy time
+          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, existingTime.startTime, existingTime.endTime)) {
+            toast({
+              title: "Time Slot Conflict",
+              description: `This time slot overlaps with an existing booking (${existingTime.startTime} - ${existingTime.endTime}). Please select a different time.`,
+              variant: "destructive"
+            });
+            return;
+          }
+        } else {
+          // No specific time in notes means the entire day is booked
           toast({
             title: "Date Unavailable",
             description: "This date is fully booked. Please select a different date.",
             variant: "destructive"
           });
           return;
-        }
-        for (const s of existingSlots) {
-          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, s.startTime, s.endTime)) {
-            toast({
-              title: "Time Slot Conflict",
-              description: `This time slot overlaps with an existing booking (${s.startTime} - ${s.endTime}). Please select a different time.`,
-              variant: "destructive"
-            });
-            return;
-          }
         }
       }
     }
@@ -1025,7 +993,7 @@ const ArtistProfile = () => {
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
 
                 {/* Avatar + name + meta overlaid at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-3 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                   <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
                     <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
@@ -1035,80 +1003,29 @@ const ArtistProfile = () => {
                     </Avatar>
                   </div>
                   <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                    {/* Name row with Follow button aligned right */}
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
-                            {artist.stage_name}
-                          </h1>
-                          {(artist as any).is_verified && (
-                            <VerifiedBadge size="sm" className="flex-shrink-0" />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-xs md:text-sm lg:text-base mt-0.5 flex-wrap">
-                          {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
-                          {artist.specialization && artist.county && <span className="opacity-70">•</span>}
-                          {artist.county && <span className="truncate">{artist.county}</span>}
-                          {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 rounded-sm shadow-sm flex-shrink-0" />}
-                        </div>
-                      </div>
-                      {!isOwnProfile && (
-                        <Button
-                          onClick={handleFollowToggle}
-                          size="sm"
-                          variant={isFollowing ? "outline" : "default"}
-                          className={
-                            isFollowing
-                              ? "h-9 px-4 rounded-full border-accent/60 bg-black/40 text-accent backdrop-blur-md hover:bg-black/60 flex-shrink-0"
-                              : "h-9 px-4 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20 flex-shrink-0"
-                          }
-                        >
-                          {isFollowing ? (
-                            <><UserCheck className="mr-1.5 h-4 w-4" /> Following</>
-                          ) : (
-                            <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>
-                          )}
-                        </Button>
-                      )}
+                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                      {artist.stage_name}
+                    </h1>
+                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                      {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
+                      {artist.specialization && artist.county && <span className="opacity-70">•</span>}
+                      {artist.county && <span className="truncate">{artist.county}</span>}
+                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
-                    {/* Social stats — inline row */}
-                    <div className="flex items-center gap-2 md:gap-2.5 mt-1.5 md:mt-2 text-white/85 text-xs md:text-sm">
-                      <button
-                        type="button"
-                        onClick={() => openConnections('followers')}
-                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
-                      >
-                        <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-accent/90" />
-                        <span className="font-semibold text-white">{followersCount}</span>
-                        <span className="text-white/70">Followers</span>
-                      </button>
-                      <span className="text-white/40">•</span>
-                      <button
-                        type="button"
-                        onClick={() => openConnections('following')}
-                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
-                      >
-                        <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-accent/90" />
-                        <span className="font-semibold text-white">{followingCount}</span>
-                        <span className="text-white/70">Following</span>
-                      </button>
-                      <span className="text-white/40">•</span>
-                      <button
-                        type="button"
-                        onClick={scrollToReviews}
-                        className="inline-flex items-center gap-1 hover:text-accent transition-colors"
-                      >
-                        <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                        <span className="font-semibold text-white">{reviews.length}</span>
-                        <span className="text-white/70">Reviews</span>
-                      </button>
+                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                      <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                      <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
+                      <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
                     </div>
                   </div>
                 </div>
 
-
-
+                {/* Verified badge — bottom-right corner */}
+                {(artist as any).is_verified && (
+                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                    <VerifiedBadge size="md" />
+                  </div>
+                )}
               </div>
 
               {/* Stats card row */}
@@ -1171,6 +1088,24 @@ const ArtistProfile = () => {
                 </div>
               )}
 
+              {/* Follow + followers row */}
+              {!isOwnProfile && (
+                <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span><span className="font-semibold text-foreground">{followersCount}</span> followers</span>
+                    <span className="opacity-50">·</span>
+                    <span><span className="font-semibold text-foreground">{followingCount}</span> following</span>
+                  </div>
+                  <Button
+                    onClick={handleFollowToggle}
+                    variant={isFollowing ? "outline" : "default"}
+                    size="sm"
+                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
+                  >
+                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
+                  </Button>
+                </div>
+              )}
             </div>
 
 
@@ -1369,7 +1304,7 @@ const ArtistProfile = () => {
                   <Separator />
 
                   {/* Reviews Section */}
-                  <div id="reviews-section" className="scroll-mt-24">
+                  <div>
                     <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
                       <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
                         <Star className="h-5 w-5 text-accent" />
@@ -1969,7 +1904,8 @@ const ArtistProfile = () => {
                 const isBusy = isBusyDate(selectedDate);
                 const isBlocked = isBlockedDate(selectedDate);
 
-                const allTimeSlots = events.flatMap((event) => event.slots || []);
+                // Collect all time slots from all events on this date
+                const allTimeSlots = events.flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
                 const hasTimeSlots = allTimeSlots.length > 0;
                 return <div className="space-y-4 mt-2">
                         {/* Busy Time Slots */}
@@ -2098,7 +2034,7 @@ const ArtistProfile = () => {
                       const events = getEventsForDate(selectedDate);
                       const blocked = isBlockedDate(selectedDate);
                       const busy = isBusyDate(selectedDate);
-                      const slots = events.flatMap((e) => e.slots || []);
+                      const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                       const hasSlots = slots.length > 0;
                       let label = "Available";
                       let cls = "bg-accent text-accent-foreground bg-emerald-500";
@@ -2284,47 +2220,6 @@ const ArtistProfile = () => {
           }
         }}
       />
-
-      {/* Followers / Following list */}
-      <Dialog open={!!connectionsDialog} onOpenChange={(open) => { if (!open) setConnectionsDialog(null); }}>
-        <DialogContent className="max-w-md rounded-lg">
-          <DialogHeader>
-            <DialogTitle className="capitalize">{connectionsDialog}</DialogTitle>
-            <DialogDescription>
-              {connectionsDialog === 'followers'
-                ? `People following ${artist?.stage_name || 'this artist'}`
-                : `Artists ${artist?.stage_name || 'this user'} follows`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto -mx-2">
-            {connectionsLoading ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>
-            ) : connectionsList.length === 0 ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                {connectionsDialog === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
-              </div>
-            ) : (
-              <ul className="divide-y divide-border">
-                {connectionsList.map((u) => (
-                  <li key={u.id}>
-                    <Link
-                      to={`/artist/${u.id}`}
-                      onClick={() => setConnectionsDialog(null)}
-                      className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-secondary/50 transition-colors"
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={u.avatar_url || undefined} alt={u.stage_name || ''} />
-                        <AvatarFallback>{u.stage_name?.[0] || '?'}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium text-foreground truncate">{u.stage_name || 'Unknown'}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>;
 };
 export default ArtistProfile;

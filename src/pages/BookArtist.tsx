@@ -24,10 +24,22 @@ interface ArtistLite {
 }
 
 interface CalendarEvent {
+  id: string;
   event_date: string;
   status: string;
-  slots: { startTime: string; endTime: string }[];
+  notes: string | null;
 }
+
+const extractAllTimeSlotsFromNotes = (notes: string | null) => {
+  if (!notes) return [] as { startTime: string; endTime: string }[];
+  const entries = notes.split(/\n\n---\n\n/);
+  const slots: { startTime: string; endTime: string }[] = [];
+  for (const entry of entries) {
+    const m = entry.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+    if (m) slots.push({ startTime: m[1], endTime: m[2] });
+  }
+  return slots;
+};
 
 const doTimeSlotsOverlap = (s1: string, e1: string, s2: string, e2: string) => {
   const m = (t: string) => {
@@ -74,7 +86,7 @@ const BookArtist = () => {
 
       const [{ data: artistData }, { data: eventData }, { data: profRows }] = await Promise.all([
         supabase.from("profiles").select("id, stage_name, avatar_url, plan").eq("id", id).maybeSingle(),
-        (supabase as any).rpc("get_public_calendar", { _profile_id: id }),
+        supabase.from("calendar_events").select("id, event_date, status, notes").eq("profile_id", id),
         (supabase as any).rpc("get_my_full_profile"),
       ]);
 
@@ -129,7 +141,7 @@ const BookArtist = () => {
     if (form.startTime && form.endTime) {
       const ev = getEventForDate(selectedDate);
       if (ev && (ev.status === "busy" || ev.status === "booked")) {
-        const slots = ev.slots || [];
+        const slots = extractAllTimeSlotsFromNotes(ev.notes);
         if (slots.length === 0) {
           toast({ title: "Date Unavailable", description: "This date is fully booked.", variant: "destructive" });
           return;
@@ -201,7 +213,7 @@ const BookArtist = () => {
   }
 
   const selectedEvent = selectedDate ? getEventForDate(selectedDate) : null;
-  const selectedSlots = selectedEvent ? (selectedEvent.slots || []) : [];
+  const selectedSlots = selectedEvent ? extractAllTimeSlotsFromNotes(selectedEvent.notes) : [];
   const supportsTimeIntervals = canUseTimeIntervals(artist.plan);
 
   return (
