@@ -1169,24 +1169,6 @@ const ArtistProfile = () => {
                 </div>
               )}
 
-              {/* Follow + followers row */}
-              {!isOwnProfile && (
-                <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span><span className="font-semibold text-foreground">{followersCount}</span> followers</span>
-                    <span className="opacity-50">·</span>
-                    <span><span className="font-semibold text-foreground">{followingCount}</span> following</span>
-                  </div>
-                  <Button
-                    onClick={handleFollowToggle}
-                    variant={isFollowing ? "outline" : "default"}
-                    size="sm"
-                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
-                  >
-                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
-                  </Button>
-                </div>
-              )}
             </div>
 
 
