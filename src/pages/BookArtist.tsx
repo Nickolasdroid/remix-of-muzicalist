@@ -129,7 +129,7 @@ const BookArtist = () => {
     if (form.startTime && form.endTime) {
       const ev = getEventForDate(selectedDate);
       if (ev && (ev.status === "busy" || ev.status === "booked")) {
-        const slots = extractAllTimeSlotsFromNotes(ev.notes);
+        const slots = ev.slots || [];
         if (slots.length === 0) {
           toast({ title: "Date Unavailable", description: "This date is fully booked.", variant: "destructive" });
           return;
