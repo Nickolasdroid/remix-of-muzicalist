@@ -92,10 +92,9 @@ interface GalleryItem {
   created_at?: string | null;
 }
 interface CalendarEvent {
-  id: string;
   event_date: string;
   status: string;
-  notes: string | null;
+  slots: { startTime: string; endTime: string }[];
 }
 interface Review {
   id: string;
@@ -348,7 +347,7 @@ const ArtistProfile = () => {
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
         supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at').eq('profile_id', id),
-        supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id),
+        (supabase as any).rpc('get_public_calendar', { _profile_id: id }),
         supabase.from('reviews')
           .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
           .eq('profile_id', id)
@@ -668,25 +667,24 @@ const ArtistProfile = () => {
     if (bookingForm.startTime && bookingForm.endTime) {
       const event = getEventForDate(selectedDate);
       if (event && (event.status === 'busy' || event.status === 'booked')) {
-        const existingTime = extractTimeFromNotes(event.notes);
-        if (existingTime) {
-          // Check if requested time overlaps with existing busy time
-          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, existingTime.startTime, existingTime.endTime)) {
-            toast({
-              title: "Time Slot Conflict",
-              description: `This time slot overlaps with an existing booking (${existingTime.startTime} - ${existingTime.endTime}). Please select a different time.`,
-              variant: "destructive"
-            });
-            return;
-          }
-        } else {
-          // No specific time in notes means the entire day is booked
+        const existingSlots = event.slots || [];
+        if (existingSlots.length === 0) {
           toast({
             title: "Date Unavailable",
             description: "This date is fully booked. Please select a different date.",
             variant: "destructive"
           });
           return;
+        }
+        for (const s of existingSlots) {
+          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, s.startTime, s.endTime)) {
+            toast({
+              title: "Time Slot Conflict",
+              description: `This time slot overlaps with an existing booking (${s.startTime} - ${s.endTime}). Please select a different time.`,
+              variant: "destructive"
+            });
+            return;
+          }
         }
       }
     }
@@ -1904,8 +1902,7 @@ const ArtistProfile = () => {
                 const isBusy = isBusyDate(selectedDate);
                 const isBlocked = isBlockedDate(selectedDate);
 
-                // Collect all time slots from all events on this date
-                const allTimeSlots = events.flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
+                const allTimeSlots = events.flatMap((event) => event.slots || []);
                 const hasTimeSlots = allTimeSlots.length > 0;
                 return <div className="space-y-4 mt-2">
                         {/* Busy Time Slots */}
@@ -2034,7 +2031,7 @@ const ArtistProfile = () => {
                       const events = getEventsForDate(selectedDate);
                       const blocked = isBlockedDate(selectedDate);
                       const busy = isBusyDate(selectedDate);
-                      const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
+                      const slots = events.flatMap((e) => e.slots || []);
                       const hasSlots = slots.length > 0;
                       let label = "Available";
                       let cls = "bg-accent text-accent-foreground bg-emerald-500";
