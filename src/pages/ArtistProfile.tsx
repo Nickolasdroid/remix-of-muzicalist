@@ -1902,8 +1902,7 @@ const ArtistProfile = () => {
                 const isBusy = isBusyDate(selectedDate);
                 const isBlocked = isBlockedDate(selectedDate);
 
-                // Collect all time slots from all events on this date
-                const allTimeSlots = events.flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
+                const allTimeSlots = events.flatMap((event) => event.slots || []);
                 const hasTimeSlots = allTimeSlots.length > 0;
                 return <div className="space-y-4 mt-2">
                         {/* Busy Time Slots */}
