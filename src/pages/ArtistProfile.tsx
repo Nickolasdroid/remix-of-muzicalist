@@ -2282,6 +2282,47 @@ const ArtistProfile = () => {
           }
         }}
       />
+
+      {/* Followers / Following list */}
+      <Dialog open={!!connectionsDialog} onOpenChange={(open) => { if (!open) setConnectionsDialog(null); }}>
+        <DialogContent className="max-w-md rounded-lg">
+          <DialogHeader>
+            <DialogTitle className="capitalize">{connectionsDialog}</DialogTitle>
+            <DialogDescription>
+              {connectionsDialog === 'followers'
+                ? `People following ${artist?.stage_name || 'this artist'}`
+                : `Artists ${artist?.stage_name || 'this user'} follows`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto -mx-2">
+            {connectionsLoading ? (
+              <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>
+            ) : connectionsList.length === 0 ? (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                {connectionsDialog === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {connectionsList.map((u) => (
+                  <li key={u.id}>
+                    <Link
+                      to={`/artist/${u.id}`}
+                      onClick={() => setConnectionsDialog(null)}
+                      className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-secondary/50 transition-colors"
+                    >
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={u.avatar_url || undefined} alt={u.stage_name || ''} />
+                        <AvatarFallback>{u.stage_name?.[0] || '?'}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium text-foreground truncate">{u.stage_name || 'Unknown'}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default ArtistProfile;
