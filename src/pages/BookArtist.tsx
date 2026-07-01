@@ -74,7 +74,7 @@ const BookArtist = () => {
 
       const [{ data: artistData }, { data: eventData }, { data: profRows }] = await Promise.all([
         supabase.from("profiles").select("id, stage_name, avatar_url, plan").eq("id", id).maybeSingle(),
-        supabase.from("calendar_events").select("id, event_date, status, notes").eq("profile_id", id),
+        (supabase as any).rpc("get_public_calendar", { _profile_id: id }),
         (supabase as any).rpc("get_my_full_profile"),
       ]);
 
