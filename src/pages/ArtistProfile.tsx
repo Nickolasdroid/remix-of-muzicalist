@@ -92,10 +92,9 @@ interface GalleryItem {
   created_at?: string | null;
 }
 interface CalendarEvent {
-  id: string;
   event_date: string;
   status: string;
-  notes: string | null;
+  slots: { startTime: string; endTime: string }[];
 }
 interface Review {
   id: string;
