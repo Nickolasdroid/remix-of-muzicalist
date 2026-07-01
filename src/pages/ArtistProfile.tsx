@@ -216,6 +216,9 @@ const ArtistProfile = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [connectionsDialog, setConnectionsDialog] = useState<null | 'followers' | 'following'>(null);
+  const [connectionsList, setConnectionsList] = useState<{ id: string; stage_name: string | null; avatar_url: string | null }[]>([]);
+  const [connectionsLoading, setConnectionsLoading] = useState(false);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
   const [responseRate, setResponseRate] = useState<number | null>(null);
