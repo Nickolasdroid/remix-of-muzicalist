@@ -24,22 +24,10 @@ interface ArtistLite {
 }
 
 interface CalendarEvent {
-  id: string;
   event_date: string;
   status: string;
-  notes: string | null;
+  slots: { startTime: string; endTime: string }[];
 }
-
-const extractAllTimeSlotsFromNotes = (notes: string | null) => {
-  if (!notes) return [] as { startTime: string; endTime: string }[];
-  const entries = notes.split(/\n\n---\n\n/);
-  const slots: { startTime: string; endTime: string }[] = [];
-  for (const entry of entries) {
-    const m = entry.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
-    if (m) slots.push({ startTime: m[1], endTime: m[2] });
-  }
-  return slots;
-};
 
 const doTimeSlotsOverlap = (s1: string, e1: string, s2: string, e2: string) => {
   const m = (t: string) => {
