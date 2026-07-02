@@ -41,6 +41,7 @@ import AdminRoute from "./components/AdminRoute";
 import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import GuestThemeGuard from "./components/GuestThemeGuard";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <GuestThemeGuard />
         <AutoTranslatePageText />
         <Routes>
           <Route path="/" element={<Index />} />
