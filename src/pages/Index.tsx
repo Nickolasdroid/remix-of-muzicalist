@@ -20,16 +20,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Force dark theme on the guest homepage regardless of user preference
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      const hadLight = document.documentElement.classList.contains("light");
-      document.documentElement.classList.remove("light");
-      return () => {
-        if (hadLight) document.documentElement.classList.add("light");
-      };
-    }
-  }, [isAuthenticated]);
 
   // Show nothing while checking auth status to prevent flash
   if (isAuthenticated === null) {
