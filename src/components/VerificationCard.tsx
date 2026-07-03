@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { BadgeCheck, ShieldCheck, Upload, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { BadgeCheck, ShieldCheck, Upload, Clock, AlertCircle, Loader2, Camera, RefreshCw, X } from "lucide-react";
 
 type Status = "unverified" | "pending" | "verified" | "rejected";
 
@@ -25,6 +25,14 @@ const VerificationCard = ({ profileId }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const idInputRef = useRef<HTMLInputElement>(null);
   const selfieInputRef = useRef<HTMLInputElement>(null);
+
+  // Camera capture state
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraLoading, setCameraLoading] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const refresh = async () => {
     setLoading(true);
@@ -49,6 +57,80 @@ const VerificationCard = ({ profileId }: Props) => {
   useEffect(() => {
     if (profileId) refresh();
   }, [profileId]);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const startCamera = async () => {
+    setCameraError(null);
+    setCameraLoading(true);
+    setCameraOpen(true);
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Camera not supported on this device/browser.");
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+    } catch (e: any) {
+      const msg =
+        e?.name === "NotAllowedError"
+          ? "Camera access denied. Please allow camera access in your browser settings."
+          : e?.message || "Could not access the camera.";
+      setCameraError(msg);
+    } finally {
+      setCameraLoading(false);
+    }
+  };
+
+  const closeCamera = () => {
+    stopCamera();
+    setCameraOpen(false);
+    setCameraError(null);
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `selfie-${Date.now()}.jpg`, { type: "image/jpeg" });
+        setSelfieFile(file);
+        setSelfiePreview(URL.createObjectURL(blob));
+        closeCamera();
+      },
+      "image/jpeg",
+      0.92,
+    );
+  };
+
+  useEffect(() => {
+    return () => {
+      stopCamera();
+      if (selfiePreview) URL.revokeObjectURL(selfiePreview);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const validateFile = (f: File | null) => {
     if (!f) return "Please select a file.";
@@ -92,6 +174,10 @@ const VerificationCard = ({ profileId }: Props) => {
       setOpen(false);
       setIdFile(null);
       setSelfieFile(null);
+      if (selfiePreview) {
+        URL.revokeObjectURL(selfiePreview);
+        setSelfiePreview(null);
+      }
       refresh();
     } catch (e: any) {
       toast({ title: "Could not submit", description: e?.message || "Try again later.", variant: "destructive" });
@@ -163,7 +249,7 @@ const VerificationCard = ({ profileId }: Props) => {
         </div>
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) closeCamera(); }}>
         <DialogContent className="rounded-lg max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -189,14 +275,75 @@ const VerificationCard = ({ profileId }: Props) => {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Selfie with your ID</label>
+
+              {selfiePreview ? (
+                <div className="space-y-2">
+                  <div className="relative rounded-lg overflow-hidden border border-border bg-black">
+                    <img src={selfiePreview} alt="Selfie preview" className="w-full h-auto" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-lg"
+                      onClick={() => {
+                        if (selfiePreview) URL.revokeObjectURL(selfiePreview);
+                        setSelfiePreview(null);
+                        setSelfieFile(null);
+                        startCamera();
+                      }}
+                    >
+                      <RefreshCw className="h-4 w-4 mr-1.5" /> Retake
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-lg"
+                      onClick={() => selfieInputRef.current?.click()}
+                    >
+                      <Upload className="h-4 w-4 mr-1.5" /> Upload instead
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-lg flex-1"
+                    onClick={startCamera}
+                  >
+                    <Camera className="h-4 w-4 mr-1.5" /> Take selfie
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-lg flex-1"
+                    onClick={() => selfieInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-1.5" /> Upload file
+                  </Button>
+                </div>
+              )}
+
               <input
                 ref={selfieInputRef}
                 type="file"
                 accept="image/*"
-                onChange={(e) => setSelfieFile(e.target.files?.[0] ?? null)}
-                className="block w-full text-sm text-muted-foreground file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-accent file:text-accent-foreground file:font-medium hover:file:bg-accent/90"
+                capture="user"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0] ?? null;
+                  setSelfieFile(f);
+                  if (selfiePreview) URL.revokeObjectURL(selfiePreview);
+                  setSelfiePreview(f ? URL.createObjectURL(f) : null);
+                }}
               />
-              {selfieFile && <p className="text-xs text-muted-foreground truncate">{selfieFile.name}</p>}
+              {selfieFile && !selfiePreview && (
+                <p className="text-xs text-muted-foreground truncate">{selfieFile.name}</p>
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
@@ -211,6 +358,50 @@ const VerificationCard = ({ profileId }: Props) => {
             <Button className="rounded-lg" onClick={handleSubmit} disabled={submitting || !idFile || !selfieFile}>
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Upload className="h-4 w-4 mr-1.5" />}
               Submit for review
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={cameraOpen} onOpenChange={(v) => { if (!v) closeCamera(); }}>
+        <DialogContent className="rounded-lg max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5 text-accent" /> Take a selfie
+            </DialogTitle>
+            <DialogDescription>
+              Hold your ID next to your face and make sure both are clearly visible.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="relative rounded-lg overflow-hidden bg-black aspect-[4/3] flex items-center justify-center">
+            {cameraLoading && (
+              <div className="absolute inset-0 flex items-center justify-center text-white/80 z-10">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+            {cameraError ? (
+              <div className="p-4 text-center text-sm text-destructive-foreground bg-destructive/80 rounded-lg m-4">
+                {cameraError}
+              </div>
+            ) : (
+              <video
+                ref={videoRef}
+                playsInline
+                muted
+                autoPlay
+                className="w-full h-full object-cover"
+                style={{ transform: "scaleX(-1)" }}
+              />
+            )}
+          </div>
+
+          <DialogFooter className="flex-row justify-end gap-2 space-x-0">
+            <Button variant="outline" className="rounded-lg" onClick={closeCamera}>
+              <X className="h-4 w-4 mr-1.5" /> Cancel
+            </Button>
+            <Button className="rounded-lg" onClick={capturePhoto} disabled={!!cameraError || cameraLoading}>
+              <Camera className="h-4 w-4 mr-1.5" /> Capture
             </Button>
           </DialogFooter>
         </DialogContent>
