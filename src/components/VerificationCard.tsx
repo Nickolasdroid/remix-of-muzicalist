@@ -24,7 +24,6 @@ const VerificationCard = ({ profileId }: Props) => {
   const [selfieFile, setSelfieFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const idInputRef = useRef<HTMLInputElement>(null);
-  const selfieInputRef = useRef<HTMLInputElement>(null);
 
   // Camera capture state
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -256,7 +255,7 @@ const VerificationCard = ({ profileId }: Props) => {
               <ShieldCheck className="h-5 w-5 text-accent" /> Identity verification
             </DialogTitle>
             <DialogDescription>
-              Upload a clear photo of your government-issued ID and a selfie holding it. Documents are private and only seen by admins.
+              Upload a clear photo of your government-issued ID and take a live selfie. Documents are private and only seen by admins.
             </DialogDescription>
           </DialogHeader>
 
@@ -274,7 +273,7 @@ const VerificationCard = ({ profileId }: Props) => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Selfie with your ID</label>
+              <label className="text-sm font-medium">Selfie</label>
 
               {selfiePreview ? (
                 <div className="space-y-2">
@@ -296,54 +295,19 @@ const VerificationCard = ({ profileId }: Props) => {
                     >
                       <RefreshCw className="h-4 w-4 mr-1.5" /> Retake
                     </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-lg"
-                      onClick={() => selfieInputRef.current?.click()}
-                    >
-                      <Upload className="h-4 w-4 mr-1.5" /> Upload instead
-                    </Button>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-lg flex-1"
-                    onClick={startCamera}
-                  >
-                    <Camera className="h-4 w-4 mr-1.5" /> Take selfie
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-lg flex-1"
-                    onClick={() => selfieInputRef.current?.click()}
-                  >
-                    <Upload className="h-4 w-4 mr-1.5" /> Upload file
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-lg w-full"
+                  onClick={startCamera}
+                >
+                  <Camera className="h-4 w-4 mr-1.5" /> Take selfie
+                </Button>
               )}
 
-              <input
-                ref={selfieInputRef}
-                type="file"
-                accept="image/*"
-                capture="user"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0] ?? null;
-                  setSelfieFile(f);
-                  if (selfiePreview) URL.revokeObjectURL(selfiePreview);
-                  setSelfiePreview(f ? URL.createObjectURL(f) : null);
-                }}
-              />
-              {selfieFile && !selfiePreview && (
-                <p className="text-xs text-muted-foreground truncate">{selfieFile.name}</p>
-              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
@@ -370,7 +334,7 @@ const VerificationCard = ({ profileId }: Props) => {
               <Camera className="h-5 w-5 text-accent" /> Take a selfie
             </DialogTitle>
             <DialogDescription>
-              Hold your ID next to your face and make sure both are clearly visible.
+              Center your face in the frame and make sure it is clearly visible and well lit.
             </DialogDescription>
           </DialogHeader>
 
