@@ -273,7 +273,7 @@ const VerificationCard = ({ profileId }: Props) => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Selfie with your ID</label>
+              <label className="text-sm font-medium">Selfie</label>
 
               {selfiePreview ? (
                 <div className="space-y-2">
@@ -295,54 +295,19 @@ const VerificationCard = ({ profileId }: Props) => {
                     >
                       <RefreshCw className="h-4 w-4 mr-1.5" /> Retake
                     </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-lg"
-                      onClick={() => selfieInputRef.current?.click()}
-                    >
-                      <Upload className="h-4 w-4 mr-1.5" /> Upload instead
-                    </Button>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-lg flex-1"
-                    onClick={startCamera}
-                  >
-                    <Camera className="h-4 w-4 mr-1.5" /> Take selfie
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-lg flex-1"
-                    onClick={() => selfieInputRef.current?.click()}
-                  >
-                    <Upload className="h-4 w-4 mr-1.5" /> Upload file
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-lg w-full"
+                  onClick={startCamera}
+                >
+                  <Camera className="h-4 w-4 mr-1.5" /> Take selfie
+                </Button>
               )}
 
-              <input
-                ref={selfieInputRef}
-                type="file"
-                accept="image/*"
-                capture="user"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0] ?? null;
-                  setSelfieFile(f);
-                  if (selfiePreview) URL.revokeObjectURL(selfiePreview);
-                  setSelfiePreview(f ? URL.createObjectURL(f) : null);
-                }}
-              />
-              {selfieFile && !selfiePreview && (
-                <p className="text-xs text-muted-foreground truncate">{selfieFile.name}</p>
-              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
