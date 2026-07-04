@@ -24,7 +24,6 @@ const VerificationCard = ({ profileId }: Props) => {
   const [selfieFile, setSelfieFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const idInputRef = useRef<HTMLInputElement>(null);
-  const selfieInputRef = useRef<HTMLInputElement>(null);
 
   // Camera capture state
   const [cameraOpen, setCameraOpen] = useState(false);
