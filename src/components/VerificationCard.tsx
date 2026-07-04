@@ -334,7 +334,7 @@ const VerificationCard = ({ profileId }: Props) => {
               <Camera className="h-5 w-5 text-accent" /> Take a selfie
             </DialogTitle>
             <DialogDescription>
-              Hold your ID next to your face and make sure both are clearly visible.
+              Center your face in the frame and make sure it is clearly visible and well lit.
             </DialogDescription>
           </DialogHeader>
 
