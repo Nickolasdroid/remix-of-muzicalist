@@ -255,7 +255,7 @@ const VerificationCard = ({ profileId }: Props) => {
               <ShieldCheck className="h-5 w-5 text-accent" /> Identity verification
             </DialogTitle>
             <DialogDescription>
-              Upload a clear photo of your government-issued ID and a selfie holding it. Documents are private and only seen by admins.
+              Upload a clear photo of your government-issued ID and take a live selfie. Documents are private and only seen by admins.
             </DialogDescription>
           </DialogHeader>
 
