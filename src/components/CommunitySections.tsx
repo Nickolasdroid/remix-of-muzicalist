@@ -194,9 +194,15 @@ const CommunitySections = () => {
         </div>
 
         {isCompact ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
-            <MobileCard type="feed" />
-            <MobileCard type="events" />
+          <div className="-mx-4 md:-mx-6 px-4 md:px-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+            <div className="flex gap-4 md:gap-6 w-max">
+              <div className="w-[85vw] max-w-sm snap-center shrink-0">
+                <MobileCard type="feed" />
+              </div>
+              <div className="w-[85vw] max-w-sm snap-center shrink-0">
+                <MobileCard type="events" />
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center gap-12 lg:gap-20 max-w-5xl mx-auto">
