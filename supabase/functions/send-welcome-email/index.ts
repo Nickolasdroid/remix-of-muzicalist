@@ -1,20 +1,20 @@
-// Sends a one-time branded welcome email to a newly registered user.
-// Dedup is enforced atomically via profiles.welcome_email_sent_at.
+// Sends a one-time branded welcome email. Invoked only by the internal
+// DB trigger `trg_welcome_email` on `public.user_roles` via pg_net, and
+// authenticated with a shared secret stored in Supabase Vault.
+//
+// Any request without a valid `x-welcome-trigger-secret` header is rejected.
+// Deduplication is enforced atomically via `profiles.welcome_email_sent_at`.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-welcome-trigger-secret",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 const SITE_URL = "https://muzicalist.com";
 const FROM = "Muzicalist <noreply@muzicalist.com>";
-
-interface Payload {
-  user_id: string;
-}
 
 function renderEmail(opts: {
   headline: string;
@@ -85,9 +85,22 @@ function escapeHtml(v: string) {
     .replace(/"/g, "&quot;");
 }
 
+function unauthorized() {
+  return new Response(JSON.stringify({ error: "unauthorized" }), {
+    status: 401,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "method_not_allowed" }), {
+      status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {
@@ -104,7 +117,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = (await req.json().catch(() => ({}))) as Partial<Payload>;
+    // ---- Authenticate the caller against the vault-backed shared secret ----
+    const providedSecret = req.headers.get("x-welcome-trigger-secret");
+    if (!providedSecret || providedSecret.length < 16) return unauthorized();
+
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    const { data: verified, error: verifyErr } = await admin.rpc(
+      "verify_welcome_trigger_secret",
+      { _secret: providedSecret }
+    );
+    if (verifyErr) {
+      console.error("Secret verify RPC failed:", verifyErr);
+      return unauthorized();
+    }
+    if (verified !== true) return unauthorized();
+
+    // ---- Parse trusted payload (only user_id, and only after auth) ----
+    const body = (await req.json().catch(() => ({}))) as { user_id?: string };
     const userId = body.user_id;
     if (!userId || typeof userId !== "string") {
       return new Response(JSON.stringify({ error: "user_id_required" }), {
@@ -113,9 +143,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
-
-    // Atomic claim: only proceed if not already sent.
+    // ---- Atomic claim: send at most one email per profile ever ----
     const { data: claimed, error: claimErr } = await admin
       .from("profiles")
       .update({ welcome_email_sent_at: new Date().toISOString() })
@@ -132,7 +160,6 @@ Deno.serve(async (req) => {
       });
     }
     if (!claimed) {
-      // Already sent or profile missing — treat as success/no-op.
       return new Response(JSON.stringify({ status: "already_sent" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -145,12 +172,14 @@ Deno.serve(async (req) => {
       .eq("user_id", userId)
       .maybeSingle();
 
-    const userType = (roleRow?.user_type as string) || "user";
-    const isArtist = userType === "artist";
-
+    const isArtist = (roleRow?.user_type as string) === "artist";
     const email = claimed.email;
     if (!email) {
-      console.error("Profile has no email");
+      console.error("Profile has no email; rolling back claim");
+      await admin
+        .from("profiles")
+        .update({ welcome_email_sent_at: null })
+        .eq("id", userId);
       return new Response(JSON.stringify({ error: "no_email" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -159,7 +188,6 @@ Deno.serve(async (req) => {
 
     let subject: string;
     let html: string;
-
     if (isArtist) {
       const name = escapeHtml(
         (claimed.stage_name || claimed.first_name || "there").toString()
@@ -219,7 +247,6 @@ Deno.serve(async (req) => {
     if (!resp.ok) {
       const text = await resp.text();
       console.error("Resend send failed", resp.status, text);
-      // Roll back the claim so a later retry can send.
       await admin
         .from("profiles")
         .update({ welcome_email_sent_at: null })
@@ -234,7 +261,10 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ status: "sent", account_type: isArtist ? "artist" : "user" }),
+      JSON.stringify({
+        status: "sent",
+        account_type: isArtist ? "artist" : "user",
+      }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
