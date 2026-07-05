@@ -47,23 +47,27 @@ function renderEmail(opts: {
   preview: string;
 }) {
   const { headline, greeting, bodyLines, ctaLabel, ctaUrl, preview } = opts;
+  const safeHeadline = protectBrand(headline);
+  const safeGreeting = protectBrand(greeting);
+  const safePreview = normalizeBrand(preview); // hidden preheader — no HTML span
   const paragraphs = bodyLines
     .map(
       (l) =>
-        `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${l}</p>`
+        `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${protectBrand(l)}</p>`
     )
     .join("");
   return `<!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="dark only" />
     <meta name="supported-color-schemes" content="dark only" />
-    <title>${headline}</title>
+    <meta name="google" content="notranslate" />
+    <title>${safeHeadline}</title>
   </head>
   <body style="margin:0;padding:0;background:#000000;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
-    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${preview}</div>
+    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${safePreview}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#000000;">
       <tr>
         <td align="center" style="padding:32px 12px;">
