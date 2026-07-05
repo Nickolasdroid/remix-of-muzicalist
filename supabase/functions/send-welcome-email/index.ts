@@ -107,9 +107,9 @@ function renderEmail(opts: {
             </tr>
             <tr>
               <td align="center" style="padding:24px 40px 36px 40px;">
-                <p style="margin:0 0 6px 0;color:#c9c9cf;font-size:14px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:600;">The Muzicalist Team</p>
+                <p style="margin:0 0 6px 0;color:#c9c9cf;font-size:14px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:600;">The <span translate="no" class="notranslate">Muzicalist</span> Team</p>
                 <p style="margin:0;color:#6b6b73;font-size:12px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">
-                  <a href="${SITE_URL}" style="color:#6b6b73;text-decoration:none;">muzicalist.com</a>
+                  <a href="${SITE_URL}" translate="no" class="notranslate" style="color:#6b6b73;text-decoration:none;">muzicalist.com</a>
                 </p>
               </td>
             </tr>
