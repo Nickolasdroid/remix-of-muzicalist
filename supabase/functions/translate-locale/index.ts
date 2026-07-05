@@ -15,15 +15,15 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-// Deterministic brand-name safeguard. The Muzicalist brand name must never be
-// translated, transliterated, or "corrected" (e.g. to "Musicalist") by any
-// translation provider. This regex restores the canonical spelling.
-const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+// Deterministic brand-name safeguard. Narrowly scoped: ONLY rewrites the
+// single translation-induced mutation we have observed ("Musicalist" /
+// "MUSICALIST") back to the canonical brand spelling. Unrelated words and
+// other fuzzy variants (e.g. Muzikalist) are never touched.
+const BRAND_REGEX = /\bMusicalist\b/g;
+const BRAND_REGEX_UPPER = /\bMUSICALIST\b/g;
 function restoreBrand(s: string): string {
   if (typeof s !== "string" || !s) return s;
-  return s.replace(BRAND_REGEX, (m) =>
-    m === m.toUpperCase() ? "MUZICALIST" : "Muzicalist"
-  );
+  return s.replace(BRAND_REGEX_UPPER, "MUZICALIST").replace(BRAND_REGEX, "Muzicalist");
 }
 
 function flattenLeaves(obj: any, prefix = "", out: Record<string, string> = {}) {
