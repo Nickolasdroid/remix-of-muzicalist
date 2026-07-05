@@ -24,6 +24,7 @@ import registerArtistBg from "@/assets/register-artist-bg.png";
 import logo from "@/assets/logo.png";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
+import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -61,6 +62,7 @@ const RegisterArtist = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [promotionalConsent, setPromotionalConsent] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [welcomeArtistName, setWelcomeArtistName] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -92,12 +94,24 @@ const RegisterArtist = () => {
         for (let i = 0; i < maxAttempts; i++) {
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
           if (!error && data.session) {
+            let displayName = "";
+            try {
+              const raw = sessionStorage.getItem("artistRegistrationDraft");
+              if (raw) {
+                const draft = JSON.parse(raw);
+                displayName = draft?.formData?.stageName || draft?.formData?.firstName || "";
+              }
+            } catch {}
             try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
-            toast({
-              title: t("artistRegistration.success.title", "Cont creat cu succes"),
-              description: t("artistRegistration.success.message", "Bun venit pe Muzicalist!"),
-            });
-            navigate("/dashboard", { replace: true });
+            if (!displayName) {
+              const { data: profile } = await supabase
+                .from("profiles")
+                .select("stage_name, first_name")
+                .eq("id", data.session.user.id)
+                .maybeSingle();
+              displayName = profile?.stage_name || profile?.first_name || "";
+            }
+            setWelcomeArtistName(displayName || " ");
             return;
           }
           await new Promise((r) => setTimeout(r, 1500));
@@ -217,6 +231,15 @@ const RegisterArtist = () => {
       }
     }
   }, [formData.country]);
+
+  if (welcomeArtistName !== null) {
+    return (
+      <ArtistWelcomeAnimation
+        userName={welcomeArtistName.trim()}
+        onFinish={() => navigate("/dashboard", { replace: true })}
+      />
+    );
+  }
 
   if (authChecking) return null;
 
