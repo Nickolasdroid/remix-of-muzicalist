@@ -228,8 +228,9 @@ const AutoTranslatePageText = () => {
     // translate it. runSync's revealBody() removes the attribute once done.
     const scheduleSync = () => {
       if (getCurrentLanguage() === "en") return; // no work needed on English
-      ensurePendingStyle();
-      document.documentElement.setAttribute("data-i18n-pending", "true");
+      // Do NOT hide the body on every mutation — that stalls rendering as
+      // content streams in. The route-change effect below handles the
+      // pre-paint hide (with a short cap) to prevent English flash.
       if (rafRef.current) return;
       rafRef.current = window.requestAnimationFrame(() => {
         rafRef.current = null;
