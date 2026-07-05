@@ -119,7 +119,10 @@ const LeaderboardPreviewSection = () => {
                       </div>
                       <div className="text-center w-full px-1">
                         <p
-                          className={`font-semibold text-foreground truncate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`}
+                          className={`font-semibold text-foreground truncate notranslate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`}
+                          data-user-content="true"
+                          data-no-translate="true"
+                          translate="no"
                         >
                           {artist.stage_name}
                         </p>

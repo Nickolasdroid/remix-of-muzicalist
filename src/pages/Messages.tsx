@@ -659,7 +659,7 @@ const Messages = () => {
                               {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                             </span>}
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1">
+                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
                             {conv.announcement_context?.title || "Ad conversation"}
                           </p>
                         </div>
@@ -852,7 +852,7 @@ const Messages = () => {
                               {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                             </span>}
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1">
+                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
                             {conv.announcement_context?.title || "Ad conversation"}
                           </p>
                         </div>

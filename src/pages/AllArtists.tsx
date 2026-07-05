@@ -117,7 +117,7 @@ const AllArtists = () => {
                     </div>
 
                     <div className="bg-card border-t border-border p-2 space-y-0.5">
-                      <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate">
+                      <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                         {artist.stage_name}
                       </h3>
 

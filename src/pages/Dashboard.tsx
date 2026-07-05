@@ -2411,7 +2411,7 @@ const Dashboard = () => {
                                           </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
-                                          <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                          <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
                                           <span className="text-xs text-muted-foreground">
                                             {new Date(review.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -2424,7 +2424,7 @@ const Dashboard = () => {
                                       <div className="flex gap-0.5">
                                         {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                       </div>
-                                      {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
+                                      {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
                                     </div>
                                   </CarouselItem>)}
                               </CarouselContent>
@@ -3059,7 +3059,7 @@ const Dashboard = () => {
                                       {announcement.location &&
                         <span className="flex items-center gap-1">
                                           <MapPin className="h-3 w-3" />
-                                          {announcement.location}
+                                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
                                         </span>
                         }
                                       {announcement.event_date &&
@@ -3071,7 +3071,7 @@ const Dashboard = () => {
                                       {announcement.budget &&
                                         <span className="flex items-center gap-1">
                                           <Euro className="h-3 w-3" />
-                                          {announcement.budget}
+                                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
                                         </span>
                                       }
                                     </div>
@@ -3965,7 +3965,7 @@ const Dashboard = () => {
                       <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{artist.stage_name}</p>
+                      <p className="text-sm font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
                       <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
                     </div>
                   </div>
