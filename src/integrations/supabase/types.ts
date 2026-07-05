@@ -703,6 +703,8 @@ export type Database = {
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
+          welcome_email_attempts: number
+          welcome_email_last_attempt_at: string | null
           welcome_email_sent_at: string | null
           youtube_url: string | null
         }
@@ -754,6 +756,8 @@ export type Database = {
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
+          welcome_email_attempts?: number
+          welcome_email_last_attempt_at?: string | null
           welcome_email_sent_at?: string | null
           youtube_url?: string | null
         }
@@ -805,6 +809,8 @@ export type Database = {
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
+          welcome_email_attempts?: number
+          welcome_email_last_attempt_at?: string | null
           welcome_email_sent_at?: string | null
           youtube_url?: string | null
         }
@@ -1073,6 +1079,8 @@ export type Database = {
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
+          welcome_email_attempts: number
+          welcome_email_last_attempt_at: string | null
           welcome_email_sent_at: string | null
           youtube_url: string | null
         }[]
@@ -1111,6 +1119,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_type"]
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      retry_pending_welcome_emails: { Args: never; Returns: number }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
         Returns: undefined
