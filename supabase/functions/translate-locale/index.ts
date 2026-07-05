@@ -132,7 +132,9 @@ Deno.serve(async (req) => {
       const parsed = safeJsonParse(content);
       const translated = Array.isArray(parsed?.translations) ? parsed.translations : [];
       const ordered = cleanTexts.map((text, index) =>
-        typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
+        restoreBrand(
+          typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
+        )
       );
 
       return new Response(JSON.stringify({ translations: ordered }), {
