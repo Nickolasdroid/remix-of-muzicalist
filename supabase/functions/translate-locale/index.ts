@@ -98,7 +98,8 @@ Deno.serve(async (req) => {
       const systemPrompt =
         `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
         `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
-        `Preserve brand names such as Muzicalist, people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
+        `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, spell-correct, or change them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" when the source is uppercase). ` +
+        `Preserve people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
         `Return ONLY JSON in this exact shape: {"translations":["..."]}. Keep the same order and count.`;
 
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
