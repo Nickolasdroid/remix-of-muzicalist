@@ -18,6 +18,26 @@ const FROM = "Muzicalist <noreply@muzicalist.com>";
 const LOGO_URL =
   "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
 
+// Deterministic brand-name safeguard for email content. The Muzicalist brand
+// name must NEVER be translated or transliterated (e.g. to "Musicalist") by
+// Gmail / Outlook / Apple Mail client-side auto-translation. We wrap every
+// occurrence in a `<span translate="no" class="notranslate">…</span>` marker
+// (which Google Translate and Gmail honor), and also normalize any accidental
+// misspellings back to the canonical brand spelling before rendering.
+const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+function normalizeBrand(s: string): string {
+  return s.replace(BRAND_REGEX, (m) =>
+    m === m.toUpperCase() ? "MUZICALIST" : "Muzicalist"
+  );
+}
+function protectBrand(s: string): string {
+  // Only touches the exact brand tokens; leaves surrounding words untouched.
+  return normalizeBrand(s).replace(
+    /\b(Muzicalist|MUZICALIST)\b/g,
+    '<span translate="no" class="notranslate">$1</span>'
+  );
+}
+
 function renderEmail(opts: {
   headline: string;
   greeting: string;
