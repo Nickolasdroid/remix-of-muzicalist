@@ -8,7 +8,7 @@
 
 // Matches "muzicalist" / "musicalist" / "muzikalist" / "musikalist" with an
 // optional short Romanian-style suffix (ul, ului, ilor, ii, ești, iști, i).
-const BRAND_REGEX = /\bmu[sz]i?k?icalist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
 
 /**
  * Restore canonical "Muzicalist" / "MUZICALIST" spelling in a string.
