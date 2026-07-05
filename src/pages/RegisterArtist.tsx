@@ -112,6 +112,9 @@ const RegisterArtist = () => {
               displayName = profile?.stage_name || profile?.first_name || "";
             }
             setWelcomeArtistName(displayName || " ");
+            supabase.functions
+              .invoke("send-welcome-email", { body: { user_id: data.session.user.id } })
+              .catch((err) => console.warn("welcome email trigger failed", err));
             return;
           }
           await new Promise((r) => setTimeout(r, 1500));
@@ -478,6 +481,11 @@ const RegisterArtist = () => {
       }
 
       try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
+
+      // Fire welcome email (server-side dedup via profiles.welcome_email_sent_at).
+      supabase.functions
+        .invoke("send-welcome-email", { body: { user_id: authData.user.id } })
+        .catch((err) => console.warn("welcome email trigger failed", err));
 
       // If signUp returned an active session (email confirmation disabled),
       // show the welcome animation then land on the dashboard. Otherwise fall

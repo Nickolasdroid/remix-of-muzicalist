@@ -133,6 +133,10 @@ const RegisterUser = () => {
       if (authData.user) {
         // Profile + user_roles rows are created automatically by the
         // handle_new_user() trigger using the metadata above.
+        // Fire welcome email (server-side dedup via profiles.welcome_email_sent_at).
+        supabase.functions
+          .invoke("send-welcome-email", { body: { user_id: authData.user.id } })
+          .catch((err) => console.warn("welcome email trigger failed", err));
 
         toast.success(t("userRegistration.success"));
         navigate("/login");
