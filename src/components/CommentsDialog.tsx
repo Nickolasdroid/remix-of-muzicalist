@@ -297,11 +297,24 @@ const CommentsDialog = ({
           </Avatar>
         </Link>
         <div className="flex-1 min-w-0">
-          <Link to={`/artist/${c.user_id}`} className="text-xs font-semibold hover:underline block mb-1">
+          <Link
+            to={`/artist/${c.user_id}`}
+            className="text-xs font-semibold hover:underline block mb-1 notranslate"
+            data-user-content="true"
+            data-no-translate="true"
+            translate="no"
+          >
             {c.profile?.stage_name || "User"}
           </Link>
           <div className="bg-muted rounded-lg px-3 py-2">
-            <p className="text-sm break-words whitespace-pre-wrap">{c.content}</p>
+            <p
+              className="text-sm break-words whitespace-pre-wrap notranslate"
+              data-user-content="true"
+              data-no-translate="true"
+              translate="no"
+            >
+              {c.content}
+            </p>
           </div>
           <div className="flex items-center gap-3 mt-1 px-1">
             <span className="text-[11px] text-muted-foreground">{formatSmartDate(c.created_at)}</span>
@@ -393,7 +406,7 @@ const CommentsDialog = ({
             {replyTo && (
               <div className="flex items-center justify-between text-xs text-muted-foreground mb-2 px-1">
                 <span>
-                  Replying to <span className="font-semibold">{replyTo.profile?.stage_name || "User"}</span>
+                  Replying to <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">{replyTo.profile?.stage_name || "User"}</span>
                 </span>
                 <button onClick={() => setReplyTo(null)} aria-label="Cancel reply">
                   <X className="h-3.5 w-3.5" />

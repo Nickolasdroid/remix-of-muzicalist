@@ -16,7 +16,12 @@ const ExpandableText = ({ text, maxLength = 125, className }: ExpandableTextProp
     : text;
 
   return (
-    <p className={cn("text-foreground whitespace-pre-wrap", className)}>
+    <p
+      className={cn("text-foreground whitespace-pre-wrap notranslate", className)}
+      data-user-content="true"
+      data-no-translate="true"
+      translate="no"
+    >
       {displayText}
       {shouldTruncate && !isExpanded && (
         <>
