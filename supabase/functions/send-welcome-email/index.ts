@@ -143,12 +143,34 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ---- Atomic claim: send at most one email per profile ever ----
+    // ---- Atomic reservation: mark as sent + increment attempts, only if
+    //      not already sent and under the retry cap. This gives at-most-once
+    //      per attempt window and self-heals across retries.
+    const nowIso = new Date().toISOString();
+    const { data: current, error: readErr } = await admin
+      .from("profiles")
+      .select("welcome_email_attempts")
+      .eq("id", userId)
+      .maybeSingle();
+    if (readErr) {
+      console.error("Read attempts error:", readErr);
+      return new Response(JSON.stringify({ error: "claim_failed" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const prevAttempts = current?.welcome_email_attempts ?? 0;
+
     const { data: claimed, error: claimErr } = await admin
       .from("profiles")
-      .update({ welcome_email_sent_at: new Date().toISOString() })
+      .update({
+        welcome_email_sent_at: nowIso,
+        welcome_email_attempts: prevAttempts + 1,
+        welcome_email_last_attempt_at: nowIso,
+      })
       .eq("id", userId)
       .is("welcome_email_sent_at", null)
+      .lt("welcome_email_attempts", 5)
       .select("id, email, first_name, stage_name")
       .maybeSingle();
 
@@ -160,7 +182,8 @@ Deno.serve(async (req) => {
       });
     }
     if (!claimed) {
-      return new Response(JSON.stringify({ status: "already_sent" }), {
+      // Either already sent, over the cap, or profile missing. Not retried.
+      return new Response(JSON.stringify({ status: "skipped" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
