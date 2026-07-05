@@ -141,12 +141,13 @@ async function loadDynamicTranslations(lang: string): Promise<Record<string, any
     }
     const data = await res.json();
     if (data?.translations) {
+      const safe = restoreBrandNameDeep(data.translations);
       try {
-        localStorage.setItem(cacheKey, JSON.stringify(data.translations));
+        localStorage.setItem(cacheKey, JSON.stringify(safe));
       } catch {
         /* quota exceeded — non-fatal */
       }
-      return data.translations;
+      return safe;
     }
     return null;
   } catch (e) {
