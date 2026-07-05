@@ -884,7 +884,7 @@ const ArtistProfile = () => {
   // Simplified view for regular user accounts (no specialization)
   const isUserAccount = !artist.specialization;
   if (isUserAccount) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card notranslate`} data-no-translate="true" translate="no">
       <Navigation />
       <div className={`container mx-auto pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]`}>
         <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
@@ -894,7 +894,7 @@ const ArtistProfile = () => {
               {artist.first_name?.[0]}{artist.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
             {artist.first_name} {artist.last_name}
           </h1>
           <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
@@ -927,7 +927,7 @@ const ArtistProfile = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <h3 className="font-medium text-foreground">
+                          <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
                             {artist.first_name} {artist.last_name}
                           </h3>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -962,7 +962,7 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
       <Navigation />
       
       <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
@@ -1003,7 +1003,7 @@ const ArtistProfile = () => {
                     </Avatar>
                   </div>
                   <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.stage_name}
                     </h1>
                     <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -1143,7 +1143,7 @@ const ArtistProfile = () => {
                       <User className="h-5 w-5 text-accent" />
                       About
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
+                    <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.bio || "No bio available."}
                     </p>
                   </div>
@@ -1348,7 +1348,7 @@ const ArtistProfile = () => {
                                     </AvatarFallback>
                                   </Avatar>
                                   <div className="flex-1 min-w-0">
-                                    <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                    <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
                                     <span className="text-xs text-muted-foreground">
                                       {new Date(review.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -1361,7 +1361,7 @@ const ArtistProfile = () => {
                                 <div className="flex gap-0.5">
                                   {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                 </div>
-                                {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
+                                {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
                               </div>
                             </CarouselItem>)}
                         </CarouselContent>
@@ -1437,7 +1437,7 @@ const ArtistProfile = () => {
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
-                                          <h3 className="font-medium text-foreground">{artist?.stage_name}</h3>
+                                          <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</h3>
 
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -1529,7 +1529,7 @@ const ArtistProfile = () => {
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <h3 className="font-medium text-foreground">
+                                      <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
                                         {artist?.stage_name}
                                       </h3>
 
@@ -1665,7 +1665,7 @@ const ArtistProfile = () => {
                                   <div>
                                     <div className="flex items-center gap-2">
                                       <h3 className="font-medium text-foreground">
-                                        {artist?.stage_name}
+                                        <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</span>
                                       </h3>
 
                                     </div>
@@ -1712,7 +1712,7 @@ const ArtistProfile = () => {
                                   {announcement.location && (
                                     <span className="flex items-center gap-1">
                                       <MapPin className="h-3 w-3" />
-                                      {announcement.location}
+                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
                                     </span>
                                   )}
                                   {announcement.event_date && (
@@ -1724,7 +1724,7 @@ const ArtistProfile = () => {
                                   {announcement.budget && (
                                     <span className="flex items-center gap-1">
                                       <Euro className="h-3 w-3" />
-                                      {announcement.budget}
+                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
                                     </span>
                                   )}
                                 </div>
@@ -1972,7 +1972,7 @@ const ArtistProfile = () => {
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Review {artist.stage_name}</DialogTitle>
+                    <DialogTitle className="text-2xl font-display">Review <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
                     <DialogDescription>
                       Share your experience with this artist
                     </DialogDescription>

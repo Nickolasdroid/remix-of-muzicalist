@@ -16,7 +16,12 @@ const SKIP_SELECTOR = [
   "option",
   "[aria-live]",
   "[contenteditable='true']",
+  "[translate='no']",
+  ".notranslate",
+  "[data-user-content]",
   "[data-no-translate]",
+  "a[href^='/artist/']",
+  "a[href*='/artist/']",
 ].join(",");
 
 const ATTRIBUTE_SKIP_SELECTOR = [
@@ -27,8 +32,18 @@ const ATTRIBUTE_SKIP_SELECTOR = [
   "canvas",
   "[aria-live]",
   "[role='region']",
+  "[translate='no']",
+  ".notranslate",
+  "[data-user-content]",
   "[data-no-translate]",
+  "a[href^='/artist/']",
+  "a[href*='/artist/']",
 ].join(",");
+
+const isUserOrArtistProfilePath = () => {
+  if (typeof window === "undefined") return false;
+  return /^\/artist\/[^/]+\/?$/.test(window.location.pathname);
+};
 
 const TRANSLATABLE_ATTRIBUTES = ["placeholder", "title", "aria-label"] as const;
 
@@ -167,6 +182,11 @@ const AutoTranslatePageText = () => {
     };
 
     const flushAsync = async () => {
+      if (isUserOrArtistProfilePath()) {
+        pendingMissing.current.clear();
+        revealBody();
+        return;
+      }
       const lang = getCurrentLanguage();
       if (lang === "en") {
         revealBody();
@@ -189,6 +209,11 @@ const AutoTranslatePageText = () => {
     };
 
     const runSync = () => {
+      if (isUserOrArtistProfilePath()) {
+        pendingMissing.current.clear();
+        revealBody();
+        return;
+      }
       const lang = getCurrentLanguage();
       if (lang === "en") {
         restoreEnglish();
@@ -227,6 +252,7 @@ const AutoTranslatePageText = () => {
     // so freshly committed English DOM never becomes visible before we
     // translate it. runSync's revealBody() removes the attribute once done.
     const scheduleSync = () => {
+      if (isUserOrArtistProfilePath()) return;
       if (getCurrentLanguage() === "en") return; // no work needed on English
       // Do NOT hide the body on every mutation — that stalls rendering as
       // content streams in. The route-change effect below handles the
@@ -271,6 +297,10 @@ const AutoTranslatePageText = () => {
   // (using the cached translations) so the user never sees the English flash.
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
+    if (isUserOrArtistProfilePath()) {
+      document.documentElement.removeAttribute("data-i18n-pending");
+      return;
+    }
     if (getCurrentLanguage() === "en") return;
     ensurePendingStyle();
     document.documentElement.setAttribute("data-i18n-pending", "true");

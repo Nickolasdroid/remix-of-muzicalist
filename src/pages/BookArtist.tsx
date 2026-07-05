@@ -232,7 +232,7 @@ const BookArtist = () => {
             </Avatar>
           </Link>
           <div>
-            <Link to={`/artist/${artist.id}`} className="text-xl font-display font-bold hover:text-accent">
+            <Link to={`/artist/${artist.id}`} className="text-xl font-display font-bold hover:text-accent notranslate" data-user-content="true" data-no-translate="true" translate="no">
               {artist.stage_name}
             </Link>
           </div>

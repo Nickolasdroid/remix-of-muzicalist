@@ -51,7 +51,7 @@ const ArtistCard = ({
               )}
             </div>
             
-            <h3 className="text-base font-display font-bold text-foreground truncate flex-1">
+            <h3 className="text-base font-display font-bold text-foreground truncate flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
               {stageName}
             </h3>
             
@@ -75,7 +75,7 @@ const ArtistCard = ({
               )}
             </div>
             
-            <h3 className="text-2xl font-display font-bold text-foreground group-hover:text-accent transition-colors truncate">
+            <h3 className="text-2xl font-display font-bold text-foreground group-hover:text-accent transition-colors truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
               {stageName}
             </h3>
             

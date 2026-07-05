@@ -74,13 +74,13 @@ interface AnnouncementContext {
 const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => (
   <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
     <p className="text-xs font-semibold text-accent mb-1">Regarding Announcement</p>
-    <p className="text-sm font-medium text-foreground pr-4">{ad.title}</p>
-    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{ad.description}</p>
+    <p className="text-sm font-medium text-foreground pr-4 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.title}</p>
+    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.description}</p>
     {(ad.location || ad.event_date || ad.budget) && (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
-        {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{ad.location}</span>}
+        {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /><span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.location}</span></span>}
         {ad.event_date && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateNoYear(ad.event_date)}</span>}
-        {ad.budget && <span className="flex items-center gap-1"><Euro className="h-3 w-3" />{ad.budget}</span>}
+        {ad.budget && <span className="flex items-center gap-1"><Euro className="h-3 w-3" /><span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.budget}</span></span>}
       </div>
     )}
   </div>
@@ -603,7 +603,7 @@ const Messages = () => {
                     </Avatar>
                     <div className="text-left flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
                         {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                           {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                         </span>}
@@ -654,12 +654,12 @@ const Messages = () => {
                         </Avatar>
                         <div className="text-left flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">{profile.stage_name}</p>
+                            <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
                             {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                               {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                             </span>}
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1">
+                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
                             {conv.announcement_context?.title || "Ad conversation"}
                           </p>
                         </div>
@@ -683,7 +683,7 @@ const Messages = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col flex-1">
-                    <span className="font-semibold">
+                    <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
@@ -727,7 +727,7 @@ const Messages = () => {
                             </div>}
                           <div className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[70%] rounded-lg px-4 py-2 ${msg.sender_id === user?.id ? 'bg-accent text-accent-foreground' : 'bg-muted'}`}>
-                              <p>{msg.content}</p>
+                              <p className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{msg.content}</p>
                               <div className="flex items-center justify-end gap-1 mt-1">
                                 <span className="text-xs opacity-70">
                                   {new Date(msg.created_at).toLocaleTimeString([], {
@@ -799,7 +799,7 @@ const Messages = () => {
                     </Avatar>
                     <div className="text-left flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium truncate">{profile.stage_name}</p>
+                        <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
                         {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                           {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                         </span>}
@@ -847,12 +847,12 @@ const Messages = () => {
                         </Avatar>
                         <div className="text-left flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">{profile.stage_name}</p>
+                            <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
                             {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                               {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
                             </span>}
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1">
+                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
                             {conv.announcement_context?.title || "Ad conversation"}
                           </p>
                         </div>
@@ -883,7 +883,7 @@ const Messages = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-semibold text-sm truncate">
+                    <span className="font-semibold text-sm truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
@@ -927,7 +927,7 @@ const Messages = () => {
                             </div>}
                           <div className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[80%] rounded-lg px-3 py-2 ${msg.sender_id === user?.id ? 'bg-accent text-accent-foreground' : 'bg-muted'}`}>
-                              <p className="text-sm">{msg.content}</p>
+                              <p className="text-sm notranslate" data-user-content="true" data-no-translate="true" translate="no">{msg.content}</p>
                               <div className="flex items-center justify-end gap-1 mt-1">
                                 <span className="text-xs opacity-70">
                                   {new Date(msg.created_at).toLocaleTimeString([], {

@@ -24,7 +24,7 @@ const SimpleArtistCard = ({ id, stageName, imageUrl, plan }: SimpleArtistCardPro
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm py-3 px-4">
-          <p className="text-foreground font-semibold text-center truncate">{stageName}</p>
+          <p className="text-foreground font-semibold text-center truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{stageName}</p>
         </div>
       </div>
     </Link>

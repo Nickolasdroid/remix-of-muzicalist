@@ -121,7 +121,7 @@ const CountySpecializationArtists = () => {
                   </Avatar>
                   <PlanBadge plan={artist.plan} size={14} className="top-0 right-0" />
                 </div>
-                <span className="text-base font-medium text-foreground">{artist.stage_name}</span>
+                <span className="text-base font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
               </Link>
             ))}
           </div>

@@ -196,7 +196,7 @@ const Announcements = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Link to={`/artist/${announcement.profile_id}`}>
-                            <h3 className="font-medium text-foreground cursor-pointer hover:underline">
+                            <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>
@@ -265,7 +265,7 @@ const Announcements = () => {
                       {announcement.location && (
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
-                          {announcement.location}
+                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
                         </span>
                       )}
                       {announcement.event_date && (
@@ -277,7 +277,7 @@ const Announcements = () => {
                       {announcement.budget && (
                         <span className="flex items-center gap-1">
                           <Euro className="h-3 w-3" />
-                          {announcement.budget}
+                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
                         </span>
                       )}
                     </div>
