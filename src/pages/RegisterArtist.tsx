@@ -232,6 +232,15 @@ const RegisterArtist = () => {
     }
   }, [formData.country]);
 
+  if (welcomeArtistName !== null) {
+    return (
+      <ArtistWelcomeAnimation
+        userName={welcomeArtistName.trim()}
+        onFinish={() => navigate("/dashboard", { replace: true })}
+      />
+    );
+  }
+
   if (authChecking) return null;
 
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
