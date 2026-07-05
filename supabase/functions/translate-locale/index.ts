@@ -159,6 +159,7 @@ Deno.serve(async (req) => {
 
     const systemPrompt =
       `You are a professional UI localization translator. Translate UI strings from ${sourceLang} to ${targetLang}. ` +
+      `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, or spell-correct them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" if the source is uppercase). ` +
       `Preserve placeholders like {{name}}, {0}, %s exactly. Preserve HTML tags. ` +
       `Keep tone friendly and concise, suitable for a web app. ` +
       `Return ONLY a JSON object that maps each input key to its translated string. ` +
