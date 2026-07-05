@@ -207,11 +207,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fill any missing keys with the source string as a safe fallback
+    // Fill any missing keys with the source string as a safe fallback, and
+    // apply the deterministic brand-name safeguard on every value.
     for (const k of keys) {
-      if (typeof translatedFlat[k] !== "string" || !translatedFlat[k].trim()) {
-        translatedFlat[k] = flat[k];
-      }
+      const val =
+        typeof translatedFlat[k] === "string" && translatedFlat[k].trim()
+          ? translatedFlat[k]
+          : flat[k];
+      translatedFlat[k] = restoreBrand(val);
     }
 
     const translations = unflatten(translatedFlat);
