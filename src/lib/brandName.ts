@@ -1,24 +1,21 @@
-// Deterministic safeguard: the Muzicalist brand name must NEVER be translated,
-// transliterated, or "corrected" to "Musicalist" (or similar) by any translation
-// pipeline. This helper restores the canonical brand spelling after translation.
+// Deterministic safeguard: the Muzicalist brand name must NEVER be
+// translated, transliterated, or "corrected" to "Musicalist" by any
+// translation pipeline.
 //
-// Narrow scope: only touches tokens that clearly spell out the brand
-// (Muzicalist / Musicalist / Muzikalist / Musikalist, plus Romanian-style
-// suffixed forms like "Muzicaliști"). Surrounding words are untouched.
+// Scope is intentionally narrow: this helper ONLY rewrites the single
+// translation-induced mutation we have observed in production — the token
+// "Musicalist" / "MUSICALIST" — back to the canonical brand spelling.
+// It never touches unrelated words, other fuzzy variants (e.g. Muzikalist,
+// Musikalist), or suffixed grammatical forms. Already-correct occurrences
+// of "Muzicalist" / "MUZICALIST" pass through unchanged.
 
-// Matches "muzicalist" / "musicalist" / "muzikalist" / "musikalist" with an
-// optional short Romanian-style suffix (ul, ului, ilor, ii, ești, iști, i).
-const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+const BRAND_REGEX = /\bMusicalist\b/g;
+const BRAND_REGEX_UPPER = /\bMUSICALIST\b/g;
 
-/**
- * Restore canonical "Muzicalist" / "MUZICALIST" spelling in a string.
- * Case rule: fully-uppercase source token → MUZICALIST, otherwise Muzicalist.
- */
+/** Restore canonical brand spelling in a single string. */
 export function restoreBrandName(input: string): string {
   if (!input || typeof input !== "string") return input;
-  return input.replace(BRAND_REGEX, (match) =>
-    match === match.toUpperCase() ? "MUZICALIST" : "Muzicalist"
-  );
+  return input.replace(BRAND_REGEX_UPPER, "MUZICALIST").replace(BRAND_REGEX, "Muzicalist");
 }
 
 /** Recursively apply `restoreBrandName` to strings inside objects/arrays. */
