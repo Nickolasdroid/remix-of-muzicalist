@@ -196,7 +196,7 @@ const Announcements = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <Link to={`/artist/${announcement.profile_id}`}>
-                            <h3 className="font-medium text-foreground cursor-pointer hover:underline">
+                            <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>

@@ -395,7 +395,7 @@ const Feed = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <Link to={`/artist/${item.profile_id}`}>
-                              <h3 className="font-medium text-foreground cursor-pointer hover:underline">
+                              <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
                                 {item.profile.stage_name}
                               </h3>
                             </Link>
@@ -505,7 +505,7 @@ const Feed = () => {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-foreground cursor-pointer hover:underline" onClick={() => navigate(`/artist/${item.profile_id}`)}>
+                        <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                             {item.profile.stage_name}
                           </h3>
 
