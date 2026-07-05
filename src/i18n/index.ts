@@ -6,6 +6,7 @@ import en from './locales/en.json';
 import ro from './locales/ro.json';
 import { languageForCountry } from '@/lib/countryLanguages';
 import { getOverride, TRANSLATION_OVERRIDES } from './overrides';
+import { restoreBrandName, restoreBrandNameDeep } from '@/lib/brandName';
 
 const STATIC_RESOURCES: Record<string, any> = {
   en,
