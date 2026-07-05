@@ -6,6 +6,7 @@ import en from './locales/en.json';
 import ro from './locales/ro.json';
 import { languageForCountry } from '@/lib/countryLanguages';
 import { getOverride, TRANSLATION_OVERRIDES } from './overrides';
+import { restoreBrandName, restoreBrandNameDeep } from '@/lib/brandName';
 
 const STATIC_RESOURCES: Record<string, any> = {
   en,
@@ -140,12 +141,13 @@ async function loadDynamicTranslations(lang: string): Promise<Record<string, any
     }
     const data = await res.json();
     if (data?.translations) {
+      const safe = restoreBrandNameDeep(data.translations);
       try {
-        localStorage.setItem(cacheKey, JSON.stringify(data.translations));
+        localStorage.setItem(cacheKey, JSON.stringify(safe));
       } catch {
         /* quota exceeded — non-fatal */
       }
-      return data.translations;
+      return safe;
     }
     return null;
   } catch (e) {
@@ -225,10 +227,13 @@ const persistCache = (base: string) => {
 export const translateTextsSync = (targetLang: string, texts: string[]): Record<string, string> => {
   const base = normalizeLanguage(targetLang);
   const uniqueTexts = [...new Set(texts.map((t) => t.trim()).filter(Boolean))];
-  if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((t) => [t, t]));
+  if (!uniqueTexts.length || base === 'en')
+    return Object.fromEntries(uniqueTexts.map((t) => [t, restoreBrandName(t)]));
   const cache = loadCache(base);
   const overrides = TRANSLATION_OVERRIDES[base] || {};
-  return Object.fromEntries(uniqueTexts.map((t) => [t, overrides[t] || cache[t] || '']));
+  return Object.fromEntries(
+    uniqueTexts.map((t) => [t, restoreBrandName(overrides[t] || cache[t] || '')])
+  );
 };
 
 export const translateTexts = async (targetLang: string, texts: string[]): Promise<Record<string, string>> => {
@@ -258,14 +263,20 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
         const data = await res.json();
         const translated: string[] = Array.isArray(data?.translations) ? data.translations : [];
         batch.forEach((text, index) => {
-          cache[text] = typeof translated[index] === 'string' && translated[index].trim() ? translated[index] : text;
+          const raw =
+            typeof translated[index] === 'string' && translated[index].trim()
+              ? translated[index]
+              : text;
+          cache[text] = restoreBrandName(raw);
         });
       }
       persistCache(base);
     }
   }
 
-  return Object.fromEntries(uniqueTexts.map((text) => [text, overrides[text] || cache[text] || text]));
+  return Object.fromEntries(
+    uniqueTexts.map((text) => [text, restoreBrandName(overrides[text] || cache[text] || text)])
+  );
 };
 
 

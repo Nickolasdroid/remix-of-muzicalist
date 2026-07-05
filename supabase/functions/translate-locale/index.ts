@@ -15,6 +15,17 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
+// Deterministic brand-name safeguard. The Muzicalist brand name must never be
+// translated, transliterated, or "corrected" (e.g. to "Musicalist") by any
+// translation provider. This regex restores the canonical spelling.
+const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+function restoreBrand(s: string): string {
+  if (typeof s !== "string" || !s) return s;
+  return s.replace(BRAND_REGEX, (m) =>
+    m === m.toUpperCase() ? "MUZICALIST" : "Muzicalist"
+  );
+}
+
 function flattenLeaves(obj: any, prefix = "", out: Record<string, string> = {}) {
   for (const [k, v] of Object.entries(obj)) {
     const path = prefix ? `${prefix}.${k}` : k;
@@ -87,7 +98,8 @@ Deno.serve(async (req) => {
       const systemPrompt =
         `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
         `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
-        `Preserve brand names such as Muzicalist, people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
+        `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, spell-correct, or change them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" when the source is uppercase). ` +
+        `Preserve people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
         `Return ONLY JSON in this exact shape: {"translations":["..."]}. Keep the same order and count.`;
 
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -120,7 +132,9 @@ Deno.serve(async (req) => {
       const parsed = safeJsonParse(content);
       const translated = Array.isArray(parsed?.translations) ? parsed.translations : [];
       const ordered = cleanTexts.map((text, index) =>
-        typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
+        restoreBrand(
+          typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
+        )
       );
 
       return new Response(JSON.stringify({ translations: ordered }), {
@@ -145,6 +159,7 @@ Deno.serve(async (req) => {
 
     const systemPrompt =
       `You are a professional UI localization translator. Translate UI strings from ${sourceLang} to ${targetLang}. ` +
+      `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, or spell-correct them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" if the source is uppercase). ` +
       `Preserve placeholders like {{name}}, {0}, %s exactly. Preserve HTML tags. ` +
       `Keep tone friendly and concise, suitable for a web app. ` +
       `Return ONLY a JSON object that maps each input key to its translated string. ` +
@@ -192,11 +207,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fill any missing keys with the source string as a safe fallback
+    // Fill any missing keys with the source string as a safe fallback, and
+    // apply the deterministic brand-name safeguard on every value.
     for (const k of keys) {
-      if (typeof translatedFlat[k] !== "string" || !translatedFlat[k].trim()) {
-        translatedFlat[k] = flat[k];
-      }
+      const val =
+        typeof translatedFlat[k] === "string" && translatedFlat[k].trim()
+          ? translatedFlat[k]
+          : flat[k];
+      translatedFlat[k] = restoreBrand(val);
     }
 
     const translations = unflatten(translatedFlat);

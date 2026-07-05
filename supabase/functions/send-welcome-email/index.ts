@@ -18,6 +18,26 @@ const FROM = "Muzicalist <noreply@muzicalist.com>";
 const LOGO_URL =
   "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
 
+// Deterministic brand-name safeguard for email content. The Muzicalist brand
+// name must NEVER be translated or transliterated (e.g. to "Musicalist") by
+// Gmail / Outlook / Apple Mail client-side auto-translation. We wrap every
+// occurrence in a `<span translate="no" class="notranslate">…</span>` marker
+// (which Google Translate and Gmail honor), and also normalize any accidental
+// misspellings back to the canonical brand spelling before rendering.
+const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+function normalizeBrand(s: string): string {
+  return s.replace(BRAND_REGEX, (m) =>
+    m === m.toUpperCase() ? "MUZICALIST" : "Muzicalist"
+  );
+}
+function protectBrand(s: string): string {
+  // Only touches the exact brand tokens; leaves surrounding words untouched.
+  return normalizeBrand(s).replace(
+    /\b(Muzicalist|MUZICALIST)\b/g,
+    '<span translate="no" class="notranslate">$1</span>'
+  );
+}
+
 function renderEmail(opts: {
   headline: string;
   greeting: string;
@@ -27,23 +47,27 @@ function renderEmail(opts: {
   preview: string;
 }) {
   const { headline, greeting, bodyLines, ctaLabel, ctaUrl, preview } = opts;
+  const safeHeadline = protectBrand(headline);
+  const safeGreeting = protectBrand(greeting);
+  const safePreview = normalizeBrand(preview); // hidden preheader — no HTML span
   const paragraphs = bodyLines
     .map(
       (l) =>
-        `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${l}</p>`
+        `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${protectBrand(l)}</p>`
     )
     .join("");
   return `<!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="dark only" />
     <meta name="supported-color-schemes" content="dark only" />
-    <title>${headline}</title>
+    <meta name="google" content="notranslate" />
+    <title>${safeHeadline}</title>
   </head>
   <body style="margin:0;padding:0;background:#000000;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
-    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${preview}</div>
+    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${safePreview}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#000000;">
       <tr>
         <td align="center" style="padding:32px 12px;">
@@ -60,8 +84,8 @@ function renderEmail(opts: {
             </tr>
             <tr>
               <td style="padding:36px 40px 8px 40px;">
-                <h1 style="margin:0 0 20px 0;color:#ffffff;font-size:26px;line-height:1.3;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:-0.2px;">${headline}</h1>
-                <p style="margin:0 0 18px 0;color:#ffffff;font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;font-weight:600;">${greeting}</p>
+                <h1 style="margin:0 0 20px 0;color:#ffffff;font-size:26px;line-height:1.3;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:-0.2px;">${safeHeadline}</h1>
+                <p style="margin:0 0 18px 0;color:#ffffff;font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;font-weight:600;">${safeGreeting}</p>
                 ${paragraphs}
               </td>
             </tr>
@@ -83,9 +107,9 @@ function renderEmail(opts: {
             </tr>
             <tr>
               <td align="center" style="padding:24px 40px 36px 40px;">
-                <p style="margin:0 0 6px 0;color:#c9c9cf;font-size:14px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:600;">The Muzicalist Team</p>
+                <p style="margin:0 0 6px 0;color:#c9c9cf;font-size:14px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:600;">The <span translate="no" class="notranslate">Muzicalist</span> Team</p>
                 <p style="margin:0;color:#6b6b73;font-size:12px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">
-                  <a href="${SITE_URL}" style="color:#6b6b73;text-decoration:none;">muzicalist.com</a>
+                  <a href="${SITE_URL}" translate="no" class="notranslate" style="color:#6b6b73;text-decoration:none;">muzicalist.com</a>
                 </p>
               </td>
             </tr>
@@ -282,7 +306,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: FROM,
           to: [email],
-          subject,
+          subject: normalizeBrand(subject),
           html,
         }),
       }
