@@ -112,9 +112,6 @@ const RegisterArtist = () => {
               displayName = profile?.stage_name || profile?.first_name || "";
             }
             setWelcomeArtistName(displayName || " ");
-            supabase.functions
-              .invoke("send-welcome-email", { body: { user_id: data.session.user.id } })
-              .catch((err) => console.warn("welcome email trigger failed", err));
             return;
           }
           await new Promise((r) => setTimeout(r, 1500));
