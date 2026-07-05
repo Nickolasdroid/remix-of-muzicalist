@@ -371,7 +371,7 @@ const UserDashboard = () => {
               <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
             </label>
           </div>
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">
+          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
             {profile?.first_name} {profile?.last_name}
           </h1>
           <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
@@ -486,7 +486,7 @@ const UserDashboard = () => {
                         </Avatar>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-foreground">
+                            <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {profile?.first_name} {profile?.last_name}
                             </h3>
                             {isAdExpired(ad) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
@@ -534,7 +534,7 @@ const UserDashboard = () => {
                         {ad.location && (
                           <span className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            {ad.location}
+                            <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.location}</span>
                           </span>
                         )}
                         {ad.event_date && (
@@ -546,7 +546,7 @@ const UserDashboard = () => {
                         {ad.budget && (
                           <span className="flex items-center gap-1">
                             <Euro className="h-3 w-3" />
-                            {ad.budget}
+                            <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.budget}</span>
                           </span>
                         )}
                       </div>

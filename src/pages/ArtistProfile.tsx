@@ -1348,7 +1348,7 @@ const ArtistProfile = () => {
                                     </AvatarFallback>
                                   </Avatar>
                                   <div className="flex-1 min-w-0">
-                                    <span className="font-medium text-sm text-foreground block">{review.reviewer_name}</span>
+                                    <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
                                     <span className="text-xs text-muted-foreground">
                                       {new Date(review.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
@@ -1361,7 +1361,7 @@ const ArtistProfile = () => {
                                 <div className="flex gap-0.5">
                                   {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
                                 </div>
-                                {review.comment && <p className="text-sm text-muted-foreground flex-1">{review.comment}</p>}
+                                {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
                               </div>
                             </CarouselItem>)}
                         </CarouselContent>
@@ -1437,7 +1437,7 @@ const ArtistProfile = () => {
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
-                                          <h3 className="font-medium text-foreground">{artist?.stage_name}</h3>
+                                          <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</h3>
 
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -1529,7 +1529,7 @@ const ArtistProfile = () => {
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <h3 className="font-medium text-foreground">
+                                      <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
                                         {artist?.stage_name}
                                       </h3>
 
@@ -1665,7 +1665,7 @@ const ArtistProfile = () => {
                                   <div>
                                     <div className="flex items-center gap-2">
                                       <h3 className="font-medium text-foreground">
-                                        {artist?.stage_name}
+                                        <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</span>
                                       </h3>
 
                                     </div>
@@ -1712,7 +1712,7 @@ const ArtistProfile = () => {
                                   {announcement.location && (
                                     <span className="flex items-center gap-1">
                                       <MapPin className="h-3 w-3" />
-                                      {announcement.location}
+                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
                                     </span>
                                   )}
                                   {announcement.event_date && (
@@ -1724,7 +1724,7 @@ const ArtistProfile = () => {
                                   {announcement.budget && (
                                     <span className="flex items-center gap-1">
                                       <Euro className="h-3 w-3" />
-                                      {announcement.budget}
+                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
                                     </span>
                                   )}
                                 </div>
@@ -1972,7 +1972,7 @@ const ArtistProfile = () => {
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Review {artist.stage_name}</DialogTitle>
+                    <DialogTitle className="text-2xl font-display">Review <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
                     <DialogDescription>
                       Share your experience with this artist
                     </DialogDescription>
