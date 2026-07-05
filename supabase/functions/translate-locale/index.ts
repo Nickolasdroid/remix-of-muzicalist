@@ -15,6 +15,17 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
+// Deterministic brand-name safeguard. The Muzicalist brand name must never be
+// translated, transliterated, or "corrected" (e.g. to "Musicalist") by any
+// translation provider. This regex restores the canonical spelling.
+const BRAND_REGEX = /\bmu[sz]i[ck]alist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
+function restoreBrand(s: string): string {
+  if (typeof s !== "string" || !s) return s;
+  return s.replace(BRAND_REGEX, (m) =>
+    m === m.toUpperCase() ? "MUZICALIST" : "Muzicalist"
+  );
+}
+
 function flattenLeaves(obj: any, prefix = "", out: Record<string, string> = {}) {
   for (const [k, v] of Object.entries(obj)) {
     const path = prefix ? `${prefix}.${k}` : k;
