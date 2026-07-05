@@ -306,7 +306,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: FROM,
           to: [email],
-          subject,
+          subject: normalizeBrand(subject),
           html,
         }),
       }
