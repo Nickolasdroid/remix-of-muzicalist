@@ -15,4 +15,19 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Split heavy vendor libs into their own chunks so the initial JS
+    // download is small and pages render faster on slower devices/networks.
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "supabase": ["@supabase/supabase-js"],
+          "query": ["@tanstack/react-query"],
+          "i18n": ["i18next", "react-i18next", "i18next-browser-languagedetector"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1200,
+  },
 }));
