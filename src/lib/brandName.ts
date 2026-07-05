@@ -1,30 +1,27 @@
 // Deterministic safeguard: the Muzicalist brand name must NEVER be translated,
-// transliterated, or corrected to "Musicalist" (or similar) by any translation
-// pipeline. This helper restores the exact brand spelling after translation.
+// transliterated, or "corrected" to "Musicalist" (or similar) by any translation
+// pipeline. This helper restores the canonical brand spelling after translation.
 //
-// Narrow scope: only touches tokens that spell out the brand (muzicalist /
-// musicalist / musikalist), preserving surrounding words.
+// Narrow scope: only touches tokens that clearly spell out the brand
+// (Muzicalist / Musicalist / Muzikalist / Musikalist, plus Romanian-style
+// suffixed forms like "Muzicaliști"). Surrounding words are untouched.
 
-const BRAND_REGEX = /\bm[uü]s?[ií]k?[ií]?calist\b/gi;
-
-// Broader regex that catches typical AI/transliteration variants:
-//   Muzicalist, Musicalist, Muzikalist, Musikalist, Muzicaliști (RO plural)
-const BRAND_REGEX_WIDE = /\bm[uü]z?s?i?k?icalist[iîí]?(ș|s)?[tț]?[iîí]?\b/gi;
+// Matches "muzicalist" / "musicalist" / "muzikalist" / "musikalist" with an
+// optional short Romanian-style suffix (ul, ului, ilor, ii, ești, iști, i).
+const BRAND_REGEX = /\bmu[sz]i?k?icalist(?:ul|ului|ilor|ii|e[sș]ti|i[sș]ti|i)?\b/gi;
 
 /**
- * Restore canonical "Muzicalist" / "MUZICALIST" spelling in any string.
- * Case rule:
- *   - Original token fully uppercase → "MUZICALIST"
- *   - Otherwise → "Muzicalist"
+ * Restore canonical "Muzicalist" / "MUZICALIST" spelling in a string.
+ * Case rule: fully-uppercase source token → MUZICALIST, otherwise Muzicalist.
  */
 export function restoreBrandName(input: string): string {
   if (!input || typeof input !== "string") return input;
-  const replace = (match: string) =>
-    match === match.toUpperCase() ? "MUZICALIST" : "Muzicalist";
-  return input.replace(BRAND_REGEX, replace).replace(/\bMuzicalist\b|\bMUZICALIST\b/g, (m) => m);
+  return input.replace(BRAND_REGEX, (match) =>
+    match === match.toUpperCase() ? "MUZICALIST" : "Muzicalist"
+  );
 }
 
-/** Same as restoreBrandName, but recursively for nested objects/arrays. */
+/** Recursively apply `restoreBrandName` to strings inside objects/arrays. */
 export function restoreBrandNameDeep<T>(value: T): T {
   if (typeof value === "string") return restoreBrandName(value) as unknown as T;
   if (Array.isArray(value)) return value.map(restoreBrandNameDeep) as unknown as T;
