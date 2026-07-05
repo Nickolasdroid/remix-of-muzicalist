@@ -280,7 +280,7 @@ const Search = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground truncate">
+                        <h3 className="font-semibold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                           {artist.stage_name || `${artist.first_name ?? ""} ${artist.last_name ?? ""}`.trim()}
                         </h3>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -334,7 +334,7 @@ const Search = () => {
                   </Avatar>
                   
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">
+                    <h3 className="font-semibold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.stage_name}
                     </h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">

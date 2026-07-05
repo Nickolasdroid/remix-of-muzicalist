@@ -20,6 +20,8 @@ const SKIP_SELECTOR = [
   ".notranslate",
   "[data-user-content]",
   "[data-no-translate]",
+  "a[href^='/artist/']",
+  "a[href*='/artist/']",
 ].join(",");
 
 const ATTRIBUTE_SKIP_SELECTOR = [
@@ -34,6 +36,8 @@ const ATTRIBUTE_SKIP_SELECTOR = [
   ".notranslate",
   "[data-user-content]",
   "[data-no-translate]",
+  "a[href^='/artist/']",
+  "a[href*='/artist/']",
 ].join(",");
 
 const isUserOrArtistProfilePath = () => {

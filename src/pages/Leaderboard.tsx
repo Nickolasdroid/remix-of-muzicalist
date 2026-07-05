@@ -960,7 +960,7 @@ const Leaderboard = () => {
                                 </div>
                                 {/* Name + stats */}
                                 <div className="text-center w-full px-1">
-                                  <p className={`font-semibold text-foreground group-hover:text-accent transition-colors truncate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`}>
+                                  <p className={`font-semibold text-foreground group-hover:text-accent transition-colors truncate notranslate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`} data-user-content="true" data-no-translate="true" translate="no">
                                     {artist.stage_name}
                                   </p>
                                   <div className="flex items-center justify-center gap-1 mt-1">
@@ -1014,7 +1014,7 @@ const Leaderboard = () => {
                                 </Avatar>
                                 
                               </div>
-                              <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate">{artist.stage_name}</span>
+                              <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
                             </Link>
                           </TableCell>
                           <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
