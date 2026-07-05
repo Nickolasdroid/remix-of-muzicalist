@@ -222,8 +222,14 @@ const AutoTranslatePageText = () => {
     // Coalesce mutations to the next animation frame only — translating before
     // the next paint prevents the previously-visible "flash of English" on
     // async-loaded content (data fetches that resolve after navigation).
+    // We ALSO hide the body synchronously (via data-i18n-pending) inside the
+    // MutationObserver microtask — which fires before the browser paints —
+    // so freshly committed English DOM never becomes visible before we
+    // translate it. runSync's revealBody() removes the attribute once done.
     const scheduleSync = () => {
       if (getCurrentLanguage() === "en") return; // no work needed on English
+      ensurePendingStyle();
+      document.documentElement.setAttribute("data-i18n-pending", "true");
       if (rafRef.current) return;
       rafRef.current = window.requestAnimationFrame(() => {
         rafRef.current = null;
