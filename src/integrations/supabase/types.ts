@@ -1115,6 +1115,10 @@ export type Database = {
         Args: { _conversation_id: string }
         Returns: undefined
       }
+      verify_welcome_trigger_secret: {
+        Args: { _secret: string }
+        Returns: boolean
+      }
     }
     Enums: {
       artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"
