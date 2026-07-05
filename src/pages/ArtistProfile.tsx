@@ -884,7 +884,7 @@ const ArtistProfile = () => {
   // Simplified view for regular user accounts (no specialization)
   const isUserAccount = !artist.specialization;
   if (isUserAccount) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card`}>
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card notranslate`} data-no-translate="true" translate="no">
       <Navigation />
       <div className={`container mx-auto pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]`}>
         <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
@@ -962,7 +962,7 @@ const ArtistProfile = () => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
       <Navigation />
       
       <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
