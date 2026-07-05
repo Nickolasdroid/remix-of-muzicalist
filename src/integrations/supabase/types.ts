@@ -703,6 +703,7 @@ export type Database = {
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
+          welcome_email_sent_at: string | null
           youtube_url: string | null
         }
         Insert: {
@@ -753,6 +754,7 @@ export type Database = {
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
+          welcome_email_sent_at?: string | null
           youtube_url?: string | null
         }
         Update: {
@@ -803,6 +805,7 @@ export type Database = {
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
+          welcome_email_sent_at?: string | null
           youtube_url?: string | null
         }
         Relationships: []
@@ -1070,6 +1073,7 @@ export type Database = {
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
+          welcome_email_sent_at: string | null
           youtube_url: string | null
         }[]
         SetofOptions: {
