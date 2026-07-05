@@ -263,14 +263,20 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
         const data = await res.json();
         const translated: string[] = Array.isArray(data?.translations) ? data.translations : [];
         batch.forEach((text, index) => {
-          cache[text] = typeof translated[index] === 'string' && translated[index].trim() ? translated[index] : text;
+          const raw =
+            typeof translated[index] === 'string' && translated[index].trim()
+              ? translated[index]
+              : text;
+          cache[text] = restoreBrandName(raw);
         });
       }
       persistCache(base);
     }
   }
 
-  return Object.fromEntries(uniqueTexts.map((text) => [text, overrides[text] || cache[text] || text]));
+  return Object.fromEntries(
+    uniqueTexts.map((text) => [text, restoreBrandName(overrides[text] || cache[text] || text)])
+  );
 };
 
 
