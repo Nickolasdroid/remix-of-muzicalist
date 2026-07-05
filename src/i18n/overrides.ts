@@ -24,6 +24,11 @@ export const TRANSLATION_OVERRIDES: Record<string, Record<string, string>> = {
     "Promotions": "Promovări",
     "promotion": "promovare",
     "promotions": "promovări",
+    // Brand-name protection — never allow "Musicalist" / "Muzikalist" variants.
+    "Musicalist": "Muzicalist",
+    "MUSICALIST": "MUZICALIST",
+    "Muzikalist": "Muzicalist",
+    "Musikalist": "Muzicalist",
   },
 };
 
