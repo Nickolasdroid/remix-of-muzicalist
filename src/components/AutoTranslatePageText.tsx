@@ -274,10 +274,12 @@ const AutoTranslatePageText = () => {
     if (getCurrentLanguage() === "en") return;
     ensurePendingStyle();
     document.documentElement.setAttribute("data-i18n-pending", "true");
-    // Safety: never leave the page hidden indefinitely.
+    // Safety: never leave the page hidden for more than a moment. If
+    // translations aren't cached yet, we'd rather show untranslated text
+    // briefly than block the whole page render on a network round-trip.
     const safety = window.setTimeout(() => {
       document.documentElement.removeAttribute("data-i18n-pending");
-    }, 15000);
+    }, 400);
     // Translate the freshly-committed DOM synchronously, BEFORE the browser
     // paints — this is what eliminates the English flash on navigation.
     runSyncRef.current?.();
