@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Authenticated users can use own uid topic" ON realtime.messages;
