@@ -265,9 +265,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
         <div className="flex items-center gap-3">
           <Link to="/login">
-            <Button variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+            <Button size="sm" className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-5">
               <LogIn className="h-4 w-4 mr-2" />
-              {t('navigation.login')}
+              Get Started
             </Button>
           </Link>
         </div>
