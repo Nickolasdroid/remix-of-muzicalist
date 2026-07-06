@@ -202,9 +202,9 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+                className="w-full h-12 text-base font-semibold rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Getting started..." : "Get Started"}
               </Button>
 
               {/* Register link */}
