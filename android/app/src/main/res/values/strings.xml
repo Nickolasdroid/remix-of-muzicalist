@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Muzicalist</string>
+    <string name="title_activity_main">Muzicalist</string>
+    <string name="package_name">com.muzicalist.app</string>
+    <string name="custom_url_scheme">com.muzicalist.app</string>
+</resources>
