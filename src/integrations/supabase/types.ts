@@ -656,6 +656,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
           billing: string | null
@@ -709,6 +710,7 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
           billing?: string | null
@@ -762,6 +764,7 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
           billing?: string | null
@@ -1032,6 +1035,7 @@ export type Database = {
       get_my_full_profile: {
         Args: never
         Returns: {
+          admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
           billing: string | null
