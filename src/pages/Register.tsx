@@ -1,7 +1,6 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { UserCircle, Mic } from "lucide-react";
+import { Mic, Search, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AuthHeader from "@/components/AuthHeader";
 
@@ -21,131 +20,77 @@ const Register = () => {
 
   if (checking) return null;
 
+  const options = [
+    {
+      icon: Mic,
+      title: "Grow my presence as an artist",
+      description: "Create your artist profile and connect with new opportunities.",
+      onClick: () => navigate("/register/artist"),
+    },
+    {
+      icon: Search,
+      title: "Find artists for my events",
+      description: "Discover, compare and connect with artists.",
+      onClick: () => navigate("/register/user"),
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-secondary pb-24 md:pb-4">
+    <div className="min-h-screen flex flex-col bg-background pb-24 md:pb-4">
       <AuthHeader />
 
-      <div className="flex-1 flex items-center justify-center">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 md:mb-4 text-foreground">Join Muzicalist
-
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-10 md:mb-14">
+            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 text-foreground">
+              What brings you to Muzicalist?
             </h1>
-          <p className="text-base md:text-lg text-muted-foreground">
-            Choose how you want to get started
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {/* Artist Registration */}
-          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 md:p-8 border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)] md:hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className="relative z-10 text-center">
-              <div className="mb-4 md:mb-6 inline-flex items-center justify-center w-16 h-16 md:w-24 md:h-24 rounded-full bg-accent/20 group-hover:bg-accent group-hover:scale-110 transition-all duration-500">
-                <Mic className="h-8 w-8 md:h-12 md:w-12 text-accent group-hover:text-accent-foreground transition-colors" />
-              </div>
-              
-              <h2 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-3 text-foreground group-hover:text-accent transition-colors">
-                Register as Artist
-              </h2>
-              
-              <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 group-hover:text-foreground/80 transition-colors">
-                Showcase your talent, get discovered, and connect with clients looking for entertainment
-              </p>
-
-              <ul className="text-left space-y-2 mb-6 md:mb-8 text-xs md:text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Create a professional profile</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Upload your media gallery</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Receive booking requests</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Post announcements</span>
-                </li>
-              </ul>
-              
-              <Button
-                  onClick={() => navigate("/register/artist")}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
-                  size="lg">
-                  
-                Continue as Artist
-              </Button>
-            </div>
+            <p className="text-base md:text-lg text-muted-foreground">
+              Choose what you'd like to do.
+            </p>
           </div>
 
-          {/* User Registration */}
-          <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-secondary p-6 md:p-8 border-2 border-transparent hover:border-accent transition-all duration-500 hover:shadow-[var(--shadow-gold)] md:hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className="relative z-10 text-center">
-              <div className="mb-4 md:mb-6 inline-flex items-center justify-center w-16 h-16 md:w-24 md:h-24 rounded-full bg-accent/20 group-hover:bg-accent group-hover:scale-110 transition-all duration-500">
-                <UserCircle className="h-8 w-8 md:h-12 md:w-12 text-accent group-hover:text-accent-foreground transition-colors" />
-              </div>
-              
-              <h2 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-3 text-foreground group-hover:text-accent transition-colors">
-                Register as User
-              </h2>
-              
-              <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 group-hover:text-foreground/80 transition-colors">
-                Find the perfect entertainment for your event and post opportunities
-              </p>
-
-              <ul className="text-left space-y-2 mb-6 md:mb-8 text-xs md:text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Browse artist profiles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Contact artists directly</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Post job opportunities</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent mt-0.5">✓</span>
-                  <span>Manage your requests</span>
-                </li>
-              </ul>
-              
-              <Button
-                  onClick={() => navigate("/register/user")}
-                  variant="secondary"
-                  className="w-full"
-                  size="lg">
-                  
-                Continue as User
-              </Button>
-            </div>
+          <div className="space-y-4">
+            {options.map((opt) => {
+              const Icon = opt.icon;
+              return (
+                <button
+                  key={opt.title}
+                  onClick={opt.onClick}
+                  className="group w-full text-left flex items-center gap-5 rounded-lg border border-border bg-card px-5 md:px-6 py-5 md:py-6 transition-all duration-300 hover:border-accent hover:shadow-[var(--shadow-gold)]"
+                >
+                  <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                    <Icon className="h-6 w-6 md:h-7 md:w-7 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base md:text-lg font-semibold text-foreground mb-1">
+                      {opt.title}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {opt.description}
+                    </p>
+                  </div>
+                  <ArrowRight className="flex-shrink-0 h-5 w-5 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+                </button>
+              );
+            })}
           </div>
-        </div>
 
-        <div className="text-center mt-6 md:mt-8">
-          <p className="text-sm md:text-base text-muted-foreground">
-            Already have an account?{" "}
-            <button
+          <div className="text-center mt-8">
+            <p className="text-sm md:text-base text-muted-foreground">
+              Already have an account?{" "}
+              <button
                 onClick={() => navigate("/login")}
-                className="text-accent hover:underline font-semibold">
-                
-              Sign in
-            </button>
-          </p>
+                className="text-accent hover:underline font-semibold"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
         </div>
       </div>
-      </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default Register;
