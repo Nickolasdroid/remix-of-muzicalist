@@ -212,6 +212,58 @@ Deno.serve(async (req) => {
         if (subscriptionId) {
           const sub = await stripe.subscriptions.retrieve(subscriptionId);
           await syncSubscription(sub, profileId ?? undefined);
+
+          // Admin notification for a successful paid subscription.
+          // Dedup: only fire the first time this Stripe event is processed.
+          if (!isDuplicateEvent) {
+            try {
+              const item = sub.items.data[0];
+              const priceId = item?.price?.id;
+              const planInfo = getPlanFromPriceId(priceId);
+              const status = sub.status;
+              const isActive = status === "active" || status === "trialing";
+              if (planInfo && isActive) {
+                const effectiveProfileId =
+                  profileId ?? (await findProfileIdByCustomer(customerId ?? ""));
+                let name = "";
+                let email = "";
+                let accountType: "user" | "artist" = "user";
+                if (effectiveProfileId) {
+                  const { data: prof } = await supabase
+                    .from("profiles")
+                    .select("first_name, stage_name, email, specialization")
+                    .eq("id", effectiveProfileId)
+                    .maybeSingle();
+                  if (prof) {
+                    name = (prof.stage_name || prof.first_name || prof.email || "") as string;
+                    email = (prof.email || "") as string;
+                    accountType = prof.specialization ? "artist" : "user";
+                  }
+                  const { data: roleRow } = await supabase
+                    .from("user_roles")
+                    .select("user_type")
+                    .eq("user_id", effectiveProfileId)
+                    .maybeSingle();
+                  if ((roleRow?.user_type as string) === "artist") accountType = "artist";
+                }
+                const unitAmount = item?.price?.unit_amount ?? session.amount_total ?? 0;
+                const currency =
+                  item?.price?.currency ?? session.currency ?? "usd";
+                await notifyAdminPaidSubscription({
+                  accountType,
+                  name,
+                  email,
+                  plan: planInfo.plan,
+                  billing: planInfo.billing,
+                  amount: unitAmount / 100,
+                  currency,
+                  paidAt: new Date(),
+                });
+              }
+            } catch (e) {
+              console.error("admin notify (paid subscription) failed", e);
+            }
+          }
         }
 
         break;
