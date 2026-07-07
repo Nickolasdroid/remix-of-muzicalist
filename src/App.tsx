@@ -1,4 +1,5 @@
 // GITHUB SYNC TEST
+// GitHub sync check: no-op comment
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
