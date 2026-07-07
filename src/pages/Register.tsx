@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserCircle, Mic } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 
 const Register = () => {
   const navigate = useNavigate();
