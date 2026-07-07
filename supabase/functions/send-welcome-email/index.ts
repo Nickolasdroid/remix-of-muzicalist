@@ -5,6 +5,7 @@
 // Any request without a valid `x-welcome-trigger-secret` header is rejected.
 // Deduplication is enforced atomically via `profiles.welcome_email_sent_at`.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { notifyAdminNewAccount } from "../_shared/adminNotify.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
