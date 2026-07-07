@@ -10,7 +10,7 @@ import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import ScrollToTop from "./components/ScrollToTop";
 import GuestThemeGuard from "./components/GuestThemeGuard";
 import AdminRoute from "./components/AdminRoute";
-
+import { Capacitor } from "@capacitor/core";
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
 // slower devices/networks. Index stays eager because it's the landing page.
 const Feed = lazy(() => import("./pages/Feed"));
@@ -64,7 +64,10 @@ const App = () => (
         <AutoTranslatePageText />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route
+  path="/"
+  element={Capacitor.isNativePlatform() ? <Login /> : <Index />}
+/>
             <Route path="/feed" element={<Feed />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/categories/:category" element={<CategoryArtists />} />
