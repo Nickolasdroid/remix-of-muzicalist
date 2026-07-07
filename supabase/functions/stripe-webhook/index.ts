@@ -105,7 +105,8 @@ Deno.serve(async (req) => {
   const { error: logErr } = await supabase
     .from("subscription_events")
     .insert({ stripe_event_id: event.id, event_type: event.type, payload: event as unknown as object });
-  if (logErr && !logErr.message.includes("duplicate")) {
+  const isDuplicateEvent = !!logErr && logErr.message.includes("duplicate");
+  if (logErr && !isDuplicateEvent) {
     console.warn("Event log insert warning:", logErr.message);
   }
 
