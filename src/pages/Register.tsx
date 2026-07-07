@@ -41,7 +41,7 @@ const Register = () => {
 
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-2xl">
-          <div className="text-center mb-10 md:mb-14">
+          <div className="text-center mb-14 md:mb-20">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 text-foreground">
               What brings you to Muzicalist?
             </h1>
@@ -57,10 +57,10 @@ const Register = () => {
                 <button
                   key={opt.title}
                   onClick={opt.onClick}
-                  className="group w-full text-left flex items-center gap-5 rounded-lg border border-border bg-card px-5 md:px-6 py-5 md:py-6 transition-all duration-300 hover:border-accent hover:shadow-[var(--shadow-gold)]"
+                  className="group w-full text-left flex items-center gap-6 rounded-lg border border-border bg-card px-7 md:px-8 py-7 md:py-8 transition-all duration-300 hover:border-accent/60 hover:shadow-[0_0_24px_-4px_hsl(var(--accent)/0.35)]"
                 >
-                  <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                    <Icon className="h-6 w-6 md:h-7 md:w-7 text-accent" />
+                  <div className="flex-shrink-0 inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full bg-accent/5 ring-1 ring-accent/15 transition-colors">
+                    <Icon className="h-7 w-7 md:h-8 md:w-8 text-accent" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="text-base md:text-lg font-semibold text-foreground mb-1">
@@ -70,7 +70,7 @@ const Register = () => {
                       {opt.description}
                     </p>
                   </div>
-                  <ArrowRight className="flex-shrink-0 h-5 w-5 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="flex-shrink-0 h-6 w-6 text-accent transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.25} />
                 </button>
               );
             })}
