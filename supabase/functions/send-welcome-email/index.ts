@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
       .eq("id", userId)
       .is("welcome_email_sent_at", null)
       .lt("welcome_email_attempts", 5)
-      .select("id, email, first_name, stage_name")
+      .select("id, email, first_name, stage_name, country, created_at, specialization")
       .maybeSingle();
 
     if (claimErr) {
