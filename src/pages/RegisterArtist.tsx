@@ -767,12 +767,7 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-        </Link>
-      </div>
+      <AuthHeader />
 
       {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
       <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
