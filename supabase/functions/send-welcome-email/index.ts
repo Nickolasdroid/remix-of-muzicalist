@@ -5,6 +5,7 @@
 // Any request without a valid `x-welcome-trigger-secret` header is rejected.
 // Deduplication is enforced atomically via `profiles.welcome_email_sent_at`.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { notifyAdminNewAccount } from "../_shared/adminNotify.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -219,7 +220,7 @@ Deno.serve(async (req) => {
       .eq("id", userId)
       .is("welcome_email_sent_at", null)
       .lt("welcome_email_attempts", 5)
-      .select("id, email, first_name, stage_name")
+      .select("id, email, first_name, stage_name, country, created_at, specialization")
       .maybeSingle();
 
     if (claimErr) {
@@ -329,6 +330,21 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
+    }
+
+    // Fire-and-forget admin notification. Dedup is guaranteed by the
+    // welcome_email_sent_at claim above (this branch runs at most once).
+    try {
+      await notifyAdminNewAccount({
+        accountType: isArtist ? "artist" : "user",
+        name: (claimed.stage_name || claimed.first_name || email) as string,
+        email,
+        country: (claimed as any).country ?? null,
+        createdAt: (claimed as any).created_at ?? null,
+        specialization: (claimed as any).specialization ?? null,
+      });
+    } catch (e) {
+      console.error("admin notify (new account) failed", e);
     }
 
     return new Response(
