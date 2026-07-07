@@ -22,6 +22,7 @@ import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig 
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
 import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
