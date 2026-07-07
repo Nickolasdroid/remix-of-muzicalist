@@ -192,6 +192,50 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ---- Independent admin registration notification.
+    //      Uses its own atomic claim (`admin_registration_notified_at`) so it
+    //      is fully decoupled from the user-facing welcome email. A failure,
+    //      retry, or "already sent" state of the welcome email cannot block
+    //      this admin notification, and vice versa. Runs before the welcome
+    //      flow so an early return from welcome logic cannot skip it.
+    try {
+      const { data: adminClaim } = await admin
+        .from("profiles")
+        .update({ admin_registration_notified_at: new Date().toISOString() })
+        .eq("id", userId)
+        .is("admin_registration_notified_at", null)
+        .select("id, email, first_name, stage_name, country, created_at, specialization")
+        .maybeSingle();
+      if (adminClaim?.email) {
+        const { data: adminRoleRow } = await admin
+          .from("user_roles")
+          .select("user_type")
+          .eq("user_id", userId)
+          .maybeSingle();
+        const adminIsArtist = (adminRoleRow?.user_type as string) === "artist";
+        try {
+          await notifyAdminNewAccount({
+            accountType: adminIsArtist ? "artist" : "user",
+            name: (adminClaim.stage_name || adminClaim.first_name || adminClaim.email) as string,
+            email: adminClaim.email as string,
+            country: (adminClaim as any).country ?? null,
+            createdAt: (adminClaim as any).created_at ?? null,
+            specialization: (adminClaim as any).specialization ?? null,
+          });
+        } catch (e) {
+          // Roll back the claim so a later retry can re-attempt.
+          console.error("admin notify (new account) send failed", e);
+          await admin
+            .from("profiles")
+            .update({ admin_registration_notified_at: null })
+            .eq("id", userId);
+        }
+      }
+    } catch (e) {
+      console.error("admin notify (new account) claim error", e);
+    }
+
+
     // ---- Atomic reservation: mark as sent + increment attempts, only if
     //      not already sent and under the retry cap. This gives at-most-once
     //      per attempt window and self-heals across retries.
