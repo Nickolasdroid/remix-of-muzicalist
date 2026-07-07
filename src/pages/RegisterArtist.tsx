@@ -22,6 +22,7 @@ import { getPhonePrefix, getMaxPhoneLength, validatePhoneNumber, getPhoneConfig 
 import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions";
 import registerArtistBg from "@/assets/register-artist-bg.png";
 import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
@@ -582,11 +583,8 @@ const RegisterArtist = () => {
   if (showPlanSelection) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-secondary to-background">
-        <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          </Link>
-        </div>
+        <AuthHeader />
+
 
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
           <div className="text-center mb-8 md:mb-12">
@@ -689,10 +687,8 @@ const RegisterArtist = () => {
   if (currentStep === 0) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        {/* Homepage logo - top left */}
-        <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
-        </Link>
+        <AuthHeader />
+
 
         {/* Form - full-screen on mobile, centered card on desktop */}
         <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
@@ -771,12 +767,7 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-        </Link>
-      </div>
+      <AuthHeader />
 
       {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
       <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">

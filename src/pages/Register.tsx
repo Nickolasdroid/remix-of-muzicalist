@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserCircle, Mic } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,13 +23,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-secondary pb-24 md:pb-4">
-      {/* Logo + Name - matching Navigation header */}
-      <div className="h-16 flex items-center px-4 md:px-8">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          <span className="font-bold text-foreground md:text-lg uppercase" style={{ fontFamily: "Montserrat, sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
-        </Link>
-      </div>
+      <AuthHeader />
 
       <div className="flex-1 flex items-center justify-center">
       <div className="max-w-4xl w-full">

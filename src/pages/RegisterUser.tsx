@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -158,12 +158,7 @@ const RegisterUser = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Top-left logo linking to homepage */}
-      <div className="fixed top-0 left-0 z-50 p-4 md:px-8 md:py-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-        </Link>
-      </div>
+      <AuthHeader />
       <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
       <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 p-4 md:p-8 bg-background border-secondary">
         <div className="text-center mb-4 md:mb-8">

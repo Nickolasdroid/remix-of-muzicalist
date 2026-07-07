@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 
 const Login = () => {
   const { toast } = useToast();
@@ -139,10 +140,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Homepage logo - top left */}
-      <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
-        <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
-      </Link>
+      <AuthHeader />
+
 
       {/* Login Form - centered */}
       <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
