@@ -376,20 +376,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fire-and-forget admin notification. Dedup is guaranteed by the
-    // welcome_email_sent_at claim above (this branch runs at most once).
-    try {
-      await notifyAdminNewAccount({
-        accountType: isArtist ? "artist" : "user",
-        name: (claimed.stage_name || claimed.first_name || email) as string,
-        email,
-        country: (claimed as any).country ?? null,
-        createdAt: (claimed as any).created_at ?? null,
-        specialization: (claimed as any).specialization ?? null,
-      });
-    } catch (e) {
-      console.error("admin notify (new account) failed", e);
-    }
+    // Admin registration notification is handled independently near the top
+    // of this handler (own atomic claim), so no admin work happens here.
+
+
 
     return new Response(
       JSON.stringify({
