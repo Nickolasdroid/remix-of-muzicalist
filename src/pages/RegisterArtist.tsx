@@ -690,10 +690,8 @@ const RegisterArtist = () => {
   if (currentStep === 0) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        {/* Homepage logo - top left */}
-        <Link to="/" className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
-          <img src={logo} alt="Muzicalist" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
-        </Link>
+        <AuthHeader />
+
 
         {/* Form - full-screen on mobile, centered card on desktop */}
         <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
