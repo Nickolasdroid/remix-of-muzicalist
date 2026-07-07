@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.png";
+import AuthHeader from "@/components/AuthHeader";
 
 const Login = () => {
   const { toast } = useToast();
