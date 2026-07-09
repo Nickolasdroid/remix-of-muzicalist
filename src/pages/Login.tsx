@@ -142,78 +142,76 @@ const Login = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <AuthHeader />
 
-
-      {/* Login Form - centered */}
-      <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12">
-        <div className="w-full max-w-md">
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <div className="border border-border rounded-xl p-6 space-y-5 bg-accent-foreground">
-              {/* Header */}
-              <div className="flex flex-col items-center text-center space-y-3">
-                <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                  Login to your Account
-                </h2>
-              </div>
-
-              <div className="space-y-2">
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="h-12 bg-input border-border text-base"
-                  placeholder="Email"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="h-12 bg-input border-border text-base pr-12"
-                    placeholder="Password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
-                  <input type="checkbox" className="rounded border-border" />
-                  Remember me
-                </label>
-                <Link to="/reset-password" className="text-accent hover:underline font-medium">
-                  Forgot password?
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-12 text-base font-semibold rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
-              >
-                {isLoading ? "Getting started..." : "Get Started"}
-              </Button>
-
-              {/* Register link */}
-              <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link to="/register" className="text-accent hover:underline font-semibold">
-                  Register here
-                </Link>
+      {/* Form - full-screen on mobile, centered card on desktop */}
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+        <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Header with logo */}
+            <div className="flex flex-col items-center text-center space-y-3">
+              <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                Login to your Account
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Welcome back to Muzicalist
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="h-12 bg-input border-border text-base"
+                placeholder="Email"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="h-12 bg-input border-border text-base pr-12"
+                  placeholder="Password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
+                <input type="checkbox" className="rounded border-border" />
+                Remember me
+              </label>
+              <Link to="/reset-password" className="text-accent hover:underline font-medium">
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Getting started..." : "Get Started"}
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link to="/register" className="text-accent hover:underline font-semibold">
+                Register here
+              </Link>
+            </p>
           </form>
         </div>
       </div>
@@ -222,3 +220,4 @@ const Login = () => {
 };
 
 export default Login;
+
