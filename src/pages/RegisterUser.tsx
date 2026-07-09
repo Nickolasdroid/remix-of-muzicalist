@@ -186,7 +186,7 @@ const RegisterUser = () => {
 
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="email">{t("userRegistration.email")}</Label>
             <Input
               id="email"
@@ -196,7 +196,7 @@ const RegisterUser = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               aria-invalid={emailTaken}
-              className={emailTaken ? "border-destructive focus-visible:ring-destructive" : ""}
+              className={`h-12 bg-input text-base ${emailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
             />
             {emailChecking && (
               <p className="text-xs text-muted-foreground mt-1">Checking email…</p>
@@ -208,9 +208,7 @@ const RegisterUser = () => {
             )}
           </div>
 
-
-
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="password">{t("userRegistration.password")}</Label>
             <div className="relative">
               <Input
@@ -220,20 +218,20 @@ const RegisterUser = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                className="pr-10"
+                className="h-12 bg-input border-border text-base pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             <PasswordStrengthIndicator password={formData.password} />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t("userRegistration.confirmPassword")}</Label>
             <div className="relative">
               <Input
@@ -243,19 +241,20 @@ const RegisterUser = () => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
-                className="pr-10"
+                className="h-12 bg-input border-border text-base pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           <div className="flex items-start space-x-2">
+
             <Checkbox
               id="terms"
               checked={agreedToTerms}
