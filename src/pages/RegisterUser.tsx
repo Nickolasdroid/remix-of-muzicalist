@@ -160,19 +160,20 @@ const RegisterUser = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AuthHeader />
-      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
-      <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 p-4 md:p-8 bg-background border-secondary">
-        <div className="text-center mb-4 md:mb-8">
-          <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
-            {t("userRegistration.title")}
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground">
-            {t("userRegistration.subtitle")}
-          </p>
-        </div>
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+        <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
+          <div className="flex flex-col items-center text-center space-y-3">
+            <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+              {t("userRegistration.title")}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t("userRegistration.subtitle")}
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
             <Label htmlFor="name">{t("userRegistration.name", "Name")}</Label>
             <Input
               id="name"
@@ -180,7 +181,9 @@ const RegisterUser = () => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
+              className="h-12 bg-input border-border text-base"
             />
+
           </div>
 
           <div>
