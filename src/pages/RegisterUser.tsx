@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthHeader from "@/components/AuthHeader";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,19 +160,20 @@ const RegisterUser = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AuthHeader />
-      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
-      <div className="max-w-md w-full flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl shadow-xl md:border-2 p-4 md:p-8 bg-background border-secondary">
-        <div className="text-center mb-4 md:mb-8">
-          <h1 className="text-xl md:text-3xl font-display font-bold mb-1 md:mb-2 text-foreground">
-            {t("userRegistration.title")}
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground">
-            {t("userRegistration.subtitle")}
-          </p>
-        </div>
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+        <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
+          <div className="flex flex-col items-center text-center space-y-3">
+            <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+              {t("userRegistration.title")}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t("userRegistration.subtitle")}
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
             <Label htmlFor="name">{t("userRegistration.name", "Name")}</Label>
             <Input
               id="name"
@@ -179,10 +181,12 @@ const RegisterUser = () => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
+              className="h-12 bg-input border-border text-base"
             />
+
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="email">{t("userRegistration.email")}</Label>
             <Input
               id="email"
@@ -192,7 +196,7 @@ const RegisterUser = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               aria-invalid={emailTaken}
-              className={emailTaken ? "border-destructive focus-visible:ring-destructive" : ""}
+              className={`h-12 bg-input text-base ${emailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
             />
             {emailChecking && (
               <p className="text-xs text-muted-foreground mt-1">Checking email…</p>
@@ -204,9 +208,7 @@ const RegisterUser = () => {
             )}
           </div>
 
-
-
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="password">{t("userRegistration.password")}</Label>
             <div className="relative">
               <Input
@@ -216,20 +218,20 @@ const RegisterUser = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                className="pr-10"
+                className="h-12 bg-input border-border text-base pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             <PasswordStrengthIndicator password={formData.password} />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t("userRegistration.confirmPassword")}</Label>
             <div className="relative">
               <Input
@@ -239,19 +241,20 @@ const RegisterUser = () => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
-                className="pr-10"
+                className="h-12 bg-input border-border text-base pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           <div className="flex items-start space-x-2">
+
             <Checkbox
               id="terms"
               checked={agreedToTerms}
@@ -271,12 +274,12 @@ const RegisterUser = () => {
 
           <Button
             type="submit"
-            className="w-full"
-            size="lg"
             disabled={isLoading || !agreedToTerms || emailTaken || emailChecking}
+            className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
+
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -292,12 +295,11 @@ const RegisterUser = () => {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
-            size="lg"
             onClick={handleGoogleSignUp}
             disabled={googleLoading}
+            className="w-full h-12 text-base font-medium rounded-xl border-border bg-input hover:bg-input/80"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+            <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -305,6 +307,7 @@ const RegisterUser = () => {
             </svg>
             {googleLoading ? t("userRegistration.creatingAccount") : t("userRegistration.continueWithGoogle", "Continue with Google")}
           </Button>
+
 
           <div className="mt-6 text-center">
             <p className="text-muted-foreground text-sm">
