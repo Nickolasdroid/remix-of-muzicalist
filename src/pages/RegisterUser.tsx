@@ -274,12 +274,12 @@ const RegisterUser = () => {
 
           <Button
             type="submit"
-            className="w-full"
-            size="lg"
             disabled={isLoading || !agreedToTerms || emailTaken || emailChecking}
+            className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? t("userRegistration.creatingAccount") : t("userRegistration.createAccount")}
           </Button>
+
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
