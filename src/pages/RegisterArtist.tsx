@@ -769,16 +769,16 @@ const RegisterArtist = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <AuthHeader />
 
-      {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
-      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
+      {/* Multi-Step Form - top-aligned on desktop so card doesn't shift between steps */}
+      <div className="flex-1 flex flex-col md:items-center md:justify-start p-0 md:p-4 md:pt-10">
         <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
             <div className="text-center">
-              <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
+              <h1 className="text-base md:text-lg font-display font-bold text-foreground mb-1">
                 Join Muzicalist as an Artist
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Step {currentStep} of {totalSteps} — {
                   currentStep === 1 ? "Basic Information" :
                   currentStep === 2 ? "Professional Details" :
