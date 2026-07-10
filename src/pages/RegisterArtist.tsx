@@ -913,7 +913,7 @@ const RegisterArtist = () => {
                     </div>
                     {formData.country && (
                       <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        Te rugăm să introduci un număr de telefon valid. Acesta va trebui verificat ulterior pentru a confirma autenticitatea contului tău.
+                        {t("artistRegistration.phoneHelper")}
                       </p>
                     )}
                   </div>
