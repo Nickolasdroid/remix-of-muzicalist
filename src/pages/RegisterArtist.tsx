@@ -714,7 +714,7 @@ const RegisterArtist = () => {
                     value={step0Email}
                     onChange={(e) => setStep0Email(e.target.value)}
                     placeholder="Email"
-                    className={`h-12 bg-input text-base pl-10 ${step0EmailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
+                    className={`bg-input focus:border-accent h-9 pl-9 ${step0EmailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
                     onKeyDown={(e) => e.key === "Enter" && !step0EmailTaken && !step0EmailChecking && handleStep0Continue()}
                     aria-invalid={step0EmailTaken}
                   />
