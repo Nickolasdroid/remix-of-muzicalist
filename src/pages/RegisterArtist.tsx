@@ -691,7 +691,7 @@ const RegisterArtist = () => {
 
 
         {/* Form - full-screen on mobile, centered card on desktop */}
-        <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+        <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4 md:pb-[120px]">
           <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
               {/* Header with logo */}
               <div className="flex flex-col items-center text-center space-y-3">
@@ -770,7 +770,7 @@ const RegisterArtist = () => {
       <AuthHeader />
 
       {/* Multi-Step Form - top-aligned on desktop so card doesn't shift between steps */}
-      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4 md:pb-[120px]">
         <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
