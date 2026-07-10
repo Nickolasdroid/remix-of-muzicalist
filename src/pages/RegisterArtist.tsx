@@ -869,7 +869,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                      <Label htmlFor="county" className="text-sm">{divisionLabel}</Label>
+                      <Label htmlFor="county" className="text-sm">{divisionLabel.replace(/ies$/i, "y").replace(/s$/i, "")}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })} disabled={!formData.country || availableRegions.length === 0}>
                         <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
