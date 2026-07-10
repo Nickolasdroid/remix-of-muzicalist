@@ -770,7 +770,7 @@ const RegisterArtist = () => {
       <AuthHeader />
 
       {/* Multi-Step Form - top-aligned on desktop so card doesn't shift between steps */}
-      <div className="flex-1 flex flex-col md:items-center md:justify-start p-0 md:p-4 md:pt-10">
+      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
         <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
