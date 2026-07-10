@@ -1107,8 +1107,19 @@ const RegisterArtist = () => {
                   <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="submit" size="default" disabled={isSubmitting || !promotionalConsent} className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50">
-                    {isSubmitting ? t("common.creating") : t("common.create")}
+                  <Button
+                    type="submit"
+                    size="default"
+                    disabled={
+                      isSubmitting ||
+                      !promotionalConsent ||
+                      getPasswordScore(formData.password) < 3 ||
+                      !formData.confirmPassword ||
+                      formData.password !== formData.confirmPassword
+                    }
+                    className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+                  >
+                    {isSubmitting ? t("common.creating") : t("artistRegistration.createArtistProfile")}
                   </Button>
                 </div>
               </div>
