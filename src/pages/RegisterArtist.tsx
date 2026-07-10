@@ -989,18 +989,60 @@ const RegisterArtist = () => {
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
                 <div className="space-y-4">
-                  <Label htmlFor="profilePic">{t("artistRegistration.uploadPhoto")}</Label>
-                  <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
+                  <input
+                    id="profilePic"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="sr-only"
+                  />
+
+                  {!imageSrc && (
+                    <label
+                      htmlFor="profilePic"
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-accent","bg-accent/5"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-accent","bg-accent/5"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-accent","bg-accent/5");
+                        const file = e.dataTransfer.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => setImageSrc(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="flex flex-col items-center justify-center gap-3 w-full min-h-[220px] rounded-xl border-2 border-dashed border-border hover:border-accent/60 bg-input/40 hover:bg-accent/5 cursor-pointer transition-colors p-6 text-center"
+                    >
+                      <div className="h-12 w-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center">
+                        <Camera className="h-6 w-6 text-accent" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {t("artistRegistration.uploadPhotoTitle")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("artistRegistration.uploadPhotoHint")}
+                        </p>
+                      </div>
+                    </label>
+                  )}
 
                   {imageSrc &&
                   <div className="space-y-4">
                       <div className="relative w-full aspect-square max-w-[400px] mx-auto bg-black rounded-lg overflow-hidden">
                         <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="zoom">{t("artistRegistration.adjustPhoto")}: {zoom.toFixed(1)}x</Label>
                         <input id="zoom" type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+                      </div>
+
+                      <div className="flex justify-center">
+                        <label htmlFor="profilePic" className="text-xs text-accent hover:underline cursor-pointer">
+                          {t("common.change", "Change photo")}
+                        </label>
                       </div>
                     </div>
                   }
