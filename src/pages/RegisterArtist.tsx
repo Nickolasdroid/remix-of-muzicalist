@@ -769,16 +769,16 @@ const RegisterArtist = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <AuthHeader />
 
-      {/* Multi-Step Form - centered on desktop, full-screen on mobile */}
-      <div className="flex-1 flex flex-col md:items-center md:justify-center p-0 md:p-4">
+      {/* Multi-Step Form - top-aligned on desktop so card doesn't shift between steps */}
+      <div className="flex-1 flex flex-col md:items-center md:justify-start p-0 md:p-4 md:pt-10">
         <div className="w-full max-w-xl flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border-2 md:border-accent/20 md:bg-card/50 md:backdrop-blur-sm md:shadow-xl p-4 md:p-8 bg-background space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title (inside form) */}
             <div className="text-center">
-              <h1 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
+              <h1 className="text-base md:text-lg font-display font-bold text-foreground mb-1">
                 Join Muzicalist as an Artist
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 Step {currentStep} of {totalSteps} — {
                   currentStep === 1 ? "Basic Information" :
                   currentStep === 2 ? "Professional Details" :
@@ -869,7 +869,7 @@ const RegisterArtist = () => {
                   </div>
 
                   <div className="space-y-1">
-                      <Label htmlFor="county" className="text-sm">{divisionLabel}</Label>
+                      <Label htmlFor="county" className="text-sm">{divisionLabel.replace(/ies$/i, "y").replace(/s$/i, "")}</Label>
                       <Select value={formData.county} onValueChange={(value) => setFormData({ ...formData, county: value })} disabled={!formData.country || availableRegions.length === 0}>
                         <SelectTrigger className="bg-input border-border h-9 pl-9 relative">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -913,7 +913,7 @@ const RegisterArtist = () => {
                     </div>
                     {formData.country && (
                       <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                        Te rugăm să introduci un număr de telefon valid. Acesta va trebui verificat ulterior pentru a confirma autenticitatea contului tău.
+                        {t("artistRegistration.phoneHelper")}
                       </p>
                     )}
                   </div>
@@ -989,18 +989,60 @@ const RegisterArtist = () => {
             {currentStep === 3 &&
               <div className="space-y-6 animate-in fade-in duration-500">
                 <div className="space-y-4">
-                  <Label htmlFor="profilePic">{t("artistRegistration.uploadPhoto")}</Label>
-                  <Input id="profilePic" type="file" accept="image/*" onChange={handleImageUpload} className="bg-input border-border focus:border-accent" />
+                  <input
+                    id="profilePic"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="sr-only"
+                  />
+
+                  {!imageSrc && (
+                    <label
+                      htmlFor="profilePic"
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-accent","bg-accent/5"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-accent","bg-accent/5"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-accent","bg-accent/5");
+                        const file = e.dataTransfer.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => setImageSrc(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="flex flex-col items-center justify-center gap-3 w-full min-h-[220px] rounded-xl border-2 border-dashed border-border hover:border-accent/60 bg-input/40 hover:bg-accent/5 cursor-pointer transition-colors p-6 text-center"
+                    >
+                      <div className="h-12 w-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center">
+                        <Camera className="h-6 w-6 text-accent" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-foreground">
+                          {t("artistRegistration.uploadPhotoTitle")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("artistRegistration.uploadPhotoHint")}
+                        </p>
+                      </div>
+                    </label>
+                  )}
 
                   {imageSrc &&
                   <div className="space-y-4">
                       <div className="relative w-full aspect-square max-w-[400px] mx-auto bg-black rounded-lg overflow-hidden">
                         <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={false} />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="zoom">{t("artistRegistration.adjustPhoto")}: {zoom.toFixed(1)}x</Label>
                         <input id="zoom" type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+                      </div>
+
+                      <div className="flex justify-center">
+                        <label htmlFor="profilePic" className="text-xs text-accent hover:underline cursor-pointer">
+                          {t("common.change", "Change photo")}
+                        </label>
                       </div>
                     </div>
                   }
@@ -1065,8 +1107,19 @@ const RegisterArtist = () => {
                   <Button type="button" onClick={previousStep} variant="outline" size="default" className="w-full md:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" /> {t("common.back")}
                   </Button>
-                  <Button type="submit" size="default" disabled={isSubmitting || !promotionalConsent} className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50">
-                    {isSubmitting ? t("common.creating") : t("common.create")}
+                  <Button
+                    type="submit"
+                    size="default"
+                    disabled={
+                      isSubmitting ||
+                      !promotionalConsent ||
+                      getPasswordScore(formData.password) < 3 ||
+                      !formData.confirmPassword ||
+                      formData.password !== formData.confirmPassword
+                    }
+                    className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg"
+                  >
+                    {isSubmitting ? t("common.creating") : t("artistRegistration.createArtistProfile")}
                   </Button>
                 </div>
               </div>

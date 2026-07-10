@@ -113,7 +113,11 @@
       "professional": "Professional"
     },
     "uploadPhoto": "Click or drag to upload your profile picture",
+    "uploadPhotoTitle": "Choose a photo or drag it here",
+    "uploadPhotoHint": "JPG, PNG or WEBP",
     "adjustPhoto": "Adjust your photo",
+    "phoneHelper": "Please enter a valid phone number. It will need to be verified later to confirm the authenticity of your account.",
+    "createArtistProfile": "Create Artist Profile",
     "validation": {
       "completeStep1": "Please complete all fields in Step 1",
       "completeStep2": "Please complete all fields in Step 2",

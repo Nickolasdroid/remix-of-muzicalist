@@ -113,7 +113,11 @@
       "professional": "Profesionist"
     },
     "uploadPhoto": "Click sau trage pentru a încărca poza de profil",
+    "uploadPhotoTitle": "Alege o fotografie sau trage-o aici",
+    "uploadPhotoHint": "JPG, PNG sau WEBP",
     "adjustPhoto": "Ajustează fotografia",
+    "phoneHelper": "Te rugăm să introduci un număr de telefon valid. Acesta va trebui verificat ulterior pentru a confirma autenticitatea contului tău.",
+    "createArtistProfile": "Creează profilul de artist",
     "validation": {
       "completeStep1": "Te rugăm să completezi toate câmpurile din Pasul 1",
       "completeStep2": "Te rugăm să completezi toate câmpurile din Pasul 2",
