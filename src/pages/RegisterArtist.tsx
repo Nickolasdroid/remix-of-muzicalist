@@ -714,7 +714,7 @@ const RegisterArtist = () => {
                     value={step0Email}
                     onChange={(e) => setStep0Email(e.target.value)}
                     placeholder="Email"
-                    className={`h-12 bg-input text-base pl-10 ${step0EmailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
+                    className={`bg-input focus:border-accent h-9 pl-9 ${step0EmailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
                     onKeyDown={(e) => e.key === "Enter" && !step0EmailTaken && !step0EmailChecking && handleStep0Continue()}
                     aria-invalid={step0EmailTaken}
                   />
@@ -1067,7 +1067,7 @@ const RegisterArtist = () => {
                     <Label htmlFor="password">{t("artistRegistration.password")}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="bg-input border-border focus:border-accent pl-9 pr-10" placeholder={t("artistRegistration.placeholders.password")} />
+                      <Input id="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9 pr-10" placeholder={t("artistRegistration.placeholders.password")} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -1079,7 +1079,7 @@ const RegisterArtist = () => {
                     <Label htmlFor="confirmPassword">{t("artistRegistration.confirmPassword")}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                      <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} className="bg-input border-border focus:border-accent pl-9 pr-10" placeholder={t("artistRegistration.placeholders.confirmPassword")} />
+                      <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} className="bg-input border-border focus:border-accent h-9 pl-9 pr-10" placeholder={t("artistRegistration.placeholders.confirmPassword")} />
                       <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
