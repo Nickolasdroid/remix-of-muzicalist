@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthHeader from "@/components/AuthHeader";
@@ -175,29 +175,34 @@ const RegisterUser = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{t("userRegistration.name", "Name")}</Label>
-            <Input
-              id="name"
-              placeholder={t("userRegistration.placeholders.name", "Your name")}
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              className="h-12 bg-input border-border text-base"
-            />
-
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="name"
+                placeholder={t("userRegistration.placeholders.name", "Your name")}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className="h-12 bg-input border-border text-base pl-10"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">{t("userRegistration.email")}</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder={t("userRegistration.placeholders.email")}
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-              aria-invalid={emailTaken}
-              className={`h-12 bg-input text-base ${emailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Input
+                id="email"
+                type="email"
+                placeholder={t("userRegistration.placeholders.email")}
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                aria-invalid={emailTaken}
+                className={`h-12 bg-input text-base pl-10 ${emailTaken ? "border-destructive focus-visible:ring-destructive" : "border-border"}`}
+              />
+            </div>
             {emailChecking && (
               <p className="text-xs text-muted-foreground mt-1">Checking email…</p>
             )}
@@ -211,6 +216,7 @@ const RegisterUser = () => {
           <div className="space-y-2">
             <Label htmlFor="password">{t("userRegistration.password")}</Label>
             <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -218,7 +224,7 @@ const RegisterUser = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
-                className="h-12 bg-input border-border text-base pr-12"
+                className="h-12 bg-input border-border text-base pl-10 pr-12"
               />
               <button
                 type="button"
@@ -234,6 +240,7 @@ const RegisterUser = () => {
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t("userRegistration.confirmPassword")}</Label>
             <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -241,7 +248,7 @@ const RegisterUser = () => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
-                className="h-12 bg-input border-border text-base pr-12"
+                className="h-12 bg-input border-border text-base pl-10 pr-12"
               />
               <button
                 type="button"
@@ -252,6 +259,7 @@ const RegisterUser = () => {
               </button>
             </div>
           </div>
+
 
           <div className="flex items-start space-x-2">
 

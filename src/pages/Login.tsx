@@ -158,24 +158,28 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="h-12 bg-input border-border text-base"
-                placeholder="Email"
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="h-12 bg-input border-border text-base pl-10"
+                  placeholder="Email"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
               <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="h-12 bg-input border-border text-base pr-12"
+                  className="h-12 bg-input border-border text-base pl-10 pr-12"
                   placeholder="Password"
                 />
                 <button
@@ -187,6 +191,7 @@ const Login = () => {
                 </button>
               </div>
             </div>
+
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
