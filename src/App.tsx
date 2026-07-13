@@ -32,7 +32,7 @@ const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const ArtistProfile = lazy(() => import("./pages/ArtistProfile"));
+const ArtistProfileRoute = lazy(() => import("./pages/ArtistProfileRoute"));
 const BookArtist = lazy(() => import("./pages/BookArtist"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Notifications = lazy(() => import("./pages/Notifications"));
@@ -87,7 +87,7 @@ const App = () => (
             <Route path="/register/user" element={<RegisterUser />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
-            <Route path="/artist/:id" element={<ArtistProfile />} />
+            <Route path="/artist/:id" element={<ArtistProfileRoute />} />
             <Route path="/book/:id" element={<BookArtist />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/notifications" element={<Notifications />} />

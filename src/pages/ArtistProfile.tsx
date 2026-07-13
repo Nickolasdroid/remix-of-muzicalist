@@ -68,6 +68,7 @@ interface Profile {
   hide_phone: boolean;
   hide_email: boolean;
   is_verified?: boolean;
+  slug?: string | null;
 }
 interface Announcement {
   id: string;
@@ -136,12 +137,13 @@ const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> =>
   }));
 };
 
-const ArtistProfile = () => {
+const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const {
-    id
+    id: routeId
   } = useParams<{
     id: string;
   }>();
+  const id = artistId ?? routeId;
   const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -296,7 +298,7 @@ const ArtistProfile = () => {
       const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
+          .select('id, slug, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
           .eq('id', id)
           .maybeSingle(),
         (supabase as any).rpc('get_profile_contact', { _profile_id: id }),
@@ -970,14 +972,14 @@ const ArtistProfile = () => {
           artist.bio,
           `Book ${artist.stage_name}, ${artist.specialization || "musical artist"} from ${[artist.county, artist.country].filter(Boolean).join(", ")}. See availability, reviews and prices on Muzicalist.`
         )}
-        path={`/artist/${id}`}
+        path={`/artist/${artist.slug ?? id}`}
         type="profile"
         image={artist.avatar_url || undefined}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "MusicGroup",
           name: artist.stage_name,
-          url: `https://muzicalist.com/artist/${id}`,
+          url: `https://muzicalist.com/artist/${artist.slug ?? id}`,
           ...(artist.avatar_url ? { image: artist.avatar_url } : {}),
           ...(artist.music_genres ? { genre: artist.music_genres } : {}),
           ...(artist.county || artist.country
