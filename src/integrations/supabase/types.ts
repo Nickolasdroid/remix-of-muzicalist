@@ -691,6 +691,7 @@ export type Database = {
           pending_account_type: string | null
           phone: string
           plan: string
+          slug: string | null
           specialization:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
@@ -745,6 +746,7 @@ export type Database = {
           pending_account_type?: string | null
           phone: string
           plan?: string
+          slug?: string | null
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
@@ -799,6 +801,7 @@ export type Database = {
           pending_account_type?: string | null
           phone?: string
           plan?: string
+          slug?: string | null
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
@@ -1070,6 +1073,7 @@ export type Database = {
           pending_account_type: string | null
           phone: string
           plan: string
+          slug: string | null
           specialization:
             | Database["public"]["Enums"]["artist_specialization"]
             | null
@@ -1124,10 +1128,12 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       retry_pending_welcome_emails: { Args: never; Returns: number }
+      slugify: { Args: { input: string }; Returns: string }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
         Returns: undefined
       }
+      unaccent: { Args: { "": string }; Returns: string }
       verify_welcome_trigger_secret: {
         Args: { _secret: string }
         Returns: boolean
