@@ -146,9 +146,8 @@ const Login = () => {
       <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4 md:pb-[120px]">
         <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Header with logo */}
+            {/* Header */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <img src={logo} alt="Muzicalist" className="h-12 w-12 object-contain" />
               <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
                 Login to your Account
               </h2>
@@ -156,6 +155,7 @@ const Login = () => {
                 Welcome back to Muzicalist
               </p>
             </div>
+
 
             <div className="space-y-2">
               <div className="relative">
