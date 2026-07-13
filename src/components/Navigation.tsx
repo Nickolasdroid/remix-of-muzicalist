@@ -1,6 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
-import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
@@ -264,10 +263,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/login">
-            <Button size="sm" className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-5">
-              Get Started
-            </Button>
+          <Link to="/login" aria-label={t('navigation.account', 'Account')}>
+            <button className="h-10 w-10 rounded-full bg-background border border-accent/60 flex items-center justify-center text-foreground/80 hover:text-accent hover:border-accent transition-all duration-200 active:scale-95">
+              <User className="h-5 w-5" />
+            </button>
           </Link>
         </div>
       </nav>
@@ -450,13 +449,11 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 )}
               </button>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login">
-                  <Button size="sm" className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 text-xs px-4">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
+              <Link to="/login" aria-label={t('navigation.account', 'Account')}>
+                <button className="h-10 w-10 rounded-full bg-background border border-accent/60 flex items-center justify-center text-foreground/80 hover:text-accent hover:border-accent transition-all duration-200 active:scale-95">
+                  <User className="h-5 w-5" />
+                </button>
+              </Link>
             )}
           </div>
         </div>
