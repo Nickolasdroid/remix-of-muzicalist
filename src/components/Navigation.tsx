@@ -263,9 +263,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/login" aria-label={t('navigation.account', 'Account')}>
-            <button className="h-10 w-10 rounded-full bg-background border border-accent/60 flex items-center justify-center text-foreground/80 hover:text-accent hover:border-accent transition-all duration-200 active:scale-95">
-              <User className="h-5 w-5" />
+          <Link to="/login" aria-label={t('navigation.account', 'Account')} className="-mr-2">
+            <button className="h-10 w-10 rounded-full border flex items-center justify-center text-accent hover:text-accent/90 bg-[hsl(var(--header-button-bg))] border-[hsl(var(--header-button-border))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:border-[hsl(var(--header-button-border-hover))] transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+              <User className="h-[22px] w-[22px]" />
             </button>
           </Link>
         </div>
@@ -449,11 +449,11 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 )}
               </button>
             ) : (
-              <Link to="/login" aria-label={t('navigation.account', 'Account')}>
-                <button className="h-10 w-10 rounded-full bg-background border border-accent/60 flex items-center justify-center text-foreground/80 hover:text-accent hover:border-accent transition-all duration-200 active:scale-95">
-                  <User className="h-5 w-5" />
-                </button>
-              </Link>
+            <Link to="/login" aria-label={t('navigation.account', 'Account')} className="-mr-2">
+              <button className="h-10 w-10 rounded-full border flex items-center justify-center text-accent hover:text-accent/90 bg-[hsl(var(--header-button-bg))] border-[hsl(var(--header-button-border))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:border-[hsl(var(--header-button-border-hover))] transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+                <User className="h-[22px] w-[22px]" />
+              </button>
+            </Link>
             )}
           </div>
         </div>

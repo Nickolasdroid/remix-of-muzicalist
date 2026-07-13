@@ -51,6 +51,12 @@ All colors MUST be HSL.
     --shadow-burgundy: 0 20px 60px -20px hsl(0 75% 19% / 0.6);
     --shadow-elegant: 0 20px 60px -20px hsl(0 0% 0% / 0.7);
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Header account button — subtle glass on dark headers */
+    --header-button-bg: 0 0% 100% / 0.04;
+    --header-button-bg-hover: 0 0% 100% / 0.08;
+    --header-button-border: 0 0% 100% / 0.12;
+    --header-button-border-hover: 0 0% 100% / 0.18;
   }
 
   :root.light {
