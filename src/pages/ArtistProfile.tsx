@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -963,6 +964,36 @@ const ArtistProfile = () => {
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
+      <SEO
+        title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
+        description={toMetaDescription(
+          artist.bio,
+          `Book ${artist.stage_name}, ${artist.specialization || "musical artist"} from ${[artist.county, artist.country].filter(Boolean).join(", ")}. See availability, reviews and prices on Muzicalist.`
+        )}
+        path={`/artist/${id}`}
+        type="profile"
+        image={artist.avatar_url || undefined}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MusicGroup",
+          name: artist.stage_name,
+          url: `https://muzicalist.com/artist/${id}`,
+          ...(artist.avatar_url ? { image: artist.avatar_url } : {}),
+          ...(artist.music_genres ? { genre: artist.music_genres } : {}),
+          ...(artist.county || artist.country
+            ? {
+                location: {
+                  "@type": "Place",
+                  address: {
+                    "@type": "PostalAddress",
+                    ...(artist.county ? { addressLocality: artist.county } : {}),
+                    ...(artist.country ? { addressCountry: artist.country } : {}),
+                  },
+                },
+              }
+            : {}),
+        }}
+      />
       <Navigation />
       
       <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>

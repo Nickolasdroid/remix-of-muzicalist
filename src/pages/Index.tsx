@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import SEO from "@/components/SEO";
 import Feed from "./Feed";
 import About from "./About";
 
@@ -26,7 +27,12 @@ const Index = () => {
     return null;
   }
 
-  return isAuthenticated ? <Feed /> : <About />;
+  return (
+    <>
+      <SEO path="/" />
+      {isAuthenticated ? <Feed /> : <About />}
+    </>
+  );
 };
 
 export default Index;

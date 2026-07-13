@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Filter } from "lucide-react";
@@ -354,6 +355,11 @@ const CategoryArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO
+        title={`${category} — Book ${category} for Your Event | Muzicalist`}
+        description={`Browse and book the best ${category?.toLowerCase()} on Muzicalist. Compare profiles, reviews, prices and availability, then send a booking request in minutes.`}
+        path={`/categories/${encodeURIComponent(category ?? "")}`}
+      />
       <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
