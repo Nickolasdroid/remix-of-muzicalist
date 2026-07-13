@@ -22,4 +22,5 @@ Disallow: /booking-requests
 Disallow: /analytics
 Disallow: /reset-password
 
+Sitemap: https://ccdgoduekpiesdmkluff.supabase.co/functions/v1/sitemap
 Sitemap: https://muzicalist.com/sitemap.xml
