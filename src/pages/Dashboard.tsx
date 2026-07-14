@@ -3023,13 +3023,14 @@ const Dashboard = () => {
                                           <h3 className="font-semibold text-foreground">
                                             {profile?.stage_name || "Artist"}
                                           </h3>
+                                          {profile?.is_verified && <VerifiedBadge size="sm" />}
 
                                           {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
                                               Expired
                                             </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{profile?.specialization || "User"}</span>
+                                          <span>{isAdmin ? "Admin" : (profile?.specialization || "User")}</span>
                                           <span>·</span>
                                           <span>{formatSmartDate(announcement.created_at)}</span>
                                           <span>·</span>
