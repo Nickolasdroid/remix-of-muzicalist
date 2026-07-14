@@ -1,0 +1,1 @@
+UPDATE public.profiles SET is_verified = true, verification_status = 'verified' WHERE id = 'e393b08b-cbf9-4281-aa36-dc6984b97fa0';
