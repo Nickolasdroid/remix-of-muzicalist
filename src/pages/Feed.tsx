@@ -20,6 +20,8 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminIds } from "@/hooks/useAdminIds";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
@@ -66,6 +68,7 @@ const Feed = () => {
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
+  const adminIds = useAdminIds();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
@@ -310,7 +313,8 @@ const Feed = () => {
     }
   };
 
-  const getSpecializationLabel = (specialization: string | null) => {
+  const getSpecializationLabel = (specialization: string | null, profileId?: string) => {
+    if (profileId && adminIds.has(profileId)) return "Admin";
     if (!specialization) return "User";
     return specialization;
   };
@@ -399,10 +403,11 @@ const Feed = () => {
                                 {item.profile.stage_name}
                               </h3>
                             </Link>
+                            {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
 
                           </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>{getSpecializationLabel(item.profile.specialization)}</span>
+                            <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                             <span>·</span>
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
@@ -508,10 +513,11 @@ const Feed = () => {
                         <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                             {item.profile.stage_name}
                           </h3>
+                          {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
 
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{getSpecializationLabel(item.profile.specialization)}</span>
+                          <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                           <span>·</span>
                           <span>{formatDate(item.created_at)}</span>
                           <span>·</span>

@@ -20,6 +20,8 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminIds } from "@/hooks/useAdminIds";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog from "@/components/ReportContentDialog";
 
@@ -43,6 +45,7 @@ const Announcements = () => {
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
+  const adminIds = useAdminIds();
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
 
@@ -200,10 +203,11 @@ const Announcements = () => {
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>
+                          {adminIds.has(announcement.profile_id) && <VerifiedBadge size="sm" />}
 
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{announcement.profiles?.specialization || "User"}</span>
+                          <span>{adminIds.has(announcement.profile_id) ? "Admin" : (announcement.profiles?.specialization || "User")}</span>
                           <span>·</span>
                           <span>{formatSmartDate(announcement.created_at)}</span>
                           <span>·</span>

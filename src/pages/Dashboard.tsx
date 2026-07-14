@@ -1971,6 +1971,9 @@ const Dashboard = () => {
                               <Camera className="h-6 w-6 text-white" />
                             </label>
                           </div>
+                          <div className="absolute bottom-1 right-1 z-20 bg-black/60 backdrop-blur rounded-full p-1">
+                            <VerifiedBadge size="md" />
+                          </div>
                           <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
                         <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground text-center md:text-left">
@@ -3020,13 +3023,14 @@ const Dashboard = () => {
                                           <h3 className="font-semibold text-foreground">
                                             {profile?.stage_name || "Artist"}
                                           </h3>
+                                          {profile?.is_verified && <VerifiedBadge size="sm" />}
 
                                           {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
                                               Expired
                                             </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{profile?.specialization || "User"}</span>
+                                          <span>{isAdmin ? "Admin" : (profile?.specialization || "User")}</span>
                                           <span>·</span>
                                           <span>{formatSmartDate(announcement.created_at)}</span>
                                           <span>·</span>

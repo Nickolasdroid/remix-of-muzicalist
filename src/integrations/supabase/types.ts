@@ -997,6 +997,7 @@ export type Database = {
         Args: { _profile_id: string }
         Returns: number
       }
+      get_admin_user_ids: { Args: never; Returns: string[] }
       get_my_calendar_event_for_date: {
         Args: { _event_date: string }
         Returns: {
