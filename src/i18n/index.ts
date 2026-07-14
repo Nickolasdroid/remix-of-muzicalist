@@ -40,39 +40,67 @@ const getStoredLanguage = () => {
 
 const getInitialLanguage = () => {
   if (typeof window === 'undefined') return 'en';
-  return normalizeLanguage(getStoredLanguage() || navigator.languages?.[0] || navigator.language);
+  const stored = getStoredLanguage();
+  if (stored) return normalizeLanguage(stored);
+  // Scan ALL browser language preferences, not just the first one: many
+  // users run an English-UI browser but still list their native language
+  // (e.g. ['en-US', 'ro']). The first non-English entry is the best guess
+  // and lets us localize instantly, with zero network round-trips.
+  const prefs = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const p of prefs) {
+    const base = normalizeLanguage(p);
+    if (base !== 'en') return base;
+  }
+  return 'en';
 };
 
 async function detectVisitorLanguage(): Promise<string> {
   const cached = localStorage.getItem(COUNTRY_LANG_KEY);
   if (cached) return cached;
 
+  const GEO_TIMEOUT_MS = 1500;
+  const timeoutSignal = () => {
+    try {
+      return AbortSignal.timeout(GEO_TIMEOUT_MS);
+    } catch {
+      return undefined; // very old browsers — fetch just runs without a cap
+    }
+  };
+
   const providers = [
-    async () => (await fetch('https://ipapi.co/country_code/')).text(),
+    async () =>
+      (await fetch('https://ipapi.co/country_code/', { signal: timeoutSignal() })).text(),
     async () => {
-      const trace = await (await fetch('https://www.cloudflare.com/cdn-cgi/trace')).text();
+      const trace = await (
+        await fetch('https://www.cloudflare.com/cdn-cgi/trace', { signal: timeoutSignal() })
+      ).text();
       return trace.match(/loc=([A-Z]{2})/)?.[1] || '';
     },
     async () => {
-      const data = await (await fetch('https://ipwho.is/')).json();
+      const data = await (
+        await fetch('https://ipwho.is/', { signal: timeoutSignal() })
+      ).json();
       return data?.country_code || '';
     },
   ];
 
-  for (const provider of providers) {
-    try {
-      const code = (await provider()).trim().toUpperCase();
-      if (code) {
-        const lang = languageForCountry(code);
-        localStorage.setItem(COUNTRY_LANG_KEY, lang);
-        return lang;
-      }
-    } catch {
-      /* try next provider */
-    }
+  try {
+    // All providers race in PARALLEL — the first valid two-letter country
+    // code wins. The old sequential chain could take many seconds when the
+    // first provider was slow or rate-limited.
+    const code = await Promise.any(
+      providers.map(async (provider) => {
+        const c = (await provider()).trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(c)) throw new Error('invalid country code');
+        return c;
+      })
+    );
+    const lang = languageForCountry(code);
+    localStorage.setItem(COUNTRY_LANG_KEY, lang);
+    return lang;
+  } catch {
+    return normalizeLanguage(navigator.languages?.[0] || navigator.language);
   }
-
-  return normalizeLanguage(navigator.languages?.[0] || navigator.language);
 }
 
 if (!i18n.isInitialized) {
@@ -96,13 +124,22 @@ if (!i18n.isInitialized) {
     });
 
   // Auto-localize based on visitor country (IP geolocation).
-  // Skipped if the user has manually picked a language.
+  // Skipped if the user has manually picked a language, and skipped entirely
+  // when the browser already declares a non-English preferred language —
+  // the browser's explicit preference outranks an IP-based guess, and this
+  // makes localization instant (no network round-trip) for most visitors.
   (async () => {
     try {
       if (typeof window === 'undefined') return;
       const manual = localStorage.getItem(MANUAL_LANG_KEY);
       if (manual) {
         await applyLanguage(manual);
+        return;
+      }
+
+      const initial = getInitialLanguage();
+      if (initial !== 'en') {
+        await applyLanguage(initial);
         return;
       }
 
