@@ -27,7 +27,7 @@ const VerifiedBadge = ({ className, size = "md", label = "Verified" }: VerifiedB
         <TooltipTrigger asChild>
           <span
             className={cn(
-              "inline-flex items-center justify-center rounded-full shrink-0 align-middle ml-1.5",
+              "inline-flex items-center justify-center rounded-full shrink-0 align-middle",
               "md:transition-all md:duration-200 md:ease-out md:hover:scale-[1.08] md:hover:brightness-110",
               sizeMap[size],
               className,
