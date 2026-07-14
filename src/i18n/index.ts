@@ -89,7 +89,7 @@ async function detectVisitorLanguage(): Promise<string> {
     // All providers race in PARALLEL — the first valid two-letter country
     // code wins. The old sequential chain could take many seconds when the
     // first provider was slow or rate-limited.
-    const code = await Promise.any(
+    const code = await (Promise as any).any(
       providers.map(async (provider) => {
         const c = (await provider()).trim().toUpperCase();
         if (!/^[A-Z]{2}$/.test(c)) throw new Error('invalid country code');
