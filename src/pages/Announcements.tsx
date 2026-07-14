@@ -45,6 +45,7 @@ const Announcements = () => {
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
+  const adminIds = useAdminIds();
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
 
