@@ -20,6 +20,8 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { isAdExpired } from "@/lib/adExpiration";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAdminIds } from "@/hooks/useAdminIds";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
