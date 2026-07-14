@@ -6,6 +6,7 @@ import en from './locales/en.json';
 import ro from './locales/ro.json';
 import { languageForCountry } from '@/lib/countryLanguages';
 import { getOverride, TRANSLATION_OVERRIDES } from './overrides';
+import { RO_TEXT } from './roText';
 import { restoreBrandName, restoreBrandNameDeep } from '@/lib/brandName';
 
 const STATIC_RESOURCES: Record<string, any> = {
@@ -278,8 +279,11 @@ export const translateTextsSync = (targetLang: string, texts: string[]): Record<
     return Object.fromEntries(uniqueTexts.map((t) => [t, restoreBrandName(t)]));
   const cache = loadCache(base);
   const overrides = TRANSLATION_OVERRIDES[base] || {};
+  // Romanian ships with a full static dictionary bundled at build time —
+  // every known UI string translates synchronously, with zero network calls.
+  const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
   return Object.fromEntries(
-    uniqueTexts.map((t) => [t, restoreBrandName(overrides[t] || cache[t] || '')])
+    uniqueTexts.map((t) => [t, restoreBrandName(overrides[t] || staticMap[t] || cache[t] || '')])
   );
 };
 
@@ -290,8 +294,9 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
 
   const cache = loadCache(base);
   const overrides = TRANSLATION_OVERRIDES[base] || {};
+  const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
 
-  const missing = uniqueTexts.filter((text) => !overrides[text] && !cache[text]);
+  const missing = uniqueTexts.filter((text) => !overrides[text] && !staticMap[text] && !cache[text]);
   if (missing.length) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -322,7 +327,7 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   }
 
   return Object.fromEntries(
-    uniqueTexts.map((text) => [text, restoreBrandName(overrides[text] || cache[text] || text)])
+    uniqueTexts.map((text) => [text, restoreBrandName(overrides[text] || staticMap[text] || cache[text] || text)])
   );
 };
 
