@@ -313,7 +313,8 @@ const Feed = () => {
     }
   };
 
-  const getSpecializationLabel = (specialization: string | null) => {
+  const getSpecializationLabel = (specialization: string | null, profileId?: string) => {
+    if (profileId && adminIds.has(profileId)) return "Admin";
     if (!specialization) return "User";
     return specialization;
   };
