@@ -403,10 +403,11 @@ const Feed = () => {
                                 {item.profile.stage_name}
                               </h3>
                             </Link>
+                            {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
 
                           </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>{getSpecializationLabel(item.profile.specialization)}</span>
+                            <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                             <span>·</span>
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
