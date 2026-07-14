@@ -890,6 +890,27 @@ export type Database = {
         }
         Relationships: []
       }
+      ui_text_translations: {
+        Row: {
+          created_at: string
+          lang: string
+          source_text: string
+          translated_text: string
+        }
+        Insert: {
+          created_at?: string
+          lang: string
+          source_text: string
+          translated_text: string
+        }
+        Update: {
+          created_at?: string
+          lang?: string
+          source_text?: string
+          translated_text?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
