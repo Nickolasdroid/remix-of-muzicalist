@@ -203,10 +203,11 @@ const Announcements = () => {
                               {announcement.profiles?.stage_name || "Artist"}
                             </h3>
                           </Link>
+                          {adminIds.has(announcement.profile_id) && <VerifiedBadge size="sm" />}
 
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{announcement.profiles?.specialization || "User"}</span>
+                          <span>{adminIds.has(announcement.profile_id) ? "Admin" : (announcement.profiles?.specialization || "User")}</span>
                           <span>·</span>
                           <span>{formatSmartDate(announcement.created_at)}</span>
                           <span>·</span>
