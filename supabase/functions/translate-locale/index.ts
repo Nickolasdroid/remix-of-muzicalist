@@ -15,6 +15,15 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
+// Global server-side translation cache (table: ui_text_translations).
+// Every UI string is AI-translated ONCE per language, platform-wide.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+const admin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
+const normLang = (l: string) => (l || "en").split("-")[0].toLowerCase();
+
 // Deterministic brand-name safeguard. Narrowly scoped: ONLY rewrites the
 // single translation-induced mutation we have observed ("Musicalist" /
 // "MUSICALIST") back to the canonical brand spelling. Unrelated words and
@@ -74,7 +83,29 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { targetLang, sourceLang = "en", source, texts } = await req.json();
+    const { targetLang, sourceLang = "en", source, texts, dump } = await req.json();
+
+    // Dump mode: return the ENTIRE cached dictionary for a language in one
+    // call. The client uses this at startup to seed its local cache, making
+    // repeat languages near-instant for every visitor.
+    if (dump === true && targetLang) {
+      const lang = normLang(targetLang);
+      const out: Record<string, string> = {};
+      const BATCH = 1000;
+      for (let from = 0; ; from += BATCH) {
+        const { data, error } = await admin
+          .from("ui_text_translations")
+          .select("source_text, translated_text")
+          .eq("lang", lang)
+          .range(from, from + BATCH - 1);
+        if (error) throw error;
+        for (const row of data ?? []) out[row.source_text] = row.translated_text;
+        if (!data || data.length < BATCH) break;
+      }
+      return new Response(JSON.stringify({ translations: out }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!targetLang || typeof targetLang !== "string") {
       return new Response(JSON.stringify({ error: "targetLang required" }), {
@@ -95,6 +126,29 @@ Deno.serve(async (req) => {
         });
       }
 
+      // 1) Global cache lookup — translations already computed for ANY past
+      //    visitor are served straight from the database, no AI involved.
+      const lang = normLang(targetLang);
+      const cached: Record<string, string> = {};
+      try {
+        const { data } = await admin
+          .from("ui_text_translations")
+          .select("source_text, translated_text")
+          .eq("lang", lang)
+          .in("source_text", cleanTexts);
+        for (const row of data ?? []) cached[row.source_text] = row.translated_text;
+      } catch (e) {
+        console.error("cache lookup failed (continuing with AI)", e);
+      }
+
+      const missingTexts = cleanTexts.filter((t) => !(t in cached));
+      if (missingTexts.length === 0) {
+        return new Response(
+          JSON.stringify({ translations: cleanTexts.map((t) => cached[t]) }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
       const systemPrompt =
         `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
         `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
@@ -112,7 +166,7 @@ Deno.serve(async (req) => {
           model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: JSON.stringify({ texts: cleanTexts }) },
+            { role: "user", content: JSON.stringify({ texts: missingTexts }) },
           ],
           response_format: { type: "json_object" },
         }),
@@ -131,11 +185,29 @@ Deno.serve(async (req) => {
       const content: string = aiJson?.choices?.[0]?.message?.content ?? "{}";
       const parsed = safeJsonParse(content);
       const translated = Array.isArray(parsed?.translations) ? parsed.translations : [];
-      const ordered = cleanTexts.map((text, index) =>
-        restoreBrand(
-          typeof translated[index] === "string" && translated[index].trim() ? translated[index] : text
-        )
-      );
+
+      // 2) Persist freshly AI-translated pairs into the global cache so no
+      //    future visitor ever pays for these strings again.
+      const freshRows = missingTexts.map((text, index) => ({
+        lang,
+        source_text: text,
+        translated_text: restoreBrand(
+          typeof translated[index] === "string" && translated[index].trim()
+            ? translated[index]
+            : text,
+        ),
+      }));
+      try {
+        await admin.from("ui_text_translations").upsert(freshRows, {
+          onConflict: "lang,source_text",
+        });
+      } catch (e) {
+        console.error("cache upsert failed (non-fatal)", e);
+      }
+
+      const fresh: Record<string, string> = {};
+      for (const row of freshRows) fresh[row.source_text] = row.translated_text;
+      const ordered = cleanTexts.map((t) => cached[t] ?? fresh[t] ?? t);
 
       return new Response(JSON.stringify({ translations: ordered }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

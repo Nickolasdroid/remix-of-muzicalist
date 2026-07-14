@@ -89,7 +89,7 @@ async function detectVisitorLanguage(): Promise<string> {
     // All providers race in PARALLEL — the first valid two-letter country
     // code wins. The old sequential chain could take many seconds when the
     // first provider was slow or rate-limited.
-    const code = await (Promise as any).any(
+    const code = await Promise.any(
       providers.map(async (provider) => {
         const c = (await provider()).trim().toUpperCase();
         if (!/^[A-Z]{2}$/.test(c)) throw new Error('invalid country code');
@@ -209,6 +209,12 @@ async function applyLanguage(lang: string) {
     return;
   }
 
+  // Dynamic language: warm the local text cache with the ENTIRE global
+  // dictionary for this language (one round-trip, plain DB read, no AI).
+  // Every string any past visitor ever translated becomes instantly
+  // available to this visitor too.
+  await warmTextCache(base);
+
   // Dynamic language — load (or fetch + cache) translations, then switch.
   const translations = await loadDynamicTranslations(base);
   if (translations) {
@@ -219,6 +225,35 @@ async function applyLanguage(lang: string) {
     if (i18n.language?.split('-')[0] !== 'en') await i18n.changeLanguage('en');
   }
   syncHtmlLang();
+}
+
+// Fetches the full server-side translation dictionary for a language and
+// merges it into the local cache. Fails silently — the per-page translation
+// flow still works without it, just with more round-trips.
+async function warmTextCache(base: string) {
+  try {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (!supabaseUrl) return;
+    const res = await fetch(`${supabaseUrl}/functions/v1/translate-locale`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(anonKey ? { Authorization: `Bearer ${anonKey}`, apikey: anonKey } : {}),
+      },
+      body: JSON.stringify({ dump: true, targetLang: base }),
+    });
+    if (!res.ok) return;
+    const json = await res.json();
+    const dict = json?.translations;
+    if (dict && typeof dict === 'object') {
+      const cache = loadCache(base);
+      Object.assign(cache, dict);
+      persistCache(base);
+    }
+  } catch {
+    /* non-fatal */
+  }
 }
 
 // Helper for language switchers to mark a manual override and apply it.
