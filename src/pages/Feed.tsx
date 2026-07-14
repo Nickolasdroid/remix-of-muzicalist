@@ -68,6 +68,7 @@ const Feed = () => {
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
+  const adminIds = useAdminIds();
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
