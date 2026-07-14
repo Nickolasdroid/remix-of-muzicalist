@@ -158,8 +158,16 @@ async function loadDynamicTranslations(lang: string): Promise<Record<string, any
 
 async function applyLanguage(lang: string) {
   const base = normalizeLanguage(lang);
+  // Keep <html lang="..."> in sync with the active language — helps search
+  // engines, screen readers and browser translation prompts.
+  const syncHtmlLang = () => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = i18n.language?.split('-')[0] || base;
+    }
+  };
   if (STATIC_LANGS.includes(base)) {
     if (i18n.language?.split('-')[0] !== base) await i18n.changeLanguage(base);
+    syncHtmlLang();
     return;
   }
 
@@ -172,6 +180,7 @@ async function applyLanguage(lang: string) {
     // Fall back to English if AI translation failed.
     if (i18n.language?.split('-')[0] !== 'en') await i18n.changeLanguage('en');
   }
+  syncHtmlLang();
 }
 
 // Helper for language switchers to mark a manual override and apply it.
@@ -191,10 +200,11 @@ export const setManualLanguage = async (lng: string) => {
         style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
         document.head.appendChild(style);
       }
-      // Safety timeout in case translation never resolves.
+      // Safety timeout in case translation never resolves. Kept short:
+      // a visible page with mixed languages beats a blank page any day.
       window.setTimeout(() => {
         document.documentElement.removeAttribute('data-i18n-pending');
-      }, 15000);
+      }, 2500);
     }
   }
   await applyLanguage(lng);
