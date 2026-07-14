@@ -965,7 +965,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   }
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
         description={toMetaDescription(
@@ -1176,9 +1176,15 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       <User className="h-5 w-5 text-accent" />
                       About
                     </h2>
-                    <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {artist.bio || "No bio available."}
-                    </p>
+                    {artist.bio ? (
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {artist.bio}
+                      </p>
+                    ) : (
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
+                        No bio available.
+                      </p>
+                    )}
                   </div>
 
                   {/* Instrument Section for Instrumentalists */}

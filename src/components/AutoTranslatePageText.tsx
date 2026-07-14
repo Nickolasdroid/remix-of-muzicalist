@@ -209,11 +209,11 @@ const AutoTranslatePageText = () => {
     };
 
     const runSync = () => {
-      if (isUserOrArtistProfilePath()) {
-        pendingMissing.current.clear();
-        revealBody();
-        return;
-      }
+      // Artist profile pages run in STATIC-ONLY mode: the exact-match
+      // dictionary translates known UI labels, but nothing is ever sent to
+      // the AI translator — user-generated content (names, bios, reviews)
+      // can never be machine-translated here.
+      const staticOnly = isUserOrArtistProfilePath();
       const lang = getCurrentLanguage();
       if (lang === "en") {
         restoreEnglish();
@@ -226,6 +226,12 @@ const AutoTranslatePageText = () => {
         const { textNodes, attrTargets, originals } = collect();
         const map = translateTextsSync(lang, originals);
         apply(lang, textNodes, attrTargets, map);
+
+        if (staticOnly) {
+          pendingMissing.current.clear();
+          revealBody();
+          return;
+        }
 
         let hasMissing = false;
         originals.forEach((o) => {
@@ -252,7 +258,6 @@ const AutoTranslatePageText = () => {
     // so freshly committed English DOM never becomes visible before we
     // translate it. runSync's revealBody() removes the attribute once done.
     const scheduleSync = () => {
-      if (isUserOrArtistProfilePath()) return;
       if (getCurrentLanguage() === "en") return; // no work needed on English
       // Do NOT hide the body on every mutation — that stalls rendering as
       // content streams in. The route-change effect below handles the
@@ -297,10 +302,6 @@ const AutoTranslatePageText = () => {
   // (using the cached translations) so the user never sees the English flash.
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
-    if (isUserOrArtistProfilePath()) {
-      document.documentElement.removeAttribute("data-i18n-pending");
-      return;
-    }
     if (getCurrentLanguage() === "en") return;
     ensurePendingStyle();
     document.documentElement.setAttribute("data-i18n-pending", "true");

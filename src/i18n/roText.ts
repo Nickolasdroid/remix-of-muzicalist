@@ -678,4 +678,11 @@ export const RO_TEXT: Record<string, string> = {
   "YouTube": "YouTube",
   "YouTube channel URL": "URL-ul canalului de YouTube",
   "Z to A": "De la Z la A",
+  "No bio available.": "Nicio biografie disponibilă.",
+  "followers": "urmăritori",
+  "following": "urmărește",
+  "reviews": "recenzii",
+  "review": "recenzie",
+  "year": "an",
+  "years": "ani",
 };
