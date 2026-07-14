@@ -513,10 +513,11 @@ const Feed = () => {
                         <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no" onClick={() => navigate(`/artist/${item.profile_id}`)}>
                             {item.profile.stage_name}
                           </h3>
+                          {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
 
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{getSpecializationLabel(item.profile.specialization)}</span>
+                          <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                           <span>·</span>
                           <span>{formatDate(item.created_at)}</span>
                           <span>·</span>
