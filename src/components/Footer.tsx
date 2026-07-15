@@ -38,7 +38,11 @@ const Footer = () => {
   }, {
     title: t("footer.plansPricing", "Plans & Pricing"),
     href: "/plans"
+  }, {
+    title: t("footer.faq", "FAQ"),
+    href: "/help"
   }];
+
   const socialLinks = [{
     icon: Facebook,
     href: "https://www.facebook.com/p/Muzicalist-100091939989391/",
