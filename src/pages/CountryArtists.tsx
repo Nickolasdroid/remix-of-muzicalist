@@ -243,15 +243,13 @@ const CountryArtists = () => {
       // If a date is provided, fetch booked artist IDs for that date
       if (urlDate && data && data.length > 0) {
         const artistIdsInCountry = data.map(a => a.id);
-        const { data: bookedEvents } = await supabase
-          .from('calendar_events')
-          .select('profile_id')
-          .eq('event_date', urlDate)
-          .in('status', ['Booked', 'Blocked'])
-          .in('profile_id', artistIdsInCountry);
-        
-        if (bookedEvents) {
-          setBookedArtistIds(new Set(bookedEvents.map(e => e.profile_id)));
+        const { data: bookedIds } = await (supabase as any).rpc('get_booked_profile_ids', {
+          _event_date: urlDate,
+          _profile_ids: artistIdsInCountry,
+        });
+
+        if (bookedIds) {
+          setBookedArtistIds(new Set<string>(bookedIds as string[]));
         }
       }
 

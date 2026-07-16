@@ -1139,6 +1139,10 @@ export type Database = {
         Returns: number
       }
       get_admin_user_ids: { Args: never; Returns: string[] }
+      get_booked_profile_ids: {
+        Args: { _event_date: string; _profile_ids: string[] }
+        Returns: string[]
+      }
       get_my_calendar_event_for_date: {
         Args: { _event_date: string }
         Returns: {

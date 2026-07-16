@@ -351,7 +351,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
         supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at').eq('profile_id', id),
-        supabase.from('calendar_events').select('id, event_date, status, notes').eq('profile_id', id),
+        (supabase as any).rpc('get_public_calendar', { _profile_id: id }),
         supabase.from('reviews')
           .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
           .eq('profile_id', id)
@@ -370,7 +370,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       const userId = sessionRes.data.session?.user?.id;
 
       setGalleryItems(galleryRes.data || []);
-      setCalendarEvents(calendarRes.data || []);
+      setCalendarEvents(
+        ((calendarRes.data || []) as Array<{ event_date: string; status: string; slots: Array<{ startTime: string; endTime: string }> }>).map((row) => ({
+          id: `${row.event_date}`,
+          event_date: row.event_date,
+          status: row.status,
+          notes: (row.slots || []).length
+            ? (row.slots || []).map((s) => `Time: ${s.startTime} - ${s.endTime}`).join('\n\n---\n\n')
+            : null,
+        }))
+      );
 
       // Reviews + avatars (independent)
       enrichReviewsWithAvatars(reviewsRes.data || []).then(setReviews);
