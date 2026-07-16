@@ -97,7 +97,16 @@ const BookArtist = () => {
         return;
       }
       setArtist(artistData as ArtistLite);
-      setEvents((eventData as CalendarEvent[]) || []);
+      setEvents(
+        ((eventData as Array<{ event_date: string; status: string; slots: Array<{ startTime: string; endTime: string }> }>) || []).map((row) => ({
+          id: row.event_date,
+          event_date: row.event_date,
+          status: row.status,
+          notes: (row.slots || []).length
+            ? (row.slots || []).map((s) => `Time: ${s.startTime} - ${s.endTime}`).join("\n\n---\n\n")
+            : null,
+        }))
+      );
       const prof = Array.isArray(profRows) ? profRows[0] : profRows;
       if (prof) setCurrentUserProfile(prof as any);
       setLoading(false);
