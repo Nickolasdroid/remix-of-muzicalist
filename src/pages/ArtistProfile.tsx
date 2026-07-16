@@ -370,7 +370,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       const userId = sessionRes.data.session?.user?.id;
 
       setGalleryItems(galleryRes.data || []);
-      setCalendarEvents(calendarRes.data || []);
+      setCalendarEvents(
+        ((calendarRes.data || []) as Array<{ event_date: string; status: string; slots: Array<{ startTime: string; endTime: string }> }>).map((row) => ({
+          id: `${row.event_date}`,
+          event_date: row.event_date,
+          status: row.status,
+          notes: (row.slots || []).length
+            ? (row.slots || []).map((s) => `Time: ${s.startTime} - ${s.endTime}`).join('\n\n---\n\n')
+            : null,
+        }))
+      );
 
       // Reviews + avatars (independent)
       enrichReviewsWithAvatars(reviewsRes.data || []).then(setReviews);
