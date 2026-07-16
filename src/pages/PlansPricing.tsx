@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 
 import { Button } from "@/components/ui/button";
 import { Check, X, Crown, Info } from "lucide-react";
@@ -80,6 +81,7 @@ const PlansPricing = () => {
 
   return (
     <div className={`min-h-screen ${isAuthenticated ? 'md:ml-64' : ''}`}>
+      <SEO title="Plans & Pricing — Free, Standard & Premium | Muzicalist" description="Compare Muzicalist subscription plans for artists: Free, Standard and Premium. More visibility, more bookings, more features — choose what fits you." path="/plans" />
       <Navigation />
 
       <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-6 lg:px-8`}>

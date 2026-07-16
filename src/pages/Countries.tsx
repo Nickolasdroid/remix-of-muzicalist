@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
@@ -93,6 +94,7 @@ const Countries = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? "md:ml-64" : ""} bg-background relative`}>
+      <SEO title="Browse Artists by Country | Muzicalist" description="Discover talented musicians from countries around the globe. Browse by country and book singers, bands, DJs and instrumentalists on Muzicalist." path="/countries" />
       <Navigation />
 
       <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? "md:pt-8" : "md:pt-24"} pb-24 md:pb-20`}>

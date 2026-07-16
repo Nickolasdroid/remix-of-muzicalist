@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,7 @@ const CountyArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO title={`${county} — Musical Artists for Hire | Muzicalist`} description={`Find and book singers, bands, DJs and instrumentalists in ${county}. Compare profiles, reviews, prices and availability on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}`} />
       <Navigation mobileTitle={county} mobileBackPath="/counties" />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>

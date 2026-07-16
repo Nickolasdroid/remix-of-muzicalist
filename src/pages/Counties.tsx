@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Loader2 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
@@ -75,6 +76,7 @@ const Counties = () => {
 
   return (
     <div className="min-h-screen md:ml-64 bg-background relative">
+      <SEO title="Browse Artists by County | Muzicalist" description="Find musical artists in every county. Browse local singers, bands, DJs and instrumentalists and book the right one for your event on Muzicalist." path="/counties" />
       <Navigation />
       
       <div className="relative z-10 container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">

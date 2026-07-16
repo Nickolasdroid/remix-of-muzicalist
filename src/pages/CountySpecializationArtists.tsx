@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { ArrowLeft } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -84,6 +85,7 @@ const CountySpecializationArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO title={`${specialization} in ${county} — Book Now | Muzicalist`} description={`Browse and book the best ${specialization?.toLowerCase()} in ${county}. See reviews, prices and availability, then send a booking request on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}/${encodeURIComponent(specialization ?? "")}`} />
       <Navigation mobileTitle={county} mobileBackPath={`/counties/${county}`} />
       
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">

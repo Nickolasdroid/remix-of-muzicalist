@@ -6,6 +6,7 @@ import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
@@ -70,6 +71,7 @@ const AllArtists = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="All Artists — Browse & Book Musicians | Muzicalist" description="Browse every artist on Muzicalist: singers, bands, DJs and instrumentalists. Filter by category, location and availability, then book directly." path="/artists" />
       <Navigation mobileTitle="Discover Artists" mobileBackPath="/" />
 
       <div className="container mx-auto px-4 md:px-8 pt-20 md:pt-24 pb-24 md:pb-20">

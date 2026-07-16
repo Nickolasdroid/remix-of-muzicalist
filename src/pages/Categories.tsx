@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import CategoryCard from "@/components/CategoryCard";
 import { Mic, Guitar, Headphones } from "lucide-react";
 import BandIcon from "@/components/icons/BandIcon";
@@ -116,6 +117,7 @@ const Categories = () => {
   }
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background relative`}>
+      <SEO title="Artist Categories — Singers, Bands, DJs & Instrumentalists | Muzicalist" description="Explore musical artists by category: professional singers, complete bands, expert DJs and skilled instrumentalists, ready to book for your event." path="/categories" />
       <Navigation />
       
       <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>

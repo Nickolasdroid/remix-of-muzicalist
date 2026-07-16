@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -369,6 +370,7 @@ const AboutUs = () => {
 
   return (
     <div className={`min-h-screen bg-[#050505] ${isAuthenticated ? 'md:ml-64' : ''}`}>
+      <SEO title="About Muzicalist — The Global Stage for Musical Artists" description="Muzicalist connects talented musicians with clients worldwide. Learn how our platform helps artists get discovered and helps clients book with confidence." path="/about" />
       <Navigation />
       {isAuthenticated ? <AuthenticatedView /> : <PublicAboutPage />}
       {!isAuthenticated && <Footer />}

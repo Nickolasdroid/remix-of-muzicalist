@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { toast } from "sonner";
@@ -153,6 +154,7 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Search Musical Artists | Muzicalist" description="Search singers, bands, DJs and instrumentalists by name, category, location, date and event type. Find the perfect artist on Muzicalist." path="/search" />
       <Navigation hideMobileHeader={true} />
 
       {/* Mobile: Custom search header */}

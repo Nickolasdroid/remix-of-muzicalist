@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -781,6 +782,7 @@ const Leaderboard = () => {
   }
 
   return <div className="min-h-screen md:ml-64 bg-background relative">
+      <SEO title="Top Rated Artists — Leaderboard | Muzicalist" description="See the highest-rated musical artists on Muzicalist, ranked by client reviews and engagement. Find proven performers for your next event." path="/leaderboard" />
       <Navigation />
       
       <div className="relative z-10 pt-16 md:pt-8 pb-24 md:pb-20 px-0">

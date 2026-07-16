@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { useState, useEffect, useMemo } from "react";
@@ -312,6 +313,7 @@ const CountryArtists = () => {
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO title={`${country} — Book Musical Artists | Muzicalist`} description={`Discover singers, bands, DJs and instrumentalists in ${country}. Compare profiles and book the perfect artist for your event on Muzicalist.`} path={`/countries/${encodeURIComponent(country ?? "")}`} />
       <Navigation mobileTitle={displayName} mobileBackPath="/countries" />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
