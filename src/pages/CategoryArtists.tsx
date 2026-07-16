@@ -271,14 +271,12 @@ const CategoryArtists = () => {
         
         // If a date is specified, check availability
         if (urlDate && artistsWithAvailability.length > 0) {
-          const { data: bookedEvents } = await supabase
-            .from('calendar_events')
-            .select('profile_id')
-            .eq('event_date', urlDate)
-            .in('status', ['Booked', 'Blocked'])
-            .in('profile_id', artistsWithAvailability.map(a => a.id));
-          
-          const bookedArtistIds = new Set(bookedEvents?.map(e => e.profile_id) || []);
+          const { data: bookedIds } = await (supabase as any).rpc('get_booked_profile_ids', {
+            _event_date: urlDate,
+            _profile_ids: artistsWithAvailability.map(a => a.id),
+          });
+
+          const bookedArtistIds = new Set<string>((bookedIds as string[] | null) || []);
           
           artistsWithAvailability = artistsWithAvailability.map(a => ({
             ...a,
