@@ -116,6 +116,8 @@ const AdminEmailCampaigns = () => {
   // Confirm dialogs
   const [pendingDelete, setPendingDelete] = useState<DbCampaign | null>(null);
   const [pendingCancel, setPendingCancel] = useState<DbCampaign | null>(null);
+  const [pendingRetry, setPendingRetry] = useState<DbCampaign | null>(null);
+  const [retryLoading, setRetryLoading] = useState(false);
 
   const isMounted = useRef(true);
   useEffect(() => () => { isMounted.current = false; }, []);
