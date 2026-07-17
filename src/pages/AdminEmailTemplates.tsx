@@ -210,7 +210,7 @@ const AdminEmailTemplates = () => {
           </div>
           <Button
             className="rounded-lg self-start sm:self-auto"
-            onClick={() => toast.info("Template editor coming soon.")}
+            onClick={() => navigate("/admin/communications/templates/new")}
           >
             <Plus className="h-4 w-4 mr-1.5" />
             New Template
