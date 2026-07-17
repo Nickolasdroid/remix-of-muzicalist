@@ -160,16 +160,40 @@ const AdminNewCampaign = () => {
 
             <div className="space-y-1.5">
               <Label>Template</Label>
-              <Select value={template} onValueChange={setTemplate}>
+              <Select
+                value={template}
+                onValueChange={setTemplate}
+                disabled={templatesLoading || templates.length === 0}
+              >
                 <SelectTrigger className="rounded-lg h-11">
-                  <SelectValue placeholder="Select a template" />
+                  <SelectValue
+                    placeholder={
+                      templatesLoading
+                        ? "Loading templates…"
+                        : templates.length === 0
+                        ? "No templates available"
+                        : "Select a template"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent className="rounded-lg">
-                  <SelectItem value="legacy-artist-reactivation">
-                    Legacy Artist Reactivation
-                  </SelectItem>
+                  {templates.map((t) => (
+                    <SelectItem
+                      key={t.id}
+                      value={t.id}
+                      disabled={!t.hasActiveVersion}
+                    >
+                      {t.name}
+                      {!t.hasActiveVersion ? " (no published version)" : ""}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {!templatesLoading && templates.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Create a template in Email Templates to get started.
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
