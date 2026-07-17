@@ -7,6 +7,7 @@ import {
   DeliveryResult,
   Recipient,
 } from "../types.ts";
+import { commError } from "../errors.ts";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend/emails";
 const DEFAULT_FROM = "Muzicalist <contact@muzicalist.com>";
