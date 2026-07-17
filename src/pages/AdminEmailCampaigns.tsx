@@ -248,14 +248,19 @@ const AdminEmailCampaigns = () => {
   };
 
   const handleRetry = async (c: DbCampaign) => {
+    setRetryLoading(true);
     try {
       await retryFailedRecipients(c.id);
-      toast.success("Retrying failed recipients");
-      load({ silent: true });
+      toast.success("Retry started successfully.");
+      // Realtime will refresh progress; no manual reload needed.
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not retry campaign");
+    } finally {
+      setRetryLoading(false);
+      setPendingRetry(null);
     }
   };
+
 
   const handleDuplicate = async (c: DbCampaign) => {
     try {
