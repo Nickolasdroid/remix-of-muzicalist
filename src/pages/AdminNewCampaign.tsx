@@ -14,8 +14,14 @@ import {
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
 import RecipientsSummary from "@/components/admin/RecipientsSummary";
+import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
+import { campaignStore, estimateSendingMs } from "@/lib/campaignStore";
 import { toast } from "sonner";
+
+const TEMPLATES: Record<string, string> = {
+  "legacy-artist-reactivation": "Legacy Artist Reactivation",
+};
 
 const AdminNewCampaign = () => {
   const navigate = useNavigate();
@@ -25,6 +31,7 @@ const AdminNewCampaign = () => {
   const [dragOver, setDragOver] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [recipients, setRecipients] = useState<ParsedRecipients | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resetFile = () => {
@@ -56,6 +63,27 @@ const AdminNewCampaign = () => {
 
   const hasValid = (recipients?.valid.length ?? 0) > 0;
   const canStart = hasValid && name.trim().length > 0 && !!template;
+  const estimatedMs = estimateSendingMs(recipients?.valid.length ?? 0);
+
+  const handleConfirm = () => {
+    if (!recipients || !file) return;
+    const templateLabel = TEMPLATES[template] ?? template;
+    campaignStore.create({
+      name: name.trim(),
+      templateId: template,
+      templateLabel,
+      fileName: file.name,
+      totalRecipients: recipients.total,
+      validCount: recipients.valid.length,
+      invalidCount: recipients.invalid.length,
+      validRecipients: recipients.valid,
+      invalidRecipients: recipients.invalid,
+      estimatedDurationMs: estimatedMs,
+    });
+    setConfirmOpen(false);
+    toast.success("Campaign created and set to Pending.");
+    navigate("/admin/communications/campaigns");
+  };
 
   return (
     <>
@@ -201,6 +229,7 @@ const AdminNewCampaign = () => {
                 className="rounded-lg h-11 flex-1"
                 disabled={!canStart}
                 title={!hasValid ? "Upload a file with valid recipients" : undefined}
+                onClick={() => setConfirmOpen(true)}
               >
                 <Rocket className="h-4 w-4 mr-2" />
                 Start Campaign
@@ -209,6 +238,21 @@ const AdminNewCampaign = () => {
             </div>
           </Card>
         </div>
+
+        {recipients && file && (
+          <CampaignConfirmDialog
+            open={confirmOpen}
+            onOpenChange={setConfirmOpen}
+            onConfirm={handleConfirm}
+            name={name.trim()}
+            templateLabel={TEMPLATES[template] ?? template}
+            fileName={file.name}
+            totalRecipients={recipients.total}
+            validCount={recipients.valid.length}
+            invalidCount={recipients.invalid.length}
+            estimatedMs={estimatedMs}
+          />
+        )}
       </main>
     </>
   );
