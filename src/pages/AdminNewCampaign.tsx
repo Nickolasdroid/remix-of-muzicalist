@@ -14,8 +14,14 @@ import {
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
 import RecipientsSummary from "@/components/admin/RecipientsSummary";
+import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
+import { campaignStore, estimateSendingMs } from "@/lib/campaignStore";
 import { toast } from "sonner";
+
+const TEMPLATES: Record<string, string> = {
+  "legacy-artist-reactivation": "Legacy Artist Reactivation",
+};
 
 const AdminNewCampaign = () => {
   const navigate = useNavigate();
