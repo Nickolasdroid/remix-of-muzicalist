@@ -1685,7 +1685,7 @@ export type Database = {
         | "Intermediate"
         | "Advanced"
         | "Professional"
-      user_type: "artist" | "user" | "admin"
+      user_type: "artist" | "user" | "admin" | "moderator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1820,7 +1820,7 @@ export const Constants = {
         "Advanced",
         "Professional",
       ],
-      user_type: ["artist", "user", "admin"],
+      user_type: ["artist", "user", "admin", "moderator"],
     },
   },
 } as const
