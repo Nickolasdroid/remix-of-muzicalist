@@ -18,6 +18,7 @@ import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
 import { campaignStore, estimateSendingMs } from "@/lib/campaignStore";
 import { toast } from "sonner";
+import TestEmailDialog from "@/components/admin/TestEmailDialog";
 
 const TEMPLATES: Record<string, string> = {
   "legacy-artist-reactivation": "Legacy Artist Reactivation",
