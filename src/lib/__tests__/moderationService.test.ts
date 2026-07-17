@@ -124,9 +124,14 @@ describe("mapPostgresError", () => {
 // ---------- Timeline service ---------------------------------------------
 describe("ModerationTimelineService", () => {
   it("assertNoDirectTimelineWrites always throws MOD_PERMISSION_DENIED", () => {
-    expect(() => ModerationTimelineService.assertNoDirectTimelineWrites()).toThrowError(
-      /moderation_case_events/,
-    );
+    try {
+      ModerationTimelineService.assertNoDirectTimelineWrites();
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(ModerationError);
+      expect((e as ModerationError).code).toBe("MOD_PERMISSION_DENIED");
+      expect((e as ModerationError).hint).toMatch(/moderation_case_events/);
+    }
   });
   it("emitted event types cover the core lifecycle", () => {
     for (const t of ["case_created", "status_changed", "action_applied", "note_added"] as const) {
