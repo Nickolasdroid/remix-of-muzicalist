@@ -633,14 +633,13 @@ export default function AdminModeration() {
 
       <ConfirmDialog
         open={confirm.open}
-        onOpenChange={confirm.setOpen}
+        onOpenChange={(o) => (o ? confirm.setOpen(true) : confirm.cancel())}
         title={confirm.config?.title ?? ""}
         description={confirm.config?.description}
         confirmLabel={confirm.config?.confirmLabel}
         tone={confirm.config?.tone}
         loading={confirm.loading}
         onConfirm={confirm.confirm}
-        onCancel={confirm.cancel}
       />
     </div>
   );
