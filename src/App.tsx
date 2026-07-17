@@ -147,6 +147,23 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/communications/templates/new"
+              element={
+                <AdminRoute>
+                  <AdminEditTemplate mode="new" />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/communications/templates/:id"
+              element={
+                <AdminRoute>
+                  <AdminEditTemplate mode="edit" />
+                </AdminRoute>
+              }
+            />
+
+            <Route
               path="/admin/moderation"
               element={
                 <AdminRoute>
