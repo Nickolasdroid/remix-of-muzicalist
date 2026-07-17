@@ -63,6 +63,27 @@ const AdminNewCampaign = () => {
 
   const hasValid = (recipients?.valid.length ?? 0) > 0;
   const canStart = hasValid && name.trim().length > 0 && !!template;
+  const estimatedMs = estimateSendingMs(recipients?.valid.length ?? 0);
+
+  const handleConfirm = () => {
+    if (!recipients || !file) return;
+    const templateLabel = TEMPLATES[template] ?? template;
+    campaignStore.create({
+      name: name.trim(),
+      templateId: template,
+      templateLabel,
+      fileName: file.name,
+      totalRecipients: recipients.total,
+      validCount: recipients.valid.length,
+      invalidCount: recipients.invalid.length,
+      validRecipients: recipients.valid,
+      invalidRecipients: recipients.invalid,
+      estimatedDurationMs: estimatedMs,
+    });
+    setConfirmOpen(false);
+    toast.success("Campaign created and set to Pending.");
+    navigate("/admin/communications/campaigns");
+  };
 
   return (
     <>
