@@ -45,6 +45,8 @@ const PlansPricing = lazy(() => import("./pages/PlansPricing"));
 const MyPlan = lazy(() => import("./pages/MyPlan"));
 const HelpSupport = lazy(() => import("./pages/HelpSupport"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminEmailCampaigns = lazy(() => import("./pages/AdminEmailCampaigns"));
+const AdminNewCampaign = lazy(() => import("./pages/AdminNewCampaign"));
 const BookingRequests = lazy(() => import("./pages/BookingRequests"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
