@@ -29,6 +29,8 @@ const AdminNewCampaign = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [template, setTemplate] = useState<string>("");
+  const [templates, setTemplates] = useState<TemplateOption[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -36,6 +38,38 @@ const AdminNewCampaign = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("email_templates")
+        .select("id, name, active_version_id, status")
+        .order("name", { ascending: true });
+      if (cancelled) return;
+      if (error) {
+        console.error("Failed to load templates", error);
+        toast.error("Could not load email templates.");
+        setTemplates([]);
+      } else {
+        setTemplates(
+          (data ?? []).map((t) => ({
+            id: t.id,
+            name: t.name,
+            hasActiveVersion: !!t.active_version_id,
+          })),
+        );
+      }
+      setTemplatesLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const templateLabelOf = (id: string) =>
+    templates.find((t) => t.id === id)?.name ?? "";
+
 
   const resetFile = () => {
     setFile(null);
