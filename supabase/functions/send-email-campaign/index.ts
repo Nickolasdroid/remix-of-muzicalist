@@ -185,6 +185,23 @@ Deno.serve(async (req) => {
 
   try {
     while (true) {
+      // Graceful cancellation: check status before fetching a new batch.
+      const { data: statusRow } = await admin
+        .from("email_campaigns")
+        .select("status")
+        .eq("id", campaignId)
+        .maybeSingle();
+      if (statusRow?.status === "Cancelled") {
+        return json({
+          campaign_id: campaignId,
+          total_processed: totalProcessed,
+          sent_count: sentDeltaTotal,
+          failed_count: failedDeltaTotal,
+          final_status: "Cancelled",
+          cancelled: true,
+        });
+      }
+
       const batch = await fetchNextBatch(admin, campaignId);
       if (batch.length === 0) break;
 
