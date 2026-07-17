@@ -321,7 +321,7 @@ const AdminNewCampaign = () => {
             open={testOpen}
             onOpenChange={setTestOpen}
             templateId={template}
-            templateLabel={TEMPLATES[template] ?? template}
+            templateLabel={templateLabelOf(template) || template}
             campaignName={name}
           />
         )}
