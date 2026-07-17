@@ -45,6 +45,7 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  Radio,
 } from "lucide-react";
 import CampaignDbStatusBadge from "@/components/admin/CampaignDbStatusBadge";
 import {
@@ -60,9 +61,20 @@ import {
   type DbCampaignRecipient,
 } from "@/lib/campaignsApi";
 import { toast } from "sonner";
+import {
+  combineRealtimeStatus,
+  useRealtimeTable,
+  type RealtimeStatus,
+} from "@/hooks/useRealtimeTable";
 
-const REFRESH_INTERVAL_MS = 5000;
 const RECIPIENTS_PAGE_SIZE = 25;
+
+const FINAL_STATUSES = new Set([
+  "Completed",
+  "CompletedWithErrors",
+  "Failed",
+  "Cancelled",
+]);
 
 const RECIPIENT_STATUS_COLORS: Record<string, string> = {
   Pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
