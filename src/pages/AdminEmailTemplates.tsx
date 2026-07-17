@@ -401,6 +401,10 @@ const AdminEmailTemplates = () => {
                               <Copy className="h-4 w-4 mr-2" />
                               Duplicate
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setVersionsFor(t)}>
+                              <History className="h-4 w-4 mr-2" />
+                              Versions
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {t.status !== "Archived" && (
                               <DropdownMenuItem onClick={() => setPendingArchive(t)}>
