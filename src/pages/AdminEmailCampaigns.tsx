@@ -368,10 +368,9 @@ const AdminEmailCampaigns = () => {
                       const total = c.valid_recipients ?? 0;
                       const done = (c.sent_count ?? 0) + (c.failed_count ?? 0);
                       const canRetry =
-                        (c.failed_count ?? 0) > 0 &&
-                        (c.status === "Completed" ||
-                          c.status === "CompletedWithErrors" ||
-                          c.status === "Failed");
+                        (c.status === "CompletedWithErrors" || (c.failed_count ?? 0) > 0) &&
+                        c.status !== "Sending" &&
+                        c.status !== "Pending";
                       const canCancel = c.status === "Sending";
                       return (
                         <TableRow key={c.id}>
