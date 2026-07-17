@@ -59,11 +59,14 @@ export async function fetchCampaignRecipients(
 }
 
 export async function cancelCampaign(id: string) {
+  // Flag the campaign as Cancelled. The processor checks this status before
+  // fetching each new batch and will stop gracefully after the current batch.
+  // sent_count, failed_count, recipient statuses and attempts are preserved.
   const { error } = await supabase
     .from("email_campaigns")
     .update({ status: "Cancelled", finished_at: new Date().toISOString() })
     .eq("id", id)
-    .eq("status", "Sending");
+    .in("status", ["Pending", "Sending"]);
   if (error) throw error;
 }
 
