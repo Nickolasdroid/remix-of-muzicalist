@@ -1,12 +1,11 @@
 // send-test-email
-// Sends a single preview email using the exact same pipeline as
-// send-email-campaign: renderCampaignEmail -> CommunicationDispatcher ->
-// ResendEmailProvider. Does NOT create a campaign or write any campaign
-// statistics. Admin-only.
+// Sends a single preview email using the selected template's ACTIVE version.
+// Fetches subject + html_content from email_template_versions, substitutes
+// safe demo variables, then delivers through the shared CommunicationDispatcher
+// -> ResendEmailProvider. Does NOT create a campaign or write statistics.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { renderCampaignEmail } from "../_shared/campaignEmail.ts";
 import {
   buildDefaultDispatcher,
   CommunicationPayload,
@@ -28,16 +27,11 @@ interface Body {
   campaign_name?: string;
 }
 
-// Safe demo body used when no explicit template body is provided.
-// Values follow the "existing renderer fallback" contract — any unknown
-// {{token}} is preserved verbatim by src/lib/templateRenderer.ts.
-const DEMO_BODY = `Bună {{artist.name}},
-
-Acesta este un email de test trimis din panoul MUZICALIST pentru a previzualiza template-ul selectat.
-
-Poți gestiona contul tău de artist accesând {{system.dashboard_url}}.
-
-Dacă ai primit acest mesaj din greșeală, îl poți ignora în siguranță.`;
+function substituteVars(input: string, vars: Record<string, string>): string {
+  return input.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_m, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : `{{${key}}}`,
+  );
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -82,7 +76,6 @@ Deno.serve(async (req) => {
   const recipientEmail = body.recipient_email?.trim().toLowerCase() ?? "";
   const recipientName = body.recipient_name?.trim() || null;
   const templateId = body.template_id?.trim();
-  const templateLabel = body.template_label?.trim() || templateId || "Test Email";
 
   if (!templateId) {
     return json({ code: "COMM_TEMPLATE_NOT_FOUND", error: "template_id is required" }, 400);
@@ -98,21 +91,56 @@ Deno.serve(async (req) => {
     return json({ code: "COMM_CONFIG_MISSING", error: "Email gateway not configured" }, 500);
   }
 
-  // Communication Pipeline stage — same renderer used by campaigns.
-  const { subject, html } = renderCampaignEmail({
-    campaignName: `[TEST] ${body.campaign_name?.trim() || templateLabel}`,
-    template: DEMO_BODY
-      .replace(/\{\{artist\.name\}\}/g, recipientName || "Test Artist")
-      .replace(/\{\{system\.dashboard_url\}\}/g, "https://muzicalist.com"),
-    recipientName,
-  });
+  // Fetch the selected template's ACTIVE version so the test email renders
+  // the exact template the admin selected, not a hardcoded demo body.
+  const { data: tpl, error: tplErr } = await admin
+    .from("email_templates")
+    .select("id, name, active_version_id")
+    .eq("id", templateId)
+    .maybeSingle();
+  if (tplErr || !tpl) {
+    return json({ code: "COMM_TEMPLATE_NOT_FOUND", error: "Template not found" }, 404);
+  }
+  if (!tpl.active_version_id) {
+    return json({
+      code: "COMM_TEMPLATE_NOT_FOUND",
+      error: "Template has no active published version",
+    }, 400);
+  }
+
+  const { data: version, error: verErr } = await admin
+    .from("email_template_versions")
+    .select("subject, html_content, text_content")
+    .eq("id", tpl.active_version_id)
+    .maybeSingle();
+  if (verErr || !version || !version.html_content) {
+    return json({
+      code: "COMM_TEMPLATE_NOT_FOUND",
+      error: "Active template version is missing HTML content",
+    }, 400);
+  }
+
+  const vars: Record<string, string> = {
+    "artist.name": recipientName || "Test Artist",
+    "system.dashboard_url": "https://muzicalist.com/dashboard",
+    "recipient.name": recipientName || "Test Artist",
+    "recipient.email": recipientEmail,
+  };
+
+  const subject = substituteVars(version.subject ?? tpl.name ?? "Muzicalist", vars);
+  const html = substituteVars(version.html_content, vars);
+  const text = version.text_content ? substituteVars(version.text_content, vars) : "";
 
   const payload: CommunicationPayload = {
     channel: "email",
     subject,
     html,
-    text: "",
-    metadata: { test_email: true, template_id: templateId },
+    text,
+    metadata: {
+      test_email: true,
+      template_id: templateId,
+      template_version_id: tpl.active_version_id,
+    },
   };
 
   const dispatcher = buildDefaultDispatcher({
