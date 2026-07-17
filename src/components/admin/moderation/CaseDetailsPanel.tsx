@@ -368,6 +368,44 @@ export function CaseDetailsPanel({
             </div>
           )}
         </dl>
+
+        <CollaborationHeader
+          others={presence.others}
+          lockHolder={presence.lockHolder}
+          isReadOnly={presence.isReadOnly}
+          hasTakenOver={presence.hasTakenOver}
+          assignedToOther={assignedProfile}
+          onTakeOver={handleTakeOver}
+          onContinueReadOnly={() => {
+            /* no-op — panel already read-only */
+          }}
+        />
+
+        {pendingChange && (
+          <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs animate-in fade-in slide-in-from-top-1">
+            <RefreshCw className="h-3.5 w-3.5 shrink-0 text-primary" />
+            <span className="flex-1">This case has changed.</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 text-[11px]"
+              onClick={() => setPendingChange(false)}
+            >
+              Dismiss
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 text-[11px]"
+              onClick={() => {
+                void loadDetails();
+                onChanged?.();
+              }}
+            >
+              Refresh
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* ---- Tabs ------------------------------------------------------ */}
@@ -401,6 +439,7 @@ export function CaseDetailsPanel({
               detailsError={detailsError}
               currentUserId={currentUserId}
               runAction={runAction}
+              isReadOnly={isReadOnly}
             />
           </TabsContent>
 
@@ -413,8 +452,9 @@ export function CaseDetailsPanel({
           </TabsContent>
 
           <TabsContent value="notes" className="mt-0">
-            <NotesTab caseId={caseId} />
+            <NotesTab caseId={caseId} isReadOnly={isReadOnly} />
           </TabsContent>
+
 
           <TabsContent value="actions" className="mt-0">
             <ActionsTab caseId={caseId} />
