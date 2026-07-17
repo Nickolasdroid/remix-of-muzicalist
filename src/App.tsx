@@ -45,6 +45,8 @@ const PlansPricing = lazy(() => import("./pages/PlansPricing"));
 const MyPlan = lazy(() => import("./pages/MyPlan"));
 const HelpSupport = lazy(() => import("./pages/HelpSupport"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminEmailCampaigns = lazy(() => import("./pages/AdminEmailCampaigns"));
+const AdminNewCampaign = lazy(() => import("./pages/AdminNewCampaign"));
 const BookingRequests = lazy(() => import("./pages/BookingRequests"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -105,6 +107,22 @@ const App = () => (
               element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/communications/campaigns"
+              element={
+                <AdminRoute>
+                  <AdminEmailCampaigns />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/communications/campaigns/new"
+              element={
+                <AdminRoute>
+                  <AdminNewCampaign />
                 </AdminRoute>
               }
             />
