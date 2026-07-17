@@ -109,6 +109,9 @@ const AdminEmailTemplates = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [pendingDelete, setPendingDelete] = useState<EmailTemplate | null>(null);
   const [pendingArchive, setPendingArchive] = useState<EmailTemplate | null>(null);
+  const [versionsFor, setVersionsFor] = useState<EmailTemplate | null>(null);
+
+
 
   const load = async () => {
     setError(null);
