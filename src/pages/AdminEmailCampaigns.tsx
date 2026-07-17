@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -60,9 +60,20 @@ import {
   type DbCampaignRecipient,
 } from "@/lib/campaignsApi";
 import { toast } from "sonner";
+import {
+  combineRealtimeStatus,
+  useRealtimeTable,
+  type RealtimeStatus,
+} from "@/hooks/useRealtimeTable";
 
-const REFRESH_INTERVAL_MS = 5000;
 const RECIPIENTS_PAGE_SIZE = 25;
+
+const FINAL_STATUSES = new Set([
+  "Completed",
+  "CompletedWithErrors",
+  "Failed",
+  "Cancelled",
+]);
 
 const RECIPIENT_STATUS_COLORS: Record<string, string> = {
   Pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
@@ -127,19 +138,32 @@ const AdminEmailCampaigns = () => {
 
   useEffect(() => { load(); }, [load]);
 
-  const hasSending = useMemo(
-    () => (campaigns ?? []).some((c) => c.status === "Sending"),
-    [campaigns],
-  );
-
-  // Auto-refresh while a campaign is Sending
-  useEffect(() => {
-    if (!hasSending) return;
-    const t = window.setInterval(() => load({ silent: true }), REFRESH_INTERVAL_MS);
-    return () => window.clearInterval(t);
-  }, [hasSending, load]);
-
   const openCampaign = campaigns?.find((c) => c.id === openId) ?? null;
+
+  // ── Realtime: campaigns table (always on) ───────────────────────────────
+  const campaignsRtStatus = useRealtimeTable<DbCampaign>({
+    table: "email_campaigns",
+    event: "*",
+    onChange: (payload) => {
+      setCampaigns((prev) => {
+        const list = prev ?? [];
+        if (payload.eventType === "INSERT") {
+          const row = payload.new as DbCampaign;
+          if (list.some((c) => c.id === row.id)) return list;
+          return [row, ...list];
+        }
+        if (payload.eventType === "UPDATE") {
+          const row = payload.new as DbCampaign;
+          return list.map((c) => (c.id === row.id ? { ...c, ...row } : c));
+        }
+        if (payload.eventType === "DELETE") {
+          const oldRow = payload.old as Partial<DbCampaign>;
+          return list.filter((c) => c.id !== oldRow.id);
+        }
+        return list;
+      });
+    },
+  });
 
   const loadRecipients = useCallback(
     async (campaignId: string, page: number) => {
@@ -168,14 +192,33 @@ const AdminEmailCampaigns = () => {
     loadRecipients(openId, recipientsPage);
   }, [openId, recipientsPage, loadRecipients]);
 
-  // Also refresh drawer while its campaign is Sending
-  useEffect(() => {
-    if (!openCampaign || openCampaign.status !== "Sending") return;
-    const t = window.setInterval(() => {
-      loadRecipients(openCampaign.id, recipientsPage);
-    }, REFRESH_INTERVAL_MS);
-    return () => window.clearInterval(t);
-  }, [openCampaign, recipientsPage, loadRecipients]);
+  // ── Realtime: recipients for the opened campaign (only while Sending) ──
+  // Auto-unsubscribes when the drawer closes OR the campaign reaches a
+  // final status (Completed / CompletedWithErrors / Failed / Cancelled).
+  const recipientsRtEnabled =
+    !!openCampaign && !FINAL_STATUSES.has(openCampaign.status);
+  const refetchTimer = useRef<number | null>(null);
+  const recipientsRtStatus = useRealtimeTable<DbCampaignRecipient>({
+    table: "email_campaign_recipients",
+    filter: openId ? `campaign_id=eq.${openId}` : undefined,
+    event: "*",
+    enabled: recipientsRtEnabled,
+    channelKey: openId ? `rt:recipients:${openId}` : undefined,
+    onChange: () => {
+      // Coalesce bursts of per-recipient updates into a single page refetch.
+      if (refetchTimer.current) window.clearTimeout(refetchTimer.current);
+      refetchTimer.current = window.setTimeout(() => {
+        if (openId) loadRecipients(openId, recipientsPage);
+      }, 400);
+    },
+  });
+  useEffect(() => () => {
+    if (refetchTimer.current) window.clearTimeout(refetchTimer.current);
+  }, []);
+
+  const liveStatus: RealtimeStatus = recipientsRtEnabled
+    ? combineRealtimeStatus(campaignsRtStatus, recipientsRtStatus)
+    : campaignsRtStatus;
 
   const handleCancel = async (c: DbCampaign) => {
     try {
@@ -248,6 +291,7 @@ const AdminEmailCampaigns = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <LiveIndicator status={liveStatus} />
               <Button
                 variant="outline"
                 onClick={() => load()}
@@ -685,5 +729,44 @@ const StatCell = ({
     </div>
   </div>
 );
+
+const LiveIndicator = ({ status }: { status: RealtimeStatus }) => {
+  const isLive = status === "connected";
+  const isConnecting = status === "connecting";
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+        isLive
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+          : isConnecting
+            ? "border-amber-500/30 bg-amber-500/10 text-amber-600"
+            : "border-border bg-muted text-muted-foreground"
+      }`}
+      title={
+        isLive
+          ? "Realtime connected"
+          : isConnecting
+            ? "Reconnecting to realtime…"
+            : "Realtime offline"
+      }
+    >
+      <span className="relative flex h-2 w-2">
+        {isLive && (
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex h-2 w-2 rounded-full ${
+            isLive
+              ? "bg-emerald-500"
+              : isConnecting
+                ? "bg-amber-500 animate-pulse"
+                : "bg-muted-foreground"
+          }`}
+        />
+      </span>
+      {isLive ? "Live" : isConnecting ? "Reconnecting…" : "Offline"}
+    </div>
+  );
+};
 
 export default AdminEmailCampaigns;
