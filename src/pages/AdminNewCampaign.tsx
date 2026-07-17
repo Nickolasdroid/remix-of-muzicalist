@@ -221,8 +221,9 @@ const AdminNewCampaign = () => {
               <Button
                 variant="outline"
                 className="rounded-lg h-11 flex-1"
-                disabled
-                title="Coming soon"
+                disabled={!template}
+                title={!template ? "Select a template first" : undefined}
+                onClick={() => setTestOpen(true)}
               >
                 <Send className="h-4 w-4 mr-2" />
                 Send Test Email
