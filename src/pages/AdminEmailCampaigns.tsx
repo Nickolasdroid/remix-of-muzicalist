@@ -435,7 +435,7 @@ const AdminEmailCampaigns = () => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-lg">
                                   {canRetry && (
-                                    <DropdownMenuItem onClick={() => handleRetry(c)}>
+                                    <DropdownMenuItem onClick={() => setPendingRetry(c)}>
                                       <RotateCcw className="h-4 w-4 mr-2" />
                                       Retry Failed
                                     </DropdownMenuItem>
