@@ -307,7 +307,7 @@ const AdminNewCampaign = () => {
             onOpenChange={setConfirmOpen}
             onConfirm={handleConfirm}
             name={name.trim()}
-            templateLabel={TEMPLATES[template] ?? template}
+            templateLabel={templateLabelOf(template) || template}
             fileName={file.name}
             totalRecipients={recipients.total}
             validCount={recipients.valid.length}
