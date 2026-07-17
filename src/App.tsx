@@ -49,6 +49,7 @@ const AdminEmailCampaigns = lazy(() => import("./pages/AdminEmailCampaigns"));
 const AdminNewCampaign = lazy(() => import("./pages/AdminNewCampaign"));
 const AdminCampaignDetail = lazy(() => import("./pages/AdminCampaignDetail"));
 const AdminEmailTemplates = lazy(() => import("./pages/AdminEmailTemplates"));
+const AdminEditTemplate = lazy(() => import("./pages/AdminEditTemplate"));
 const AdminModeration = lazy(() => import("./pages/AdminModeration"));
 const BookingRequests = lazy(() => import("./pages/BookingRequests"));
 const NotFound = lazy(() => import("./pages/NotFound"));
