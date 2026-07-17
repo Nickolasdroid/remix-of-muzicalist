@@ -4,14 +4,19 @@ import { MapPin, Music, CalendarIcon, Search } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { lazy, Suspense } from "react";
+// Calendar (react-day-picker, ~90KB) is only needed when the date popover
+// opens — lazy-loaded so it stays out of the main bundle.
+const Calendar = lazy(() =>
+  import("@/components/ui/calendar").then((m) => ({ default: m.Calendar }))
+);
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag, getCountryName, getCountryCode } from "@/lib/countryFlags";
-import { countryAdminDivisions } from "@/lib/countryAdminDivisions";
+// countryAdminDivisions (~55KB) is loaded lazily after mount — see below.
 import { useEffect } from "react";
 
 const categories = ["Singer", "Instrumentalist", "DJ", "Band"] as const;
@@ -47,7 +52,15 @@ const HeroSearchBar = () => {
   }, []);
 
   const countryCode = selectedCountry ? getCountryCode(selectedCountry) : null;
-  const regions = countryCode ? countryAdminDivisions[countryCode]?.regions || [] : [];
+  const [adminDivisions, setAdminDivisions] = useState<Record<string, { regions: string[] }> | null>(null);
+  useEffect(() => {
+    // Loaded in the background right after mount; ready long before the
+    // user picks a country.
+    import("@/lib/countryAdminDivisions").then((m) =>
+      setAdminDivisions(m.countryAdminDivisions as any)
+    );
+  }, []);
+  const regions = countryCode ? adminDivisions?.[countryCode]?.regions || [] : [];
 
   const locationLabel = selectedCountry
     ? `${getCountryFlag(selectedCountry)} ${selectedRegion || getCountryName(selectedCountry)}`
@@ -216,13 +229,15 @@ const HeroSearchBar = () => {
                 <DrawerTitle>Select Date</DrawerTitle>
               </DrawerHeader>
               <div className="flex justify-center">
-                <Calendar
+                <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">...</div>}>
+                  <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={(d) => { setSelectedDate(d); setDateOpen(false); }}
                   disabled={(date) => date < new Date()}
                   className="p-3 pointer-events-auto"
                 />
+                </Suspense>
               </div>
             </DrawerContent>
           </Drawer>

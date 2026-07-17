@@ -6,7 +6,15 @@ import en from './locales/en.json';
 import ro from './locales/ro.json';
 import { languageForCountry } from '@/lib/countryLanguages';
 import { getOverride, TRANSLATION_OVERRIDES } from './overrides';
-import { RO_TEXT } from './roText';
+// The Romanian dictionary (~130KB raw) is code-split and loaded lazily so
+// non-Romanian visitors never download it. The import is kicked off at module
+// load for Romanian visitors, so it's ready before first paint in practice.
+let RO_TEXT: Record<string, string> = {};
+let roDictPromise: Promise<void> | null = null;
+const ensureRoDict = (): Promise<void> =>
+  (roDictPromise ??= import('./roText').then((m) => {
+    RO_TEXT = m.RO_TEXT;
+  }));
 import { restoreBrandName, restoreBrandNameDeep } from '@/lib/brandName';
 
 const STATIC_RESOURCES: Record<string, any> = {
@@ -124,6 +132,12 @@ if (!i18n.isInitialized) {
       },
     });
 
+
+// Kick off the Romanian dictionary download immediately for Romanian
+// visitors — in parallel with everything else, before React even mounts.
+if (typeof window !== 'undefined' && getInitialLanguage() === 'ro') {
+  void ensureRoDict();
+}
   // Auto-localize based on visitor country (IP geolocation).
   // Skipped if the user has manually picked a language, and skipped entirely
   // when the browser already declares a non-English preferred language —
@@ -204,6 +218,7 @@ async function applyLanguage(lang: string) {
     }
   };
   if (STATIC_LANGS.includes(base)) {
+    if (base === 'ro') await ensureRoDict();
     if (i18n.language?.split('-')[0] !== base) await i18n.changeLanguage(base);
     syncHtmlLang();
     return;
@@ -327,6 +342,7 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   const uniqueTexts = [...new Set(texts.map((text) => text.trim()).filter(Boolean))];
   if (!uniqueTexts.length || base === 'en') return Object.fromEntries(uniqueTexts.map((text) => [text, text]));
 
+  if (base === 'ro') await ensureRoDict();
   const cache = loadCache(base);
   const overrides = TRANSLATION_OVERRIDES[base] || {};
   const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
