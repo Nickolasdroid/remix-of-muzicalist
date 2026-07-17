@@ -545,8 +545,8 @@ const AdminEmailCampaigns = () => {
                             </TableRow>
                           ) : (
                             recipients.map((r) => (
-                              <>
-                                <TableRow key={r.id}>
+                              <Fragment key={r.id}>
+                                <TableRow>
                                   <TableCell className="text-sm">{r.recipient_name || "—"}</TableCell>
                                   <TableCell className="text-sm text-muted-foreground truncate max-w-[200px]" title={r.recipient_email}>
                                     {r.recipient_email}
@@ -562,13 +562,13 @@ const AdminEmailCampaigns = () => {
                                   </TableCell>
                                 </TableRow>
                                 {r.error_message && (
-                                  <TableRow key={`${r.id}-err`} className="bg-destructive/5 hover:bg-destructive/5">
+                                  <TableRow className="bg-destructive/5 hover:bg-destructive/5">
                                     <TableCell colSpan={5} className="text-xs text-destructive py-2">
                                       <span className="font-medium">Error:</span> {r.error_message}
                                     </TableCell>
                                   </TableRow>
                                 )}
-                              </>
+                              </Fragment>
                             ))
                           )}
                         </TableBody>
