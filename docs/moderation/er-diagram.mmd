@@ -1,0 +1,99 @@
+erDiagram
+    moderation_cases ||--o{ moderation_reports : "has"
+    moderation_cases ||--o{ moderation_evidence : "has"
+    moderation_cases ||--o{ moderation_case_notes : "has"
+    moderation_cases ||--o{ moderation_actions : "has"
+    moderation_cases ||--o{ moderation_case_events : "audit"
+    moderation_categories ||--o{ moderation_cases : "classifies"
+    moderation_target_types ||--o{ moderation_cases : "targets"
+    moderation_target_types ||--o{ moderation_actions : "targets"
+    moderation_action_types ||--o{ moderation_actions : "type"
+    moderation_action_types ||--o{ moderation_cases : "resolution"
+
+    moderation_cases {
+        uuid id PK
+        text case_number UK
+        enum status
+        enum priority
+        uuid category_id FK
+        uuid target_type_id FK
+        uuid target_id
+        uuid reporter_id
+        uuid assigned_moderator_id
+        text title
+        text summary
+        text resolution_notes
+        uuid resolution_action_id FK
+        int reports_count
+        timestamptz created_at
+        timestamptz updated_at
+        timestamptz triaged_at
+        timestamptz first_review_at
+        timestamptz resolved_at
+        timestamptz closed_at
+        timestamptz reopened_at
+    }
+    moderation_reports {
+        uuid id PK
+        uuid case_id FK
+        uuid reporter_id
+        text reason_key
+        text description
+        text source
+    }
+    moderation_evidence {
+        uuid id PK
+        uuid case_id FK
+        text kind
+        text url
+        jsonb snapshot
+    }
+    moderation_case_notes {
+        uuid id PK
+        uuid case_id FK
+        uuid author_id
+        text body
+        bool is_internal
+    }
+    moderation_actions {
+        uuid id PK
+        uuid case_id FK
+        uuid action_type_id FK
+        uuid performed_by
+        uuid target_type_id FK
+        uuid target_id
+        text reason
+        jsonb parameters
+        bool is_reversed
+        uuid reversed_by
+        timestamptz reversed_at
+    }
+    moderation_case_events {
+        uuid id PK
+        uuid case_id FK
+        enum event_type
+        uuid actor_id
+        jsonb from_value
+        jsonb to_value
+        jsonb payload
+        text message
+    }
+    moderation_categories {
+        uuid id PK
+        text key UK
+        text label
+        enum default_priority
+    }
+    moderation_target_types {
+        uuid id PK
+        text key UK
+        text label
+        text table_name
+    }
+    moderation_action_types {
+        uuid id PK
+        text key UK
+        text label
+        bool is_reversible
+        int severity
+    }

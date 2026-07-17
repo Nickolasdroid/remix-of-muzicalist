@@ -825,6 +825,442 @@ export type Database = {
           },
         ]
       }
+      moderation_action_types: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          is_reversible: boolean
+          key: string
+          label: string
+          severity: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_reversible?: boolean
+          key: string
+          label: string
+          severity?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_reversible?: boolean
+          key?: string
+          label?: string
+          severity?: number
+        }
+        Relationships: []
+      }
+      moderation_actions: {
+        Row: {
+          action_type_id: string
+          case_id: string
+          created_at: string
+          id: string
+          is_reversed: boolean
+          parameters: Json
+          performed_by: string | null
+          reason: string | null
+          reversal_reason: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          target_id: string | null
+          target_type_id: string | null
+        }
+        Insert: {
+          action_type_id: string
+          case_id: string
+          created_at?: string
+          id?: string
+          is_reversed?: boolean
+          parameters?: Json
+          performed_by?: string | null
+          reason?: string | null
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          target_id?: string | null
+          target_type_id?: string | null
+        }
+        Update: {
+          action_type_id?: string
+          case_id?: string
+          created_at?: string
+          id?: string
+          is_reversed?: boolean
+          parameters?: Json
+          performed_by?: string | null
+          reason?: string | null
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          target_id?: string | null
+          target_type_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_actions_action_type_id_fkey"
+            columns: ["action_type_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_action_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_actions_target_type_id_fkey"
+            columns: ["target_type_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_target_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_case_events: {
+        Row: {
+          actor_id: string | null
+          actor_role: string | null
+          case_id: string
+          created_at: string
+          event_type: Database["public"]["Enums"]["moderation_event_type"]
+          from_value: Json | null
+          id: string
+          message: string | null
+          payload: Json
+          to_value: Json | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_role?: string | null
+          case_id: string
+          created_at?: string
+          event_type: Database["public"]["Enums"]["moderation_event_type"]
+          from_value?: Json | null
+          id?: string
+          message?: string | null
+          payload?: Json
+          to_value?: Json | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_role?: string | null
+          case_id?: string
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["moderation_event_type"]
+          from_value?: Json | null
+          id?: string
+          message?: string | null
+          payload?: Json
+          to_value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_case_events_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_case_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          case_id: string
+          created_at: string
+          id: string
+          is_internal: boolean
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          case_id: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          case_id?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_case_notes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_cases: {
+        Row: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_moderator_id?: string | null
+          case_number?: string
+          category_id: string
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          first_review_at?: string | null
+          id?: string
+          metadata?: Json
+          priority?: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at?: string | null
+          reporter_id?: string | null
+          reports_count?: number
+          resolution_action_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["moderation_case_status"]
+          summary?: string | null
+          target_id: string
+          target_snapshot?: Json | null
+          target_type_id: string
+          title: string
+          triaged_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_moderator_id?: string | null
+          case_number?: string
+          category_id?: string
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          first_review_at?: string | null
+          id?: string
+          metadata?: Json
+          priority?: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at?: string | null
+          reporter_id?: string | null
+          reports_count?: number
+          resolution_action_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["moderation_case_status"]
+          summary?: string | null
+          target_id?: string
+          target_snapshot?: Json | null
+          target_type_id?: string
+          title?: string
+          triaged_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_cases_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_cases_resolution_action_id_fkey"
+            columns: ["resolution_action_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_action_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "moderation_cases_target_type_id_fkey"
+            columns: ["target_type_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_target_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_categories: {
+        Row: {
+          created_at: string
+          default_priority: Database["public"]["Enums"]["moderation_priority"]
+          description: string | null
+          id: string
+          is_active: boolean
+          key: string
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_priority?: Database["public"]["Enums"]["moderation_priority"]
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          key: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_priority?: Database["public"]["Enums"]["moderation_priority"]
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          key?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      moderation_evidence: {
+        Row: {
+          added_by: string | null
+          case_id: string
+          content: string | null
+          created_at: string
+          id: string
+          kind: string
+          snapshot: Json | null
+          url: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          case_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          snapshot?: Json | null
+          url?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          case_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          snapshot?: Json | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_evidence_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_reports: {
+        Row: {
+          case_id: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json
+          reason_key: string | null
+          reporter_email: string | null
+          reporter_id: string | null
+          source: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          reason_key?: string | null
+          reporter_email?: string | null
+          reporter_id?: string | null
+          source?: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          reason_key?: string | null
+          reporter_email?: string | null
+          reporter_id?: string | null
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moderation_reports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "moderation_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moderation_target_types: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          label: string
+          sort_order: number
+          table_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key: string
+          label: string
+          sort_order?: number
+          table_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key?: string
+          label?: string
+          sort_order?: number
+          table_name?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -1442,6 +1878,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      generate_moderation_case_number: { Args: never; Returns: string }
       get_accepted_events_count: {
         Args: { _profile_id: string }
         Returns: number
@@ -1581,6 +2018,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_type"]
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1685,7 +2123,34 @@ export type Database = {
         | "Intermediate"
         | "Advanced"
         | "Professional"
-      user_type: "artist" | "user" | "admin"
+      moderation_case_status:
+        | "open"
+        | "triaged"
+        | "in_review"
+        | "waiting_for_response"
+        | "resolved"
+        | "closed"
+        | "reopened"
+      moderation_event_type:
+        | "case_created"
+        | "case_assigned"
+        | "case_unassigned"
+        | "status_changed"
+        | "priority_changed"
+        | "category_changed"
+        | "report_added"
+        | "evidence_added"
+        | "note_added"
+        | "action_applied"
+        | "action_reversed"
+        | "decision_changed"
+        | "appeal_received"
+        | "case_reopened"
+        | "case_resolved"
+        | "case_closed"
+        | "system_note"
+      moderation_priority: "low" | "medium" | "high" | "critical"
+      user_type: "artist" | "user" | "admin" | "moderator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1820,7 +2285,36 @@ export const Constants = {
         "Advanced",
         "Professional",
       ],
-      user_type: ["artist", "user", "admin"],
+      moderation_case_status: [
+        "open",
+        "triaged",
+        "in_review",
+        "waiting_for_response",
+        "resolved",
+        "closed",
+        "reopened",
+      ],
+      moderation_event_type: [
+        "case_created",
+        "case_assigned",
+        "case_unassigned",
+        "status_changed",
+        "priority_changed",
+        "category_changed",
+        "report_added",
+        "evidence_added",
+        "note_added",
+        "action_applied",
+        "action_reversed",
+        "decision_changed",
+        "appeal_received",
+        "case_reopened",
+        "case_resolved",
+        "case_closed",
+        "system_note",
+      ],
+      moderation_priority: ["low", "medium", "high", "critical"],
+      user_type: ["artist", "user", "admin", "moderator"],
     },
   },
 } as const
