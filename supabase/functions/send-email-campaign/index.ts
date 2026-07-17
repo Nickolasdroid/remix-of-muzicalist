@@ -155,35 +155,25 @@ Deno.serve(async (req) => {
     return json({ error: "Email gateway not configured" }, 500);
   }
 
-  // --- Load campaign ---
-  const { data: campaign, error: campaignError } = await admin
-    .from("email_campaigns")
-    .select("*")
-    .eq("id", campaignId)
-    .maybeSingle();
-  if (campaignError) return json({ error: "Failed to load campaign", details: campaignError.message }, 500);
-  if (!campaign) return json({ error: "Campaign not found" }, 404);
-
-  const currentStatus = String(campaign.status ?? "");
-  if (currentStatus !== "Pending" && currentStatus !== "Sending") {
-    return json(
-      { error: `Campaign cannot be processed. Expected 'Pending' or 'Sending', got '${campaign.status}'.` },
-      409,
-    );
+  // --- Atomic lock: only proceed if we can flip Pending -> Sending
+  //     (or reclaim a Sending campaign that has been stuck for >15 min). ---
+  const { data: lockedRows, error: lockError } = await admin.rpc(
+    "try_lock_email_campaign",
+    { _campaign_id: campaignId },
+  );
+  if (lockError) {
+    return json({ error: "Failed to acquire campaign lock", details: lockError.message }, 500);
   }
-
-  // --- Transition Pending -> Sending (idempotent) ---
-  if (currentStatus === "Pending") {
-    const { data: updated, error: updateError } = await admin
+  const campaign = Array.isArray(lockedRows) ? lockedRows[0] : lockedRows;
+  if (!campaign) {
+    // Either the campaign doesn't exist, or it's already being processed by another run.
+    const { data: existing } = await admin
       .from("email_campaigns")
-      .update({ status: "Sending", started_at: new Date().toISOString(), last_error: null })
+      .select("id")
       .eq("id", campaignId)
-      .eq("status", "Pending")
-      .select()
       .maybeSingle();
-    if (updateError || !updated) {
-      return json({ error: "Failed to transition campaign to Sending", details: updateError?.message }, 500);
-    }
+    if (!existing) return json({ error: "Campaign not found" }, 404);
+    return json({ error: "Campaign is already being processed." }, 409);
   }
 
   const campaignName: string = campaign.name ?? "Muzicalist";
