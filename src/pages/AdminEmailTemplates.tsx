@@ -50,6 +50,7 @@ import {
   LayoutTemplate,
   AlertCircle,
   RotateCcw,
+  History,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -63,6 +64,7 @@ import {
   type TemplateCategory,
   type TemplateStatus,
 } from "@/lib/emailTemplates";
+import EmailTemplateVersionsDialog from "@/components/admin/EmailTemplateVersionsDialog";
 
 type CategoryFilter = "All" | TemplateCategory;
 type StatusFilter = "All" | TemplateStatus;
