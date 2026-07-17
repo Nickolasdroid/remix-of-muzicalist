@@ -833,7 +833,7 @@ function EvidenceIcon({ kind }: { kind: string }) {
 // Notes
 // =========================================================================
 
-function NotesTab({ caseId }: { caseId: string }) {
+function NotesTab({ caseId, isReadOnly = false }: { caseId: string; isReadOnly?: boolean }) {
   const [items, setItems] = useState<ModerationCaseNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
