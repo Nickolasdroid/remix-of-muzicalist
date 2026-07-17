@@ -186,6 +186,12 @@ Deno.serve(async (req) => {
   let sentDeltaTotal = 0;
   let failedDeltaTotal = 0;
 
+  // Communication Dispatcher — the only place aware of concrete providers.
+  const dispatcher: CommunicationDispatcher = buildDefaultDispatcher({
+    lovableApiKey: LOVABLE_API_KEY,
+    resendApiKey: RESEND_API_KEY,
+  });
+
   try {
     while (true) {
       // Graceful cancellation: check status before fetching a new batch.
@@ -217,29 +223,41 @@ Deno.serve(async (req) => {
 
         totalProcessed++;
 
+        // Communication Pipeline stage: build the channel-agnostic payload.
         const { subject, html } = renderCampaignEmail({
           campaignName,
           template,
           recipientName: recipient.recipient_name,
         });
-
-        const result = await sendCampaignEmailViaResend({
-          to: recipient.recipient_email,
+        const payload: CommunicationPayload = {
+          channel: "email",
           subject,
           html,
-          lovableApiKey: LOVABLE_API_KEY,
-          resendApiKey: RESEND_API_KEY,
+          text: "",
+          metadata: { campaign_id: campaignId },
+        };
+
+        // Dispatcher stage: delegates to the registered EmailProvider.
+        const result = await dispatcher.dispatch({
+          channel: "email",
+          recipient: {
+            email: recipient.recipient_email,
+            name: recipient.recipient_name,
+          },
+          payload,
         });
 
-        if (result.ok) {
+        if (result.success) {
           await markSent(admin, recipient.id);
           batchSent++;
         } else {
-          console.error(`Send failed for ${recipient.recipient_email}: ${result.error}`);
-          await markFailed(admin, recipient.id, result.error);
+          const errMsg = result.error ?? "Unknown delivery error";
+          console.error(`Send failed for ${recipient.recipient_email}: ${errMsg}`);
+          await markFailed(admin, recipient.id, errMsg);
           batchFailed++;
         }
       }
+
 
       await persistCampaignProgress(admin, campaignId, batchSent, batchFailed);
       sentDeltaTotal += batchSent;
