@@ -229,6 +229,7 @@ const AdminNewCampaign = () => {
                 className="rounded-lg h-11 flex-1"
                 disabled={!canStart}
                 title={!hasValid ? "Upload a file with valid recipients" : undefined}
+                onClick={() => setConfirmOpen(true)}
               >
                 <Rocket className="h-4 w-4 mr-2" />
                 Start Campaign
@@ -237,6 +238,21 @@ const AdminNewCampaign = () => {
             </div>
           </Card>
         </div>
+
+        {recipients && file && (
+          <CampaignConfirmDialog
+            open={confirmOpen}
+            onOpenChange={setConfirmOpen}
+            onConfirm={handleConfirm}
+            name={name.trim()}
+            templateLabel={TEMPLATES[template] ?? template}
+            fileName={file.name}
+            totalRecipients={recipients.total}
+            validCount={recipients.valid.length}
+            invalidCount={recipients.invalid.length}
+            estimatedMs={estimatedMs}
+          />
+        )}
       </main>
     </>
   );
