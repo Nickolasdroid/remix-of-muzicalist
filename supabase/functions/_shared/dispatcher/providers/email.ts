@@ -81,7 +81,7 @@ export class ResendEmailProvider implements CommunicationProvider {
           message_id: null,
           status: "failed",
           error: `Resend ${resp.status}: ${text.slice(0, 500)}`,
-          metadata: { http_status: resp.status },
+          metadata: { http_status: resp.status, error_code: "COMM_DELIVERY_FAILED" },
         };
       }
 
@@ -101,7 +101,7 @@ export class ResendEmailProvider implements CommunicationProvider {
         message_id: null,
         status: "failed",
         error: err instanceof Error ? err.message : String(err),
-        metadata: {},
+        metadata: { error_code: "COMM_DELIVERY_FAILED" },
       };
     }
   }
