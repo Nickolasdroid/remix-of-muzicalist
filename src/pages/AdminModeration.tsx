@@ -595,30 +595,18 @@ export default function AdminModeration() {
             </div>
           </section>
 
-          {/* RIGHT — case details placeholder */}
+          {/* RIGHT — case details */}
           <aside className="hidden lg:block">
-            <SectionCard title="Case Details">
+            <div className="sticky top-4 h-[calc(100vh-6rem)] overflow-hidden rounded-lg border border-border bg-card">
               {selectedCase ? (
-                <div className="space-y-3">
-                  <div>
-                    <div className="font-mono text-xs text-muted-foreground">
-                      {selectedCase.case_number}
-                    </div>
-                    <div className="mt-1 text-sm font-medium">{selectedCase.title}</div>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <StatusBadge tone={priorityTone(selectedCase.priority)} label={selectedCase.priority} />
-                    <StatusBadge
-                      tone={statusTone(selectedCase.status)}
-                      label={selectedCase.status.replaceAll("_", " ")}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Full case detail panel coming soon.
-                  </p>
-                </div>
+                <CaseDetailsPanel
+                  caseRow={selectedCase}
+                  currentUserId={me}
+                  onChanged={() => void load()}
+                  onClose={() => setSelectedCase(null)}
+                />
               ) : (
-                <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
+                <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
                   <Inbox className="h-8 w-8 text-muted-foreground/60" />
                   <p className="text-sm font-medium">Select a case to review</p>
                   <p className="text-xs text-muted-foreground">
@@ -626,10 +614,33 @@ export default function AdminModeration() {
                   </p>
                 </div>
               )}
-            </SectionCard>
+            </div>
           </aside>
         </div>
       </main>
+
+      {/* Mobile / tablet — full-screen details sheet */}
+      <Sheet
+        open={!!selectedCase}
+        onOpenChange={(o) => {
+          if (!o) setSelectedCase(null);
+        }}
+      >
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 p-0 sm:max-w-lg lg:hidden"
+        >
+          {selectedCase && (
+            <CaseDetailsPanel
+              caseRow={selectedCase}
+              currentUserId={me}
+              onChanged={() => void load()}
+              onClose={() => setSelectedCase(null)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+
 
       <ConfirmDialog
         open={confirm.open}
