@@ -25,10 +25,11 @@ const items: CommItem[] = [
   },
   {
     key: "templates",
-    title: "Templates",
+    title: "Email Templates",
     description: "Manage reusable email templates.",
     icon: LayoutTemplate,
-    status: { kind: "soon" },
+    status: { kind: "active" },
+    href: "/admin/communications/templates",
   },
   {
     key: "audiences",
