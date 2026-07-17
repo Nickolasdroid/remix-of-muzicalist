@@ -88,11 +88,26 @@ export interface CommunicationPayload {
   };
 }
 
+export type CommunicationPipelineErrorCode =
+  | "template_not_found"
+  | "no_active_version"
+  | "version_not_found";
+
+const PIPELINE_TO_CATALOG: Record<CommunicationPipelineErrorCode, CommErrorCode> = {
+  template_not_found: "COMM_TEMPLATE_NOT_FOUND",
+  no_active_version: "COMM_ACTIVE_VERSION_NOT_FOUND",
+  version_not_found: "COMM_VERSION_NOT_FOUND",
+};
+
 export class CommunicationPipelineError extends Error {
-  code: "template_not_found" | "no_active_version" | "version_not_found";
-  constructor(code: CommunicationPipelineError["code"], message: string) {
-    super(message);
+  code: CommunicationPipelineErrorCode;
+  /** Stable identifier from the shared communication error catalog. */
+  errorCode: CommErrorCode;
+  constructor(code: CommunicationPipelineErrorCode, message?: string) {
+    const catalogCode = PIPELINE_TO_CATALOG[code];
+    super(message ?? COMM_ERROR_MESSAGES[catalogCode]);
     this.code = code;
+    this.errorCode = catalogCode;
   }
 }
 
