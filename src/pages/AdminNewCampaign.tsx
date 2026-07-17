@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -20,14 +21,16 @@ import { campaignStore, estimateSendingMs } from "@/lib/campaignStore";
 import { toast } from "sonner";
 import TestEmailDialog from "@/components/admin/TestEmailDialog";
 
-const TEMPLATES: Record<string, string> = {
-  "legacy-artist-reactivation": "Legacy Artist Reactivation",
-};
+type TemplateOption = { id: string; name: string; hasActiveVersion: boolean };
+
+
 
 const AdminNewCampaign = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [template, setTemplate] = useState<string>("");
+  const [templates, setTemplates] = useState<TemplateOption[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -35,6 +38,38 @@ const AdminNewCampaign = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("email_templates")
+        .select("id, name, active_version_id, status")
+        .order("name", { ascending: true });
+      if (cancelled) return;
+      if (error) {
+        console.error("Failed to load templates", error);
+        toast.error("Could not load email templates.");
+        setTemplates([]);
+      } else {
+        setTemplates(
+          (data ?? []).map((t) => ({
+            id: t.id,
+            name: t.name,
+            hasActiveVersion: !!t.active_version_id,
+          })),
+        );
+      }
+      setTemplatesLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const templateLabelOf = (id: string) =>
+    templates.find((t) => t.id === id)?.name ?? "";
+
 
   const resetFile = () => {
     setFile(null);
@@ -69,7 +104,7 @@ const AdminNewCampaign = () => {
 
   const handleConfirm = () => {
     if (!recipients || !file) return;
-    const templateLabel = TEMPLATES[template] ?? template;
+    const templateLabel = templateLabelOf(template) || template;
     campaignStore.create({
       name: name.trim(),
       templateId: template,
@@ -125,16 +160,40 @@ const AdminNewCampaign = () => {
 
             <div className="space-y-1.5">
               <Label>Template</Label>
-              <Select value={template} onValueChange={setTemplate}>
+              <Select
+                value={template}
+                onValueChange={setTemplate}
+                disabled={templatesLoading || templates.length === 0}
+              >
                 <SelectTrigger className="rounded-lg h-11">
-                  <SelectValue placeholder="Select a template" />
+                  <SelectValue
+                    placeholder={
+                      templatesLoading
+                        ? "Loading templates…"
+                        : templates.length === 0
+                        ? "No templates available"
+                        : "Select a template"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent className="rounded-lg">
-                  <SelectItem value="legacy-artist-reactivation">
-                    Legacy Artist Reactivation
-                  </SelectItem>
+                  {templates.map((t) => (
+                    <SelectItem
+                      key={t.id}
+                      value={t.id}
+                      disabled={!t.hasActiveVersion}
+                    >
+                      {t.name}
+                      {!t.hasActiveVersion ? " (no published version)" : ""}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {!templatesLoading && templates.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Create a template in Email Templates to get started.
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -248,7 +307,7 @@ const AdminNewCampaign = () => {
             onOpenChange={setConfirmOpen}
             onConfirm={handleConfirm}
             name={name.trim()}
-            templateLabel={TEMPLATES[template] ?? template}
+            templateLabel={templateLabelOf(template) || template}
             fileName={file.name}
             totalRecipients={recipients.total}
             validCount={recipients.valid.length}
@@ -262,7 +321,7 @@ const AdminNewCampaign = () => {
             open={testOpen}
             onOpenChange={setTestOpen}
             templateId={template}
-            templateLabel={TEMPLATES[template] ?? template}
+            templateLabel={templateLabelOf(template) || template}
             campaignName={name}
           />
         )}
