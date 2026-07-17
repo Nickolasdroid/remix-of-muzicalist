@@ -888,11 +888,20 @@ function NotesTab({ caseId, isReadOnly = false }: { caseId: string; isReadOnly?:
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Add an internal note visible only to moderators…"
+          placeholder={
+            isReadOnly
+              ? "Read-only — take over the review to add notes."
+              : "Add an internal note visible only to moderators…"
+          }
+          disabled={isReadOnly}
           className="min-h-[72px] resize-y text-xs"
         />
         <div className="mt-2 flex justify-end">
-          <Button size="sm" onClick={submit} disabled={submitting || !body.trim()}>
+          <Button
+            size="sm"
+            onClick={submit}
+            disabled={submitting || !body.trim() || isReadOnly}
+          >
             {submitting ? (
               <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
             ) : (
@@ -902,6 +911,7 @@ function NotesTab({ caseId, isReadOnly = false }: { caseId: string; isReadOnly?:
           </Button>
         </div>
       </div>
+
 
       <Separator />
 
