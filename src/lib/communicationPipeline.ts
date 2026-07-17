@@ -22,6 +22,10 @@ import {
   type ValidationError,
   type VariableDefinition,
 } from "@/lib/emailVariables";
+import {
+  COMM_ERROR_MESSAGES,
+  type CommErrorCode,
+} from "@/lib/communicationErrors";
 
 export type CommunicationChannel =
   | "email"
