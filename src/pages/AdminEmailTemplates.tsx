@@ -311,7 +311,7 @@ const AdminEmailTemplates = () => {
               messages to campaigns. Create your first one to get started.
             </p>
             <Button
-              onClick={() => toast.info("Template editor coming soon.")}
+              onClick={() => navigate("/admin/communications/templates/new")}
               className="rounded-lg mt-5"
             >
               <Plus className="h-4 w-4 mr-1.5" />
