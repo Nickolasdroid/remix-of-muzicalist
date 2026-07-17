@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import {
   Accordion,
@@ -291,6 +292,22 @@ const HelpSupport = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Help & Support — FAQ | Muzicalist"
+        description="Answers to common questions about Muzicalist: accounts, plans, bookings, messaging, payments, privacy and more."
+        path="/help"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqSections.flatMap((section) =>
+            section.items.map((item) => ({
+              "@type": "Question",
+              name: item.q,
+              acceptedAnswer: { "@type": "Answer", text: item.a },
+            }))
+          ),
+        }}
+      />
       <Navigation mobileTitle="Help & Support" mobileBackPath={-1} />
 
       <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-8">
