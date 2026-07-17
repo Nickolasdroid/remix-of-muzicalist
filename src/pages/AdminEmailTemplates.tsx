@@ -210,7 +210,7 @@ const AdminEmailTemplates = () => {
           </div>
           <Button
             className="rounded-lg self-start sm:self-auto"
-            onClick={() => toast.info("Template editor coming soon.")}
+            onClick={() => navigate("/admin/communications/templates/new")}
           >
             <Plus className="h-4 w-4 mr-1.5" />
             New Template
@@ -311,7 +311,7 @@ const AdminEmailTemplates = () => {
               messages to campaigns. Create your first one to get started.
             </p>
             <Button
-              onClick={() => toast.info("Template editor coming soon.")}
+              onClick={() => navigate("/admin/communications/templates/new")}
               className="rounded-lg mt-5"
             >
               <Plus className="h-4 w-4 mr-1.5" />
@@ -386,13 +386,13 @@ const AdminEmailTemplates = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="rounded-lg w-40">
                             <DropdownMenuItem
-                              onClick={() => toast.info("Template preview coming soon.")}
+                              onClick={() => navigate(`/admin/communications/templates/${t.id}`)}
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               View
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => toast.info("Template editor coming soon.")}
+                              onClick={() => navigate(`/admin/communications/templates/${t.id}`)}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
