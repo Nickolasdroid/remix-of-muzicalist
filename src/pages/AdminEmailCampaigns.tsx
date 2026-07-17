@@ -116,6 +116,8 @@ const AdminEmailCampaigns = () => {
   // Confirm dialogs
   const [pendingDelete, setPendingDelete] = useState<DbCampaign | null>(null);
   const [pendingCancel, setPendingCancel] = useState<DbCampaign | null>(null);
+  const [pendingRetry, setPendingRetry] = useState<DbCampaign | null>(null);
+  const [retryLoading, setRetryLoading] = useState(false);
 
   const isMounted = useRef(true);
   useEffect(() => () => { isMounted.current = false; }, []);
@@ -246,14 +248,19 @@ const AdminEmailCampaigns = () => {
   };
 
   const handleRetry = async (c: DbCampaign) => {
+    setRetryLoading(true);
     try {
       await retryFailedRecipients(c.id);
-      toast.success("Retrying failed recipients");
-      load({ silent: true });
+      toast.success("Retry started successfully.");
+      // Realtime will refresh progress; no manual reload needed.
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not retry campaign");
+    } finally {
+      setRetryLoading(false);
+      setPendingRetry(null);
     }
   };
+
 
   const handleDuplicate = async (c: DbCampaign) => {
     try {
@@ -361,10 +368,9 @@ const AdminEmailCampaigns = () => {
                       const total = c.valid_recipients ?? 0;
                       const done = (c.sent_count ?? 0) + (c.failed_count ?? 0);
                       const canRetry =
-                        (c.failed_count ?? 0) > 0 &&
-                        (c.status === "Completed" ||
-                          c.status === "CompletedWithErrors" ||
-                          c.status === "Failed");
+                        (c.status === "CompletedWithErrors" || (c.failed_count ?? 0) > 0) &&
+                        c.status !== "Sending" &&
+                        c.status !== "Pending";
                       const canCancel = c.status === "Sending";
                       return (
                         <TableRow key={c.id}>
@@ -429,7 +435,7 @@ const AdminEmailCampaigns = () => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-lg">
                                   {canRetry && (
-                                    <DropdownMenuItem onClick={() => handleRetry(c)}>
+                                    <DropdownMenuItem onClick={() => setPendingRetry(c)}>
                                       <RotateCcw className="h-4 w-4 mr-2" />
                                       Retry Failed
                                     </DropdownMenuItem>
@@ -672,6 +678,45 @@ const AdminEmailCampaigns = () => {
               className="rounded-lg"
             >
               Cancel campaign
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirm retry failed */}
+      <AlertDialog
+        open={!!pendingRetry}
+        onOpenChange={(o) => {
+          if (!o && !retryLoading) setPendingRetry(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Retry delivery for all failed recipients?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Only recipients with attempts &lt; 3 will be retried.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-lg" disabled={retryLoading}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (pendingRetry) handleRetry(pendingRetry);
+              }}
+              disabled={retryLoading}
+              className="rounded-lg"
+            >
+              {retryLoading ? (
+                <>
+                  <RotateCcw className="h-4 w-4 mr-2 animate-spin" />
+                  Retrying…
+                </>
+              ) : (
+                "Retry"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

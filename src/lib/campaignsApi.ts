@@ -73,8 +73,9 @@ export async function deleteCampaign(id: string) {
 }
 
 export async function retryFailedRecipients(campaignId: string) {
-  // Reset Failed recipients (with retries left) back to Pending, then move campaign
-  // to Pending so the processor picks it up again.
+  // Reset Failed recipients (with retries left) back to Pending so the
+  // processor picks them up again. `attempts` is intentionally preserved so
+  // the processor keeps enforcing the < 3 cap. Sent recipients are untouched.
   const { error: recErr } = await supabase
     .from("email_campaign_recipients")
     .update({ status: "Pending", error_message: null })
@@ -83,9 +84,15 @@ export async function retryFailedRecipients(campaignId: string) {
     .lt("attempts", 3);
   if (recErr) throw recErr;
 
+  // Move campaign back to Pending, clear failure state, keep sent_count.
   const { error: campErr } = await supabase
     .from("email_campaigns")
-    .update({ status: "Pending", finished_at: null, last_error: null })
+    .update({
+      status: "Pending",
+      finished_at: null,
+      last_error: null,
+      failed_count: 0,
+    })
     .eq("id", campaignId);
   if (campErr) throw campErr;
 
