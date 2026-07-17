@@ -537,112 +537,123 @@ function OverviewTab({
       )}
 
       <SectionCard title="Quick actions">
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!currentUserId || caseRow.assigned_moderator_id === currentUserId}
-            onClick={() =>
-              runAction(
-                () =>
-                  ModerationService.assignModerator(
-                    caseRow.id,
-                    currentUserId!,
-                    caseRow.assigned_moderator_id,
-                  ),
-                "Assigned to you",
-              )
-            }
-          >
-            <UserCheck className="mr-1.5 h-3.5 w-3.5" />
-            Assign to me
-          </Button>
-
-          {closed ? (
+        <fieldset disabled={isReadOnly} className="contents">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                runAction(() => ModerationService.reopenCase(caseRow.id), "Case reopened")
+              disabled={
+                isReadOnly ||
+                !currentUserId ||
+                caseRow.assigned_moderator_id === currentUserId
               }
-            >
-              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-              Reopen case
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
               onClick={() =>
-                runAction(() => ModerationService.closeCase(caseRow.id), "Case closed")
-              }
-            >
-              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-              Close case
-            </Button>
-          )}
-
-          <div>
-            <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-              Change status
-            </label>
-            <Select
-              value={caseRow.status}
-              onValueChange={(v) =>
                 runAction(
                   () =>
-                    ModerationService.changeStatus(
+                    ModerationService.assignModerator(
                       caseRow.id,
-                      caseRow.status,
-                      v as ModerationCaseStatus,
+                      currentUserId!,
+                      caseRow.assigned_moderator_id,
                     ),
-                  "Status updated",
-                  "Transition not allowed",
+                  "Assigned to you",
                 )
               }
             >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((s) => (
-                  <SelectItem key={s.value} value={s.value} className="text-xs">
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              <UserCheck className="mr-1.5 h-3.5 w-3.5" />
+              Assign to me
+            </Button>
 
-          <div>
-            <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-              Change priority
-            </label>
-            <Select
-              value={caseRow.priority}
-              onValueChange={(v) =>
-                runAction(
-                  () => ModerationService.changePriority(caseRow.id, v as ModerationPriority),
-                  "Priority updated",
-                )
-              }
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRIORITY_OPTIONS.map((p) => (
-                  <SelectItem key={p.value} value={p.value} className="text-xs">
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {closed ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isReadOnly}
+                onClick={() =>
+                  runAction(() => ModerationService.reopenCase(caseRow.id), "Case reopened")
+                }
+              >
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                Reopen case
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isReadOnly}
+                onClick={() =>
+                  runAction(() => ModerationService.closeCase(caseRow.id), "Case closed")
+                }
+              >
+                <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                Close case
+              </Button>
+            )}
+
+            <div>
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                Change status
+              </label>
+              <Select
+                disabled={isReadOnly}
+                value={caseRow.status}
+                onValueChange={(v) =>
+                  runAction(
+                    () =>
+                      ModerationService.changeStatus(
+                        caseRow.id,
+                        caseRow.status,
+                        v as ModerationCaseStatus,
+                      ),
+                    "Status updated",
+                    "Transition not allowed",
+                  )
+                }
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value} className="text-xs">
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                Change priority
+              </label>
+              <Select
+                disabled={isReadOnly}
+                value={caseRow.priority}
+                onValueChange={(v) =>
+                  runAction(
+                    () => ModerationService.changePriority(caseRow.id, v as ModerationPriority),
+                    "Priority updated",
+                  )
+                }
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORITY_OPTIONS.map((p) => (
+                    <SelectItem key={p.value} value={p.value} className="text-xs">
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </SectionCard>
     </div>
   );
+
 }
 
 function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
