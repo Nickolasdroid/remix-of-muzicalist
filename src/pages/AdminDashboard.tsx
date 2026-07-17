@@ -29,6 +29,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2, Loader2, Search } from "lucide-react";
 import AdminVerificationsTab from "@/components/AdminVerificationsTab";
+import CommunicationsPanel from "@/components/admin/CommunicationsPanel";
 
 interface AdminProfile {
   id: string;
