@@ -58,6 +58,8 @@ import {
   type VersionStatus,
 } from "@/lib/emailTemplateVersions";
 import type { EmailTemplate } from "@/lib/emailTemplates";
+import { validateTemplateContent } from "@/lib/emailVariables";
+import EmailVariablesPanel from "@/components/admin/EmailVariablesPanel";
 
 const STATUS_STYLES: Record<VersionStatus, string> = {
   Draft: "bg-amber-500/10 text-amber-600 border-amber-500/20",
@@ -337,35 +339,67 @@ export const EmailTemplateVersionsDialog = ({ template, open, onOpenChange }: Pr
 
       {/* View version */}
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <DialogContent className="rounded-lg max-w-2xl">
+        <DialogContent className="rounded-lg max-w-4xl">
           <DialogHeader>
             <DialogTitle>Version v{viewing?.version_number}</DialogTitle>
             <DialogDescription>
               {viewing ? formatDateTime(viewing.created_at) : null}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <div className="text-xs uppercase text-muted-foreground mb-1">Subject</div>
-              <div className="text-sm text-foreground bg-muted/40 rounded-lg px-3 py-2">
-                {viewing?.subject || "—"}
+          {(() => {
+            if (!viewing) return null;
+            const combined = `${viewing.subject}\n${viewing.html_content ?? ""}\n${viewing.text_content ?? ""}`;
+            const validation = validateTemplateContent(combined);
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-4">
+                <div className="space-y-3 min-w-0">
+                  <div>
+                    <div className="text-xs uppercase text-muted-foreground mb-1">Subject</div>
+                    <div className="text-sm text-foreground bg-muted/40 rounded-lg px-3 py-2">
+                      {viewing.subject || "—"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase text-muted-foreground mb-1">HTML</div>
+                    <pre className="text-xs text-foreground bg-muted/40 rounded-lg px-3 py-2 max-h-64 overflow-auto whitespace-pre-wrap">
+                      {viewing.html_content || "—"}
+                    </pre>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase text-muted-foreground mb-1">Text</div>
+                    <pre className="text-xs text-foreground bg-muted/40 rounded-lg px-3 py-2 max-h-40 overflow-auto whitespace-pre-wrap">
+                      {viewing.text_content || "—"}
+                    </pre>
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase text-muted-foreground mb-1">
+                      Variable validation
+                    </div>
+                    {validation.ok ? (
+                      <div className="text-xs text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
+                        {validation.used.length === 0
+                          ? "No variables used."
+                          : `${validation.used.length} variable${validation.used.length === 1 ? "" : "s"} used, all valid.`}
+                      </div>
+                    ) : (
+                      <ul className="text-xs bg-destructive/10 border border-destructive/20 text-destructive rounded-lg px-3 py-2 space-y-1">
+                        {validation.errors.map((err, i) => (
+                          <li key={i}>
+                            <span className="font-mono">{err.match}</span> — {err.message}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+                <EmailVariablesPanel className="h-fit" />
               </div>
-            </div>
-            <div>
-              <div className="text-xs uppercase text-muted-foreground mb-1">HTML</div>
-              <pre className="text-xs text-foreground bg-muted/40 rounded-lg px-3 py-2 max-h-64 overflow-auto whitespace-pre-wrap">
-                {viewing?.html_content || "—"}
-              </pre>
-            </div>
-            <div>
-              <div className="text-xs uppercase text-muted-foreground mb-1">Text</div>
-              <pre className="text-xs text-foreground bg-muted/40 rounded-lg px-3 py-2 max-h-40 overflow-auto whitespace-pre-wrap">
-                {viewing?.text_content || "—"}
-              </pre>
-            </div>
-          </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
+
+
 
       {/* Publish confirm */}
       <AlertDialog open={!!pendingPublish} onOpenChange={(o) => !o && setPendingPublish(null)}>
