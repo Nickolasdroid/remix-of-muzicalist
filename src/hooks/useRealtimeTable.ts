@@ -53,9 +53,8 @@ export function useRealtimeTable<Row extends Record<string, unknown> = Record<st
       `rt:${table}:${filter ?? "all"}:${Math.random().toString(36).slice(2, 8)}`;
 
     const channel: RealtimeChannel = supabase.channel(name).on(
-      // @ts-expect-error - supabase-js typing for postgres_changes is loose
-      "postgres_changes",
-      { event, schema: "public", table, ...(filter ? { filter } : {}) },
+      "postgres_changes" as never,
+      { event, schema: "public", table, ...(filter ? { filter } : {}) } as never,
       (payload: RealtimePostgresChangesPayload<Row>) => {
         handlerRef.current(payload);
       },
