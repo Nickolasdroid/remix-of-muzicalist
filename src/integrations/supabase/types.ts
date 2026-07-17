@@ -1814,6 +1814,79 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_case_action: {
+        Args: {
+          _action_key: string
+          _case_id: string
+          _parameters?: Json
+          _reason?: string
+          _target_id?: string
+          _target_type_key?: string
+        }
+        Returns: {
+          action_type_id: string
+          case_id: string
+          created_at: string
+          id: string
+          is_reversed: boolean
+          parameters: Json
+          performed_by: string | null
+          reason: string | null
+          reversal_reason: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          target_id: string | null
+          target_type_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_actions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      add_case_evidence: {
+        Args: {
+          _case_id: string
+          _content?: string
+          _kind: string
+          _snapshot?: Json
+          _url?: string
+        }
+        Returns: {
+          added_by: string | null
+          case_id: string
+          content: string | null
+          created_at: string
+          id: string
+          kind: string
+          snapshot: Json | null
+          url: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_evidence"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      add_case_note: {
+        Args: { _body: string; _case_id: string; _is_internal?: boolean }
+        Returns: {
+          author_id: string | null
+          body: string
+          case_id: string
+          created_at: string
+          id: string
+          is_internal: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_case_notes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_get_profiles_basic: {
         Args: { _ids: string[] }
         Returns: {
@@ -1843,7 +1916,158 @@ export type Database = {
           subscription_status: string
         }[]
       }
+      assign_moderator: {
+        Args: { _case_id: string; _moderator_id: string }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      change_case_priority: {
+        Args: {
+          _case_id: string
+          _priority: Database["public"]["Enums"]["moderation_priority"]
+        }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      change_case_status: {
+        Args: {
+          _case_id: string
+          _next_status: Database["public"]["Enums"]["moderation_case_status"]
+          _note?: string
+        }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      close_case: {
+        Args: {
+          _case_id: string
+          _resolution_action_key?: string
+          _resolution_notes?: string
+        }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_email_template_version: {
         Args: {
           _html_content: string
@@ -1869,6 +2093,53 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_moderation_case: {
+        Args: {
+          _category_key: string
+          _metadata?: Json
+          _priority?: Database["public"]["Enums"]["moderation_priority"]
+          _reporter_email?: string
+          _reporter_id?: string
+          _reporter_reason?: string
+          _summary?: string
+          _target_id: string
+          _target_snapshot?: Json
+          _target_type_key: string
+          _title: string
+        }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1887,6 +2158,28 @@ export type Database = {
       get_booked_profile_ids: {
         Args: { _event_date: string; _profile_ids: string[] }
         Returns: string[]
+      }
+      get_moderation_case_details: { Args: { _case_id: string }; Returns: Json }
+      get_moderation_case_timeline: {
+        Args: { _case_id: string }
+        Returns: {
+          actor_id: string | null
+          actor_role: string | null
+          case_id: string
+          created_at: string
+          event_type: Database["public"]["Enums"]["moderation_event_type"]
+          from_value: Json | null
+          id: string
+          message: string | null
+          payload: Json
+          to_value: Json | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "moderation_case_events"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_my_calendar_event_for_date: {
         Args: { _event_date: string }
@@ -2019,6 +2312,39 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      list_moderation_cases: {
+        Args: {
+          _assigned_to?: string
+          _category_keys?: string[]
+          _limit?: number
+          _offset?: number
+          _priorities?: Database["public"]["Enums"]["moderation_priority"][]
+          _search?: string
+          _statuses?: Database["public"]["Enums"]["moderation_case_status"][]
+          _target_type_keys?: string[]
+        }
+        Returns: {
+          assigned_moderator_id: string
+          case_number: string
+          category_key: string
+          category_label: string
+          closed_at: string
+          created_at: string
+          id: string
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reporter_id: string
+          reports_count: number
+          resolved_at: string
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string
+          target_id: string
+          target_type_key: string
+          title: string
+          total_count: number
+          updated_at: string
+        }[]
+      }
+      moderation_require_mod: { Args: never; Returns: string }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -2056,6 +2382,41 @@ export type Database = {
           read_ct: number
         }[]
       }
+      reopen_case: {
+        Args: { _case_id: string; _reason?: string }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       restore_email_template_version: {
         Args: { _version_id: string }
         Returns: {
@@ -2077,6 +2438,30 @@ export type Database = {
         }
       }
       retry_pending_welcome_emails: { Args: never; Returns: number }
+      reverse_case_action: {
+        Args: { _action_id: string; _reason: string }
+        Returns: {
+          action_type_id: string
+          case_id: string
+          created_at: string
+          id: string
+          is_reversed: boolean
+          parameters: Json
+          performed_by: string | null
+          reason: string | null
+          reversal_reason: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          target_id: string | null
+          target_type_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_actions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       slugify: { Args: { input: string }; Returns: string }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
@@ -2111,6 +2496,41 @@ export type Database = {
         }
       }
       unaccent: { Args: { "": string }; Returns: string }
+      unassign_moderator: {
+        Args: { _case_id: string }
+        Returns: {
+          assigned_moderator_id: string | null
+          case_number: string
+          category_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          first_review_at: string | null
+          id: string
+          metadata: Json
+          priority: Database["public"]["Enums"]["moderation_priority"]
+          reopened_at: string | null
+          reporter_id: string | null
+          reports_count: number
+          resolution_action_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["moderation_case_status"]
+          summary: string | null
+          target_id: string
+          target_snapshot: Json | null
+          target_type_id: string
+          title: string
+          triaged_at: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "moderation_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       verify_welcome_trigger_secret: {
         Args: { _secret: string }
         Returns: boolean
