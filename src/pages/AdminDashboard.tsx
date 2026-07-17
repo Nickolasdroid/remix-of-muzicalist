@@ -308,6 +308,10 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
 
+            <TabsContent value="communications" className="mt-4">
+              <CommunicationsPanel />
+            </TabsContent>
+
             <TabsContent value="verifications" className="mt-4">
               <AdminVerificationsTab />
             </TabsContent>
