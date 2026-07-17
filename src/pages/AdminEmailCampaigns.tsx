@@ -225,7 +225,7 @@ const AdminEmailCampaigns = () => {
   const handleCancel = async (c: DbCampaign) => {
     try {
       await cancelCampaign(c.id);
-      toast.success("Campaign cancelled");
+      toast.success("Campaign cancelled successfully.");
       load({ silent: true });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not cancel campaign");
