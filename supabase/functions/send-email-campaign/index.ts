@@ -1,9 +1,12 @@
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { renderCampaignEmail } from "../_shared/campaignEmail.ts";
 import {
-  renderCampaignEmail,
-  sendCampaignEmailViaResend,
-} from "../_shared/campaignEmail.ts";
+  buildDefaultDispatcher,
+  CommunicationDispatcher,
+  CommunicationPayload,
+} from "../_shared/dispatcher/index.ts";
+
 
 interface RequestBody {
   campaign_id?: string;
