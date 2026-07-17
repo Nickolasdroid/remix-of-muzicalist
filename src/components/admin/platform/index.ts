@@ -16,3 +16,4 @@ export * from "./PageHeader";
 export * from "./StatsCard";
 export * from "./Toolbar";
 export * from "./SectionCard";
+export * from "./RowActions";
