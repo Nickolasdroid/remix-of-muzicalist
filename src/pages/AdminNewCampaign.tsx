@@ -18,6 +18,7 @@ import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
 import { campaignStore, estimateSendingMs } from "@/lib/campaignStore";
 import { toast } from "sonner";
+import TestEmailDialog from "@/components/admin/TestEmailDialog";
 
 const TEMPLATES: Record<string, string> = {
   "legacy-artist-reactivation": "Legacy Artist Reactivation",
@@ -32,6 +33,7 @@ const AdminNewCampaign = () => {
   const [parsing, setParsing] = useState(false);
   const [recipients, setRecipients] = useState<ParsedRecipients | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [testOpen, setTestOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resetFile = () => {
@@ -219,8 +221,9 @@ const AdminNewCampaign = () => {
               <Button
                 variant="outline"
                 className="rounded-lg h-11 flex-1"
-                disabled
-                title="Coming soon"
+                disabled={!template}
+                title={!template ? "Select a template first" : undefined}
+                onClick={() => setTestOpen(true)}
               >
                 <Send className="h-4 w-4 mr-2" />
                 Send Test Email
@@ -251,6 +254,16 @@ const AdminNewCampaign = () => {
             validCount={recipients.valid.length}
             invalidCount={recipients.invalid.length}
             estimatedMs={estimatedMs}
+          />
+        )}
+
+        {template && (
+          <TestEmailDialog
+            open={testOpen}
+            onOpenChange={setTestOpen}
+            templateId={template}
+            templateLabel={TEMPLATES[template] ?? template}
+            campaignName={name}
           />
         )}
       </main>
