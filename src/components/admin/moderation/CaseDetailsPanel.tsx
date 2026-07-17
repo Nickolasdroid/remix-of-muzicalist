@@ -154,6 +154,41 @@ export function CaseDetailsPanel({
   const [detailsError, setDetailsError] = useState<string | null>(null);
 
   const [tab, setTab] = useState("overview");
+  const [selfProfile, setSelfProfile] = useState<{ name: string; avatar_url: string | null }>({
+    name: "Moderator",
+    avatar_url: null,
+  });
+  const [assignedProfile, setAssignedProfile] = useState<{ id: string; name: string } | null>(null);
+  const [pendingChange, setPendingChange] = useState(false);
+  const lastSeenUpdatedAt = useRef<string>(caseRow.updated_at);
+
+  // -- Load self profile once so presence broadcasts a real name/avatar. --
+  useEffect(() => {
+    if (!currentUserId) return;
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("stage_name, avatar_url, email")
+      .eq("id", currentUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        setSelfProfile({
+          name: (data.stage_name as string) || (data.email as string) || "Moderator",
+          avatar_url: (data.avatar_url as string | null) ?? null,
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
+
+  const presence = useCasePresence({
+    caseId,
+    selfId: currentUserId,
+    selfName: selfProfile.name,
+    selfAvatar: selfProfile.avatar_url,
+  });
 
   const loadDetails = useCallback(async () => {
     setDetailsLoading(true);
@@ -161,6 +196,7 @@ export function CaseDetailsPanel({
     try {
       const data = await ModerationService.getCase(caseId);
       setDetails(data);
+      setPendingChange(false);
     } catch (e) {
       setDetailsError(e instanceof Error ? e.message : "Failed to load case");
     } finally {
@@ -172,30 +208,95 @@ export function CaseDetailsPanel({
     void loadDetails();
   }, [loadDetails]);
 
-  // Live-refresh header whenever the case row itself changes.
-  useRealtimeTable({
+  useEffect(() => {
+    lastSeenUpdatedAt.current = caseRow.updated_at;
+  }, [caseId, caseRow.updated_at]);
+
+  // Live-refresh header. If the case changed since we last saw it, surface a
+  // banner instead of stomping in-progress edits.
+  useRealtimeTable<{ id: string; updated_at: string }>({
     table: "moderation_cases",
     filter: `id=eq.${caseId}`,
-    event: "*",
-    onChange: () => void loadDetails(),
+    event: "UPDATE",
+    onChange: (payload) => {
+      const remote = (payload.new as { updated_at?: string })?.updated_at;
+      if (remote && remote > lastSeenUpdatedAt.current) {
+        setPendingChange(true);
+      }
+    },
   });
+
+  // Resolve the assigned moderator's name for the assignment warning.
+  useEffect(() => {
+    const id = caseRow.assigned_moderator_id;
+    if (!id || id === currentUserId) {
+      setAssignedProfile(null);
+      return;
+    }
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("stage_name, email")
+      .eq("id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setAssignedProfile({
+          id,
+          name:
+            (data?.stage_name as string | undefined) ||
+            (data?.email as string | undefined) ||
+            "another moderator",
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [caseRow.assigned_moderator_id, currentUserId]);
 
   const status = caseRow.status;
   const priority = caseRow.priority;
+  const isReadOnly = presence.isReadOnly;
 
   const notify = (title: string, description?: string, error = false) =>
     toast({ title, description, variant: error ? "destructive" : undefined });
 
   const runAction = async (fn: () => Promise<unknown>, ok: string, fail = "Action failed") => {
+    if (isReadOnly) {
+      notify("Read-only mode", "Take over the review to make changes.", true);
+      return;
+    }
     try {
       await fn();
       notify(ok);
       onChanged?.();
       void loadDetails();
     } catch (e) {
-      notify(fail, e instanceof Error ? e.message : undefined, true);
+      if (isConflictError(e)) {
+        notify(
+          "This case has changed",
+          "Someone else modified it. Latest state loaded.",
+          true,
+        );
+        void loadDetails();
+        onChanged?.();
+      } else {
+        notify(fail, e instanceof Error ? e.message : undefined, true);
+      }
     }
   };
+
+  const handleTakeOver = async () => {
+    if (typeof window !== "undefined") {
+      const ok = window.confirm(
+        `Take over review from ${presence.lockHolder?.name ?? "the current reviewer"}? They will drop to read-only.`,
+      );
+      if (!ok) return;
+    }
+    await presence.takeOver();
+    notify("Review taken over");
+  };
+
 
   const resolutionTime =
     caseRow.closed_at || caseRow.resolved_at
