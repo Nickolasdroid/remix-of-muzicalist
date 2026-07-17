@@ -1400,6 +1400,34 @@ export type Database = {
         Args: { _conversation_id: string }
         Returns: undefined
       }
+      try_lock_email_campaign: {
+        Args: { _campaign_id: string }
+        Returns: {
+          audience_type: string | null
+          created_at: string
+          created_by: string | null
+          failed_count: number
+          finished_at: string | null
+          id: string
+          invalid_recipients: number
+          last_error: string | null
+          name: string
+          sent_count: number
+          started_at: string | null
+          status: string
+          template: string
+          total_recipients: number
+          updated_at: string
+          uploaded_file_name: string | null
+          valid_recipients: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "email_campaigns"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       unaccent: { Args: { "": string }; Returns: string }
       verify_welcome_trigger_secret: {
         Args: { _secret: string }
