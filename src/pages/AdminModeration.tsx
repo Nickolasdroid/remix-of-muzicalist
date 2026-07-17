@@ -90,6 +90,7 @@ interface Filters {
   priorities: ModerationPriority[];
   categories: ModerationCategoryKey[];
   assignedTo: "any" | "unassigned" | "me";
+  [key: string]: unknown;
 }
 
 const INITIAL_FILTERS: Filters = {
