@@ -7,6 +7,7 @@ import {
   DeliveryResult,
   Recipient,
 } from "../types.ts";
+import { commError } from "../errors.ts";
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend/emails";
 const DEFAULT_FROM = "Muzicalist <contact@muzicalist.com>";
@@ -31,13 +32,17 @@ export class ResendEmailProvider implements CommunicationProvider {
   }): Promise<DeliveryResult> {
     const { recipient, payload } = input;
     if (!recipient.email) {
+      const err = commError(
+        "COMM_RECIPIENT_INVALID",
+        "Recipient email is required for the email channel.",
+      );
       return {
         success: false,
         provider: this.name,
         message_id: null,
         status: "failed",
-        error: "Recipient email is required for the email channel.",
-        metadata: {},
+        error: err.message,
+        metadata: { error_code: err.code },
       };
     }
 
@@ -76,7 +81,7 @@ export class ResendEmailProvider implements CommunicationProvider {
           message_id: null,
           status: "failed",
           error: `Resend ${resp.status}: ${text.slice(0, 500)}`,
-          metadata: { http_status: resp.status },
+          metadata: { http_status: resp.status, error_code: "COMM_DELIVERY_FAILED" },
         };
       }
 
@@ -96,7 +101,7 @@ export class ResendEmailProvider implements CommunicationProvider {
         message_id: null,
         status: "failed",
         error: err instanceof Error ? err.message : String(err),
-        metadata: {},
+        metadata: { error_code: "COMM_DELIVERY_FAILED" },
       };
     }
   }

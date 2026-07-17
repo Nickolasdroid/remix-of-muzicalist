@@ -10,6 +10,7 @@ import {
   DeliveryResult,
   Recipient,
 } from "./types.ts";
+import { commError } from "./errors.ts";
 import { ResendEmailProvider } from "./providers/email.ts";
 import {
   NoopInAppProvider,
@@ -39,13 +40,17 @@ export class CommunicationDispatcher {
   async dispatch(input: DispatchInput): Promise<DeliveryResult> {
     const provider = this.providers.get(input.channel);
     if (!provider) {
+      const err = commError(
+        "COMM_PROVIDER_UNAVAILABLE",
+        `No provider registered for channel "${input.channel}".`,
+      );
       return {
         success: false,
         provider: "unknown",
         message_id: null,
         status: "failed",
-        error: `No provider registered for channel "${input.channel}".`,
-        metadata: { channel: input.channel },
+        error: err.message,
+        metadata: { channel: input.channel, error_code: err.code },
       };
     }
     return provider.send({ recipient: input.recipient, payload: input.payload });
