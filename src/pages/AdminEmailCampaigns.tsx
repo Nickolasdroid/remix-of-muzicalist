@@ -731,4 +731,43 @@ const StatCell = ({
   </div>
 );
 
+const LiveIndicator = ({ status }: { status: RealtimeStatus }) => {
+  const isLive = status === "connected";
+  const isConnecting = status === "connecting";
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${
+        isLive
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+          : isConnecting
+            ? "border-amber-500/30 bg-amber-500/10 text-amber-600"
+            : "border-border bg-muted text-muted-foreground"
+      }`}
+      title={
+        isLive
+          ? "Realtime connected"
+          : isConnecting
+            ? "Reconnecting to realtime…"
+            : "Realtime offline"
+      }
+    >
+      <span className="relative flex h-2 w-2">
+        {isLive && (
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex h-2 w-2 rounded-full ${
+            isLive
+              ? "bg-emerald-500"
+              : isConnecting
+                ? "bg-amber-500 animate-pulse"
+                : "bg-muted-foreground"
+          }`}
+        />
+      </span>
+      {isLive ? "Live" : isConnecting ? "Reconnecting…" : "Offline"}
+    </div>
+  );
+};
+
 export default AdminEmailCampaigns;
