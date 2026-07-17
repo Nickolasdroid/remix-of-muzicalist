@@ -683,6 +683,45 @@ const AdminEmailCampaigns = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Confirm retry failed */}
+      <AlertDialog
+        open={!!pendingRetry}
+        onOpenChange={(o) => {
+          if (!o && !retryLoading) setPendingRetry(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Retry delivery for all failed recipients?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Only recipients with attempts &lt; 3 will be retried.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-lg" disabled={retryLoading}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (pendingRetry) handleRetry(pendingRetry);
+              }}
+              disabled={retryLoading}
+              className="rounded-lg"
+            >
+              {retryLoading ? (
+                <>
+                  <RotateCcw className="h-4 w-4 mr-2 animate-spin" />
+                  Retrying…
+                </>
+              ) : (
+                "Retry"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Confirm delete */}
       <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent className="rounded-lg">
