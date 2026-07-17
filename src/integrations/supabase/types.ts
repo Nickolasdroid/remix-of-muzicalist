@@ -356,6 +356,104 @@ export type Database = {
           },
         ]
       }
+      email_campaign_recipients: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_email: string
+          recipient_name: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaign_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          audience_type: string | null
+          created_at: string
+          created_by: string | null
+          failed_count: number
+          finished_at: string | null
+          id: string
+          invalid_recipients: number
+          name: string
+          sent_count: number
+          started_at: string | null
+          status: string
+          template: string
+          total_recipients: number
+          updated_at: string
+          uploaded_file_name: string | null
+          valid_recipients: number
+        }
+        Insert: {
+          audience_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          failed_count?: number
+          finished_at?: string | null
+          id?: string
+          invalid_recipients?: number
+          name: string
+          sent_count?: number
+          started_at?: string | null
+          status?: string
+          template: string
+          total_recipients?: number
+          updated_at?: string
+          uploaded_file_name?: string | null
+          valid_recipients?: number
+        }
+        Update: {
+          audience_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          failed_count?: number
+          finished_at?: string | null
+          id?: string
+          invalid_recipients?: number
+          name?: string
+          sent_count?: number
+          started_at?: string | null
+          status?: string
+          template?: string
+          total_recipients?: number
+          updated_at?: string
+          uploaded_file_name?: string | null
+          valid_recipients?: number
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
