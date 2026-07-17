@@ -104,7 +104,7 @@ const AdminNewCampaign = () => {
 
   const handleConfirm = () => {
     if (!recipients || !file) return;
-    const templateLabel = TEMPLATES[template] ?? template;
+    const templateLabel = templateLabelOf(template) || template;
     campaignStore.create({
       name: name.trim(),
       templateId: template,
