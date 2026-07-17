@@ -33,6 +33,7 @@ const AdminNewCampaign = () => {
   const [parsing, setParsing] = useState(false);
   const [recipients, setRecipients] = useState<ParsedRecipients | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [testOpen, setTestOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resetFile = () => {
