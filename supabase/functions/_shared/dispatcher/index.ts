@@ -10,6 +10,7 @@ import {
   DeliveryResult,
   Recipient,
 } from "./types.ts";
+import { commError } from "./errors.ts";
 import { ResendEmailProvider } from "./providers/email.ts";
 import {
   NoopInAppProvider,
