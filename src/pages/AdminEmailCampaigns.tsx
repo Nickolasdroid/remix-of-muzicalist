@@ -292,6 +292,7 @@ const AdminEmailCampaigns = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <LiveIndicator status={liveStatus} />
               <Button
                 variant="outline"
                 onClick={() => load()}
