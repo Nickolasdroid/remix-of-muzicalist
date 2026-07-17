@@ -476,6 +476,7 @@ function OverviewTab({
   detailsError,
   currentUserId,
   runAction,
+  isReadOnly = false,
 }: {
   caseRow: ModerationCaseListRow;
   details: ModerationCaseDetails | null;
@@ -483,6 +484,7 @@ function OverviewTab({
   detailsError: string | null;
   currentUserId: string | null;
   runAction: (fn: () => Promise<unknown>, ok: string, fail?: string) => Promise<void>;
+  isReadOnly?: boolean;
 }) {
   const closed = caseRow.status === "closed" || caseRow.status === "resolved";
 
