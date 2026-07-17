@@ -666,18 +666,18 @@ const AdminEmailCampaigns = () => {
       <AlertDialog open={!!pendingCancel} onOpenChange={(o) => !o && setPendingCancel(null)}>
         <AlertDialogContent className="rounded-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel this campaign?</AlertDialogTitle>
+            <AlertDialogTitle>Stop this campaign?</AlertDialogTitle>
             <AlertDialogDescription>
-              Delivery will stop after the current batch. Recipients already sent will remain marked as Sent.
+              The current batch will finish, but no additional recipients will be processed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep sending</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg">Keep Running</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => pendingCancel && handleCancel(pendingCancel)}
               className="rounded-lg"
             >
-              Cancel campaign
+              Cancel Campaign
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
