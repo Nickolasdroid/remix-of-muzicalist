@@ -386,13 +386,13 @@ const AdminEmailTemplates = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="rounded-lg w-40">
                             <DropdownMenuItem
-                              onClick={() => toast.info("Template preview coming soon.")}
+                              onClick={() => navigate(`/admin/communications/templates/${t.id}`)}
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               View
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => toast.info("Template editor coming soon.")}
+                              onClick={() => navigate(`/admin/communications/templates/${t.id}`)}
                             >
                               <Pencil className="h-4 w-4 mr-2" />
                               Edit
