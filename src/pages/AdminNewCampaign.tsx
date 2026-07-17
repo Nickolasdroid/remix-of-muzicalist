@@ -12,7 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket } from "lucide-react";
+import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
+import RecipientsSummary from "@/components/admin/RecipientsSummary";
+import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
+import { toast } from "sonner";
 
 const AdminNewCampaign = () => {
   const navigate = useNavigate();
@@ -20,13 +23,39 @@ const AdminNewCampaign = () => {
   const [template, setTemplate] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [parsing, setParsing] = useState(false);
+  const [recipients, setRecipients] = useState<ParsedRecipients | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const acceptFile = (f: File | null | undefined) => {
-    if (!f) return;
-    if (!/\.(xlsx|xls)$/i.test(f.name)) return;
-    setFile(f);
+  const resetFile = () => {
+    setFile(null);
+    setRecipients(null);
+    if (inputRef.current) inputRef.current.value = "";
   };
+
+  const acceptFile = async (f: File | null | undefined) => {
+    if (!f) return;
+    if (!/\.(xlsx|xls)$/i.test(f.name)) {
+      toast.error("Unsupported file type. Please upload a .xls or .xlsx file.");
+      return;
+    }
+    setFile(f);
+    setRecipients(null);
+    setParsing(true);
+    try {
+      const parsed = await parseRecipientsFile(f);
+      setRecipients(parsed);
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not read this file. Make sure it is a valid Excel spreadsheet.");
+      setFile(null);
+    } finally {
+      setParsing(false);
+    }
+  };
+
+  const hasValid = (recipients?.valid.length ?? 0) > 0;
+  const canStart = hasValid && name.trim().length > 0 && !!template;
 
   return (
     <>
@@ -120,14 +149,15 @@ const AdminNewCampaign = () => {
                 <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3 mt-3 animate-in fade-in duration-300">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 shrink-0">
-                      <FileSpreadsheet className="h-4 w-4" />
+                      {parsing ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">
                         {file.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {(file.size / 1024).toFixed(1)} KB · Recipient validation coming soon
+                        {(file.size / 1024).toFixed(1)} KB
+                        {parsing ? " · Reading spreadsheet…" : recipients ? ` · ${recipients.total} rows detected` : ""}
                       </p>
                     </div>
                   </div>
@@ -135,13 +165,27 @@ const AdminNewCampaign = () => {
                     variant="ghost"
                     size="sm"
                     className="rounded-lg shrink-0"
-                    onClick={() => setFile(null)}
+                    onClick={resetFile}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               )}
             </div>
+
+            {recipients && (
+              <RecipientsSummary data={recipients} />
+            )}
+
+            {recipients && !hasValid && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <p>
+                  No valid recipients were found in this file. Please upload a spreadsheet
+                  with a <strong>Name</strong> (or NUME) and <strong>Email</strong> column.
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-border">
               <Button
@@ -155,11 +199,12 @@ const AdminNewCampaign = () => {
               </Button>
               <Button
                 className="rounded-lg h-11 flex-1"
-                disabled
-                title="Coming soon"
+                disabled={!canStart}
+                title={!hasValid ? "Upload a file with valid recipients" : undefined}
               >
                 <Rocket className="h-4 w-4 mr-2" />
                 Start Campaign
+                {hasValid && ` (${recipients!.valid.length})`}
               </Button>
             </div>
           </Card>
