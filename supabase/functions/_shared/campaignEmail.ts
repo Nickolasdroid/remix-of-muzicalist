@@ -118,36 +118,6 @@ export function renderCampaignEmail(opts: {
   return { subject: normalizeBrand(campaignName), html };
 }
 
-export async function sendCampaignEmailViaResend(params: {
-  to: string;
-  subject: string;
-  html: string;
-  lovableApiKey: string;
-  resendApiKey: string;
-}): Promise<{ ok: true; id?: string } | { ok: false; error: string }> {
-  try {
-    const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${params.lovableApiKey}`,
-        "X-Connection-Api-Key": params.resendApiKey,
-      },
-      body: JSON.stringify({
-        from: CAMPAIGN_FROM,
-        to: [params.to],
-        subject: params.subject,
-        reply_to: "contact@muzicalist.com",
-        html: params.html,
-      }),
-    });
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => "");
-      return { ok: false, error: `Resend ${resp.status}: ${text.slice(0, 500)}` };
-    }
-    const data = (await resp.json().catch(() => ({}))) as { id?: string };
-    return { ok: true, id: data.id };
-  } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : String(err) };
-  }
-}
+// Resend-specific delivery has moved to
+// supabase/functions/_shared/dispatcher/providers/email.ts.
+
