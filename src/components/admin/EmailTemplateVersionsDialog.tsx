@@ -58,6 +58,8 @@ import {
   type VersionStatus,
 } from "@/lib/emailTemplateVersions";
 import type { EmailTemplate } from "@/lib/emailTemplates";
+import { validateTemplateContent } from "@/lib/emailVariables";
+import EmailVariablesPanel from "@/components/admin/EmailVariablesPanel";
 
 const STATUS_STYLES: Record<VersionStatus, string> = {
   Draft: "bg-amber-500/10 text-amber-600 border-amber-500/20",
