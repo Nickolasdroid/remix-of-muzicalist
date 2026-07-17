@@ -63,6 +63,9 @@ import type {
   ModerationPriority,
 } from "@/lib/moderation/types";
 import { formatEventTitle } from "@/lib/moderation/timelineService";
+import { isConflictError } from "@/lib/moderation/collab";
+import { useCasePresence } from "@/hooks/moderation/useCasePresence";
+import { CollaborationHeader } from "./CollaborationHeader";
 
 // ---- Static option lists (mirror the queue) ------------------------------
 
