@@ -37,6 +37,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { toast } from "@/hooks/use-toast";
 import type { AdminAction } from "@/lib/adminActions";
 import { ModerationService } from "@/lib/moderation/service";
+import { CaseDetailsPanel } from "@/components/admin/moderation/CaseDetailsPanel";
 import type {
   ModerationCaseListRow,
   ModerationCaseStatus,
