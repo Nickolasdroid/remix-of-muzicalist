@@ -145,6 +145,14 @@ const App = () => (
                 </AdminRoute>
               }
             />
+            <Route
+              path="/admin/moderation"
+              element={
+                <AdminRoute>
+                  <AdminModeration />
+                </AdminRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
