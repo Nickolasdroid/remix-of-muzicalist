@@ -127,6 +127,14 @@ const App = () => (
                 </AdminRoute>
               }
             />
+            <Route
+              path="/admin/communications/campaigns/:id"
+              element={
+                <AdminRoute>
+                  <AdminCampaignDetail />
+                </AdminRoute>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
