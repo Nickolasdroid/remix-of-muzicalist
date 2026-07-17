@@ -377,7 +377,7 @@ function OverviewTab({
       </SectionCard>
 
       {detailsLoading && <LoadingState label="Loading case details…" />}
-      {detailsError && <ErrorState title="Couldn't load details" description={detailsError} />}
+      {detailsError && <ErrorState title="Couldn't load details" message={detailsError} />}
 
       {details && (
         <SectionCard title="Case metrics">
@@ -553,7 +553,7 @@ function TimelineTab({ caseId }: { caseId: string }) {
   });
 
   if (loading) return <LoadingState label="Loading timeline…" />;
-  if (error) return <ErrorState title="Couldn't load timeline" description={error} />;
+  if (error) return <ErrorState title="Couldn't load timeline" message={error} />;
   if (!events.length)
     return (
       <EmptyState
@@ -623,7 +623,7 @@ function EvidenceTab({ caseId }: { caseId: string }) {
   });
 
   if (loading) return <LoadingState label="Loading evidence…" />;
-  if (error) return <ErrorState title="Couldn't load evidence" description={error} />;
+  if (error) return <ErrorState title="Couldn't load evidence" message={error} />;
   if (!items.length)
     return (
       <EmptyState
@@ -762,7 +762,7 @@ function NotesTab({ caseId }: { caseId: string }) {
       {loading ? (
         <LoadingState label="Loading notes…" />
       ) : error ? (
-        <ErrorState title="Couldn't load notes" description={error} />
+        <ErrorState title="Couldn't load notes" message={error} />
       ) : !items.length ? (
         <EmptyState
           icon={<MessageSquarePlus className="h-6 w-6" />}
@@ -823,7 +823,7 @@ function ActionsTab({ caseId }: { caseId: string }) {
   });
 
   if (loading) return <LoadingState label="Loading actions…" />;
-  if (error) return <ErrorState title="Couldn't load actions" description={error} />;
+  if (error) return <ErrorState title="Couldn't load actions" message={error} />;
   if (!items.length)
     return (
       <EmptyState
