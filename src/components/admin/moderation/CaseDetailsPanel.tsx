@@ -723,9 +723,40 @@ function TimelineTab({ caseId }: { caseId: string }) {
   const sorted = [...events].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
+  const recent = sorted.slice(0, 3);
 
   return (
+    <div className="space-y-4">
+      {recent.length > 0 && (
+        <div className="rounded-md border border-border bg-muted/30 p-3">
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            </span>
+            Live activity
+          </div>
+          <ul className="space-y-1.5">
+            {recent.map((e) => (
+              <li
+                key={`live-${e.id}`}
+                className="flex items-center gap-2 text-[11px] animate-in fade-in slide-in-from-left-1"
+              >
+                <span className="text-muted-foreground">
+                  {EVENT_ICON[e.event_type] ?? <Clock className="h-3 w-3" />}
+                </span>
+                <span className="truncate">{formatEventTitle(e)}</span>
+                <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+                  {fmtDate(e.created_at)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
     <ol className="relative space-y-4 border-l border-border pl-5">
+
       {sorted.map((e) => (
         <li key={e.id} className="relative">
           <span className="absolute -left-[26px] flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
