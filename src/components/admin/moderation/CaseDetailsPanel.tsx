@@ -6,7 +6,7 @@
  * timeline, notes, evidence and actions streams refresh live via
  * useRealtimeTable subscriptions filtered by case_id.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -63,6 +63,9 @@ import type {
   ModerationPriority,
 } from "@/lib/moderation/types";
 import { formatEventTitle } from "@/lib/moderation/timelineService";
+import { isConflictError } from "@/lib/moderation/collab";
+import { useCasePresence } from "@/hooks/moderation/useCasePresence";
+import { CollaborationHeader } from "./CollaborationHeader";
 
 // ---- Static option lists (mirror the queue) ------------------------------
 
@@ -151,6 +154,41 @@ export function CaseDetailsPanel({
   const [detailsError, setDetailsError] = useState<string | null>(null);
 
   const [tab, setTab] = useState("overview");
+  const [selfProfile, setSelfProfile] = useState<{ name: string; avatar_url: string | null }>({
+    name: "Moderator",
+    avatar_url: null,
+  });
+  const [assignedProfile, setAssignedProfile] = useState<{ id: string; name: string } | null>(null);
+  const [pendingChange, setPendingChange] = useState(false);
+  const lastSeenUpdatedAt = useRef<string>(caseRow.updated_at);
+
+  // -- Load self profile once so presence broadcasts a real name/avatar. --
+  useEffect(() => {
+    if (!currentUserId) return;
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("stage_name, avatar_url, email")
+      .eq("id", currentUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        setSelfProfile({
+          name: (data.stage_name as string) || (data.email as string) || "Moderator",
+          avatar_url: (data.avatar_url as string | null) ?? null,
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
+
+  const presence = useCasePresence({
+    caseId,
+    selfId: currentUserId,
+    selfName: selfProfile.name,
+    selfAvatar: selfProfile.avatar_url,
+  });
 
   const loadDetails = useCallback(async () => {
     setDetailsLoading(true);
@@ -158,6 +196,7 @@ export function CaseDetailsPanel({
     try {
       const data = await ModerationService.getCase(caseId);
       setDetails(data);
+      setPendingChange(false);
     } catch (e) {
       setDetailsError(e instanceof Error ? e.message : "Failed to load case");
     } finally {
@@ -169,30 +208,95 @@ export function CaseDetailsPanel({
     void loadDetails();
   }, [loadDetails]);
 
-  // Live-refresh header whenever the case row itself changes.
-  useRealtimeTable({
+  useEffect(() => {
+    lastSeenUpdatedAt.current = caseRow.updated_at;
+  }, [caseId, caseRow.updated_at]);
+
+  // Live-refresh header. If the case changed since we last saw it, surface a
+  // banner instead of stomping in-progress edits.
+  useRealtimeTable<{ id: string; updated_at: string }>({
     table: "moderation_cases",
     filter: `id=eq.${caseId}`,
-    event: "*",
-    onChange: () => void loadDetails(),
+    event: "UPDATE",
+    onChange: (payload) => {
+      const remote = (payload.new as { updated_at?: string })?.updated_at;
+      if (remote && remote > lastSeenUpdatedAt.current) {
+        setPendingChange(true);
+      }
+    },
   });
+
+  // Resolve the assigned moderator's name for the assignment warning.
+  useEffect(() => {
+    const id = caseRow.assigned_moderator_id;
+    if (!id || id === currentUserId) {
+      setAssignedProfile(null);
+      return;
+    }
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("stage_name, email")
+      .eq("id", id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setAssignedProfile({
+          id,
+          name:
+            (data?.stage_name as string | undefined) ||
+            (data?.email as string | undefined) ||
+            "another moderator",
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [caseRow.assigned_moderator_id, currentUserId]);
 
   const status = caseRow.status;
   const priority = caseRow.priority;
+  const isReadOnly = presence.isReadOnly;
 
   const notify = (title: string, description?: string, error = false) =>
     toast({ title, description, variant: error ? "destructive" : undefined });
 
   const runAction = async (fn: () => Promise<unknown>, ok: string, fail = "Action failed") => {
+    if (isReadOnly) {
+      notify("Read-only mode", "Take over the review to make changes.", true);
+      return;
+    }
     try {
       await fn();
       notify(ok);
       onChanged?.();
       void loadDetails();
     } catch (e) {
-      notify(fail, e instanceof Error ? e.message : undefined, true);
+      if (isConflictError(e)) {
+        notify(
+          "This case has changed",
+          "Someone else modified it. Latest state loaded.",
+          true,
+        );
+        void loadDetails();
+        onChanged?.();
+      } else {
+        notify(fail, e instanceof Error ? e.message : undefined, true);
+      }
     }
   };
+
+  const handleTakeOver = async () => {
+    if (typeof window !== "undefined") {
+      const ok = window.confirm(
+        `Take over review from ${presence.lockHolder?.name ?? "the current reviewer"}? They will drop to read-only.`,
+      );
+      if (!ok) return;
+    }
+    await presence.takeOver();
+    notify("Review taken over");
+  };
+
 
   const resolutionTime =
     caseRow.closed_at || caseRow.resolved_at
@@ -264,6 +368,44 @@ export function CaseDetailsPanel({
             </div>
           )}
         </dl>
+
+        <CollaborationHeader
+          others={presence.others}
+          lockHolder={presence.lockHolder}
+          isReadOnly={presence.isReadOnly}
+          hasTakenOver={presence.hasTakenOver}
+          assignedToOther={assignedProfile}
+          onTakeOver={handleTakeOver}
+          onContinueReadOnly={() => {
+            /* no-op — panel already read-only */
+          }}
+        />
+
+        {pendingChange && (
+          <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-xs animate-in fade-in slide-in-from-top-1">
+            <RefreshCw className="h-3.5 w-3.5 shrink-0 text-primary" />
+            <span className="flex-1">This case has changed.</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 text-[11px]"
+              onClick={() => setPendingChange(false)}
+            >
+              Dismiss
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 text-[11px]"
+              onClick={() => {
+                void loadDetails();
+                onChanged?.();
+              }}
+            >
+              Refresh
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* ---- Tabs ------------------------------------------------------ */}
@@ -297,6 +439,7 @@ export function CaseDetailsPanel({
               detailsError={detailsError}
               currentUserId={currentUserId}
               runAction={runAction}
+              isReadOnly={isReadOnly}
             />
           </TabsContent>
 
@@ -309,8 +452,9 @@ export function CaseDetailsPanel({
           </TabsContent>
 
           <TabsContent value="notes" className="mt-0">
-            <NotesTab caseId={caseId} />
+            <NotesTab caseId={caseId} isReadOnly={isReadOnly} />
           </TabsContent>
+
 
           <TabsContent value="actions" className="mt-0">
             <ActionsTab caseId={caseId} />
@@ -332,6 +476,7 @@ function OverviewTab({
   detailsError,
   currentUserId,
   runAction,
+  isReadOnly = false,
 }: {
   caseRow: ModerationCaseListRow;
   details: ModerationCaseDetails | null;
@@ -339,6 +484,7 @@ function OverviewTab({
   detailsError: string | null;
   currentUserId: string | null;
   runAction: (fn: () => Promise<unknown>, ok: string, fail?: string) => Promise<void>;
+  isReadOnly?: boolean;
 }) {
   const closed = caseRow.status === "closed" || caseRow.status === "resolved";
 
@@ -391,112 +537,123 @@ function OverviewTab({
       )}
 
       <SectionCard title="Quick actions">
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!currentUserId || caseRow.assigned_moderator_id === currentUserId}
-            onClick={() =>
-              runAction(
-                () =>
-                  ModerationService.assignModerator(
-                    caseRow.id,
-                    currentUserId!,
-                    caseRow.assigned_moderator_id,
-                  ),
-                "Assigned to you",
-              )
-            }
-          >
-            <UserCheck className="mr-1.5 h-3.5 w-3.5" />
-            Assign to me
-          </Button>
-
-          {closed ? (
+        <fieldset disabled={isReadOnly} className="contents">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() =>
-                runAction(() => ModerationService.reopenCase(caseRow.id), "Case reopened")
+              disabled={
+                isReadOnly ||
+                !currentUserId ||
+                caseRow.assigned_moderator_id === currentUserId
               }
-            >
-              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-              Reopen case
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
               onClick={() =>
-                runAction(() => ModerationService.closeCase(caseRow.id), "Case closed")
-              }
-            >
-              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
-              Close case
-            </Button>
-          )}
-
-          <div>
-            <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-              Change status
-            </label>
-            <Select
-              value={caseRow.status}
-              onValueChange={(v) =>
                 runAction(
                   () =>
-                    ModerationService.changeStatus(
+                    ModerationService.assignModerator(
                       caseRow.id,
-                      caseRow.status,
-                      v as ModerationCaseStatus,
+                      currentUserId!,
+                      caseRow.assigned_moderator_id,
                     ),
-                  "Status updated",
-                  "Transition not allowed",
+                  "Assigned to you",
                 )
               }
             >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((s) => (
-                  <SelectItem key={s.value} value={s.value} className="text-xs">
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              <UserCheck className="mr-1.5 h-3.5 w-3.5" />
+              Assign to me
+            </Button>
 
-          <div>
-            <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
-              Change priority
-            </label>
-            <Select
-              value={caseRow.priority}
-              onValueChange={(v) =>
-                runAction(
-                  () => ModerationService.changePriority(caseRow.id, v as ModerationPriority),
-                  "Priority updated",
-                )
-              }
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRIORITY_OPTIONS.map((p) => (
-                  <SelectItem key={p.value} value={p.value} className="text-xs">
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {closed ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isReadOnly}
+                onClick={() =>
+                  runAction(() => ModerationService.reopenCase(caseRow.id), "Case reopened")
+                }
+              >
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                Reopen case
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isReadOnly}
+                onClick={() =>
+                  runAction(() => ModerationService.closeCase(caseRow.id), "Case closed")
+                }
+              >
+                <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                Close case
+              </Button>
+            )}
+
+            <div>
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                Change status
+              </label>
+              <Select
+                disabled={isReadOnly}
+                value={caseRow.status}
+                onValueChange={(v) =>
+                  runAction(
+                    () =>
+                      ModerationService.changeStatus(
+                        caseRow.id,
+                        caseRow.status,
+                        v as ModerationCaseStatus,
+                      ),
+                    "Status updated",
+                    "Transition not allowed",
+                  )
+                }
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value} className="text-xs">
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-muted-foreground">
+                Change priority
+              </label>
+              <Select
+                disabled={isReadOnly}
+                value={caseRow.priority}
+                onValueChange={(v) =>
+                  runAction(
+                    () => ModerationService.changePriority(caseRow.id, v as ModerationPriority),
+                    "Priority updated",
+                  )
+                }
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORITY_OPTIONS.map((p) => (
+                    <SelectItem key={p.value} value={p.value} className="text-xs">
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </SectionCard>
     </div>
   );
+
 }
 
 function Field({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
@@ -566,9 +723,40 @@ function TimelineTab({ caseId }: { caseId: string }) {
   const sorted = [...events].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
+  const recent = sorted.slice(0, 3);
 
   return (
+    <div className="space-y-4">
+      {recent.length > 0 && (
+        <div className="rounded-md border border-border bg-muted/30 p-3">
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            </span>
+            Live activity
+          </div>
+          <ul className="space-y-1.5">
+            {recent.map((e) => (
+              <li
+                key={`live-${e.id}`}
+                className="flex items-center gap-2 text-[11px] animate-in fade-in slide-in-from-left-1"
+              >
+                <span className="text-muted-foreground">
+                  {EVENT_ICON[e.event_type] ?? <Clock className="h-3 w-3" />}
+                </span>
+                <span className="truncate">{formatEventTitle(e)}</span>
+                <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+                  {fmtDate(e.created_at)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
     <ol className="relative space-y-4 border-l border-border pl-5">
+
       {sorted.map((e) => (
         <li key={e.id} className="relative">
           <span className="absolute -left-[26px] flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
@@ -586,7 +774,9 @@ function TimelineTab({ caseId }: { caseId: string }) {
         </li>
       ))}
     </ol>
+    </div>
   );
+
 }
 
 // =========================================================================
@@ -687,7 +877,7 @@ function EvidenceIcon({ kind }: { kind: string }) {
 // Notes
 // =========================================================================
 
-function NotesTab({ caseId }: { caseId: string }) {
+function NotesTab({ caseId, isReadOnly = false }: { caseId: string; isReadOnly?: boolean }) {
   const [items, setItems] = useState<ModerationCaseNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -742,11 +932,20 @@ function NotesTab({ caseId }: { caseId: string }) {
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Add an internal note visible only to moderators…"
+          placeholder={
+            isReadOnly
+              ? "Read-only — take over the review to add notes."
+              : "Add an internal note visible only to moderators…"
+          }
+          disabled={isReadOnly}
           className="min-h-[72px] resize-y text-xs"
         />
         <div className="mt-2 flex justify-end">
-          <Button size="sm" onClick={submit} disabled={submitting || !body.trim()}>
+          <Button
+            size="sm"
+            onClick={submit}
+            disabled={submitting || !body.trim() || isReadOnly}
+          >
             {submitting ? (
               <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
             ) : (
@@ -756,6 +955,7 @@ function NotesTab({ caseId }: { caseId: string }) {
           </Button>
         </div>
       </div>
+
 
       <Separator />
 
