@@ -158,6 +158,7 @@ const AdminDashboard = () => {
             <TabsList className="rounded-lg">
               <TabsTrigger value="users">Users ({profiles.length})</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
+              <TabsTrigger value="communications">Communications</TabsTrigger>
               <TabsTrigger value="verifications">Verifications</TabsTrigger>
             </TabsList>
 
