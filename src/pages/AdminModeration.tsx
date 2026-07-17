@@ -382,7 +382,7 @@ export default function AdminModeration() {
               tone="danger"
               icon={<AlertTriangle className="h-5 w-5" />}
             />
-            <StatsCard label="Closed" value={overview.closedToday} tone="muted" />
+            <StatsCard label="Closed" value={overview.closedToday} tone="success" />
           </StatsGrid>
         </div>
 
