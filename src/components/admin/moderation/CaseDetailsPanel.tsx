@@ -6,7 +6,7 @@
  * timeline, notes, evidence and actions streams refresh live via
  * useRealtimeTable subscriptions filtered by case_id.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
