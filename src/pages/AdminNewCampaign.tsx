@@ -256,6 +256,16 @@ const AdminNewCampaign = () => {
             estimatedMs={estimatedMs}
           />
         )}
+
+        {template && (
+          <TestEmailDialog
+            open={testOpen}
+            onOpenChange={setTestOpen}
+            templateId={template}
+            templateLabel={TEMPLATES[template] ?? template}
+            campaignName={name}
+          />
+        )}
       </main>
     </>
   );
