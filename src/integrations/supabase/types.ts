@@ -617,6 +617,7 @@ export type Database = {
           created_by: string | null
           html_content: string | null
           id: string
+          status: string
           subject: string
           template_id: string
           text_content: string | null
@@ -627,6 +628,7 @@ export type Database = {
           created_by?: string | null
           html_content?: string | null
           id?: string
+          status?: string
           subject: string
           template_id: string
           text_content?: string | null
@@ -637,6 +639,7 @@ export type Database = {
           created_by?: string | null
           html_content?: string | null
           id?: string
+          status?: string
           subject?: string
           template_id?: string
           text_content?: string | null
@@ -1405,6 +1408,31 @@ export type Database = {
         }[]
       }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      create_email_template_version: {
+        Args: {
+          _html_content: string
+          _subject: string
+          _template_id: string
+          _text_content: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          html_content: string | null
+          id: string
+          status: string
+          subject: string
+          template_id: string
+          text_content: string | null
+          version_number: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "email_template_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1562,6 +1590,26 @@ export type Database = {
         }
         Returns: number
       }
+      publish_email_template_version: {
+        Args: { _version_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          html_content: string | null
+          id: string
+          status: string
+          subject: string
+          template_id: string
+          text_content: string | null
+          version_number: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "email_template_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -1569,6 +1617,26 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      restore_email_template_version: {
+        Args: { _version_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          html_content: string | null
+          id: string
+          status: string
+          subject: string
+          template_id: string
+          text_content: string | null
+          version_number: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "email_template_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       retry_pending_welcome_emails: { Args: never; Returns: number }
       slugify: { Args: { input: string }; Returns: string }

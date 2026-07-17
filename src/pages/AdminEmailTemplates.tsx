@@ -50,6 +50,7 @@ import {
   LayoutTemplate,
   AlertCircle,
   RotateCcw,
+  History,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -63,6 +64,7 @@ import {
   type TemplateCategory,
   type TemplateStatus,
 } from "@/lib/emailTemplates";
+import EmailTemplateVersionsDialog from "@/components/admin/EmailTemplateVersionsDialog";
 
 type CategoryFilter = "All" | TemplateCategory;
 type StatusFilter = "All" | TemplateStatus;
@@ -107,6 +109,9 @@ const AdminEmailTemplates = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [pendingDelete, setPendingDelete] = useState<EmailTemplate | null>(null);
   const [pendingArchive, setPendingArchive] = useState<EmailTemplate | null>(null);
+  const [versionsFor, setVersionsFor] = useState<EmailTemplate | null>(null);
+
+
 
   const load = async () => {
     setError(null);
@@ -396,6 +401,10 @@ const AdminEmailTemplates = () => {
                               <Copy className="h-4 w-4 mr-2" />
                               Duplicate
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setVersionsFor(t)}>
+                              <History className="h-4 w-4 mr-2" />
+                              Versions
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {t.status !== "Archived" && (
                               <DropdownMenuItem onClick={() => setPendingArchive(t)}>
@@ -470,6 +479,12 @@ const AdminEmailTemplates = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <EmailTemplateVersionsDialog
+        template={versionsFor}
+        open={!!versionsFor}
+        onOpenChange={(o) => !o && setVersionsFor(null)}
+      />
     </div>
   );
 };
