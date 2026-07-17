@@ -12,7 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket } from "lucide-react";
+import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
+import RecipientsSummary from "@/components/admin/RecipientsSummary";
+import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
+import { toast } from "sonner";
 
 const AdminNewCampaign = () => {
   const navigate = useNavigate();
@@ -20,13 +23,39 @@ const AdminNewCampaign = () => {
   const [template, setTemplate] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [parsing, setParsing] = useState(false);
+  const [recipients, setRecipients] = useState<ParsedRecipients | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const acceptFile = (f: File | null | undefined) => {
-    if (!f) return;
-    if (!/\.(xlsx|xls)$/i.test(f.name)) return;
-    setFile(f);
+  const resetFile = () => {
+    setFile(null);
+    setRecipients(null);
+    if (inputRef.current) inputRef.current.value = "";
   };
+
+  const acceptFile = async (f: File | null | undefined) => {
+    if (!f) return;
+    if (!/\.(xlsx|xls)$/i.test(f.name)) {
+      toast.error("Unsupported file type. Please upload a .xls or .xlsx file.");
+      return;
+    }
+    setFile(f);
+    setRecipients(null);
+    setParsing(true);
+    try {
+      const parsed = await parseRecipientsFile(f);
+      setRecipients(parsed);
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not read this file. Make sure it is a valid Excel spreadsheet.");
+      setFile(null);
+    } finally {
+      setParsing(false);
+    }
+  };
+
+  const hasValid = (recipients?.valid.length ?? 0) > 0;
+  const canStart = hasValid && name.trim().length > 0 && !!template;
 
   return (
     <>
