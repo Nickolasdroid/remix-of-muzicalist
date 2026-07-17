@@ -1,10 +1,5 @@
-// Sends a one-time reactivation email to artists imported from the previous
-// MUZICALIST platform. Reuses the exact same branded email design as
-// `send-welcome-email` (logo, colors, typography, button, layout, brand
-// protection helpers, renderEmail structure).
-//
-// Input:
-//   { "name": "Artist Name", "email": "artist@email.com" }
+// Premium relaunch/marketing email for legacy MUZICALIST artists.
+// Input: { "name": "Artist Name", "email": "artist@email.com" }
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,8 +12,8 @@ const SITE_URL = "https://muzicalist.com";
 const FROM = "Muzicalist <contact@muzicalist.com>";
 const LOGO_URL =
   "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
+const GOLD = "#f5b301";
 
-// Deterministic brand-name safeguard for email content (identical to send-welcome-email).
 const BRAND_REGEX = /\bMusicalist\b/g;
 const BRAND_REGEX_UPPER = /\bMUSICALIST\b/g;
 function normalizeBrand(s: string): string {
@@ -30,7 +25,6 @@ function protectBrand(s: string): string {
     '<span translate="no" class="notranslate">$1</span>'
   );
 }
-
 function escapeHtml(v: string) {
   return v
     .replace(/&/g, "&amp;")
@@ -39,58 +33,64 @@ function escapeHtml(v: string) {
     .replace(/"/g, "&quot;");
 }
 
-function renderEmail(opts: {
-  headline: string;
-  greeting: string;
-  bodyLines: string[];
-  ctaLabel: string;
-  ctaUrl: string;
-  preview: string;
-  postCtaHeading?: string;
-  postCtaBullets?: string[];
-  closingLines?: string[];
-}) {
-  const {
-    headline,
-    greeting,
-    bodyLines,
-    ctaLabel,
-    ctaUrl,
-    preview,
-    postCtaHeading,
-    postCtaBullets,
-    closingLines,
-  } = opts;
-  const safeHeadline = protectBrand(headline);
-  const safeGreeting = protectBrand(greeting);
-  const safePreview = normalizeBrand(preview);
-  const paragraphs = bodyLines
-    .map(
-      (l) =>
-        `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${protectBrand(l)}</p>`
-    )
-    .join("");
+interface Benefit {
+  title: string;
+  desc: string;
+}
 
-  const postCtaBlock = (postCtaHeading || (postCtaBullets && postCtaBullets.length) || (closingLines && closingLines.length))
-    ? `<tr>
-              <td style="padding:8px 40px 8px 40px;">
-                ${postCtaHeading ? `<p style="margin:0 0 14px 0;color:#ffffff;font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;font-weight:600;">${protectBrand(postCtaHeading)}</p>` : ""}
-                ${(postCtaBullets && postCtaBullets.length)
-                  ? `<ul style="margin:0 0 18px 0;padding:0 0 0 20px;color:#c9c9cf;font-size:16px;line-height:1.7;font-family:Arial,Helvetica,sans-serif;">${postCtaBullets
-                      .map((b) => `<li style="margin:0 0 6px 0;">${protectBrand(b)}</li>`)
-                      .join("")}</ul>`
-                  : ""}
-                ${(closingLines || [])
-                  .map(
-                    (l) =>
-                      `<p style="margin:0 0 18px 0;color:#c9c9cf;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${protectBrand(l)}</p>`
-                  )
-                  .join("")}
-              </td>
-            </tr>`
-    : "";
+const BENEFITS: Benefit[] = [
+  { title: "Professional Artist Profile", desc: "A polished page that represents your craft." },
+  { title: "More Visibility", desc: "Get discovered by the right audience." },
+  { title: "Booking Opportunities", desc: "Receive requests directly from clients." },
+  { title: "Photos & Videos Showcase", desc: "Present your work in full quality." },
+  { title: "Reviews & Reputation", desc: "Build trust with verified feedback." },
+  { title: "Modern Dashboard", desc: "Manage everything from one place." },
+];
 
-  return `<!doctype html>
+function renderBenefitsTable(): string {
+  // Two-column responsive card grid using tables for Outlook compatibility.
+  const rows: string[] = [];
+  for (let i = 0; i < BENEFITS.length; i += 2) {
+    const left = BENEFITS[i];
+    const right = BENEFITS[i + 1];
+    rows.push(`
+      <tr>
+        <td width="50%" valign="top" style="padding:8px;">
+          ${renderBenefitCard(left)}
+        </td>
+        <td width="50%" valign="top" style="padding:8px;">
+          ${right ? renderBenefitCard(right) : "&nbsp;"}
+        </td>
+      </tr>
+    `);
+  }
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      ${rows.join("")}
+    </table>
+  `;
+}
+
+function renderBenefitCard(b: Benefit): string {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0e0e12;border:1px solid #1f1f24;border-radius:14px;">
+      <tr>
+        <td style="padding:20px 20px 18px 20px;">
+          <div style="width:34px;height:2px;background:${GOLD};margin:0 0 14px 0;line-height:2px;font-size:0;">&nbsp;</div>
+          <p style="margin:0 0 6px 0;color:#ffffff;font-size:14px;line-height:1.35;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.1px;">${protectBrand(escapeHtml(b.title))}</p>
+          <p style="margin:0;color:#8a8a92;font-size:13px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">${protectBrand(escapeHtml(b.desc))}</p>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+function renderEmail(artistName: string): { subject: string; html: string } {
+  const safeName = protectBrand(escapeHtml(artistName));
+  const subject = normalizeBrand("MUZICALIST is Back — A new era for artists.");
+  const preview = normalizeBrand("A completely redesigned platform for artists.");
+
+  const html = `<!doctype html>
 <html lang="en" translate="no">
   <head>
     <meta charset="utf-8" />
@@ -98,63 +98,119 @@ function renderEmail(opts: {
     <meta name="color-scheme" content="dark only" />
     <meta name="supported-color-schemes" content="dark only" />
     <meta name="google" content="notranslate" />
-    <title>${safeHeadline}</title>
+    <title>${protectBrand(escapeHtml("MUZICALIST is Back"))}</title>
   </head>
   <body style="margin:0;padding:0;background:#000000;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
-    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${safePreview}</div>
+    <div style="display:none!important;max-height:0;overflow:hidden;opacity:0;color:transparent;visibility:hidden;mso-hide:all;">${preview}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#000000;">
       <tr>
-        <td align="center" style="padding:32px 12px;">
-          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#111114;border:1px solid #1f1f24;border-radius:16px;overflow:hidden;">
+        <td align="center" style="padding:40px 12px;">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#000000;">
+
+            <!-- Header -->
             <tr>
-              <td align="center" style="padding:40px 32px 20px 32px;background:#0b0b0e;">
-                <img src="${LOGO_URL}" alt="Muzicalist" width="72" height="72" style="display:block;width:72px;height:72px;border:0;outline:none;text-decoration:none;" />
+              <td align="center" style="padding:24px 24px 40px 24px;">
+                <img src="${LOGO_URL}" alt="Muzicalist" width="80" height="80" style="display:block;width:80px;height:80px;border:0;outline:none;text-decoration:none;" />
               </td>
             </tr>
+
+            <!-- Hero -->
             <tr>
-              <td style="padding:0 32px;background:#0b0b0e;">
-                <div style="height:1px;line-height:1px;font-size:0;background:linear-gradient(to right, rgba(245,179,1,0), rgba(245,179,1,0.35), rgba(245,179,1,0));">&nbsp;</div>
+              <td align="center" style="padding:8px 32px 8px 32px;">
+                <p style="margin:0 0 14px 0;color:${GOLD};font-size:11px;line-height:1;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:3px;text-transform:uppercase;">A New Era</p>
+                <h1 style="margin:0 0 18px 0;color:#ffffff;font-size:40px;line-height:1.1;font-weight:800;font-family:Arial,Helvetica,sans-serif;letter-spacing:-0.6px;">
+                  <span translate="no" class="notranslate">MUZICALIST</span> is Back.
+                </h1>
+                <p style="margin:0 auto;max-width:480px;color:#a8a8b0;font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;">
+                  A completely redesigned platform built to help artists showcase their careers, increase their visibility and connect with more opportunities.
+                </p>
               </td>
             </tr>
+
+            <!-- Gold divider -->
             <tr>
-              <td style="padding:36px 40px 8px 40px;">
-                <h1 style="margin:0 0 20px 0;color:#ffffff;font-size:26px;line-height:1.3;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:-0.2px;">${safeHeadline}</h1>
-                <p style="margin:0 0 18px 0;color:#ffffff;font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;font-weight:600;">${safeGreeting}</p>
-                ${paragraphs}
+              <td align="center" style="padding:36px 32px 36px 32px;">
+                <div style="width:56px;height:2px;background:${GOLD};line-height:2px;font-size:0;">&nbsp;</div>
               </td>
             </tr>
+
+            <!-- Greeting -->
             <tr>
-              <td align="center" style="padding:16px 40px 24px 40px;">
+              <td style="padding:0 32px 8px 32px;">
+                <p style="margin:0 0 14px 0;color:#ffffff;font-size:17px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:700;">Hello ${safeName},</p>
+                <p style="margin:0 0 14px 0;color:#c9c9cf;font-size:16px;line-height:1.7;font-family:Arial,Helvetica,sans-serif;">
+                  We have completely rebuilt <span translate="no" class="notranslate">MUZICALIST</span> from the ground up.
+                </p>
+                <p style="margin:0 0 8px 0;color:#c9c9cf;font-size:16px;line-height:1.7;font-family:Arial,Helvetica,sans-serif;">
+                  Discover a faster, more modern platform designed for today's music industry.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Benefits -->
+            <tr>
+              <td style="padding:40px 24px 8px 24px;">
+                <p style="margin:0 0 22px 8px;color:${GOLD};font-size:11px;line-height:1;font-weight:700;font-family:Arial,Helvetica,sans-serif;letter-spacing:3px;text-transform:uppercase;">Benefits for Artists</p>
+                ${renderBenefitsTable()}
+              </td>
+            </tr>
+
+            <!-- CTA -->
+            <tr>
+              <td align="center" style="padding:44px 32px 12px 32px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td align="center" bgcolor="#f5b301" style="border-radius:10px;">
-                      <a href="${ctaUrl}" target="_blank" style="display:inline-block;background:#f5b301;color:#0b0b0e;text-decoration:none;font-weight:700;font-size:16px;line-height:1;padding:16px 34px;border-radius:10px;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.2px;">${ctaLabel}</a>
+                    <td align="center" bgcolor="${GOLD}" style="border-radius:999px;">
+                      <a href="${SITE_URL}" target="_blank" style="display:inline-block;background:${GOLD};color:#0b0b0e;text-decoration:none;font-weight:700;font-size:15px;line-height:1;padding:18px 40px;border-radius:999px;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.3px;">Explore the New <span translate="no" class="notranslate" style="color:#0b0b0e;">MUZICALIST</span></a>
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
-            ${postCtaBlock}
+
+            <!-- Secondary text -->
             <tr>
-              <td style="padding:0 40px;">
-                <div style="height:1px;line-height:1px;font-size:0;background:#1f1f24;">&nbsp;</div>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" style="padding:24px 40px 36px 40px;">
-                <p style="margin:0 0 6px 0;color:#c9c9cf;font-size:14px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:600;">The <span translate="no" class="notranslate">Muzicalist</span> Team</p>
-                <p style="margin:0;color:#6b6b73;font-size:12px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">
-                  <a href="${SITE_URL}" translate="no" class="notranslate" style="color:#6b6b73;text-decoration:none;">muzicalist.com</a>
+              <td align="center" style="padding:28px 40px 8px 40px;">
+                <p style="margin:0 0 8px 0;color:#8a8a92;font-size:13px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">
+                  Your previous account can be reactivated using your registered email address.
+                </p>
+                <p style="margin:0;color:#8a8a92;font-size:13px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">
+                  If you no longer remember your password, simply use the password reset option.
                 </p>
               </td>
             </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="padding:44px 32px 0 32px;">
+                <div style="height:1px;line-height:1px;font-size:0;background:#1f1f24;">&nbsp;</div>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td align="center" style="padding:28px 32px 8px 32px;">
+                <p style="margin:0 0 10px 0;color:#c9c9cf;font-size:14px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;">
+                  Thank you for being part of the <span translate="no" class="notranslate">MUZICALIST</span> community.
+                </p>
+                <p style="margin:0 0 14px 0;color:#ffffff;font-size:13px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;font-weight:700;letter-spacing:0.3px;">
+                  The <span translate="no" class="notranslate">MUZICALIST</span> Team
+                </p>
+                <p style="margin:0;color:#6b6b73;font-size:12px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">
+                  <a href="${SITE_URL}" translate="no" class="notranslate" style="color:${GOLD};text-decoration:none;">muzicalist.com</a>
+                </p>
+              </td>
+            </tr>
+
           </table>
-          <div style="height:24px;line-height:24px;font-size:0;">&nbsp;</div>
+          <div style="height:32px;line-height:32px;font-size:0;">&nbsp;</div>
         </td>
       </tr>
     </table>
   </body>
 </html>`;
+
+  return { subject, html };
 }
 
 Deno.serve(async (req) => {
@@ -194,38 +250,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const safeName = escapeHtml(name);
-
-    const subject =
-      "Noua versiune MUZICALIST este acum online. Creează-ți profilul de artist.";
-
-    const html = renderEmail({
-      preview: "Noua versiune MUZICALIST este acum online.",
-      headline: "Noua versiune MUZICALIST este acum online",
-      greeting: `Bună, ${safeName},`,
-      bodyLines: [
-        "Îți mulțumim că ai făcut parte din prima versiune MUZICALIST.",
-        "În ultimele luni, MUZICALIST a trecut printr-o reconstrucție completă pentru a susține noile funcționalități, o experiență mai rapidă și dezvoltarea viitoare a platformei.",
-        "Din acest motiv, profilurile din versiunea anterioară nu au putut fi transferate automat, fiind necesară crearea unui nou profil de artist.",
-        "Înregistrarea durează doar câteva minute.",
-      ],
-      ctaLabel: "CREEAZĂ-ȚI PROFILUL DE ARTIST",
-      ctaUrl: `${SITE_URL}/register/artist`,
-      postCtaHeading: "Noua versiune MUZICALIST îți oferă:",
-      postCtaBullets: [
-        "Profil de artist modern și complet.",
-        "Galerie foto și video.",
-        "Publicarea de postări și anunțuri.",
-        "Calendar pentru primirea cererilor de rezervare.",
-        "Vizibilitate în funcție de locație și gen muzical.",
-        "Căutare inteligentă cu AI pentru descoperirea artiștilor.",
-        "Funcționalități noi care vor continua să fie dezvoltate.",
-      ],
-      closingLines: [
-        "Ne-am bucura să faci parte din nou din comunitatea MUZICALIST.",
-        "Dacă ai întrebări sau întâmpini orice problemă, ne poți răspunde direct la acest email.",
-      ],
-    });
+    const { subject, html } = renderEmail(name);
 
     const resp = await fetch(
       "https://connector-gateway.lovable.dev/resend/emails",
@@ -239,7 +264,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: FROM,
           to: [email],
-          subject: normalizeBrand(subject),
+          subject,
           reply_to: "contact@muzicalist.com",
           html,
         }),
