@@ -479,6 +479,12 @@ const AdminEmailTemplates = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <EmailTemplateVersionsDialog
+        template={versionsFor}
+        open={!!versionsFor}
+        onOpenChange={(o) => !o && setVersionsFor(null)}
+      />
     </div>
   );
 };
