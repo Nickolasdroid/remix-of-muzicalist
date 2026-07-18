@@ -150,26 +150,16 @@ const AdminEditTemplate = ({ mode }: Props) => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto max-w-5xl px-4 py-6 sm:py-8">
-        <div className="mb-6 flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/admin/communications/templates")}
-            className="rounded-lg -ml-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-1.5" />
-            Templates
-          </Button>
-          <div>
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-              {mode === "new" ? "New Template" : "Edit Template"}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Editing creates a new version. Publishing makes it the active version used by
-              campaigns and test sends.
-            </p>
-          </div>
+        <div className="mb-6">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+            {mode === "new" ? "New Template" : "Edit Template"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Editing creates a new version. Publishing makes it the active version used by
+            campaigns and test sends.
+          </p>
         </div>
+
 
         {loading ? (
           <Card className="rounded-lg border-border p-6 space-y-3">
