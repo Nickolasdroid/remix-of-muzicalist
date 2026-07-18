@@ -145,10 +145,12 @@ const ArtistAnalytics = () => {
         <div className="hidden md:flex items-center gap-3 mb-8">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => navigate(-1)}
+            className="-ml-2"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 mr-1.5" />
+            Back
           </Button>
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-accent" />
