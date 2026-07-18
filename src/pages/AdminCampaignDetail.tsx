@@ -82,13 +82,6 @@ const AdminCampaignDetail = () => {
       <Navigation mobileTitle="Campaign" />
       <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <button
-            onClick={() => navigate("/admin/communications/campaigns")}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Campaigns
-          </button>
 
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
