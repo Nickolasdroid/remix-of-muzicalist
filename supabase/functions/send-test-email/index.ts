@@ -120,10 +120,12 @@ Deno.serve(async (req) => {
     }, 400);
   }
 
+  const displayName = recipientName || "Test Artist";
   const vars: Record<string, string> = {
-    "artist.name": recipientName || "Test Artist",
+    "artist.stage_name": displayName,
+    "artist.name": displayName,
     "system.dashboard_url": "https://muzicalist.com/dashboard",
-    "recipient.name": recipientName || "Test Artist",
+    "recipient.name": displayName,
     "recipient.email": recipientEmail,
   };
 
