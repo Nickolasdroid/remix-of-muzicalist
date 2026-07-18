@@ -364,6 +364,9 @@ export default function AdminModeration() {
                   </SheetContent>
                 </Sheet>
               </div>
+              <Button variant="outline" size="sm" onClick={() => navigate("/admin/dashboard")}>
+                Back to admin
+              </Button>
             </>
           }
         />
