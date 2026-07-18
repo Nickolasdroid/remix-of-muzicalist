@@ -17,7 +17,7 @@ const AuthHeader = () => {
         />
         <span
           className="font-bold text-foreground md:text-lg uppercase"
-          style={{ fontFamily: "Montserrat, sans-serif", letterSpacing: "-0.02em" }}
+          style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}
         >
           Muzicalist
         </span>
