@@ -189,25 +189,15 @@ const AdminEmailTemplates = () => {
       <main className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/admin/dashboard")}
-              className="rounded-lg -ml-2"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1.5" />
-              Admin
-            </Button>
-            <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-                Email Templates
-              </h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Manage the reusable emails sent across the platform.
-              </p>
-            </div>
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              Email Templates
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Manage the reusable emails sent across the platform.
+            </p>
           </div>
+
           <Button
             className="rounded-lg self-start sm:self-auto"
             onClick={() => navigate("/admin/communications/templates/new")}
