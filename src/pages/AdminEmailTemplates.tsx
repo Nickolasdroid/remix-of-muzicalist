@@ -185,7 +185,7 @@ const AdminEmailTemplates = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navigation mobileTitle="Email Templates" mobileBackPath="/admin/dashboard" />
       <main className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -200,7 +200,7 @@ const AdminEmailTemplates = () => {
               Back
             </Button>
             <div>
-              <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              <h1 className="hidden md:block font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
                 Email Templates
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">
