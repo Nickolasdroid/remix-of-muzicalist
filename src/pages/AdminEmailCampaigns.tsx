@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   MailPlus,
-  ArrowLeft,
   Inbox,
   Eye,
   MoreHorizontal,

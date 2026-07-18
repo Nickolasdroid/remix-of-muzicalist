@@ -38,7 +38,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ArrowLeft,
   Plus,
   Search as SearchIcon,
   MoreHorizontal,

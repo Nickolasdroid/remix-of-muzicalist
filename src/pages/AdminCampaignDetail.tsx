@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Users, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
+import { Users, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
 import CampaignStatusBadge from "@/components/admin/CampaignStatusBadge";
 import RecipientsSummary from "@/components/admin/RecipientsSummary";
 import {

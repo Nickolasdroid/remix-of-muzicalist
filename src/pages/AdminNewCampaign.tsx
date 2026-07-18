@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
 import RecipientsSummary from "@/components/admin/RecipientsSummary";
 import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
