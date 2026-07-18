@@ -21,7 +21,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage } from "@/i18n";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
 
 interface NavigationProps {

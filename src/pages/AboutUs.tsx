@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Search, GitCompare, MessageCircle, TrendingUp, Check, X, ArrowRight, Sparkles } from "lucide-react";
-import logo from "@/assets/logo.png";
-import heroConcert from "@/assets/about-hero-concert.jpg";
-import storyLive from "@/assets/about-story-live.jpg";
-import storyNetwork from "@/assets/about-story-network.jpg";
-import worldNetwork from "@/assets/about-world-network.jpg";
+import logo from "@/assets/logo.webp";
+import heroConcert from "@/assets/about-hero-concert.webp";
+import storyLive from "@/assets/about-story-live.webp";
+import storyNetwork from "@/assets/about-story-network.webp";
+import worldNetwork from "@/assets/about-world-network.webp";
 import { PLATFORM_STATS } from "@/lib/platformStats";
 
 const STEPS = [

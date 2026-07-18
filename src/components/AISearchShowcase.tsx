@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroConcert from "@/assets/hero-concert.png";
+// Uses the preloaded public WebP (see <link rel="preload"> in index.html)
+const heroConcert = "/hero-concert.webp";
 
 const mockResults = [
 { name: "DJ Alex Beat", location: "Cluj Napoca", rating: 5.0, avatar: "🎧" },
