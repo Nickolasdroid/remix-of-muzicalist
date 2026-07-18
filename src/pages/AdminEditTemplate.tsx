@@ -155,10 +155,10 @@ const AdminEditTemplate = ({ mode }: Props) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/admin/communications/templates")}
-            className="rounded-lg -ml-2"
+            className="rounded-lg -ml-2 hidden md:inline-flex"
           >
             <ArrowLeft className="h-4 w-4 mr-1.5" />
-            Templates
+            Back
           </Button>
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
