@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, X, Send, Rocket, AlertTriangle, Loader2 } from "lucide-react";
 import RecipientsSummary from "@/components/admin/RecipientsSummary";
 import CampaignConfirmDialog from "@/components/admin/CampaignConfirmDialog";
 import { parseRecipientsFile, type ParsedRecipients } from "@/lib/campaignRecipients";
@@ -127,13 +127,6 @@ const AdminNewCampaign = () => {
       <Navigation mobileTitle="New Campaign" />
       <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-3xl">
-          <button
-            onClick={() => navigate("/admin/communications/campaigns")}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Campaigns
-          </button>
 
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
