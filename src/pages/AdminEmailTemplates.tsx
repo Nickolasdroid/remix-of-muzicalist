@@ -188,28 +188,28 @@ const AdminEmailTemplates = () => {
       <Navigation mobileTitle="Email Templates" mobileBackPath="/admin/dashboard" />
       <main className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/admin/dashboard")}
-              className="rounded-lg -ml-2 hidden md:inline-flex"
+              className="rounded-lg -ml-2 hidden md:inline-flex shrink-0"
             >
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               Back
             </Button>
-            <div>
+            <div className="min-w-0">
               <h1 className="hidden md:block font-display text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
                 Email Templates
               </h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-sm text-muted-foreground md:mt-0.5">
                 Manage the reusable emails sent across the platform.
               </p>
             </div>
           </div>
           <Button
-            className="rounded-lg self-start sm:self-auto"
+            className="rounded-lg w-full md:w-auto"
             onClick={() => navigate("/admin/communications/templates/new")}
           >
             <Plus className="h-4 w-4 mr-1.5" />
