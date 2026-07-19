@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Mic, Search, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 
 const Register = () => {
   const navigate = useNavigate();
