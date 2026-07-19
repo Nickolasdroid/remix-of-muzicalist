@@ -1,0 +1,27 @@
+# Muzicalist
+
+> The global stage for musical artists — book singers, instrumentalists, DJs, and bands worldwide. Search artists by category, country, and availability.
+
+Muzicalist is a booking platform connecting event organizers with professional musical artists. Artists build public profiles with media, pricing, availability, and reviews. Clients discover artists by specialization, country, and county, and send booking requests directly.
+
+## Pages
+
+- [Home](https://muzicalist.com/): Landing page introducing Muzicalist
+- [About](https://muzicalist.com/about): What Muzicalist is and how it works
+- [All artists](https://muzicalist.com/artists): Browse every public artist profile
+- [Categories](https://muzicalist.com/categories): Artists grouped by specialization (singer, DJ, band, instrumentalist)
+- [Countries](https://muzicalist.com/countries): Artists grouped by country
+- [Counties](https://muzicalist.com/counties): Artists grouped by county/region
+- [Feed](https://muzicalist.com/feed): Community feed of artist posts
+- [Announcements](https://muzicalist.com/announcements): Artist announcements and promotions
+- [Leaderboard](https://muzicalist.com/leaderboard): Top-ranked artists
+- [Search](https://muzicalist.com/search): Search artists by name, location, and availability
+- [Plans & Pricing](https://muzicalist.com/plans): Subscription tiers for artists
+- [Help & FAQ](https://muzicalist.com/help): Frequently asked questions and support
+
+## Optional
+
+- [Sign up](https://muzicalist.com/register): Create an artist or client account
+- [Log in](https://muzicalist.com/login): Sign in to an existing account
+- [Privacy Policy](https://muzicalist.com/privacy-policy)
+- [Terms of Service](https://muzicalist.com/terms-of-service)
