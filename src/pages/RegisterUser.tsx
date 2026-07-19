@@ -13,6 +13,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
+import { trackPixelEvent } from "@/components/MetaPixel";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
@@ -137,6 +138,7 @@ const RegisterUser = () => {
         // handle_new_user() trigger. A DB trigger on user_roles then sends
         // the welcome email server-side (see trg_welcome_email).
 
+        trackPixelEvent("CompleteRegistration");
         toast.success(t("userRegistration.success"));
         navigate("/login");
       }

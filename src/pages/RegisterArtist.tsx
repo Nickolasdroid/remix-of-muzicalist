@@ -27,6 +27,7 @@ import SEO from "@/components/SEO";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
+import { trackPixelEvent } from "@/components/MetaPixel";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -72,6 +73,15 @@ const RegisterArtist = () => {
     const success = params.get("checkout") === "success";
 
     if (success) {
+      // Meta Pixel: successful artist registration (post-checkout).
+      // Guarded so it only fires once per completed registration.
+      try {
+        const pixelKey = "muzicalist_pixel_complete_registration_fired";
+        if (!sessionStorage.getItem(pixelKey)) {
+          trackPixelEvent("CompleteRegistration");
+          sessionStorage.setItem(pixelKey, "1");
+        }
+      } catch {}
       (async () => {
         let email = params.get("email") || "";
         let password = "";
@@ -487,6 +497,7 @@ const RegisterArtist = () => {
       // If signUp returned an active session (email confirmation disabled),
       // show the welcome animation then land on the dashboard. Otherwise fall
       // back to the login page so they can verify and sign in.
+      trackPixelEvent("CompleteRegistration");
       if (authData.session) {
         setWelcomeArtistName((formData.stageName || formData.firstName || " ").trim());
       } else {
