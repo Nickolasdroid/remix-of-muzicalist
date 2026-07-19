@@ -24,8 +24,8 @@ const Register = () => {
   const options = [
     {
       icon: Mic,
-      title: "Grow my presence as an artist",
-      description: "Create your artist profile and connect with new opportunities.",
+      title: "Create My Artist Profile",
+      description: "Showcase your music, experience, and availability to potential clients.",
       onClick: () => navigate("/register/artist"),
     },
     {
