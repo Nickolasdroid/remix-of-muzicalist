@@ -8,6 +8,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 
 const Login = () => {
   const { toast } = useToast();
