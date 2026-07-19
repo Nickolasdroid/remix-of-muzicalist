@@ -23,6 +23,7 @@ import { getDivisionName, getCountryRegions } from "@/lib/countryAdminDivisions"
 import registerArtistBg from "@/assets/register-artist-bg.webp";
 import logo from "@/assets/logo.webp";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
