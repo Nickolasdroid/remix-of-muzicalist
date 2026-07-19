@@ -3,6 +3,7 @@ import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 import logo from "@/assets/logo.webp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -159,6 +160,7 @@ const RegisterUser = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Sign up | Muzicalist" description="Create a free Muzicalist account to discover and book musical artists for your events." path="/register/user" />
       <AuthHeader />
       <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4">
         <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">

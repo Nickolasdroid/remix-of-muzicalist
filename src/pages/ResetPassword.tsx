@@ -9,6 +9,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 
 const ResetPassword = () => {
   const { toast } = useToast();
@@ -130,6 +131,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Reset password | Muzicalist" description="Reset your Muzicalist account password." path="/reset-password" noindex />
       <AuthHeader />
 
       <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12 md:pb-[120px]">

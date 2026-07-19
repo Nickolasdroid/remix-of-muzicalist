@@ -25,6 +25,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
+import SEO from "@/components/SEO";
 
 const POSTS_PER_PAGE = 10;
 
@@ -347,10 +348,16 @@ const Feed = () => {
   }
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
+      <SEO
+        title="Musical Community Feed | Muzicalist"
+        description="Discover the latest posts, announcements and promotions from musical artists worldwide on Muzicalist."
+        path="/feed"
+      />
       <Navigation />
       
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
+          <h1 className="sr-only">Musical Community Feed</h1>
           
           {/* Filter Tabs */}
           <div className="flex gap-2 px-2 sm:px-0 py-2">

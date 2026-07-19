@@ -8,6 +8,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import AuthHeader from "@/components/AuthHeader";
+import SEO from "@/components/SEO";
 
 const Login = () => {
   const { toast } = useToast();
@@ -140,6 +141,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Log in | Muzicalist" description="Log in to your Muzicalist account to book musical artists, manage bookings, and message performers." path="/login" noindex />
       <AuthHeader />
 
       {/* Form - full-screen on mobile, centered card on desktop */}

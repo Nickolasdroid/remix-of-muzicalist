@@ -70,6 +70,7 @@ const App = () => (
         <GuestThemeGuard />
         <AutoTranslatePageText />
         <Suspense fallback={<RouteFallback />}>
+          <main>
           <Routes>
             <Route
   path="/"
@@ -174,6 +175,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </main>
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>

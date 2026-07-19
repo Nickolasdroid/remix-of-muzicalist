@@ -257,7 +257,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
+            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
             <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
         </div>
@@ -304,7 +304,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               {/* Logo */}
               <div className="p-4 border-b border-border">
                 <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                  <img src={logo} alt="Muzicalist" className="h-10 w-10 object-contain" />
+                  <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-10 w-10 object-contain" />
                   <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
                 </Link>
               </div>
@@ -403,7 +403,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           </Sheet>
           ) : (
             <Link to="/" className="flex items-center gap-2">
-              <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+              <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
               <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
             </Link>
           )}
@@ -427,7 +427,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
                 <Link to="/feed" className="flex items-center gap-2">
-                  <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+                  <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
                   <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
                 </Link>
               )}
@@ -493,7 +493,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         {/* Logo at top of sidebar - h-16 to align with header */}
         <div className="h-16 flex items-center px-4 border-b border-border">
           <Link to="/feed" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist" className="h-9 w-9 object-contain" />
+            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
             <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
         </div>

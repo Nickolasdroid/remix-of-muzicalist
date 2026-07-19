@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getPlanPriority } from "@/lib/planLimits";
@@ -151,10 +152,16 @@ const Announcements = () => {
   const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [announcements.length, adsFilter, loading, canCreate, page, hasMore]);
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO
+        title="Announcements & Promotions | Muzicalist"
+        description="Latest artist promotions and announcements from musicians and event organizers worldwide on Muzicalist."
+        path="/announcements"
+      />
       <Navigation />
       
       <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
+          <h1 className="sr-only">Announcements &amp; Promotions</h1>
           
           {/* Filter Tabs */}
           <div className="flex gap-2 px-2 sm:px-0 py-2">
