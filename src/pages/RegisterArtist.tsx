@@ -497,6 +497,7 @@ const RegisterArtist = () => {
       // If signUp returned an active session (email confirmation disabled),
       // show the welcome animation then land on the dashboard. Otherwise fall
       // back to the login page so they can verify and sign in.
+      trackPixelEvent("CompleteRegistration");
       if (authData.session) {
         setWelcomeArtistName((formData.stageName || formData.firstName || " ").trim());
       } else {
