@@ -578,6 +578,7 @@ const RegisterArtist = () => {
         if (error || !data?.url) {
           throw new Error(data?.error || error?.message || "Could not start checkout");
         }
+        stagePendingPurchase({ plan: planName, isAnnual });
         window.location.href = data.url as string;
 
       } catch (err: any) {
