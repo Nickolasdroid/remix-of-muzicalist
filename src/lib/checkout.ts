@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PRICE_BY_PLAN, type Billing } from "@/lib/stripePrices";
+import { stagePendingPurchase } from "@/components/MetaPixel";
 
 type PaidPlan = "Standard" | "Premium";
 
@@ -37,6 +38,10 @@ export async function startCheckout(opts: {
     toast.error(data?.error || error?.message || "Could not start checkout");
     return false;
   }
+
+  // Stage the pending purchase so Meta Pixel can fire Purchase once Stripe
+  // redirects back with ?checkout=success.
+  stagePendingPurchase({ plan: opts.plan, isAnnual: opts.billing === "yearly" });
 
   window.location.href = data.url as string;
   return true;

@@ -27,7 +27,7 @@ import SEO from "@/components/SEO";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
-import { trackPixelEvent } from "@/components/MetaPixel";
+import { trackPixelEvent, stagePendingPurchase } from "@/components/MetaPixel";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
@@ -578,6 +578,7 @@ const RegisterArtist = () => {
         if (error || !data?.url) {
           throw new Error(data?.error || error?.message || "Could not start checkout");
         }
+        stagePendingPurchase({ plan: planName, isAnnual });
         window.location.href = data.url as string;
 
       } catch (err: any) {
