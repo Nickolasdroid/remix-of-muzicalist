@@ -39,6 +39,10 @@ export async function startCheckout(opts: {
     return false;
   }
 
+  // Stage the pending purchase so Meta Pixel can fire Purchase once Stripe
+  // redirects back with ?checkout=success.
+  stagePendingPurchase({ plan: opts.plan, isAnnual: opts.billing === "yearly" });
+
   window.location.href = data.url as string;
   return true;
 }
