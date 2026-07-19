@@ -768,6 +768,7 @@ const RegisterArtist = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Join as an Artist | Muzicalist" description="Create your artist profile on Muzicalist to reach event organizers, manage bookings and grow your musical career." path="/register/artist" />
       <AuthHeader />
 
       {/* Multi-Step Form - top-aligned on desktop so card doesn't shift between steps */}
