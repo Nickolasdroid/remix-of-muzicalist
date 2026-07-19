@@ -25,6 +25,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
+import SEO from "@/components/SEO";
 
 const POSTS_PER_PAGE = 10;
 
