@@ -71,3 +71,19 @@ const MetaPixel = () => {
 };
 
 export default MetaPixel;
+
+/**
+ * Fire a Meta Pixel event. Safe to call before the pixel script has loaded —
+ * the bootstrap snippet queues calls until fbevents.js is ready.
+ */
+export const trackPixelEvent = (
+  event: string,
+  params?: Record<string, unknown>,
+) => {
+  if (typeof window === "undefined" || !window.fbq) return;
+  if (params) {
+    window.fbq("track", event, params);
+  } else {
+    window.fbq("track", event);
+  }
+};
