@@ -68,6 +68,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <MetaPixel />
         <GuestThemeGuard />
         <AutoTranslatePageText />
         <Suspense fallback={<RouteFallback />}>
