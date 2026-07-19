@@ -157,7 +157,17 @@ export const trackPixelEvent = (
   event: string,
   params?: Record<string, unknown>,
 ) => {
-  if (typeof window === "undefined" || !window.fbq) return;
+  if (typeof window === "undefined") return;
+  // Ensure the pixel bootstrap has run so window.fbq exists and queues calls
+  // until fbevents.js finishes loading. Without this, an event fired on a
+  // page where <MetaPixel /> hasn't mounted yet (or before its effect ran)
+  // would silently no-op.
+  loadPixel();
+  if (!window.fbq) {
+    console.warn(`[MetaPixel] fbq unavailable, dropping event: ${event}`);
+    return;
+  }
+  console.log(`[MetaPixel] ${event} fired`, params ?? "");
   if (params) {
     window.fbq("track", event, params);
   } else {
