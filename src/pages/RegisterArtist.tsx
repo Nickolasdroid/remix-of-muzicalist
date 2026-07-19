@@ -72,6 +72,15 @@ const RegisterArtist = () => {
     const success = params.get("checkout") === "success";
 
     if (success) {
+      // Meta Pixel: successful artist registration (post-checkout).
+      // Guarded so it only fires once per completed registration.
+      try {
+        const pixelKey = "muzicalist_pixel_complete_registration_fired";
+        if (!sessionStorage.getItem(pixelKey)) {
+          trackPixelEvent("CompleteRegistration");
+          sessionStorage.setItem(pixelKey, "1");
+        }
+      } catch {}
       (async () => {
         let email = params.get("email") || "";
         let password = "";
