@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PRICE_BY_PLAN, type Billing } from "@/lib/stripePrices";
+import { stagePendingPurchase } from "@/components/MetaPixel";
 
 type PaidPlan = "Standard" | "Premium";
 
