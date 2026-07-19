@@ -11,6 +11,7 @@ import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import ScrollToTop from "./components/ScrollToTop";
 import GuestThemeGuard from "./components/GuestThemeGuard";
 import AdminRoute from "./components/AdminRoute";
+import MetaPixel from "./components/MetaPixel";
 import { Capacitor } from "@capacitor/core";
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
 // slower devices/networks. Index stays eager because it's the landing page.
