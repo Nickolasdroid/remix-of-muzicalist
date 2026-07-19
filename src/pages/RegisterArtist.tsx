@@ -27,6 +27,7 @@ import SEO from "@/components/SEO";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import ArtistWelcomeAnimation from "@/components/ArtistWelcomeAnimation";
+import { trackPixelEvent } from "@/components/MetaPixel";
 
 const RegisterArtist = () => {
   const { t } = useTranslation();
