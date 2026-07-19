@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import SEO from "@/components/SEO";
 import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { getPlanPriority } from "@/lib/planLimits";
