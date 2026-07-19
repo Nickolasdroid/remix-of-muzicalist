@@ -13,6 +13,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
+import { trackPixelEvent } from "@/components/MetaPixel";
 
 const RegisterUser = () => {
   const navigate = useNavigate();
