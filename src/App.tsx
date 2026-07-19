@@ -70,6 +70,7 @@ const App = () => (
         <GuestThemeGuard />
         <AutoTranslatePageText />
         <Suspense fallback={<RouteFallback />}>
+          <main>
           <Routes>
             <Route
   path="/"
