@@ -86,12 +86,18 @@ const CampaignConfirmDialog = ({
             variant="outline"
             className="rounded-lg"
             onClick={() => onOpenChange(false)}
+            disabled={loading}
           >
             Cancel
           </Button>
-          <Button className="rounded-lg" onClick={onConfirm}>
+          <Button
+            className="rounded-lg"
+            onClick={onConfirm}
+            disabled={loading}
+            type="button"
+          >
             <Rocket className="h-4 w-4 mr-2" />
-            Start Campaign
+            {loading ? "Starting…" : "Start Campaign"}
           </Button>
         </DialogFooter>
       </DialogContent>
