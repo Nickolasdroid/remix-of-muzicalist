@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import {
   Carousel,
   CarouselContent,
@@ -157,7 +158,7 @@ const DiscoverArtistsSection = () => {
                         </h3>
 
                         <p className="text-xs text-muted-foreground truncate text-left">
-                          {artist.specialization}{artist.county ? ` · ${artist.county}` : ''} {flag}
+                          {translateSpecialization(artist.specialization)}{artist.county ? ` · ${artist.county}` : ''} {flag}
                         </p>
 
                         <div className="flex items-center justify-between min-h-[20px]">

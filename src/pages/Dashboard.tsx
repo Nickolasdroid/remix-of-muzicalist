@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1895,7 +1896,7 @@ const Dashboard = () => {
                                 {formData.stageName}
                               </h1>
                               <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-                                {formData.specialization && <span className="font-medium">{formData.specialization}</span>}
+                                {formData.specialization && <span className="font-medium">{translateSpecialization(formData.specialization)}</span>}
                                 {formData.specialization && formData.county && <span className="opacity-70">•</span>}
                                 {formData.county && <span className="truncate">{formData.county}</span>}
                                 {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
@@ -3030,7 +3031,7 @@ const Dashboard = () => {
                                             </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{isAdmin ? "Admin" : (profile?.specialization || "User")}</span>
+                                          <span>{isAdmin ? "Admin" : (translateSpecialization(profile?.specialization) || "User")}</span>
                                           <span>·</span>
                                           <span>{formatSmartDate(announcement.created_at)}</span>
                                           <span>·</span>
@@ -3970,7 +3971,7 @@ const Dashboard = () => {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{artist.specialization} · {artist.county}</p>
+                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(artist.specialization)} · {artist.county}</p>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setUnfollowTargetId(artist.id); }}>
@@ -4023,7 +4024,7 @@ const Dashboard = () => {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{follower.stage_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{follower.specialization} · {follower.county}</p>
+                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(follower.specialization)} · {follower.county}</p>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="shrink-0 text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setRemoveFollowerTargetId(follower.id); }}>

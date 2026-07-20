@@ -26,6 +26,7 @@ import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
 import SEO from "@/components/SEO";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 const POSTS_PER_PAGE = 10;
 
@@ -317,7 +318,7 @@ const Feed = () => {
   const getSpecializationLabel = (specialization: string | null, profileId?: string) => {
     if (profileId && adminIds.has(profileId)) return "Admin";
     if (!specialization) return "User";
-    return specialization;
+    return translateSpecialization(specialization);
   };
 
   const formatDate = formatSmartDate;
