@@ -21,6 +21,7 @@ interface Props {
   validCount: number;
   invalidCount: number;
   estimatedMs: number;
+  loading?: boolean;
 }
 
 const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
