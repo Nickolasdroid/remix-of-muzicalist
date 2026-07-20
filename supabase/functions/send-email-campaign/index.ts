@@ -40,16 +40,20 @@ async function fetchNextBatch(
   admin: SupabaseClient,
   campaignId: string,
 ): Promise<Recipient[]> {
-  // Pending OR (Failed AND attempts < MAX_ATTEMPTS)
+  // Only Pending recipients are eligible within a single run. Failed
+  // recipients require the user's explicit "Retry Failed" action, which
+  // resets them back to Pending — this prevents the same recipient from
+  // being retried repeatedly inside one invocation and inflating counters.
   const { data, error } = await admin
     .from("email_campaign_recipients")
     .select("id, recipient_email, recipient_name, status, attempts")
     .eq("campaign_id", campaignId)
-    .or(`status.eq.Pending,and(status.eq.Failed,attempts.lt.${MAX_ATTEMPTS})`)
+    .eq("status", "Pending")
     .order("created_at", { ascending: true })
     .limit(BATCH_SIZE);
   if (error) throw new Error(`fetch batch: ${error.message}`);
   return (data ?? []) as Recipient[];
+
 }
 
 async function markRecipientSending(
