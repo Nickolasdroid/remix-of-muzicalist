@@ -102,24 +102,64 @@ const AdminNewCampaign = () => {
   const canStart = hasValid && name.trim().length > 0 && !!template;
   const estimatedMs = estimateSendingMs(recipients?.valid.length ?? 0);
 
-  const handleConfirm = () => {
-    if (!recipients || !file) return;
-    const templateLabel = templateLabelOf(template) || template;
-    campaignStore.create({
-      name: name.trim(),
-      templateId: template,
-      templateLabel,
-      fileName: file.name,
-      totalRecipients: recipients.total,
-      validCount: recipients.valid.length,
-      invalidCount: recipients.invalid.length,
-      validRecipients: recipients.valid,
-      invalidRecipients: recipients.invalid,
-      estimatedDurationMs: estimatedMs,
-    });
-    setConfirmOpen(false);
-    toast.success("Campaign created and set to Pending.");
-    navigate("/admin/communications/campaigns");
+  const [starting, setStarting] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!recipients || !file || starting) return;
+    setStarting(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const { data: created, error: campErr } = await supabase
+        .from("email_campaigns")
+        .insert({
+          name: name.trim(),
+          template,
+          uploaded_file_name: file.name,
+          total_recipients: recipients.total,
+          valid_recipients: recipients.valid.length,
+          invalid_recipients: recipients.invalid.length,
+          status: "Pending",
+          created_by: userData.user?.id ?? null,
+        })
+        .select("id")
+        .single();
+      if (campErr) throw campErr;
+
+      const rows = recipients.valid.map((r) => ({
+        campaign_id: created.id,
+        recipient_name: r.name ?? null,
+        recipient_email: r.email,
+        status: "Pending",
+        attempts: 0,
+      }));
+      const chunkSize = 500;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const { error: recErr } = await supabase
+          .from("email_campaign_recipients")
+          .insert(rows.slice(i, i + chunkSize));
+        if (recErr) throw recErr;
+      }
+
+      const { error: invokeErr } = await supabase.functions.invoke(
+        "send-email-campaign",
+        { body: { campaign_id: created.id } },
+      );
+      if (invokeErr) {
+        console.error("send-email-campaign invoke failed", invokeErr);
+        toast.warning("Campaign created but processor did not start. It will retry.");
+      } else {
+        toast.success("Campaign created and started.");
+      }
+
+      setConfirmOpen(false);
+      navigate("/admin/communications/campaigns");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Failed to create campaign", err);
+      toast.error(`Could not start campaign: ${msg}`);
+    } finally {
+      setStarting(false);
+    }
   };
 
   return (
