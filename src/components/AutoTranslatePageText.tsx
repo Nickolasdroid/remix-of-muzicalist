@@ -303,31 +303,22 @@ const AutoTranslatePageText = () => {
     };
   }, []);
 
-  // On every route change, hide the body BEFORE paint when a non-English
-  // language is active, then translate the freshly mounted DOM synchronously
-  // (using the cached translations) so the user never sees the English flash.
+  // On every route change, translate the freshly-mounted DOM synchronously in
+  // this layout effect — which runs BEFORE the browser paints. When the
+  // translation is cached (the normal case, thanks to the global server-side
+  // cache) the text is already in the target language on first paint, so there
+  // is no English flash AND no pause: we never hide the body.
+  //
+  // For the rare uncached string, runSync() queues an async fetch and swaps the
+  // translation in when it arrives (a brief source-language flash on those few
+  // words only). We deliberately do NOT hide the page while that happens —
+  // hiding the body on navigation was the cause of the perceptible pause,
+  // worst on mobile. Instant navigation wins over a one-frame flash on a
+  // handful of missing strings.
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
     if (getCurrentLanguage() === "en") return;
-    ensurePendingStyle();
-    document.documentElement.setAttribute("data-i18n-pending", "true");
-    // Safety: never leave the page hidden for more than a hair. When the
-    // translation is already cached (the normal case, thanks to the global
-    // server-side cache) runSync() below reveals the body synchronously in
-    // the same tick, so this timeout never fires. It only matters when a
-    // translation is missing — and in that case we'd much rather show
-    // untranslated text after ~60ms than block the whole navigation on a
-    // network round-trip. 60ms is below the human "pause" threshold, so the
-    // navigation feels instant even on the worst-case path.
-    const safety = window.setTimeout(() => {
-      document.documentElement.removeAttribute("data-i18n-pending");
-    }, 60);
-    // Translate the freshly-committed DOM synchronously, BEFORE the browser
-    // paints — this is what eliminates the English flash on navigation.
     runSyncRef.current?.();
-    return () => {
-      window.clearTimeout(safety);
-    };
   }, [location.pathname]);
 
   return null;
