@@ -9,12 +9,14 @@ import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PlanBadge from "@/components/PlanBadge";
+import NewArtistBadge from "@/components/NewArtistBadge";
 
 interface Artist {
   id: string;
   stage_name: string;
   avatar_url: string | null;
   plan: string;
+  created_at: string;
 }
 
 type SpecializationType = "Singer" | "Instrumentalist" | "DJ" | "Band";
@@ -64,7 +66,7 @@ const CountySpecializationArtists = () => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, stage_name, avatar_url, plan')
+        .select('id, stage_name, avatar_url, plan, created_at')
         .ilike('county', county)
         .eq('specialization', dbSpecialization)
         .in('id', artistIds);
@@ -123,7 +125,10 @@ const CountySpecializationArtists = () => {
                   </Avatar>
                   <PlanBadge plan={artist.plan} size={14} className="top-0 right-0" />
                 </div>
-                <span className="text-base font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-base font-medium text-foreground notranslate truncate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
+                  <NewArtistBadge createdAt={artist.created_at} variant="inline" />
+                </div>
               </Link>
             ))}
           </div>

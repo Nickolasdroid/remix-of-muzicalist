@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import PlanBadge from "@/components/PlanBadge";
+import NewArtistBadge from "@/components/NewArtistBadge";
 
 interface SimpleArtistCardProps {
   id: string;
@@ -8,13 +9,15 @@ interface SimpleArtistCardProps {
   imageUrl?: string;
   isPremium?: boolean;
   plan?: string | null;
+  createdAt?: string | null;
 }
 
-const SimpleArtistCard = ({ id, stageName, imageUrl, plan }: SimpleArtistCardProps) => {
+const SimpleArtistCard = ({ id, stageName, imageUrl, plan, createdAt }: SimpleArtistCardProps) => {
   return (
     <Link to={`/artist/${id}`}>
       <div className="group relative aspect-square overflow-hidden rounded-lg transition-all duration-300 hover:shadow-[var(--shadow-gold)]">
         <PlanBadge plan={plan} />
+        <NewArtistBadge createdAt={createdAt} />
         <div className="w-full h-full">
           {imageUrl ? (
             <img src={imageUrl} alt={stageName} className="w-full h-full object-cover" />
