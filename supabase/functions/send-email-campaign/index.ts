@@ -1,11 +1,16 @@
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { renderCampaignEmail } from "../_shared/campaignEmail.ts";
 import {
   buildDefaultDispatcher,
   CommunicationDispatcher,
   CommunicationPayload,
 } from "../_shared/dispatcher/index.ts";
+
+function substituteVars(input: string, vars: Record<string, string>): string {
+  return input.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_m, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : `{{${key}}}`,
+  );
+}
 
 
 interface RequestBody {
@@ -180,7 +185,52 @@ Deno.serve(async (req) => {
   }
 
   const campaignName: string = campaign.name ?? "Muzicalist";
-  const template: string = campaign.template ?? "";
+  const templateId: string = campaign.template ?? "";
+
+  // Load the selected template + its active published version so recipients
+  // receive the actual template HTML — not the campaign metadata.
+  if (!UUID_RE.test(templateId)) {
+    await admin.from("email_campaigns").update({
+      status: "Failed",
+      last_error: "Campaign has no valid template_id",
+      finished_at: new Date().toISOString(),
+    }).eq("id", campaignId);
+    return json({ error: "Campaign has no valid template_id" }, 400);
+  }
+
+  const { data: tpl, error: tplErr } = await admin
+    .from("email_templates")
+    .select("id, name, active_version_id")
+    .eq("id", templateId)
+    .maybeSingle();
+  if (tplErr || !tpl || !tpl.active_version_id) {
+    const msg = "Selected template not found or has no active published version";
+    await admin.from("email_campaigns").update({
+      status: "Failed",
+      last_error: msg,
+      finished_at: new Date().toISOString(),
+    }).eq("id", campaignId);
+    return json({ error: msg }, 400);
+  }
+
+  const { data: version, error: verErr } = await admin
+    .from("email_template_versions")
+    .select("subject, html_content, text_content")
+    .eq("id", tpl.active_version_id)
+    .maybeSingle();
+  if (verErr || !version || !version.html_content) {
+    const msg = "Active template version is missing HTML content";
+    await admin.from("email_campaigns").update({
+      status: "Failed",
+      last_error: msg,
+      finished_at: new Date().toISOString(),
+    }).eq("id", campaignId);
+    return json({ error: msg }, 400);
+  }
+
+  const templateSubject = version.subject ?? campaignName;
+  const templateHtml = version.html_content;
+  const templateText = version.text_content ?? "";
 
   let totalProcessed = 0;
   let sentDeltaTotal = 0;
@@ -223,18 +273,28 @@ Deno.serve(async (req) => {
 
         totalProcessed++;
 
-        // Communication Pipeline stage: build the channel-agnostic payload.
-        const { subject, html } = renderCampaignEmail({
-          campaignName,
-          template,
-          recipientName: recipient.recipient_name,
-        });
+        const displayName = recipient.recipient_name || "";
+        const vars: Record<string, string> = {
+          "artist.stage_name": displayName,
+          "artist.name": displayName,
+          "recipient.name": displayName,
+          "recipient.email": recipient.recipient_email,
+          "system.dashboard_url": "https://muzicalist.com/dashboard",
+          "campaign.name": campaignName,
+        };
+        const subject = substituteVars(templateSubject, vars);
+        const html = substituteVars(templateHtml, vars);
+        const text = templateText ? substituteVars(templateText, vars) : "";
+
         const payload: CommunicationPayload = {
           channel: "email",
           subject,
           html,
-          text: "",
-          metadata: { campaign_id: campaignId },
+          text,
+          metadata: {
+            template_id: tpl.id,
+            template_version_id: tpl.active_version_id,
+          },
         };
 
         // Dispatcher stage: delegates to the registered EmailProvider.
