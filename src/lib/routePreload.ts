@@ -47,3 +47,46 @@ export function preloadPopularRoutes(paths: string[]) {
     setTimeout(run, 2000);
   }
 }
+
+/**
+ * Coadă de preload procesată una câte una la idle.
+ *
+ * Folosită de PrefetchLink pentru preload-ul din viewport pe mobil: când o
+ * listă lungă de carduri intră deodată în viewport, în loc să declanșăm zeci
+ * de importuri simultan (care ar concura cu randarea și rețeaua), le punem în
+ * coadă și le scoatem pe rând, câte unul per fereastră de idle. Fiecare path
+ * unic e preîncărcat o singură dată.
+ */
+const idleQueue: string[] = [];
+const queued = new Set<string>();
+let draining = false;
+
+const scheduleIdle = (fn: () => void) => {
+  if (typeof window === "undefined") return;
+  if ("requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(fn, { timeout: 2000 });
+  } else {
+    setTimeout(fn, 200);
+  }
+};
+
+const drain = () => {
+  const path = idleQueue.shift();
+  if (path === undefined) {
+    draining = false;
+    return;
+  }
+  preloadForPath(path);
+  scheduleIdle(drain);
+};
+
+/** Pune un path în coada de preload la idle (dedup pe path). */
+export function queueIdlePreload(path: string) {
+  if (!path || queued.has(path)) return;
+  queued.add(path);
+  idleQueue.push(path);
+  if (!draining) {
+    draining = true;
+    scheduleIdle(drain);
+  }
+}
