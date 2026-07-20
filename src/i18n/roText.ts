@@ -1100,8 +1100,6 @@ export const RO_TEXT: Record<string, string> = {
   "Find artists for my events": "Caut artiști pentru evenimentele mele",
   "Create My Artist Profile": "Creează-ți profilul de artist",
   "Showcase your music, experience, and availability to potential clients.": "Prezintă-ți muzica, experiența și disponibilitatea către potențiali clienți.",
-  "Discover, compare and connect with artists.": "Descoperă, compară și intră în legătură cu artiști.",
-  "Choose what you'd like to do.": "Alege ce ai vrea să faci.",
   "Find jazz singers in București": "Find jazz singers in București",
   "Finding reliable musicians is difficult": "Găsirea muzicienilor de încredere e dificilă",
   "Fine-tune density, font size and motion. Additional display options will appear here soon.": "Reglează fin densitatea, dimensiunea fontului și animațiile. Opțiuni suplimentare de afișare vor apărea aici în curând.",
