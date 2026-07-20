@@ -124,7 +124,7 @@ const AllArtists = () => {
                       </h3>
 
                       <p className="text-xs text-muted-foreground truncate text-left">
-                        {artist.specialization}
+                        {translateSpecialization(artist.specialization)}
                         {artist.county ? ` · ${artist.county}` : ""} {flag}
                       </p>
 
