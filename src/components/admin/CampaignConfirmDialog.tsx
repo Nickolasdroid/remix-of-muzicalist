@@ -44,6 +44,7 @@ const CampaignConfirmDialog = ({
   validCount,
   invalidCount,
   estimatedMs,
+  loading = false,
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
