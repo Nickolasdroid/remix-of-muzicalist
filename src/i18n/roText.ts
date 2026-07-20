@@ -1098,6 +1098,8 @@ export const RO_TEXT: Record<string, string> = {
   "File too large": "Fișier prea mare",
   "Find artists by location, genre and availability.": "Găsește artiști după locație, gen și disponibilitate.",
   "Find artists for my events": "Caut artiști pentru evenimentele mele",
+  "Create My Artist Profile": "Creează-ți profilul de artist",
+  "Showcase your music, experience, and availability to potential clients.": "Prezintă-ți muzica, experiența și disponibilitatea către potențiali clienți.",
   "Find jazz singers in București": "Find jazz singers in București",
   "Finding reliable musicians is difficult": "Găsirea muzicienilor de încredere e dificilă",
   "Fine-tune density, font size and motion. Additional display options will appear here soon.": "Reglează fin densitatea, dimensiunea fontului și animațiile. Opțiuni suplimentare de afișare vor apărea aici în curând.",
