@@ -143,13 +143,7 @@ const Search = () => {
 
   const getSpecializationLabel = (spec: string | null) => {
     if (!spec) return '';
-    const labels: Record<string, string> = {
-      singer: 'Singer',
-      instrumentalist: 'Instrumentalist',
-      dj: 'DJ',
-      band: 'Band',
-    };
-    return labels[spec] || spec;
+    return translateSpecialization(spec);
   };
 
   return (
