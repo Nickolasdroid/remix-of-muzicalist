@@ -4,6 +4,7 @@ import { User, Star, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
