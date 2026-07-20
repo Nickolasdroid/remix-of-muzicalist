@@ -19,11 +19,14 @@ interface ArtistData {
   county: string;
   country: string | null;
   plan: string;
+  created_at: string;
 }
 
 interface ArtistWithRating extends ArtistData {
   rating: number | null;
 }
+
+const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 const AllArtists = () => {
   const [artists, setArtists] = useState<ArtistWithRating[]>([]);
