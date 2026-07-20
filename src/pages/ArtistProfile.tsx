@@ -1490,7 +1490,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{artist?.specialization || "User"}</span>
+                                          <span>{translateSpecialization(artist?.specialization) || "User"}</span>
                                           <span>·</span>
                                           <span>{formatSmartDate(promo.created_at)}</span>
                                           <span>·</span>
@@ -1584,7 +1584,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <span>{artist?.specialization || "User"}</span>
+                                      <span>{translateSpecialization(artist?.specialization) || "User"}</span>
                                       <span>·</span>
                                       <span>{formatDate(post.created_at)}</span>
                                       <span>·</span>
@@ -1719,7 +1719,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <span>{artist?.specialization || "User"}</span>
+                                      <span>{translateSpecialization(artist?.specialization) || "User"}</span>
                                       <span>·</span>
                                       <span>{formatSmartDate(announcement.created_at)}</span>
                                       <span>·</span>
