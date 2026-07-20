@@ -15,6 +15,7 @@ interface Artist {
   stage_name: string;
   avatar_url: string | null;
   plan: string;
+  created_at: string;
 }
 
 type SpecializationType = "Singer" | "Instrumentalist" | "DJ" | "Band";
