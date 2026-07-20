@@ -1,6 +1,4 @@
-// GITHUB SYNC TEST
-// GitHub sync check: no-op comment
-import { lazy, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,53 +11,106 @@ import GuestThemeGuard from "./components/GuestThemeGuard";
 import AdminRoute from "./components/AdminRoute";
 import MetaPixel from "./components/MetaPixel";
 import { Capacitor } from "@capacitor/core";
+import { lazyWithPreload } from "@/lib/lazyWithPreload";
+import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
+
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
 // slower devices/networks. Index stays eager because it's the landing page.
-const Feed = lazy(() => import("./pages/Feed"));
-const Leaderboard = lazy(() => import("./pages/Leaderboard"));
-const Register = lazy(() => import("./pages/Register"));
-const RegisterArtist = lazy(() => import("./pages/RegisterArtist"));
-const RegisterUser = lazy(() => import("./pages/RegisterUser"));
-const Categories = lazy(() => import("./pages/Categories"));
-const CategoryArtists = lazy(() => import("./pages/CategoryArtists"));
-const Counties = lazy(() => import("./pages/Counties"));
-const CountyArtists = lazy(() => import("./pages/CountyArtists"));
-const CountySpecializationArtists = lazy(() => import("./pages/CountySpecializationArtists"));
-const Countries = lazy(() => import("./pages/Countries"));
-const CountryArtists = lazy(() => import("./pages/CountryArtists"));
-const Announcements = lazy(() => import("./pages/Announcements"));
-const AboutUs = lazy(() => import("./pages/AboutUs"));
-const Login = lazy(() => import("./pages/Login"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const ArtistProfileRoute = lazy(() => import("./pages/ArtistProfileRoute"));
-const BookArtist = lazy(() => import("./pages/BookArtist"));
-const Messages = lazy(() => import("./pages/Messages"));
-const Notifications = lazy(() => import("./pages/Notifications"));
-const Search = lazy(() => import("./pages/Search"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const AllArtists = lazy(() => import("./pages/AllArtists"));
-const ArtistAnalytics = lazy(() => import("./pages/ArtistAnalytics"));
-const PlansPricing = lazy(() => import("./pages/PlansPricing"));
-const MyPlan = lazy(() => import("./pages/MyPlan"));
-const HelpSupport = lazy(() => import("./pages/HelpSupport"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const AdminEmailCampaigns = lazy(() => import("./pages/AdminEmailCampaigns"));
-const AdminNewCampaign = lazy(() => import("./pages/AdminNewCampaign"));
-const AdminCampaignDetail = lazy(() => import("./pages/AdminCampaignDetail"));
-const AdminEmailTemplates = lazy(() => import("./pages/AdminEmailTemplates"));
-const AdminEditTemplate = lazy(() => import("./pages/AdminEditTemplate"));
-const AdminModeration = lazy(() => import("./pages/AdminModeration"));
-const BookingRequests = lazy(() => import("./pages/BookingRequests"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+// lazyWithPreload = ca lazy, dar cu .preload() ca să scoatem pauza la navigare.
+const Feed = lazyWithPreload(() => import("./pages/Feed"));
+const Leaderboard = lazyWithPreload(() => import("./pages/Leaderboard"));
+const Register = lazyWithPreload(() => import("./pages/Register"));
+const RegisterArtist = lazyWithPreload(() => import("./pages/RegisterArtist"));
+const RegisterUser = lazyWithPreload(() => import("./pages/RegisterUser"));
+const Categories = lazyWithPreload(() => import("./pages/Categories"));
+const CategoryArtists = lazyWithPreload(() => import("./pages/CategoryArtists"));
+const Counties = lazyWithPreload(() => import("./pages/Counties"));
+const CountyArtists = lazyWithPreload(() => import("./pages/CountyArtists"));
+const CountySpecializationArtists = lazyWithPreload(() => import("./pages/CountySpecializationArtists"));
+const Countries = lazyWithPreload(() => import("./pages/Countries"));
+const CountryArtists = lazyWithPreload(() => import("./pages/CountryArtists"));
+const Announcements = lazyWithPreload(() => import("./pages/Announcements"));
+const AboutUs = lazyWithPreload(() => import("./pages/AboutUs"));
+const Login = lazyWithPreload(() => import("./pages/Login"));
+const ResetPassword = lazyWithPreload(() => import("./pages/ResetPassword"));
+const Dashboard = lazyWithPreload(() => import("./pages/Dashboard"));
+const UserDashboard = lazyWithPreload(() => import("./pages/UserDashboard"));
+const ArtistProfileRoute = lazyWithPreload(() => import("./pages/ArtistProfileRoute"));
+const BookArtist = lazyWithPreload(() => import("./pages/BookArtist"));
+const Messages = lazyWithPreload(() => import("./pages/Messages"));
+const Notifications = lazyWithPreload(() => import("./pages/Notifications"));
+const Search = lazyWithPreload(() => import("./pages/Search"));
+const PrivacyPolicy = lazyWithPreload(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazyWithPreload(() => import("./pages/TermsOfService"));
+const AllArtists = lazyWithPreload(() => import("./pages/AllArtists"));
+const ArtistAnalytics = lazyWithPreload(() => import("./pages/ArtistAnalytics"));
+const PlansPricing = lazyWithPreload(() => import("./pages/PlansPricing"));
+const MyPlan = lazyWithPreload(() => import("./pages/MyPlan"));
+const HelpSupport = lazyWithPreload(() => import("./pages/HelpSupport"));
+const AdminDashboard = lazyWithPreload(() => import("./pages/AdminDashboard"));
+const AdminEmailCampaigns = lazyWithPreload(() => import("./pages/AdminEmailCampaigns"));
+const AdminNewCampaign = lazyWithPreload(() => import("./pages/AdminNewCampaign"));
+const AdminCampaignDetail = lazyWithPreload(() => import("./pages/AdminCampaignDetail"));
+const AdminEmailTemplates = lazyWithPreload(() => import("./pages/AdminEmailTemplates"));
+const AdminEditTemplate = lazyWithPreload(() => import("./pages/AdminEditTemplate"));
+const AdminModeration = lazyWithPreload(() => import("./pages/AdminModeration"));
+const BookingRequests = lazyWithPreload(() => import("./pages/BookingRequests"));
+const NotFound = lazyWithPreload(() => import("./pages/NotFound"));
+
+// Leagă fiecare path public de preload-ul lui, ca PrefetchLink (hover/focus)
+// și prefetch-ul la idle să știe ce chunk să ceară.
+registerPreload("/feed", Feed.preload);
+registerPreload("/categories", Categories.preload);
+registerPreload("/categories/", CategoryArtists.preload);
+registerPreload("/leaderboard", Leaderboard.preload);
+registerPreload("/countries", Countries.preload);
+registerPreload("/countries/", CountryArtists.preload);
+registerPreload("/counties", Counties.preload);
+registerPreload("/counties/", CountyArtists.preload);
+registerPreload("/announcements", Announcements.preload);
+registerPreload("/about", AboutUs.preload);
+registerPreload("/login", Login.preload);
+registerPreload("/reset-password", ResetPassword.preload);
+registerPreload("/register", Register.preload);
+registerPreload("/register/artist", RegisterArtist.preload);
+registerPreload("/register/user", RegisterUser.preload);
+registerPreload("/dashboard", Dashboard.preload);
+registerPreload("/user-dashboard", UserDashboard.preload);
+registerPreload("/artist/", ArtistProfileRoute.preload);
+registerPreload("/book/", BookArtist.preload);
+registerPreload("/messages", Messages.preload);
+registerPreload("/notifications", Notifications.preload);
+registerPreload("/search", Search.preload);
+registerPreload("/artists", AllArtists.preload);
+registerPreload("/analytics", ArtistAnalytics.preload);
+registerPreload("/privacy-policy", PrivacyPolicy.preload);
+registerPreload("/terms-of-service", TermsOfService.preload);
+registerPreload("/plans", PlansPricing.preload);
+registerPreload("/my-plan", MyPlan.preload);
+registerPreload("/help", HelpSupport.preload);
+registerPreload("/booking-requests", BookingRequests.preload);
 
 const queryClient = new QueryClient();
 
+// Fallback transparent: nu introduce flash de background. Randăm ce era
+// (ScrollToTop lasă poziția), doar ținem layout-ul până vine chunk-ul.
 const RouteFallback = () => (
   <div className="min-h-screen bg-background" aria-hidden="true" />
 );
+
+// Preîncarcă la idle rutele cele mai vizitate, ca prima navigare spre ele
+// să fie deja din cache.
+const RoutePrefetcher = () => {
+  useEffect(() => {
+    preloadPopularRoutes([
+      "/artists",
+      "/categories",
+      "/search",
+      "/countries",
+    ]);
+  }, []);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -71,6 +122,7 @@ const App = () => (
         <MetaPixel />
         <GuestThemeGuard />
         <AutoTranslatePageText />
+        <RoutePrefetcher />
         <Suspense fallback={<RouteFallback />}>
           <main>
           <Routes>
