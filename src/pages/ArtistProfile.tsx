@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef } from "react";
@@ -1049,7 +1050,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       {artist.stage_name}
                     </h1>
                     <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-                      {artist.specialization && <span className="font-medium">{artist.specialization}</span>}
+                      {artist.specialization && <span className="font-medium">{translateSpecialization(artist.specialization)}</span>}
                       {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                       {artist.county && <span className="truncate">{artist.county}</span>}
                       {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
