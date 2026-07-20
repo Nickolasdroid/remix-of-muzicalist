@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "groove-guide-central"
+const SITE_NAME = "Muzicalist"
 const SENDER_DOMAIN = "notify.muzicalist.com"
 const ROOT_DOMAIN = "muzicalist.com"
 const FROM_DOMAIN = "notify.muzicalist.com" // Domain shown in From address (may be root or sender subdomain)
