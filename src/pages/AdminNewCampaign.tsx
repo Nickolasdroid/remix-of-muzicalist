@@ -105,10 +105,30 @@ const AdminNewCampaign = () => {
   const [starting, setStarting] = useState(false);
 
   const handleConfirm = async () => {
-    if (!recipients || !file || starting) return;
+    console.log("[Campaign] Start clicked", { hasRecipients: !!recipients, hasFile: !!file, starting, name, template });
+    if (starting) return;
+    if (!recipients || !file) {
+      toast.error("Please upload a recipients file first.");
+      return;
+    }
+    if (!name.trim()) {
+      toast.error("Campaign name is required.");
+      return;
+    }
+    if (!template) {
+      toast.error("Please select a template.");
+      return;
+    }
+    if (recipients.valid.length === 0) {
+      toast.error("No valid recipients to send to.");
+      return;
+    }
     setStarting(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr) throw userErr;
+      if (!userData.user) throw new Error("You must be signed in as an admin.");
+      console.log("[Campaign] Inserting campaign row…");
       const { data: created, error: campErr } = await supabase
         .from("email_campaigns")
         .insert({
@@ -119,11 +139,12 @@ const AdminNewCampaign = () => {
           valid_recipients: recipients.valid.length,
           invalid_recipients: recipients.invalid.length,
           status: "Pending",
-          created_by: userData.user?.id ?? null,
+          created_by: userData.user.id,
         })
         .select("id")
         .single();
       if (campErr) throw campErr;
+      console.log("[Campaign] Created", created);
 
       const rows = recipients.valid.map((r) => ({
         campaign_id: created.id,
@@ -139,6 +160,7 @@ const AdminNewCampaign = () => {
           .insert(rows.slice(i, i + chunkSize));
         if (recErr) throw recErr;
       }
+      console.log("[Campaign] Inserted recipients", rows.length);
 
       const { error: invokeErr } = await supabase.functions.invoke(
         "send-email-campaign",
@@ -155,7 +177,7 @@ const AdminNewCampaign = () => {
       navigate("/admin/communications/campaigns");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("Failed to create campaign", err);
+      console.error("[Campaign] Failed to create campaign", err);
       toast.error(`Could not start campaign: ${msg}`);
     } finally {
       setStarting(false);
