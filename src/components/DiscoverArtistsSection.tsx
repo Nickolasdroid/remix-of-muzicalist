@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import {
   Carousel,
   CarouselContent,
