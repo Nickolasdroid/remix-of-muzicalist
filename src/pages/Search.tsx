@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import { supabase } from "@/integrations/supabase/client";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { toast } from "sonner";
