@@ -317,9 +317,46 @@ Deno.serve(async (req) => {
         } else {
           const errMsg = result.error ?? "Unknown delivery error";
           console.error(`Send failed for ${recipient.recipient_email}: ${errMsg}`);
+
+          // Rate-limit / quota errors are transient — do NOT burn an attempt
+          // or count as failed. Revert to Pending and stop the run so the
+          // campaign can resume later (manually or on next invocation).
+          if (/\b429\b|rate.?limit|quota/i.test(errMsg)) {
+            await admin
+              .from("email_campaign_recipients")
+              .update({
+                status: "Pending",
+                attempts: Math.max(0, recipient.attempts),
+                error_message: errMsg.slice(0, 1000),
+              })
+              .eq("id", recipient.id);
+            totalProcessed--;
+            await persistCampaignProgress(admin, campaignId, batchSent, batchFailed);
+            sentDeltaTotal += batchSent;
+            failedDeltaTotal += batchFailed;
+            await admin
+              .from("email_campaigns")
+              .update({
+                status: "Sending",
+                last_error: errMsg.slice(0, 1000),
+                finished_at: null,
+              })
+              .eq("id", campaignId);
+            return json({
+              campaign_id: campaignId,
+              total_processed: totalProcessed,
+              sent_count: sentDeltaTotal,
+              failed_count: failedDeltaTotal,
+              final_status: "Sending",
+              stopped: "rate_limited",
+              error: errMsg,
+            });
+          }
+
           await markFailed(admin, recipient.id, errMsg);
           batchFailed++;
         }
+
       }
 
 
