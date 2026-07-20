@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
@@ -40,8 +40,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import GenrePickerDialog from "@/components/GenrePickerDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import Cropper from "react-easy-crop";
-import { Area } from "react-easy-crop";
+// react-easy-crop e o librărie grea folosită DOAR când userul deschide
+// crop-ul de imagine (showCropper). O încărcăm lazy ca să iasă complet din
+// chunk-ul inițial al Dashboard-ului — se descarcă abia la prima deschidere
+// a cropper-ului. `Area` e doar un tip, deci import type (zero cost runtime).
+import type { Area } from "react-easy-crop";
+const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
@@ -3810,7 +3814,9 @@ const Dashboard = () => {
             <h3 className="text-xl font-bold text-foreground mb-4">Crop Profile Picture</h3>
             
             <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden mb-4">
-              <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={true} />
+              <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/70">…</div>}>
+                <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={true} />
+              </Suspense>
             </div>
             
             <div className="space-y-2 mb-4">
