@@ -366,8 +366,9 @@ const AdminNewCampaign = () => {
         {recipients && file && (
           <CampaignConfirmDialog
             open={confirmOpen}
-            onOpenChange={setConfirmOpen}
+            onOpenChange={(o) => { if (!starting) setConfirmOpen(o); }}
             onConfirm={handleConfirm}
+            loading={starting}
             name={name.trim()}
             templateLabel={templateLabelOf(template) || template}
             fileName={file.name}
