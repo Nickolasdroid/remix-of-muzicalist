@@ -1,11 +1,16 @@
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { renderCampaignEmail } from "../_shared/campaignEmail.ts";
 import {
   buildDefaultDispatcher,
   CommunicationDispatcher,
   CommunicationPayload,
 } from "../_shared/dispatcher/index.ts";
+
+function substituteVars(input: string, vars: Record<string, string>): string {
+  return input.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_m, key) =>
+    Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : `{{${key}}}`,
+  );
+}
 
 
 interface RequestBody {
