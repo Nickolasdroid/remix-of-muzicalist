@@ -273,18 +273,28 @@ Deno.serve(async (req) => {
 
         totalProcessed++;
 
-        // Communication Pipeline stage: build the channel-agnostic payload.
-        const { subject, html } = renderCampaignEmail({
-          campaignName,
-          template,
-          recipientName: recipient.recipient_name,
-        });
+        const displayName = recipient.recipient_name || "";
+        const vars: Record<string, string> = {
+          "artist.stage_name": displayName,
+          "artist.name": displayName,
+          "recipient.name": displayName,
+          "recipient.email": recipient.recipient_email,
+          "system.dashboard_url": "https://muzicalist.com/dashboard",
+          "campaign.name": campaignName,
+        };
+        const subject = substituteVars(templateSubject, vars);
+        const html = substituteVars(templateHtml, vars);
+        const text = templateText ? substituteVars(templateText, vars) : "";
+
         const payload: CommunicationPayload = {
           channel: "email",
           subject,
           html,
-          text: "",
-          metadata: { campaign_id: campaignId },
+          text,
+          metadata: {
+            template_id: tpl.id,
+            template_version_id: tpl.active_version_id,
+          },
         };
 
         // Dispatcher stage: delegates to the registered EmailProvider.
