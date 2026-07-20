@@ -198,9 +198,15 @@ const AutoTranslatePageText = () => {
         revealBody();
         return;
       }
+      // Reveal the page BEFORE the network round-trip. Blocking the reveal on
+      // translateTexts() is what caused the long pause on navigation (worst on
+      // mobile, where the request is slower). We show the page now — briefly in
+      // the source language for the few missing strings — then fetch the
+      // translations and swap them in via runSync() when they arrive. No
+      // navigation ever waits on the network again.
+      revealBody();
       await translateTexts(lang, missing);
       runSync();
-      revealBody();
     };
 
     const scheduleAsync = () => {
@@ -305,12 +311,17 @@ const AutoTranslatePageText = () => {
     if (getCurrentLanguage() === "en") return;
     ensurePendingStyle();
     document.documentElement.setAttribute("data-i18n-pending", "true");
-    // Safety: never leave the page hidden for more than a moment. If
-    // translations aren't cached yet, we'd rather show untranslated text
-    // briefly than block the whole page render on a network round-trip.
+    // Safety: never leave the page hidden for more than a hair. When the
+    // translation is already cached (the normal case, thanks to the global
+    // server-side cache) runSync() below reveals the body synchronously in
+    // the same tick, so this timeout never fires. It only matters when a
+    // translation is missing — and in that case we'd much rather show
+    // untranslated text after ~60ms than block the whole navigation on a
+    // network round-trip. 60ms is below the human "pause" threshold, so the
+    // navigation feels instant even on the worst-case path.
     const safety = window.setTimeout(() => {
       document.documentElement.removeAttribute("data-i18n-pending");
-    }, 400);
+    }, 60);
     // Translate the freshly-committed DOM synchronously, BEFORE the browser
     // paints — this is what eliminates the English flash on navigation.
     runSyncRef.current?.();
