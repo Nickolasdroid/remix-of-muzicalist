@@ -21,10 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Search, Eye, PauseCircle, PlayCircle, ArrowUpDown } from "lucide-react";
+import { Pencil, Trash2, Search, Ban, RotateCcw, ArrowUpDown, History } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AdminProfile } from "./adminProfileTypes";
 import { EditProfileDialog, DeleteProfileDialog } from "./AdminProfileDialogs";
+import { AccountStatusBadge } from "./AccountStatusBadge";
+import { SuspendAccountDialog, ReactivateAccountDialog } from "./SuspendAccountDialog";
+import { SuspensionHistoryDialog } from "./SuspensionHistoryDialog";
 
 interface Props {
   profiles: AdminProfile[];
