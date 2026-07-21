@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { User, Star, ChevronRight, TrendingUp } from "lucide-react";
+import { User, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
 import { translateSpecialization } from "@/lib/specializationLabel";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 import {
   Carousel,
   CarouselContent,
@@ -27,7 +28,9 @@ interface ArtistData {
 
 interface ArtistWithRating extends ArtistData {
   rating: number | null;
+  reviewCount: number;
 }
+
 
 const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
