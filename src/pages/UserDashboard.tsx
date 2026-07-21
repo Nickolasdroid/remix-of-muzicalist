@@ -120,6 +120,17 @@ const UserDashboard = () => {
         navigate('/login');
         return;
       }
+      // Role guard: only regular users belong here. Artists/admins go to /dashboard.
+      const { data: roleRow } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      const userType = (roleRow?.user_type as string) || null;
+      if (userType && userType !== 'user') {
+        navigate('/dashboard', { replace: true });
+        return;
+      }
       setUser(session.user);
       
       const { data: profileRows, error } = await (supabase as any)
@@ -429,7 +440,6 @@ const UserDashboard = () => {
             { key: 'bio', label: 'Bio', done: !!(profile?.bio && String(profile.bio).trim().length > 0), icon: FileText },
             { key: 'phone', label: 'Phone number', done: !!profile?.phone, icon: Phone },
             { key: 'city', label: 'City', done: !!(profile?.city || profile?.location), icon: MapPinIcon },
-            { key: 'cover_url', label: 'Cover photo', done: !!(profile?.cover_url || profile?.cover_photo_url), icon: ImageIcon },
           ];
           const completionPct = Math.round((completionFields.filter(f => f.done).length / completionFields.length) * 100);
 

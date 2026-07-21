@@ -560,6 +560,16 @@ const Dashboard = () => {
         navigate('/login');
         return;
       }
+      // Role guard: regular users must never see the artist dashboard.
+      const { data: roleRow } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      if ((roleRow?.user_type as string) === 'user') {
+        navigate('/user-dashboard', { replace: true });
+        return;
+      }
       setUser(session.user);
       const {
         data: profileRows,
