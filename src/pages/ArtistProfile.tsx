@@ -1022,17 +1022,28 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
             <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
               <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
-                  <img
-                    src={artist.cover_url}
-                    alt={`${artist.stage_name} cover`}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setLightboxSrc(artist.cover_url!)}
+                    className="group/cover absolute inset-0 w-full h-full cursor-zoom-in"
+                    aria-label="Enlarge cover photo"
+                  >
+                    <img
+                      src={artist.cover_url}
+                      alt={`${artist.stage_name} cover`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <span className="hidden md:block pointer-events-none absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium opacity-0 group-hover/cover:opacity-100 transition-opacity">
+                      Click to enlarge
+                    </span>
+                  </button>
                 ) : (
                   <div
                     className="absolute inset-0"
                     style={{ background: getCoverGradient((artist as any).cover_theme) }}
                   />
                 )}
+
 
                 {/* Smooth premium fade into the page background (Spotify/Apple Music style) */}
                 <div
