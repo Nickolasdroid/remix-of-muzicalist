@@ -112,6 +112,39 @@ async function detectVisitorLanguage(): Promise<string> {
   }
 }
 
+// --- Boot-time language gate ---------------------------------------------
+// Pentru limbile DINAMICE (nu engleză, nu cele statice ca româna), resursele
+// de traducere se încarcă async din rețea (warmTextCache + loadDynamicTranslations)
+// DUPĂ ce i18n.init a setat deja limba sincron din localStorage. Fereastra
+// dintre "limba e setată" și "resursele au sosit" = flash de engleză la primul
+// load. Ascundem body-ul O SINGURĂ DATĂ, la boot, până termină auto-localizarea
+// — NU la fiecare navigare. Un load inițial cu o clipă de așteptare e acceptat
+// de useri; un flash pe fiecare pagină nu.
+const bootLangIsDynamic = () => {
+  if (typeof window === 'undefined') return false;
+  const manual = (() => {
+    try { return localStorage.getItem(MANUAL_LANG_KEY); } catch { return null; }
+  })();
+  const base = normalizeLanguage(manual || getInitialLanguage());
+  return base !== 'en' && !STATIC_LANGS.includes(base);
+};
+
+const showBootGate = () => {
+  if (typeof document === 'undefined') return;
+  if (!document.getElementById('i18n-pending-style')) {
+    const style = document.createElement('style');
+    style.id = 'i18n-pending-style';
+    style.textContent = 'html[data-i18n-pending="true"] body{visibility:hidden!important}';
+    document.head.appendChild(style);
+  }
+  document.documentElement.setAttribute('data-i18n-pending', 'true');
+};
+
+const hideBootGate = () => {
+  if (typeof document === 'undefined') return;
+  document.documentElement.removeAttribute('data-i18n-pending');
+};
+
 if (!i18n.isInitialized) {
   i18n
     .use(LanguageDetector)
@@ -144,6 +177,15 @@ if (typeof window !== 'undefined' && getInitialLanguage() === 'ro') {
   // the browser's explicit preference outranks an IP-based guess, and this
   // makes localization instant (no network round-trip) for most visitors.
   (async () => {
+    // Ascunde body-ul la boot DOAR pentru limbile dinamice (resursele lor vin
+    // din rețea). Pentru en/ro nu ascundem nimic — sunt sincrone. Safety: nu
+    // ținem pagina ascunsă mai mult de 2.5s, orice s-ar întâmpla.
+    const gated = bootLangIsDynamic();
+    let safety: ReturnType<typeof setTimeout> | null = null;
+    if (gated) {
+      showBootGate();
+      safety = setTimeout(hideBootGate, 2500);
+    }
     try {
       if (typeof window === 'undefined') return;
       const manual = localStorage.getItem(MANUAL_LANG_KEY);
@@ -161,6 +203,11 @@ if (typeof window !== 'undefined' && getInitialLanguage() === 'ro') {
       await applyLanguage(await detectVisitorLanguage());
     } catch (e) {
       console.warn('Auto-localization failed', e);
+    } finally {
+      if (gated) {
+        if (safety) clearTimeout(safety);
+        hideBootGate();
+      }
     }
   })();
 }
