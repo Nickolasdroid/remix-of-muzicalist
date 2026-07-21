@@ -72,6 +72,9 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
 
   const [editing, setEditing] = useState<AdminProfile | null>(null);
   const [deleting, setDeleting] = useState<AdminProfile | null>(null);
+  const [suspending, setSuspending] = useState<AdminProfile | null>(null);
+  const [reactivating, setReactivating] = useState<AdminProfile | null>(null);
+  const [history, setHistory] = useState<AdminProfile | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingNow, setDeletingNow] = useState(false);
 
@@ -159,19 +162,6 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
     }
   };
 
-  const handleToggleSuspend = async (u: AdminProfile) => {
-    const nextActive = !(u.is_active !== false);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_active: nextActive })
-      .eq("id", u.id);
-    if (error) {
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: nextActive ? "User reactivated" : "User suspended" });
-    refresh();
-  };
 
   const handleSaveEdit = async () => {
     if (!editing) return;
