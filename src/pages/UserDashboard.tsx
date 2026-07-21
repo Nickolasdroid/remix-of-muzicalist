@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, User, Image as ImageIcon, Phone, MapPin as MapPinIcon, FileText } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -421,15 +421,6 @@ const UserDashboard = () => {
             cooldownDaysRemaining = Math.max(0, Math.ceil((cooldownDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
           }
           const canPublish = standardAdsRemaining > 0;
-
-          // Profile completion
-          const completionFields = [
-            { key: 'avatar_url', label: 'Profile photo', done: !!profile?.avatar_url, icon: User },
-            { key: 'bio', label: 'Bio', done: !!(profile?.bio && String(profile.bio).trim().length > 0), icon: FileText },
-            { key: 'phone', label: 'Phone number', done: !!profile?.phone, icon: Phone },
-            { key: 'city', label: 'City', done: !!(profile?.city || profile?.location), icon: MapPinIcon },
-          ];
-          const completionPct = Math.round((completionFields.filter(f => f.done).length / completionFields.length) * 100);
 
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
