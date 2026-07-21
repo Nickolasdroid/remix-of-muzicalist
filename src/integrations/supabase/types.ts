@@ -1900,6 +1900,7 @@ export type Database = {
         Args: never
         Returns: {
           avatar_url: string
+          avg_rating: number
           billing: string
           country: string
           county: string
@@ -1907,13 +1908,19 @@ export type Database = {
           email: string
           first_name: string
           id: string
+          is_active: boolean
+          is_verified: boolean
           last_name: string
+          last_sign_in_at: string
           phone: string
           plan: string
+          reviews_count: number
+          specialization: string
           stage_name: string
           stripe_subscription_id: string
           subscription_current_period_end: string
           subscription_status: string
+          verification_status: string
         }[]
       }
       assign_moderator: {
