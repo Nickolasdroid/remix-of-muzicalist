@@ -503,27 +503,10 @@ const UserDashboard = () => {
                 </div>
               </Card>
 
-              {/* ===== Stat Cards ===== */}
-              <div className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {statCards.map((s) => (
-                  <Card key={s.label} className="rounded-lg border-border/60 bg-card">
-                    <div className="p-4 flex items-center gap-3">
-                      <div className={`p-2.5 rounded-lg ${s.bg}`}>
-                        <s.icon className={`h-5 w-5 ${s.tone}`} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground truncate">{s.label}</p>
-                        <p className="text-xl md:text-2xl font-bold text-foreground">{s.value}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-
               {/* ===== Quick Actions ===== */}
               <div className="mt-6">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {quickActions.map((a) => (
                     <button
                       key={a.label}
@@ -688,34 +671,6 @@ const UserDashboard = () => {
                           </button>
                         ))}
                       </div>
-                    )}
-                  </div>
-                </Card>
-              </div>
-
-              {/* ===== Activity ===== */}
-              <div className="mt-6">
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Activity className="h-5 w-5 text-accent" />
-                      <h3 className="font-semibold text-foreground">Account Activity</h3>
-                    </div>
-                    {recentActivity.length === 0 ? (
-                      <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-6 text-center">
-                        <Activity className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
-                        <p className="text-sm text-muted-foreground">No activity yet</p>
-                      </div>
-                    ) : (
-                      <ol className="relative border-l border-border/60 ml-2 space-y-4">
-                        {recentActivity.map((item, i) => (
-                          <li key={i} className="pl-4 relative">
-                            <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-accent shadow-gold" />
-                            <p className="text-sm text-foreground">{item.label}</p>
-                            <p className="text-xs text-muted-foreground">{item.time}</p>
-                          </li>
-                        ))}
-                      </ol>
                     )}
                   </div>
                 </Card>
