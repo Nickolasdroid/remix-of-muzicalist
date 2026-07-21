@@ -86,6 +86,7 @@ const DiscoverArtistsSection = () => {
         rating: ratingMap[a.id]
           ? Math.round((ratingMap[a.id].reduce((s, v) => s + v, 0) / ratingMap[a.id].length) * 10) / 10
           : null,
+        reviewCount: ratingMap[a.id]?.length ?? 0,
       }));
 
       withRatings.sort((a, b) => sortByPlanPriority(a, b));
