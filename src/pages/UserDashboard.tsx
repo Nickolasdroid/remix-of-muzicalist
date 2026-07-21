@@ -478,8 +478,8 @@ const UserDashboard = () => {
 
           const statCards = [
             { label: 'Announcements', value: announcements.length, icon: Megaphone, tone: 'text-accent', bg: 'bg-accent/10' },
-            { label: 'Active Bookings', value: pendingBookings + acceptedActive, icon: CalendarIcon, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { label: 'Completed', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { label: 'Pending Bookings', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+            { label: 'Completed Bookings', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
             ...(FOLLOWING_ENABLED ? [{ label: 'Following', value: followingCount, icon: Heart, tone: 'text-rose-400', bg: 'bg-rose-500/10' }] : []),
           ];
 
@@ -500,8 +500,8 @@ const UserDashboard = () => {
               accent: 'from-blue-500/25 to-blue-500/5',
             },
             {
-              label: 'Edit Profile',
-              desc: 'Update your details',
+              label: 'Account Settings',
+              desc: 'Manage your account',
               icon: Pencil,
               onClick: goToSettings,
               accent: 'from-emerald-500/25 to-emerald-500/5',
