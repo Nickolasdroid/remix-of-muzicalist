@@ -68,9 +68,8 @@ const UserDashboard = () => {
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
 
-  // Bookings & follows
+  // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
-  const [followingCount, setFollowingCount] = useState(0);
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -92,15 +91,6 @@ const UserDashboard = () => {
     if (data) setBookings(data);
   };
 
-  const loadFollowing = async () => {
-    if (!user) return;
-    const { count } = await supabase
-      .from('followers')
-      .select('*', { count: 'exact', head: true })
-      .eq('follower_id', user.id);
-    setFollowingCount(count || 0);
-  };
-
   useEffect(() => {
     checkAuth();
   }, []);
@@ -109,7 +99,6 @@ const UserDashboard = () => {
     if (user) {
       loadAnnouncements();
       loadBookings();
-      loadFollowing();
     }
   }, [user]);
 
