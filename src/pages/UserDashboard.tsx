@@ -16,8 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Heart, Sparkles, ChevronRight, User, Image as ImageIcon, Phone, MapPin as MapPinIcon, FileText, Activity } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -68,9 +67,8 @@ const UserDashboard = () => {
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
 
-  // Bookings & follows
+  // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
-  const [followingCount, setFollowingCount] = useState(0);
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -92,15 +90,6 @@ const UserDashboard = () => {
     if (data) setBookings(data);
   };
 
-  const loadFollowing = async () => {
-    if (!user) return;
-    const { count } = await supabase
-      .from('followers')
-      .select('*', { count: 'exact', head: true })
-      .eq('follower_id', user.id);
-    setFollowingCount(count || 0);
-  };
-
   useEffect(() => {
     checkAuth();
   }, []);
@@ -109,7 +98,6 @@ const UserDashboard = () => {
     if (user) {
       loadAnnouncements();
       loadBookings();
-      loadFollowing();
     }
   }, [user]);
 
@@ -434,54 +422,12 @@ const UserDashboard = () => {
           }
           const canPublish = standardAdsRemaining > 0;
 
-          // Profile completion
-          const completionFields = [
-            { key: 'avatar_url', label: 'Profile photo', done: !!profile?.avatar_url, icon: User },
-            { key: 'bio', label: 'Bio', done: !!(profile?.bio && String(profile.bio).trim().length > 0), icon: FileText },
-            { key: 'phone', label: 'Phone number', done: !!profile?.phone, icon: Phone },
-            { key: 'city', label: 'City', done: !!(profile?.city || profile?.location), icon: MapPinIcon },
-          ];
-          const completionPct = Math.round((completionFields.filter(f => f.done).length / completionFields.length) * 100);
-
-          // Activity timeline
-          type Activity = { icon: any; label: string; time: string; ts: number };
-          const activity: Activity[] = [];
-          if (profile?.updated_at) {
-            activity.push({ icon: Pencil, label: 'Profile updated', time: formatSmartDate(profile.updated_at), ts: new Date(profile.updated_at).getTime() });
-          }
-          for (const a of announcements) {
-            activity.push({ icon: Megaphone, label: 'Announcement published', time: formatSmartDate(a.created_at), ts: new Date(a.created_at).getTime() });
-          }
-          for (const b of bookings) {
-            const ts = new Date(b.created_at).getTime();
-            const label = b.status === 'accepted' && parseYMD(b.event_end_date || b.event_date) && parseYMD(b.event_end_date || b.event_date)! < today
-              ? 'Booking completed'
-              : b.status === 'rejected'
-              ? 'Booking declined'
-              : b.status === 'accepted'
-              ? 'Booking accepted'
-              : 'Booking requested';
-            activity.push({ icon: CalendarIcon, label, time: formatSmartDate(b.created_at), ts });
-          }
-          activity.sort((a, b) => b.ts - a.ts);
-          const recentActivity = activity.slice(0, 5);
-
-          // Feature flag for Following card
-          const FOLLOWING_ENABLED = true;
-
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
           };
           const goToSettings = () => {
             setSearchParams({ tab: 'settings' });
           };
-
-          const statCards = [
-            { label: 'Announcements', value: announcements.length, icon: Megaphone, tone: 'text-accent', bg: 'bg-accent/10' },
-            { label: 'Pending Bookings', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-            { label: 'Completed Bookings', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            ...(FOLLOWING_ENABLED ? [{ label: 'Following', value: followingCount, icon: Heart, tone: 'text-rose-400', bg: 'bg-rose-500/10' }] : []),
-          ];
 
           const quickActions = [
             {
@@ -498,13 +444,6 @@ const UserDashboard = () => {
               icon: CalendarIcon,
               onClick: () => goToBookings(),
               accent: 'from-blue-500/25 to-blue-500/5',
-            },
-            {
-              label: 'Account Settings',
-              desc: 'Manage your account',
-              icon: Pencil,
-              onClick: goToSettings,
-              accent: 'from-emerald-500/25 to-emerald-500/5',
             },
           ];
 
@@ -554,27 +493,10 @@ const UserDashboard = () => {
                 </div>
               </Card>
 
-              {/* ===== Stat Cards ===== */}
-              <div className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {statCards.map((s) => (
-                  <Card key={s.label} className="rounded-lg border-border/60 bg-card">
-                    <div className="p-4 flex items-center gap-3">
-                      <div className={`p-2.5 rounded-lg ${s.bg}`}>
-                        <s.icon className={`h-5 w-5 ${s.tone}`} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground truncate">{s.label}</p>
-                        <p className="text-xl md:text-2xl font-bold text-foreground">{s.value}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-
               {/* ===== Quick Actions ===== */}
               <div className="mt-6">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {quickActions.map((a) => (
                     <button
                       key={a.label}
@@ -739,34 +661,6 @@ const UserDashboard = () => {
                           </button>
                         ))}
                       </div>
-                    )}
-                  </div>
-                </Card>
-              </div>
-
-              {/* ===== Activity ===== */}
-              <div className="mt-6">
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Activity className="h-5 w-5 text-accent" />
-                      <h3 className="font-semibold text-foreground">Account Activity</h3>
-                    </div>
-                    {recentActivity.length === 0 ? (
-                      <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-6 text-center">
-                        <Activity className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
-                        <p className="text-sm text-muted-foreground">No activity yet</p>
-                      </div>
-                    ) : (
-                      <ol className="relative border-l border-border/60 ml-2 space-y-4">
-                        {recentActivity.map((item, i) => (
-                          <li key={i} className="pl-4 relative">
-                            <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-accent shadow-gold" />
-                            <p className="text-sm text-foreground">{item.label}</p>
-                            <p className="text-xs text-muted-foreground">{item.time}</p>
-                          </li>
-                        ))}
-                      </ol>
                     )}
                   </div>
                 </Card>
