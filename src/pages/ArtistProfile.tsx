@@ -2218,6 +2218,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <ImageLightbox src={lightboxSrc} alt={artist?.stage_name} onClose={() => setLightboxSrc(null)} />
 
       {/* Delete Review Confirmation Dialog */}
       <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
