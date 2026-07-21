@@ -548,7 +548,7 @@ const UserDashboard = () => {
                       className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
                     >
                       <Pencil className="h-4 w-4 mr-2" />
-                      Edit Profile
+                      Account Settings
                     </Button>
                   </div>
                 </div>
