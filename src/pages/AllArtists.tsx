@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { User, Star, ArrowLeft } from "lucide-react";
+import { User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { translateSpecialization } from "@/lib/specializationLabel";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
@@ -24,9 +25,9 @@ interface ArtistData {
 
 interface ArtistWithRating extends ArtistData {
   rating: number | null;
+  reviewCount: number;
 }
 
-const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 const AllArtists = () => {
   const [artists, setArtists] = useState<ArtistWithRating[]>([]);
