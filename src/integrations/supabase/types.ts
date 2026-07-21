@@ -1516,6 +1516,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_suspension_id: string | null
           admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
@@ -1543,6 +1544,7 @@ export type Database = {
           instagram_url: string | null
           instruments: string | null
           is_active: boolean
+          is_permanent_suspension: boolean
           is_verified: boolean
           last_name: string
           music_genres: string | null
@@ -1562,6 +1564,8 @@ export type Database = {
           subscription_cancel_at_period_end: boolean
           subscription_current_period_end: string | null
           subscription_status: string | null
+          suspended_until: string | null
+          suspension_reason: string | null
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
@@ -1571,6 +1575,7 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          active_suspension_id?: string | null
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
@@ -1598,6 +1603,7 @@ export type Database = {
           instagram_url?: string | null
           instruments?: string | null
           is_active?: boolean
+          is_permanent_suspension?: boolean
           is_verified?: boolean
           last_name: string
           music_genres?: string | null
@@ -1617,6 +1623,8 @@ export type Database = {
           subscription_cancel_at_period_end?: boolean
           subscription_current_period_end?: string | null
           subscription_status?: string | null
+          suspended_until?: string | null
+          suspension_reason?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
@@ -1626,6 +1634,7 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          active_suspension_id?: string | null
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
@@ -1653,6 +1662,7 @@ export type Database = {
           instagram_url?: string | null
           instruments?: string | null
           is_active?: boolean
+          is_permanent_suspension?: boolean
           is_verified?: boolean
           last_name?: string
           music_genres?: string | null
@@ -1672,6 +1682,8 @@ export type Database = {
           subscription_cancel_at_period_end?: boolean
           subscription_current_period_end?: string | null
           subscription_status?: string | null
+          suspended_until?: string | null
+          suspension_reason?: string | null
           tiktok_url?: string | null
           updated_at?: string | null
           verification_status?: string
@@ -1680,7 +1692,15 @@ export type Database = {
           welcome_email_sent_at?: string | null
           youtube_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_active_suspension_id_fkey"
+            columns: ["active_suspension_id"]
+            isOneToOne: false
+            referencedRelation: "account_suspensions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -2225,7 +2245,6 @@ export type Database = {
         Returns: {
           admin_name: string
           created_at: string
-          created_by: string
           duration_key: string
           id: string
           internal_notes: string
@@ -2234,7 +2253,6 @@ export type Database = {
           notify_user: boolean
           other_reason: string
           reactivated_at: string
-          reactivated_by: string
           reactivator_name: string
           reason: string
           suspended_until: string
@@ -2309,6 +2327,7 @@ export type Database = {
       get_my_full_profile: {
         Args: never
         Returns: {
+          active_suspension_id: string | null
           admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
@@ -2336,6 +2355,7 @@ export type Database = {
           instagram_url: string | null
           instruments: string | null
           is_active: boolean
+          is_permanent_suspension: boolean
           is_verified: boolean
           last_name: string
           music_genres: string | null
@@ -2355,6 +2375,8 @@ export type Database = {
           subscription_cancel_at_period_end: boolean
           subscription_current_period_end: string | null
           subscription_status: string | null
+          suspended_until: string | null
+          suspension_reason: string | null
           tiktok_url: string | null
           updated_at: string | null
           verification_status: string
@@ -2462,32 +2484,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      reactivate_account: {
-        Args: { _user_id: string }
-        Returns: {
-          created_at: string
-          created_by: string | null
-          duration_key: string
-          id: string
-          internal_notes: string | null
-          is_active: boolean
-          is_permanent: boolean
-          notify_user: boolean
-          other_reason: string | null
-          reactivated_at: string | null
-          reactivated_by: string | null
-          reason: string
-          suspended_until: string | null
-          updated_at: string
-          user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "account_suspensions"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      reactivate_account: { Args: { _user_id: string }; Returns: undefined }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -2590,29 +2587,7 @@ export type Database = {
           _reason: string
           _user_id: string
         }
-        Returns: {
-          created_at: string
-          created_by: string | null
-          duration_key: string
-          id: string
-          internal_notes: string | null
-          is_active: boolean
-          is_permanent: boolean
-          notify_user: boolean
-          other_reason: string | null
-          reactivated_at: string | null
-          reactivated_by: string | null
-          reason: string
-          suspended_until: string | null
-          updated_at: string
-          user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "account_suspensions"
-          isOneToOne: true
-          isSetofReturn: false
-        }
+        Returns: string
       }
       try_lock_email_campaign: {
         Args: { _campaign_id: string }
