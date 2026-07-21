@@ -16,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Heart, Sparkles, ChevronRight, User, Image as ImageIcon, Phone, MapPin as MapPinIcon, FileText, Activity } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -63,8 +64,13 @@ const UserDashboard = () => {
 
   // Announcement limits
   const STANDARD_AD_LIMIT = 1;
+  const AD_COOLDOWN_DAYS = 30;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
+
+  // Bookings & follows
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [followingCount, setFollowingCount] = useState(0);
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -76,6 +82,25 @@ const UserDashboard = () => {
     if (data) setAnnouncements(data);
   };
 
+  const loadBookings = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('booking_requests')
+      .select('id, status, event_date, event_end_date, created_at, profile_id')
+      .eq('requester_user_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setBookings(data);
+  };
+
+  const loadFollowing = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from('followers')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', user.id);
+    setFollowingCount(count || 0);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -83,6 +108,8 @@ const UserDashboard = () => {
   useEffect(() => {
     if (user) {
       loadAnnouncements();
+      loadBookings();
+      loadFollowing();
     }
   }, [user]);
 
@@ -356,80 +383,452 @@ const UserDashboard = () => {
           </div>
         </div>
       ) : (
-      <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]">
-        {/* Profile Header - matching public user profile format */}
-        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
-          <div className="relative group">
-            <Avatar className="h-24 w-24 border-2 border-accent/20">
-              <AvatarImage src={profile?.avatar_url} alt={profile?.stage_name} />
-              <AvatarFallback className="text-2xl">
-                {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-              <Upload className="h-6 w-6 text-white" />
-              <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-            </label>
-          </div>
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-            {profile?.first_name} {profile?.last_name}
-          </h1>
-          <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-            <span>{t("userDashboard.adsPublished", { count: announcements.length })}</span>
-            {profile?.created_at && (
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                {t("userDashboard.memberSince", { 
-                  date: new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) 
-                })}
-              </span>
-            )}
-          </div>
-        </div>
+      <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-4xl px-4">
+        {(() => {
+          // Derived data
+          const memberSince = profile?.created_at
+            ? new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+            : null;
 
-        {/* My Announcements Section */}
-        <div className="mt-6 space-y-4">
-          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-            <Megaphone className="h-5 w-5 text-accent" />
-            {t("userDashboard.announcements")}
-          </h2>
-          <div className="max-w-[500px] mx-auto space-y-4">
-            <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Standard: <span className="font-medium text-foreground">{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const parseYMD = (s?: string | null) => {
+            if (!s) return null;
+            const [y, m, d] = s.split('-').map(Number);
+            return new Date(y, m - 1, d);
+          };
+
+          const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+          const acceptedActive = bookings.filter(b => {
+            const d = parseYMD(b.event_end_date || b.event_date);
+            return b.status === 'accepted' && d && d >= today;
+          }).length;
+          const completedBookings = bookings.filter(b => {
+            const d = parseYMD(b.event_end_date || b.event_date);
+            return b.status === 'accepted' && d && d < today;
+          }).length;
+          const cancelledBookings = bookings.filter(b => b.status === 'rejected').length;
+
+          // Cooldown
+          const oldestStandard = announcements
+            .filter(a => !a.is_premium)
+            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0];
+          let cooldownDaysRemaining = 0;
+          let cooldownDate: Date | null = null;
+          if (oldestStandard && standardAdsRemaining <= 0) {
+            const created = new Date(oldestStandard.created_at);
+            cooldownDate = new Date(created);
+            cooldownDate.setDate(cooldownDate.getDate() + AD_COOLDOWN_DAYS);
+            cooldownDaysRemaining = Math.max(0, Math.ceil((cooldownDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+          }
+          const canPublish = standardAdsRemaining > 0;
+
+          // Profile completion
+          const completionFields = [
+            { key: 'avatar_url', label: 'Profile photo', done: !!profile?.avatar_url, icon: User },
+            { key: 'bio', label: 'Bio', done: !!(profile?.bio && String(profile.bio).trim().length > 0), icon: FileText },
+            { key: 'phone', label: 'Phone number', done: !!profile?.phone, icon: Phone },
+            { key: 'city', label: 'City', done: !!(profile?.city || profile?.location), icon: MapPinIcon },
+            { key: 'cover_url', label: 'Cover photo', done: !!(profile?.cover_url || profile?.cover_photo_url), icon: ImageIcon },
+          ];
+          const completionPct = Math.round((completionFields.filter(f => f.done).length / completionFields.length) * 100);
+
+          // Activity timeline
+          type Activity = { icon: any; label: string; time: string; ts: number };
+          const activity: Activity[] = [];
+          if (profile?.updated_at) {
+            activity.push({ icon: Pencil, label: 'Profile updated', time: formatSmartDate(profile.updated_at), ts: new Date(profile.updated_at).getTime() });
+          }
+          for (const a of announcements) {
+            activity.push({ icon: Megaphone, label: 'Announcement published', time: formatSmartDate(a.created_at), ts: new Date(a.created_at).getTime() });
+          }
+          for (const b of bookings) {
+            const ts = new Date(b.created_at).getTime();
+            const label = b.status === 'accepted' && parseYMD(b.event_end_date || b.event_date) && parseYMD(b.event_end_date || b.event_date)! < today
+              ? 'Booking completed'
+              : b.status === 'rejected'
+              ? 'Booking declined'
+              : b.status === 'accepted'
+              ? 'Booking accepted'
+              : 'Booking requested';
+            activity.push({ icon: CalendarIcon, label, time: formatSmartDate(b.created_at), ts });
+          }
+          activity.sort((a, b) => b.ts - a.ts);
+          const recentActivity = activity.slice(0, 5);
+
+          // Feature flag for Following card
+          const FOLLOWING_ENABLED = true;
+
+          const goToBookings = (filter?: string) => {
+            navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
+          };
+          const goToSettings = () => {
+            setSearchParams({ tab: 'settings' });
+          };
+
+          const statCards = [
+            { label: 'Announcements', value: announcements.length, icon: Megaphone, tone: 'text-accent', bg: 'bg-accent/10' },
+            { label: 'Active Bookings', value: pendingBookings + acceptedActive, icon: CalendarIcon, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
+            { label: 'Completed', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            ...(FOLLOWING_ENABLED ? [{ label: 'Following', value: followingCount, icon: Heart, tone: 'text-rose-400', bg: 'bg-rose-500/10' }] : []),
+          ];
+
+          const quickActions = [
+            {
+              label: 'Publish Announcement',
+              desc: canPublish ? 'Share what you need' : `Available in ${cooldownDaysRemaining}d`,
+              icon: Megaphone,
+              onClick: () => canPublish && setShowAnnouncementDialog(true),
+              disabled: !canPublish,
+              accent: 'from-accent/25 to-accent/5',
+            },
+            {
+              label: 'My Bookings',
+              desc: 'Manage your requests',
+              icon: CalendarIcon,
+              onClick: () => goToBookings(),
+              accent: 'from-blue-500/25 to-blue-500/5',
+            },
+            {
+              label: 'Edit Profile',
+              desc: 'Update your details',
+              icon: Pencil,
+              onClick: goToSettings,
+              accent: 'from-emerald-500/25 to-emerald-500/5',
+            },
+          ];
+
+          return (
+            <>
+              {/* ===== Header ===== */}
+              <Card className="relative overflow-hidden rounded-lg border-border/60 bg-gradient-card shadow-elegant">
+                <div className="absolute inset-0 bg-gradient-cinematic opacity-40 pointer-events-none" />
+                <div className="relative p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="relative group mx-auto md:mx-0">
+                    <Avatar className="h-24 w-24 md:h-28 md:w-28 border-2 border-accent/30 shadow-gold">
+                      <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
+                      <AvatarFallback className="text-2xl bg-secondary">
+                        {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                      <Upload className="h-6 w-6 text-white" />
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    </label>
+                  </div>
+                  <div className="flex-1 min-w-0 text-center md:text-left">
+                    <h1
+                      className="text-2xl md:text-3xl font-display font-bold text-foreground notranslate"
+                      data-user-content="true"
+                      data-no-translate="true"
+                      translate="no"
+                    >
+                      {profile?.first_name} {profile?.last_name}
+                    </h1>
+                    {memberSince && (
+                      <p className="mt-1.5 text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />
+                        Member since {memberSince}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex justify-center md:justify-end">
+                    <Button
+                      onClick={goToSettings}
+                      className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* ===== Stat Cards ===== */}
+              <div className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {statCards.map((s) => (
+                  <Card key={s.label} className="rounded-lg border-border/60 bg-card">
+                    <div className="p-4 flex items-center gap-3">
+                      <div className={`p-2.5 rounded-lg ${s.bg}`}>
+                        <s.icon className={`h-5 w-5 ${s.tone}`} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground truncate">{s.label}</p>
+                        <p className="text-xl md:text-2xl font-bold text-foreground">{s.value}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* ===== Quick Actions ===== */}
+              <div className="mt-6">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {quickActions.map((a) => (
+                    <button
+                      key={a.label}
+                      onClick={a.onClick}
+                      disabled={a.disabled}
+                      className={`relative overflow-hidden rounded-lg border border-border/60 bg-card p-5 text-left transition hover:border-accent/40 hover:shadow-gold disabled:opacity-60 disabled:cursor-not-allowed group`}
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${a.accent} opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none`} />
+                      <div className="relative flex items-start justify-between gap-3">
+                        <div>
+                          <div className="p-2 inline-flex rounded-lg bg-background/40 border border-border/60 mb-3">
+                            <a.icon className="h-5 w-5 text-accent" />
+                          </div>
+                          <h3 className="font-semibold text-foreground">{a.label}</h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">{a.desc}</p>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" disabled={standardAdsRemaining <= 0} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                      <Plus className="h-4 w-4 mr-1" />
-                      {t("userDashboard.newAd")}
+
+              {/* ===== My Announcements & My Bookings ===== */}
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* My Announcements */}
+                <Card className="rounded-lg border-border/60 bg-card">
+                  <div className="p-5">
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Megaphone className="h-5 w-5 text-accent" />
+                        <h3 className="font-semibold text-foreground">My Announcements</h3>
+                      </div>
+                      <Badge variant="outline" className="rounded-lg text-xs">
+                        {standardAdsUsed}/{STANDARD_AD_LIMIT}
+                      </Badge>
+                    </div>
+
+                    <div className="rounded-lg bg-background/40 border border-border/60 p-4 mb-4">
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Standard</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {standardAdsUsed} <span className="text-base text-muted-foreground font-normal">/ {STANDARD_AD_LIMIT}</span>
+                      </p>
+                      {!canPublish && cooldownDate && (
+                        <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5" />
+                          Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
+                          <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    <Button
+                      onClick={() => setShowAnnouncementDialog(true)}
+                      disabled={!canPublish}
+                      className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      {canPublish ? 'Publish Announcement' : `Available in ${cooldownDaysRemaining}d`}
                     </Button>
-                  </DialogTrigger>
-                <DialogContent className="max-w-md">
+
+                    {announcements.length > 0 ? (
+                      <div className="mt-5 space-y-2">
+                        {announcements.slice(0, 3).map((ad) => (
+                          <div key={ad.id} className="flex items-start justify-between gap-2 p-3 rounded-lg bg-background/30 border border-border/50">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm text-foreground line-clamp-2">{ad.description}</p>
+                              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{formatSmartDate(ad.created_at)}</span>
+                                <span>·</span>
+                                {isAdExpired(ad) ? (
+                                  <span className="text-destructive">Expired</span>
+                                ) : (
+                                  <span>{getDaysRemaining(ad)}d left</span>
+                                )}
+                              </div>
+                            </div>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive shrink-0">
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="rounded-lg">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
+                                  <AlertDialogDescription>{t("userDashboard.deleteAdDescription")}</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteAnnouncement(ad.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    {t("userDashboard.delete")}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-5 rounded-lg border border-dashed border-border/60 bg-background/20 p-6 text-center">
+                        <Megaphone className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">No announcements yet</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">Publish your first one to reach artists.</p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* My Bookings */}
+                <Card className="rounded-lg border-border/60 bg-card">
+                  <div className="p-5">
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="h-5 w-5 text-accent" />
+                        <h3 className="font-semibold text-foreground">My Bookings</h3>
+                      </div>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => goToBookings()}>
+                        View all
+                        <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
+                    </div>
+
+                    {bookings.length === 0 ? (
+                      <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-8 text-center">
+                        <CalendarIcon className="h-10 w-10 mx-auto mb-3 text-muted-foreground/60" />
+                        <p className="text-sm font-medium text-foreground">No bookings yet</p>
+                        <p className="text-xs text-muted-foreground mt-1">Book your first artist to get started.</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-4 rounded-lg"
+                          onClick={() => navigate('/')}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                          Discover artists
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+                          { key: 'accepted', label: 'Accepted', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                          { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
+                          { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
+                        ].map((b) => (
+                          <button
+                            key={b.key}
+                            onClick={() => goToBookings(b.key)}
+                            className="rounded-lg border border-border/60 bg-background/40 p-3 text-left hover:border-accent/40 hover:bg-background/60 transition"
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className={`p-1.5 rounded-md ${b.bg}`}>
+                                <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
+                              </div>
+                              <span className="text-xs text-muted-foreground">{b.label}</span>
+                            </div>
+                            <p className="text-xl font-bold text-foreground">{b.value}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+
+              {/* ===== Activity & Profile Completion ===== */}
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Account Activity */}
+                <Card className="rounded-lg border-border/60 bg-card">
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Activity className="h-5 w-5 text-accent" />
+                      <h3 className="font-semibold text-foreground">Account Activity</h3>
+                    </div>
+                    {recentActivity.length === 0 ? (
+                      <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-6 text-center">
+                        <Activity className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">No activity yet</p>
+                      </div>
+                    ) : (
+                      <ol className="relative border-l border-border/60 ml-2 space-y-4">
+                        {recentActivity.map((item, i) => (
+                          <li key={i} className="pl-4 relative">
+                            <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-accent shadow-gold" />
+                            <p className="text-sm text-foreground">{item.label}</p>
+                            <p className="text-xs text-muted-foreground">{item.time}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Profile Completion */}
+                <Card className="rounded-lg border-border/60 bg-card">
+                  <div className="p-5">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-accent" />
+                        <h3 className="font-semibold text-foreground">Profile Completion</h3>
+                      </div>
+                      <span className="text-2xl font-bold text-accent">{completionPct}%</span>
+                    </div>
+                    <Progress value={completionPct} className="h-2 mb-4" />
+                    <ul className="space-y-2">
+                      {completionFields.map((f) => (
+                        <li key={f.key}>
+                          <button
+                            onClick={f.done ? undefined : goToSettings}
+                            disabled={f.done}
+                            className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition ${
+                              f.done
+                                ? 'border-transparent bg-transparent cursor-default'
+                                : 'border-border/60 hover:border-accent/40 hover:bg-background/40'
+                            }`}
+                          >
+                            {f.done ? (
+                              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                            ) : (
+                              <div className="h-4 w-4 rounded-full border border-muted-foreground/40 shrink-0" />
+                            )}
+                            <span className={`text-sm flex-1 ${f.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                              {f.label}
+                            </span>
+                            {!f.done && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    {completionPct < 100 && (
+                      <Button
+                        onClick={goToSettings}
+                        className="w-full mt-4 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+                      >
+                        Complete Profile
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </div>
+
+              {/* ===== Announcement Dialog ===== */}
+              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                <DialogContent className="max-w-md rounded-lg">
                   <DialogHeader>
                     <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
                   </DialogHeader>
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       <span>{t("userDashboard.adValidity", "Valid 15 days")}</span>
                     </div>
                   </div>
                   <div className="space-y-4 mt-4">
-
                     <div>
                       <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
                       <Textarea
                         id="announcement-text-user"
                         value={newAnnouncement.description}
-                        onChange={(e) => setNewAnnouncement({ 
-                          ...newAnnouncement, 
-                          description: e.target.value.slice(0, 200) 
-                        })}
+                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value.slice(0, 200) })}
                         placeholder={t("userDashboard.descriptionPlaceholder", "Write your announcement here...")}
                         rows={4}
                         maxLength={200}
@@ -437,128 +836,33 @@ const UserDashboard = () => {
                       />
                       <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
                     </div>
-
-                    {!newAnnouncement.isPremium && (
-                      <div className="space-y-3">
-                        <div>
-                          <Label htmlFor="announcement-location-user">Location (optional)</Label>
-                          <Input id="announcement-location-user" value={newAnnouncement.location} onChange={e => setNewAnnouncement({...newAnnouncement, location: e.target.value})} placeholder="e.g. New York, NY" className="mt-1" />
-                        </div>
-                        <div>
-                          <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
-                          <Input id="announcement-event-date-user" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({...newAnnouncement, eventDate: e.target.value})} className="mt-1" />
-                        </div>
-                        <div>
-                          <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
-                          <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({...newAnnouncement, budget: e.target.value})} placeholder="e.g. $500" className="mt-1" />
-                        </div>
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="announcement-location-user">Location (optional)</Label>
+                        <Input id="announcement-location-user" value={newAnnouncement.location} onChange={e => setNewAnnouncement({ ...newAnnouncement, location: e.target.value })} placeholder="e.g. New York, NY" className="mt-1" />
                       </div>
-                    )}
-
-
-                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
+                      <div>
+                        <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
+                        <Input id="announcement-event-date-user" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
+                        <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({ ...newAnnouncement, budget: e.target.value })} placeholder="e.g. $500" className="mt-1" />
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleAddAnnouncement}
+                      disabled={isSaving || !newAnnouncement.description}
+                      className="w-full rounded-lg bg-accent text-accent-foreground"
+                    >
                       {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
                     </Button>
                   </div>
                 </DialogContent>
               </Dialog>
-              </div>
-            </div>
-
-            {/* Announcements List - matching public profile card format */}
-            {announcements.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t("userDashboard.noAds")}</p>
-              </div>
-            ) : (
-              <div className="space-y-1">
-              {announcements.map((ad) => (
-                <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary">
-                  <div className="p-4 pb-0 px-[6px] py-[3px]">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10 border-2 border-background">
-                          <AvatarImage src={profile?.avatar_url} alt={profile?.first_name} />
-                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                            {profile?.first_name?.[0] || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                              {profile?.first_name} {profile?.last_name}
-                            </h3>
-                            {isAdExpired(ad) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
-                                Expired
-                              </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(ad)}d left</Badge>}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>User</span>
-                            <span>·</span>
-                            <span>{formatSmartDate(ad.created_at)}</span>
-                            <span>·</span>
-                            <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Delete button */}
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive h-8 w-8">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-lg">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {t("userDashboard.deleteAdDescription")}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteAnnouncement(ad.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              {t("userDashboard.delete")}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                    <ExpandableText text={ad.description} className="mt-3" />
-                    {!ad.is_premium && (ad.location || ad.event_date || ad.budget) && (
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                        {ad.location && (
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.location}</span>
-                          </span>
-                        )}
-                        {ad.event_date && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatDateNoYear(ad.event_date)}
-                          </span>
-                        )}
-                        {ad.budget && (
-                          <span className="flex items-center gap-1">
-                            <Euro className="h-3 w-3" />
-                            <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.budget}</span>
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  
-                </Card>
-              ))}
-            </div>
-          )}
-          </div>
-        </div>
+            </>
+          );
+        })()}
       </div>
       )}
 
