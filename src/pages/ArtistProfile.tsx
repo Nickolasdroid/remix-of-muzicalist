@@ -148,6 +148,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const id = artistId ?? routeId;
   const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
