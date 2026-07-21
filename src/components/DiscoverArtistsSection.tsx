@@ -166,18 +166,11 @@ const DiscoverArtistsSection = () => {
                         </p>
 
                         <div className="flex items-center justify-between min-h-[20px]">
-                          {artist.rating !== null ? (
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 text-accent fill-accent" />
-                              <span className="text-sm font-medium text-muted-foreground">
-                                {artist.rating.toFixed(1)}
-                              </span>
-                            </div>
-                          ) : (Date.now() - new Date(artist.created_at).getTime() < NEW_ARTIST_WINDOW_MS) ? (
-                            <span className="text-xs font-medium text-accent/80">
-                              New artist
-                            </span>
-                          ) : null}
+                          <ArtistCardStatusBadge
+                            createdAt={artist.created_at}
+                            rating={artist.rating}
+                            reviewCount={artist.reviewCount}
+                          />
                         </div>
                       </div>
                     </div>
