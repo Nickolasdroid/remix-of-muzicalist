@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { User, Star, MapPin, CalendarCheck, CalendarX } from "lucide-react";
+import { User, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryName } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 
 interface ArtistProfileCardProps {
   id: string;
@@ -16,11 +17,10 @@ interface ArtistProfileCardProps {
   searchDate?: string | null;
 }
 
-const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
-
 const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const [rating, setRating] = useState<number | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [reviewCount, setReviewCount] = useState<number>(0);
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,14 +32,24 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
       if (reviews && reviews.length > 0) {
         const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
         setRating(Math.round(avg * 10) / 10);
+        setReviewCount(reviews.length);
       }
       if (profile?.created_at) {
-        setIsNew(Date.now() - new Date(profile.created_at).getTime() < NEW_ARTIST_WINDOW_MS);
+        setCreatedAt(profile.created_at);
       }
     };
 
     fetchData();
+
+    const channel = supabase
+      .channel(`reviews-${id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews', filter: `profile_id=eq.${id}` }, () => {
+        fetchData();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [id]);
+
 
 
 
