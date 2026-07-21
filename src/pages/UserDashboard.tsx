@@ -744,9 +744,8 @@ const UserDashboard = () => {
                 </Card>
               </div>
 
-              {/* ===== Activity & Profile Completion ===== */}
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Account Activity */}
+              {/* ===== Activity ===== */}
+              <div className="mt-6">
                 <Card className="rounded-lg border-border/60 bg-card">
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-4">
@@ -768,53 +767,6 @@ const UserDashboard = () => {
                           </li>
                         ))}
                       </ol>
-                    )}
-                  </div>
-                </Card>
-
-                {/* Profile Completion */}
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-accent" />
-                        <h3 className="font-semibold text-foreground">Profile Completion</h3>
-                      </div>
-                      <span className="text-2xl font-bold text-accent">{completionPct}%</span>
-                    </div>
-                    <Progress value={completionPct} className="h-2 mb-4" />
-                    <ul className="space-y-2">
-                      {completionFields.map((f) => (
-                        <li key={f.key}>
-                          <button
-                            onClick={f.done ? undefined : goToSettings}
-                            disabled={f.done}
-                            className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition ${
-                              f.done
-                                ? 'border-transparent bg-transparent cursor-default'
-                                : 'border-border/60 hover:border-accent/40 hover:bg-background/40'
-                            }`}
-                          >
-                            {f.done ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                            ) : (
-                              <div className="h-4 w-4 rounded-full border border-muted-foreground/40 shrink-0" />
-                            )}
-                            <span className={`text-sm flex-1 ${f.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
-                              {f.label}
-                            </span>
-                            {!f.done && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    {completionPct < 100 && (
-                      <Button
-                        onClick={goToSettings}
-                        className="w-full mt-4 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                      >
-                        Complete Profile
-                      </Button>
                     )}
                   </div>
                 </Card>
