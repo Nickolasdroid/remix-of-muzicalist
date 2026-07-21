@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import ImageLightbox from "@/components/ImageLightbox";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
