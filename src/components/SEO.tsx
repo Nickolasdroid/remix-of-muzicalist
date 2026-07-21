@@ -2,9 +2,9 @@ import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://muzicalist.com";
 const SITE_NAME = "Muzicalist";
-const DEFAULT_TITLE = "Muzicalist - Find Your Perfect Musical Artist";
+const DEFAULT_TITLE = "Muzicalist | Discover & Book Professional Artists";
 const DEFAULT_DESCRIPTION =
-  "Book singers, instrumentalists, DJs, and bands worldwide. Search musical artists by category, country, and availability on Muzicalist.";
+  "Discover singers, DJs, bands and instrumentalists. Compare profiles, reviews, media and book the perfect artist for your event.";
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SEOProps {
