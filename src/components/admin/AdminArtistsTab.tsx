@@ -21,10 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Search, Eye, PauseCircle, PlayCircle, ArrowUpDown, Star } from "lucide-react";
+import { Pencil, Trash2, Search, Eye, Ban, RotateCcw, ArrowUpDown, Star, History } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AdminProfile } from "./adminProfileTypes";
 import { EditProfileDialog, DeleteProfileDialog } from "./AdminProfileDialogs";
+import { AccountStatusBadge } from "./AccountStatusBadge";
+import { SuspendAccountDialog, ReactivateAccountDialog } from "./SuspendAccountDialog";
+import { SuspensionHistoryDialog } from "./SuspensionHistoryDialog";
 
 interface Props {
   profiles: AdminProfile[];
@@ -72,6 +75,9 @@ export default function AdminArtistsTab({ profiles, roles, loading, refresh }: P
 
   const [editing, setEditing] = useState<AdminProfile | null>(null);
   const [deleting, setDeleting] = useState<AdminProfile | null>(null);
+  const [suspending, setSuspending] = useState<AdminProfile | null>(null);
+  const [reactivating, setReactivating] = useState<AdminProfile | null>(null);
+  const [historyTarget, setHistoryTarget] = useState<AdminProfile | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingNow, setDeletingNow] = useState(false);
 
@@ -182,19 +188,6 @@ export default function AdminArtistsTab({ profiles, roles, loading, refresh }: P
     }
   };
 
-  const handleToggleSuspend = async (u: AdminProfile) => {
-    const nextActive = !(u.is_active !== false);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_active: nextActive })
-      .eq("id", u.id);
-    if (error) {
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: nextActive ? "Artist reactivated" : "Artist suspended" });
-    refresh();
-  };
 
   const handleSaveEdit = async () => {
     if (!editing) return;
