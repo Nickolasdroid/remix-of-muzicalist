@@ -432,45 +432,12 @@ const UserDashboard = () => {
           ];
           const completionPct = Math.round((completionFields.filter(f => f.done).length / completionFields.length) * 100);
 
-          // Activity timeline
-          type Activity = { icon: any; label: string; time: string; ts: number };
-          const activity: Activity[] = [];
-          if (profile?.updated_at) {
-            activity.push({ icon: Pencil, label: 'Profile updated', time: formatSmartDate(profile.updated_at), ts: new Date(profile.updated_at).getTime() });
-          }
-          for (const a of announcements) {
-            activity.push({ icon: Megaphone, label: 'Announcement published', time: formatSmartDate(a.created_at), ts: new Date(a.created_at).getTime() });
-          }
-          for (const b of bookings) {
-            const ts = new Date(b.created_at).getTime();
-            const label = b.status === 'accepted' && parseYMD(b.event_end_date || b.event_date) && parseYMD(b.event_end_date || b.event_date)! < today
-              ? 'Booking completed'
-              : b.status === 'rejected'
-              ? 'Booking declined'
-              : b.status === 'accepted'
-              ? 'Booking accepted'
-              : 'Booking requested';
-            activity.push({ icon: CalendarIcon, label, time: formatSmartDate(b.created_at), ts });
-          }
-          activity.sort((a, b) => b.ts - a.ts);
-          const recentActivity = activity.slice(0, 5);
-
-          // Feature flag for Following card
-          const FOLLOWING_ENABLED = true;
-
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
           };
           const goToSettings = () => {
             setSearchParams({ tab: 'settings' });
           };
-
-          const statCards = [
-            { label: 'Announcements', value: announcements.length, icon: Megaphone, tone: 'text-accent', bg: 'bg-accent/10' },
-            { label: 'Pending Bookings', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-            { label: 'Completed Bookings', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            ...(FOLLOWING_ENABLED ? [{ label: 'Following', value: followingCount, icon: Heart, tone: 'text-rose-400', bg: 'bg-rose-500/10' }] : []),
-          ];
 
           const quickActions = [
             {
@@ -487,13 +454,6 @@ const UserDashboard = () => {
               icon: CalendarIcon,
               onClick: () => goToBookings(),
               accent: 'from-blue-500/25 to-blue-500/5',
-            },
-            {
-              label: 'Account Settings',
-              desc: 'Manage your account',
-              icon: Pencil,
-              onClick: goToSettings,
-              accent: 'from-emerald-500/25 to-emerald-500/5',
             },
           ];
 
