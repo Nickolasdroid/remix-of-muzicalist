@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_suspensions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          duration_key: string
+          id: string
+          internal_notes: string | null
+          is_active: boolean
+          is_permanent: boolean
+          notify_user: boolean
+          other_reason: string | null
+          reactivated_at: string | null
+          reactivated_by: string | null
+          reason: string
+          suspended_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          duration_key: string
+          id?: string
+          internal_notes?: string | null
+          is_active?: boolean
+          is_permanent?: boolean
+          notify_user?: boolean
+          other_reason?: string | null
+          reactivated_at?: string | null
+          reactivated_by?: string | null
+          reason: string
+          suspended_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          duration_key?: string
+          id?: string
+          internal_notes?: string | null
+          is_active?: boolean
+          is_permanent?: boolean
+          notify_user?: boolean
+          other_reason?: string | null
+          reactivated_at?: string | null
+          reactivated_by?: string | null
+          reason?: string
+          suspended_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       announcement_likes: {
         Row: {
           announcement_id: string
@@ -1899,6 +1953,7 @@ export type Database = {
       admin_list_profiles: {
         Args: never
         Returns: {
+          active_suspension_id: string
           avatar_url: string
           avg_rating: number
           billing: string
@@ -1909,6 +1964,7 @@ export type Database = {
           first_name: string
           id: string
           is_active: boolean
+          is_permanent_suspension: boolean
           is_verified: boolean
           last_name: string
           last_sign_in_at: string
@@ -1920,6 +1976,8 @@ export type Database = {
           stripe_subscription_id: string
           subscription_current_period_end: string
           subscription_status: string
+          suspended_until: string
+          suspension_reason: string
           verification_status: string
         }[]
       }
@@ -1958,6 +2016,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      auto_reactivate_expired_suspensions: { Args: never; Returns: number }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
       change_case_priority: {
         Args: {
@@ -2161,6 +2220,27 @@ export type Database = {
         Args: { _profile_id: string }
         Returns: number
       }
+      get_account_suspension_history: {
+        Args: { _user_id: string }
+        Returns: {
+          admin_name: string
+          created_at: string
+          created_by: string
+          duration_key: string
+          id: string
+          internal_notes: string
+          is_active: boolean
+          is_permanent: boolean
+          notify_user: boolean
+          other_reason: string
+          reactivated_at: string
+          reactivated_by: string
+          reactivator_name: string
+          reason: string
+          suspended_until: string
+          user_id: string
+        }[]
+      }
       get_admin_user_ids: { Args: never; Returns: string[] }
       get_booked_profile_ids: {
         Args: { _event_date: string; _profile_ids: string[] }
@@ -2317,6 +2397,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      is_account_active: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       list_moderation_cases: {
@@ -2377,6 +2458,32 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "email_template_versions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reactivate_account: {
+        Args: { _user_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          duration_key: string
+          id: string
+          internal_notes: string | null
+          is_active: boolean
+          is_permanent: boolean
+          notify_user: boolean
+          other_reason: string | null
+          reactivated_at: string | null
+          reactivated_by: string | null
+          reason: string
+          suspended_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_suspensions"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -2473,6 +2580,39 @@ export type Database = {
       soft_delete_conversation: {
         Args: { _conversation_id: string }
         Returns: undefined
+      }
+      suspend_account: {
+        Args: {
+          _duration_key: string
+          _internal_notes: string
+          _notify_user: boolean
+          _other_reason: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          duration_key: string
+          id: string
+          internal_notes: string | null
+          is_active: boolean
+          is_permanent: boolean
+          notify_user: boolean
+          other_reason: string | null
+          reactivated_at: string | null
+          reactivated_by: string | null
+          reason: string
+          suspended_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_suspensions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       try_lock_email_campaign: {
         Args: { _campaign_id: string }
