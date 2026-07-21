@@ -64,8 +64,13 @@ const UserDashboard = () => {
 
   // Announcement limits
   const STANDARD_AD_LIMIT = 1;
+  const AD_COOLDOWN_DAYS = 30;
   const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
+
+  // Bookings & follows
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [followingCount, setFollowingCount] = useState(0);
 
   const loadAnnouncements = async () => {
     if (!user) return;
@@ -77,6 +82,25 @@ const UserDashboard = () => {
     if (data) setAnnouncements(data);
   };
 
+  const loadBookings = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('booking_requests')
+      .select('id, status, event_date, event_end_date, created_at, profile_id')
+      .eq('requester_user_id', user.id)
+      .order('created_at', { ascending: false });
+    if (data) setBookings(data);
+  };
+
+  const loadFollowing = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from('followers')
+      .select('*', { count: 'exact', head: true })
+      .eq('follower_id', user.id);
+    setFollowingCount(count || 0);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -84,6 +108,8 @@ const UserDashboard = () => {
   useEffect(() => {
     if (user) {
       loadAnnouncements();
+      loadBookings();
+      loadFollowing();
     }
   }, [user]);
 
