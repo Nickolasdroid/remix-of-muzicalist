@@ -1,5 +1,5 @@
 import { User, MapPin, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { PrefetchLink as Link } from "@/components/PrefetchLink";
 
 interface ArtistCardProps {
   id: string;

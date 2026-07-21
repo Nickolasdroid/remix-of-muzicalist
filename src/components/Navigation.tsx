@@ -1,4 +1,6 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { PrefetchLink as Link } from "@/components/PrefetchLink";
+import { preloadForPath } from "@/lib/routePreload";
 import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -439,6 +441,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             {user ? (
               <button
                 onClick={() => navigate('/notifications')}
+                onMouseEnter={() => preloadForPath('/notifications')}
+                onFocus={() => preloadForPath('/notifications')}
                 className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
               >
                 <Bell className="h-6 w-6" />
