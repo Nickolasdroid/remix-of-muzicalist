@@ -720,7 +720,7 @@ const UserDashboard = () => {
                       <div className="grid grid-cols-2 gap-2">
                         {[
                           { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-                          { key: 'accepted', label: 'Accepted', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                          { key: 'accepted', label: 'Confirmed', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                           { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
                           { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
                         ].map((b) => (
