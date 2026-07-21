@@ -478,8 +478,8 @@ const UserDashboard = () => {
 
           const statCards = [
             { label: 'Announcements', value: announcements.length, icon: Megaphone, tone: 'text-accent', bg: 'bg-accent/10' },
-            { label: 'Active Bookings', value: pendingBookings + acceptedActive, icon: CalendarIcon, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { label: 'Completed', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { label: 'Pending Bookings', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+            { label: 'Completed Bookings', value: completedBookings, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
             ...(FOLLOWING_ENABLED ? [{ label: 'Following', value: followingCount, icon: Heart, tone: 'text-rose-400', bg: 'bg-rose-500/10' }] : []),
           ];
 
@@ -500,8 +500,8 @@ const UserDashboard = () => {
               accent: 'from-blue-500/25 to-blue-500/5',
             },
             {
-              label: 'Edit Profile',
-              desc: 'Update your details',
+              label: 'Account Settings',
+              desc: 'Manage your account',
               icon: Pencil,
               onClick: goToSettings,
               accent: 'from-emerald-500/25 to-emerald-500/5',
@@ -548,7 +548,7 @@ const UserDashboard = () => {
                       className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
                     >
                       <Pencil className="h-4 w-4 mr-2" />
-                      Edit Profile
+                      Account Settings
                     </Button>
                   </div>
                 </div>
@@ -720,7 +720,7 @@ const UserDashboard = () => {
                       <div className="grid grid-cols-2 gap-2">
                         {[
                           { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-                          { key: 'accepted', label: 'Accepted', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                          { key: 'accepted', label: 'Confirmed', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                           { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
                           { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
                         ].map((b) => (
@@ -744,9 +744,8 @@ const UserDashboard = () => {
                 </Card>
               </div>
 
-              {/* ===== Activity & Profile Completion ===== */}
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Account Activity */}
+              {/* ===== Activity ===== */}
+              <div className="mt-6">
                 <Card className="rounded-lg border-border/60 bg-card">
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-4">
@@ -768,53 +767,6 @@ const UserDashboard = () => {
                           </li>
                         ))}
                       </ol>
-                    )}
-                  </div>
-                </Card>
-
-                {/* Profile Completion */}
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-accent" />
-                        <h3 className="font-semibold text-foreground">Profile Completion</h3>
-                      </div>
-                      <span className="text-2xl font-bold text-accent">{completionPct}%</span>
-                    </div>
-                    <Progress value={completionPct} className="h-2 mb-4" />
-                    <ul className="space-y-2">
-                      {completionFields.map((f) => (
-                        <li key={f.key}>
-                          <button
-                            onClick={f.done ? undefined : goToSettings}
-                            disabled={f.done}
-                            className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition ${
-                              f.done
-                                ? 'border-transparent bg-transparent cursor-default'
-                                : 'border-border/60 hover:border-accent/40 hover:bg-background/40'
-                            }`}
-                          >
-                            {f.done ? (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                            ) : (
-                              <div className="h-4 w-4 rounded-full border border-muted-foreground/40 shrink-0" />
-                            )}
-                            <span className={`text-sm flex-1 ${f.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
-                              {f.label}
-                            </span>
-                            {!f.done && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    {completionPct < 100 && (
-                      <Button
-                        onClick={goToSettings}
-                        className="w-full mt-4 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                      >
-                        Complete Profile
-                      </Button>
                     )}
                   </div>
                 </Card>

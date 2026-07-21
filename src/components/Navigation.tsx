@@ -234,7 +234,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     ? [
         { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
-        { to: '/user-dashboard', icon: User, label: t('navigation.profile') },
+        { to: '/user-dashboard', icon: User, label: t('navigation.account', 'Account') },
       ]
     : [
         { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
