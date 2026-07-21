@@ -21,10 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Trash2, Search, Eye, PauseCircle, PlayCircle, ArrowUpDown } from "lucide-react";
+import { Pencil, Trash2, Search, Ban, RotateCcw, ArrowUpDown, History } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AdminProfile } from "./adminProfileTypes";
 import { EditProfileDialog, DeleteProfileDialog } from "./AdminProfileDialogs";
+import { AccountStatusBadge } from "./AccountStatusBadge";
+import { SuspendAccountDialog, ReactivateAccountDialog } from "./SuspendAccountDialog";
+import { SuspensionHistoryDialog } from "./SuspensionHistoryDialog";
 
 interface Props {
   profiles: AdminProfile[];
@@ -69,6 +72,9 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
 
   const [editing, setEditing] = useState<AdminProfile | null>(null);
   const [deleting, setDeleting] = useState<AdminProfile | null>(null);
+  const [suspending, setSuspending] = useState<AdminProfile | null>(null);
+  const [reactivating, setReactivating] = useState<AdminProfile | null>(null);
+  const [history, setHistory] = useState<AdminProfile | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingNow, setDeletingNow] = useState(false);
 
@@ -156,19 +162,6 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
     }
   };
 
-  const handleToggleSuspend = async (u: AdminProfile) => {
-    const nextActive = !(u.is_active !== false);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_active: nextActive })
-      .eq("id", u.id);
-    if (error) {
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: nextActive ? "User reactivated" : "User suspended" });
-    refresh();
-  };
 
   const handleSaveEdit = async () => {
     if (!editing) return;
@@ -318,18 +311,25 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
                     {p.last_sign_in_at ? new Date(p.last_sign_in_at).toLocaleDateString() : "—"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={active ? "default" : "destructive"} className="rounded-lg">
-                      {active ? "Active" : "Suspended"}
-                    </Badge>
+                    <AccountStatusBadge profile={p} />
                   </TableCell>
                   <TableCell className="text-right whitespace-nowrap space-x-1">
-                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setEditing({ ...p })}>
+                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setEditing({ ...p })} title="Edit">
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => handleToggleSuspend(p)} title={active ? "Suspend" : "Reactivate"}>
-                      {active ? <PauseCircle className="h-3.5 w-3.5" /> : <PlayCircle className="h-3.5 w-3.5" />}
+                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setHistory(p)} title="Suspension history">
+                      <History className="h-3.5 w-3.5" />
                     </Button>
-                    <Button size="sm" variant="destructive" className="rounded-lg" onClick={() => setDeleting(p)} disabled={roles[p.id] === "admin"}>
+                    {active ? (
+                      <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setSuspending(p)} title="Suspend" disabled={roles[p.id] === "admin"}>
+                        <Ban className="h-3.5 w-3.5" />
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setReactivating(p)} title="Reactivate">
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                    <Button size="sm" variant="destructive" className="rounded-lg" onClick={() => setDeleting(p)} disabled={roles[p.id] === "admin"} title="Delete">
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </TableCell>
@@ -354,6 +354,9 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
 
       <EditProfileDialog editing={editing} setEditing={setEditing} saving={savingEdit} onSave={handleSaveEdit} />
       <DeleteProfileDialog target={deleting} setTarget={setDeleting} deleting={deletingNow} onConfirm={handleDelete} />
+      <SuspendAccountDialog target={suspending} onOpenChange={(o) => !o && setSuspending(null)} onSuccess={refresh} />
+      <ReactivateAccountDialog target={reactivating} onOpenChange={(o) => !o && setReactivating(null)} onSuccess={refresh} />
+      <SuspensionHistoryDialog target={history} onOpenChange={(o) => !o && setHistory(null)} />
     </div>
   );
 }

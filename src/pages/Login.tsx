@@ -110,6 +110,25 @@ const Login = () => {
 
       if (error) throw error;
 
+      // Suspension check
+      const { data: profileCheck } = await supabase
+        .from('profiles')
+        .select('is_active')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (profileCheck && profileCheck.is_active === false) {
+        await supabase.auth.signOut({ scope: 'local' });
+        toast({
+          title: "Account suspended",
+          description:
+            "Your Muzicalist account has been suspended. Please contact contact@muzicalist.com if you believe this is a mistake.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('user_type')
