@@ -13,6 +13,7 @@ import MetaPixel from "./components/MetaPixel";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
 import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
+import TransitionRoutes from "@/components/TransitionRoutes";
 
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
 // slower devices/networks. Index stays eager because it's the landing page.
@@ -125,7 +126,9 @@ const App = () => (
         <RoutePrefetcher />
         <Suspense fallback={<RouteFallback />}>
           <main>
-          <Routes>
+          <TransitionRoutes>
+            {(location) => (
+          <Routes location={location}>
             <Route
   path="/"
   element={Capacitor.isNativePlatform() ? <Login /> : <Index />}
@@ -229,6 +232,8 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+            )}
+          </TransitionRoutes>
           </main>
         </Suspense>
       </BrowserRouter>
