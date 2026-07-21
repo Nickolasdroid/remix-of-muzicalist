@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { User, Star, ArrowLeft } from "lucide-react";
+import { User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { translateSpecialization } from "@/lib/specializationLabel";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
@@ -24,9 +25,9 @@ interface ArtistData {
 
 interface ArtistWithRating extends ArtistData {
   rating: number | null;
+  reviewCount: number;
 }
 
-const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 const AllArtists = () => {
   const [artists, setArtists] = useState<ArtistWithRating[]>([]);
@@ -64,6 +65,7 @@ const AllArtists = () => {
               (ratingMap[a.id].reduce((s, v) => s + v, 0) / ratingMap[a.id].length) * 10
             ) / 10
           : null,
+        reviewCount: ratingMap[a.id]?.length ?? 0,
       }));
 
       setArtists(withRatings);
@@ -133,18 +135,11 @@ const AllArtists = () => {
                       </p>
 
                       <div className="flex items-center justify-between min-h-[20px]">
-                        {artist.rating !== null ? (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 text-accent fill-accent" />
-                            <span className="text-sm font-medium text-muted-foreground">
-                              {artist.rating.toFixed(1)}
-                            </span>
-                          </div>
-                        ) : (Date.now() - new Date(artist.created_at).getTime() < NEW_ARTIST_WINDOW_MS) ? (
-                          <span className="text-xs font-medium text-accent/80">
-                            New artist
-                          </span>
-                        ) : null}
+                        <ArtistCardStatusBadge
+                          createdAt={artist.created_at}
+                          rating={artist.rating}
+                          reviewCount={artist.reviewCount}
+                        />
                       </div>
                     </div>
                   </div>
