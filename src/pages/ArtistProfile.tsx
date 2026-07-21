@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import ImageLightbox from "@/components/ImageLightbox";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
@@ -147,6 +148,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const id = artistId ?? routeId;
   const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
@@ -1020,17 +1022,28 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
             <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
               <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
-                  <img
-                    src={artist.cover_url}
-                    alt={`${artist.stage_name} cover`}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setLightboxSrc(artist.cover_url!)}
+                    className="group/cover absolute inset-0 w-full h-full cursor-zoom-in"
+                    aria-label="Enlarge cover photo"
+                  >
+                    <img
+                      src={artist.cover_url}
+                      alt={`${artist.stage_name} cover`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <span className="hidden md:block pointer-events-none absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium opacity-0 group-hover/cover:opacity-100 transition-opacity">
+                      Click to enlarge
+                    </span>
+                  </button>
                 ) : (
                   <div
                     className="absolute inset-0"
                     style={{ background: getCoverGradient((artist as any).cover_theme) }}
                   />
                 )}
+
 
                 {/* Smooth premium fade into the page background (Spotify/Apple Music style) */}
                 <div
@@ -1044,14 +1057,26 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                 {/* Avatar + name + meta overlaid at bottom */}
                 <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
-                  <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0`}>
+                  <button
+                    type="button"
+                    onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
+                    disabled={!artist.avatar_url}
+                    aria-label="Enlarge profile picture"
+                    className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
+                  >
                     <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                       <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                       <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
                         <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
                       </AvatarFallback>
                     </Avatar>
-                  </div>
+                    {artist.avatar_url && (
+                      <span className="hidden md:flex pointer-events-none absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-black/70 text-white text-[10px] font-medium opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap">
+                        Click to enlarge
+                      </span>
+                    )}
+                  </button>
+
                   <div className="flex-1 min-w-0 pb-1 md:pb-2">
                     <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.stage_name}
@@ -2193,6 +2218,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <ImageLightbox src={lightboxSrc} alt={artist?.stage_name} onClose={() => setLightboxSrc(null)} />
 
       {/* Delete Review Confirmation Dialog */}
       <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
