@@ -305,7 +305,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, slug, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, experience_level, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
+          .select('id, slug, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
           .eq('id', id)
           .maybeSingle(),
         (supabase as any).rpc('get_profile_contact', { _profile_id: id }),

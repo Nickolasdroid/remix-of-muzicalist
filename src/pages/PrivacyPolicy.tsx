@@ -50,7 +50,7 @@ const PrivacyPolicy = () => {
               <ul className="list-disc pl-6 space-y-2">
                 <li>Account details: name, email, phone number, password (stored encrypted)</li>
                 <li>Profile information: stage name, biography, avatar, gallery photos and videos, social links, pricing</li>
-                <li>Professional information: specialization, instruments, music genres, experience level, career details</li>
+                <li>Professional information: specialization, instruments, music genres, career details</li>
                 <li>Location data: country and region (auto-detected from IP at signup, editable in profile)</li>
                 <li>Content you post: posts, announcements, comments, reviews, booking requests and messages</li>
                 <li>Reports you submit about other users or content (reason and optional description)</li>

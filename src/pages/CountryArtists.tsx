@@ -37,8 +37,6 @@ interface FilterButtonProps {
   setFilterCategory: (value: string) => void;
   filterCounty: string;
   setFilterCounty: (value: string) => void;
-  filterExperience: string;
-  setFilterExperience: (value: string) => void;
   sortOrder: string;
   setSortOrder: (value: string) => void;
   counties: string[];
@@ -49,8 +47,6 @@ const FilterContent = ({
   setFilterCategory,
   filterCounty,
   setFilterCounty,
-  filterExperience,
-  setFilterExperience,
   sortOrder,
   setSortOrder,
   counties,
@@ -88,22 +84,6 @@ const FilterContent = ({
     </div>
 
     <div className="space-y-2">
-      <Label htmlFor="experience">Experience Level</Label>
-      <Select value={filterExperience} onValueChange={setFilterExperience}>
-        <SelectTrigger id="experience">
-          <SelectValue placeholder="All Levels" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Levels</SelectItem>
-          <SelectItem value="Beginner">Beginner</SelectItem>
-          <SelectItem value="Intermediate">Intermediate</SelectItem>
-          <SelectItem value="Advanced">Advanced</SelectItem>
-          <SelectItem value="Professional">Professional</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-
-    <div className="space-y-2">
       <Label htmlFor="sort">Sort Alphabetically</Label>
       <Select value={sortOrder} onValueChange={setSortOrder}>
         <SelectTrigger id="sort">
@@ -122,7 +102,6 @@ const FilterContent = ({
       onClick={() => {
         setFilterCategory("all");
         setFilterCounty("all");
-        setFilterExperience("all");
         setSortOrder("none");
       }}
       className="w-full"
@@ -182,7 +161,7 @@ interface Artist {
   avatar_url: string | null;
   county: string;
   specialization: string | null;
-  experience_level: string | null;
+  
   plan: string;
 }
 
@@ -203,7 +182,7 @@ const CountryArtists = () => {
 
   const [filterCategory, setFilterCategory] = useState<string>(urlSpecialization || "all");
   const [filterCounty, setFilterCounty] = useState<string>(urlRegion || "all");
-  const [filterExperience, setFilterExperience] = useState<string>("all");
+  
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -232,7 +211,7 @@ const CountryArtists = () => {
 
       const { data } = await supabase
         .from('profiles')
-        .select('id, stage_name, avatar_url, county, specialization, experience_level, plan')
+        .select('id, stage_name, avatar_url, county, specialization, plan')
         .in('country', countryVariants)
         .in('id', artistIds)
         .order('stage_name');
@@ -284,10 +263,6 @@ const CountryArtists = () => {
       result = result.filter(artist => artist.county === filterCounty);
     }
 
-    // Experience filter
-    if (filterExperience !== "all") {
-      result = result.filter(artist => artist.experience_level?.toLowerCase() === filterExperience.toLowerCase());
-    }
 
     // If date filter is active, sort available artists first
     if (urlDate) {
@@ -307,7 +282,7 @@ const CountryArtists = () => {
     }
 
     return result;
-  }, [artists, searchTerm, filterCategory, filterCounty, filterExperience, sortOrder, urlDate, bookedArtistIds]);
+  }, [artists, searchTerm, filterCategory, filterCounty, sortOrder, urlDate, bookedArtistIds]);
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
@@ -337,8 +312,6 @@ const CountryArtists = () => {
               setFilterCategory={setFilterCategory}
               filterCounty={filterCounty}
               setFilterCounty={setFilterCounty}
-              filterExperience={filterExperience}
-              setFilterExperience={setFilterExperience}
               sortOrder={sortOrder}
               setSortOrder={setSortOrder}
               counties={counties}
@@ -397,7 +370,7 @@ const CountryArtists = () => {
             <div className="text-center py-12">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground text-base md:text-lg">
-                {searchTerm || filterCategory !== "all" || filterCounty !== "all" || filterExperience !== "all"
+                {searchTerm || filterCategory !== "all" || filterCounty !== "all"
                    ? "No artists found matching your filters" 
                    : `No artists registered from ${displayName} yet`
                 }

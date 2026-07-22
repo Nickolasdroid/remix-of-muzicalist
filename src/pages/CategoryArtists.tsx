@@ -36,8 +36,6 @@ interface FilterButtonProps {
   setFilterCountry: (value: string) => void;
   filterCounty: string;
   setFilterCounty: (value: string) => void;
-  filterExperience: string;
-  setFilterExperience: (value: string) => void;
   sortOrder: string;
   setSortOrder: (value: string) => void;
   countries: string[];
@@ -49,8 +47,6 @@ const FilterContent = ({
   setFilterCountry,
   filterCounty,
   setFilterCounty,
-  filterExperience,
-  setFilterExperience,
   sortOrder,
   setSortOrder,
   countries,
@@ -88,22 +84,6 @@ const FilterContent = ({
     </div>
 
     <div className="space-y-2">
-      <Label htmlFor="experience">Experience Level</Label>
-      <Select value={filterExperience} onValueChange={setFilterExperience}>
-        <SelectTrigger id="experience">
-          <SelectValue placeholder="All Levels" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Levels</SelectItem>
-          <SelectItem value="Beginner">Beginner</SelectItem>
-          <SelectItem value="Intermediate">Intermediate</SelectItem>
-          <SelectItem value="Advanced">Advanced</SelectItem>
-          <SelectItem value="Professional">Professional</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-
-    <div className="space-y-2">
       <Label htmlFor="sort">Sort Alphabetically</Label>
       <Select value={sortOrder} onValueChange={setSortOrder}>
         <SelectTrigger id="sort">
@@ -122,7 +102,6 @@ const FilterContent = ({
       onClick={() => {
         setFilterCountry("all");
         setFilterCounty("all");
-        setFilterExperience("all");
         setSortOrder("none");
       }}
       className="w-full"
@@ -182,7 +161,7 @@ interface Artist {
   avatar_url: string | null;
   country: string | null;
   county: string;
-  experience_level: string | null;
+  
   plan: string;
   availabilityStatus?: "available" | "booked" | null;
 }
@@ -195,7 +174,7 @@ const CategoryArtists = () => {
   const [loading, setLoading] = useState(true);
   const [filterCountry, setFilterCountry] = useState<string>("all");
   const [filterCounty, setFilterCounty] = useState<string>("all");
-  const [filterExperience, setFilterExperience] = useState<string>("all");
+  
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -253,7 +232,7 @@ const CategoryArtists = () => {
 
       let query = supabase
         .from('profiles')
-        .select('id, stage_name, avatar_url, country, county, experience_level, plan')
+        .select('id, stage_name, avatar_url, country, county, plan')
         .eq('specialization', specialization as "Singer" | "Instrumentalist" | "DJ" | "Band")
         .in('id', artistIds);
 
@@ -267,7 +246,7 @@ const CategoryArtists = () => {
       if (error) {
         console.error('Error fetching artists:', error);
       } else {
-        let artistsWithAvailability: Artist[] = (data || []).map(a => ({ ...a, country: a.country ?? null, experience_level: a.experience_level ?? null }));
+        let artistsWithAvailability: Artist[] = (data || []).map(a => ({ ...a, country: a.country ?? null }));
         
         // If a date is specified, check availability
         if (urlDate && artistsWithAvailability.length > 0) {
@@ -338,9 +317,6 @@ const CategoryArtists = () => {
       result = result.filter(artist => artist.county === filterCounty);
     }
 
-    if (filterExperience !== "all") {
-      result = result.filter(artist => artist.experience_level?.toLowerCase() === filterExperience.toLowerCase());
-    }
 
     if (sortOrder === "a-z") {
       result.sort((a, b) => a.stage_name.localeCompare(b.stage_name));
@@ -349,7 +325,7 @@ const CategoryArtists = () => {
     }
 
     return result;
-  }, [artists, filterCountry, filterCounty, filterExperience, sortOrder]);
+  }, [artists, filterCountry, filterCounty, sortOrder]);
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
@@ -378,8 +354,6 @@ const CategoryArtists = () => {
             setFilterCountry={setFilterCountry}
             filterCounty={filterCounty}
             setFilterCounty={setFilterCounty}
-            filterExperience={filterExperience}
-            setFilterExperience={setFilterExperience}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
             countries={availableCountries}
