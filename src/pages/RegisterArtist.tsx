@@ -51,7 +51,6 @@ const RegisterArtist = () => {
     country: "",
     county: "",
     specialization: "",
-    experienceLevel: "",
     careerStartYear: "",
     password: "",
     confirmPassword: ""
