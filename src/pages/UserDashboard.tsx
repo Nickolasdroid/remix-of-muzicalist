@@ -464,8 +464,8 @@ const UserDashboard = () => {
             <>
               {/* Header Section - matching Artist Profile layout */}
               <div className="space-y-6 md:space-y-8">
-                {/* Hero Header: Cover + overlapping avatar/name/meta */}
-                <div className="-mx-4 md:mx-0">
+                {/* Hero Header: Cover + overlapping avatar/name/meta — matches ArtistProfile exactly */}
+                <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
                   <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
 
@@ -480,14 +480,14 @@ const UserDashboard = () => {
 
                     {/* Avatar + name + meta overlaid at bottom */}
                     <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
-                      <div className="relative group shrink-0">
-                        <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background shadow-xl">
+                      <div className="group/avatar relative p-1 rounded-full shadow-xl flex-shrink-0">
+                        <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                           <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
                           <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
                             {profile?.first_name?.[0]}{profile?.last_name?.[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                        <label className="absolute inset-1 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover/avatar:opacity-100 cursor-pointer transition-opacity">
                           <Upload className="h-5 w-5 text-white" />
                           <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                         </label>
@@ -503,7 +503,7 @@ const UserDashboard = () => {
                           {profile?.first_name} {profile?.last_name}
                         </h1>
                         {memberSince && (
-                          <div className="flex items-center gap-1.5 md:gap-2 text-white/85 text-sm md:text-base mt-0.5 md:mt-1">
+                          <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
                             <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             <span>Member since {memberSince}</span>
                           </div>
