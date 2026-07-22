@@ -359,7 +359,7 @@ const CountryArtists = () => {
 
         <div className="text-center mb-6 md:mb-8">
           <p className="hidden md:block text-muted-foreground mb-4">
-            {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''} found`}
+            {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''}`}
           </p>
 
           <div className="max-w-xl mx-auto relative">
