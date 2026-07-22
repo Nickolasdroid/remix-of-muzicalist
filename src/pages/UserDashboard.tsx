@@ -535,7 +535,7 @@ const UserDashboard = () => {
 
 
               {/* ===== Quick Actions ===== */}
-              <div className="mt-6 md:mt-8">
+              <div>
                 <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-accent" />
                   Quick actions
