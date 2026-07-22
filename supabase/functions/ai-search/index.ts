@@ -832,7 +832,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
         music_genres: a.music_genres,
         country: a.country,
         county: a.county,
-        experience_level: a.experience_level,
+        
         plan: a.plan,
         estimated_price: a.estimated_price,
         avg_rating: Number(r.avg.toFixed(2)),
