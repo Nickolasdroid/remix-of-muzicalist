@@ -1163,24 +1163,56 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 </div>
               )}
 
-              {/* Follow + followers row */}
-              {!isOwnProfile && (
-                <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span><span className="font-semibold text-foreground">{followersCount}</span> followers</span>
-                    <span className="opacity-50">·</span>
-                    <span><span className="font-semibold text-foreground">{followingCount}</span> following</span>
+              {/* Social stats + Follow */}
+              <div className="mx-4 md:mx-0 mt-3 md:mt-4">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
+                  <div className="flex items-center gap-4 md:gap-8 flex-1 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => setFollowListMode("followers")}
+                      className="group flex flex-col items-start text-left transition-transform hover:-translate-y-0.5"
+                    >
+                      <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
+                        {followersCount}
+                      </span>
+                      <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
+                        Followers
+                      </span>
+                    </button>
+                    <div className="h-8 w-px bg-border/70" aria-hidden="true" />
+                    <button
+                      type="button"
+                      onClick={() => setFollowListMode("following")}
+                      className="group flex flex-col items-start text-left transition-transform hover:-translate-y-0.5"
+                    >
+                      <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
+                        {followingCount}
+                      </span>
+                      <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
+                        Following
+                      </span>
+                    </button>
                   </div>
-                  <Button
-                    onClick={handleFollowToggle}
-                    variant={isFollowing ? "outline" : "default"}
-                    size="sm"
-                    className={isFollowing ? "border-accent text-accent" : "bg-accent text-accent-foreground hover:bg-accent/90"}
-                  >
-                    {isFollowing ? <><UserCheck className="mr-1.5 h-4 w-4" /> Following</> : <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>}
-                  </Button>
+                  {!isOwnProfile && (
+                    <Button
+                      onClick={handleFollowToggle}
+                      variant={isFollowing ? "outline" : "secondary"}
+                      size="sm"
+                      className={`rounded-full px-4 md:px-5 transition-all ${
+                        isFollowing
+                          ? "border-accent/60 text-accent hover:bg-accent/10"
+                          : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
+                      }`}
+                    >
+                      {isFollowing ? (
+                        <><UserCheck className="mr-1.5 h-4 w-4" /> Following</>
+                      ) : (
+                        <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>
+                      )}
+                    </Button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
 
