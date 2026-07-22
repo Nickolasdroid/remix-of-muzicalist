@@ -758,6 +758,15 @@ const UserDashboard = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+
+              {user && (
+                <FollowingManageDialog
+                  open={showFollowingDialog}
+                  onOpenChange={setShowFollowingDialog}
+                  userId={user.id}
+                  onChanged={setFollowingCount}
+                />
+              )}
             </>
           );
         })()}
