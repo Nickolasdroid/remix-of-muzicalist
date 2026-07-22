@@ -508,6 +508,33 @@ const UserDashboard = () => {
                 </div>
               </Card>
 
+              {/* ===== Following ===== */}
+              <button
+                type="button"
+                onClick={() => setShowFollowingDialog(true)}
+                className="mt-6 w-full text-left relative overflow-hidden rounded-lg border border-border/60 bg-card p-5 transition hover:border-accent/40 hover:shadow-gold group"
+                aria-label="Open following list"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/15 to-pink-500/0 opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none" />
+                <div className="relative flex items-center gap-4">
+                  <div className="p-2 inline-flex rounded-lg bg-background/40 border border-border/60">
+                    <Users className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Following</h3>
+                    <p className="mt-0.5 text-2xl font-bold text-foreground">
+                      {followingCount}
+                      <span className="ml-2 text-sm font-normal text-muted-foreground">
+                        {followingCount === 1 ? 'Artist' : 'Artists'}
+                      </span>
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
+                </div>
+              </button>
+
+
+
               {/* ===== Quick Actions ===== */}
               <div className="mt-6">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
