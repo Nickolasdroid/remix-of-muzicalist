@@ -460,61 +460,75 @@ const UserDashboard = () => {
 
           return (
             <>
-              {/* ===== Header ===== */}
-              <Card className="relative overflow-hidden rounded-lg border-border/60 bg-gradient-card shadow-elegant">
-                <div className="absolute inset-0 bg-gradient-cinematic opacity-40 pointer-events-none" />
-                <div className="relative p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
-                  <div className="relative group mx-auto md:mx-0">
-                    <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-accent/30 shadow-gold">
-                      <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
-                      <AvatarFallback className="text-xl bg-secondary">
-                        {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                      <Upload className="h-5 w-5 text-white" />
-                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                    </label>
-                  </div>
-                  <div className="flex-1 min-w-0 text-center md:text-left">
-                    <h1
-                      className="text-xl md:text-2xl lg:text-3xl font-display font-bold text-foreground notranslate"
-                      data-user-content="true"
-                      data-no-translate="true"
-                      translate="no"
-                    >
-                      {profile?.first_name} {profile?.last_name}
-                    </h1>
-                    {memberSince && (
-                      <p className="mt-1.5 text-xs md:text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
-                        <Clock className="h-3.5 w-3.5" />
-                        Member since {memberSince}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Card>
+              {/* ===== Hero Header — mirrors Artist Profile layout ===== */}
+              <div className="-mx-4 md:mx-0">
+                <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+                  <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
 
-              {/* ===== Following ===== */}
-              <button
-                type="button"
-                onClick={() => setShowFollowingDialog(true)}
-                className="mt-4 md:mt-5 w-full text-left flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3 transition hover:border-accent/40 group"
-                aria-label="Open following list"
-              >
-                <div className="flex items-center gap-3">
-                  <Users className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                  <div className="flex flex-col">
-                    <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
-                      {followingCount}
-                    </span>
-                    <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                      Following
-                    </span>
+                  {/* Smooth fade into page background */}
+                  <div
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
+                    style={{
+                      background:
+                        "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+                    }}
+                  />
+
+                  {/* Avatar + name + meta overlaid at bottom */}
+                  <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
+                    <div className="relative group shrink-0">
+                      <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 border-2 md:border-4 border-background shadow-xl">
+                        <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
+                        <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
+                          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                        <Upload className="h-5 w-5 text-white" />
+                        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                      </label>
+                    </div>
+
+                    <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                      <h1
+                        className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg notranslate"
+                        data-user-content="true"
+                        data-no-translate="true"
+                        translate="no"
+                      >
+                        {profile?.first_name} {profile?.last_name}
+                      </h1>
+                      {memberSince && (
+                        <div className="flex items-center gap-1.5 md:gap-2 text-white/85 text-sm md:text-base mt-0.5 md:mt-1">
+                          <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                          <span>Member since {memberSince}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
-              </button>
+
+                {/* Following pill — sits directly under hero, no card wrapper */}
+                <button
+                  type="button"
+                  onClick={() => setShowFollowingDialog(true)}
+                  className="mx-4 md:mx-0 mt-3 md:mt-5 w-[calc(100%-2rem)] md:w-full text-left flex items-center justify-between gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3 md:px-5 md:py-4 transition hover:border-accent/40 group"
+                  aria-label="Open following list"
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                    <div className="flex flex-col">
+                      <span className="text-base md:text-2xl font-bold text-foreground leading-none group-hover:text-accent transition-colors">
+                        {followingCount}
+                      </span>
+                      <span className="mt-1 text-[11px] md:text-sm text-muted-foreground">
+                        Following
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                </button>
+              </div>
 
               {/* ===== Quick Actions ===== */}
               <div className="mt-6 md:mt-8">
