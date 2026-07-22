@@ -1,12 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, TouchEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Star, Heart, Calendar, Check, Trash2 } from "lucide-react";
+import {
+  Bell,
+  Star,
+  Heart,
+  Calendar,
+  CalendarCheck,
+  CalendarX,
+  MessageCircle,
+  MessageSquare,
+  UserPlus,
+  FileText,
+  Megaphone,
+  Info,
+  Trash2,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import Navigation from "@/components/Navigation";
+import { cn } from "@/lib/utils";
+
 interface Notification {
   id: string;
   type: string;
@@ -19,6 +32,54 @@ interface Notification {
   read_at: string | null;
   created_at: string;
 }
+
+const iconFor = (type: string) => {
+  const base = "h-5 w-5";
+  switch (type) {
+    case "like":
+      return <Heart className={cn(base, "text-rose-500 fill-rose-500")} />;
+    case "comment":
+      return <MessageCircle className={cn(base, "text-sky-400")} />;
+    case "message":
+      return <MessageSquare className={cn(base, "text-sky-400")} />;
+    case "booking_request":
+      return <Calendar className={cn(base, "text-amber-400")} />;
+    case "booking_update":
+      return <CalendarCheck className={cn(base, "text-emerald-400")} />;
+    case "booking_declined":
+      return <CalendarX className={cn(base, "text-destructive")} />;
+    case "review":
+      return <Star className={cn(base, "text-yellow-400 fill-yellow-400")} />;
+    case "follow":
+      return <UserPlus className={cn(base, "text-accent")} />;
+    case "new_post":
+      return <FileText className={cn(base, "text-accent")} />;
+    case "new_announcement":
+      return <Megaphone className={cn(base, "text-accent")} />;
+    default:
+      return <Info className={cn(base, "text-muted-foreground")} />;
+  }
+};
+
+const groupLabel = (date: Date): "Today" | "Yesterday" | "Earlier" => {
+  if (isToday(date)) return "Today";
+  if (isYesterday(date)) return "Yesterday";
+  return "Earlier";
+};
+
+const notificationTypeToPrefKey = (t: string): string | null => {
+  switch (t) {
+    case "review": return "reviews";
+    case "like": return "likes";
+    case "comment": return "comments";
+    case "follow": return "followers";
+    case "booking_request": return "booking_requests";
+    case "booking_update": return "booking_updates";
+    case "message": return "messages";
+    default: return null;
+  }
+};
+
 const Notifications = () => {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -26,248 +87,242 @@ const Notifications = () => {
   const [user, setUser] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
-  const [deleteNotificationId, setDeleteNotificationId] = useState<string | null>(null);
+  const [swipeId, setSwipeId] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const touchStartX = useRef(0);
+  const touchCurrentX = useRef(0);
+
   useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: {
-          session
-        }
-      } = await supabase.auth.getSession();
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
       setUser(session.user);
-      // Check user type
-      const { data: roleData } = await supabase.from('user_roles').select('user_type').eq('user_id', session.user.id).maybeSingle();
+      const { data: roleData } = await supabase
+        .from("user_roles").select("user_type").eq("user_id", session.user.id).maybeSingle();
       setUserType(roleData?.user_type || null);
-      // Load notification preferences
-      const { data: profileData } = await supabase.from('profiles').select('notification_preferences').eq('id', session.user.id).maybeSingle();
+      const { data: profileData } = await supabase
+        .from("profiles").select("notification_preferences").eq("id", session.user.id).maybeSingle();
       const prefs = (profileData as any)?.notification_preferences;
-      setNotificationPrefs(prefs && typeof prefs === 'object' ? prefs as Record<string, boolean> : {});
-      loadNotifications(session.user.id);
+      setNotificationPrefs(prefs && typeof prefs === "object" ? (prefs as Record<string, boolean>) : {});
+      const { data } = await supabase
+        .from("notifications").select("*").eq("user_id", session.user.id)
+        .order("created_at", { ascending: false });
+      if (data) setNotifications(data);
+      setLoading(false);
     };
-    checkAuth();
+    init();
   }, [navigate]);
+
   useEffect(() => {
     if (!user) return;
-
-    // Subscribe to real-time notifications
-    const channel = supabase.channel('notifications-realtime').on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'notifications',
-      filter: `user_id=eq.${user.id}`
-    }, payload => {
-      setNotifications(prev => [payload.new as Notification, ...prev]);
-    }).subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    const channel = supabase
+      .channel("notifications-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+        (payload) => setNotifications((prev) => [payload.new as Notification, ...prev])
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
-  const loadNotifications = async (userId: string) => {
-    setLoading(true);
-    const {
-      data,
-      error
-    } = await supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', {
-      ascending: false
-    });
-    if (!error && data) {
-      setNotifications(data);
+
+  const markAsRead = async (id: string) => {
+    const now = new Date().toISOString();
+    await supabase.from("notifications").update({ read_at: now }).eq("id", id);
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: now } : n)));
+  };
+
+  const deleteNotification = async (id: string) => {
+    await supabase.from("notifications").delete().eq("id", id);
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setSwipeId(null);
+    setSwipeOffset(0);
+  };
+
+  const getRoute = (n: Notification): string | null => {
+    const { reference_type: refType, type, reference_id: refId } = n;
+    if (type === "follow" && n.actor_id) return `/artist/${n.actor_id}`;
+    if (type === "message" && refId) return `/messages?conversation=${refId}`;
+    if (userType === "user") {
+      if (type === "booking_request" || type === "booking_update") return "/booking-requests";
+      if (refType === "announcement") return "/user-dashboard";
+      return "/user-dashboard";
     }
-    setLoading(false);
-  };
-  const markAsRead = async (notificationId: string) => {
-    await supabase.from('notifications').update({
-      read_at: new Date().toISOString()
-    }).eq('id', notificationId);
-    setNotifications(prev => prev.map(n => n.id === notificationId ? {
-      ...n,
-      read_at: new Date().toISOString()
-    } : n));
-  };
-  const markAllAsRead = async () => {
-    await supabase.from('notifications').update({
-      read_at: new Date().toISOString()
-    }).eq('user_id', user.id).is('read_at', null);
-    setNotifications(prev => prev.map(n => ({
-      ...n,
-      read_at: n.read_at || new Date().toISOString()
-    })));
-  };
-  const deleteNotification = async () => {
-    if (!deleteNotificationId) return;
-    await supabase.from('notifications').delete().eq('id', deleteNotificationId);
-    setNotifications(prev => prev.filter(n => n.id !== deleteNotificationId));
-    setDeleteNotificationId(null);
-  };
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'review':
-        return <Star className="h-5 w-5 text-yellow-500" />;
-      case 'like':
-        return <Heart className="h-5 w-5 text-red-500" />;
-      case 'booking_request':
-      case 'booking_update':
-        return <Calendar className="h-5 w-5 text-blue-500" />;
-      default:
-        return <Bell className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
-  const getNotificationRoute = (notification: Notification): string | null => {
-    const refType = notification.reference_type;
-    const type = notification.type;
-    const refId = notification.reference_id;
-    if (type === 'follow' && notification.actor_id) {
-      return `/artist/${notification.actor_id}`;
-    }
-    if (userType === 'user') {
-      return '/user-dashboard';
-    }
-    // Comment notifications: open the comments dialog for the target post/announcement
-    if (type === 'comment' && refId && (refType === 'post' || refType === 'announcement')) {
-      const section = refType === 'post' ? 'posts' : 'announcements';
+    if (type === "comment" && refId && (refType === "post" || refType === "announcement")) {
+      const section = refType === "post" ? "posts" : "announcements";
       return `/dashboard?tab=profile&section=${section}&commentsId=${refId}&commentsType=${refType}`;
     }
-    if (refType === 'post') {
-      return '/dashboard?tab=profile&section=posts';
-    }
-    if (refType === 'announcement') {
-      return '/dashboard?tab=profile&section=announcements';
-    }
-    if (refType === 'review') {
-      return '/dashboard?tab=profile';
-    }
-    if (refType === 'booking_request' || type === 'booking_request' || type === 'booking_update') {
-      return '/dashboard?tab=profile&section=calendar';
-    }
-    if (refType === 'follower') {
-      return notification.actor_id ? `/artist/${notification.actor_id}` : '/dashboard?tab=profile';
-    }
-    return '/dashboard?tab=profile';
+    if (refType === "post") return "/dashboard?tab=profile&section=posts";
+    if (refType === "announcement") return "/dashboard?tab=profile&section=announcements";
+    if (refType === "review") return "/dashboard?tab=profile";
+    if (refType === "booking_request" || type === "booking_request" || type === "booking_update")
+      return "/dashboard?tab=profile&section=calendar";
+    if (refType === "follower") return n.actor_id ? `/artist/${n.actor_id}` : "/dashboard?tab=profile";
+    return "/dashboard?tab=profile";
   };
 
-  const handleNotificationClick = async (notification: Notification) => {
-    if (!notification.read_at) {
-      await markAsRead(notification.id);
-    }
-    const route = getNotificationRoute(notification);
+  const handleClick = async (n: Notification) => {
+    if (swipeId === n.id && Math.abs(swipeOffset) > 10) return;
+    if (!n.read_at) await markAsRead(n.id);
+    const route = getRoute(n);
     if (route) navigate(route);
   };
-  const notificationTypeToPrefKey = (n: Notification): string | null => {
-    switch (n.type) {
-      case 'review': return 'reviews';
-      case 'like': return 'likes';
-      case 'comment': return 'comments';
-      case 'follow': return 'followers';
-      case 'booking_request': return 'booking_requests';
-      case 'booking_update': return 'booking_updates';
-      case 'message': return 'messages';
-      default: return null;
+
+  const onTouchStart = (e: TouchEvent, id: string) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchCurrentX.current = touchStartX.current;
+    setSwipeId(id);
+  };
+  const onTouchMove = (e: TouchEvent) => {
+    touchCurrentX.current = e.touches[0].clientX;
+    const delta = touchCurrentX.current - touchStartX.current;
+    if (delta < 0) setSwipeOffset(Math.max(delta, -120));
+  };
+  const onTouchEnd = (id: string) => {
+    if (swipeOffset < -80) {
+      deleteNotification(id);
+    } else {
+      setSwipeOffset(0);
+      setSwipeId(null);
     }
   };
-  const visibleNotifications = notifications.filter(n => {
+
+  const visible = notifications.filter((n) => {
     if (!notificationPrefs) return true;
-    const key = notificationTypeToPrefKey(n);
+    const key = notificationTypeToPrefKey(n.type);
     if (!key) return true;
     return notificationPrefs[key] !== false;
   });
-  const unreadCount = visibleNotifications.filter(n => !n.read_at).length;
-  return <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <main className="md:ml-64 pt-16 md:pt-2 pb-20 md:pb-4">
-        <div className="max-w-3xl mx-auto p-4 md:p-6 px-0 py-0">
-          <div className="hidden md:flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Bell className="h-6 w-6 text-accent" />
-              <h1 className="text-2xl font-bold">Notifications</h1>
-            </div>
-            {unreadCount > 0 && <Button variant="outline" size="sm" className="pl-2" onClick={markAllAsRead}>
-                <Check className="h-4 w-4 mr-1" />
-                Mark all as read
-              </Button>}
-          </div>
-          {unreadCount > 0 && <div className="flex md:hidden justify-end p-2 border-none border-0">
-            <Button variant="outline" size="sm" className="pl-2" onClick={markAllAsRead}>
-              <Check className="h-4 w-4 mr-1" />
-              Mark all as read
-            </Button>
-          </div>}
 
-          {loading ? <div className="space-y-1">
-              {[1, 2, 3].map(i => <Card key={i} className="p-3 animate-pulse">
-                  <div className="flex items-start gap-4">
-                    <div className="h-10 w-10 rounded-full bg-muted" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-muted rounded w-1/3" />
-                      <div className="h-3 bg-muted rounded w-2/3" />
-                    </div>
+  // Sort: unread first, then by date desc
+  const sorted = [...visible].sort((a, b) => {
+    if (!!a.read_at !== !!b.read_at) return a.read_at ? 1 : -1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  // Group by day bucket, preserving unread-first section
+  const unread = sorted.filter((n) => !n.read_at);
+  const read = sorted.filter((n) => n.read_at);
+  const groupByDay = (items: Notification[]) => {
+    const buckets: Record<string, Notification[]> = { Today: [], Yesterday: [], Earlier: [] };
+    items.forEach((n) => buckets[groupLabel(new Date(n.created_at))].push(n));
+    return buckets;
+  };
+  const readGroups = groupByDay(read);
+
+  const renderCard = (n: Notification) => {
+    const isSwiping = swipeId === n.id;
+    const offset = isSwiping ? swipeOffset : 0;
+    return (
+      <div key={n.id} className="relative overflow-hidden">
+        {/* Swipe reveal delete */}
+        <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-6 bg-destructive/90 w-full">
+          <Trash2 className="h-5 w-5 text-destructive-foreground" />
+        </div>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => handleClick(n)}
+          onTouchStart={(e) => onTouchStart(e, n.id)}
+          onTouchMove={onTouchMove}
+          onTouchEnd={() => onTouchEnd(n.id)}
+          style={{ transform: `translateX(${offset}px)` }}
+          className={cn(
+            "relative flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-colors select-none",
+            "hover:bg-accent/5 active:bg-accent/10",
+            !n.read_at ? "bg-accent/[0.06]" : "bg-background",
+          )}
+        >
+          <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
+            {iconFor(n.type)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={cn("text-sm leading-snug", !n.read_at ? "text-foreground" : "text-muted-foreground")}>
+              {n.actor_name && (
+                <span className="font-semibold text-foreground notranslate" translate="no">
+                  {n.actor_name}{" "}
+                </span>
+              )}
+              <span>{n.message || n.title}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+            </p>
+          </div>
+          {!n.read_at && (
+            <div className="h-2.5 w-2.5 rounded-full bg-accent flex-shrink-0 mt-2" aria-label="unread" />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const Section = ({ label, items }: { label: string; items: Notification[] }) => {
+    if (!items.length) return null;
+    return (
+      <div>
+        <h2 className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {label}
+        </h2>
+        <div className="divide-y divide-border/40">{items.map(renderCard)}</div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="md:ml-64 pt-16 md:pt-2 pb-24 md:pb-8">
+        <div className="max-w-3xl mx-auto md:p-6 md:px-4">
+          <div className="hidden md:flex items-center gap-3 mb-4 px-4">
+            <Bell className="h-6 w-6 text-accent" />
+            <h1 className="text-2xl font-bold">Notifications</h1>
+          </div>
+
+          {loading ? (
+            <div className="space-y-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-start gap-3 px-4 py-3.5 animate-pulse">
+                  <div className="h-10 w-10 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3.5 bg-muted rounded w-3/4" />
+                    <div className="h-2.5 bg-muted rounded w-1/4" />
                   </div>
-                </Card>)}
-            </div> : visibleNotifications.length === 0 ? <Card className="p-12 text-center">
-              <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
-              {userType !== 'user' && <p className="text-muted-foreground">
-                You'll be notified when someone reviews your profile, likes your posts, or sends you a booking request.
-              </p>}
-            </Card> : <div>
-              {visibleNotifications.map(notification => <div key={notification.id} className={`py-2 px-4 cursor-pointer transition-colors hover:bg-accent/5 border-b border-border/40 last:border-b-0 ${!notification.read_at ? 'bg-accent/10' : ''}`} onClick={() => handleNotificationClick(notification)}>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1">
-                      {getNotificationIcon(notification.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <p className={`font-medium line-clamp-1 ${!notification.read_at ? 'text-foreground' : 'text-muted-foreground'}`}>
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
-                              {formatDistanceToNow(new Date(notification.created_at), {
-                        addSuffix: true
-                      })}
-                            </p>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                            {notification.message}
-                          </p>
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={e => {
-                    e.stopPropagation();
-                    setDeleteNotificationId(notification.id);
-                  }}>
-                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                        </Button>
-                      </div>
-                    </div>
-                    {!notification.read_at && <div className="h-2 w-2 rounded-full bg-accent flex-shrink-0 mt-2" />}
-                  </div>
-                </div>)}
-            </div>}
+                </div>
+              ))}
+            </div>
+          ) : sorted.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center px-6 py-24">
+              <div className="h-16 w-16 rounded-full bg-secondary/40 flex items-center justify-center mb-4">
+                <Bell className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold mb-1">No notifications yet</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                When people interact with you on Muzicalist, you'll see it here.
+              </p>
+            </div>
+          ) : (
+            <div>
+              {unread.length > 0 && (
+                <div>
+                  <h2 className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+                    New
+                  </h2>
+                  <div className="divide-y divide-border/40">{unread.map(renderCard)}</div>
+                </div>
+              )}
+              <Section label="Today" items={readGroups.Today} />
+              <Section label="Yesterday" items={readGroups.Yesterday} />
+              <Section label="Earlier" items={readGroups.Earlier} />
+            </div>
+          )}
         </div>
       </main>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteNotificationId} onOpenChange={open => !open && setDeleteNotificationId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Notification</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this notification? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteNotification} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>;
+    </div>
+  );
 };
+
 export default Notifications;
