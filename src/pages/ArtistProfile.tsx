@@ -223,6 +223,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followListMode, setFollowListMode] = useState<"followers" | "following" | null>(null);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
   const [responseRate, setResponseRate] = useState<number | null>(null);
