@@ -701,9 +701,11 @@ const UserDashboard = () => {
                   )}
                 </div>
               </div>
+              </div>
 
 
               {/* ===== Announcement Dialog ===== */}
+
               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                 <DialogContent className="max-w-md rounded-lg">
                   <DialogHeader>
