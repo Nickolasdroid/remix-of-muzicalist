@@ -531,12 +531,11 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.county ||
       criteria.country ||
       criteria.excluded_country ||
-      criteria.instrument ||
-      criteria.experience_level
+      criteria.instrument
     );
 
     // Helper to run a query against the artist subset
-    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, estimated_price";
+    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, instruments, bio, plan, estimated_price";
 
     let q = supabase
       .from("profiles")
@@ -545,7 +544,6 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       .limit(24);
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
-    if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
     if (criteria.country) {
       // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
       q = q.in("country", getCountryVariants(criteria.country));
