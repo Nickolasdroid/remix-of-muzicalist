@@ -71,6 +71,19 @@ const UserDashboard = () => {
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
 
+  // Following
+  const [followingCount, setFollowingCount] = useState<number>(0);
+  const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+
+  const loadFollowingCount = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from('followers')
+      .select('artist_id', { count: 'exact', head: true })
+      .eq('follower_id', user.id);
+    setFollowingCount(count || 0);
+  };
+
   const loadAnnouncements = async () => {
     if (!user) return;
     const { data } = await supabase
