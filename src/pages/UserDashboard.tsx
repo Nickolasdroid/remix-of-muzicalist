@@ -562,7 +562,7 @@ const UserDashboard = () => {
               </div>
 
               {/* ===== My Announcements & My Bookings ===== */}
-              <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* My Announcements */}
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-3">
