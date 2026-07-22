@@ -54,7 +54,7 @@ interface Profile {
   county: string;
   country: string | null;
   specialization: string | null;
-  experience_level: string | null;
+  
   music_genres: string | null;
   career_start_year: number | null;
   number_of_events: number;
