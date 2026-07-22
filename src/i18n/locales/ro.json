@@ -78,7 +78,7 @@
     "country": "Țară",
     "county": "Județ",
     "musicGenres": "Genuri muzicale",
-    "experienceLevel": "Nivel de experiență",
+    
     "numberOfEvents": "Număr de evenimente",
     "careerStartYear": "Anul începerii carierei",
     "password": "Parolă",
@@ -94,7 +94,6 @@
       "selectCounty": "Selectează județul",
       "selectGenres": "Selectează genuri muzicale...",
       "searchGenres": "Caută sau scrie un gen...",
-      "experienceLevel": "Începător, Avansat...",
       "numberOfEvents": "Evenimente susținute",
       "careerStart": "Când ai început?",
       "password": "Creează o parolă puternică",
@@ -105,12 +104,6 @@
       "instrumentalist": "Instrumentist",
       "dj": "DJ",
       "band": "Formație"
-    },
-    "experienceLevels": {
-      "beginner": "Începător",
-      "intermediate": "Intermediar",
-      "advanced": "Avansat",
-      "professional": "Profesionist"
     },
     "uploadPhoto": "Click sau trage pentru a încărca poza de profil",
     "uploadPhotoTitle": "Alege o fotografie sau trage-o aici",
