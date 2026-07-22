@@ -171,7 +171,7 @@ const Dashboard = () => {
     country: "",
     specialization: "",
     musicGenres: "",
-    experienceLevel: "",
+    
     numberOfEvents: "",
     careerStartYear: "",
     bio: "",
