@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Heart, ExternalLink } from "lucide-react";
+import { User, Heart } from "lucide-react";
 
 interface FollowingManageDialogProps {
   open: boolean;
@@ -28,6 +28,7 @@ interface ArtistRow {
 
 const FollowingManageDialog = ({ open, onOpenChange, userId, onChanged }: FollowingManageDialogProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [artists, setArtists] = useState<ArtistRow[]>([]);
   const [removing, setRemoving] = useState<string | null>(null);
@@ -63,7 +64,8 @@ const FollowingManageDialog = ({ open, onOpenChange, userId, onChanged }: Follow
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, userId]);
 
-  const unfollow = async (artistId: string) => {
+  const unfollow = async (e: React.MouseEvent, artistId: string) => {
+    e.stopPropagation();
     setRemoving(artistId);
     try {
       const { error } = await supabase
@@ -80,6 +82,11 @@ const FollowingManageDialog = ({ open, onOpenChange, userId, onChanged }: Follow
     } finally {
       setRemoving(null);
     }
+  };
+
+  const openProfile = (slug: string | null, id: string) => {
+    onOpenChange(false);
+    navigate(`/artist/${slug || id}`);
   };
 
   return (
@@ -101,54 +108,47 @@ const FollowingManageDialog = ({ open, onOpenChange, userId, onChanged }: Follow
             <ul className="space-y-2">
               {artists.map((a) => {
                 const display = a.stage_name || [a.first_name, a.last_name].filter(Boolean).join(" ") || "Artist";
-                const to = `/artist/${a.slug || a.id}`;
                 const region = [a.county, a.country].filter(Boolean).join(", ");
                 return (
                   <li
                     key={a.id}
-                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 p-3"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openProfile(a.slug, a.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openProfile(a.slug, a.id);
+                      }
+                    }}
+                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 p-3 cursor-pointer hover:bg-muted/60 transition-colors"
                   >
-                    <Link to={to} onClick={() => onOpenChange(false)} className="flex items-center gap-3 min-w-0 flex-1 group">
-                      <Avatar className="h-11 w-11">
-                        {a.avatar_url ? (
-                          <AvatarImage src={a.avatar_url} alt={display} />
-                        ) : (
-                          <AvatarFallback>
-                            <User className="h-5 w-5" />
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-medium text-foreground group-hover:text-accent transition-colors">
-                          {display}
-                        </div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {[a.specialization, region].filter(Boolean).join(" · ") || "Artist"}
-                        </div>
+                    <Avatar className="h-11 w-11 pointer-events-none">
+                      {a.avatar_url ? (
+                        <AvatarImage src={a.avatar_url} alt={display} />
+                      ) : (
+                        <AvatarFallback>
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="min-w-0 flex-1 pointer-events-none">
+                      <div className="truncate text-sm font-medium text-foreground group-hover:text-accent transition-colors">
+                        {display}
                       </div>
-                    </Link>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 rounded-lg text-xs"
-                      >
-                        <Link to={to} onClick={() => onOpenChange(false)}>
-                          <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                          Open
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={removing === a.id}
-                        onClick={() => unfollow(a.id)}
-                        className="h-8 rounded-lg text-xs"
-                      >
-                        {removing === a.id ? "…" : "Unfollow"}
-                      </Button>
+                      <div className="truncate text-xs text-muted-foreground">
+                        {[a.specialization, region].filter(Boolean).join(" · ") || "Artist"}
+                      </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={removing === a.id}
+                      onClick={(e) => unfollow(e, a.id)}
+                      className="h-8 rounded-lg text-xs shrink-0"
+                    >
+                      {removing === a.id ? "…" : "Unfollow"}
+                    </Button>
                   </li>
                 );
               })}
