@@ -233,7 +233,7 @@ const Notifications = () => {
           className={cn(
             "relative flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-colors select-none",
             "hover:bg-accent/5 active:bg-accent/10",
-            !n.read_at ? "bg-accent/[0.06]" : "bg-background",
+            !n.read_at ? "bg-accent/[0.03]" : "bg-background",
           )}
         >
           <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
