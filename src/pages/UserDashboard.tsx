@@ -16,12 +16,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import FollowingManageDialog from "@/components/FollowingManageDialog";
 
 interface MediaPreview {
   url: string;
@@ -70,6 +71,19 @@ const UserDashboard = () => {
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
 
+  // Following
+  const [followingCount, setFollowingCount] = useState<number>(0);
+  const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+
+  const loadFollowingCount = async () => {
+    if (!user) return;
+    const { count } = await supabase
+      .from('followers')
+      .select('artist_id', { count: 'exact', head: true })
+      .eq('follower_id', user.id);
+    setFollowingCount(count || 0);
+  };
+
   const loadAnnouncements = async () => {
     if (!user) return;
     const { data } = await supabase
@@ -98,6 +112,7 @@ const UserDashboard = () => {
     if (user) {
       loadAnnouncements();
       loadBookings();
+      loadFollowingCount();
     }
   }, [user]);
 
@@ -493,6 +508,33 @@ const UserDashboard = () => {
                 </div>
               </Card>
 
+              {/* ===== Following ===== */}
+              <button
+                type="button"
+                onClick={() => setShowFollowingDialog(true)}
+                className="mt-6 w-full text-left relative overflow-hidden rounded-lg border border-border/60 bg-card p-5 transition hover:border-accent/40 hover:shadow-gold group"
+                aria-label="Open following list"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/15 to-pink-500/0 opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none" />
+                <div className="relative flex items-center gap-4">
+                  <div className="p-2 inline-flex rounded-lg bg-background/40 border border-border/60">
+                    <Users className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Following</h3>
+                    <p className="mt-0.5 text-2xl font-bold text-foreground">
+                      {followingCount}
+                      <span className="ml-2 text-sm font-normal text-muted-foreground">
+                        {followingCount === 1 ? 'Artist' : 'Artists'}
+                      </span>
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
+                </div>
+              </button>
+
+
+
               {/* ===== Quick Actions ===== */}
               <div className="mt-6">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
@@ -716,6 +758,15 @@ const UserDashboard = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+
+              {user && (
+                <FollowingManageDialog
+                  open={showFollowingDialog}
+                  onOpenChange={setShowFollowingDialog}
+                  userId={user.id}
+                  onChanged={setFollowingCount}
+                />
+              )}
             </>
           );
         })()}
