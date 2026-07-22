@@ -16,12 +16,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import FollowListDialog from "@/components/FollowListDialog";
 
 interface MediaPreview {
   url: string;
