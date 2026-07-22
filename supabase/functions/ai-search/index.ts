@@ -339,7 +339,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
                   excluded_country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code that must be excluded when the user says not from/outside/except a country" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
-                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", "Professional", null] },
+                  
                   instrument: { type: ["string", "null"] },
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
@@ -350,7 +350,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   event_type: { type: ["string", "null"], description: "Canonical English event type (wedding, baptism, corporate, birthday, etc.)" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "budget_amount", "budget_currency", "event_type", "is_artist_search"],
+                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "budget_amount", "budget_currency", "event_type", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -390,7 +390,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       country: string | null;
       excluded_country: string | null;
       county: string | null;
-      experience_level: string | null;
+      
       instrument: string | null;
       keywords: string | null;
       event_date: string | null;
@@ -404,7 +404,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null, excluded_country: null,
-      county: null, experience_level: null, instrument: null, keywords: null,
+      county: null, instrument: null, keywords: null,
       event_date: null, event_end_date: null, quality_filter: null,
       budget_amount: null, budget_currency: null, event_type: null, is_artist_search: null,
     };
@@ -425,7 +425,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.country ||
       criteria.excluded_country ||
       criteria.county ||
-      criteria.experience_level ||
+      
       criteria.instrument ||
       criteria.keywords ||
       criteria.event_date ||
