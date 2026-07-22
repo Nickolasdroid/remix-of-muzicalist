@@ -463,22 +463,22 @@ const UserDashboard = () => {
               {/* ===== Header ===== */}
               <Card className="relative overflow-hidden rounded-lg border-border/60 bg-gradient-card shadow-elegant">
                 <div className="absolute inset-0 bg-gradient-cinematic opacity-40 pointer-events-none" />
-                <div className="relative p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-8">
+                <div className="relative p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
                   <div className="relative group mx-auto md:mx-0">
-                    <Avatar className="h-24 w-24 md:h-28 md:w-28 border-2 border-accent/30 shadow-gold">
+                    <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-accent/30 shadow-gold">
                       <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
-                      <AvatarFallback className="text-2xl bg-secondary">
+                      <AvatarFallback className="text-xl bg-secondary">
                         {profile?.first_name?.[0]}{profile?.last_name?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                      <Upload className="h-6 w-6 text-white" />
+                      <Upload className="h-5 w-5 text-white" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                     </label>
                   </div>
-                  <div className="flex-1 min-w-0 text-center md:text-left md:pr-12">
+                  <div className="flex-1 min-w-0 text-center md:text-left">
                     <h1
-                      className="text-2xl md:text-3xl font-display font-bold text-foreground notranslate"
+                      className="text-xl md:text-2xl lg:text-3xl font-display font-bold text-foreground notranslate"
                       data-user-content="true"
                       data-no-translate="true"
                       translate="no"
@@ -486,7 +486,7 @@ const UserDashboard = () => {
                       {profile?.first_name} {profile?.last_name}
                     </h1>
                     {memberSince && (
-                      <p className="mt-2 text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
+                      <p className="mt-1.5 text-xs md:text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
                         Member since {memberSince}
                       </p>
@@ -499,85 +499,65 @@ const UserDashboard = () => {
               <button
                 type="button"
                 onClick={() => setShowFollowingDialog(true)}
-                className="mt-6 w-full text-left relative overflow-hidden rounded-lg border border-border/60 bg-card p-5 transition hover:border-accent/40 hover:shadow-gold group"
+                className="mt-4 md:mt-5 w-full text-left flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3 transition hover:border-accent/40 group"
                 aria-label="Open following list"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/15 to-pink-500/0 opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none" />
-                <div className="relative flex items-center gap-4">
-                  <div className="p-2 inline-flex rounded-lg bg-background/40 border border-border/60">
-                    <Users className="h-5 w-5 text-accent" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Following</h3>
-                    <p className="mt-0.5 text-2xl font-bold text-foreground">
+                <div className="flex items-center gap-3">
+                  <Users className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                  <div className="flex flex-col">
+                    <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
                       {followingCount}
-                      <span className="ml-2 text-sm font-normal text-muted-foreground">
-                        {followingCount === 1 ? 'Artist' : 'Artists'}
-                      </span>
-                    </p>
+                    </span>
+                    <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
+                      Following
+                    </span>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
                 </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
               </button>
 
-
-
               {/* ===== Quick Actions ===== */}
-              <div className="mt-6">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Quick actions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="mt-6 md:mt-8">
+                <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-accent" />
+                  Quick actions
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {quickActions.map((a) => (
                     <button
                       key={a.label}
                       onClick={a.onClick}
                       disabled={a.disabled}
-                      className={`relative overflow-hidden rounded-lg border border-border/60 bg-card p-5 text-left transition hover:border-accent/40 hover:shadow-gold disabled:opacity-60 disabled:cursor-not-allowed group`}
+                      className="relative overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-3 text-left transition hover:border-accent/40 disabled:opacity-60 disabled:cursor-not-allowed group flex items-center gap-3"
                     >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${a.accent} opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none`} />
-                      <div className="relative flex items-start justify-between gap-3">
-                        <div>
-                          <div className="p-2 inline-flex rounded-lg bg-background/40 border border-border/60 mb-3">
-                            <a.icon className="h-5 w-5 text-accent" />
-                          </div>
-                          <h3 className="font-semibold text-foreground">{a.label}</h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">{a.desc}</p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      <div className="p-2 rounded-lg bg-background/40 border border-border/60 shrink-0">
+                        <a.icon className="h-4 w-4 text-accent" />
                       </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-semibold text-foreground truncate">{a.label}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* ===== My Announcements & My Bookings ===== */}
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* My Announcements */}
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center justify-between gap-3 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Megaphone className="h-5 w-5 text-accent" />
-                        <h3 className="font-semibold text-foreground">My Announcements</h3>
-                      </div>
-                      <Badge variant="outline" className="rounded-lg text-xs">
-                        {standardAdsUsed}/{STANDARD_AD_LIMIT}
-                      </Badge>
-                    </div>
+                <div>
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                      <Megaphone className="h-5 w-5 text-accent" />
+                      My Announcements
+                    </h2>
+                    <Badge variant="outline" className="rounded-lg text-xs font-medium">
+                      {standardAdsUsed}/{STANDARD_AD_LIMIT}
+                    </Badge>
+                  </div>
 
-                    <div className="rounded-lg bg-background/40 border border-border/60 p-4 mb-4">
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Standard</p>
-                      <p className="text-2xl font-bold text-foreground">
-                        {standardAdsUsed} <span className="text-base text-muted-foreground font-normal">/ {STANDARD_AD_LIMIT}</span>
-                      </p>
-                      {!canPublish && cooldownDate && (
-                        <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
-                          <Clock className="h-3.5 w-3.5" />
-                          Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
-                          <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
-                        </p>
-                      )}
-                    </div>
-
+                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-4">
                     <Button
                       onClick={() => setShowAnnouncementDialog(true)}
                       disabled={!canPublish}
@@ -586,9 +566,16 @@ const UserDashboard = () => {
                       <Plus className="h-4 w-4 mr-2" />
                       {canPublish ? 'Publish Announcement' : `Available in ${cooldownDaysRemaining}d`}
                     </Button>
+                    {!canPublish && cooldownDate && (
+                      <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />
+                        Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
+                        <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+                      </p>
+                    )}
 
                     {announcements.length > 0 ? (
-                      <div className="mt-5 space-y-2">
+                      <div className="mt-3 space-y-2">
                         {announcements.slice(0, 3).map((ad) => (
                           <div key={ad.id} className="flex items-start justify-between gap-2 p-3 rounded-lg bg-background/30 border border-border/50">
                             <div className="min-w-0 flex-1">
@@ -629,71 +616,74 @@ const UserDashboard = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="mt-5 rounded-lg border border-dashed border-border/60 bg-background/20 p-6 text-center">
-                        <Megaphone className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
+                      <div className="mt-3 rounded-lg border border-dashed border-border/60 bg-background/20 p-4 text-center">
+                        <Megaphone className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/60" />
                         <p className="text-sm text-muted-foreground">No announcements yet</p>
-                        <p className="text-xs text-muted-foreground/70 mt-1">Publish your first one to reach artists.</p>
+                        <p className="text-xs text-muted-foreground/70 mt-0.5">Publish your first one to reach artists.</p>
                       </div>
                     )}
-                  </div>
-                </Card>
+                  </Card>
+                </div>
 
                 {/* My Bookings */}
-                <Card className="rounded-lg border-border/60 bg-card">
-                  <div className="p-5">
-                    <div className="flex items-center justify-between gap-3 mb-4">
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="h-5 w-5 text-accent" />
-                        <h3 className="font-semibold text-foreground">My Bookings</h3>
-                      </div>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => goToBookings()}>
-                        View all
-                        <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                      </Button>
-                    </div>
-
-                    {bookings.length === 0 ? (
-                      <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-8 text-center">
-                        <CalendarIcon className="h-10 w-10 mx-auto mb-3 text-muted-foreground/60" />
-                        <p className="text-sm font-medium text-foreground">No bookings yet</p>
-                        <p className="text-xs text-muted-foreground mt-1">Book your first artist to get started.</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="mt-4 rounded-lg"
-                          onClick={() => navigate('/')}
-                        >
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                          Discover artists
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-                          { key: 'accepted', label: 'Confirmed', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                          { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
-                          { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
-                        ].map((b) => (
-                          <button
-                            key={b.key}
-                            onClick={() => goToBookings(b.key)}
-                            className="rounded-lg border border-border/60 bg-background/40 p-3 text-left hover:border-accent/40 hover:bg-background/60 transition"
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className={`p-1.5 rounded-md ${b.bg}`}>
-                                <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
-                              </div>
-                              <span className="text-xs text-muted-foreground">{b.label}</span>
-                            </div>
-                            <p className="text-xl font-bold text-foreground">{b.value}</p>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                <div>
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                      <CalendarIcon className="h-5 w-5 text-accent" />
+                      My Bookings
+                    </h2>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => goToBookings()}>
+                      View all
+                      <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                    </Button>
                   </div>
-                </Card>
+
+                  {bookings.length === 0 ? (
+                    <Card className="rounded-lg border-dashed border-border/60 bg-card/60 backdrop-blur-sm p-6 text-center">
+                      <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
+                      <p className="text-sm font-medium text-foreground">No bookings yet</p>
+                      <p className="text-xs text-muted-foreground mt-1">Book your first artist to get started.</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 rounded-lg"
+                        onClick={() => navigate('/')}
+                      >
+                        <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                        Discover artists
+                      </Button>
+                    </Card>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {[
+                        { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+                        { key: 'accepted', label: 'Confirmed', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                        { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
+                        { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
+                      ].map((b) => (
+                        <button
+                          key={b.key}
+                          onClick={() => goToBookings(b.key)}
+                          className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5 text-left hover:border-accent/40 transition"
+                        >
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
+                              {b.value}
+                            </span>
+                            <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground truncate">
+                              {b.label}
+                            </span>
+                          </div>
+                          <div className={`p-1.5 rounded-md ${b.bg} shrink-0`}>
+                            <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+
 
               {/* ===== Announcement Dialog ===== */}
               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
