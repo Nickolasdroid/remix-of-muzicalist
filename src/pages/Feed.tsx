@@ -25,6 +25,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
+import { sharePost } from "@/lib/sharePost";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
 
