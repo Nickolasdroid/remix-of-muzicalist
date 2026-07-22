@@ -588,7 +588,7 @@ const Dashboard = () => {
         country: profileData.country || "",
         specialization: profileData.specialization || "",
         musicGenres: profileData.music_genres || "",
-        experienceLevel: profileData.experience_level || "",
+        
         numberOfEvents: profileData.number_of_events?.toString() || "",
         careerStartYear: profileData.career_start_year?.toString() || "",
         bio: profileData.bio || "",
