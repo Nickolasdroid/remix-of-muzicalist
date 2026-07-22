@@ -328,8 +328,8 @@ const CountryArtists = () => {
             <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
           </div>
 
-          <div className="flex items-center justify-between gap-3 w-full md:w-auto md:justify-end">
-            <p className="md:hidden text-sm text-muted-foreground">
+          <div className="relative flex items-center justify-end gap-3 w-full md:w-auto">
+            <p className="md:hidden absolute left-1/2 -translate-x-1/2 text-sm text-muted-foreground pointer-events-none">
               {`${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''}`}
             </p>
             <FilterButton 
