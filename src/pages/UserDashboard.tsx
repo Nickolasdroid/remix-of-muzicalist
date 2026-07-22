@@ -112,6 +112,7 @@ const UserDashboard = () => {
     if (user) {
       loadAnnouncements();
       loadBookings();
+      loadFollowingCount();
     }
   }, [user]);
 
