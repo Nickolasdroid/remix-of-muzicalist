@@ -78,7 +78,7 @@
     "country": "Country",
     "county": "County",
     "musicGenres": "Music Genres",
-    "experienceLevel": "Experience Level",
+    
     "numberOfEvents": "Number of Events",
     "careerStartYear": "Year of Career Start",
     "password": "Password",
@@ -94,7 +94,6 @@
       "selectCounty": "Select your county",
       "selectGenres": "Select music genres...",
       "searchGenres": "Search or type a genre...",
-      "experienceLevel": "Beginner, Advanced...",
       "numberOfEvents": "Events performed",
       "careerStart": "When did you start?",
       "password": "Create a strong password",
@@ -105,12 +104,6 @@
       "instrumentalist": "Instrumentalist",
       "dj": "DJ",
       "band": "Band"
-    },
-    "experienceLevels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced",
-      "professional": "Professional"
     },
     "uploadPhoto": "Click or drag to upload your profile picture",
     "uploadPhotoTitle": "Choose a photo or drag it here",
