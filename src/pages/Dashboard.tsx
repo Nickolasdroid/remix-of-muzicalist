@@ -849,7 +849,6 @@ const Dashboard = () => {
           updateData.music_genres = formData.musicGenres;
           break;
         case 'experience':
-          updateData.experience_level = formData.experienceLevel as any;
           updateData.number_of_events = parseInt(formData.numberOfEvents);
           break;
         case 'bio':
