@@ -563,7 +563,6 @@ const RegisterArtist = () => {
             country: countryName,
             county: formData.county,
             specialization: formData.specialization,
-            experience_level: formData.experienceLevel,
             career_start_year: formData.careerStartYear,
             avatar_base64,
             plan: planName,
