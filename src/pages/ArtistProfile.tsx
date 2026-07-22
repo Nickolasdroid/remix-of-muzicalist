@@ -19,6 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
+import { Share2 } from "lucide-react";
+import { sharePost } from "@/lib/sharePost";
 
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
