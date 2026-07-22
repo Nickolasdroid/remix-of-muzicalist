@@ -465,7 +465,7 @@ const UserDashboard = () => {
               {/* Header Section - matching Artist Profile layout */}
               <div className="space-y-6 md:space-y-8">
                 {/* Hero Header: Cover + overlapping avatar/name/meta */}
-                <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+                <div className="-mx-4 md:mx-0">
                   <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
 
