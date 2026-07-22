@@ -19,6 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
+import { Share2 } from "lucide-react";
+import { sharePost } from "@/lib/sharePost";
 
 import { isAdExpired } from "@/lib/adExpiration";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
@@ -1622,7 +1624,17 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                   <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                                 </Button>
                                 {((promo as any).commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{(promo as any).commentsCount}</span>}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "announcement" })}
+                                  aria-label="Share"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                                >
+                                  <Share2 className="lucide lucide-share-2 !w-7 !h-7" />
+                                </Button>
                               </div>
+
                               </Card>);
 
                       }
@@ -1721,7 +1733,17 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                 <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                               </Button>
                               {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "post" })}
+                                aria-label="Share"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                              >
+                                <Share2 className="lucide lucide-share-2 !w-7 !h-7" />
+                              </Button>
                             </div>
+
                           </Card>);
 
                     }) : <Card className="p-8 text-center">

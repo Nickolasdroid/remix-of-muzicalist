@@ -25,6 +25,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import CommentsDialog from "@/components/CommentsDialog";
+import { sharePost } from "@/lib/sharePost";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
 
@@ -500,7 +501,17 @@ const Feed = () => {
                       <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                     </Button>
                     {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "announcement" })}
+                      aria-label="Share"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                    >
+                      <Share2 className="lucide lucide-share-2 !w-7 !h-7" />
+                    </Button>
                   </div>
+
                 </Card>
               ) : (
                 /* Regular Post Card */
@@ -609,7 +620,17 @@ const Feed = () => {
                     <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
                   </Button>
                   {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "post" })}
+                    aria-label="Share"
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                  >
+                    <Share2 className="lucide lucide-share-2 !w-7 !h-7" />
+                  </Button>
                 </div>
+
               </Card>
               )
             )
