@@ -397,7 +397,9 @@ const UserDashboard = () => {
           </div>
         </div>
       ) : (
-      <div className="container mx-auto pt-20 md:pt-8 pb-24 md:pb-8 max-w-4xl px-4">
+      <div className="pt-16 md:pt-8 pb-24 md:pb-20 px-0 md:px-4">
+        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+
         {(() => {
           // Derived data
           const memberSince = profile?.created_at
