@@ -171,7 +171,7 @@ const Dashboard = () => {
     country: "",
     specialization: "",
     musicGenres: "",
-    experienceLevel: "",
+    
     numberOfEvents: "",
     careerStartYear: "",
     bio: "",
@@ -588,7 +588,7 @@ const Dashboard = () => {
         country: profileData.country || "",
         specialization: profileData.specialization || "",
         musicGenres: profileData.music_genres || "",
-        experienceLevel: profileData.experience_level || "",
+        
         numberOfEvents: profileData.number_of_events?.toString() || "",
         careerStartYear: profileData.career_start_year?.toString() || "",
         bio: profileData.bio || "",
@@ -849,7 +849,6 @@ const Dashboard = () => {
           updateData.music_genres = formData.musicGenres;
           break;
         case 'experience':
-          updateData.experience_level = formData.experienceLevel as any;
           updateData.number_of_events = parseInt(formData.numberOfEvents);
           break;
         case 'bio':

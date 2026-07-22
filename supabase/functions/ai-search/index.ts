@@ -282,12 +282,7 @@ CANONICAL VALUES (always return these exact strings, never the localized version
   * DJ = dj, disc jockey, deejay (any language)
   * Band = trupa, trupă, formatie, formație, groupe, gruppe, banda, grupo, etc.
   * CRITICAL: Generic words like "artist", "artists", "artiști", "artisti", "musicians", "muzicieni", "performers", "interpreți", "cineva" are NOT specializations — they are umbrella terms covering ALL specializations. When the user uses these generic words, set specialization to null so results include singers, bands, DJs, and instrumentalists alike. Example: "Ce artisti canta manele?" -> specialization: null, genre: "Manele".
-- experience_level: one of "Beginner", "Intermediate", "Advanced", "Professional", or null. The platform stores experience as a strict 4-level enum. ONLY set when the user EXPLICITLY references the artist's experience level / seniority / career stage. Map localized terms:
-  * Beginner = incepator, începător, debutant, novice, junior, "la inceput de drum", "fara experienta", anfänger, principiante, débutant, новичок, etc.
-  * Intermediate = intermediar, mediu, "cu ceva experienta", intermédiaire, intermedio, mittel, средний, etc.
-  * Advanced = avansat, experimentat, "cu multa experienta", senior, veteran, "vechi in domeniu", expérimenté, esperto, erfahren, опытный, etc.
-  * Professional = profesionist, profesionisti, profesională, professional, professionals, professionnel, professionnels, profesional, profesionales, pro, "de profesie", profi, профессионал, etc.
-  * IMPORTANT: "Professional" IS a valid stored level — map "profesionist"/"professional"/"pro" to experience_level: "Professional", NOT to quality_filter. Quality words like "bun"/"good"/"top"/"best"/"slab"/"bad"/"renumit"/"celebru"/"de calitate" are reputation judgments that go into quality_filter. Keep these two dimensions strictly separate.
+- genre: return the canonical English genre name (see below).
 - genre: return the canonical English genre name (Pop, Rock, Jazz, Classical, Electronic, Hip Hop, Folk, R&B, Country, Reggae, Blues, Metal, Manele, Bhangra, House, Techno, Latin, Salsa, Disco, Soul, Funk, Punk, etc.). Translate from any language: "rock" stays "Rock"; "musique classique"/"musica clasica" -> "Classical"; "jazz" stays "Jazz"; "muzica populara" -> "Folk"; etc.
 - country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters) ONLY for INCLUDED locations. Examples: Franta/France/Franța/Frankreich/Francia -> "FR"; Romania/România/Roumanie/Rumänien -> "RO"; Germania/Germany/Allemagne/Deutschland -> "DE"; Italia/Italy/Italie -> "IT"; Spania/Spain/España/Espagne -> "ES"; UK/Marea Britanie/Royaume-Uni -> "GB"; SUA/USA/Statele Unite/États-Unis -> "US"; Olanda/Netherlands/Pays-Bas -> "NL"; etc.
 - excluded_country: ALWAYS return ISO 3166-1 alpha-2 code (2 uppercase letters) for NEGATED locations. Romanian examples: "să nu fie din România", "nu din Romania", "care nu este din România", "exceptând România" -> excluded_country: "RO" and country: null. English examples: "not from France", "outside Germany", "except Italy" -> excluded_country set, country null.
@@ -310,7 +305,7 @@ CANONICAL VALUES (always return these exact strings, never the localized version
 - budget_currency: ISO 4217 currency code (3 uppercase letters) derived from the user's wording — accept BOTH symbols and any-language spellings. Examples: "€"/"EUR"/"euro"/"euros"/"euri" -> "EUR"; "$"/"USD"/"dollar"/"dollars"/"dolar"/"dolari" -> "USD"; "£"/"GBP"/"pound"/"lira sterlina" -> "GBP"; "RON"/"LEI"/"lei romanesti" -> "RON"; "MDL"/"lei moldovenesti" -> "MDL"; "CHF"/"franc"/"franci elvetieni" -> "CHF"; "HUF"/"forint" -> "HUF"; "PLN"/"zloty"/"złoty" -> "PLN"; "CZK"/"koruna" -> "CZK"; "BGN"/"leva" -> "BGN"; "RSD"/"dinar sarbesc" -> "RSD"; "UAH"/"₴"/"hryvnia"/"grivna" -> "UAH"; "TRY"/"₺"/"lira turceasca" -> "TRY"; "RUB"/"₽"/"rubla" -> "RUB"; "SEK"/"krona" -> "SEK"; "NOK"/"krone" -> "NOK"; "DKK" -> "DKK"; "CAD"/"dolar canadian" -> "CAD"; "AUD"/"A$"/"dolar australian" -> "AUD"; "NZD"/"NZ$" -> "NZD"; "JPY"/"¥"/"円"/"yen" -> "JPY"; "CNY"/"yuan"/"RMB" -> "CNY"; "INR"/"₹"/"rupee"/"rupia" -> "INR"; "AED"/"dirham" -> "AED"; "ILS"/"₪"/"shekel" -> "ILS"; "ZAR"/"rand" -> "ZAR"; "BRL"/"real" -> "BRL"; "MXN"/"peso mexican" -> "MXN". Default to "RON" when budget_amount is set but no currency is mentioned. Otherwise null.
 - event_type: short canonical English event type when the user mentions one (e.g. "wedding", "baptism", "corporate", "birthday", "party", "festival", "club", "concert", "private event", "anniversary", "graduation"). Translate from any language: "nunta"/"nuntă" -> "wedding"; "botez" -> "baptism"; "cununie" -> "wedding"; "petrecere"/"petrecere privata" -> "private party"; "aniversare" -> "anniversary"; "majorat" -> "birthday"; "corporativ" -> "corporate". Otherwise null.
 - quality_filter: one of "high", "low", or null. Set when the user expresses a quality judgment about the artist:
-  * "high" -> user wants GOOD/TOP/BEST/QUALITY artists based on REPUTATION/REVIEWS. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "de calitate", "renumiti", "celebri", "experimentati", "cu recenzii bune". Do NOT trigger this on the word "profesionist"/"professional"/"pro" — those map to experience_level instead.
+  * "high" -> user wants GOOD/TOP/BEST/QUALITY artists based on REPUTATION/REVIEWS. Examples: "un instrumentist bun", "cei mai buni soliști", "top DJs", "good band", "best singers", "buni", "talentati", "de calitate", "renumiti", "celebri", "experimentati", "cu recenzii bune", "profesionist"/"professional"/"pro".
   * "low" -> user explicitly wants WEAK/BAD/CHEAP/BEGINNER artists. Examples: "un solist slab", "artisti slabi", "incepatori", "ieftini", "mediocri", "bad singers".
   * null -> no quality judgment expressed.
 - is_artist_search: true ONLY when the user is clearly trying to find, search, book, hire, or filter musicians/artists/DJs/bands/singers/instrumentalists for the platform. Return false for greetings, small talk, personal questions, random questions, or anything not related to finding artists.
@@ -344,7 +339,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code (2 uppercase letters), e.g. FR, RO, DE" },
                   excluded_country: { type: ["string", "null"], description: "ISO 3166-1 alpha-2 country code that must be excluded when the user says not from/outside/except a country" },
                   county: { type: ["string", "null"], description: "County, region, or city" },
-                  experience_level: { type: ["string", "null"], enum: ["Beginner", "Intermediate", "Advanced", "Professional", null] },
+                  
                   instrument: { type: ["string", "null"] },
                   keywords: { type: ["string", "null"], description: "Other free-text keywords (e.g. event type, vibe) for fuzzy bio match" },
                   event_date: { type: ["string", "null"], description: "Event date in YYYY-MM-DD format if user mentions one" },
@@ -355,7 +350,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
                   event_type: { type: ["string", "null"], description: "Canonical English event type (wedding, baptism, corporate, birthday, etc.)" },
                   is_artist_search: { type: "boolean", description: "Whether the query is clearly about finding/searching/booking artists on the platform" },
                 },
-                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "experience_level", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "budget_amount", "budget_currency", "event_type", "is_artist_search"],
+                required: ["name", "specialization", "genre", "country", "excluded_country", "county", "instrument", "keywords", "event_date", "event_end_date", "quality_filter", "budget_amount", "budget_currency", "event_type", "is_artist_search"],
                 additionalProperties: false,
               },
             },
@@ -395,7 +390,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       country: string | null;
       excluded_country: string | null;
       county: string | null;
-      experience_level: string | null;
+      
       instrument: string | null;
       keywords: string | null;
       event_date: string | null;
@@ -409,7 +404,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     let criteria: SearchCriteria = {
       name: null, specialization: null, genre: null, country: null, excluded_country: null,
-      county: null, experience_level: null, instrument: null, keywords: null,
+      county: null, instrument: null, keywords: null,
       event_date: null, event_end_date: null, quality_filter: null,
       budget_amount: null, budget_currency: null, event_type: null, is_artist_search: null,
     };
@@ -430,7 +425,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.country ||
       criteria.excluded_country ||
       criteria.county ||
-      criteria.experience_level ||
+      
       criteria.instrument ||
       criteria.keywords ||
       criteria.event_date ||
@@ -536,12 +531,11 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.county ||
       criteria.country ||
       criteria.excluded_country ||
-      criteria.instrument ||
-      criteria.experience_level
+      criteria.instrument
     );
 
     // Helper to run a query against the artist subset
-    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, experience_level, instruments, bio, plan, estimated_price";
+    const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, instruments, bio, plan, estimated_price";
 
     let q = supabase
       .from("profiles")
@@ -550,7 +544,6 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       .limit(24);
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
-    if (criteria.experience_level) q = q.eq("experience_level", criteria.experience_level);
     if (criteria.country) {
       // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
       q = q.in("country", getCountryVariants(criteria.country));
@@ -839,7 +832,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
         music_genres: a.music_genres,
         country: a.country,
         county: a.county,
-        experience_level: a.experience_level,
+        
         plan: a.plan,
         estimated_price: a.estimated_price,
         avg_rating: Number(r.avg.toFixed(2)),

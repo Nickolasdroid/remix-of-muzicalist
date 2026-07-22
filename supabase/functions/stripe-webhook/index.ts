@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
                 country: pending.country,
                 county: pending.county,
                 specialization: pending.specialization,
-                experience_level: pending.experience_level,
+                
                 career_start_year: pending.career_start_year ? String(pending.career_start_year) : "",
               },
             });

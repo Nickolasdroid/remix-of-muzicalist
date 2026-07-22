@@ -1366,7 +1366,6 @@ export type Database = {
           county: string
           created_at: string
           email: string
-          experience_level: string | null
           first_name: string
           id: string
           last_name: string
@@ -1385,7 +1384,6 @@ export type Database = {
           county: string
           created_at?: string
           email: string
-          experience_level?: string | null
           first_name: string
           id?: string
           last_name: string
@@ -1404,7 +1402,6 @@ export type Database = {
           county?: string
           created_at?: string
           email?: string
-          experience_level?: string | null
           first_name?: string
           id?: string
           last_name?: string
@@ -1532,9 +1529,6 @@ export type Database = {
           created_at: string | null
           email: string
           estimated_price: string | null
-          experience_level:
-            | Database["public"]["Enums"]["experience_level"]
-            | null
           facebook_url: string | null
           first_name: string
           gender: string | null
@@ -1591,9 +1585,6 @@ export type Database = {
           created_at?: string | null
           email: string
           estimated_price?: string | null
-          experience_level?:
-            | Database["public"]["Enums"]["experience_level"]
-            | null
           facebook_url?: string | null
           first_name: string
           gender?: string | null
@@ -1650,9 +1641,6 @@ export type Database = {
           created_at?: string | null
           email?: string
           estimated_price?: string | null
-          experience_level?:
-            | Database["public"]["Enums"]["experience_level"]
-            | null
           facebook_url?: string | null
           first_name?: string
           gender?: string | null
@@ -2343,9 +2331,6 @@ export type Database = {
           created_at: string | null
           email: string
           estimated_price: string | null
-          experience_level:
-            | Database["public"]["Enums"]["experience_level"]
-            | null
           facebook_url: string | null
           first_name: string
           gender: string | null
@@ -2660,11 +2645,6 @@ export type Database = {
     }
     Enums: {
       artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"
-      experience_level:
-        | "Beginner"
-        | "Intermediate"
-        | "Advanced"
-        | "Professional"
       moderation_case_status:
         | "open"
         | "triaged"
@@ -2821,12 +2801,6 @@ export const Constants = {
   public: {
     Enums: {
       artist_specialization: ["Singer", "Instrumentalist", "DJ", "Band"],
-      experience_level: [
-        "Beginner",
-        "Intermediate",
-        "Advanced",
-        "Professional",
-      ],
       moderation_case_status: [
         "open",
         "triaged",

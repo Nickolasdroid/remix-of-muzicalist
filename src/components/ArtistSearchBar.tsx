@@ -28,7 +28,6 @@ const ArtistSearchBar = () => {
   const [selectedCounty, setSelectedCounty] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedGenre, setSelectedGenre] = useState<string>("");
-  const [selectedExperience, setSelectedExperience] = useState<string>("");
   const [minEvents, setMinEvents] = useState("");
   const [minReviews, setMinReviews] = useState("");
   const [selectedEventType, setSelectedEventType] = useState<string>("");
@@ -40,7 +39,6 @@ const ArtistSearchBar = () => {
     "Pop", "Rock", "Jazz", "Classical", "Electronic", "Hip Hop", "Folk",
     "R&B", "Country", "Reggae", "Blues", "Metal"
   ];
-  const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Professional"];
 
   // Fetch user's country for currency
   useEffect(() => {
@@ -125,7 +123,6 @@ const ArtistSearchBar = () => {
       selectedCounty ||
       selectedCategory ||
       selectedGenre ||
-      selectedExperience ||
       minEvents ||
       minReviews ||
       selectedEventType ||
@@ -220,22 +217,6 @@ const ArtistSearchBar = () => {
           </Select>
         </div>
 
-        {/* Experience Level */}
-        <div className="space-y-1">
-          <Label htmlFor="experience" className="text-xs">Experience</Label>
-          <Select value={selectedExperience} onValueChange={setSelectedExperience}>
-            <SelectTrigger id="experience" className="h-9 text-sm">
-              <SelectValue placeholder="Select level" />
-            </SelectTrigger>
-            <SelectContent>
-              {experienceLevels.map((level) => (
-                <SelectItem key={level} value={level.toLowerCase()}>
-                  {level}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Minimum Events */}
         <div className="space-y-1">

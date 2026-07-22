@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const {
       email, password, first_name, last_name, stage_name, phone,
-      country, county, specialization, experience_level, career_start_year,
+      country, county, specialization, career_start_year,
       avatar_base64, plan, billing, success_url, cancel_url,
     } = body ?? {};
 
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
         email: normalizedEmail,
         password_encrypted,
         first_name, last_name, stage_name, phone,
-        country, county, specialization, experience_level,
+        country, county, specialization,
         career_start_year: career_start_year ? Number(career_start_year) : null,
         avatar_base64: avatar_base64 ?? null,
         plan, billing,
