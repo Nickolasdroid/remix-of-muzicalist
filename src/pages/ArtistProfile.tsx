@@ -1602,34 +1602,38 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                               }
                                   </div>
                             }
-                              <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleAnnouncementLike(promo.id)}
-                                  aria-label={(promo as any).isLiked ? "Unlike promotion" : "Like promotion"}
-                                  aria-pressed={(promo as any).isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${(promo as any).isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${(promo as any).isLiked ? 'fill-current' : ''}`} />
-                                </Button>
-                                {((promo as any).likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{(promo as any).likes}</span>}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
-                                  aria-label="Comment"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                                >
-                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                </Button>
-                                {((promo as any).commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{(promo as any).commentsCount}</span>}
+                              <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                                <div className="flex items-center">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleAnnouncementLike(promo.id)}
+                                    aria-label={(promo as any).isLiked ? "Unlike promotion" : "Like promotion"}
+                                    aria-pressed={(promo as any).isLiked}
+                                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${(promo as any).isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                  >
+                                    <Heart className={`lucide lucide-heart !h-7 !w-7 ${(promo as any).isLiked ? 'fill-current' : ''}`} />
+                                  </Button>
+                                  {((promo as any).likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{(promo as any).likes}</span>}
+                                </div>
+                                <div className="flex items-center">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
+                                    aria-label="Comment"
+                                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                                  >
+                                    <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
+                                  </Button>
+                                  {((promo as any).commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{(promo as any).commentsCount}</span>}
+                                </div>
                                 <Button
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "announcement" })}
                                   aria-label="Share"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                                 >
                                   <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
                                 </Button>
@@ -1710,35 +1714,39 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                               </div>}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-0 px-2 py-0 mt-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handlePostLike(post.id)}
-                                aria-label={post.isLiked ? "Unlike post" : "Like post"}
-                                aria-pressed={post.isLiked}
-                                className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
-                              >
-                                <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? 'fill-current' : ''}`} />
-                              </Button>
-                              {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
+                            <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                              <div className="flex items-center">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handlePostLike(post.id)}
+                                  aria-label={post.isLiked ? "Unlike post" : "Like post"}
+                                  aria-pressed={post.isLiked}
+                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
+                                >
+                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? 'fill-current' : ''}`} />
+                                </Button>
+                                {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
+                              </div>
 
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
-                                aria-label="Comment"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
-                              >
-                                <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                              </Button>
-                              {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
+                              <div className="flex items-center">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
+                                  aria-label="Comment"
+                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
+                                >
+                                  <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
+                                </Button>
+                                {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
+                              </div>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "post" })}
                                 aria-label="Share"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ml-2"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
                               >
                                 <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
                               </Button>
