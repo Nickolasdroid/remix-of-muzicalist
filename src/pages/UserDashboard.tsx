@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Pencil, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
@@ -440,10 +440,6 @@ const UserDashboard = () => {
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
           };
-          const goToSettings = () => {
-            setSearchParams({ tab: 'settings' });
-          };
-
           const quickActions = [
             {
               label: 'Publish Announcement',
@@ -467,7 +463,7 @@ const UserDashboard = () => {
               {/* ===== Header ===== */}
               <Card className="relative overflow-hidden rounded-lg border-border/60 bg-gradient-card shadow-elegant">
                 <div className="absolute inset-0 bg-gradient-cinematic opacity-40 pointer-events-none" />
-                <div className="relative p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6">
+                <div className="relative p-8 md:p-10 flex flex-col md:flex-row md:items-center gap-8">
                   <div className="relative group mx-auto md:mx-0">
                     <Avatar className="h-24 w-24 md:h-28 md:w-28 border-2 border-accent/30 shadow-gold">
                       <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
@@ -480,7 +476,7 @@ const UserDashboard = () => {
                       <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                     </label>
                   </div>
-                  <div className="flex-1 min-w-0 text-center md:text-left">
+                  <div className="flex-1 min-w-0 text-center md:text-left md:pr-12">
                     <h1
                       className="text-2xl md:text-3xl font-display font-bold text-foreground notranslate"
                       data-user-content="true"
@@ -490,20 +486,11 @@ const UserDashboard = () => {
                       {profile?.first_name} {profile?.last_name}
                     </h1>
                     {memberSince && (
-                      <p className="mt-1.5 text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
+                      <p className="mt-2 text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
                         Member since {memberSince}
                       </p>
                     )}
-                  </div>
-                  <div className="flex justify-center md:justify-end">
-                    <Button
-                      onClick={goToSettings}
-                      className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                    >
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Account Settings
-                    </Button>
                   </div>
                 </div>
               </Card>
