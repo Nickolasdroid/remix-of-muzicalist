@@ -2272,6 +2272,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Followers/Following List Dialog */}
+      {id && (
+        <FollowListDialog
+          open={followListMode !== null}
+          onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
+          profileId={id}
+          mode={followListMode || "followers"}
+        />
+      )}
+
       {/* Unfollow Confirmation Dialog */}
       <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
         <AlertDialogContent className="rounded-lg">
