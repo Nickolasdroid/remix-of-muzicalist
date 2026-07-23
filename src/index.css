@@ -50,6 +50,10 @@ All colors MUST be HSL.
     --accent: 45 75% 55%;             /* #D4AF37 / #F5C542 gold */
     --accent-foreground: 240 10% 6%;
 
+    /* Quiet amber surface used for unread social notifications */
+    --notification-unread: 42 32% 13%;
+    --notification-unread-hover: 42 34% 16%;
+
     /* Ambient cinematic burgundy — used only for glow/accents */
     --burgundy: 0 75% 19%;            /* #5A0B0B */
     --burgundy-foreground: 0 0% 100%;
@@ -100,6 +104,9 @@ All colors MUST be HSL.
 
     --accent: 45 75% 45%;
     --accent-foreground: 0 0% 100%;
+
+    --notification-unread: 43 48% 94%;
+    --notification-unread-hover: 43 50% 91%;
 
     --burgundy: 0 60% 35%;
     --burgundy-foreground: 0 0% 100%;

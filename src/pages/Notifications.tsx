@@ -232,8 +232,9 @@ const Notifications = () => {
           style={{ transform: `translateX(${offset}px)` }}
           className={cn(
             "relative flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-colors select-none",
-            "hover:bg-accent/5 active:bg-accent/10",
-            !n.read_at ? "bg-[hsl(38_80%_50%/0.08)]" : "bg-background",
+            !n.read_at
+              ? "bg-notification-unread hover:bg-notification-unread-hover active:bg-notification-unread-hover"
+              : "bg-background hover:bg-secondary/35 active:bg-secondary/50",
           )}
         >
           <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
