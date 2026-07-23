@@ -48,6 +48,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+  const notificationSeenKey = user ? `muzicalist-notifications-seen:${user.id}` : null;
 
   const handleLogout = async () => {
     try {
@@ -185,11 +186,25 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         return;
       }
 
-      const { count } = await supabase
+      // Opening the page acknowledges the menu badge only. Individual
+      // notifications remain unread until the user opens them.
+      if (location.pathname === '/notifications') {
+        localStorage.setItem(`muzicalist-notifications-seen:${user.id}`, new Date().toISOString());
+        setUnreadNotifications(0);
+        return;
+      }
+
+      const lastSeenAt = localStorage.getItem(`muzicalist-notifications-seen:${user.id}`);
+
+      let query = supabase
         .from('notifications')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .is('read_at', null);
+
+      if (lastSeenAt) query = query.gt('created_at', lastSeenAt);
+
+      const { count } = await query;
 
       setUnreadNotifications(count || 0);
     };
@@ -214,19 +229,16 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, location.pathname]);
 
-  // Mark all notifications as read when visiting the notifications page
+  // Clear only the navigation badge when visiting the notifications page.
   useEffect(() => {
     if (!user || location.pathname !== '/notifications') return;
+    if (notificationSeenKey) {
+      localStorage.setItem(notificationSeenKey, new Date().toISOString());
+    }
     setUnreadNotifications(0);
-    supabase
-      .from('notifications')
-      .update({ read_at: new Date().toISOString() })
-      .eq('user_id', user.id)
-      .is('read_at', null)
-      .then(() => {});
-  }, [location.pathname, user]);
+  }, [location.pathname, notificationSeenKey, user]);
 
   // Determine dashboard path based on user type
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
