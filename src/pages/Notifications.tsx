@@ -234,7 +234,7 @@ const Notifications = () => {
             "relative flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-colors select-none",
             !n.read_at
               ? "bg-notification-unread hover:bg-notification-unread-hover active:bg-notification-unread-hover"
-              : "bg-background hover:bg-secondary/35 active:bg-secondary/50",
+              : "bg-background hover:bg-notification-unread active:bg-notification-unread-hover",
           )}
         >
           <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
