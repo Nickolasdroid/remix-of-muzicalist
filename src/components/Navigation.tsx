@@ -216,6 +216,18 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     };
   }, [user]);
 
+  // Mark all notifications as read when visiting the notifications page
+  useEffect(() => {
+    if (!user || location.pathname !== '/notifications') return;
+    setUnreadNotifications(0);
+    supabase
+      .from('notifications')
+      .update({ read_at: new Date().toISOString() })
+      .eq('user_id', user.id)
+      .is('read_at', null)
+      .then(() => {});
+  }, [location.pathname, user]);
+
   // Determine dashboard path based on user type
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
