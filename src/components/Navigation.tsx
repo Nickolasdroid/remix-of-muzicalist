@@ -227,7 +227,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       .is('read_at', null)
       .then(() => {});
   }, [location.pathname, user]);
-  }, [user]);
 
   // Determine dashboard path based on user type
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
