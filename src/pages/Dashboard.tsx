@@ -3671,6 +3671,89 @@ const Dashboard = () => {
                               </div>}
                           </div>
 
+                          {/* Sent Booking Requests (requests this artist sent to other artists) */}
+                          <div className="mt-8 pt-8 border-t border-border">
+                            {(() => {
+                              const todayD = new Date();
+                              todayD.setHours(0, 0, 0, 0);
+                              const parseYMD = (s?: string | null) => {
+                                if (!s) return null;
+                                const [y, m, d] = String(s).split('-').map(Number);
+                                return new Date(y, m - 1, d);
+                              };
+                              const sentPending = sentBookingRequests.filter((b) => b.status === 'pending').length;
+                              const sentConfirmed = sentBookingRequests.filter((b) => {
+                                const d = parseYMD(b.event_end_date || b.event_date);
+                                return b.status === 'accepted' && d && d >= todayD;
+                              }).length;
+                              const sentCompleted = sentBookingRequests.filter((b) => {
+                                const d = parseYMD(b.event_end_date || b.event_date);
+                                return b.status === 'accepted' && d && d < todayD;
+                              }).length;
+                              const sentCancelled = sentBookingRequests.filter((b) => b.status === 'rejected').length;
+                              const goSent = (f?: string) =>
+                                navigate(`/booking-requests?tab=sent${f ? `&filter=${f}` : ''}`);
+                              return (
+                                <>
+                                  <div className="flex items-center justify-between mb-4 gap-2">
+                                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                      <CalendarCheck className="h-5 w-5 text-accent" />
+                                      My Bookings
+                                    </h3>
+                                    {sentBookingRequests.length > 0 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="rounded-lg text-accent hover:text-accent"
+                                        onClick={() => goSent()}
+                                      >
+                                        See all
+                                      </Button>
+                                    )}
+                                  </div>
+
+                                  {sentBookingRequests.length === 0 ? (
+                                    <Card className="border-2 border-dashed border-border/50">
+                                      <CardContent className="p-8 text-center">
+                                        <CalendarCheck className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                                        <p className="text-muted-foreground">You haven't sent any booking requests yet</p>
+                                      </CardContent>
+                                    </Card>
+                                  ) : (
+                                    <div className="grid grid-cols-2 gap-2.5">
+                                      {[
+                                        { key: 'pending', label: 'Pending', value: sentPending, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+                                        { key: 'accepted', label: 'Confirmed', value: sentConfirmed, icon: Check, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                                        { key: 'completed', label: 'Completed', value: sentCompleted, icon: CalendarCheck, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
+                                        { key: 'rejected', label: 'Cancelled', value: sentCancelled, icon: X, tone: 'text-destructive', bg: 'bg-destructive/10' },
+                                      ].map((b) => (
+                                        <button
+                                          key={b.key}
+                                          onClick={() => goSent(b.key)}
+                                          className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5 text-left hover:border-accent/40 transition"
+                                        >
+                                          <div className="flex flex-col min-w-0">
+                                            <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
+                                              {b.value}
+                                            </span>
+                                            <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground truncate">
+                                              {b.label}
+                                            </span>
+                                          </div>
+                                          <div className={`p-1.5 rounded-md ${b.bg} shrink-0`}>
+                                            <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
+                                          </div>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+
+
+
                           {/* Booking Request Detail Dialog */}
                           <Dialog open={showBookingDetailDialog} onOpenChange={setShowBookingDetailDialog}>
                             <DialogContent className="max-w-md rounded-lg">
