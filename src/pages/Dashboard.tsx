@@ -66,8 +66,7 @@ const Dashboard = () => {
   } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { isAdmin: rawIsAdmin } = useUserRole();
-  const isAdmin = false; // TEMP: force artist view for verification
+  const { isAdmin } = useUserRole();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
