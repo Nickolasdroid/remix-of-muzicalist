@@ -47,7 +47,8 @@ const BookingRequests = () => {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [requests, setRequests] = useState<any[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<any[]>([]);
+  const [sentRequests, setSentRequests] = useState<any[]>([]);
   const [artistProfiles, setArtistProfiles] = useState<Record<string, { stage_name?: string | null; avatar_url?: string | null }>>({});
   const [selected, setSelected] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
@@ -55,6 +56,7 @@ const BookingRequests = () => {
   const [viewerRole, setViewerRole] = useState<"user" | "artist" | null>(null);
 
   const filter = (searchParams.get("filter") as FilterKey) || "all";
+  const tab = (searchParams.get("tab") as "received" | "sent") || "received";
 
   const load = async () => {
     const {
@@ -75,33 +77,42 @@ const BookingRequests = () => {
     const isArtist = userType !== "user";
     setViewerRole(isArtist ? "artist" : "user");
 
-    // Query booking_requests using the SAME source/filter as the dashboards:
-    // - Regular users: requests they sent (requester_user_id = me)
-    // - Artists: requests received on their profile (profile_id = me)
-    const column = isArtist ? "profile_id" : "requester_user_id";
-    const { data } = await supabase
+    // Requests sent by me (as a requester) — available for users AND artists
+    const { data: sentData } = await supabase
       .from("booking_requests")
       .select("*")
-      .eq(column, user.id)
+      .eq("requester_user_id", user.id)
+      .neq("profile_id", user.id)
       .order("created_at", { ascending: false });
-    const rows = data || [];
-    setRequests(rows);
+    const sent = sentData || [];
+    setSentRequests(sent);
 
-    // For regular users, resolve artist display info
-    if (!isArtist && rows.length > 0) {
-      const artistIds = Array.from(new Set(rows.map((r: any) => r.profile_id).filter(Boolean)));
-      if (artistIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, stage_name, avatar_url")
-          .in("id", artistIds);
-        const map: Record<string, any> = {};
-        (profiles || []).forEach((p: any) => (map[p.id] = p));
-        setArtistProfiles(map);
-      }
+    // Requests received on my artist profile
+    let received: any[] = [];
+    if (isArtist) {
+      const { data: receivedData } = await supabase
+        .from("booking_requests")
+        .select("*")
+        .eq("profile_id", user.id)
+        .order("created_at", { ascending: false });
+      received = receivedData || [];
+      setReceivedRequests(received);
+    }
+
+    // Resolve artist display info for sent requests
+    const artistIds = Array.from(new Set(sent.map((r: any) => r.profile_id).filter(Boolean)));
+    if (artistIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, stage_name, avatar_url")
+        .in("id", artistIds);
+      const map: Record<string, any> = {};
+      (profiles || []).forEach((p: any) => (map[p.id] = p));
+      setArtistProfiles(map);
     }
     setLoading(false);
   };
+
 
   useEffect(() => {
     load();
@@ -124,6 +135,12 @@ const BookingRequests = () => {
     return r.status;
   };
 
+
+  const isArtistViewer = viewerRole === "artist";
+  // Sent view = user account, or artist looking at the "Sent" tab
+  const isSentView = !isArtistViewer || tab === "sent";
+  const requests = isSentView ? sentRequests : receivedRequests;
+
   const filtered = useMemo(() => {
     if (filter === "all") return requests;
     return requests.filter((r) => categorize(r) === filter);
@@ -137,6 +154,7 @@ const BookingRequests = () => {
     });
     return c;
   }, [requests]);
+
 
   const formatDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split("-").map(Number);
@@ -202,7 +220,16 @@ const BookingRequests = () => {
     setSearchParams(next);
   };
 
-  const isUserView = viewerRole === "user";
+  const setTab = (t: "received" | "sent") => {
+    const next = new URLSearchParams(searchParams);
+    if (t === "received") next.delete("tab");
+    else next.set("tab", t);
+    next.delete("filter");
+    setSearchParams(next);
+  };
+
+  // "User view" = viewing requests I sent (as requester)
+  const isUserView = isSentView;
 
   return (
     <>
@@ -213,7 +240,7 @@ const BookingRequests = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(isUserView ? "/user-dashboard" : "/dashboard?tab=profile")}
+              onClick={() => navigate(isArtistViewer ? "/dashboard?tab=profile" : "/user-dashboard")}
               className="rounded-lg"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
@@ -224,11 +251,32 @@ const BookingRequests = () => {
           <div className="mb-4 flex items-center gap-2">
             <CalendarIcon className="h-6 w-6 text-accent" />
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-              {isUserView ? "My Bookings" : "Booking Requests"}
+              {isArtistViewer ? "Booking Requests" : "My Bookings"}
             </h1>
           </div>
 
+          {isArtistViewer && (
+            <div className="flex gap-2 mb-4">
+              {([
+                { k: "received", label: "Received", n: receivedRequests.length },
+                { k: "sent", label: "Sent", n: sentRequests.length },
+              ] as { k: "received" | "sent"; label: string; n: number }[]).map((t) => (
+                <Button
+                  key={t.k}
+                  size="sm"
+                  variant={tab === t.k ? "default" : "outline"}
+                  className="rounded-lg"
+                  onClick={() => setTab(t.k)}
+                >
+                  {t.label}
+                  <span className="ml-2 text-xs opacity-70">{t.n}</span>
+                </Button>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2 mb-6">
+
             {([
               { k: "all", label: "All" },
               { k: "pending", label: "Pending" },
