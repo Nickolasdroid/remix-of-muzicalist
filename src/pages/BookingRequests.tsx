@@ -220,7 +220,16 @@ const BookingRequests = () => {
     setSearchParams(next);
   };
 
-  const isUserView = viewerRole === "user";
+  const setTab = (t: "received" | "sent") => {
+    const next = new URLSearchParams(searchParams);
+    if (t === "received") next.delete("tab");
+    else next.set("tab", t);
+    next.delete("filter");
+    setSearchParams(next);
+  };
+
+  // "User view" = viewing requests I sent (as requester)
+  const isUserView = isSentView;
 
   return (
     <>
@@ -231,7 +240,7 @@ const BookingRequests = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(isUserView ? "/user-dashboard" : "/dashboard?tab=profile")}
+              onClick={() => navigate(isArtistViewer ? "/dashboard?tab=profile" : "/user-dashboard")}
               className="rounded-lg"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
@@ -242,11 +251,32 @@ const BookingRequests = () => {
           <div className="mb-4 flex items-center gap-2">
             <CalendarIcon className="h-6 w-6 text-accent" />
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-              {isUserView ? "My Bookings" : "Booking Requests"}
+              {isArtistViewer ? "Booking Requests" : "My Bookings"}
             </h1>
           </div>
 
+          {isArtistViewer && (
+            <div className="flex gap-2 mb-4">
+              {([
+                { k: "received", label: "Received", n: receivedRequests.length },
+                { k: "sent", label: "Sent", n: sentRequests.length },
+              ] as { k: "received" | "sent"; label: string; n: number }[]).map((t) => (
+                <Button
+                  key={t.k}
+                  size="sm"
+                  variant={tab === t.k ? "default" : "outline"}
+                  className="rounded-lg"
+                  onClick={() => setTab(t.k)}
+                >
+                  {t.label}
+                  <span className="ml-2 text-xs opacity-70">{t.n}</span>
+                </Button>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2 mb-6">
+
             {([
               { k: "all", label: "All" },
               { k: "pending", label: "Pending" },
