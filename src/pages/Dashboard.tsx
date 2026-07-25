@@ -371,7 +371,15 @@ const Dashboard = () => {
       ascending: false
     });
     if (data) setBookingRequests(data);
+    const { data: sent } = await supabase
+      .from('booking_requests')
+      .select('*')
+      .eq('requester_user_id', user.id)
+      .neq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    setSentBookingRequests(sent || []);
   };
+
   const loadAwaitingReplies = async () => {
     if (!user) return;
     // Only conversations tied to announcements owned by this artist (i.e. applications to their ads)
