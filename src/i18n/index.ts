@@ -30,8 +30,28 @@ const TRANSLATIONS_PREFIX = 'i18nextDynamic_';
 const TEXT_TRANSLATIONS_PREFIX = 'i18nextTextDynamic_';
 // Bump this when en.json changes meaningfully to invalidate cached AI translations.
 const TRANSLATIONS_VERSION = '1';
+const AI_TRANSLATION_PAUSE_KEY = 'i18nextAiTranslationPausedUntil';
+const AI_TRANSLATION_PAUSE_MS = 15 * 60 * 1000;
 
 const normalizeLanguage = (lang: string | null | undefined) => (lang || 'en').split('-')[0].toLowerCase();
+
+const isAiTranslationPaused = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return Number(sessionStorage.getItem(AI_TRANSLATION_PAUSE_KEY) || 0) > Date.now();
+  } catch {
+    return false;
+  }
+};
+
+const pauseAiTranslation = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(AI_TRANSLATION_PAUSE_KEY, String(Date.now() + AI_TRANSLATION_PAUSE_MS));
+  } catch {
+    /* storage unavailable — the server-side circuit breaker still applies */
+  }
+};
 
 const getStoredLanguage = () => {
   if (typeof window === 'undefined') return null;
@@ -214,6 +234,8 @@ if (typeof window !== 'undefined' && getInitialLanguage() === 'ro') {
 
 async function loadDynamicTranslations(lang: string): Promise<Record<string, any> | null> {
   const cacheKey = `${TRANSLATIONS_PREFIX}${lang}_v${TRANSLATIONS_VERSION}`;
+  if (isAiTranslationPaused()) return null;
+
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) return JSON.parse(cached);
@@ -239,6 +261,10 @@ async function loadDynamicTranslations(lang: string): Promise<Record<string, any
       return null;
     }
     const data = await res.json();
+    if (data?.degraded) {
+      pauseAiTranslation();
+      return null;
+    }
     if (data?.translations) {
       const safe = restoreBrandNameDeep(data.translations);
       try {
@@ -395,7 +421,7 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
 
   const missing = uniqueTexts.filter((text) => !overrides[text] && !staticMap[text] && !cache[text]);
-  if (missing.length) {
+  if (missing.length && !isAiTranslationPaused()) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     if (supabaseUrl) {
@@ -411,6 +437,10 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
         });
         if (!res.ok) continue;
         const data = await res.json();
+        if (data?.degraded) {
+          pauseAiTranslation();
+          break;
+        }
         const translated: string[] = Array.isArray(data?.translations) ? data.translations : [];
         batch.forEach((text, index) => {
           const raw =

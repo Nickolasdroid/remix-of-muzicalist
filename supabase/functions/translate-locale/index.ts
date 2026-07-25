@@ -24,6 +24,26 @@ const admin = createClient(
 );
 const normLang = (l: string) => (l || "en").split("-")[0].toLowerCase();
 
+// Avoid an error storm when the workspace AI allowance is exhausted. Edge
+// runtimes reuse isolates, so this also protects subsequent requests handled
+// by the same instance while the billing limit is being adjusted.
+const CREDIT_LIMIT_COOLDOWN_MS = 15 * 60 * 1000;
+let gatewayBlockedUntil = 0;
+
+const isCreditLimitResponse = (status: number, body: string) =>
+  (status === 402 || status === 403) &&
+  (body.includes("credit_limit_reached") || body.includes("Workspace credit limit reached"));
+
+const degradedResponse = (translations: unknown) =>
+  new Response(
+    JSON.stringify({
+      translations,
+      degraded: true,
+      reason: "credit_limit_reached",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+
 // Deterministic brand-name safeguard. Narrowly scoped: ONLY rewrites the
 // single translation-induced mutation we have observed ("Musicalist" /
 // "MUSICALIST") back to the canonical brand spelling. Unrelated words and
@@ -149,6 +169,10 @@ Deno.serve(async (req) => {
         );
       }
 
+      if (Date.now() < gatewayBlockedUntil) {
+        return degradedResponse(cleanTexts.map((text) => cached[text] ?? text));
+      }
+
       const systemPrompt =
         `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
         `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
@@ -175,6 +199,10 @@ Deno.serve(async (req) => {
       if (!aiRes.ok) {
         const text = await aiRes.text();
         console.error("AI gateway error", aiRes.status, text);
+        if (isCreditLimitResponse(aiRes.status, text)) {
+          gatewayBlockedUntil = Date.now() + CREDIT_LIMIT_COOLDOWN_MS;
+          return degradedResponse(cleanTexts.map((value) => cached[value] ?? value));
+        }
         return new Response(JSON.stringify({ error: "AI gateway error", status: aiRes.status, detail: text }), {
           status: aiRes.status,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -239,6 +267,10 @@ Deno.serve(async (req) => {
 
     const userPayload = JSON.stringify(flat);
 
+    if (Date.now() < gatewayBlockedUntil) {
+      return degradedResponse(null);
+    }
+
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -258,6 +290,10 @@ Deno.serve(async (req) => {
     if (!aiRes.ok) {
       const text = await aiRes.text();
       console.error("AI gateway error", aiRes.status, text);
+      if (isCreditLimitResponse(aiRes.status, text)) {
+        gatewayBlockedUntil = Date.now() + CREDIT_LIMIT_COOLDOWN_MS;
+        return degradedResponse(null);
+      }
       return new Response(
         JSON.stringify({ error: "AI gateway error", status: aiRes.status, detail: text }),
         { status: aiRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
