@@ -17,7 +17,7 @@ const Counties = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
-  // Check auth and get user's country
+  // Check auth and auto-select country from available artist countries (alphabetical)
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -26,13 +26,17 @@ const Counties = () => {
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: rows } = await supabase
         .from('profiles')
         .select('country')
-        .eq('id', user.id)
-        .maybeSingle();
+        .not('country', 'is', null)
+        .not('specialization', 'is', null);
 
-      setSelectedCountry(profile?.country || null);
+      const uniqueCountries = [...new Set((rows || []).map((r: any) => r.country))]
+        .filter(Boolean)
+        .sort((a: string, b: string) => a.localeCompare(b));
+
+      setSelectedCountry(uniqueCountries[0] || null);
     };
     checkAuth();
   }, [navigate]);
