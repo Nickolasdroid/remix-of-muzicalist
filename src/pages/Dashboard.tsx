@@ -3594,7 +3594,7 @@ const Dashboard = () => {
                             <div className="flex items-center justify-between mb-4 gap-2">
                               <h3 className="text-xl font-display font-bold flex items-center gap-2">
                                 <CalendarIcon className="h-5 w-5 text-accent" />
-                                Booking Requests
+                                <span translate="no" className="notranslate">Booking Requests</span>
                                 {(() => {
                                   const todayStr = new Date().toISOString().split("T")[0];
                                   const newCount = bookingRequests.filter(
@@ -3698,7 +3698,7 @@ const Dashboard = () => {
                                   <div className="flex items-center justify-between mb-4 gap-2">
                                     <h3 className="text-xl font-display font-bold flex items-center gap-2">
                                       <CalendarCheck className="h-5 w-5 text-accent" />
-                                      My Bookings
+                                      <span translate="no" className="notranslate">My Bookings</span>
                                     </h3>
                                     {sentBookingRequests.length > 0 && (
                                       <Button
