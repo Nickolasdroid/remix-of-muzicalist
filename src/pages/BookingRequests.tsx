@@ -47,7 +47,8 @@ const BookingRequests = () => {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [requests, setRequests] = useState<any[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<any[]>([]);
+  const [sentRequests, setSentRequests] = useState<any[]>([]);
   const [artistProfiles, setArtistProfiles] = useState<Record<string, { stage_name?: string | null; avatar_url?: string | null }>>({});
   const [selected, setSelected] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
@@ -55,6 +56,7 @@ const BookingRequests = () => {
   const [viewerRole, setViewerRole] = useState<"user" | "artist" | null>(null);
 
   const filter = (searchParams.get("filter") as FilterKey) || "all";
+  const tab = (searchParams.get("tab") as "received" | "sent") || "received";
 
   const load = async () => {
     const {
@@ -75,33 +77,42 @@ const BookingRequests = () => {
     const isArtist = userType !== "user";
     setViewerRole(isArtist ? "artist" : "user");
 
-    // Query booking_requests using the SAME source/filter as the dashboards:
-    // - Regular users: requests they sent (requester_user_id = me)
-    // - Artists: requests received on their profile (profile_id = me)
-    const column = isArtist ? "profile_id" : "requester_user_id";
-    const { data } = await supabase
+    // Requests sent by me (as a requester) — available for users AND artists
+    const { data: sentData } = await supabase
       .from("booking_requests")
       .select("*")
-      .eq(column, user.id)
+      .eq("requester_user_id", user.id)
+      .neq("profile_id", user.id)
       .order("created_at", { ascending: false });
-    const rows = data || [];
-    setRequests(rows);
+    const sent = sentData || [];
+    setSentRequests(sent);
 
-    // For regular users, resolve artist display info
-    if (!isArtist && rows.length > 0) {
-      const artistIds = Array.from(new Set(rows.map((r: any) => r.profile_id).filter(Boolean)));
-      if (artistIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, stage_name, avatar_url")
-          .in("id", artistIds);
-        const map: Record<string, any> = {};
-        (profiles || []).forEach((p: any) => (map[p.id] = p));
-        setArtistProfiles(map);
-      }
+    // Requests received on my artist profile
+    let received: any[] = [];
+    if (isArtist) {
+      const { data: receivedData } = await supabase
+        .from("booking_requests")
+        .select("*")
+        .eq("profile_id", user.id)
+        .order("created_at", { ascending: false });
+      received = receivedData || [];
+      setReceivedRequests(received);
+    }
+
+    // Resolve artist display info for sent requests
+    const artistIds = Array.from(new Set(sent.map((r: any) => r.profile_id).filter(Boolean)));
+    if (artistIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, stage_name, avatar_url")
+        .in("id", artistIds);
+      const map: Record<string, any> = {};
+      (profiles || []).forEach((p: any) => (map[p.id] = p));
+      setArtistProfiles(map);
     }
     setLoading(false);
   };
+
 
   useEffect(() => {
     load();
