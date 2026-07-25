@@ -135,6 +135,12 @@ const BookingRequests = () => {
     return r.status;
   };
 
+
+  const isArtistViewer = viewerRole === "artist";
+  // Sent view = user account, or artist looking at the "Sent" tab
+  const isSentView = !isArtistViewer || tab === "sent";
+  const requests = isSentView ? sentRequests : receivedRequests;
+
   const filtered = useMemo(() => {
     if (filter === "all") return requests;
     return requests.filter((r) => categorize(r) === filter);
@@ -148,6 +154,7 @@ const BookingRequests = () => {
     });
     return c;
   }, [requests]);
+
 
   const formatDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split("-").map(Number);
