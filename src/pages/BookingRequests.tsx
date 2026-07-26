@@ -234,7 +234,7 @@ const BookingRequests = () => {
   return (
     <>
       <Navigation mobileTitle="Booking Requests" />
-      <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
+      <main translate="no" className="notranslate md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-3xl">
           <div className="hidden md:flex items-center gap-2 mb-6">
             <Button
@@ -355,7 +355,7 @@ const BookingRequests = () => {
       </main>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md rounded-lg">
+        <DialogContent translate="no" className="notranslate max-w-md rounded-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5 text-accent" />

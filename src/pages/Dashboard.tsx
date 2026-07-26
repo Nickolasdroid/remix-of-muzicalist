@@ -3756,7 +3756,7 @@ const Dashboard = () => {
 
                           {/* Booking Request Detail Dialog */}
                           <Dialog open={showBookingDetailDialog} onOpenChange={setShowBookingDetailDialog}>
-                            <DialogContent className="max-w-md rounded-lg">
+                            <DialogContent translate="no" className="notranslate max-w-md rounded-lg">
                               <DialogHeader>
                                 <DialogTitle className="flex items-center gap-2">
                                   <CalendarIcon className="h-5 w-5 text-accent" />
