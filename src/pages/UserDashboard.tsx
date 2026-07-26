@@ -644,7 +644,7 @@ const UserDashboard = () => {
                 </div>
 
                 {/* My Bookings */}
-                <div translate="no" className="notranslate">
+                <div>
                   <div className="flex items-center justify-between gap-3 mb-3">
                     <h2 className="text-xl font-display font-bold flex items-center gap-2">
                       <CalendarIcon className="h-5 w-5 text-accent" />
