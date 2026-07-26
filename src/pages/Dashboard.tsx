@@ -3590,11 +3590,11 @@ const Dashboard = () => {
                           </div>
 
                           {/* Booking Requests Section */}
-                          <div translate="no" className="notranslate mt-8 pt-8 border-t border-border">
+                          <div className="mt-8 pt-8 border-t border-border">
                             <div className="flex items-center justify-between mb-4 gap-2">
                               <h3 className="text-xl font-display font-bold flex items-center gap-2">
                                 <CalendarIcon className="h-5 w-5 text-accent" />
-                                <span translate="no" className="notranslate">Booking Requests</span>
+                                Booking Requests
                                 {(() => {
                                   const todayStr = new Date().toISOString().split("T")[0];
                                   const newCount = bookingRequests.filter(
@@ -3672,7 +3672,7 @@ const Dashboard = () => {
                           </div>
 
                           {/* Sent Booking Requests (requests this artist sent to other artists) */}
-                          <div translate="no" className="notranslate mt-8 pt-8 border-t border-border">
+                          <div className="mt-8 pt-8 border-t border-border">
                             {(() => {
                               const todayD = new Date();
                               todayD.setHours(0, 0, 0, 0);
@@ -3698,7 +3698,7 @@ const Dashboard = () => {
                                   <div className="flex items-center justify-between mb-4 gap-2">
                                     <h3 className="text-xl font-display font-bold flex items-center gap-2">
                                       <CalendarCheck className="h-5 w-5 text-accent" />
-                                      <span translate="no" className="notranslate">My Bookings</span>
+                                      My Bookings
                                     </h3>
                                     {sentBookingRequests.length > 0 && (
                                       <Button
@@ -3756,7 +3756,7 @@ const Dashboard = () => {
 
                           {/* Booking Request Detail Dialog */}
                           <Dialog open={showBookingDetailDialog} onOpenChange={setShowBookingDetailDialog}>
-                            <DialogContent translate="no" className="notranslate max-w-md rounded-lg">
+                            <DialogContent className="max-w-md rounded-lg">
                               <DialogHeader>
                                 <DialogTitle className="flex items-center gap-2">
                                   <CalendarIcon className="h-5 w-5 text-accent" />
