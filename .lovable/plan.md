@@ -1,29 +1,31 @@
-# Selector de limbă — plan
+## Ce am verificat
 
-## Concluzia analizei
+- Nu există nicăieri în aplicație un buton de „șterge poza de profil”. Funcția `handleRemoveAvatar` din `src/pages/Dashboard.tsx` (linia 746) există, dar nu este folosită în interfață — este cod mort.
+- La înregistrarea ca artist (`src/pages/RegisterArtist.tsx`), pasul 3 verifică doar că utilizatorul a *selectat* o imagine (`imageSrc`), nu și că imaginea a fost efectiv decupată și încărcată.
+- Uploadul propriu-zis se face după crearea contului, într-un bloc `try/catch` care doar scrie un avertisment în consolă. Dacă apelul eșuează — sau dacă zona de decupare nu a fost calculată — contul se creează oricum, fără poză.
+- În baza de date, cele 4 conturi fără poză (DJ VAELT, DjMarcu, Dj markuss, Elys) provin toate din înregistrarea pe email, fără o înregistrare în așteptare asociată. Deci nu s-a șters nimic: poza pur și simplu nu a ajuns niciodată pe server.
 
-În codul actual, selectorul de limbă **există deja doar în Settings** (`src/components/SettingsTab.tsx`, secțiunea „Language"). Nu există selector în `Header`/`Navbar`/bottom nav. Detectarea automată din browser + IP funcționează deja la boot (`src/i18n/index.ts` cu prioritatea `localStorage → IP → navigator.languages → 'en'`).
+Concluzie: nu a fost o ștergere, ci o scăpare în fluxul de înregistrare.
 
-Varianta B aleasă = **starea curentă**. Nu sunt necesare modificări de cod.
+## Ce vom face
 
-## Răspunsuri la întrebări
+1. **Validare reală la pasul 3 din înregistrare**
+   - Pe lângă `imageSrc`, se verifică și existența zonei de decupare; dacă lipsește, se calculează implicit (imaginea întreagă) în loc să fie ignorată.
 
-1. **Câți useri ar fi afectați fără selector (varianta C)?** Non-zero dar minoritar: useri cu browser într-o limbă și preferință pentru alta (turiști, expați, dispozitive partajate, useri care preferă engleza deși browserul e RO), plus useri cu limbă de browser nesuportată care ar rămâne blocați pe `en` fără posibilitate de corecție.
+2. **Uploadul devine blocant, nu „best effort”**
+   - Înainte de finalizare, imaginea decupată se generează și se validează.
+   - Dacă apelul către funcția de upload eșuează, se reîncearcă automat de câteva ori.
+   - Dacă tot eșuează, utilizatorul primește un mesaj clar de eroare și rămâne pe pas, în loc ca înregistrarea să continue fără poză.
 
-2. **Selectorul poate fi mutat doar în Settings și eliminat din header?** Este deja acolo și deja lipsește din header — nimic de făcut.
+3. **Verificare finală**
+   - După upload se confirmă că profilul are efectiv poză salvată; altfel se semnalează eroarea.
 
-3. **Modificări concrete pentru varianta B:** zero. Toate mecanismele cerute există: auto-detect la boot, override persistat în `localStorage`, UI de schimbare în Settings, confirmare cu `AlertDialog`, listă `WORLD_LANGUAGES` cu search.
+4. **Curățare**
+   - Se elimină funcția nefolosită de ștergere a pozei din dashboard, ca să nu poată fi reactivată accidental. Rămâne doar înlocuirea pozei.
 
-4. **Motiv tehnic pentru a păstra selectorul vizibil:** override pentru limbi nesuportate/greșit detectate, semnal de preferință persistat, escape hatch când traducerea AI eșuează pe o limbă. Toate se rezolvă cu selectorul în Settings — nu e nevoie să fie în header.
+Conturile existente fără poză rămân neatinse, conform alegerii tale.
 
-## Recomandare
+## Detalii tehnice
 
-**B — Selector doar în Settings/Profile** (deja implementat). Cea mai bună pentru MUZICALIST:
-- Interfață curată în header (deja aglomerat pe mobile).
-- Detectare automată acoperă >90% din cazuri fără interacțiune.
-- Override manual disponibil pentru cazurile edge, fără să polueze UI-ul principal.
-- Zero risc de regresie.
-
-## Acțiuni
-
-Niciuna. Dacă vrei totuși îmbunătățiri incrementale (ex. buton „Reset to browser default" în Settings, filtrare `WORLD_LANGUAGES` la limbile prioritare), spune-mi și fac un plan separat.
+- Fișiere: `src/pages/RegisterArtist.tsx` (validare pas 3, `getAvatarBase64`, `handleSubmit`), `src/pages/Dashboard.tsx` (ștergere cod mort `handleRemoveAvatar`).
+- Fără modificări de bază de date și fără modificări la funcția `upload-artist-avatar`.

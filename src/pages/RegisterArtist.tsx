@@ -372,23 +372,32 @@ const RegisterArtist = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area | null): Promise<Blob> => {
     const image = new Image();
     image.src = imageSrc;
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       image.onload = resolve;
+      image.onerror = () => reject(new Error('Failed to load image'));
     });
+    // Fall back to the full image when the crop area was never computed.
+    const crop: Area = pixelCrop ?? {
+      x: 0,
+      y: 0,
+      width: image.naturalWidth || image.width,
+      height: image.naturalHeight || image.height,
+    };
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       throw new Error('Failed to get canvas context');
     }
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise((resolve) => {
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+    return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob);
+        else reject(new Error('Failed to process image'));
       }, 'image/jpeg', 0.95);
     });
   };
@@ -423,28 +432,51 @@ const RegisterArtist = () => {
     return map[spec] || spec;
   };
 
-  const getAvatarBase64 = async (): Promise<string | null> => {
-    if (!imageSrc || !croppedAreaPixels) return null;
-    try {
-      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      return await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          resolve(result.split(",")[1] ?? "");
-        };
-        reader.onerror = () => reject(new Error("Failed to read image"));
-        reader.readAsDataURL(croppedBlob);
-      });
-    } catch (e) {
-      console.warn("Avatar processing failed:", e);
-      return null;
+  const getAvatarBase64 = async (): Promise<string> => {
+    if (!imageSrc) throw new Error("Profile photo is required");
+    const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        resolve(result.split(",")[1] ?? "");
+      };
+      reader.onerror = () => reject(new Error("Failed to read image"));
+      reader.readAsDataURL(croppedBlob);
+    });
+    if (!base64) throw new Error("Failed to process profile photo");
+    return base64;
+  };
+
+  const uploadAvatarWithRetry = async (userId: string, base64: string) => {
+    let lastError: any = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { data, error } = await supabase.functions.invoke("upload-artist-avatar", {
+          body: {
+            user_id: userId,
+            email: formData.email,
+            image_base64: base64,
+            content_type: "image/jpeg",
+          },
+        });
+        if (error) throw error;
+        if (!data?.avatar_url) throw new Error(data?.error || "Avatar upload failed");
+        return data.avatar_url as string;
+      } catch (e) {
+        lastError = e;
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+      }
     }
+    throw lastError instanceof Error ? lastError : new Error("Avatar upload failed");
   };
 
   const handleFreeSignup = async () => {
     setIsSubmitting(true);
     try {
+      // Profile photo is mandatory — prepare it BEFORE creating the account.
+      const avatarBase64 = await getAvatarBase64();
+
       const redirectUrl = `${window.location.origin}/login`;
       const countryName = getCountryNameByCode(formData.country) || formData.country;
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -469,23 +501,7 @@ const RegisterArtist = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("User creation failed");
 
-      if (imageSrc && croppedAreaPixels) {
-        try {
-          const base64 = await getAvatarBase64();
-          if (base64) {
-            await supabase.functions.invoke("upload-artist-avatar", {
-              body: {
-                user_id: authData.user.id,
-                email: formData.email,
-                image_base64: base64,
-                content_type: "image/jpeg",
-              },
-            });
-          }
-        } catch (avatarErr) {
-          console.warn("Avatar upload failed:", avatarErr);
-        }
-      }
+      await uploadAvatarWithRetry(authData.user.id, avatarBase64);
 
       try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
 
