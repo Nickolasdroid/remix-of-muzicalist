@@ -9,7 +9,7 @@ import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PlanBadge from "@/components/PlanBadge";
-import NewArtistBadge from "@/components/NewArtistBadge";
+
 
 interface Artist {
   id: string;
