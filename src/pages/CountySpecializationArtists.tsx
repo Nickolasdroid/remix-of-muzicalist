@@ -9,7 +9,7 @@ import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PlanBadge from "@/components/PlanBadge";
-import NewArtistBadge from "@/components/NewArtistBadge";
+
 
 interface Artist {
   id: string;
@@ -127,7 +127,7 @@ const CountySpecializationArtists = () => {
                 </div>
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-base font-medium text-foreground notranslate truncate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
-                  <NewArtistBadge createdAt={artist.created_at} variant="inline" />
+                  
                 </div>
               </Link>
             ))}
