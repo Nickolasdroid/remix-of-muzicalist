@@ -474,6 +474,9 @@ const RegisterArtist = () => {
   const handleFreeSignup = async () => {
     setIsSubmitting(true);
     try {
+      // Profile photo is mandatory — prepare it BEFORE creating the account.
+      const avatarBase64 = await getAvatarBase64();
+
       const redirectUrl = `${window.location.origin}/login`;
       const countryName = getCountryNameByCode(formData.country) || formData.country;
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -498,23 +501,7 @@ const RegisterArtist = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("User creation failed");
 
-      if (imageSrc && croppedAreaPixels) {
-        try {
-          const base64 = await getAvatarBase64();
-          if (base64) {
-            await supabase.functions.invoke("upload-artist-avatar", {
-              body: {
-                user_id: authData.user.id,
-                email: formData.email,
-                image_base64: base64,
-                content_type: "image/jpeg",
-              },
-            });
-          }
-        } catch (avatarErr) {
-          console.warn("Avatar upload failed:", avatarErr);
-        }
-      }
+      await uploadAvatarWithRetry(authData.user.id, avatarBase64);
 
       try { sessionStorage.removeItem("artistRegistrationDraft"); } catch {}
 
