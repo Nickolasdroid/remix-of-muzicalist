@@ -134,14 +134,12 @@ const CountyArtists = () => {
                     <h2 className="text-lg md:text-xl font-sans font-bold uppercase text-white">
                       {category.displayTitle} ({categoryArtists.length})
                     </h2>
-                    <Link to={`/counties/${county}/${category.key}`}>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="rounded-full border-accent text-accent hover:bg-accent hover:text-accent-foreground h-8 w-8 md:h-10 md:w-10"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </Button>
+                    <Link
+                      to={`/counties/${county}/${category.key}`}
+                      className="inline-flex items-center gap-1 text-[13px] md:text-sm font-medium text-accent hover:text-accent/80 active:opacity-70 transition-colors"
+                    >
+                      View all
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                   
