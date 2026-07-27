@@ -1,6 +1,6 @@
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
