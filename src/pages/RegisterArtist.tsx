@@ -372,23 +372,32 @@ const RegisterArtist = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area | null): Promise<Blob> => {
     const image = new Image();
     image.src = imageSrc;
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       image.onload = resolve;
+      image.onerror = () => reject(new Error('Failed to load image'));
     });
+    // Fall back to the full image when the crop area was never computed.
+    const crop: Area = pixelCrop ?? {
+      x: 0,
+      y: 0,
+      width: image.naturalWidth || image.width,
+      height: image.naturalHeight || image.height,
+    };
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       throw new Error('Failed to get canvas context');
     }
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise((resolve) => {
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+    return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob);
+        else reject(new Error('Failed to process image'));
       }, 'image/jpeg', 0.95);
     });
   };
