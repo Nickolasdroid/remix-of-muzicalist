@@ -1222,28 +1222,30 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-background">
-                  <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <User className="h-5 w-5 md:h-4 md:w-4" />
-                    <span className="hidden lg:inline">Details</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <FileText className="h-5 w-5 md:h-4 md:w-4" />
-                    <span className="hidden lg:inline">Posts</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
-                    <span className="hidden lg:inline">Announcements</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <Images className="h-5 w-5 md:h-4 md:w-4" />
-                    <span className="hidden lg:inline">Gallery</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
-                    <span className="hidden lg:inline">Calendar</span>
-                  </TabsTrigger>
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 h-auto p-1 gap-1 rounded-[18px] mx-0 w-full bg-[#111111] border border-[#2A2A2A] shadow-sm">
+                  {[
+                    { value: "details", Icon: User, label: "Details" },
+                    { value: "posts", Icon: FileText, label: "Posts" },
+                    { value: "announcements", Icon: Megaphone, label: "Announcements" },
+                    { value: "gallery", Icon: Images, label: "Gallery" },
+                    { value: "calendar", Icon: CalendarIcon, label: "Calendar" },
+                  ].map(({ value, Icon, label }) => (
+                    <TabsTrigger
+                      key={value}
+                      value={value}
+                      aria-label={label}
+                      className="relative flex flex-col items-center justify-center gap-1 px-2 py-2 border-0 rounded-[14px] bg-transparent shadow-none text-[#E5E5E5] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-[#D4AF37]"
+                    >
+                      <Icon className="h-[22px] w-[22px] md:h-5 md:w-5 transition-colors duration-200 ease-in-out" />
+                      <span
+                        aria-hidden="true"
+                        className="block h-[3px] w-5 rounded-full bg-[#D4AF37] opacity-0 scale-x-0 origin-center transition-all duration-200 ease-in-out data-[active=true]:opacity-100 data-[active=true]:scale-x-100"
+                        data-active={activeTab === value}
+                      />
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
+
 
 
                 {/* Details Tab */}
