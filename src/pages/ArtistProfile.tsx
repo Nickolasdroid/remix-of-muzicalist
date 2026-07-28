@@ -1222,28 +1222,34 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 p-1 rounded-none md:rounded-lg -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-background">
-                  <TabsTrigger value="details" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <User className="h-5 w-5 md:h-4 md:w-4" />
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-[#111111] border-y md:border border-[#2A2A2A]">
+                  <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Details</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
-                  <TabsTrigger value="posts" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <FileText className="h-5 w-5 md:h-4 md:w-4" />
+                  <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Posts</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
-                  <TabsTrigger value="announcements" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <Megaphone className="h-5 w-5 md:h-4 md:w-4" />
+                  <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Announcements</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
-                  <TabsTrigger value="gallery" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <Images className="h-5 w-5 md:h-4 md:w-4" />
+                  <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Gallery</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
-                  <TabsTrigger value="calendar" className="flex items-center justify-center gap-2 px-2 md:px-4 border border-muted-foreground/30 data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:border-muted-foreground/60">
-                    <CalendarIcon className="h-5 w-5 md:h-4 md:w-4" />
+                  <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <CalendarIcon strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Calendar</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
                 </TabsList>
+
 
 
                 {/* Details Tab */}
