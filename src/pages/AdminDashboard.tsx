@@ -87,7 +87,16 @@ const AdminDashboard = () => {
               <TabsTrigger value="artists">Artists ({artistsCount})</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
               <TabsTrigger value="communications">Communications</TabsTrigger>
+              <TabsTrigger value="reports" className="gap-2">
+                Reports
+                {unreadReports > 0 && (
+                  <CountBadge className="rounded-full px-1.5 py-0 text-[10px]">
+                    {unreadReports}
+                  </CountBadge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="verifications">Verifications</TabsTrigger>
+
             </TabsList>
 
             <TabsContent value="users" className="mt-4">
