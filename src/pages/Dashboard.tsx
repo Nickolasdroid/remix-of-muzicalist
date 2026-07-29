@@ -60,6 +60,7 @@ import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
+import i18n from "@/i18n";
 const Dashboard = () => {
   const {
     toast
@@ -1933,7 +1934,14 @@ const Dashboard = () => {
                               <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               <span className="text-base md:text-2xl font-bold text-foreground">
                                 {formData.careerStartYear
-                                  ? `${Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear))} ${Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear)) === 1 ? 'year' : 'years'}`
+                                  ? (() => {
+                                      const yrs = Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear));
+                                      const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                                      const unit = isRo
+                                        ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                                        : (yrs === 1 ? 'year' : 'years');
+                                      return `${yrs} ${unit}`;
+                                    })()
                                   : '—'}
                               </span>
                             </div>
