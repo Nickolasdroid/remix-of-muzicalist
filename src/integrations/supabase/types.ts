@@ -1690,6 +1690,169 @@ export type Database = {
           },
         ]
       }
+      report_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          from_value: Json | null
+          id: string
+          report_id: string
+          to_value: Json | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          from_value?: Json | null
+          id?: string
+          report_id: string
+          to_value?: Json | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          from_value?: Json | null
+          id?: string
+          report_id?: string
+          to_value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_events_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_notes: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          body: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          report_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          report_id: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          report_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_notes_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          app_version: string | null
+          artist_id: string | null
+          assigned_to: string | null
+          attachments: Json
+          browser: string | null
+          country: string | null
+          created_at: string
+          description: string
+          device: string | null
+          id: string
+          is_read: boolean
+          language: string | null
+          os: string | null
+          page_url: string | null
+          priority: string
+          reporter_email: string | null
+          reporter_name: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          role: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          app_version?: string | null
+          artist_id?: string | null
+          assigned_to?: string | null
+          attachments?: Json
+          browser?: string | null
+          country?: string | null
+          created_at?: string
+          description: string
+          device?: string | null
+          id?: string
+          is_read?: boolean
+          language?: string | null
+          os?: string | null
+          page_url?: string | null
+          priority?: string
+          reporter_email?: string | null
+          reporter_name?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          role?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          app_version?: string | null
+          artist_id?: string | null
+          assigned_to?: string | null
+          attachments?: Json
+          browser?: string | null
+          country?: string | null
+          created_at?: string
+          description?: string
+          device?: string | null
+          id?: string
+          is_read?: boolean
+          language?: string | null
+          os?: string | null
+          page_url?: string | null
+          priority?: string
+          reporter_email?: string | null
+          reporter_name?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          role?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string | null

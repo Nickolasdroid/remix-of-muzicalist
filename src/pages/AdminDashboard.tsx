@@ -8,7 +8,10 @@ import AdminVerificationsTab from "@/components/AdminVerificationsTab";
 import CommunicationsPanel from "@/components/admin/CommunicationsPanel";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import AdminArtistsTab from "@/components/admin/AdminArtistsTab";
+import AdminReportsTab from "@/components/admin/AdminReportsTab";
+import { Badge as CountBadge } from "@/components/ui/badge";
 import type { AdminProfile } from "@/components/admin/adminProfileTypes";
+
 
 interface RoleRow {
   user_id: string;
@@ -35,9 +38,30 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
+  const [unreadReports, setUnreadReports] = useState(0);
+
+  const fetchUnreadReports = async () => {
+    const { count } = await supabase
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .eq("is_read", false);
+    setUnreadReports(count ?? 0);
+  };
+
   useEffect(() => {
     fetchAll();
+    fetchUnreadReports();
+    const channel = supabase
+      .channel("admin-reports-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => {
+        fetchUnreadReports();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
 
   const subscribers = profiles.filter((p) => !!p.stripe_subscription_id);
   const usersCount = profiles.filter((p) => roles[p.id] === "user").length;
@@ -63,7 +87,16 @@ const AdminDashboard = () => {
               <TabsTrigger value="artists">Artists ({artistsCount})</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
               <TabsTrigger value="communications">Communications</TabsTrigger>
+              <TabsTrigger value="reports" className="gap-2">
+                Reports
+                {unreadReports > 0 && (
+                  <CountBadge className="rounded-full px-1.5 py-0 text-[10px]">
+                    {unreadReports}
+                  </CountBadge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="verifications">Verifications</TabsTrigger>
+
             </TabsList>
 
             <TabsContent value="users" className="mt-4">
@@ -130,6 +163,11 @@ const AdminDashboard = () => {
             <TabsContent value="communications" className="mt-4">
               <CommunicationsPanel />
             </TabsContent>
+
+            <TabsContent value="reports" className="mt-4">
+              <AdminReportsTab onUnreadChange={fetchUnreadReports} />
+            </TabsContent>
+
 
             <TabsContent value="verifications" className="mt-4">
               <AdminVerificationsTab />
