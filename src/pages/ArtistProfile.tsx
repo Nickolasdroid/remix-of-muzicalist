@@ -1132,7 +1132,14 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                     <span className="text-base md:text-2xl font-bold text-foreground">
                       {artist.career_start_year
-                        ? `${Math.max(1, new Date().getFullYear() - artist.career_start_year)} ${Math.max(1, new Date().getFullYear() - artist.career_start_year) === 1 ? 'year' : 'years'}`
+                        ? (() => {
+                            const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year);
+                            const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                            const unit = isRo
+                              ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                              : (yrs === 1 ? 'year' : 'years');
+                            return `${yrs} ${unit}`;
+                          })()
                         : '—'}
                     </span>
                   </div>
