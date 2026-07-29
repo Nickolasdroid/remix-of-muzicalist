@@ -49,7 +49,10 @@ const TRANSLATABLE_ATTRIBUTES = ["placeholder", "title", "aria-label"] as const;
 
 const shouldTranslateText = (value: string) => {
   const text = value.replace(/\s+/g, " ").trim();
-  if (text.length < 2 || text.length > 220) return false;
+  // Ceiling raised from 220 -> 5000: long paragraphs (Terms, Privacy, help
+  // copy) were silently skipped and left in English. 5000 still guards against
+  // accidentally translating giant concatenated blobs.
+  if (text.length < 2 || text.length > 5000) return false;
   if (!/[\p{L}]/u.test(text)) return false;
   if (/^[@#]?\d+$/.test(text)) return false;
   if (/^(https?:\/\/|www\.|[\w.+-]+@[\w.-]+\.)/i.test(text)) return false;
