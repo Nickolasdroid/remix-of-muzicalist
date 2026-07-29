@@ -164,6 +164,11 @@ const AdminDashboard = () => {
               <CommunicationsPanel />
             </TabsContent>
 
+            <TabsContent value="reports" className="mt-4">
+              <AdminReportsTab onUnreadChange={fetchUnreadReports} />
+            </TabsContent>
+
+
             <TabsContent value="verifications" className="mt-4">
               <AdminVerificationsTab />
             </TabsContent>
