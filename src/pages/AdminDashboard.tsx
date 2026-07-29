@@ -38,9 +38,30 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
+  const [unreadReports, setUnreadReports] = useState(0);
+
+  const fetchUnreadReports = async () => {
+    const { count } = await supabase
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .eq("is_read", false);
+    setUnreadReports(count ?? 0);
+  };
+
   useEffect(() => {
     fetchAll();
+    fetchUnreadReports();
+    const channel = supabase
+      .channel("admin-reports-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "reports" }, () => {
+        fetchUnreadReports();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
 
   const subscribers = profiles.filter((p) => !!p.stripe_subscription_id);
   const usersCount = profiles.filter((p) => roles[p.id] === "user").length;
