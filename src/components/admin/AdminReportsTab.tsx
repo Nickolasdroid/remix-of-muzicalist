@@ -512,7 +512,7 @@ export default function AdminReportsTab({ onUnreadChange }: { onUnreadChange?: (
         title="Delete report?"
         description="This permanently removes the report and its internal notes."
         confirmLabel="Delete"
-        destructive
+        tone="danger"
         onConfirm={deleteReport}
       />
     </div>
