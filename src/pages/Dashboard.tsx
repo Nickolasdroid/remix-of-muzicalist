@@ -2121,6 +2121,38 @@ const Dashboard = () => {
                           </>
               }
 
+                        {/* Number of members — Bands only */}
+                        {formData.specialization?.toLowerCase() === 'band' && <>
+                            <Separator />
+                            <div className="group">
+                              <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                  <Users className="h-5 w-5 text-accent" />
+                                  Number of members
+                                </h3>
+                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>}
+                              </div>
+                              {editingField === 'bandMembers' ? <div className="space-y-2">
+                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className="max-w-[160px]" />
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => saveField('bandMembers')} disabled={isSaving}>
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div> : formData.bandMembers ? <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                                    {formData.bandMembers} members
+                                  </Badge> : <p className="text-muted-foreground italic text-sm">Not specified</p>}
+                            </div>
+                          </>}
+
+
                         <Separator />
 
                         {/* Details Grid */}
