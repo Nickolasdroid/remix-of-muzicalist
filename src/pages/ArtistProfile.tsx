@@ -1216,11 +1216,8 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
                       }`}
                     >
-                      {isFollowing ? (
-                        <><UserCheck className="mr-1.5 h-4 w-4" /> Following</>
-                      ) : (
-                        <><UserPlus className="mr-1.5 h-4 w-4" /> Follow</>
-                      )}
+                      {isFollowing ? "Following" : "Follow"}
+
                     </Button>
                   )}
                 </div>
