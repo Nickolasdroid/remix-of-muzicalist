@@ -1304,6 +1304,23 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     </>
               }
 
+                  {/* Members count for Bands */}
+                  {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
+                    <>
+                      <Separator />
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                          <Users className="h-5 w-5 text-accent" />
+                          Members:
+                        </h2>
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          {artist.band_members} members
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+
+
                   <Separator />
 
                   {/* Details Grid */}
