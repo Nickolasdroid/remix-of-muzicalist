@@ -1998,33 +1998,33 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-[#111111] border-y md:border border-[#2A2A2A]`}>
+                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
                         {!isAdmin && (
-                          <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                          <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                             <span className="hidden lg:inline">Details</span>
                             <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                           </TabsTrigger>
                         )}
-                        <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                        <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                           <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                           <span className="hidden lg:inline">Posts</span>
                           <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                         </TabsTrigger>
-                        <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                        <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                           <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                           <span className="hidden lg:inline">Announcements</span>
                           <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                         </TabsTrigger>
                         {!isAdmin && (
-                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                             <span className="hidden lg:inline">Gallery</span>
                             <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                           </TabsTrigger>
                         )}
                         {!isAdmin && (
-                          <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-[#CFCFCF] transition-colors duration-200 ease-in-out hover:bg-white/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-none">
+                          <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <CalendarIcon strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                             <span className="hidden lg:inline">Calendar</span>
                             <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
