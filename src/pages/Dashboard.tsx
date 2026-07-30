@@ -60,7 +60,6 @@ import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
-import i18n from "@/i18n";
 const Dashboard = () => {
   const {
     toast
