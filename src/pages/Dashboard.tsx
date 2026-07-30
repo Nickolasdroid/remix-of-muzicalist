@@ -182,6 +182,7 @@ const Dashboard = () => {
     tiktokUrl: "",
     spotifyUrl: "",
     instruments: "",
+    bandMembers: "",
     hidePhone: false,
     hideEmail: false
   });
