@@ -1086,13 +1086,13 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.stage_name}
                     </h1>
-                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap name-overlay-outline">
                       {artist.specialization && <span className="font-medium">{translateSpecialization(artist.specialization)}</span>}
                       {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                       {artist.county && <span className="truncate">{artist.county}</span>}
                       {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                     </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 name-overlay-outline">
                       <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
                       <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
                       <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
