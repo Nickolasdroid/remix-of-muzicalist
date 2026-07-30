@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
+import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
@@ -54,6 +54,7 @@ interface Profile {
   county: string;
   country: string | null;
   specialization: string | null;
+  band_members?: number | null;
   
   music_genres: string | null;
   career_start_year: number | null;
@@ -305,7 +306,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       const [{ data: profileData, error: profileError }, { data: contactRows }] = await Promise.all([
         supabase
           .from('profiles')
-          .select('id, slug, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
+          .select('id, slug, first_name, last_name, stage_name, avatar_url, cover_url, cover_theme, bio, country, county, specialization, band_members, career_start_year, number_of_events, music_genres, instruments, estimated_price, facebook_url, instagram_url, youtube_url, tiktok_url, spotify_url, hide_email, hide_phone, allow_promotion, plan, is_active, is_verified, created_at, updated_at')
           .eq('id', id)
           .maybeSingle(),
         (supabase as any).rpc('get_profile_contact', { _profile_id: id }),
@@ -1302,6 +1303,23 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       </div>
                     </>
               }
+
+                  {/* Members count for Bands */}
+                  {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
+                    <>
+                      <Separator />
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                          <Users className="h-5 w-5 text-accent" />
+                          Members:
+                        </h2>
+                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                          {artist.band_members} members
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+
 
                   <Separator />
 

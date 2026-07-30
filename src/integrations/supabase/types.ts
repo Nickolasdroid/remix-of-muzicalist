@@ -1517,6 +1517,7 @@ export type Database = {
           admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
+          band_members: number | null
           billing: string | null
           bio: string | null
           career_start_year: number | null
@@ -1573,6 +1574,7 @@ export type Database = {
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
+          band_members?: number | null
           billing?: string | null
           bio?: string | null
           career_start_year?: number | null
@@ -1629,6 +1631,7 @@ export type Database = {
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
           avatar_url?: string | null
+          band_members?: number | null
           billing?: string | null
           bio?: string | null
           career_start_year?: number | null
@@ -2482,6 +2485,7 @@ export type Database = {
           admin_registration_notified_at: string | null
           allow_promotion: boolean
           avatar_url: string | null
+          band_members: number | null
           billing: string | null
           bio: string | null
           career_start_year: number | null
