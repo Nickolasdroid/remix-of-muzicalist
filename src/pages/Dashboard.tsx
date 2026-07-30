@@ -610,6 +610,7 @@ const Dashboard = () => {
         tiktokUrl: profileData.tiktok_url || "",
         spotifyUrl: profileData.spotify_url || "",
         instruments: profileData.instruments || "",
+        bandMembers: (profileData as any).band_members?.toString() || "",
         hidePhone: profileData.hide_phone || false,
         hideEmail: profileData.hide_email || false
       });
