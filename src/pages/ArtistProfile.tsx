@@ -1083,7 +1083,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   </button>
 
                   <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {artist.stage_name}
                     </h1>
                     <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">

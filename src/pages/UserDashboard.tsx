@@ -495,7 +495,7 @@ const UserDashboard = () => {
 
                       <div className="flex-1 min-w-0 pb-1 md:pb-2">
                         <h1
-                          className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg notranslate"
+                          className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate"
                           data-user-content="true"
                           data-no-translate="true"
                           translate="no"
