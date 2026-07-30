@@ -854,6 +854,11 @@ const Dashboard = () => {
         case 'instruments':
           updateData.instruments = formData.instruments;
           break;
+        case 'bandMembers': {
+          const n = parseInt(formData.bandMembers);
+          updateData.band_members = formData.bandMembers.trim() === "" || isNaN(n) ? null : Math.max(2, n);
+          break;
+        }
       }
       const {
         error
