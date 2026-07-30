@@ -54,6 +54,7 @@ interface Profile {
   county: string;
   country: string | null;
   specialization: string | null;
+  band_members?: number | null;
   
   music_genres: string | null;
   career_start_year: number | null;
