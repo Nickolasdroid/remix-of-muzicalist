@@ -668,7 +668,7 @@ const SettingsTab = ({
   };
 
   const MobilePasswordSection = () => (
-    <div className="px-4 pt-2 pb-8 space-y-6">
+    <div className="px-4 pt-2 pb-2 space-y-6">
       <p className="text-sm text-muted-foreground leading-relaxed">
         Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
       </p>
@@ -1956,7 +1956,7 @@ const DesktopSettingsLayout = ({
         {/* Dynamic content panel */}
         {showContent && (
           <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-            <div className="bg-background px-4 py-4 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
+            <div className="bg-background px-4 pt-4 pb-0 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
               <div key={activeSection} className="animate-fade-in">
                 {contentMap[activeSection] ?? contentMap.edit_profile}
               </div>
