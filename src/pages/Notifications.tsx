@@ -275,7 +275,10 @@ const Notifications = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Navigation
+        mobileTitle="Notifications"
+        onMobileBack={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
+      />
       <main className="md:ml-64 pt-16 md:pt-2 pb-24 md:pb-8">
         <div className="max-w-3xl mx-auto md:p-6 md:px-4">
           <div className="hidden md:flex items-center gap-3 mb-4 px-4">
