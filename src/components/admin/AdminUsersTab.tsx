@@ -175,9 +175,11 @@ export default function AdminUsersTab({ profiles, roles, loading, refresh }: Pro
         email: editing.email,
         phone: editing.phone,
         country: editing.country,
-        plan: editing.plan,
       })
       .eq("id", editing.id);
+    if (!error && editing.plan) {
+      await (supabase as any).rpc("admin_set_profile_plan", { _profile_id: editing.id, _plan: editing.plan });
+    }
     setSavingEdit(false);
     if (error) {
       toast({ title: "Update failed", description: error.message, variant: "destructive" });
