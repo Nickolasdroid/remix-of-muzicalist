@@ -40,10 +40,8 @@ const MyPlan = () => {
         const { data: profileRows } = await (supabase as any).rpc('get_my_full_profile');
         const profile = Array.isArray(profileRows) ? profileRows[0] : profileRows;
         if (!profile?.stripe_customer_id) {
-          const { error: updErr } = await supabase
-            .from('profiles')
-            .update({ plan: planId })
-            .eq('id', session.user.id);
+          const { error: updErr } = await (supabase as any).rpc('self_downgrade_to_free');
+
           if (updErr) {
             toast({ title: t('common.error'), description: updErr.message, variant: 'destructive' });
             setActionLoading(null);
