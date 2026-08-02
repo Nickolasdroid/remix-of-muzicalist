@@ -2155,6 +2155,10 @@ export type Database = {
           verification_status: string
         }[]
       }
+      admin_set_profile_plan: {
+        Args: { _plan: string; _profile_id: string }
+        Returns: undefined
+      }
       assign_moderator: {
         Args: { _case_id: string; _moderator_id: string }
         Returns: {
@@ -2725,6 +2729,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      self_downgrade_to_free: { Args: never; Returns: undefined }
       slugify: { Args: { input: string }; Returns: string }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
