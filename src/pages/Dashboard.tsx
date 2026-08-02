@@ -3137,12 +3137,15 @@ const Dashboard = () => {
 
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
-                        <div className="mb-4 items-center justify-between flex flex-col">
-                          
+                        <SectionShell>
+                        <SectionHeader
+                          icon={<Images className="h-5 w-5 text-accent" />}
+                          title="My Gallery"
+                          action={
                           <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
                             <DialogTrigger asChild>
-                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90 text-center">
-                                <Plus className="h-4 w-4 mr-2" />
+                              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
+                                <Plus className="h-4 w-4 mr-1" />
                                 Add
                               </Button>
                             </DialogTrigger>
