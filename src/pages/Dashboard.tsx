@@ -2923,19 +2923,15 @@ const Dashboard = () => {
                               Upgrade
                             </Button>
                           </div> :
-                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                          <div className="max-w-[500px] mx-auto space-y-4">
+                        <SectionShell>
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
-                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Announcements: <span className={`font-medium ${standardAdsUsed > STANDARD_AD_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
-                              <AdSlotInfoButton kind="ad" />
-                            </div>
-                            <div className="flex items-center gap-2">
+                          <SectionHeader
+                            icon={<Megaphone className="h-5 w-5 text-accent" />}
+                            title="My Announcements"
+                            action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
                                     <Plus className="h-4 w-4 mr-1" />
                                     Add
                                   </Button>
