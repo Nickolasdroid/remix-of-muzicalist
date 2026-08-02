@@ -3125,13 +3125,14 @@ const Dashboard = () => {
                                   </div>}
                                 
                               </Card>)}
-                            {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
-                                <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                                <p className="text-sm">No announcements yet</p>
-                              </div>}
+                            {announcements.filter((a) => !a.is_premium).length === 0 && (
+                              <SectionEmptyState
+                                icon={<Megaphone className="h-10 w-10 opacity-50" />}
+                                title="No announcements yet"
+                              />
+                            )}
                           </div>
-                          </div>
-                        </div>}
+                        </SectionShell>}
                       </TabsContent>
 
                       {/* Gallery Tab */}
