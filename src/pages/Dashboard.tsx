@@ -2990,8 +2990,16 @@ const Dashboard = () => {
                                   </div>
                                 </DialogContent>
                               </Dialog>
-                            </div>
-                          </div>
+                            }
+                          />
+                          <SectionStats className="grid-cols-1">
+                            <SectionStatCard
+                              label="Announcements"
+                              info={<AdSlotInfoButton kind="ad" />}
+                              isOver={standardAdsUsed > STANDARD_AD_LIMIT}
+                              value={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
+                            />
+                          </SectionStats>
                           {(() => {
                             const nonPremium = announcements.filter((a) => !a.is_premium);
                             const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
