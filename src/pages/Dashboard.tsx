@@ -51,6 +51,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
+import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionFilters, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
