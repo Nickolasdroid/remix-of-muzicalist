@@ -3209,7 +3209,22 @@ const Dashboard = () => {
                               </div>
                             </DialogContent>
                           </Dialog>
-                        </div>
+                          }
+                        />
+                        <SectionStats className="lg:grid-cols-2">
+                          <SectionStatCard
+                            label="Photos"
+                            isOver={imagesOverLimit}
+                            value={<>{imagesUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_IMAGE_LIMIT}</span></>}
+                          />
+                          {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && (
+                            <SectionStatCard
+                              label="Videos"
+                              isOver={videosOverLimit}
+                              value={<>{videosUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_VIDEO_LIMIT}</span></>}
+                            />
+                          )}
+                        </SectionStats>
                         <div className="space-y-8">
                           {galleryOverLimit && (
                             <div
