@@ -22,7 +22,7 @@ import {
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { getCurrentLanguage } from "@/i18n";
+import { getCurrentLanguage, translateTextsSync } from "@/i18n";
 import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
 
@@ -37,7 +37,22 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const skipAutoTranslate = getCurrentLanguage() === 'ro';
+  const currentLang = getCurrentLanguage();
+  const skipAutoTranslate = currentLang === 'ro';
+  // The mobile/desktop top bar is marked data-no-translate so the DOM
+  // auto-translator never double-translates the labels it already renders via
+  // t(). But mobileTitle is frequently passed in as a hardcoded English string
+  // by the page components, so it would otherwise stay English while the rest
+  // of the page is localized. Run it through the same synchronous dictionary
+  // (static RO + overrides + AI cache) used everywhere else, falling back to
+  // the original text when there's no translation (e.g. it's already localized
+  // or is a proper noun like a country/category name).
+  const localizedMobileTitle = (() => {
+    if (!mobileTitle) return mobileTitle;
+    if (currentLang === 'en') return mobileTitle;
+    const translated = translateTextsSync(currentLang, [mobileTitle])[mobileTitle.trim()];
+    return translated || mobileTitle;
+  })();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
@@ -436,7 +451,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
           {/* Center: Custom mobile title or page title (logged in) or nothing */}
           {mobileTitle ? (
-            <span className="font-display font-bold text-foreground text-lg ml-1">{mobileTitle}</span>
+            <span className="font-display font-bold text-foreground text-lg ml-1">{localizedMobileTitle}</span>
           ) : user ? (
             <>
               {(location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings') ? (
