@@ -2263,14 +2263,14 @@ const Dashboard = () => {
                                 <DollarSign className="h-5 w-5 text-accent" />
                                 Estimated Prices
                               </h3>
-                              {canSetEstimatedPrice(currentPlan) && !isAddingPrice && pricingCount < getEstimatedPriceLimit(currentPlan) && (
+                              {canSetEstimatedPrice(currentPlan) && (
                                 <Button
                                   size="sm"
-                                  variant="outline"
-                                  onClick={() => setIsAddingPrice(true)}
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                  onClick={() => setPricingDialogOpen(true)}
                                 >
-                                  <Plus className="h-3 w-3 mr-1" />
-                                  Add
+                                  <Edit2 className="h-4 w-4" />
                                 </Button>
                               )}
                             </div>
@@ -2282,11 +2282,10 @@ const Dashboard = () => {
                             ) : (
                               <>
                                 <PricingEntriesEditor
+                                  key={`pricing-view-${pricingRefreshKey}`}
                                   profileId={user?.id}
                                   country={profile?.country}
-                                  editable={true}
-                                  isAdding={isAddingPrice}
-                                  onAddingChange={setIsAddingPrice}
+                                  editable={false}
                                   maxEntries={getEstimatedPriceLimit(currentPlan)}
                                   onCountChange={setPricingCount}
                                 />
@@ -2295,10 +2294,34 @@ const Dashboard = () => {
                                     You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
                                   </p>
                                 )}
+                                <Dialog
+                                  open={pricingDialogOpen}
+                                  onOpenChange={(open) => {
+                                    setPricingDialogOpen(open);
+                                    if (!open) {
+                                      setIsAddingPrice(false);
+                                      setPricingRefreshKey((k) => k + 1);
+                                    }
+                                  }}
+                                >
+                                  <DialogContent className="max-w-md rounded-lg">
+                                    <DialogHeader>
+                                      <DialogTitle>Estimated Prices</DialogTitle>
+                                    </DialogHeader>
+                                    <PricingEntriesEditor
+                                      key={`pricing-edit-${pricingDialogOpen}`}
+                                      profileId={user?.id}
+                                      country={profile?.country}
+                                      editable={true}
+                                      maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
                               </>
                             )}
                           </div>
                         </div>
+
 
                         <Separator />
 
