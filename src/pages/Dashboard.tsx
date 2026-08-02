@@ -3341,6 +3341,7 @@ const Dashboard = () => {
                             </div>
                           </div>}
                         </div>
+                        </SectionShell>
 
                       </TabsContent>}
 
