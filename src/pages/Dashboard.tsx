@@ -51,6 +51,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
+import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionFilters, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
@@ -2543,54 +2544,41 @@ const Dashboard = () => {
                             } catch { return ''; }
                           };
                           return (
-                        <div className="space-y-4">
+                        <SectionShell>
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
 
-                          {/* Header */}
-                          <div className="flex items-center justify-between gap-3">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <FileText className="h-5 w-5 text-accent" />
-                              My Posts
-                            </h2>
-                            <Button
-                              size="sm"
-                              onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                              className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add
-                            </Button>
-                          </div>
+                          <SectionHeader
+                            icon={<FileText className="h-5 w-5 text-accent" />}
+                            title="My Posts"
+                            action={
+                              <Button
+                                size="sm"
+                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add
+                              </Button>
+                            }
+                          />
 
-                          {/* Stats card */}
-                          <div className="grid grid-cols-2 divide-x divide-border/50 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="pr-4">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Active Posts</span>
-                                <AdSlotInfoButton kind="post" />
-                              </div>
-                              <div className="mt-1.5 text-2xl font-display font-bold">
-                                <span className={postsUsed > STANDARD_POST_LIMIT ? 'text-destructive' : 'text-foreground'}>{postsUsed}</span>
-                                <span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span>
-                              </div>
-                            </div>
-                            <div className="pl-4">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Active Promotions</span>
-                                <AdSlotInfoButton kind="promotion" />
-                              </div>
-                              <div className="mt-1.5 text-2xl font-display font-bold">
-                                <span className={premiumAdsUsed > PREMIUM_AD_LIMIT ? 'text-destructive' : 'text-foreground'}>{premiumAdsUsed}</span>
-                                <span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <SectionStats>
+                            <SectionStatCard
+                              label="Active Posts"
+                              info={<AdSlotInfoButton kind="post" />}
+                              isOver={postsUsed > STANDARD_POST_LIMIT}
+                              value={<>{postsUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span></>}
+                            />
+                            <SectionStatCard
+                              label="Active Promotions"
+                              info={<AdSlotInfoButton kind="promotion" />}
+                              isOver={premiumAdsUsed > PREMIUM_AD_LIMIT}
+                              value={<>{premiumAdsUsed}<span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span></>}
+                            />
+                          </SectionStats>
 
-                          {/* Filter pills + search */}
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <SectionFilters>
                             {([
                               { id: 'all', label: 'All' },
                               { id: 'photos', label: 'Photos' },
@@ -2618,7 +2606,7 @@ const Dashboard = () => {
                             >
                               <Search className="h-4 w-4" />
                             </Button>
-                          </div>
+                          </SectionFilters>
 
                           {showPostSearch && (
                             <Input
@@ -2632,14 +2620,11 @@ const Dashboard = () => {
 
                           {/* Post list */}
                           {filtered.length === 0 ? (
-                            <Card className="border-2 border-dashed border-accent/30">
-                              <CardContent className="p-12 text-center">
-                                <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                                <p className="text-muted-foreground">
-                                  {postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
-                                </p>
-                              </CardContent>
-                            </Card>
+                            <SectionEmptyState
+                              icon={<FileText className="h-10 w-10 opacity-50" />}
+                              title={postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
+                            />
+
                           ) : (
                             <div className="space-y-3">
                               {filtered.map((item) => {
@@ -2922,17 +2907,14 @@ const Dashboard = () => {
                               </div>
                             </DialogContent>
                           </Dialog>
-                        </div>
+                        </SectionShell>
+
                           );
                         })()}
                       </TabsContent>
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                          <Megaphone className="h-5 w-5 text-accent" />
-                          My Announcements
-                        </h2>
                         {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
@@ -2941,19 +2923,15 @@ const Dashboard = () => {
                               Upgrade
                             </Button>
                           </div> :
-                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                          <div className="max-w-[500px] mx-auto space-y-4">
+                        <SectionShell>
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
-                          <div className="flex flex-row items-center justify-between gap-4 p-4 bg-card/50 rounded-lg border border-border/50 min-h-[72px]">
-                            <div className="flex items-center gap-2">
-                              <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Announcements: <span className={`font-medium ${standardAdsUsed > STANDARD_AD_LIMIT ? 'text-destructive' : 'text-foreground'}`}>{standardAdsUsed}/{STANDARD_AD_LIMIT}</span></span>
-                              <AdSlotInfoButton kind="ad" />
-                            </div>
-                            <div className="flex items-center gap-2">
+                          <SectionHeader
+                            icon={<Megaphone className="h-5 w-5 text-accent" />}
+                            title="My Announcements"
+                            action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
                                     <Plus className="h-4 w-4 mr-1" />
                                     Add
                                   </Button>
@@ -3012,15 +2990,23 @@ const Dashboard = () => {
                                   </div>
                                 </DialogContent>
                               </Dialog>
-                            </div>
-                          </div>
+                            }
+                          />
+                          <SectionStats className="grid-cols-1">
+                            <SectionStatCard
+                              label="Announcements"
+                              info={<AdSlotInfoButton kind="ad" />}
+                              isOver={standardAdsUsed > STANDARD_AD_LIMIT}
+                              value={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
+                            />
+                          </SectionStats>
                           {(() => {
                             const nonPremium = announcements.filter((a) => !a.is_premium);
                             const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
                             const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
                             const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
                             return (
-                              <div className="px-4 md:px-0 space-y-3">
+                              <div className="space-y-3">
                                 <h3 className="text-base font-semibold text-foreground">Overview</h3>
                                 <div className="grid grid-cols-2 gap-3">
                                   <div onClick={() => navigate('/messages?tab=announcements&sub=requests')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
@@ -3139,23 +3125,27 @@ const Dashboard = () => {
                                   </div>}
                                 
                               </Card>)}
-                            {announcements.filter((a) => !a.is_premium).length === 0 && <div className="text-center py-12 text-muted-foreground">
-                                <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                                <p className="text-sm">No announcements yet</p>
-                              </div>}
+                            {announcements.filter((a) => !a.is_premium).length === 0 && (
+                              <SectionEmptyState
+                                icon={<Megaphone className="h-10 w-10 opacity-50" />}
+                                title="No announcements yet"
+                              />
+                            )}
                           </div>
-                          </div>
-                        </div>}
+                        </SectionShell>}
                       </TabsContent>
 
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
-                        <div className="mb-4 items-center justify-between flex flex-col">
-                          
+                        <SectionShell>
+                        <SectionHeader
+                          icon={<Images className="h-5 w-5 text-accent" />}
+                          title="My Gallery"
+                          action={
                           <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
                             <DialogTrigger asChild>
-                              <Button className="bg-accent text-accent-foreground hover:bg-accent/90 text-center">
-                                <Plus className="h-4 w-4 mr-2" />
+                              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
+                                <Plus className="h-4 w-4 mr-1" />
                                 Add
                               </Button>
                             </DialogTrigger>
@@ -3219,7 +3209,22 @@ const Dashboard = () => {
                               </div>
                             </DialogContent>
                           </Dialog>
-                        </div>
+                          }
+                        />
+                        <SectionStats className="lg:grid-cols-2">
+                          <SectionStatCard
+                            label="Photos"
+                            isOver={imagesOverLimit}
+                            value={<>{imagesUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_IMAGE_LIMIT}</span></>}
+                          />
+                          {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && (
+                            <SectionStatCard
+                              label="Videos"
+                              isOver={videosOverLimit}
+                              value={<>{videosUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_VIDEO_LIMIT}</span></>}
+                            />
+                          )}
+                        </SectionStats>
                         <div className="space-y-8">
                           {galleryOverLimit && (
                             <div
@@ -3241,12 +3246,9 @@ const Dashboard = () => {
 
                           {/* Photos Section */}
                           <div>
-                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
                               <Images className="h-5 w-5 text-accent" />
                               Photos
-                              <span className={imagesOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
-                                ({imagesUsed}/{STANDARD_IMAGE_LIMIT})
-                              </span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'image').map((item) => {
@@ -3285,12 +3287,9 @@ const Dashboard = () => {
 
                           {/* Videos Section - shown if plan supports videos OR user already has videos (e.g. after downgrade) */}
                           {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && <div>
-                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
-                              <span className={videosOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
-                                ({videosUsed}/{STANDARD_VIDEO_LIMIT})
-                              </span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'video').map((item) => {
@@ -3336,6 +3335,7 @@ const Dashboard = () => {
                             </div>
                           </div>}
                         </div>
+                        </SectionShell>
 
                       </TabsContent>}
 
