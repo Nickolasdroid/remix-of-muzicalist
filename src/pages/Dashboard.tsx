@@ -3287,12 +3287,9 @@ const Dashboard = () => {
 
                           {/* Videos Section - shown if plan supports videos OR user already has videos (e.g. after downgrade) */}
                           {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && <div>
-                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
                               <Play className="h-5 w-5 text-accent" />
                               Videos
-                              <span className={videosOverLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
-                                ({videosUsed}/{STANDARD_VIDEO_LIMIT})
-                              </span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                               {galleryItems.filter((item) => item.type === 'video').map((item) => {
