@@ -2620,14 +2620,11 @@ const Dashboard = () => {
 
                           {/* Post list */}
                           {filtered.length === 0 ? (
-                            <Card className="border-2 border-dashed border-accent/30">
-                              <CardContent className="p-12 text-center">
-                                <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                                <p className="text-muted-foreground">
-                                  {postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
-                                </p>
-                              </CardContent>
-                            </Card>
+                            <SectionEmptyState
+                              icon={<FileText className="h-10 w-10 opacity-50" />}
+                              title={postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
+                            />
+
                           ) : (
                             <div className="space-y-3">
                               {filtered.map((item) => {
