@@ -2543,54 +2543,41 @@ const Dashboard = () => {
                             } catch { return ''; }
                           };
                           return (
-                        <div className="space-y-4">
+                        <SectionShell>
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
 
-                          {/* Header */}
-                          <div className="flex items-center justify-between gap-3">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <FileText className="h-5 w-5 text-accent" />
-                              My Posts
-                            </h2>
-                            <Button
-                              size="sm"
-                              onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                              className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add
-                            </Button>
-                          </div>
+                          <SectionHeader
+                            icon={<FileText className="h-5 w-5 text-accent" />}
+                            title="My Posts"
+                            action={
+                              <Button
+                                size="sm"
+                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add
+                              </Button>
+                            }
+                          />
 
-                          {/* Stats card */}
-                          <div className="grid grid-cols-2 divide-x divide-border/50 p-4 bg-card/50 rounded-lg border border-border/50">
-                            <div className="pr-4">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Active Posts</span>
-                                <AdSlotInfoButton kind="post" />
-                              </div>
-                              <div className="mt-1.5 text-2xl font-display font-bold">
-                                <span className={postsUsed > STANDARD_POST_LIMIT ? 'text-destructive' : 'text-foreground'}>{postsUsed}</span>
-                                <span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span>
-                              </div>
-                            </div>
-                            <div className="pl-4">
-                              <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-accent" />
-                                <span className="text-sm text-muted-foreground">Active Promotions</span>
-                                <AdSlotInfoButton kind="promotion" />
-                              </div>
-                              <div className="mt-1.5 text-2xl font-display font-bold">
-                                <span className={premiumAdsUsed > PREMIUM_AD_LIMIT ? 'text-destructive' : 'text-foreground'}>{premiumAdsUsed}</span>
-                                <span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span>
-                              </div>
-                            </div>
-                          </div>
+                          <SectionStats>
+                            <SectionStatCard
+                              label="Active Posts"
+                              info={<AdSlotInfoButton kind="post" />}
+                              isOver={postsUsed > STANDARD_POST_LIMIT}
+                              value={<>{postsUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span></>}
+                            />
+                            <SectionStatCard
+                              label="Active Promotions"
+                              info={<AdSlotInfoButton kind="promotion" />}
+                              isOver={premiumAdsUsed > PREMIUM_AD_LIMIT}
+                              value={<>{premiumAdsUsed}<span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span></>}
+                            />
+                          </SectionStats>
 
-                          {/* Filter pills + search */}
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <SectionFilters>
                             {([
                               { id: 'all', label: 'All' },
                               { id: 'photos', label: 'Photos' },
@@ -2618,7 +2605,7 @@ const Dashboard = () => {
                             >
                               <Search className="h-4 w-4" />
                             </Button>
-                          </div>
+                          </SectionFilters>
 
                           {showPostSearch && (
                             <Input
