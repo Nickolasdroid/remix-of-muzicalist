@@ -2909,7 +2909,8 @@ const Dashboard = () => {
                               </div>
                             </DialogContent>
                           </Dialog>
-                        </div>
+                        </SectionShell>
+
                           );
                         })()}
                       </TabsContent>
