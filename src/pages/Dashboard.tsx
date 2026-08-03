@@ -1812,8 +1812,15 @@ const Dashboard = () => {
                             />
 
                           )}
-                          {/* Bottom dark blur gradient */}
-                          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent backdrop-blur-[2px]" />
+                          {/* Smooth premium fade into the page background */}
+                          <div
+                            className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
+                            style={{
+                              background:
+                                "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+                            }}
+                          />
+
 
                           {/* Cover edit controls (top-right) */}
                           <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
