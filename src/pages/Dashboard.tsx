@@ -1792,7 +1792,7 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div className={`pt-16 md:pt-8 ${activeTab === "settings" ? "pb-[calc(4rem+1.25rem+env(safe-area-inset-bottom))] md:pb-8 bg-background" : "pb-24 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
+      <div className={`pt-14 md:pt-8 ${activeTab === "settings" ? "pb-[calc(4rem+1.25rem+env(safe-area-inset-bottom))] md:pb-8 bg-background" : "pb-24 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
         <div className={`container mx-auto max-w-4xl ${activeTab === "settings" ? "px-0 md:px-0" : "px-4 md:px-0"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
