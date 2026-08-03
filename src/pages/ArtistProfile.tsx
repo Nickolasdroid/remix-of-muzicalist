@@ -1060,46 +1060,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 />
 
 
-                {/* Avatar + name + meta overlaid at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
-                  <button
-                    type="button"
-                    onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
-                    disabled={!artist.avatar_url}
-                    aria-label="Enlarge profile picture"
-                    className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
-                  >
-                    <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
-                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                      <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                        <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
-                      </AvatarFallback>
-                    </Avatar>
-                    {artist.avatar_url && (
-                      <span className="hidden md:flex pointer-events-none absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-black/70 text-white text-[10px] font-medium opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap">
-                        Click to enlarge
-                      </span>
-                    )}
-                  </button>
-
-                  <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                    <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {artist.stage_name}
-                    </h1>
-                    <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap name-overlay-outline">
-                      {artist.specialization && <span className="font-medium">{translateSpecialization(artist.specialization)}</span>}
-                      {artist.specialization && artist.county && <span className="opacity-70">•</span>}
-                      {artist.county && <span className="truncate">{artist.county}</span>}
-                      {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
-                    </div>
-                    <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 name-overlay-outline">
-                      <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                      <span className="text-white text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                      <span className="text-white/70 text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Verified badge — bottom-right corner */}
                 {(artist as any).is_verified && (
                   <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
@@ -1107,6 +1067,42 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   </div>
                 )}
               </div>
+
+              {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
+              <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-end gap-3 md:gap-4 lg:gap-5 relative z-10">
+                <button
+                  type="button"
+                  onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
+                  disabled={!artist.avatar_url}
+                  aria-label="Enlarge profile picture"
+                  className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
+                >
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
+                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                      <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+
+                <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                  <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                    {artist.stage_name}
+                  </h1>
+                  <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                    {artist.specialization && <span className="font-medium">{translateSpecialization(artist.specialization)}</span>}
+                    {artist.specialization && artist.county && <span className="opacity-70">•</span>}
+                    {artist.county && <span className="truncate">{artist.county}</span>}
+                    {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                  </div>
+                  <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                    <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                    <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
+                    <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                  </div>
+                </div>
+              </div>
+
 
               {/* Stats card row */}
               <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
