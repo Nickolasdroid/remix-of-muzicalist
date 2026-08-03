@@ -1024,7 +1024,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
             {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
-            <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+            <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
               <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
                   <button
