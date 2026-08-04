@@ -435,14 +435,6 @@ const Feed = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => {
-                            const url = `${window.location.origin}/artist/${item.profile_id}`;
-                            navigator.clipboard.writeText(url);
-                            toast({ title: "Link copied", description: "The link has been copied to your clipboard." });
-                          }}>
-                            <Send className="h-4 w-4 mr-2" />
-                            Share
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => {
                             if (!currentUserId) {
                               navigate("/login");
                               return;
@@ -558,14 +550,6 @@ const Feed = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                          const url = `${window.location.origin}/artist/${item.profile_id}`;
-                          navigator.clipboard.writeText(url);
-                          toast({ title: "Link copied", description: "The link has been copied to your clipboard." });
-                        }}>
-                          <Send className="h-4 w-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                           if (!currentUserId) {
                             navigate("/login");
