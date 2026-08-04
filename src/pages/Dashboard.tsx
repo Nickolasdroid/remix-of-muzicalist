@@ -164,6 +164,11 @@ const Dashboard = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverImageSrc, setCoverImageSrc] = useState<string | null>(null);
+  const [coverCrop, setCoverCrop] = useState({ x: 0, y: 0 });
+  const [coverZoom, setCoverZoom] = useState(1);
+  const [coverCroppedAreaPixels, setCoverCroppedAreaPixels] = useState<Area | null>(null);
+  const [showCoverCropper, setShowCoverCropper] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -748,7 +753,7 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !user) return;
@@ -756,12 +761,23 @@ const Dashboard = () => {
       toast({ title: "File too large", description: "Cover image must be under 8MB.", variant: "destructive" });
       return;
     }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCoverImageSrc(reader.result as string);
+      setCoverCrop({ x: 0, y: 0 });
+      setCoverZoom(1);
+      setShowCoverCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+  const handleSaveCover = async () => {
+    if (!coverImageSrc || !coverCroppedAreaPixels || !user) return;
     setIsUploadingCover(true);
     try {
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const fileName = `${user.id}/cover.${ext === 'png' ? 'png' : 'jpg'}`;
-      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
-        contentType: file.type || "image/jpeg",
+      const croppedBlob = await getCroppedImg(coverImageSrc, coverCroppedAreaPixels);
+      const fileName = `${user.id}/cover.jpg`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
+        contentType: "image/jpeg",
         cacheControl: "0",
         upsert: true,
       });
@@ -774,6 +790,8 @@ const Dashboard = () => {
         .eq("id", user.id);
       if (updateError) throw updateError;
       setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: freshUrl }));
+      setShowCoverCropper(false);
+      setCoverImageSrc(null);
       toast({ title: "Success", description: "Cover image updated." });
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to upload cover.", variant: "destructive" });
@@ -3999,6 +4017,50 @@ const Dashboard = () => {
             </div>
           </div>
         </div>}
+
+      {/* Cover Cropper Modal */}
+      {showCoverCropper && coverImageSrc && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-3xl w-full">
+            <h3 className="text-xl font-bold text-foreground mb-1">Adjust cover photo</h3>
+            <p className="text-sm text-muted-foreground mb-4">Drag to reposition and zoom to center your cover image.</p>
+
+            <div className="relative w-full h-[320px] bg-black rounded-lg overflow-hidden mb-4">
+              <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/70">…</div>}>
+                <Cropper
+                  image={coverImageSrc}
+                  crop={coverCrop}
+                  zoom={coverZoom}
+                  aspect={16 / 6}
+                  onCropChange={setCoverCrop}
+                  onZoomChange={setCoverZoom}
+                  onCropComplete={(_area: Area, pixels: Area) => setCoverCroppedAreaPixels(pixels)}
+                  cropShape="rect"
+                  showGrid={true}
+                  objectFit="horizontal-cover"
+                />
+              </Suspense>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <Label>Zoom: {coverZoom.toFixed(1)}x</Label>
+              <input type="range" min={1} max={3} step={0.1} value={coverZoom} onChange={(e) => setCoverZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => {
+                setShowCoverCropper(false);
+                setCoverImageSrc(null);
+              }}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveCover} disabled={isUploadingCover} className="bg-accent text-accent-foreground">
+                {isUploadingCover ? "Saving..." : "Save cover"}
+              </Button>
+            </div>
+          </div>
+        </div>}
+
+
 
       {/* Booking Overwrite Warning Dialog */}
       <AlertDialog open={showBookingWarningDialog} onOpenChange={setShowBookingWarningDialog}>
