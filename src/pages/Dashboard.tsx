@@ -753,7 +753,7 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !user) return;
@@ -761,12 +761,23 @@ const Dashboard = () => {
       toast({ title: "File too large", description: "Cover image must be under 8MB.", variant: "destructive" });
       return;
     }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCoverImageSrc(reader.result as string);
+      setCoverCrop({ x: 0, y: 0 });
+      setCoverZoom(1);
+      setShowCoverCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+  const handleSaveCover = async () => {
+    if (!coverImageSrc || !coverCroppedAreaPixels || !user) return;
     setIsUploadingCover(true);
     try {
-      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const fileName = `${user.id}/cover.${ext === 'png' ? 'png' : 'jpg'}`;
-      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
-        contentType: file.type || "image/jpeg",
+      const croppedBlob = await getCroppedImg(coverImageSrc, coverCroppedAreaPixels);
+      const fileName = `${user.id}/cover.jpg`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
+        contentType: "image/jpeg",
         cacheControl: "0",
         upsert: true,
       });
@@ -779,6 +790,8 @@ const Dashboard = () => {
         .eq("id", user.id);
       if (updateError) throw updateError;
       setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: freshUrl }));
+      setShowCoverCropper(false);
+      setCoverImageSrc(null);
       toast({ title: "Success", description: "Cover image updated." });
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to upload cover.", variant: "destructive" });
