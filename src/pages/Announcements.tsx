@@ -233,17 +233,6 @@ const Announcements = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => {
-                          const url = `${window.location.origin}/artist/${announcement.profile_id}`;
-                          navigator.clipboard.writeText(url);
-                          toast({
-                            title: "Link copied",
-                            description: "The link has been copied to your clipboard."
-                          });
-                        }}>
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
                       if (!currentUserId) {
                         navigate("/login");
                         return;
