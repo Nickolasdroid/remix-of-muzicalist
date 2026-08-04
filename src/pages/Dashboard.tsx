@@ -164,6 +164,11 @@ const Dashboard = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverImageSrc, setCoverImageSrc] = useState<string | null>(null);
+  const [coverCrop, setCoverCrop] = useState({ x: 0, y: 0 });
+  const [coverZoom, setCoverZoom] = useState(1);
+  const [coverCroppedAreaPixels, setCoverCroppedAreaPixels] = useState<Area | null>(null);
+  const [showCoverCropper, setShowCoverCropper] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
