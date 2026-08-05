@@ -14,11 +14,21 @@ import {
   Megaphone,
   Info,
   Trash2,
+  MoreHorizontal,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import Navigation from "@/components/Navigation";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Notification {
   id: string;
