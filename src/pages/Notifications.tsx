@@ -321,35 +321,84 @@ const Notifications = () => {
             {!n.read_at && (
               <div className="h-2.5 w-2.5 rounded-full bg-accent" aria-label="unread" />
             )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Notification options"
-                  onClick={(e) => e.stopPropagation()}
-                  className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-lg w-56">
-                <DropdownMenuItem
-                  onClick={(e) => { e.stopPropagation(); deleteNotification(n.id); }}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete notification
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, true); }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Show more like this
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, false); }}>
-                  <Minus className="h-4 w-4 mr-2" />
-                  Show fewer like this
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isMobile ? (
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Notification options"
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent onClick={(e) => e.stopPropagation()}>
+                  <div className="px-4 pb-8 pt-2">
+                    <DrawerClose asChild>
+                      <button
+                        type="button"
+                        onClick={() => deleteNotification(n.id)}
+                        className="w-full flex items-center gap-3 px-4 py-4 rounded-lg text-destructive active:bg-secondary/60"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                        <span className="text-base">Delete notification</span>
+                      </button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <button
+                        type="button"
+                        onClick={() => setSimilarPreference(n, true)}
+                        className="w-full flex items-center gap-3 px-4 py-4 rounded-lg active:bg-secondary/60"
+                      >
+                        <Plus className="h-5 w-5" />
+                        <span className="text-base">Show more like this</span>
+                      </button>
+                    </DrawerClose>
+                    <DrawerClose asChild>
+                      <button
+                        type="button"
+                        onClick={() => setSimilarPreference(n, false)}
+                        className="w-full flex items-center gap-3 px-4 py-4 rounded-lg active:bg-secondary/60"
+                      >
+                        <Minus className="h-5 w-5" />
+                        <span className="text-base">Show fewer like this</span>
+                      </button>
+                    </DrawerClose>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Notification options"
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="rounded-lg w-56">
+                  <DropdownMenuItem
+                    onClick={(e) => { e.stopPropagation(); deleteNotification(n.id); }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete notification
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, true); }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Show more like this
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, false); }}>
+                    <Minus className="h-4 w-4 mr-2" />
+                    Show fewer like this
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </div>
