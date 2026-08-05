@@ -14,11 +14,21 @@ import {
   Megaphone,
   Info,
   Trash2,
+  MoreHorizontal,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import Navigation from "@/components/Navigation";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Notification {
   id: string;
@@ -159,6 +169,27 @@ const Notifications = () => {
     setSwipeOffset(0);
   };
 
+  const setSimilarPreference = async (n: Notification, show: boolean) => {
+    const key = notificationTypeToPrefKey(n.type);
+    if (!key || !user) {
+      toast.info("No preference available for this notification type");
+      return;
+    }
+    const nextPrefs = { ...(notificationPrefs || {}), [key]: show };
+    setNotificationPrefs(nextPrefs);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ notification_preferences: nextPrefs })
+      .eq("id", user.id);
+    if (error) {
+      toast.error("Could not update preference");
+      return;
+    }
+    toast.success(show ? "You'll see more notifications like this" : "You'll see fewer notifications like this");
+  };
+
+
+
   const getRoute = (n: Notification): string | null => {
     const { reference_type: refType, type, reference_id: refId } = n;
     if (type === "follow" && n.actor_id) return `/artist/${n.actor_id}`;
@@ -286,9 +317,40 @@ const Notifications = () => {
               {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
             </p>
           </div>
-          {!n.read_at && (
-            <div className="h-2.5 w-2.5 rounded-full bg-accent flex-shrink-0 mt-2" aria-label="unread" />
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0 mt-1">
+            {!n.read_at && (
+              <div className="h-2.5 w-2.5 rounded-full bg-accent" aria-label="unread" />
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Notification options"
+                  onClick={(e) => e.stopPropagation()}
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-lg w-56">
+                <DropdownMenuItem
+                  onClick={(e) => { e.stopPropagation(); deleteNotification(n.id); }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete notification
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, true); }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Show more like this
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, false); }}>
+                  <Minus className="h-4 w-4 mr-2" />
+                  Show fewer like this
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     );
