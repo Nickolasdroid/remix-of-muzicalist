@@ -99,6 +99,7 @@ const notificationTypeToPrefKey = (t: string): string | null => {
 
 const Notifications = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
