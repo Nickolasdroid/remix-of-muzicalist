@@ -169,6 +169,27 @@ const Notifications = () => {
     setSwipeOffset(0);
   };
 
+  const setSimilarPreference = async (n: Notification, show: boolean) => {
+    const key = notificationTypeToPrefKey(n.type);
+    if (!key || !user) {
+      toast.info("No preference available for this notification type");
+      return;
+    }
+    const nextPrefs = { ...(notificationPrefs || {}), [key]: show };
+    setNotificationPrefs(nextPrefs);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ notification_preferences: nextPrefs })
+      .eq("id", user.id);
+    if (error) {
+      toast.error("Could not update preference");
+      return;
+    }
+    toast.success(show ? "You'll see more notifications like this" : "You'll see fewer notifications like this");
+  };
+
+
+
   const getRoute = (n: Notification): string | null => {
     const { reference_type: refType, type, reference_id: refId } = n;
     if (type === "follow" && n.actor_id) return `/artist/${n.actor_id}`;
