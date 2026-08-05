@@ -254,8 +254,24 @@ const Notifications = () => {
               : "bg-background hover:bg-notification-unread active:bg-notification-unread-hover",
           )}
         >
-          <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
-            {iconFor(n.type)}
+          <div className="relative flex-shrink-0 mt-0.5">
+            <div className="h-11 w-11 rounded-full overflow-hidden bg-secondary/40 flex items-center justify-center">
+              {n.actor_id && actorAvatars[n.actor_id] ? (
+                <img
+                  src={actorAvatars[n.actor_id] as string}
+                  alt={n.actor_name || "avatar"}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {(n.actor_name || "?").charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-background border border-border flex items-center justify-center">
+              {iconFor(n.type, "h-3 w-3")}
+            </div>
           </div>
           <div className="flex-1 min-w-0">
             <p className={cn("text-sm leading-snug", !n.read_at ? "text-foreground" : "text-muted-foreground")}>
