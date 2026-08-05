@@ -317,9 +317,40 @@ const Notifications = () => {
               {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
             </p>
           </div>
-          {!n.read_at && (
-            <div className="h-2.5 w-2.5 rounded-full bg-accent flex-shrink-0 mt-2" aria-label="unread" />
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0 mt-1">
+            {!n.read_at && (
+              <div className="h-2.5 w-2.5 rounded-full bg-accent" aria-label="unread" />
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Notification options"
+                  onClick={(e) => e.stopPropagation()}
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-lg w-56">
+                <DropdownMenuItem
+                  onClick={(e) => { e.stopPropagation(); deleteNotification(n.id); }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete notification
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, true); }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Show more like this
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSimilarPreference(n, false); }}>
+                  <Minus className="h-4 w-4 mr-2" />
+                  Show fewer like this
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     );
