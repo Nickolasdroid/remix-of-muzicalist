@@ -33,8 +33,8 @@ interface Notification {
   created_at: string;
 }
 
-const iconFor = (type: string) => {
-  const base = "h-5 w-5";
+const iconFor = (type: string, size = "h-5 w-5") => {
+  const base = size;
   switch (type) {
     case "like":
       return <Heart className={cn(base, "text-rose-500 fill-rose-500")} />;
@@ -87,6 +87,7 @@ const Notifications = () => {
   const [user, setUser] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
+  const [actorAvatars, setActorAvatars] = useState<Record<string, string | null>>({});
   const [swipeId, setSwipeId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const touchStartX = useRef(0);
