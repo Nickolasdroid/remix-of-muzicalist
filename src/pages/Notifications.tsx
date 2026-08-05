@@ -118,6 +118,22 @@ const Notifications = () => {
   }, [navigate]);
 
   useEffect(() => {
+    const ids = Array.from(
+      new Set(notifications.map((n) => n.actor_id).filter((id): id is string => !!id))
+    ).filter((id) => !(id in actorAvatars));
+    if (ids.length === 0) return;
+    (async () => {
+      const { data } = await supabase.from("profiles").select("id, avatar_url").in("id", ids);
+      setActorAvatars((prev) => {
+        const next = { ...prev };
+        ids.forEach((id) => { next[id] = null; });
+        (data || []).forEach((p: any) => { next[p.id] = p.avatar_url ?? null; });
+        return next;
+      });
+    })();
+  }, [notifications, actorAvatars]);
+
+  useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel("notifications-realtime")
