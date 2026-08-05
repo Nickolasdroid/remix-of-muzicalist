@@ -33,8 +33,8 @@ interface Notification {
   created_at: string;
 }
 
-const iconFor = (type: string) => {
-  const base = "h-5 w-5";
+const iconFor = (type: string, size = "h-5 w-5") => {
+  const base = size;
   switch (type) {
     case "like":
       return <Heart className={cn(base, "text-rose-500 fill-rose-500")} />;
@@ -87,6 +87,7 @@ const Notifications = () => {
   const [user, setUser] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
+  const [actorAvatars, setActorAvatars] = useState<Record<string, string | null>>({});
   const [swipeId, setSwipeId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const touchStartX = useRef(0);
@@ -115,6 +116,22 @@ const Notifications = () => {
     };
     init();
   }, [navigate]);
+
+  useEffect(() => {
+    const ids = Array.from(
+      new Set(notifications.map((n) => n.actor_id).filter((id): id is string => !!id))
+    ).filter((id) => !(id in actorAvatars));
+    if (ids.length === 0) return;
+    (async () => {
+      const { data } = await supabase.from("profiles").select("id, avatar_url").in("id", ids);
+      setActorAvatars((prev) => {
+        const next = { ...prev };
+        ids.forEach((id) => { next[id] = null; });
+        (data || []).forEach((p: any) => { next[p.id] = p.avatar_url ?? null; });
+        return next;
+      });
+    })();
+  }, [notifications, actorAvatars]);
 
   useEffect(() => {
     if (!user) return;
@@ -237,8 +254,24 @@ const Notifications = () => {
               : "bg-background hover:bg-notification-unread active:bg-notification-unread-hover",
           )}
         >
-          <div className="flex-shrink-0 mt-0.5 flex items-center justify-center h-10 w-10 rounded-full bg-secondary/40">
-            {iconFor(n.type)}
+          <div className="relative flex-shrink-0 mt-0.5">
+            <div className="h-11 w-11 rounded-full overflow-hidden bg-secondary/40 flex items-center justify-center">
+              {n.actor_id && actorAvatars[n.actor_id] ? (
+                <img
+                  src={actorAvatars[n.actor_id] as string}
+                  alt={n.actor_name || "avatar"}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {(n.actor_name || "?").charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-background border border-border flex items-center justify-center">
+              {iconFor(n.type, "h-3 w-3")}
+            </div>
           </div>
           <div className="flex-1 min-w-0">
             <p className={cn("text-sm leading-snug", !n.read_at ? "text-foreground" : "text-muted-foreground")}>
