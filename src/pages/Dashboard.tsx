@@ -255,6 +255,7 @@ const Dashboard = () => {
   const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
+  const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
