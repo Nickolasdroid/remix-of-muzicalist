@@ -1160,6 +1160,27 @@ const Dashboard = () => {
       setDeletePostId(null);
     }
   };
+  const handleSaveEditItem = async () => {
+    if (!editItem) return;
+    setIsSaving(true);
+    try {
+      if (editItem.kind === 'promotion') {
+        const { error } = await supabase.from('announcements').update({ description: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadAnnouncements();
+      } else {
+        const { error } = await supabase.from('posts').update({ content: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadPosts();
+      }
+      toast({ title: "Success", description: t('dashboardPosts.updated', 'Updated!') });
+      setEditItem(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
