@@ -68,6 +68,7 @@ const Dashboard = () => {
   } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { isAdmin } = useUserRole();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
