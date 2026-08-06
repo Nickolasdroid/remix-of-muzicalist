@@ -24,6 +24,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
 import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import CommentsDialog from "@/components/CommentsDialog";
 import VerifiedBadge from "@/components/VerifiedBadge";
 
