@@ -24,6 +24,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
 import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import CommentsDialog from "@/components/CommentsDialog";
 import VerifiedBadge from "@/components/VerifiedBadge";
 
@@ -67,6 +68,7 @@ const Dashboard = () => {
   } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { isAdmin } = useUserRole();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -253,6 +255,7 @@ const Dashboard = () => {
   const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
+  const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
@@ -1156,6 +1159,27 @@ const Dashboard = () => {
     } finally {
       setIsSaving(false);
       setDeletePostId(null);
+    }
+  };
+  const handleSaveEditItem = async () => {
+    if (!editItem) return;
+    setIsSaving(true);
+    try {
+      if (editItem.kind === 'promotion') {
+        const { error } = await supabase.from('announcements').update({ description: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadAnnouncements();
+      } else {
+        const { error } = await supabase.from('posts').update({ content: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadPosts();
+      }
+      toast({ title: "Success", description: t('dashboardPosts.updated', 'Updated!') });
+      setEditItem(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
     }
   };
   const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2600,215 +2624,253 @@ const Dashboard = () => {
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
 
-                          <SectionHeader
-                            icon={<FileText className="h-5 w-5 text-accent" />}
-                            title="My Posts"
-                            action={
-                              <Button
-                                size="sm"
-                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                Add
-                              </Button>
-                            }
-                          />
-
-                          <SectionStats>
-                            <SectionStatCard
-                              label="Active Posts"
-                              info={<AdSlotInfoButton kind="post" />}
-                              isOver={postsUsed > STANDARD_POST_LIMIT}
-                              value={<>{postsUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_POST_LIMIT}</span></>}
-                            />
-                            <SectionStatCard
-                              label="Active Promotions"
-                              info={<AdSlotInfoButton kind="promotion" />}
-                              isOver={premiumAdsUsed > PREMIUM_AD_LIMIT}
-                              value={<>{premiumAdsUsed}<span className="text-muted-foreground text-lg"> / {PREMIUM_AD_LIMIT}</span></>}
-                            />
-                          </SectionStats>
-
-                          <SectionFilters>
-                            {([
-                              { id: 'all', label: 'All' },
-                              { id: 'photos', label: 'Photos' },
-                              { id: 'videos', label: 'Videos' },
-                              { id: 'promotions', label: 'Promotions' },
-                            ] as const).map((f) => (
-                              <button
-                                key={f.id}
-                                onClick={() => setPostFilter(f.id)}
-                                className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                                  postFilter === f.id
-                                    ? 'border-accent text-accent bg-accent/5'
-                                    : 'border-border text-muted-foreground hover:text-foreground'
-                                }`}
-                              >
-                                {f.label}
-                              </button>
-                            ))}
+                          {/* Header */}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <h2 className="text-xl md:text-2xl font-display font-bold flex items-center gap-2 min-w-0">
+                              <FileText className="h-5 w-5 text-accent shrink-0" />
+                              <span className="truncate">{t('dashboardPosts.title', 'My Posts')}</span>
+                            </h2>
                             <Button
-                              size="icon"
-                              variant="outline"
-                              className="ml-auto h-9 w-9 rounded-lg"
-                              onClick={() => setShowPostSearch((v) => !v)}
-                              aria-label="Search posts"
+                              onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                              className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg w-full sm:w-auto h-11 px-5 font-semibold shadow-[var(--shadow-gold)]"
                             >
-                              <Search className="h-4 w-4" />
+                              <Plus className="h-4 w-4 mr-2" />
+                              {t('dashboardPosts.createPost', 'Create Post')}
                             </Button>
-                          </SectionFilters>
+                          </div>
 
-                          {showPostSearch && (
-                            <Input
-                              autoFocus
-                              value={postSearch}
-                              onChange={(e) => setPostSearch(e.target.value)}
-                              placeholder="Search posts..."
-                              className="rounded-lg"
-                            />
-                          )}
+                          {/* Compact stats bar */}
+                          {(() => {
+                            const totalLikes = merged.reduce((s, it: any) => s + (it.likes || 0), 0);
+                            const totalComments = merged.reduce((s, it: any) => s + (it.commentsCount || 0), 0);
+                            const activePromotions = promoItems.filter((p) => !isAdExpired(p as any)).length;
+                            const stats = [
+                              { label: t('dashboardPosts.totalPosts', 'Total Posts'), value: postItems.length, icon: <FileText className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.totalLikes', 'Total Likes'), value: totalLikes, icon: <Heart className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.totalComments', 'Total Comments'), value: totalComments, icon: <MessageCircle className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.activePromotions', 'Active Promotions'), value: activePromotions, icon: <Megaphone className="h-3.5 w-3.5" /> },
+                            ];
+                            return (
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg border border-border/50 bg-card/50 p-2">
+                                {stats.map((s) => (
+                                  <div key={s.label} className="flex flex-col gap-0.5 px-2 py-1.5 min-w-0">
+                                    <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground truncate">
+                                      <span className="text-accent shrink-0">{s.icon}</span>
+                                      <span className="truncate">{s.label}</span>
+                                    </span>
+                                    <span className="text-lg font-display font-bold text-foreground">{s.value}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })()}
+
+                          {/* Filters + search */}
+                          <div className="flex flex-col md:flex-row md:items-center gap-3">
+                            <div className="-mx-1 px-1 overflow-x-auto md:overflow-visible">
+                              <div className="flex items-center gap-2 w-max md:w-auto md:flex-wrap">
+                                {([
+                                  { id: 'all', label: t('dashboardPosts.filterAll', 'All') },
+                                  { id: 'photos', label: t('dashboardPosts.filterPhotos', 'Photos') },
+                                  { id: 'videos', label: t('dashboardPosts.filterVideos', 'Videos') },
+                                  { id: 'promotions', label: t('dashboardPosts.filterPromotions', 'Promotions') },
+                                ] as const).map((f) => (
+                                  <button
+                                    key={f.id}
+                                    onClick={() => setPostFilter(f.id as any)}
+                                    className={`shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-all duration-200 ${
+                                      postFilter === f.id
+                                        ? 'border-accent text-accent-foreground bg-accent'
+                                        : 'border-border text-muted-foreground hover:text-foreground hover:border-accent/40'
+                                    }`}
+                                  >
+                                    {f.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="relative md:ml-auto md:w-64">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                value={postSearch}
+                                onChange={(e) => setPostSearch(e.target.value)}
+                                placeholder={t('dashboardPosts.searchPlaceholder', 'Search posts...')}
+                                className="rounded-lg pl-9 h-10"
+                              />
+                            </div>
+                          </div>
 
                           {/* Post list */}
                           {filtered.length === 0 ? (
                             <SectionEmptyState
                               icon={<FileText className="h-10 w-10 opacity-50" />}
-                              title={postSearch || postFilter !== 'all' ? 'No posts match this filter.' : 'No posts yet. Create your first post!'}
+                              title={postSearch || postFilter !== 'all'
+                                ? t('dashboardPosts.emptyFiltered', 'No posts match this filter.')
+                                : t('dashboardPosts.empty', 'No posts yet. Create your first post!')}
                             />
 
                           ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                               {filtered.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const expired = isPromo ? isAdExpired(item as any) : false;
                                 const daysLeft = isPromo ? getDaysRemaining(item as any) : 0;
                                 const expirationLabel = isPromo && !expired
-                                  ? `Promotion active until ${new Date(getAdExpirationDate(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+                                  ? `${new Date(getAdExpirationDate(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
                                   : null;
                                 return (
-                                  <Card key={`${item.__kind}-${item.id}`} className="overflow-hidden rounded-lg border-border/50">
-                                    <div className="flex gap-3 p-3">
+                                  <Card
+                                    key={`${item.__kind}-${item.id}`}
+                                    className="overflow-hidden rounded-xl border-border/50 bg-card/70 transition-all duration-300 hover:border-accent/40 hover:shadow-[var(--shadow-elegant)]"
+                                  >
+                                    <div className="flex flex-col sm:flex-row gap-4 p-4">
                                       {/* Thumbnail */}
                                       <button
                                         type="button"
                                         onClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
-                                        className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-lg overflow-hidden bg-muted/40 group"
+                                        className="relative w-full h-44 sm:h-[130px] sm:w-[130px] shrink-0 rounded-lg overflow-hidden bg-muted/40 group"
                                       >
                                         {item.__mediaUrl ? (
                                           item.__mediaType === 'video' ? (
                                             <>
-                                              <video src={item.__mediaUrl} className="w-full h-full object-cover" />
-                                              <span className="absolute bottom-1.5 right-1.5 h-5 w-5 rounded bg-black/60 flex items-center justify-center text-accent">
-                                                <VideoIcon className="h-3 w-3" />
+                                              <video src={item.__mediaUrl} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]" />
+                                              <span className="absolute bottom-2 right-2 h-6 w-6 rounded-md bg-black/60 flex items-center justify-center text-accent">
+                                                <VideoIcon className="h-3.5 w-3.5" />
                                               </span>
                                             </>
                                           ) : (
                                             <>
-                                              <img src={item.__mediaUrl} alt="" className="w-full h-full object-cover" />
-                                              <span className="absolute bottom-1.5 right-1.5 h-5 w-5 rounded bg-black/60 flex items-center justify-center text-accent">
-                                                {isPromo ? <Megaphone className="h-3 w-3" /> : <ImageIcon className="h-3 w-3" />}
+                                              <img src={item.__mediaUrl} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]" />
+                                              <span className="absolute bottom-2 right-2 h-6 w-6 rounded-md bg-black/60 flex items-center justify-center text-accent">
+                                                {isPromo ? <Megaphone className="h-3.5 w-3.5" /> : <ImageIcon className="h-3.5 w-3.5" />}
                                               </span>
                                             </>
                                           )
                                         ) : (
                                           <div className="w-full h-full flex items-center justify-center">
-                                            <FileText className="h-6 w-6 text-muted-foreground" />
+                                            <FileText className="h-7 w-7 text-muted-foreground" />
                                           </div>
                                         )}
                                       </button>
 
                                       {/* Content */}
-                                      <div className="flex-1 min-w-0">
+                                      <div className="flex-1 min-w-0 flex flex-col">
                                         <div className="flex items-start justify-between gap-2">
-                                          <h3 className="font-semibold text-foreground line-clamp-1 break-words">
+                                          <h3 className="font-semibold text-base text-foreground line-clamp-1 break-words">
                                             {getTitle(item.__text)}
                                           </h3>
                                           <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full -mt-1 -mr-1 shrink-0" disabled={isSaving}>
+                                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full -mt-1 -mr-1 shrink-0" disabled={isSaving}>
                                                 <MoreHorizontal className="h-4 w-4" />
                                               </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
+                                              <DropdownMenuItem onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}>
+                                                <Pencil className="h-4 w-4 mr-2" />
+                                                {t('dashboardPosts.edit', 'Edit')}
+                                              </DropdownMenuItem>
                                               <DropdownMenuItem
                                                 onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
                                                 className="text-destructive focus:text-destructive"
                                               >
                                                 <Trash2 className="h-4 w-4 mr-2" />
-                                                Delete
+                                                {t('dashboardPosts.delete', 'Delete')}
                                               </DropdownMenuItem>
                                             </DropdownMenuContent>
                                           </DropdownMenu>
                                         </div>
-                                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5 flex-wrap">
+
+                                        <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3 break-words whitespace-pre-line">
+                                          {item.__text}
+                                        </p>
+
+                                        <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1.5 flex-wrap">
                                           <span>{new Date(item.__date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                           <span>·</span>
                                           <span>{formatTime(item.__date)}</span>
                                         </div>
-                                        <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-                                          {isPromo ? (
+
+                                        <div className="mt-2 flex items-center gap-2 flex-wrap">
+                                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                            {t('dashboardPosts.published', 'Published')}
+                                          </span>
+                                          {isPromo && (
                                             expired ? (
-                                              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-destructive">
+                                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
                                                 <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                                                Expired
+                                                {t('dashboardPosts.expired', 'Expired')}
                                               </span>
                                             ) : (
-                                              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
-                                                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                                                Promoted
+                                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/20">
+                                                <Megaphone className="h-3 w-3" />
+                                                {t('dashboardPosts.promoted', 'Promoted')}
+                                                {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
                                               </span>
                                             )
-                                          ) : (
-                                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-500">
-                                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                              Published
-                                            </span>
                                           )}
                                         </div>
-                                        {isPromo && !expired && expirationLabel && (
-                                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10 border border-accent/20 text-[11px] font-medium text-accent">
-                                            <Megaphone className="h-3 w-3" />
-                                            {expirationLabel}
-                                          </div>
-                                        )}
+
+                                        {/* Engagement metrics */}
+                                        <div className="mt-3 flex items-center gap-4 sm:gap-6 flex-wrap">
+                                          <button
+                                            type="button"
+                                            onClick={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
+                                            className={`inline-flex items-center gap-1.5 text-sm transition-colors ${(item as any).isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+                                          >
+                                            <Heart className={`h-4 w-4 ${(item as any).isLiked ? 'fill-current' : ''}`} />
+                                            <span className="font-semibold text-foreground">{(item as any).likes || 0}</span>
+                                            <span className="hidden sm:inline">{t('dashboardPosts.likes', 'Likes')}</span>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
+                                            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                          >
+                                            <MessageCircle className="h-4 w-4" />
+                                            <span className="font-semibold text-foreground">{(item as any).commentsCount || 0}</span>
+                                            <span className="hidden sm:inline">{t('dashboardPosts.comments', 'Comments')}</span>
+                                          </button>
+                                          <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                                            <Share2 className="h-4 w-4" />
+                                            <span className="font-semibold text-foreground">{(item as any).shares || 0}</span>
+                                            <span className="hidden sm:inline">{t('dashboardPosts.shares', 'Shares')}</span>
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
 
-                                    {/* Stats row */}
-                                    <div className="grid grid-cols-4 border-t border-border/50 px-3 py-2 text-center">
-                                      <button
-                                        type="button"
-                                        onClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
-                                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                                    {/* Quick actions */}
+                                    <div className="flex flex-wrap gap-2 border-t border-border/50 px-4 py-3">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px]"
+                                        onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}
                                       >
-                                        <Eye className="h-4 w-4" />
-                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).views || 0}</span>
-                                        <span className="text-[10px] uppercase tracking-wide">Views</span>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
-                                        className={`flex flex-col items-center gap-0.5 transition-colors ${(item as any).isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+                                        <Pencil className="h-4 w-4 mr-1.5" />
+                                        {t('dashboardPosts.edit', 'Edit')}
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={isPromo}
+                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-accent/40 text-accent hover:bg-accent/10 hover:text-accent"
+                                        onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
                                       >
-                                        <Heart className={`h-4 w-4 ${(item as any).isLiked ? 'fill-current' : ''}`} />
-                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).likes || 0}</span>
-                                        <span className="text-[10px] uppercase tracking-wide">Likes</span>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
-                                        className="flex flex-col items-center gap-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                                        <Megaphone className="h-4 w-4 mr-1.5" />
+                                        {t('dashboardPosts.promote', 'Promote')}
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                        onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
                                       >
-                                        <MessageCircle className="h-4 w-4" />
-                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).commentsCount || 0}</span>
-                                        <span className="text-[10px] uppercase tracking-wide">Comments</span>
-                                      </button>
-                                      <div className="flex flex-col items-center gap-0.5 text-muted-foreground">
-                                        <Share2 className="h-4 w-4" />
-                                        <span className="text-xs font-semibold text-foreground leading-tight">{(item as any).shares || 0}</span>
-                                        <span className="text-[10px] uppercase tracking-wide">Shares</span>
-                                      </div>
+                                        <Trash2 className="h-4 w-4 mr-1.5" />
+                                        {t('dashboardPosts.delete', 'Delete')}
+                                      </Button>
                                     </div>
                                   </Card>
                                 );
@@ -2816,13 +2878,36 @@ const Dashboard = () => {
                             </div>
                           )}
 
-                          {/* Tip banner */}
-                          <div className="flex items-start gap-2 p-3 rounded-lg border border-border/50 bg-card/50">
-                            <Lightbulb className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                            <p className="text-sm text-muted-foreground">
-                              <span className="font-semibold text-foreground">Tip:</span> Engage regularly with your audience to grow your reach.
-                            </p>
-                          </div>
+                          {/* Edit dialog */}
+                          <Dialog open={!!editItem} onOpenChange={(open) => { if (!open) setEditItem(null); }}>
+                            <DialogContent className="max-w-md rounded-lg">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  {editItem?.kind === 'promotion'
+                                    ? t('dashboardPosts.editPromotion', 'Edit Promotion')
+                                    : t('dashboardPosts.editPost', 'Edit Post')}
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 mt-2">
+                                <Textarea
+                                  value={editItem?.text || ''}
+                                  onChange={(e) => setEditItem(editItem ? { ...editItem, text: e.target.value.slice(0, 200) } : null)}
+                                  rows={5}
+                                  maxLength={200}
+                                  className="rounded-lg"
+                                />
+                                <p className="text-xs text-muted-foreground text-right">{(editItem?.text || '').length}/200</p>
+                                <Button
+                                  onClick={handleSaveEditItem}
+                                  disabled={isSaving || !(editItem?.text || '').trim()}
+                                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg"
+                                >
+                                  {isSaving ? t('common.loading', 'Loading...') : t('common.save', 'Save')}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
 
                           {/* Add Post dialog (controlled) */}
                           <Dialog open={showPostDialog} onOpenChange={(open) => {
