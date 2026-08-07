@@ -248,5 +248,33 @@
     "downgradeConfirmDescription": "Vei trece de la planul {{current}} la planul {{target}}. Vei pierde modificările și funcționalitățile active din planul curent.",
     "cancel": "Anulează",
     "confirmDowngrade": "Da, fă downgrade"
+  },
+  "dashboardPosts": {
+    "title": "Postările mele",
+    "createPost": "Creează",
+    "totalPosts": "Total postări",
+    "totalLikes": "Total aprecieri",
+    "totalComments": "Total comentarii",
+    "activePromotions": "Promoții active",
+    "all": "Toate",
+    "photos": "Fotografii",
+    "videos": "Videoclipuri",
+    "promotions": "Promoții",
+    "searchPlaceholder": "Caută postări...",
+    "noPosts": "Nu ai postări încă.",
+    "edit": "Editează",
+    "promote": "Promovează",
+    "delete": "Șterge",
+    "postOptions": "Opțiuni postare",
+    "editPost": "Editează postarea",
+    "promotePost": "Promovează postarea",
+    "deletePost": "Șterge postarea",
+    "deleteConfirm": "Sigur vrei să ștergi această postare?",
+    "promoted": "Promovat",
+    "likes": "aprecieri",
+    "comments": "comentarii",
+    "shares": "distribuiri",
+    "promotedUntil": "Promovat până la {{date}}",
+    "loadMore": "Încarcă mai multe"
   }
 }
