@@ -205,7 +205,7 @@
   },
   "dashboardPosts": {
     "title": "My Posts",
-    "createPost": "Create Post",
+    "createPost": "Create",
     "totalPosts": "Total Posts",
     "totalLikes": "Total Likes",
     "totalComments": "Total Comments",
