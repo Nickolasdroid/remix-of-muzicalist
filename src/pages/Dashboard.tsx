@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
 import i18n from "@/i18n";
@@ -256,6 +257,7 @@ const Dashboard = () => {
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
+  const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
@@ -2759,26 +2761,94 @@ const Dashboard = () => {
                                           <h3 className="font-semibold text-base text-foreground line-clamp-1 break-words">
                                             {getTitle(item.__text)}
                                           </h3>
-                                          <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full -mt-1 -mr-1 shrink-0" disabled={isSaving}>
-                                                <MoreHorizontal className="h-4 w-4" />
-                                              </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                              <DropdownMenuItem onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}>
-                                                <Pencil className="h-4 w-4 mr-2" />
-                                                {t('dashboardPosts.edit', 'Edit')}
-                                              </DropdownMenuItem>
-                                              <DropdownMenuItem
-                                                onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
-                                                className="text-destructive focus:text-destructive"
-                                              >
-                                                <Trash2 className="h-4 w-4 mr-2" />
-                                                {t('dashboardPosts.delete', 'Delete')}
-                                              </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                          </DropdownMenu>
+                                          {isMobile ? (
+                                            <Drawer
+                                              open={activePostMenu === `${item.__kind}-${item.id}`}
+                                              onOpenChange={(open) => setActivePostMenu(open ? `${item.__kind}-${item.id}` : null)}
+                                            >
+                                              <DrawerTrigger asChild>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  className="h-8 w-8 rounded-full -mt-1 -mr-1 shrink-0"
+                                                  disabled={isSaving}
+                                                  aria-label={t('dashboardPosts.postOptions', 'Post options')}
+                                                >
+                                                  <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                              </DrawerTrigger>
+                                              <DrawerContent className="rounded-t-xl">
+                                                <DrawerHeader className="pb-2">
+                                                  <DrawerTitle className="text-base font-semibold">
+                                                    {t('dashboardPosts.postOptions', 'Post options')}
+                                                  </DrawerTitle>
+                                                </DrawerHeader>
+                                                <div className="flex flex-col gap-1 px-4 pb-8">
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                      setActivePostMenu(null);
+                                                      setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text });
+                                                    }}
+                                                    className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-foreground hover:bg-accent/10 transition-colors"
+                                                  >
+                                                    <Pencil className="h-5 w-5 text-accent" />
+                                                    {t('dashboardPosts.edit', 'Edit')}
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    disabled={isPromo}
+                                                    onClick={() => {
+                                                      setActivePostMenu(null);
+                                                      setPostMediaType('promotion');
+                                                      setShowPostDialog(true);
+                                                    }}
+                                                    className={cn(
+                                                      "flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium transition-colors",
+                                                      isPromo
+                                                        ? "text-muted-foreground opacity-50 cursor-not-allowed"
+                                                        : "text-foreground hover:bg-accent/10"
+                                                    )}
+                                                  >
+                                                    <Megaphone className="h-5 w-5 text-accent" />
+                                                    {t('dashboardPosts.promote', 'Promote')}
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                      setActivePostMenu(null);
+                                                      isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id);
+                                                    }}
+                                                    className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                                                  >
+                                                    <Trash2 className="h-5 w-5" />
+                                                    {t('dashboardPosts.delete', 'Delete')}
+                                                  </button>
+                                                </div>
+                                              </DrawerContent>
+                                            </Drawer>
+                                          ) : (
+                                            <DropdownMenu>
+                                              <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full -mt-1 -mr-1 shrink-0" disabled={isSaving}>
+                                                  <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                              </DropdownMenuTrigger>
+                                              <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}>
+                                                  <Pencil className="h-4 w-4 mr-2" />
+                                                  {t('dashboardPosts.edit', 'Edit')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                  onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
+                                                  className="text-destructive focus:text-destructive"
+                                                >
+                                                  <Trash2 className="h-4 w-4 mr-2" />
+                                                  {t('dashboardPosts.delete', 'Delete')}
+                                                </DropdownMenuItem>
+                                              </DropdownMenuContent>
+                                            </DropdownMenu>
+                                          )}
                                         </div>
 
                                         <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3 break-words whitespace-pre-line">
@@ -2841,37 +2911,39 @@ const Dashboard = () => {
                                       </div>
                                     </div>
 
-                                    {/* Quick actions */}
-                                    <div className="flex flex-wrap gap-2 border-t border-border/50 px-4 py-3">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px]"
-                                        onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}
-                                      >
-                                        <Pencil className="h-4 w-4 mr-1.5" />
-                                        {t('dashboardPosts.edit', 'Edit')}
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={isPromo}
-                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-accent/40 text-accent hover:bg-accent/10 hover:text-accent"
-                                        onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
-                                      >
-                                        <Megaphone className="h-4 w-4 mr-1.5" />
-                                        {t('dashboardPosts.promote', 'Promote')}
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                        onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
-                                      >
-                                        <Trash2 className="h-4 w-4 mr-1.5" />
-                                        {t('dashboardPosts.delete', 'Delete')}
-                                      </Button>
-                                    </div>
+                                    {/* Quick actions - hidden on mobile, visible on desktop */}
+                                    {!isMobile && (
+                                      <div className="flex flex-wrap gap-2 border-t border-border/50 px-4 py-3">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px]"
+                                          onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}
+                                        >
+                                          <Pencil className="h-4 w-4 mr-1.5" />
+                                          {t('dashboardPosts.edit', 'Edit')}
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          disabled={isPromo}
+                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-accent/40 text-accent hover:bg-accent/10 hover:text-accent"
+                                          onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
+                                        >
+                                          <Megaphone className="h-4 w-4 mr-1.5" />
+                                          {t('dashboardPosts.promote', 'Promote')}
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                          onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-1.5" />
+                                          {t('dashboardPosts.delete', 'Delete')}
+                                        </Button>
+                                      </div>
+                                    )}
                                   </Card>
                                 );
                               })}
