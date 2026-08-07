@@ -2624,20 +2624,20 @@ const Dashboard = () => {
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
 
-                          {/* Header */}
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <h2 className="text-xl md:text-2xl font-display font-bold flex items-center gap-2 min-w-0">
-                              <FileText className="h-5 w-5 text-accent shrink-0" />
-                              <span className="truncate">{t('dashboardPosts.title', 'My Posts')}</span>
-                            </h2>
-                            <Button
-                              onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                              className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg w-full sm:w-auto h-11 px-5 font-semibold shadow-[var(--shadow-gold)]"
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              {t('dashboardPosts.createPost', 'Create Post')}
-                            </Button>
-                          </div>
+                          <SectionHeader
+                            icon={<FileText className="h-5 w-5 text-accent" />}
+                            title={t('dashboardPosts.title', 'My Posts')}
+                            action={
+                              <Button
+                                size="sm"
+                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                {t('dashboardPosts.createPost', 'Create')}
+                              </Button>
+                            }
+                          />
 
                           {/* Compact stats bar */}
                           {(() => {
