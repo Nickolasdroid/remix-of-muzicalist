@@ -2840,6 +2840,14 @@ const Dashboard = () => {
                                                   {t('dashboardPosts.edit', 'Edit')}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
+                                                  disabled={isPromo}
+                                                  onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
+                                                  className={cn(isPromo && "opacity-50 cursor-not-allowed")}
+                                                >
+                                                  <Megaphone className="h-4 w-4 mr-2" />
+                                                  {t('dashboardPosts.promote', 'Promote')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
                                                   onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
                                                   className="text-destructive focus:text-destructive"
                                                 >
@@ -2911,39 +2919,6 @@ const Dashboard = () => {
                                       </div>
                                     </div>
 
-                                    {/* Quick actions - hidden on mobile, visible on desktop */}
-                                    {!isMobile && (
-                                      <div className="flex flex-wrap gap-2 border-t border-border/50 px-4 py-3">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px]"
-                                          onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}
-                                        >
-                                          <Pencil className="h-4 w-4 mr-1.5" />
-                                          {t('dashboardPosts.edit', 'Edit')}
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          disabled={isPromo}
-                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-accent/40 text-accent hover:bg-accent/10 hover:text-accent"
-                                          onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
-                                        >
-                                          <Megaphone className="h-4 w-4 mr-1.5" />
-                                          {t('dashboardPosts.promote', 'Promote')}
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="rounded-lg h-9 flex-1 sm:flex-none min-w-[92px] border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                          onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
-                                        >
-                                          <Trash2 className="h-4 w-4 mr-1.5" />
-                                          {t('dashboardPosts.delete', 'Delete')}
-                                        </Button>
-                                      </div>
-                                    )}
                                   </Card>
                                 );
                               })}
