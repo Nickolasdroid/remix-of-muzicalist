@@ -2764,7 +2764,7 @@ const Dashboard = () => {
                                           {isMobile ? (
                                             <Drawer
                                               open={activePostMenu === `${item.__kind}-${item.id}`}
-                                              onOpenChange={(open) => !open && setActivePostMenu(null)}
+                                              onOpenChange={(open) => setActivePostMenu(open ? `${item.__kind}-${item.id}` : null)}
                                             >
                                               <DrawerTrigger asChild>
                                                 <Button
