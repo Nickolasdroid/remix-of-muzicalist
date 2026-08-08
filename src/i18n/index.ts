@@ -406,7 +406,12 @@ export const translateTextsSync = (targetLang: string, texts: string[]): Record<
   // every known UI string translates synchronously, with zero network calls.
   const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
   return Object.fromEntries(
-    uniqueTexts.map((t) => [t, restoreBrandName(overrides[t] || staticMap[t] || cache[t] || '')])
+    uniqueTexts.map((t) => [
+      t,
+      // Music genres own their localization — the generic dictionary must
+      // never turn "Country" into "Țară".
+      getGenreTranslation(t, base) ?? restoreBrandName(overrides[t] || staticMap[t] || cache[t] || ''),
+    ])
   );
 };
 
@@ -420,7 +425,10 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   const overrides = TRANSLATION_OVERRIDES[base] || {};
   const staticMap: Record<string, string> = base === 'ro' ? RO_TEXT : {};
 
-  const missing = uniqueTexts.filter((text) => !overrides[text] && !staticMap[text] && !cache[text]);
+  // Genres are resolved locally and are never sent to the AI translator.
+  const missing = uniqueTexts.filter(
+    (text) => getGenreTranslation(text, base) === undefined && !overrides[text] && !staticMap[text] && !cache[text]
+  );
   if (missing.length && !isAiTranslationPaused()) {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -455,9 +463,13 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
   }
 
   return Object.fromEntries(
-    uniqueTexts.map((text) => [text, restoreBrandName(overrides[text] || staticMap[text] || cache[text] || text)])
+    uniqueTexts.map((text) => [
+      text,
+      getGenreTranslation(text, base) ?? restoreBrandName(overrides[text] || staticMap[text] || cache[text] || text),
+    ])
   );
 };
+
 
 
 export default i18n;
