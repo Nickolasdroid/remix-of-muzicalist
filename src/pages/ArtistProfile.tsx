@@ -7,6 +7,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
+import { genreLabel } from "@/lib/genreLabel";
 import { supabase } from "@/integrations/supabase/client";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Button } from "@/components/ui/button";

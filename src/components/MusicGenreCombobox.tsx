@@ -17,92 +17,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { MUSIC_GENRES, MAX_GENRES } from "@/lib/musicGenres";
+import { genreLabel } from "@/lib/genreLabel";
 
-const MUSIC_GENRES = [
-  "Pop",
-  "Rock",
-  "Jazz",
-  "Blues",
-  "Hip-Hop",
-  "R&B",
-  "Country",
-  "Electronic",
-  "Dance",
-  "House",
-  "Techno",
-  "Classical",
-  "Folk",
-  "Reggae",
-  "Metal",
-  "Punk",
-  "Soul",
-  "Funk",
-  "Latin",
-  "Manele",
-  "Traditional",
-  "Party Music",
-  "Easy Listening",
-  "Ethno",
-  "Trap",
-  "Disco",
-  "Afrobeat",
-  "Amapiano",
-  "Bachata",
-  "Baile Funk",
-  "Bhangra",
-  "Bolero",
-  "Bossa Nova",
-  "Cajun",
-  "Calypso",
-  "Celtic",
-  "Chanson",
-  "Cumbia",
-  "Dancehall",
-  "Drill",
-  "Drum and Bass",
-  "Dub",
-  "Dubstep",
-  "EDM",
-  "Fado",
-  "Flamenco",
-  "Garage",
-  "Gospel",
-  "Grime",
-  "Grunge",
-  "Highlife",
-  "Indie",
-  "J-Pop",
-  "K-Pop",
-  "Klezmer",
-  "Kizomba",
-  "Kompa",
-  "Lo-fi",
-  "Mariachi",
-  "Merengue",
-  "Motown",
-  "New Wave",
-  "Opera",
-  "Polka",
-  "Progressive Rock",
-  "Qawwali",
-  "Ranchera",
-  "Reggaeton",
-  "Rumba",
-  "Salsa",
-  "Samba",
-  "Schlager",
-  "Semba",
-  "Ska",
-  "Soca",
-  "Synthwave",
-  "Tango",
-  "Trance",
-  "Turbo-Folk",
-  "Vallenato",
-  "Zouk",
-];
 
-const MAX_GENRES = 5;
 
 interface MusicGenreComboboxProps {
   value: string;
@@ -200,7 +118,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
                         selectedGenres.includes(genre) ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    {genre}
+                    {genreLabel(genre)}
                   </CommandItem>
                 ))}
                 {showAddCustom && filteredGenres.length > 0 && (
@@ -228,7 +146,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
               variant="secondary"
               className="flex items-center gap-1 pr-1"
             >
-              {genre}
+              {genreLabel(genre)}
               <button
                 type="button"
                 onClick={() => handleRemove(genre)}

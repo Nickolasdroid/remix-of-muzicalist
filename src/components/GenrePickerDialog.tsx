@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { genreLabel } from "@/lib/genreLabel";
 
 interface GenrePickerDialogProps {
   availableGenres: string[];
@@ -17,7 +18,8 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
   const [open, setOpen] = useState(false);
 
   const filtered = availableGenres.filter(g =>
-    g.toLowerCase().includes(search.toLowerCase())
+    g.toLowerCase().includes(search.toLowerCase()) ||
+    genreLabel(g).toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -56,7 +58,7 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
                 }}
               >
                 <Plus className="h-3 w-3 mr-1" />
-                {genre}
+                {genreLabel(genre)}
               </Badge>
             ))}
             {filtered.length === 0 && (
