@@ -15,6 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { toast } from "sonner";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
+import { MUSIC_GENRES } from "@/lib/musicGenres";
+import { genreLabel } from "@/lib/genreLabel";
 
 const EVENT_TYPES = [
   "Wedding", "Birthday", "Corporate Event", "Concert", "Festival",
@@ -35,10 +37,7 @@ const ArtistSearchBar = () => {
   const [userCurrency, setUserCurrency] = useState("RON");
 
   const categories = ["Singer", "Instrumentalist", "DJ", "Band"];
-  const genres = [
-    "Pop", "Rock", "Jazz", "Classical", "Electronic", "Hip Hop", "Folk",
-    "R&B", "Country", "Reggae", "Blues", "Metal"
-  ];
+  const genres = MUSIC_GENRES;
 
   // Fetch user's country for currency
   useEffect(() => {
@@ -210,7 +209,7 @@ const ArtistSearchBar = () => {
             <SelectContent>
               {genres.map((genre) => (
                 <SelectItem key={genre} value={genre.toLowerCase()}>
-                  {genre}
+                  {genreLabel(genre)}
                 </SelectItem>
               ))}
             </SelectContent>
