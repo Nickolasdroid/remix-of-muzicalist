@@ -16,6 +16,7 @@ const ensureRoDict = (): Promise<void> =>
     RO_TEXT = m.RO_TEXT;
   }));
 import { restoreBrandName, restoreBrandNameDeep } from '@/lib/brandName';
+import { getGenreTranslation } from '@/lib/musicGenres';
 
 const STATIC_RESOURCES: Record<string, any> = {
   en,
