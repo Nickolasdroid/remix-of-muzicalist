@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
+import { genreListLabel } from "@/lib/genreLabel";
 import { supabase } from "@/integrations/supabase/client";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { toast } from "sonner";
@@ -291,7 +292,7 @@ const Search = () => {
                         </div>
                         {artist.music_genres && (
                           <p className="text-xs text-muted-foreground truncate mt-0.5">
-                            {artist.music_genres}
+                            {genreListLabel(artist.music_genres)}
                           </p>
                         )}
                       </div>
@@ -345,7 +346,7 @@ const Search = () => {
                     </div>
                     {artist.music_genres && (
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
-                        {artist.music_genres}
+                        {genreListLabel(artist.music_genres)}
                       </p>
                     )}
                   </div>

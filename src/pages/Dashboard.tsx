@@ -17,6 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { genreLabel } from "@/lib/genreLabel";
+import { MUSIC_GENRES } from "@/lib/musicGenres";
 import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
@@ -2235,16 +2237,14 @@ const Dashboard = () => {
                           musicGenres: newGenres.join(', ')
                         });
                       }}>
-                                      {genre.trim()}
+                                      {genreLabel(genre.trim())}
                                       <X className="h-3 w-3 ml-1" />
                                     </Badge>)}
                                 </div>
                                 
                                 {/* Available genres to add */}
                                 {(() => {
-                      const PRIORITY_GENRES = ['Pop', 'Rock', 'Jazz', 'Manele', 'Traditional', 'Blues', 'Disco', 'Hip-Hop', 'Electronic', 'House', 'R&B', 'Latin', 'Trap', 'Reggaeton', 'Folk', 'Country'];
-                      const OTHER_GENRES = ['Afrobeat', 'Amapiano', 'Bachata', 'Baile Funk', 'Bhangra', 'Bolero', 'Bossa Nova', 'Cajun', 'Calypso', 'Celtic', 'Chanson', 'Classical', 'Cumbia', 'Dance', 'Dancehall', 'Drill', 'Drum and Bass', 'Dub', 'Dubstep', 'Easy Listening', 'EDM', 'Ethno', 'Fado', 'Flamenco', 'Funk', 'Garage', 'Gospel', 'Grime', 'Grunge', 'Highlife', 'Indie', 'J-Pop', 'K-Pop', 'Kizomba', 'Klezmer', 'Kompa', 'Lo-fi', 'Mariachi', 'Merengue', 'Metal', 'Motown', 'New Wave', 'Opera', 'Party Music', 'Polka', 'Progressive Rock', 'Punk', 'Qawwali', 'R&B', 'Ranchera', 'Reggae', 'Rumba', 'Salsa', 'Samba', 'Schlager', 'Semba', 'Ska', 'Soca', 'Soul', 'Synthwave', 'Tango', 'Techno', 'Trance', 'Turbo-Folk', 'Vallenato', 'Zouk'];
-                      const ALL_GENRES = [...PRIORITY_GENRES, ...OTHER_GENRES.filter((g) => !PRIORITY_GENRES.includes(g))];
+                      const ALL_GENRES = MUSIC_GENRES;
                       const selectedSet = new Set(formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || []);
                       const isAtLimit = selectedSet.size >= 5;
                       const availableGenres = ALL_GENRES.filter((genre) => !selectedSet.has(genre));
@@ -2261,7 +2261,7 @@ const Dashboard = () => {
                         }
                       }}>
                                       <Plus className="h-3 w-3 mr-1" />
-                                      {genre}
+                                      {genreLabel(genre)}
                                     </Badge>;
 
 
@@ -2301,7 +2301,7 @@ const Dashboard = () => {
                               </div> : <div>
                                 <div className="flex flex-wrap gap-2">
                                   {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
-                                      {genre.trim()}
+                                      {genreLabel(genre.trim())}
                                     </Badge>)}
                                   {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}
                                 </div>
