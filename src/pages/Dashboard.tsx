@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
 import PromotePostDialog from "@/components/PromotePostDialog";
+import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
