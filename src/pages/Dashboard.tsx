@@ -2714,7 +2714,7 @@ const Dashboard = () => {
                             />
 
                           ) : (
-                            <div className="space-y-4">
+                            <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                               {filtered.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const expired = isPromo ? isAdExpired(item as any) : false;
