@@ -125,6 +125,7 @@ interface Post {
   likes: number;
   isLiked: boolean;
   commentsCount?: number;
+  promoted_until?: string | null;
 }
 interface MediaPreview {
   url: string;
@@ -366,7 +367,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
           .eq('profile_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('posts')
-          .select('id, profile_id, content, media_url, media_type, created_at')
+          .select('id, profile_id, content, media_url, media_type, created_at, promoted_until')
           .eq('profile_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('followers').select('follower_id').eq('artist_id', id),
@@ -1698,6 +1699,15 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                       <span>{formatDate(post.created_at)}</span>
                                       <span>·</span>
                                       <Globe className="h-3 w-3" />
+                                      {!!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now() && (
+                                        <>
+                                          <span>·</span>
+                                          <span className="inline-flex items-center gap-1 text-accent">
+                                            <Megaphone className="h-3 w-3" />
+                                            {t("postPromotion.promoted", "Promoted")}
+                                          </span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
