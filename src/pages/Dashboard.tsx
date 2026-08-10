@@ -2921,24 +2921,19 @@ const Dashboard = () => {
                               </DialogHeader>
                               <div className="flex items-center gap-2 mt-3 flex-wrap">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
-                                  {postMediaType === 'promotion' ? <Megaphone className="h-3 w-3" /> : <Images className="h-3 w-3" />}
-                                  <span>
-                                    {postMediaType === 'promotion'
-                                      ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
-                                      : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
-                                  </span>
+                                  <Images className="h-3 w-3" />
+                                  <span>{`${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
                                   <Clock className="h-3 w-3" />
-                                  <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Resets at renewal'}</span>
+                                  <span>Resets at renewal</span>
                                 </div>
                               </div>
                               <div className="space-y-4 mt-4">
-                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
-                                  <TabsList className="grid w-full grid-cols-3">
+                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video')}>
+                                  <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Photo</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
-                                    <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
                                   </TabsList>
 
                                   <TabsContent value="image" className="space-y-4">
@@ -3007,40 +3002,6 @@ const Dashboard = () => {
                                     </Button>
                                   </TabsContent>
 
-                                  <TabsContent value="promotion" className="space-y-4">
-                                    <div>
-                                      <Label>Promotion Text</Label>
-                                      <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({ ...newPromotion, description: e.target.value.slice(0, 200) })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
-                                    </div>
-
-                                    {newPromotion.mediaUrl && <div className="relative">
-                                        {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({ ...newPromotion, mediaUrl: "", mediaType: "" })}>
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>}
-                                    {!newPromotion.mediaUrl && promotionUploadProgress === null && <>
-                                        <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
-                                      </>}
-                                    {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-sm font-medium">Uploading media…</p>
-                                          <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
-                                        </div>
-                                        <Progress value={promotionUploadProgress} />
-                                      </div>}
-
-                                    <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create Promotion"}
-                                    </Button>
-                                  </TabsContent>
                                 </Tabs>
                               </div>
                             </DialogContent>
