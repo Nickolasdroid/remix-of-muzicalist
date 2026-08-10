@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Heart, MessageCircle, Send, Globe } from "lucide-react";
+import { Heart, MessageCircle, Send, Globe, Megaphone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
@@ -8,6 +8,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { Button } from "@/components/ui/button";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export interface FeedPostAuthor {
   id?: string;
@@ -27,6 +28,8 @@ interface FeedPostCardProps {
   likes?: number;
   commentsCount?: number;
   isLiked?: boolean;
+  /** Subtle indicator shown when the post currently uses a promotion entitlement */
+  promoted?: boolean;
   /** Extra metadata rendered in the meta row (e.g. status badges) */
   metaExtra?: ReactNode;
   /** Three-dot menu element rendered in the top-right corner */
@@ -38,6 +41,7 @@ interface FeedPostCardProps {
   onShare?: () => void;
   shares?: number;
 }
+
 
 const actionBtnClass =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0";
@@ -51,6 +55,7 @@ const FeedPostCard = ({
   likes = 0,
   commentsCount = 0,
   isLiked = false,
+  promoted = false,
   metaExtra,
   menu,
   onAuthorClick,
@@ -60,6 +65,7 @@ const FeedPostCard = ({
   onShare,
   shares,
 }: FeedPostCardProps) => {
+  const { t } = useTranslation();
   return (
     <Card className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
       <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -96,6 +102,15 @@ const FeedPostCard = ({
                 <span>{formatSmartDate(createdAt)}</span>
                 <span>·</span>
                 <Globe className="h-3 w-3" />
+                {promoted && (
+                  <>
+                    <span>·</span>
+                    <span className="inline-flex items-center gap-1 text-accent">
+                      <Megaphone className="h-3 w-3" />
+                      {t("postPromotion.promoted", "Promoted")}
+                    </span>
+                  </>
+                )}
                 {metaExtra}
               </div>
             </div>

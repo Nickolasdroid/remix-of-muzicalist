@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
-import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -49,6 +50,7 @@ interface FeedItem {
   likes: number;
   commentsCount: number;
   type: "post" | "announcement";
+  promoted?: boolean;
 }
 
 interface MediaPreview {
@@ -58,6 +60,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [feedFilter, setFeedFilter] = useState<"all" | "announcements">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +105,7 @@ const Feed = () => {
       const [postsRes, promosRes] = await Promise.all([
         supabase
           .from('posts')
-          .select(`id, profile_id, content, media_url, media_type, created_at, profiles!inner (stage_name, avatar_url, specialization, plan)`)
+          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, profiles!inner (stage_name, avatar_url, specialization, plan)`)
           .order('created_at', { ascending: false })
           .range(from, to),
         supabase
@@ -171,6 +174,7 @@ const Feed = () => {
         likes: postLikeCounts.get(post.id) || 0,
         commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
+        promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
       }));
 
       const promoItems: FeedItem[] = promotions.map((a: any) => ({
@@ -193,9 +197,14 @@ const Feed = () => {
         type: "announcement" as const,
       }));
 
-      const combined = [...postsWithProfiles, ...promoItems].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      // Promoted posts keep the existing priority boost: they are ranked first,
+      // then everything else falls back to reverse-chronological order.
+      const combined = [...postsWithProfiles, ...promoItems].sort((a, b) => {
+        const pa = a.promoted ? 1 : 0;
+        const pb = b.promoted ? 1 : 0;
+        if (pa !== pb) return pb - pa;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
 
       if (append) {
         setFeedItems(prev => [...prev, ...combined]);
@@ -539,6 +548,15 @@ const Feed = () => {
                           <span>{formatDate(item.created_at)}</span>
                           <span>·</span>
                           <Globe className="h-3 w-3" />
+                          {item.promoted && (
+                            <>
+                              <span>·</span>
+                              <span className="inline-flex items-center gap-1 text-accent">
+                                <Megaphone className="h-3 w-3" />
+                                {t("postPromotion.promoted", "Promoted")}
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

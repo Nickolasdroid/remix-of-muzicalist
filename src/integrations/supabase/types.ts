@@ -301,6 +301,7 @@ export type Database = {
           id: string
           is_premium: boolean
           kind: string
+          post_id: string | null
           profile_id: string
         }
         Insert: {
@@ -310,6 +311,7 @@ export type Database = {
           id?: string
           is_premium?: boolean
           kind?: string
+          post_id?: string | null
           profile_id: string
         }
         Update: {
@@ -319,9 +321,18 @@ export type Database = {
           id?: string
           is_premium?: boolean
           kind?: string
+          post_id?: string | null
           profile_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "consumed_ad_slots_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_reports: {
         Row: {
@@ -1451,6 +1462,8 @@ export type Database = {
           media_type: string | null
           media_url: string | null
           profile_id: string
+          promoted_at: string | null
+          promoted_until: string | null
           updated_at: string
         }
         Insert: {
@@ -1460,6 +1473,8 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           profile_id: string
+          promoted_at?: string | null
+          promoted_until?: string | null
           updated_at?: string
         }
         Update: {
@@ -1469,6 +1484,8 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           profile_id?: string
+          promoted_at?: string | null
+          promoted_until?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2196,6 +2213,7 @@ export type Database = {
       }
       auto_reactivate_expired_suspensions: { Args: never; Returns: number }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
+      billing_period_start: { Args: { _user_id: string }; Returns: string }
       change_case_priority: {
         Args: {
           _case_id: string
@@ -2620,6 +2638,7 @@ export type Database = {
         }
         Returns: number
       }
+      promote_post: { Args: { p_post_id: string }; Returns: Json }
       publish_email_template_version: {
         Args: { _version_id: string }
         Returns: {

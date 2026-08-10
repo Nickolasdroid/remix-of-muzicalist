@@ -22,6 +22,7 @@ import { MUSIC_GENRES } from "@/lib/musicGenres";
 import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
+import PromotePostDialog from "@/components/PromotePostDialog";
 import { sharePost } from "@/lib/sharePost";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -232,16 +233,13 @@ const Dashboard = () => {
   const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
   const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
+  // Post promotions consume the existing monthly promotion entitlement.
+  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
+  const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
+  const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
 
-  // Promotion dialog state (in Posts section)
-  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
-  const [newPromotion, setNewPromotion] = useState({
-    description: "",
-    mediaUrl: "",
-    mediaType: ""
-  });
 
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
@@ -252,12 +250,12 @@ const Dashboard = () => {
     mediaType: ""
   });
   const [showPostDialog, setShowPostDialog] = useState(false);
-  const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
+  const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
-  const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
@@ -1027,67 +1025,7 @@ const Dashboard = () => {
   };
 
   // Promotion functions (in Posts section)
-  const handlePromotionMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    if (file.type.startsWith('video/') && file.size > 500 * 1024 * 1024) {
-      toast({ title: "Error", description: "Video file size must not exceed 500 MB.", variant: "destructive" });
-      e.target.value = "";
-      return;
-    }
-    setIsSaving(true);
-    setPromotionUploadProgress(0);
-    try {
-      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPromotionUploadProgress(p));
-      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-      setNewPromotion({ ...newPromotion, mediaUrl: publicUrl, mediaType });
-      toast({ title: "Success", description: "Media uploaded!" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-      setPromotionUploadProgress(null);
-      e.target.value = "";
-    }
-  };
 
-  const handleAddPromotion = async () => {
-    if (!user || !newPromotion.description) return;
-    if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
-      return;
-    }
-    setIsSaving(true);
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      const { data: inserted, error } = await supabase.from('announcements').insert({
-        profile_id: user.id,
-        title: "Announcement",
-        date: todayDate,
-        description: newPromotion.description,
-        is_premium: true,
-        media_url: newPromotion.mediaUrl || null,
-        media_type: newPromotion.mediaType || null
-      }).select('id').single();
-      if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: true,
-        announcement_id: inserted?.id ?? null,
-      });
-      await loadAnnouncements();
-      setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
-      setShowPostDialog(false);
-      setPostMediaType('image');
-      toast({ title: "Success", description: "Promotion created!" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   // Posts functions
   const handleAddPost = async () => {
@@ -1137,6 +1075,22 @@ const Dashboard = () => {
         description: error.message,
         variant: "destructive"
       });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  /** Applies one monthly promotion entitlement to an existing post. */
+  const handlePromotePost = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await (supabase as any).rpc('promote_post', { p_post_id: id });
+      if (error) throw error;
+      await loadPosts();
+      await loadAnnouncements();
+      setPromoteTarget(null);
+      toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -2605,7 +2559,11 @@ const Dashboard = () => {
                           const filtered = merged.filter((it) => {
                             if (postFilter === 'photos' && !(it.__kind === 'post' && it.__mediaType === 'image')) return false;
                             if (postFilter === 'videos' && !(it.__kind === 'post' && it.__mediaType === 'video')) return false;
-                            if (postFilter === 'promotions' && it.__kind !== 'promotion') return false;
+                            if (postFilter === 'promotions') {
+                              const activePromo = it.__kind === 'promotion'
+                                || (!!(it as any).promoted_until && new Date((it as any).promoted_until).getTime() > Date.now());
+                              if (!activePromo) return false;
+                            }
                             if (postSearch.trim()) {
                               const q = postSearch.trim().toLowerCase();
                               if (!it.__text.toLowerCase().includes(q)) return false;
@@ -2626,7 +2584,7 @@ const Dashboard = () => {
                           return (
                         <SectionShell>
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
-                          <OverLimitBanner kind="promotions" used={premiumAdsUsed} limit={PREMIUM_AD_LIMIT} resetDate={periodEnd} />
+                          <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
 
                           <SectionHeader
                             icon={<FileText className="h-5 w-5 text-accent" />}
@@ -2647,7 +2605,9 @@ const Dashboard = () => {
                           {(() => {
                             const totalLikes = merged.reduce((s, it: any) => s + (it.likes || 0), 0);
                             const totalComments = merged.reduce((s, it: any) => s + (it.commentsCount || 0), 0);
-                            const activePromotions = promoItems.filter((p) => !isAdExpired(p as any)).length;
+                            const activePromotions =
+                              promoItems.filter((p) => !isAdExpired(p as any)).length +
+                              postItems.filter((p: any) => !!p.promoted_until && new Date(p.promoted_until).getTime() > Date.now()).length;
                             const stats = [
                               { label: t('dashboardPosts.totalPosts', 'Total Posts'), value: postItems.length, icon: <FileText className="h-3.5 w-3.5" /> },
                               { label: t('dashboardPosts.totalLikes', 'Total Likes'), value: totalLikes, icon: <Heart className="h-3.5 w-3.5" /> },
@@ -2717,6 +2677,8 @@ const Dashboard = () => {
                             <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                               {filtered.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
+                                const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
+                                const isPostPromoted = !!postPromotedUntil && new Date(postPromotedUntil).getTime() > Date.now();
                                 const expired = isPromo ? isAdExpired(item as any) : false;
                                 const daysLeft = isPromo ? getDaysRemaining(item as any) : 0;
                                 const expirationLabel = isPromo && !expired
@@ -2738,6 +2700,7 @@ const Dashboard = () => {
                                     likes={(item as any).likes || 0}
                                     commentsCount={(item as any).commentsCount || 0}
                                     isLiked={(item as any).isLiked}
+                                    promoted={isPostPromoted}
                                     shares={(item as any).shares || 0}
                                     onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
                                     onLike={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
@@ -2804,24 +2767,21 @@ const Dashboard = () => {
                                                 <Pencil className="h-5 w-5 text-accent" />
                                                 {t('dashboardPosts.edit', 'Edit')}
                                               </button>
-                                              <button
-                                                type="button"
-                                                disabled={isPromo}
-                                                onClick={() => {
-                                                  setActivePostMenu(null);
-                                                  setPostMediaType('promotion');
-                                                  setShowPostDialog(true);
-                                                }}
-                                                className={cn(
-                                                  "flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium transition-colors",
-                                                  isPromo
-                                                    ? "text-muted-foreground opacity-50 cursor-not-allowed"
-                                                    : "text-foreground hover:bg-accent/10"
-                                                )}
-                                              >
-                                                <Megaphone className="h-5 w-5 text-accent" />
-                                                {t('dashboardPosts.promote', 'Promote')}
-                                              </button>
+                                              {!isPromo && (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    setActivePostMenu(null);
+                                                    setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil });
+                                                  }}
+                                                  className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-foreground hover:bg-accent/10 transition-colors"
+                                                >
+                                                  <Megaphone className="h-5 w-5 text-accent" />
+                                                  {isPostPromoted
+                                                    ? t('postPromotion.managePromotion', 'Manage promotion')
+                                                    : t('postPromotion.promotePost', 'Promote post')}
+                                                </button>
+                                              )}
                                               <button
                                                 type="button"
                                                 onClick={() => {
@@ -2848,14 +2808,16 @@ const Dashboard = () => {
                                               <Pencil className="h-4 w-4 mr-2" />
                                               {t('dashboardPosts.edit', 'Edit')}
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                              disabled={isPromo}
-                                              onClick={() => { setPostMediaType('promotion'); setShowPostDialog(true); }}
-                                              className={cn(isPromo && "opacity-50 cursor-not-allowed")}
-                                            >
-                                              <Megaphone className="h-4 w-4 mr-2" />
-                                              {t('dashboardPosts.promote', 'Promote')}
-                                            </DropdownMenuItem>
+                                            {!isPromo && (
+                                              <DropdownMenuItem
+                                                onClick={() => setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil })}
+                                              >
+                                                <Megaphone className="h-4 w-4 mr-2" />
+                                                {isPostPromoted
+                                                  ? t('postPromotion.managePromotion', 'Manage promotion')
+                                                  : t('postPromotion.promotePost', 'Promote post')}
+                                              </DropdownMenuItem>
+                                            )}
                                             <DropdownMenuItem
                                               onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
                                               className="text-destructive focus:text-destructive"
@@ -2873,6 +2835,16 @@ const Dashboard = () => {
                               })}
                             </div>
                           )}
+
+                          <PromotePostDialog
+                            open={!!promoteTarget}
+                            onOpenChange={(open) => { if (!open) setPromoteTarget(null); }}
+                            isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
+                            promotedUntil={promoteTarget?.promotedUntil}
+                            remaining={promotionsRemaining}
+                            isSaving={isSaving}
+                            onConfirm={() => promoteTarget && handlePromotePost(promoteTarget.id)}
+                          />
 
                           {/* Edit dialog */}
                           <Dialog open={!!editItem} onOpenChange={(open) => { if (!open) setEditItem(null); }}>
@@ -2916,24 +2888,19 @@ const Dashboard = () => {
                               </DialogHeader>
                               <div className="flex items-center gap-2 mt-3 flex-wrap">
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
-                                  {postMediaType === 'promotion' ? <Megaphone className="h-3 w-3" /> : <Images className="h-3 w-3" />}
-                                  <span>
-                                    {postMediaType === 'promotion'
-                                      ? `${Math.max(premiumAdsRemaining, 0)}/${PREMIUM_AD_LIMIT} left`
-                                      : `${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}
-                                  </span>
+                                  <Images className="h-3 w-3" />
+                                  <span>{`${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
                                   <Clock className="h-3 w-3" />
-                                  <span>{postMediaType === 'promotion' ? 'Valid 15 days' : 'Resets at renewal'}</span>
+                                  <span>Resets at renewal</span>
                                 </div>
                               </div>
                               <div className="space-y-4 mt-4">
-                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video' | 'promotion')}>
-                                  <TabsList className="grid w-full grid-cols-3">
+                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video')}>
+                                  <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="image">Photo</TabsTrigger>
                                     <TabsTrigger value="video">Video</TabsTrigger>
-                                    <TabsTrigger value="promotion" disabled={premiumAdsRemaining <= 0}>Promotion</TabsTrigger>
                                   </TabsList>
 
                                   <TabsContent value="image" className="space-y-4">
@@ -3002,40 +2969,6 @@ const Dashboard = () => {
                                     </Button>
                                   </TabsContent>
 
-                                  <TabsContent value="promotion" className="space-y-4">
-                                    <div>
-                                      <Label>Promotion Text</Label>
-                                      <Textarea value={newPromotion.description} onChange={(e) => setNewPromotion({ ...newPromotion, description: e.target.value.slice(0, 200) })} placeholder="Write your promotion here..." rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPromotion.description.length}/200</p>
-                                    </div>
-
-                                    {newPromotion.mediaUrl && <div className="relative">
-                                        {newPromotion.mediaType === 'video' ? <SmoothVideoPlayer src={newPromotion.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" /> : <img src={newPromotion.mediaUrl} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />}
-                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPromotion({ ...newPromotion, mediaUrl: "", mediaType: "" })}>
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>}
-                                    {!newPromotion.mediaUrl && promotionUploadProgress === null && <>
-                                        <Label htmlFor="promotion-media-input" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="promotion-media-input" type="file" accept="image/*,video/*" onChange={handlePromotionMediaUpload} className="hidden" />
-                                      </>}
-                                    {promotionUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-sm font-medium">Uploading media…</p>
-                                          <p className="text-sm text-muted-foreground">{promotionUploadProgress}%</p>
-                                        </div>
-                                        <Progress value={promotionUploadProgress} />
-                                      </div>}
-
-                                    <Button onClick={handleAddPromotion} disabled={isSaving || !newPromotion.description} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create Promotion"}
-                                    </Button>
-                                  </TabsContent>
                                 </Tabs>
                               </div>
                             </DialogContent>
