@@ -2733,101 +2733,36 @@ const Dashboard = () => {
                                       </>
                                     }
                                     menu={
-                                      isMobile ? (
-                                        <Drawer
-                                          open={activePostMenu === `${item.__kind}-${item.id}`}
-                                          onOpenChange={(open) => setActivePostMenu(open ? `${item.__kind}-${item.id}` : null)}
-                                        >
-                                          <DrawerTrigger asChild>
-                                            <Button
-                                              variant="ghost"
-                                              size="icon"
-                                              className="h-8 w-8 rounded-full shrink-0"
-                                              disabled={isSaving}
-                                              aria-label={t('dashboardPosts.postOptions', 'Post options')}
-                                            >
-                                              <MoreHorizontal className="h-5 w-5" />
-                                            </Button>
-                                          </DrawerTrigger>
-                                          <DrawerContent className="rounded-t-xl">
-                                            <DrawerHeader className="pb-2">
-                                              <DrawerTitle className="text-base font-semibold">
-                                                {t('dashboardPosts.postOptions', 'Post options')}
-                                              </DrawerTitle>
-                                            </DrawerHeader>
-                                            <div className="flex flex-col gap-1 px-4 pb-8">
-                                              <button
-                                                type="button"
-                                                onClick={() => {
-                                                  setActivePostMenu(null);
-                                                  setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text });
-                                                }}
-                                                className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-foreground hover:bg-accent/10 transition-colors"
-                                              >
-                                                <Pencil className="h-5 w-5 text-accent" />
-                                                {t('dashboardPosts.edit', 'Edit')}
-                                              </button>
-                                              {!isPromo && (
-                                                <button
-                                                  type="button"
-                                                  onClick={() => {
-                                                    setActivePostMenu(null);
-                                                    setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil });
-                                                  }}
-                                                  className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-foreground hover:bg-accent/10 transition-colors"
-                                                >
-                                                  <Megaphone className="h-5 w-5 text-accent" />
-                                                  {isPostPromoted
-                                                    ? t('postPromotion.managePromotion', 'Manage promotion')
-                                                    : t('postPromotion.promotePost', 'Promote post')}
-                                                </button>
-                                              )}
-                                              <button
-                                                type="button"
-                                                onClick={() => {
-                                                  setActivePostMenu(null);
-                                                  isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id);
-                                                }}
-                                                className="flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                                              >
-                                                <Trash2 className="h-5 w-5" />
-                                                {t('dashboardPosts.delete', 'Delete')}
-                                              </button>
-                                            </div>
-                                          </DrawerContent>
-                                        </Drawer>
-                                      ) : (
-                                        <DropdownMenu>
-                                          <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0" disabled={isSaving}>
-                                              <MoreHorizontal className="h-5 w-5" />
-                                            </Button>
-                                          </DropdownMenuTrigger>
-                                          <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text })}>
-                                              <Pencil className="h-4 w-4 mr-2" />
-                                              {t('dashboardPosts.edit', 'Edit')}
-                                            </DropdownMenuItem>
-                                            {!isPromo && (
-                                              <DropdownMenuItem
-                                                onClick={() => setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil })}
-                                              >
-                                                <Megaphone className="h-4 w-4 mr-2" />
-                                                {isPostPromoted
+                                      <PostActionsMenu
+                                        open={activePostMenu === `${item.__kind}-${item.id}`}
+                                        onOpenChange={(open) => setActivePostMenu(open ? `${item.__kind}-${item.id}` : null)}
+                                        disabled={isSaving}
+                                        actions={[
+                                          {
+                                            key: 'edit',
+                                            label: t('dashboardPosts.edit', 'Edit'),
+                                            icon: Pencil,
+                                            onSelect: () => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text }),
+                                          },
+                                          ...(!isPromo
+                                            ? [{
+                                                key: 'promote',
+                                                label: isPostPromoted
                                                   ? t('postPromotion.managePromotion', 'Manage promotion')
-                                                  : t('postPromotion.promotePost', 'Promote post')}
-                                              </DropdownMenuItem>
-                                            )}
-                                            <DropdownMenuItem
-                                              onClick={() => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id)}
-                                              className="text-destructive focus:text-destructive"
-                                            >
-                                              <Trash2 className="h-4 w-4 mr-2" />
-                                              {t('dashboardPosts.delete', 'Delete')}
-                                            </DropdownMenuItem>
-                                          </DropdownMenuContent>
-                                        </DropdownMenu>
-                                      )
+                                                  : t('postPromotion.promote', 'Promote'),
+                                                icon: Megaphone,
+                                                onSelect: () => setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil }),
+                                              }]
+                                            : []),
+                                          {
+                                            key: 'delete',
+                                            label: t('dashboardPosts.delete', 'Delete'),
+                                            icon: Trash2,
+                                            destructive: true,
+                                            onSelect: () => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id),
+                                          },
+                                        ]}
+                                      />
                                     }
                                   />
 
