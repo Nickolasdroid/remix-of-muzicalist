@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import ExpandableText from "@/components/ExpandableText";
@@ -146,6 +147,7 @@ const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> =>
 };
 
 const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
+  const { t } = useTranslation();
   const {
     id: routeId
   } = useParams<{
