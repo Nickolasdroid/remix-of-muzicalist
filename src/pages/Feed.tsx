@@ -8,7 +8,10 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import PostActionsMenu from "@/components/PostActionsMenu";
+import PromotePostDialog from "@/components/PromotePostDialog";
+import { getPromotionLimit } from "@/lib/planLimits";
+import { getPeriodStart } from "@/lib/billingPeriod";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +54,7 @@ interface FeedItem {
   commentsCount: number;
   type: "post" | "announcement";
   promoted?: boolean;
+  promotedUntil?: string | null;
 }
 
 interface MediaPreview {
@@ -78,6 +82,13 @@ const Feed = () => {
   const [adminDeleteTarget, setAdminDeleteTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  // Existing promotion entitlement, reused from the Dashboard business logic.
+  const [promotionLimit, setPromotionLimit] = useState(0);
+  const [promotionsUsed, setPromotionsUsed] = useState(0);
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
+  const [isPromoting, setIsPromoting] = useState(false);
+  const promotionsRemaining = promotionLimit - promotionsUsed;
 
   useEffect(() => {
     // Background auth check; doesn't block the feed fetch
@@ -86,11 +97,20 @@ const Feed = () => {
         setCurrentUserId(session.user.id);
         const { data: prof } = await supabase
           .from('profiles')
-          .select('plan, specialization')
+          .select('plan, specialization, billing, subscription_current_period_end')
           .eq('id', session.user.id)
           .maybeSingle();
         if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
           setCanCreate(true);
+        }
+        if (prof?.specialization) {
+          setPromotionLimit(getPromotionLimit(prof.plan));
+          const { data: slots } = await supabase
+            .from('consumed_ad_slots')
+            .select('consumed_at, kind')
+            .eq('profile_id', session.user.id)
+            .gte('consumed_at', getPeriodStart(prof as any).toISOString());
+          setPromotionsUsed((slots || []).filter((s: any) => s.kind === 'promotion').length);
         }
       }
     });
@@ -175,6 +195,7 @@ const Feed = () => {
         commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
         promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
+        promotedUntil: post.promoted_until || null,
       }));
 
       const promoItems: FeedItem[] = promotions.map((a: any) => ({
