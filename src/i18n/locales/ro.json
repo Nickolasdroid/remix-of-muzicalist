@@ -78,7 +78,6 @@
     "country": "Țară",
     "county": "Județ",
     "musicGenres": "Genuri muzicale",
-    
     "numberOfEvents": "Număr de evenimente",
     "careerStartYear": "Anul începerii carierei",
     "password": "Parolă",
@@ -276,5 +275,23 @@
     "shares": "distribuiri",
     "promotedUntil": "Promovat până la {{date}}",
     "loadMore": "Încarcă mai multe"
+  },
+  "postPromotion": {
+    "promotePost": "Promovează postarea",
+    "managePromotion": "Gestionează promovarea",
+    "promoted": "Promovată",
+    "title": "Promovare postare",
+    "description": "Postarea ta va primi vizibilitate suplimentară în feedul Muzicalist.",
+    "available_one": "{{count}} promovare disponibilă luna aceasta",
+    "available_other": "{{count}} promovări disponibile luna aceasta",
+    "none": "Nu mai ai promovări disponibile luna aceasta.",
+    "confirm": "Promovează postarea",
+    "cancel": "Anulează",
+    "promotedTitle": "Postare promovată",
+    "activeVisibility": "Vizibilitate suplimentară activă",
+    "activeUntil": "Activă până la {{date}}",
+    "close": "Închide",
+    "success": "Postare promovată!",
+    "notAvailable": "Planul tău nu include promovări de postări."
   }
 }

@@ -78,7 +78,6 @@
     "country": "Country",
     "county": "County",
     "musicGenres": "Music Genres",
-    
     "numberOfEvents": "Number of Events",
     "careerStartYear": "Year of Career Start",
     "password": "Password",
@@ -276,5 +275,23 @@
     "downgradeConfirmDescription": "You will switch from the {{current}} plan to the {{target}} plan. You will lose active modifications and features from the current plan.",
     "cancel": "Cancel",
     "confirmDowngrade": "Yes, downgrade"
+  },
+  "postPromotion": {
+    "promotePost": "Promote post",
+    "managePromotion": "Manage promotion",
+    "promoted": "Promoted",
+    "title": "Post promotion",
+    "description": "Your post will receive additional visibility in the Muzicalist feed.",
+    "available_one": "{{count}} promotion available this month",
+    "available_other": "{{count}} promotions available this month",
+    "none": "No promotions available this month.",
+    "confirm": "Promote post",
+    "cancel": "Cancel",
+    "promotedTitle": "Promoted post",
+    "activeVisibility": "Additional visibility active",
+    "activeUntil": "Active until {{date}}",
+    "close": "Close",
+    "success": "Post promoted!",
+    "notAvailable": "Your plan does not include post promotions."
   }
 }
