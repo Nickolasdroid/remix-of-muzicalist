@@ -457,37 +457,35 @@ const Feed = () => {
                         </div>
                       </div>
                       
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                            <MoreHorizontal className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => {
-                            if (!currentUserId) {
-                              navigate("/login");
-                              return;
-                            }
-                            setReportTarget({ id: item.id, type: "announcement" });
-                          }}>
-                            <Flag className="h-4 w-4 mr-2" />
-                            Report
-                          </DropdownMenuItem>
-                          {currentUserId === item.profile_id && (
-                            <DropdownMenuItem onClick={() => setDeleteAnnouncementId(item.id)} className="text-destructive focus:text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          )}
-                          {isAdmin && currentUserId !== item.profile_id && (
-                            <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "announcement" })} className="text-destructive focus:text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete (admin)
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <PostActionsMenu
+                        open={openMenuId === `announcement-${item.id}`}
+                        onOpenChange={(open) => setOpenMenuId(open ? `announcement-${item.id}` : null)}
+                        actions={[
+                          {
+                            key: 'report',
+                            label: t('dashboardPosts.report', 'Report'),
+                            icon: Flag,
+                            onSelect: () => {
+                              if (!currentUserId) { navigate("/login"); return; }
+                              setReportTarget({ id: item.id, type: "announcement" });
+                            },
+                          },
+                          ...(currentUserId === item.profile_id ? [{
+                            key: 'delete',
+                            label: t('dashboardPosts.delete', 'Delete'),
+                            icon: Trash2,
+                            destructive: true,
+                            onSelect: () => setDeleteAnnouncementId(item.id),
+                          }] : []),
+                          ...(isAdmin && currentUserId !== item.profile_id ? [{
+                            key: 'admin-delete',
+                            label: t('dashboardPosts.deleteAdmin', 'Delete (admin)'),
+                            icon: Trash2,
+                            destructive: true,
+                            onSelect: () => setAdminDeleteTarget({ id: item.id, type: "announcement" }),
+                          }] : []),
+                        ]}
+                      />
                     </div>
 
                     <ExpandableText text={item.content} className="mt-3 my-[5px]" />
@@ -582,37 +580,44 @@ const Feed = () => {
                       </div>
                     </div>
                     
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                          <MoreHorizontal className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                          if (!currentUserId) {
-                            navigate("/login");
-                            return;
-                          }
-                          setReportTarget({ id: item.id, type: "post" });
-                        }}>
-                          <Flag className="h-4 w-4 mr-2" />
-                          Report
-                        </DropdownMenuItem>
-                        {currentUserId === item.profile_id && (
-                          <DropdownMenuItem onClick={() => setDeletePostId(item.id)} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        )}
-                        {isAdmin && currentUserId !== item.profile_id && (
-                          <DropdownMenuItem onClick={() => setAdminDeleteTarget({ id: item.id, type: "post" })} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete (admin)
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <PostActionsMenu
+                      open={openMenuId === `post-${item.id}`}
+                      onOpenChange={(open) => setOpenMenuId(open ? `post-${item.id}` : null)}
+                      actions={[
+                        {
+                          key: 'report',
+                          label: t('dashboardPosts.report', 'Report'),
+                          icon: Flag,
+                          onSelect: () => {
+                            if (!currentUserId) { navigate("/login"); return; }
+                            setReportTarget({ id: item.id, type: "post" });
+                          },
+                        },
+                        // Promote is only exposed to the post owner when their plan grants entitlements.
+                        ...(currentUserId === item.profile_id && promotionLimit > 0 ? [{
+                          key: 'promote',
+                          label: item.promoted
+                            ? t('postPromotion.managePromotion', 'Manage promotion')
+                            : t('postPromotion.promote', 'Promote'),
+                          icon: Megaphone,
+                          onSelect: () => setPromoteTarget({ id: item.id, promotedUntil: item.promotedUntil || null }),
+                        }] : []),
+                        ...(currentUserId === item.profile_id ? [{
+                          key: 'delete',
+                          label: t('dashboardPosts.delete', 'Delete'),
+                          icon: Trash2,
+                          destructive: true,
+                          onSelect: () => setDeletePostId(item.id),
+                        }] : []),
+                        ...(isAdmin && currentUserId !== item.profile_id ? [{
+                          key: 'admin-delete',
+                          label: t('dashboardPosts.deleteAdmin', 'Delete (admin)'),
+                          icon: Trash2,
+                          destructive: true,
+                          onSelect: () => setAdminDeleteTarget({ id: item.id, type: "post" }),
+                        }] : []),
+                      ]}
+                    />
                   </div>
 
                   <ExpandableText text={item.content} className="mt-3 my-[5px]" />
