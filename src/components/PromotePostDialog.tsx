@@ -55,7 +55,7 @@ const PromotePostDialog = ({
             <Megaphone className="h-5 w-5 text-accent" />
             {isPromoted
               ? t("postPromotion.managePromotion", "Manage promotion")
-              : t("postPromotion.promotePost", "Promote post")}
+              : t("postPromotion.promote", "Promote")}
           </DialogTitle>
           <DialogDescription>
             {isPromoted

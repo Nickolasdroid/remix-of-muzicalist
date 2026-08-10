@@ -228,7 +228,9 @@
     "postOptions": "Post options",
     "editPost": "Edit Post",
     "editPromotion": "Edit Promotion",
-    "updated": "Updated!"
+    "updated": "Updated!",
+    "report": "Report",
+    "deleteAdmin": "Delete (admin)"
   },
   "userDashboard": {
     "myAds": "Profile",
@@ -277,7 +279,6 @@
     "confirmDowngrade": "Yes, downgrade"
   },
   "postPromotion": {
-    "promotePost": "Promote post",
     "managePromotion": "Manage promotion",
     "promoted": "Promoted",
     "title": "Post promotion",
@@ -292,6 +293,7 @@
     "activeUntil": "Active until {{date}}",
     "close": "Close",
     "success": "Post promoted!",
-    "notAvailable": "Your plan does not include post promotions."
+    "notAvailable": "Your plan does not include post promotions.",
+    "promote": "Promote"
   }
 }

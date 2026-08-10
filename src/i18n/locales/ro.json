@@ -274,10 +274,11 @@
     "comments": "comentarii",
     "shares": "distribuiri",
     "promotedUntil": "Promovat până la {{date}}",
-    "loadMore": "Încarcă mai multe"
+    "loadMore": "Încarcă mai multe",
+    "report": "Raportează",
+    "deleteAdmin": "Șterge (admin)"
   },
   "postPromotion": {
-    "promotePost": "Promovează postarea",
     "managePromotion": "Gestionează promovarea",
     "promoted": "Promovată",
     "title": "Promovare postare",
@@ -292,6 +293,7 @@
     "activeUntil": "Activă până la {{date}}",
     "close": "Închide",
     "success": "Postare promovată!",
-    "notAvailable": "Planul tău nu include promovări de postări."
+    "notAvailable": "Planul tău nu include promovări de postări.",
+    "promote": "Promovează"
   }
 }
