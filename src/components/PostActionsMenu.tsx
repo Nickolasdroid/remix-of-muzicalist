@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +20,7 @@ export interface PostAction {
   /** Stable identifier for the action row */
   key: string;
   label: string;
-  icon: ReactNode;
+  icon: LucideIcon;
   onSelect: () => void;
   destructive?: boolean;
 }
@@ -80,7 +79,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange }: PostActionsM
                     : "text-foreground hover:bg-accent/10"
                 }`}
               >
-                <span className={action.destructive ? "" : "text-accent"}>{action.icon}</span>
+                <action.icon className={`h-5 w-5 ${action.destructive ? "" : "text-accent"}`} />
                 {action.label}
               </button>
             ))}
@@ -100,7 +99,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange }: PostActionsM
             onClick={action.onSelect}
             className={action.destructive ? "text-destructive focus:text-destructive" : undefined}
           >
-            <span className="mr-2 inline-flex">{action.icon}</span>
+            <action.icon className="h-4 w-4 mr-2" />
             {action.label}
           </DropdownMenuItem>
         ))}
