@@ -232,8 +232,12 @@ const Dashboard = () => {
   const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
   const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
+  // Post promotions consume the existing monthly promotion entitlement.
+  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
+  const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
+  const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
 
   // Promotion dialog state (in Posts section)
   const [showPromotionDialog, setShowPromotionDialog] = useState(false);
@@ -252,12 +256,13 @@ const Dashboard = () => {
     mediaType: ""
   });
   const [showPostDialog, setShowPostDialog] = useState(false);
-  const [postMediaType, setPostMediaType] = useState<'image' | 'video' | 'promotion'>('image');
+  const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [postSearch, setPostSearch] = useState("");
   const [showPostSearch, setShowPostSearch] = useState(false);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
