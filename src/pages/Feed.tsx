@@ -766,6 +766,30 @@ const Feed = () => {
           setAdminDeleteTarget(null);
         }}
       />
+      <PromotePostDialog
+        open={!!promoteTarget}
+        onOpenChange={(o) => { if (!o) setPromoteTarget(null); }}
+        isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
+        promotedUntil={promoteTarget?.promotedUntil}
+        remaining={promotionsRemaining}
+        isSaving={isPromoting}
+        onConfirm={async () => {
+          if (!promoteTarget) return;
+          setIsPromoting(true);
+          try {
+            const { error } = await (supabase as any).rpc('promote_post', { p_post_id: promoteTarget.id });
+            if (error) throw error;
+            setPromotionsUsed((n) => n + 1);
+            setPromoteTarget(null);
+            await fetchPosts(0, false);
+            toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
+          } catch (e: any) {
+            toast({ title: "Error", description: e.message, variant: "destructive" });
+          } finally {
+            setIsPromoting(false);
+          }
+        }}
+      />
       <ReportContentDialog
         open={!!reportTarget}
         onOpenChange={(o) => !o && setReportTarget(null)}
