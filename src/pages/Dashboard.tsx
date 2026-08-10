@@ -22,6 +22,7 @@ import { MUSIC_GENRES } from "@/lib/musicGenres";
 import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
+import PromotePostDialog from "@/components/PromotePostDialog";
 import { sharePost } from "@/lib/sharePost";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -239,13 +240,6 @@ const Dashboard = () => {
   const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
 
-  // Promotion dialog state (in Posts section)
-  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
-  const [newPromotion, setNewPromotion] = useState({
-    description: "",
-    mediaUrl: "",
-    mediaType: ""
-  });
 
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
@@ -259,7 +253,6 @@ const Dashboard = () => {
   const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
-  const [promotionUploadProgress, setPromotionUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
@@ -1032,67 +1025,7 @@ const Dashboard = () => {
   };
 
   // Promotion functions (in Posts section)
-  const handlePromotionMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    if (file.type.startsWith('video/') && file.size > 500 * 1024 * 1024) {
-      toast({ title: "Error", description: "Video file size must not exceed 500 MB.", variant: "destructive" });
-      e.target.value = "";
-      return;
-    }
-    setIsSaving(true);
-    setPromotionUploadProgress(0);
-    try {
-      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPromotionUploadProgress(p));
-      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-      setNewPromotion({ ...newPromotion, mediaUrl: publicUrl, mediaType });
-      toast({ title: "Success", description: "Media uploaded!" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-      setPromotionUploadProgress(null);
-      e.target.value = "";
-    }
-  };
 
-  const handleAddPromotion = async () => {
-    if (!user || !newPromotion.description) return;
-    if (premiumAdsUsed >= PREMIUM_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${PREMIUM_AD_LIMIT} promotions per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
-      return;
-    }
-    setIsSaving(true);
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      const { data: inserted, error } = await supabase.from('announcements').insert({
-        profile_id: user.id,
-        title: "Announcement",
-        date: todayDate,
-        description: newPromotion.description,
-        is_premium: true,
-        media_url: newPromotion.mediaUrl || null,
-        media_type: newPromotion.mediaType || null
-      }).select('id').single();
-      if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: true,
-        announcement_id: inserted?.id ?? null,
-      });
-      await loadAnnouncements();
-      setNewPromotion({ description: "", mediaUrl: "", mediaType: "" });
-      setShowPostDialog(false);
-      setPostMediaType('image');
-      toast({ title: "Success", description: "Promotion created!" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   // Posts functions
   const handleAddPost = async () => {
