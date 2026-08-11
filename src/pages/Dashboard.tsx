@@ -2947,59 +2947,70 @@ const Dashboard = () => {
                                     Add
                                   </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-md">
-                                  <DialogHeader>
-                                    <DialogTitle>Add New</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
-                                      <Megaphone className="h-3 w-3" />
-                                      <span>{Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0)}/{STANDARD_AD_LIMIT} left</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                                      <Clock className="h-3 w-3" />
-                                      <span>Valid 7 days</span>
-                                    </div>
-                                  </div>
-                                  <div className="space-y-4 mt-4">
-                                    <div>
-                                      <Label htmlFor="announcement-text-inner">Announcement Text</Label>
-                                      <Textarea id="announcement-text-inner" value={newAnnouncement.description} onChange={(e) => setNewAnnouncement({
-                              ...newAnnouncement,
-                              description: e.target.value.slice(0, 200)
-                            })} placeholder="Write your announcement here..." rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
-                                    </div>
+                                <CreationModalShell
+                                  title={t('creationModal.announcementTitle', 'Add an announcement')}
+                                  meta={<>
+                                    {Number.isFinite(STANDARD_AD_LIMIT) && (
+                                      <UsagePill
+                                        icon={<Megaphone className="h-3 w-3" />}
+                                        tone={Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0) === 0 ? "warning" : "accent"}
+                                      >
+                                        {t('creationModal.announcementsAvailable', { count: Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0), defaultValue: '{{count}} announcements available' })}
+                                      </UsagePill>
+                                    )}
+                                    <UsagePill icon={<Clock className="h-3 w-3" />}>
+                                      {t('creationModal.validDays', { count: 7, defaultValue: 'Valid for {{count}} days' })}
+                                    </UsagePill>
+                                  </>}
+                                  footer={
+                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
+                                      {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishAnnouncement', 'Publish announcement')}
+                                    </Button>
+                                  }
+                                >
+                                  <CreationSection title={t('creationModal.description', 'Description')}>
+                                    <Textarea
+                                      id="announcement-text-inner"
+                                      value={newAnnouncement.description}
+                                      onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value.slice(0, 200) })}
+                                      placeholder={t('creationModal.announcementPlaceholder', "Tell artists what you're looking for...")}
+                                      rows={4}
+                                      maxLength={200}
+                                      className="resize-none rounded-lg bg-muted/20 border-border/70 p-3.5 text-sm leading-relaxed focus-visible:ring-accent/40"
+                                    />
+                                    <p className="text-[11px] text-muted-foreground/80 text-right">{newAnnouncement.description.length}/200</p>
+                                  </CreationSection>
 
-                                    <div className="space-y-3">
+                                  <CreationSection title={t('creationModal.eventDetails', 'Event details')} variant="secondary">
+                                    <div className="space-y-4">
                                       <div>
-                                        <Label htmlFor="announcement-location-inner">Location (optional)</Label>
+                                        <FieldLabel htmlFor="announcement-location-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          {t('creationModal.location', 'Location')}
+                                        </FieldLabel>
                                         <LocationAutocomplete
                                           id="announcement-location-inner"
                                           value={newAnnouncement.location}
                                           onChange={(val) => setNewAnnouncement({ ...newAnnouncement, location: val })}
                                           country={null}
-                                          placeholder="Search any location worldwide..."
-                                          className="mt-1"
+                                          placeholder={t('creationModal.locationPlaceholder', 'Search any location worldwide...')}
                                         />
                                       </div>
                                       <div>
-                                        <Label htmlFor="announcement-event-date-inner">Event Date (optional)</Label>
-                                        <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
+                                        <FieldLabel htmlFor="announcement-event-date-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          {t('creationModal.eventDate', 'Event date')}
+                                        </FieldLabel>
+                                        <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="rounded-lg" />
                                       </div>
                                       <div>
-                                        <Label htmlFor="announcement-budget-inner" className="flex items-center gap-1">
-                                          Budget <Euro className="h-3.5 w-3.5" /> (optional)
-                                        </Label>
-                                        <Input id="announcement-budget-inner" type="number" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder="e.g. 500" className="mt-1" />
+                                        <FieldLabel htmlFor="announcement-budget-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          <span className="inline-flex items-center gap-1">{t('creationModal.budget', 'Budget')} <Euro className="h-3.5 w-3.5 text-muted-foreground" /></span>
+                                        </FieldLabel>
+                                        <Input id="announcement-budget-inner" type="number" inputMode="numeric" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder={t('creationModal.budgetPlaceholder', 'e.g. 500')} className="rounded-lg" />
                                       </div>
                                     </div>
-                                    
-                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Adding..." : "Add Announcement"}
-                                    </Button>
-                                  </div>
-                                </DialogContent>
+                                  </CreationSection>
+                                </CreationModalShell>
+
                               </Dialog>
                             }
                           />
