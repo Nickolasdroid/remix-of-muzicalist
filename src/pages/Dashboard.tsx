@@ -59,6 +59,7 @@ import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/sub
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
+import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
 import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionFilters, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
@@ -2871,7 +2872,7 @@ const Dashboard = () => {
                                       onClick={() => setPostMediaType('video')}
                                       className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
                                     >
-                                      <Video className="h-5 w-5 text-accent" />
+                                      <VideoIcon className="h-5 w-5 text-accent" />
                                       {t('creationModal.video', 'Video')}
                                     </Label>
                                     <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
