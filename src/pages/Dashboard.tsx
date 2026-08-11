@@ -2611,25 +2611,29 @@ const Dashboard = () => {
                               promoItems.filter((p) => !isAdExpired(p as any)).length +
                               postItems.filter((p: any) => !!p.promoted_until && new Date(p.promoted_until).getTime() > Date.now()).length;
                             const stats = [
-                              { label: t('dashboardPosts.totalPosts', 'Total Posts'), value: postItems.length, icon: <FileText className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.totalLikes', 'Total Likes'), value: totalLikes, icon: <Heart className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.totalComments', 'Total Comments'), value: totalComments, icon: <MessageCircle className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.activePromotions', 'Active Promotions'), value: activePromotions, icon: <Megaphone className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.statPosts', 'Posts'), value: postItems.length, icon: <FileText className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.statLikes', 'Likes'), value: totalLikes, icon: <Heart className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.statComments', 'Comments'), value: totalComments, icon: <MessageCircle className="h-3.5 w-3.5" /> },
+                              { label: t('dashboardPosts.statPromotions', 'Promotions'), value: activePromotions, icon: <Megaphone className="h-3.5 w-3.5" /> },
                             ];
                             return (
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg border border-border/50 bg-card/50 p-2">
-                                {stats.map((s) => (
-                                  <div key={s.label} className="flex flex-col gap-0.5 px-2 py-1.5 min-w-0">
-                                    <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground truncate">
-                                      <span className="text-accent shrink-0">{s.icon}</span>
-                                      <span className="truncate">{s.label}</span>
-                                    </span>
-                                    <span className="text-lg font-display font-bold text-foreground">{s.value}</span>
-                                  </div>
-                                ))}
+                              <div className="-mx-1 px-1 overflow-x-auto scrollbar-none">
+                                <div className="flex items-center gap-3 w-max sm:w-auto text-sm">
+                                  {stats.map((s, i) => (
+                                    <div key={s.label} className="flex items-center gap-3 shrink-0">
+                                      {i > 0 && <span className="text-border select-none">·</span>}
+                                      <span className="flex items-center gap-1.5 whitespace-nowrap">
+                                        <span className="text-accent/80 shrink-0">{s.icon}</span>
+                                        <span className="font-semibold text-foreground">{s.value}</span>
+                                        <span className="text-muted-foreground">{s.label}</span>
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             );
                           })()}
+
 
                           {/* Filters + search */}
                           <div className="flex flex-col md:flex-row md:items-center gap-3">
