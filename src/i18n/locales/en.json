@@ -204,7 +204,7 @@
   },
   "dashboardPosts": {
     "title": "My Posts",
-    "createPost": "Create",
+    "createPost": "Add",
     "totalPosts": "Total Posts",
     "totalLikes": "Total Likes",
     "totalComments": "Total Comments",
@@ -214,7 +214,7 @@
     "filterVideos": "Videos",
     "filterPromotions": "Promotions",
     "searchPlaceholder": "Search posts...",
-    "empty": "No posts yet. Create your first post!",
+    "empty": "No posts yet. Add your first post!",
     "emptyFiltered": "No posts match this filter.",
     "published": "Published",
     "promoted": "Promoted",

@@ -2598,7 +2598,7 @@ const Dashboard = () => {
                                 className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                               >
                                 <Plus className="h-4 w-4 mr-1" />
-                                {t('dashboardPosts.createPost', 'Create')}
+                                {t('dashboardPosts.createPost', 'Add')}
                               </Button>
                             }
                           />
@@ -2672,7 +2672,7 @@ const Dashboard = () => {
                               icon={<FileText className="h-10 w-10 opacity-50" />}
                               title={postSearch || postFilter !== 'all'
                                 ? t('dashboardPosts.emptyFiltered', 'No posts match this filter.')
-                                : t('dashboardPosts.empty', 'No posts yet. Create your first post!')}
+                                : t('dashboardPosts.empty', 'No posts yet. Add your first post!')}
                             />
 
                           ) : (
@@ -2944,7 +2944,7 @@ const Dashboard = () => {
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
                                     <Plus className="h-4 w-4 mr-1" />
-                                    Add
+                                    {t('dashboardPosts.createPost', 'Add')}
                                   </Button>
                                 </DialogTrigger>
                                 <CreationModalShell
