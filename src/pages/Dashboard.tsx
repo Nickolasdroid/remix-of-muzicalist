@@ -2818,97 +2818,105 @@ const Dashboard = () => {
                             setShowPostDialog(open);
                             if (!open) setPostMediaType('image');
                           }}>
-                            <DialogContent className="max-w-md">
-                              <DialogHeader>
-                                <DialogTitle>Add New</DialogTitle>
-                              </DialogHeader>
-                              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-xs font-medium text-destructive">
-                                  <Images className="h-3 w-3" />
-                                  <span>{`${Math.max(postsRemaining, 0)}/${STANDARD_POST_LIMIT} left`}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                                  <Clock className="h-3 w-3" />
-                                  <span>Resets at renewal</span>
-                                </div>
-                              </div>
-                              <div className="space-y-4 mt-4">
-                                <Tabs value={postMediaType} onValueChange={(v) => setPostMediaType(v as 'image' | 'video')}>
-                                  <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="image">Photo</TabsTrigger>
-                                    <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList>
+                            <CreationModalShell
+                              title={t('creationModal.postTitle', 'Add a post')}
+                              meta={<>
+                                {Number.isFinite(STANDARD_POST_LIMIT) && (
+                                  <UsagePill
+                                    icon={<Images className="h-3 w-3" />}
+                                    tone={Math.max(postsRemaining, 0) === 0 ? "warning" : "accent"}
+                                  >
+                                    {t('creationModal.postsAvailable', { count: Math.max(postsRemaining, 0), defaultValue: '{{count}} posts available' })}
+                                  </UsagePill>
+                                )}
+                                <UsagePill icon={<Clock className="h-3 w-3" />}>
+                                  {t('creationModal.resetsAtRenewal', 'Resets at renewal')}
+                                </UsagePill>
+                              </>}
+                              footer={
+                                <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
+                                  {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishPost', 'Publish post')}
+                                </Button>
+                              }
+                            >
+                              <CreationSection title={t('creationModal.shareQuestion', 'What do you want to share?')}>
+                                <Textarea
+                                  value={newPost.content}
+                                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })}
+                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
+                                  rows={4}
+                                  maxLength={200}
+                                  className="resize-none rounded-lg bg-muted/20 border-border/70 p-3.5 text-sm leading-relaxed focus-visible:ring-accent/40"
+                                />
+                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
+                              </CreationSection>
 
-                                  <TabsContent value="image" className="space-y-4">
-                                    <div>
-                                      <Label>Post Content</Label>
-                                      <Textarea value={newPost.content} onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
-                                    </div>
-                                    {newPost.mediaUrl && newPost.mediaType === 'image' && <div className="relative">
-                                        <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-48 object-cover rounded-lg" />
-                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}>
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>}
-                                    {!newPost.mediaUrl && postUploadProgress === null && <>
-                                        <Label htmlFor="post-image-inner" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
-                                      </>}
-                                    {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-sm font-medium">Uploading image…</p>
-                                          <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
-                                        </div>
-                                        <Progress value={postUploadProgress} />
-                                      </div>}
-                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create"}
+                              <CreationSection
+                                title={t('creationModal.media', 'Media')}
+                                description={t('creationModal.mediaHint', 'Attach a photo or a video to your post.')}
+                                variant="secondary"
+                              >
+                                {!newPost.mediaUrl && postUploadProgress === null && (
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <Label
+                                      htmlFor="post-image-inner"
+                                      onClick={() => setPostMediaType('image')}
+                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
+                                    >
+                                      <ImageIcon className="h-5 w-5 text-accent" />
+                                      {t('creationModal.photo', 'Photo')}
+                                    </Label>
+                                    <Label
+                                      htmlFor="post-video-inner"
+                                      onClick={() => setPostMediaType('video')}
+                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
+                                    >
+                                      <Video className="h-5 w-5 text-accent" />
+                                      {t('creationModal.video', 'Video')}
+                                    </Label>
+                                    <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
+                                    <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
+                                  </div>
+                                )}
+
+                                {newPost.mediaUrl && (
+                                  <div className="relative overflow-hidden rounded-lg border border-border/70">
+                                    {newPost.mediaType === 'video'
+                                      ? <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full max-h-52 aspect-video" />
+                                      : <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-44 object-cover" />}
+                                    <Button
+                                      size="icon"
+                                      variant="secondary"
+                                      aria-label={t('creationModal.removeMedia', 'Remove')}
+                                      className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 hover:bg-background"
+                                      onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}
+                                    >
+                                      <X className="h-4 w-4" />
                                     </Button>
-                                  </TabsContent>
+                                  </div>
+                                )}
 
-                                  <TabsContent value="video" className="space-y-4">
-                                    <div>
-                                      <Label>Post Content</Label>
-                                      <Textarea value={newPost.content} onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })} placeholder="What's on your mind?" rows={4} maxLength={200} className="mt-2" />
-                                      <p className="text-xs text-muted-foreground text-right mt-1">{newPost.content.length}/200</p>
+                                {postUploadProgress !== null && (
+                                  <div className="rounded-lg border border-border/70 bg-muted/20 p-4 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                      <p className="text-sm font-medium">
+                                        {postMediaType === 'video'
+                                          ? t('creationModal.uploadingVideo', 'Uploading video…')
+                                          : t('creationModal.uploadingImage', 'Uploading image…')}
+                                      </p>
+                                      <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
                                     </div>
-                                    {newPost.mediaUrl && newPost.mediaType === 'video' && <div className="relative">
-                                        <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full rounded-lg max-h-48 aspect-video" />
-                                        <Button size="sm" variant="destructive" className="absolute top-2 right-2" onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}>
-                                          <X className="h-4 w-4" />
-                                        </Button>
-                                      </div>}
-                                    {!newPost.mediaUrl && postUploadProgress === null && <>
-                                        <Label htmlFor="post-video-inner" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload video</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
-                                      </>}
-                                    {postUploadProgress !== null && <div className="border-2 border-dashed border-accent/50 rounded-lg p-6 space-y-3">
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-sm font-medium">Uploading video…</p>
-                                          <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
-                                        </div>
-                                        <Progress value={postUploadProgress} />
-                                      </div>}
-                                    <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full bg-accent text-accent-foreground">
-                                      {isSaving ? "Creating..." : "Create"}
-                                    </Button>
-                                  </TabsContent>
+                                    <Progress value={postUploadProgress} />
+                                  </div>
+                                )}
 
-                                </Tabs>
-                              </div>
-                            </DialogContent>
+                                {!newPost.mediaUrl && postUploadProgress === null && (
+                                  <p className="text-[11px] text-muted-foreground/70">{t('creationModal.mediaRequired', 'A photo or a video is required.')}</p>
+                                )}
+                              </CreationSection>
+                            </CreationModalShell>
                           </Dialog>
+
                         </SectionShell>
 
                           );
