@@ -47,8 +47,8 @@ const PlatformStatsBar = () => {
     { label: "Countries", value: stats ? formatCount(stats.countries) : "—" },
     { label: "Artists", value: stats ? formatCount(stats.artists) : "—" },
     {
-      label: "Average Rating",
-      value: stats?.averageRating != null ? stats.averageRating.toFixed(1) : "—",
+      label: "Users",
+      value: stats ? formatCount(stats.users) : "—",
       icon: true,
     },
     { label: "Events Booked", value: stats ? formatCount(stats.eventsBooked) : "—" },
