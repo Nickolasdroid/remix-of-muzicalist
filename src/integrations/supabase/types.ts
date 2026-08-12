@@ -2574,6 +2574,15 @@ export type Database = {
         }
         Returns: string
       }
+      get_platform_stats: {
+        Args: never
+        Returns: {
+          artists: number
+          average_rating: number
+          countries: number
+          events_booked: number
+        }[]
+      }
       get_profile_contact: {
         Args: { _profile_id: string }
         Returns: {
