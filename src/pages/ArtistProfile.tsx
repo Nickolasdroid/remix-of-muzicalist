@@ -231,6 +231,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  // Marks the timestamp of the last manual follow/unfollow so the DB
+  // resolver effect doesn't overwrite the optimistic state before the
+  // insert/delete has propagated (which caused the button to revert).
+  const lastFollowActionRef = useRef<number>(0);
   const [followListMode, setFollowListMode] = useState<"followers" | "following" | null>(null);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
@@ -602,7 +606,12 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       .eq('follower_id', currentUserId)
       .maybeSingle()
       .then(({ data }) => {
-        if (!cancelled) setIsFollowing(!!data);
+        // Ignore stale reads that land right after a manual toggle: the
+        // DELETE/INSERT may not be reflected yet, so trust the optimistic
+        // local state instead of reverting the button.
+        if (cancelled) return;
+        if (Date.now() - lastFollowActionRef.current < 4000) return;
+        setIsFollowing(!!data);
       });
     return () => { cancelled = true; };
   }, [currentUserId, id]);
@@ -627,6 +636,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
   const doFollow = async () => {
     if (!currentUserId || !id) return;
+    lastFollowActionRef.current = Date.now();
     setIsFollowing(true);
     setFollowersCount((prev) => prev + 1);
     try {
@@ -640,6 +650,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
   const doUnfollow = async () => {
     if (!currentUserId || !id) return;
+    lastFollowActionRef.current = Date.now();
     setIsFollowing(false);
     setFollowersCount((prev) => prev - 1);
     setShowUnfollowConfirm(false);
