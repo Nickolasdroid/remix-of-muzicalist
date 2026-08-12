@@ -10,7 +10,7 @@ import CommunitySections from "@/components/CommunitySections";
 import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
 import CategoryCard from "@/components/CategoryCard";
 import HeroSearchBar from "@/components/HeroSearchBar";
-import { PLATFORM_STATS } from "@/lib/platformStats";
+import PlatformStatsBar from "@/components/PlatformStatsBar";
 
 const About = () => {
   return (
