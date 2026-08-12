@@ -33,16 +33,15 @@ const PlatformStatsBar = () => {
 
   useEffect(() => {
     loadStats();
+    const interval = window.setInterval(loadStats, 60000);
+    const onFocus = () => loadStats();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [loadStats]);
 
-  // Live updates when underlying data changes
-  useRealtimeTable({ table: "profiles", onChange: loadStats, channelKey: "platform-stats-profiles" });
-  useRealtimeTable({ table: "reviews", onChange: loadStats, channelKey: "platform-stats-reviews" });
-  useRealtimeTable({
-    table: "booking_requests",
-    onChange: loadStats,
-    channelKey: "platform-stats-bookings",
-  });
 
   const items = [
     { label: "Countries", value: stats ? formatCount(stats.countries) : "—" },
