@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 
 interface PlatformStats {
   artists: number;
   countries: number;
-  averageRating: number | null;
+  users: number;
   eventsBooked: number;
 }
 
@@ -26,7 +26,7 @@ const PlatformStatsBar = () => {
     setStats({
       artists: Number(row.artists ?? 0),
       countries: Number(row.countries ?? 0),
-      averageRating: row.average_rating === null ? null : Number(row.average_rating),
+      users: Number(row.users ?? 0),
       eventsBooked: Number(row.events_booked ?? 0),
     });
   }, []);
@@ -47,8 +47,8 @@ const PlatformStatsBar = () => {
     { label: "Countries", value: stats ? formatCount(stats.countries) : "—" },
     { label: "Artists", value: stats ? formatCount(stats.artists) : "—" },
     {
-      label: "Average Rating",
-      value: stats?.averageRating != null ? stats.averageRating.toFixed(1) : "—",
+      label: "Users",
+      value: stats ? formatCount(stats.users) : "—",
       icon: true,
     },
     { label: "Events Booked", value: stats ? formatCount(stats.eventsBooked) : "—" },
@@ -62,7 +62,7 @@ const PlatformStatsBar = () => {
           <div className="flex flex-col items-center gap-1 flex-1">
             <span className="flex items-center gap-1 text-lg md:text-2xl font-display font-bold text-accent">
               {item.value}
-              {item.icon && <Star className="h-4 w-4 md:h-5 md:w-5 fill-accent text-accent" />}
+              {item.icon && <Users className="h-4 w-4 md:h-5 md:w-5 text-accent" />}
             </span>
             <span className="text-[10px] md:text-sm text-muted-foreground">{item.label}</span>
           </div>
