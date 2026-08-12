@@ -2581,6 +2581,7 @@ export type Database = {
           average_rating: number
           countries: number
           events_booked: number
+          users: number
         }[]
       }
       get_profile_contact: {
