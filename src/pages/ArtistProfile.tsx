@@ -45,7 +45,7 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
-import i18n from "@/i18n";
+import i18n, { translateTextsSync } from "@/i18n";
 interface Profile {
   id: string;
   first_name: string;
@@ -1248,8 +1248,9 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
                       }`}
                     >
-                      {isFollowing ? "Following" : "Follow"}
-
+                      <span data-no-translate>
+                        {translateTextsSync(i18n.language || 'en', [isFollowing ? 'Following' : 'Follow'])[isFollowing ? 'Following' : 'Follow']}
+                      </span>
                     </Button>
                   )}
                 </div>
