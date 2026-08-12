@@ -588,6 +588,27 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   };
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false);
 
+  // Reliably resolve the existing follow relationship whenever the viewer or artist changes
+  useEffect(() => {
+    let cancelled = false;
+    if (!currentUserId || !id || currentUserId === id) {
+      setIsFollowing(false);
+      return;
+    }
+    supabase
+      .from('followers')
+      .select('id')
+      .eq('artist_id', id)
+      .eq('follower_id', currentUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setIsFollowing(!!data);
+      });
+    return () => { cancelled = true; };
+  }, [currentUserId, id]);
+
+
+
   const handleFollowToggle = () => {
     if (!currentUserId) {
       toast({ title: "Login Required", description: "Please log in to follow artists." });
@@ -1212,7 +1233,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       size="sm"
                       className={`rounded-full px-4 md:px-5 transition-all ${
                         isFollowing
-                          ? "border-accent/60 text-accent hover:bg-accent/10"
+                          ? "border-border bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                           : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
                       }`}
                     >
