@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useRealtimeTable } from "@/hooks/useRealtimeTable";
+
 
 interface PlatformStats {
   artists: number;
