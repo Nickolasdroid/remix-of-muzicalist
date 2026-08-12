@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 
 interface PlatformStats {
   artists: number;
   countries: number;
-  averageRating: number | null;
+  users: number;
   eventsBooked: number;
 }
 
