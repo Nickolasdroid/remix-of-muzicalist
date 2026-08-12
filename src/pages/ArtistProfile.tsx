@@ -1233,7 +1233,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       size="sm"
                       className={`rounded-full px-4 md:px-5 transition-all ${
                         isFollowing
-                          ? "border-accent/60 text-accent hover:bg-accent/10"
+                          ? "border-border bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                           : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
                       }`}
                     >
