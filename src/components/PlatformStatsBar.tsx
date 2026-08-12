@@ -45,11 +45,7 @@ const PlatformStatsBar = () => {
   const items = [
     { label: "Countries", value: stats ? formatCount(stats.countries) : "—" },
     { label: "Artists", value: stats ? formatCount(stats.artists) : "—" },
-    {
-      label: "Users",
-      value: stats ? formatCount(stats.users) : "—",
-      icon: true,
-    },
+    { label: "Users", value: stats ? formatCount(stats.users) : "—" },
     { label: "Events Booked", value: stats ? formatCount(stats.eventsBooked) : "—" },
   ];
 
