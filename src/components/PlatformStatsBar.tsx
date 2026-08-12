@@ -26,7 +26,7 @@ const PlatformStatsBar = () => {
     setStats({
       artists: Number(row.artists ?? 0),
       countries: Number(row.countries ?? 0),
-      averageRating: row.average_rating === null ? null : Number(row.average_rating),
+      users: Number(row.users ?? 0),
       eventsBooked: Number(row.events_booked ?? 0),
     });
   }, []);
