@@ -2272,6 +2272,7 @@ export const RO_TEXT: Record<string, string> = {
   "Use the Search page to find artists by stage name, specialization, country, region, date and event type. You can also browse Categories, Countries and Regions.": "Folosește pagina de Căutare pentru a găsi artiști după nume de scenă, specializare, țară, regiune, dată și tip de eveniment. Poți explora și Categoriile, Țările și Regiunile.",
   "Useful Links": "Linkuri utile",
   "User": "Utilizator",
+  "Users": "Utilizatori",
   "User creation failed": "Crearea utilizatorului a eșuat",
   "User deleted": "Utilizator șters",
   "User updated": "Utilizator actualizat",
