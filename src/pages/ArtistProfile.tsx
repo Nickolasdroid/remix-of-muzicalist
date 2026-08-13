@@ -940,66 +940,107 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   // Simplified view for regular user accounts (no specialization)
   const isUserAccount = !artist.specialization;
   if (isUserAccount) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-card notranslate`} data-no-translate="true" translate="no">
-      <Navigation />
-      <div className={`container mx-auto pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-8 max-w-lg px-[4px] py-[24px]`}>
-        <div className="border border-border rounded-lg p-6 flex flex-col items-center gap-4 my-[33px]">
-          <Avatar className="h-24 w-24 border-2 border-accent/20">
-            <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-            <AvatarFallback className="text-2xl">
-              {artist.first_name?.[0]}{artist.last_name?.[0]}
-            </AvatarFallback>
-          </Avatar>
-          <h1 className="text-xl md:text-2xl font-display font-bold text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-            {artist.first_name} {artist.last_name}
-          </h1>
-          <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-            <span>{announcements.length} {announcements.length === 1 ? 'ad' : 'ads'} published</span>
-            {artist.created_at && <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                Member since {new Date(artist.created_at).toLocaleDateString(undefined, {
-                month: 'long',
-                year: 'numeric'
-              })}
-              </span>}
-          </div>
-        </div>
+    const activeAds = announcements.filter((a) => !isAdExpired(a));
+    const memberSince = artist.created_at
+      ? new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+      : null;
 
-        {/* User's Ads */}
-        {announcements.filter((a) => !isAdExpired(a)).length > 0 && <div className="mt-6">
-            <h2 className="text-lg font-display font-semibold flex items-center gap-2 mb-2">
-              <Megaphone className="h-4 w-4 text-accent" />
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
+      <Navigation />
+      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+
+          {/* Hero header — mirrors the User Dashboard */}
+          <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+            <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+              <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
+                style={{
+                  background:
+                    "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+                }}
+              />
+              <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
+                <div className="relative p-1 rounded-full shadow-xl flex-shrink-0">
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                    <AvatarImage src={artist.avatar_url || undefined} alt={`${artist.first_name || ''} ${artist.last_name || ''}`} />
+                    <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
+                      {artist.first_name?.[0]}{artist.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                  <h1
+                    className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate"
+                    data-user-content="true"
+                    data-no-translate="true"
+                    translate="no"
+                  >
+                    {artist.first_name} {artist.last_name}
+                  </h1>
+                  <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                    <span>User</span>
+                    {memberSince && (
+                      <>
+                        <span className="opacity-70">•</span>
+                        <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                        <span>Member since {memberSince}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Compact public stat row */}
+            <div className="mx-4 md:mx-0 mt-3 md:mt-4">
+              <div className="w-full flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
+                    {activeAds.length}
+                  </span>
+                  <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
+                    Ads
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* User's Ads */}
+          {activeAds.length > 0 && <div>
+            <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
+              <Megaphone className="h-5 w-5 text-accent" />
               Ads
             </h2>
-            <div className="w-full max-w-[500px] mx-auto space-y-1">
-              {announcements.filter((a) => !isAdExpired(a)).map((ad) => <Card key={ad.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-                  <div className="p-4 pb-0 px-[6px] py-[3px]">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10 border-2 border-background">
-                          <AvatarImage src={artist.avatar_url || undefined} alt={artist.first_name} />
-                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                            {artist.first_name?.[0] || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                            {artist.first_name} {artist.last_name}
-                          </h3>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>User</span>
-                            <span>·</span>
-                            <span>{formatSmartDate(ad.created_at)}</span>
-                            <span>·</span>
-                            {ad.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Ad</Badge>}
-                          </div>
+            <div className="space-y-3">
+              {activeAds.map((ad) => <Card key={ad.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
+                  <div className="p-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10 border-2 border-background">
+                        <AvatarImage src={artist.avatar_url || undefined} alt={artist.first_name} />
+                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                          {artist.first_name?.[0] || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <h3 className="font-medium text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                          {artist.first_name} {artist.last_name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+                          <span>User</span>
+                          <span>·</span>
+                          <span>{formatSmartDate(ad.created_at)}</span>
+                          <span>·</span>
+                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs rounded-lg">{ad.is_premium ? 'Promotion' : 'Ad'}</Badge>
                         </div>
                       </div>
                     </div>
-                    <ExpandableText text={ad.description} className="mt-3" />
+                    <ExpandableText text={ad.description} className="mt-3 text-sm" />
                   </div>
-                  
-                  {ad.is_premium && ad.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+
+                  {ad.is_premium && ad.media_url && <div className="cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
                 url: ad.media_url!,
                 type: ad.media_type === "video" ? "video" : "image"
               })}>
@@ -1011,11 +1052,13 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
             </div>
           </div>}
 
-        {/* Media Preview Dialog */}
-        <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+          {/* Media Preview Dialog */}
+          <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+        </div>
       </div>
     </div>;
   }
+
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
