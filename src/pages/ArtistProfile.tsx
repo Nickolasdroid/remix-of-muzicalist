@@ -940,7 +940,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   // Simplified view for regular user accounts (no specialization)
   const isUserAccount = !artist.specialization;
   if (isUserAccount) {
-    const activeAds = announcements.filter((a) => !isAdExpired(a));
+    const activeAnnouncements = announcements.filter((a) => !isAdExpired(a));
     const memberSince = artist.created_at
       ? new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
       : null;
@@ -998,24 +998,24 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               <div className="w-full flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
                 <div className="flex flex-col items-start text-left">
                   <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
-                    {activeAds.length}
+                    {activeAnnouncements.length}
                   </span>
                   <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                    Ads
+                    Announcements
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* User's Ads */}
-          {activeAds.length > 0 && <div>
+          {/* User's Announcements */}
+          {activeAnnouncements.length > 0 && <div>
             <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
               <Megaphone className="h-5 w-5 text-accent" />
-              Ads
+              Announcements
             </h2>
             <div className="space-y-3">
-              {activeAds.map((ad) => <Card key={ad.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
+              {activeAnnouncements.map((announcement) => <Card key={announcement.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
                   <div className="p-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10 border-2 border-background">
@@ -1031,22 +1031,22 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                         <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
                           <span>User</span>
                           <span>·</span>
-                          <span>{formatSmartDate(ad.created_at)}</span>
+                          <span>{formatSmartDate(announcement.created_at)}</span>
                           <span>·</span>
-                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{ad.is_premium ? 'Promotion' : 'Announcement'}</Badge>
+                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{announcement.is_premium ? 'Promotion' : 'Announcement'}</Badge>
                         </div>
                       </div>
                     </div>
-                    <ExpandableText text={ad.description} className="mt-3 text-sm" />
+                    <ExpandableText text={announcement.description} className="mt-3 text-sm" />
                   </div>
 
-                  {ad.is_premium && ad.media_url && <div className="cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
-                url: ad.media_url!,
-                type: ad.media_type === "video" ? "video" : "image"
+                  {announcement.is_premium && announcement.media_url && <div className="cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                url: announcement.media_url!,
+                type: announcement.media_type === "video" ? "video" : "image"
               })}>
-                      {ad.media_type === "video" ? <div className="relative w-full aspect-video">
-                          <video src={ad.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
-                        </div> : <img src={ad.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
+                      {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
+                          <video src={announcement.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+                        </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
                     </div>}
                 </Card>)}
             </div>
