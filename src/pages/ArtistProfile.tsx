@@ -1033,7 +1033,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           <span>·</span>
                           <span>{formatSmartDate(ad.created_at)}</span>
                           <span>·</span>
-                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs rounded-lg">{ad.is_premium ? 'Promotion' : 'Ad'}</Badge>
+                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{ad.is_premium ? 'Promotion' : 'Announcement'}</Badge>
                         </div>
                       </div>
                     </div>
