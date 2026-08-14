@@ -565,15 +565,25 @@ const UserDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* My Announcements */}
                 <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                      <Megaphone className="h-5 w-5 text-accent" />
-                      My Announcements
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
+                      <Megaphone className="h-4 w-4 text-accent shrink-0" />
+                      <span className="truncate">My Announcements</span>
+                      <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0">
+                        {standardAdsUsed}/{STANDARD_AD_LIMIT}
+                      </Badge>
                     </h2>
-                    <Badge variant="outline" className="rounded-lg text-xs font-medium">
-                      {standardAdsUsed}/{STANDARD_AD_LIMIT}
-                    </Badge>
+                    <Button
+                      size="sm"
+                      onClick={() => setShowAnnouncementDialog(true)}
+                      disabled={!canPublish}
+                      className="h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 text-xs"
+                    >
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      {canPublish ? 'Create Announcement' : `Available in ${cooldownDaysRemaining}d`}
+                    </Button>
                   </div>
+
 
                   <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">
                     {!canPublish && cooldownDate && (
