@@ -603,16 +603,17 @@ const UserDashboard = () => {
 
                 {/* My Bookings */}
                 <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5 text-accent" />
-                      My Bookings
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
+                      <CalendarIcon className="h-4 w-4 text-accent shrink-0" />
+                      <span className="truncate">My Bookings</span>
                     </h2>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => goToBookings()}>
+                    <Button variant="ghost" size="sm" className="h-8 text-xs shrink-0" onClick={() => goToBookings()}>
                       View all
                       <ChevronRight className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </div>
+
 
                   {bookings.length === 0 ? (
                     <Card className="rounded-lg border-dashed border-border/60 bg-card/60 backdrop-blur-sm p-6 text-center">
