@@ -442,30 +442,14 @@ const UserDashboard = () => {
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
           };
-          const quickActions = [
-            {
-              label: 'Publish Announcement',
-              desc: canPublish ? 'Share what you need' : `Available in ${cooldownDaysRemaining}d`,
-              icon: Megaphone,
-              onClick: () => canPublish && setShowAnnouncementDialog(true),
-              disabled: !canPublish,
-              accent: 'from-accent/25 to-accent/5',
-            },
-            {
-              label: 'My Bookings',
-              desc: 'Manage your requests',
-              icon: CalendarIcon,
-              onClick: () => goToBookings(),
-              accent: 'from-blue-500/25 to-blue-500/5',
-            },
-          ];
 
           return (
             <>
               {/* Header Section - matching Artist Profile layout */}
-              <div className="space-y-6 md:space-y-8">
+              <div className="space-y-4 md:space-y-5">
                 {/* Hero Header: Cover + overlapping avatar/name/meta — matches ArtistProfile exactly */}
-                <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+                <div className="mb-4 md:mb-5 -mx-4 md:mx-0">
+
                   <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
 
