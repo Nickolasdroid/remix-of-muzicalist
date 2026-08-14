@@ -535,7 +535,7 @@ const UserDashboard = () => {
                       className="h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 text-xs"
                     >
                       <Plus className="h-3.5 w-3.5 mr-1" />
-                      {canPublish ? 'Create Announcement' : `Available in ${cooldownDaysRemaining}d`}
+                      {t("userDashboard.add")}
                     </Button>
                   </div>
 
