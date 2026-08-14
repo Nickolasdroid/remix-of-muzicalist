@@ -575,22 +575,15 @@ const UserDashboard = () => {
                     </Badge>
                   </div>
 
-                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-4">
-                    <Button
-                      onClick={() => setShowAnnouncementDialog(true)}
-                      disabled={!canPublish}
-                      className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {canPublish ? 'Publish Announcement' : `Available in ${cooldownDaysRemaining}d`}
-                    </Button>
+                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">
                     {!canPublish && cooldownDate && (
-                      <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
                         Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
                         <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
                       </p>
                     )}
+
 
                     {announcements.length > 0 ? (
                       <div className="mt-3 space-y-2">
