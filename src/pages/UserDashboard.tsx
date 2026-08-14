@@ -442,30 +442,14 @@ const UserDashboard = () => {
           const goToBookings = (filter?: string) => {
             navigate(`/booking-requests${filter ? `?filter=${filter}` : ''}`);
           };
-          const quickActions = [
-            {
-              label: 'Publish Announcement',
-              desc: canPublish ? 'Share what you need' : `Available in ${cooldownDaysRemaining}d`,
-              icon: Megaphone,
-              onClick: () => canPublish && setShowAnnouncementDialog(true),
-              disabled: !canPublish,
-              accent: 'from-accent/25 to-accent/5',
-            },
-            {
-              label: 'My Bookings',
-              desc: 'Manage your requests',
-              icon: CalendarIcon,
-              onClick: () => goToBookings(),
-              accent: 'from-blue-500/25 to-blue-500/5',
-            },
-          ];
 
           return (
             <>
               {/* Header Section - matching Artist Profile layout */}
-              <div className="space-y-6 md:space-y-8">
+              <div className="space-y-4 md:space-y-5">
                 {/* Hero Header: Cover + overlapping avatar/name/meta — matches ArtistProfile exactly */}
-                <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
+                <div className="mb-4 md:mb-5 -mx-4 md:mx-0">
+
                   <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
 
@@ -512,85 +496,59 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Following — mirrors Artist Profile social row */}
-                  <div className="mx-4 md:mx-0 mt-3 md:mt-4">
+                  {/* Following — compact inline row */}
+                  <div className="mx-4 md:mx-0 mt-2 md:mt-3">
                     <button
                       type="button"
                       onClick={() => setShowFollowingDialog(true)}
-                      className="w-full flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3 transition hover:border-accent/40 group"
+                      className="w-full flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2 transition hover:border-accent/40 group"
                       aria-label="Open following list"
                     >
-                      <div className="flex flex-col items-start text-left">
-                        <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
-                          {followingCount}
-                        </span>
-                        <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                          Following
-                        </span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+                        {followingCount}
+                      </span>
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Following
+                      </span>
+                      <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-accent transition-colors" />
                     </button>
                   </div>
                 </div>
 
-
-              {/* ===== Quick Actions ===== */}
-              <div>
-                <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-accent" />
-                  Quick actions
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  {quickActions.map((a) => (
-                    <button
-                      key={a.label}
-                      onClick={a.onClick}
-                      disabled={a.disabled}
-                      className="relative overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-3 text-left transition hover:border-accent/40 disabled:opacity-60 disabled:cursor-not-allowed group flex items-center gap-3"
-                    >
-                      <div className="p-2 rounded-lg bg-background/40 border border-border/60 shrink-0">
-                        <a.icon className="h-4 w-4 text-accent" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-semibold text-foreground truncate">{a.label}</h3>
-                        <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* ===== My Announcements & My Bookings ===== */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* My Announcements */}
                 <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                      <Megaphone className="h-5 w-5 text-accent" />
-                      My Announcements
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
+                      <Megaphone className="h-4 w-4 text-accent shrink-0" />
+                      <span className="truncate">My Announcements</span>
+                      <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0">
+                        {standardAdsUsed}/{STANDARD_AD_LIMIT}
+                      </Badge>
                     </h2>
-                    <Badge variant="outline" className="rounded-lg text-xs font-medium">
-                      {standardAdsUsed}/{STANDARD_AD_LIMIT}
-                    </Badge>
-                  </div>
-
-                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-4">
                     <Button
+                      size="sm"
                       onClick={() => setShowAnnouncementDialog(true)}
                       disabled={!canPublish}
-                      className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+                      className="h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 text-xs"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {canPublish ? 'Publish Announcement' : `Available in ${cooldownDaysRemaining}d`}
+                      <Plus className="h-3.5 w-3.5 mr-1" />
+                      {canPublish ? 'Create Announcement' : `Available in ${cooldownDaysRemaining}d`}
                     </Button>
+                  </div>
+
+
+                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">
                     {!canPublish && cooldownDate && (
-                      <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
                         Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
                         <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
                       </p>
                     )}
+
 
                     {announcements.length > 0 ? (
                       <div className="mt-3 space-y-2">
@@ -645,16 +603,17 @@ const UserDashboard = () => {
 
                 {/* My Bookings */}
                 <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5 text-accent" />
-                      My Bookings
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
+                      <CalendarIcon className="h-4 w-4 text-accent shrink-0" />
+                      <span className="truncate">My Bookings</span>
                     </h2>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => goToBookings()}>
+                    <Button variant="ghost" size="sm" className="h-8 text-xs shrink-0" onClick={() => goToBookings()}>
                       View all
                       <ChevronRight className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </div>
+
 
                   {bookings.length === 0 ? (
                     <Card className="rounded-lg border-dashed border-border/60 bg-card/60 backdrop-blur-sm p-6 text-center">
