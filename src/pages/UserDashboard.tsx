@@ -534,32 +534,7 @@ const UserDashboard = () => {
                 </div>
 
 
-              {/* ===== Quick Actions ===== */}
-              <div>
-                <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-accent" />
-                  Quick actions
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  {quickActions.map((a) => (
-                    <button
-                      key={a.label}
-                      onClick={a.onClick}
-                      disabled={a.disabled}
-                      className="relative overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-3 text-left transition hover:border-accent/40 disabled:opacity-60 disabled:cursor-not-allowed group flex items-center gap-3"
-                    >
-                      <div className="p-2 rounded-lg bg-background/40 border border-border/60 shrink-0">
-                        <a.icon className="h-4 w-4 text-accent" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-semibold text-foreground truncate">{a.label}</h3>
-                        <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               {/* ===== My Announcements & My Bookings ===== */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
