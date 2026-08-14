@@ -512,26 +512,25 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Following — mirrors Artist Profile social row */}
-                  <div className="mx-4 md:mx-0 mt-3 md:mt-4">
+                  {/* Following — compact inline row */}
+                  <div className="mx-4 md:mx-0 mt-2 md:mt-3">
                     <button
                       type="button"
                       onClick={() => setShowFollowingDialog(true)}
-                      className="w-full flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3 transition hover:border-accent/40 group"
+                      className="w-full flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2 transition hover:border-accent/40 group"
                       aria-label="Open following list"
                     >
-                      <div className="flex flex-col items-start text-left">
-                        <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
-                          {followingCount}
-                        </span>
-                        <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                          Following
-                        </span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+                        {followingCount}
+                      </span>
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Following
+                      </span>
+                      <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-accent transition-colors" />
                     </button>
                   </div>
                 </div>
+
 
 
 
