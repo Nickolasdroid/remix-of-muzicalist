@@ -242,6 +242,7 @@
     "adsRemaining": "{{standard}} standard / {{premium}} premium announcements remaining",
     "newAd": "New",
     "createAd": "Create New",
+    "add": "Add",
     "description": "Description",
     "descriptionPlaceholder": "Describe what you're looking for...",
     "media": "Media (optional)",
