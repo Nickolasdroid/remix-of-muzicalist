@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "lucide-react";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 interface FollowListDialogProps {
   open: boolean;
@@ -95,7 +96,7 @@ const FollowListDialog = ({ open, onOpenChange, profileId, mode }: FollowListDia
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium text-foreground">{display}</div>
                         {p.specialization && (
-                          <div className="truncate text-xs text-muted-foreground">{p.specialization}</div>
+                          <div className="truncate text-xs text-muted-foreground">{translateSpecialization(p.specialization)}</div>
                         )}
                       </div>
                     </Link>
