@@ -23,6 +23,8 @@ import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import FollowingManageDialog from "@/components/FollowingManageDialog";
+import FollowListDialog from "@/components/FollowListDialog";
+import SocialStats from "@/components/SocialStats";
 
 interface MediaPreview {
   url: string;
@@ -71,17 +73,26 @@ const UserDashboard = () => {
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
 
-  // Following
+  // Following / Followers
   const [followingCount, setFollowingCount] = useState<number>(0);
+  const [followersCount, setFollowersCount] = useState<number>(0);
   const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
 
   const loadFollowingCount = async () => {
     if (!user) return;
-    const { count } = await supabase
-      .from('followers')
-      .select('artist_id', { count: 'exact', head: true })
-      .eq('follower_id', user.id);
-    setFollowingCount(count || 0);
+    const [{ count: followingC }, { count: followersC }] = await Promise.all([
+      supabase
+        .from('followers')
+        .select('artist_id', { count: 'exact', head: true })
+        .eq('follower_id', user.id),
+      supabase
+        .from('followers')
+        .select('follower_id', { count: 'exact', head: true })
+        .eq('artist_id', user.id),
+    ]);
+    setFollowingCount(followingC || 0);
+    setFollowersCount(followersC || 0);
   };
 
   const loadAnnouncements = async () => {
@@ -496,23 +507,14 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Following — compact inline row */}
-                  <div className="mx-4 md:mx-0 mt-2 md:mt-3">
-                    <button
-                      type="button"
-                      onClick={() => setShowFollowingDialog(true)}
-                      className="w-full flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2 transition hover:border-accent/40 group"
-                      aria-label="Open following list"
-                    >
-                      <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
-                        {followingCount}
-                      </span>
-                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Following
-                      </span>
-                      <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-accent transition-colors" />
-                    </button>
-                  </div>
+                  {/* Followers / Following — shared compact row */}
+                  <SocialStats
+                    className="mx-4 md:mx-0 mt-3 md:mt-4"
+                    followersCount={followersCount}
+                    followingCount={followingCount}
+                    onFollowersClick={() => setShowFollowersDialog(true)}
+                    onFollowingClick={() => setShowFollowingDialog(true)}
+                  />
                 </div>
 
 
@@ -716,12 +718,20 @@ const UserDashboard = () => {
               </Dialog>
 
               {user && (
-                <FollowingManageDialog
-                  open={showFollowingDialog}
-                  onOpenChange={setShowFollowingDialog}
-                  userId={user.id}
-                  onChanged={setFollowingCount}
-                />
+                <>
+                  <FollowingManageDialog
+                    open={showFollowingDialog}
+                    onOpenChange={setShowFollowingDialog}
+                    userId={user.id}
+                    onChanged={setFollowingCount}
+                  />
+                  <FollowListDialog
+                    open={showFollowersDialog}
+                    onOpenChange={setShowFollowersDialog}
+                    profileId={user.id}
+                    mode="followers"
+                  />
+                </>
               )}
             </>
           );

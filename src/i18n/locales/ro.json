@@ -335,5 +335,11 @@
     "optional": "Opțional",
     "publishAnnouncement": "Publică anunțul",
     "mediaRequired": "Este necesară o fotografie sau un videoclip."
+  },
+  "social": {
+    "followers": "Urmăritori",
+    "following": "Urmărești",
+    "follow": "Urmărește",
+    "followingAction": "Urmărești"
   }
 }

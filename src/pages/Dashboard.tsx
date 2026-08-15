@@ -4,6 +4,7 @@ import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import SocialStats from "@/components/SocialStats";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
 import { Button } from "@/components/ui/button";
@@ -1972,15 +1973,13 @@ const Dashboard = () => {
                         </div>
 
                         {/* Followers row */}
-                        <div className="mx-4 md:mx-0 mt-3 md:mt-4 flex items-center gap-3 text-sm text-muted-foreground">
-                          <button onClick={() => setShowFollowersDialog(true)} className="hover:text-foreground transition-colors">
-                            <span className="font-semibold text-foreground">{followersCount}</span> followers
-                          </button>
-                          <span className="opacity-50">·</span>
-                          <button onClick={() => setShowFollowingDialog(true)} className="hover:text-foreground transition-colors">
-                            <span className="font-semibold text-foreground">{followingCount}</span> following
-                          </button>
-                        </div>
+                        <SocialStats
+                          className="mx-4 md:mx-0 mt-3 md:mt-4"
+                          followersCount={followersCount}
+                          followingCount={followingCount}
+                          onFollowersClick={() => setShowFollowersDialog(true)}
+                          onFollowingClick={() => setShowFollowingDialog(true)}
+                        />
 
                       </div>
                     )}
