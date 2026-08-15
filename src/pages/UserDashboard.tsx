@@ -72,17 +72,26 @@ const UserDashboard = () => {
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
 
-  // Following
+  // Following / Followers
   const [followingCount, setFollowingCount] = useState<number>(0);
+  const [followersCount, setFollowersCount] = useState<number>(0);
   const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
 
   const loadFollowingCount = async () => {
     if (!user) return;
-    const { count } = await supabase
-      .from('followers')
-      .select('artist_id', { count: 'exact', head: true })
-      .eq('follower_id', user.id);
-    setFollowingCount(count || 0);
+    const [{ count: followingC }, { count: followersC }] = await Promise.all([
+      supabase
+        .from('followers')
+        .select('artist_id', { count: 'exact', head: true })
+        .eq('follower_id', user.id),
+      supabase
+        .from('followers')
+        .select('follower_id', { count: 'exact', head: true })
+        .eq('artist_id', user.id),
+    ]);
+    setFollowingCount(followingC || 0);
+    setFollowersCount(followersC || 0);
   };
 
   const loadAnnouncements = async () => {
