@@ -23,6 +23,7 @@ import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import FollowingManageDialog from "@/components/FollowingManageDialog";
+import SocialStats from "@/components/SocialStats";
 
 interface MediaPreview {
   url: string;

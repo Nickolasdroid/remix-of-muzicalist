@@ -45,6 +45,7 @@ import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
+import SocialStats from "@/components/SocialStats";
 import i18n, { translateTextsSync } from "@/i18n";
 interface Profile {
   id: string;
