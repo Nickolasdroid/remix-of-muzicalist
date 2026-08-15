@@ -1252,53 +1252,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               )}
 
               {/* Social stats + Follow */}
-              <div className="mx-4 md:mx-0 mt-3 md:mt-4">
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
-                  <div className="flex items-center gap-4 md:gap-8 flex-1 min-w-0">
-                    <button
-                      type="button"
-                      onClick={() => setFollowListMode("followers")}
-                      className="group flex flex-col items-start text-left transition-transform hover:-translate-y-0.5"
-                    >
-                      <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
-                        {followersCount}
-                      </span>
-                      <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                        Followers
-                      </span>
-                    </button>
-                    <div className="h-8 w-px bg-border/70" aria-hidden="true" />
-                    <button
-                      type="button"
-                      onClick={() => setFollowListMode("following")}
-                      className="group flex flex-col items-start text-left transition-transform hover:-translate-y-0.5"
-                    >
-                      <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none group-hover:text-accent transition-colors">
-                        {followingCount}
-                      </span>
-                      <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                        Following
-                      </span>
-                    </button>
-                  </div>
-                  {!isOwnProfile && (
-                    <Button
-                      onClick={handleFollowToggle}
-                      variant={isFollowing ? "outline" : "secondary"}
-                      size="sm"
-                      className={`rounded-full px-4 md:px-5 transition-all ${
-                        isFollowing
-                          ? "border-border bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                          : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"
-                      }`}
-                    >
-                      <span data-no-translate>
-                        {translateTextsSync(i18n.language || 'en', [isFollowing ? 'Following' : 'Follow'])[isFollowing ? 'Following' : 'Follow']}
-                      </span>
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <SocialStats
+                className="mx-4 md:mx-0 mt-3 md:mt-4"
+                followersCount={followersCount}
+                followingCount={followingCount}
+                onFollowersClick={() => setFollowListMode("followers")}
+                onFollowingClick={() => setFollowListMode("following")}
+                showFollowButton={!isOwnProfile}
+                isFollowing={isFollowing}
+                onFollowToggle={handleFollowToggle}
+              />
             </div>
 
 
