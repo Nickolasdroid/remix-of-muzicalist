@@ -333,5 +333,11 @@
     "optional": "Optional",
     "publishAnnouncement": "Publish announcement",
     "mediaRequired": "A photo or a video is required."
+  },
+  "social": {
+    "followers": "Followers",
+    "following": "Following",
+    "follow": "Follow",
+    "followingAction": "Following"
   }
 }
