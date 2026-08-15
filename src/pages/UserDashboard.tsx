@@ -717,12 +717,20 @@ const UserDashboard = () => {
               </Dialog>
 
               {user && (
-                <FollowingManageDialog
-                  open={showFollowingDialog}
-                  onOpenChange={setShowFollowingDialog}
-                  userId={user.id}
-                  onChanged={setFollowingCount}
-                />
+                <>
+                  <FollowingManageDialog
+                    open={showFollowingDialog}
+                    onOpenChange={setShowFollowingDialog}
+                    userId={user.id}
+                    onChanged={setFollowingCount}
+                  />
+                  <FollowListDialog
+                    open={showFollowersDialog}
+                    onOpenChange={setShowFollowersDialog}
+                    profileId={user.id}
+                    mode="followers"
+                  />
+                </>
               )}
             </>
           );
