@@ -506,23 +506,14 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Following — compact inline row */}
-                  <div className="mx-4 md:mx-0 mt-2 md:mt-3">
-                    <button
-                      type="button"
-                      onClick={() => setShowFollowingDialog(true)}
-                      className="w-full flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2 transition hover:border-accent/40 group"
-                      aria-label="Open following list"
-                    >
-                      <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
-                        {followingCount}
-                      </span>
-                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Following
-                      </span>
-                      <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-accent transition-colors" />
-                    </button>
-                  </div>
+                  {/* Followers / Following — shared compact row */}
+                  <SocialStats
+                    className="mx-4 md:mx-0 mt-3 md:mt-4"
+                    followersCount={followersCount}
+                    followingCount={followingCount}
+                    onFollowersClick={() => setShowFollowersDialog(true)}
+                    onFollowingClick={() => setShowFollowingDialog(true)}
+                  />
                 </div>
 
 
