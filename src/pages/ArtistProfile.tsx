@@ -1007,7 +1007,39 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 </div>
               </div>
             </div>
+
+            {/* Followers / Following — shared compact row */}
+            <SocialStats
+              className="mx-4 md:mx-0 mt-3"
+              followersCount={followersCount}
+              followingCount={followingCount}
+              onFollowersClick={() => setFollowListMode("followers")}
+              onFollowingClick={() => setFollowListMode("following")}
+              showFollowButton={!isOwnProfile}
+              isFollowing={isFollowing}
+              onFollowToggle={handleFollowToggle}
+            />
           </div>
+
+          <FollowListDialog
+            open={followListMode !== null}
+            onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
+            profileId={artist.id}
+            mode={followListMode || "followers"}
+          />
+
+          <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
+            <AlertDialogContent className="rounded-lg">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Unfollow</AlertDialogTitle>
+                <AlertDialogDescription>Are you sure you want to unfollow? You can follow again later.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={doUnfollow}>Unfollow</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* User's Announcements */}
           {activeAnnouncements.length > 0 && <div>
