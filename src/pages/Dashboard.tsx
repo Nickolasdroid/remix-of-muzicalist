@@ -1786,7 +1786,7 @@ const Dashboard = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading profile...</p>
-        </div>
+                            </div>
       </div>;
   }
   return <div className={`min-h-screen md:ml-64 bg-background`}>
