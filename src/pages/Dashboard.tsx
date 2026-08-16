@@ -2774,7 +2774,7 @@ const Dashboard = () => {
 
                                 );
                               })}
-                            </div>
+                            </div></div>
                           )}
 
                           <PromotePostDialog
