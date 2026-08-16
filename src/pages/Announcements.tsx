@@ -25,6 +25,7 @@ import { useAdminIds } from "@/hooks/useAdminIds";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog from "@/components/ReportContentDialog";
+import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
