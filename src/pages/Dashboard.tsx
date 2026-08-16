@@ -3066,96 +3066,53 @@ const Dashboard = () => {
                               </div>
                             );
                           })()}
-                          <div id="announcements-list">
-                            {announcements.filter((a) => !a.is_premium).map((announcement) => <Card key={announcement.id} className="bg-card text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary border-0">
-                                <div className="p-4 pb-0 px-[6px] py-[3px]">
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(profile?.plan)}`}>
-                                        <Avatar className="w-10 h-10 border-2 border-background">
-                                          <AvatarImage src={profile?.avatar_url || ""} alt={profile?.stage_name || "Artist"} />
-                                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                            {(profile?.stage_name || "A").charAt(0)}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                      </div>
-                                      <div>
-                                        <div className="flex items-center gap-2">
-                                          <h3 className="font-semibold text-foreground">
-                                            {profile?.stage_name || "Artist"}
-                                          </h3>
-                                          {profile?.is_verified && <VerifiedBadge size="sm" />}
-
-                                          {isAdExpired(announcement) ? <Badge variant="outline" className="text-xs text-destructive border-destructive">
-                                              Expired
-                                            </Badge> : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{isAdmin ? "Admin" : (translateSpecialization(profile?.specialization) || "User")}</span>
-                                          <span>·</span>
-                                          <span>{formatSmartDate(announcement.created_at)}</span>
-                                          <span>·</span>
-                                          {announcement.is_premium ? <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                              Promotion
-                                            </Badge> : <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                              Announcement
-                                            </Badge>}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
-                                          <MoreHorizontal className="h-5 w-5" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
-                                          <Trash2 className="h-4 w-4 mr-2" />
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </div>
-                                  <ExpandableText text={announcement.description} className="mt-3" />
-                                  {!announcement.is_premium && (announcement.location || announcement.event_date || announcement.budget) &&
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                                      {announcement.location &&
-                        <span className="flex items-center gap-1">
-                                          <MapPin className="h-3 w-3" />
-                                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
-                                        </span>
-                        }
-                                      {announcement.event_date &&
-                        <span className="flex items-center gap-1">
-                                          <CalendarIcon className="h-3 w-3" />
-                                          {formatDateNoYear(announcement.event_date)}
-                                        </span>
-                        }
-                                      {announcement.budget &&
-                                        <span className="flex items-center gap-1">
-                                          <Euro className="h-3 w-3" />
-                                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
-                                        </span>
-                                      }
-                                    </div>
-                      }
-                                </div>
-                                
-                                {announcement.is_premium && announcement.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: announcement.media_url!, type: announcement.media_type === "video" ? "video" : "image" })}>
-                                    {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                                        <SmoothVideoPlayer src={announcement.media_url} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
-                                      </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                                  </div>}
-                                
-                              </Card>)}
+                          <div id="announcements-list" className="-mx-4 md:mx-0">
+                            <div className="w-full max-w-[500px] mx-auto space-y-1">
+                            {announcements.filter((a) => !a.is_premium).map((announcement) => (
+                              <FeedAnnouncementCard
+                                key={announcement.id}
+                                author={{
+                                  stageName: profile?.stage_name || "Artist",
+                                  avatarUrl: profile?.avatar_url,
+                                  specializationLabel: isAdmin ? "Admin" : (translateSpecialization(profile?.specialization) || "User"),
+                                  plan: profile?.plan,
+                                  verified: !!profile?.is_verified,
+                                }}
+                                createdAt={announcement.created_at}
+                                description={announcement.description}
+                                location={announcement.location}
+                                eventDate={announcement.event_date}
+                                budget={announcement.budget}
+                                formatEventDate={formatDateNoYear}
+                                typeLabel="Announcement"
+                                titleExtra={isAdExpired(announcement)
+                                  ? <Badge variant="outline" className="text-xs text-destructive border-destructive">Expired</Badge>
+                                  : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
+                                menu={
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
+                                        <MoreHorizontal className="h-5 w-5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                }
+                              />
+                            ))}
                             {announcements.filter((a) => !a.is_premium).length === 0 && (
                               <SectionEmptyState
+                                className="mx-4 md:mx-0"
                                 icon={<Megaphone className="h-10 w-10 opacity-50" />}
                                 title="No announcements yet"
                               />
                             )}
+                            </div>
                           </div>
                         </SectionShell>}
                       </TabsContent>
