@@ -25,6 +25,7 @@ import { useAdminIds } from "@/hooks/useAdminIds";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog from "@/components/ReportContentDialog";
+import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
@@ -188,104 +189,57 @@ const Announcements = () => {
           const GUEST_PREVIEW_COUNT = 2;
           const filteredBase = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promotions" ? a.is_premium : true);
           const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promotions" ? "No promotions yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <Card key={announcement.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-                {/* Header */}
-                <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <Link to={`/artist/${announcement.profile_id}`}>
-                        <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(announcement.profiles?.plan)}`}>
-                          <Avatar className="w-10 h-10 cursor-pointer border-2 border-background">
-                            <AvatarImage src={announcement.profiles?.avatar_url || ""} alt={announcement.profiles?.stage_name || "Artist"} />
-                            <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                              {(announcement.profiles?.stage_name || "A").charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                      </Link>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Link to={`/artist/${announcement.profile_id}`}>
-                            <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                              {announcement.profiles?.stage_name || "Artist"}
-                            </h3>
-                          </Link>
-                          {adminIds.has(announcement.profile_id) && <VerifiedBadge size="sm" />}
-
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{adminIds.has(announcement.profile_id) ? "Admin" : (announcement.profiles?.specialization || "User")}</span>
-                          <span>·</span>
-                          <span>{formatSmartDate(announcement.created_at)}</span>
-                          <span>·</span>
-                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                            Announcement
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                          <MoreHorizontal className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                      if (!currentUserId) {
-                        navigate("/login");
-                        return;
-                      }
-                      setReportId(announcement.id);
-                    }}>
-                          <Flag className="h-4 w-4 mr-2" />
-                          Report
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promotions" ? "No promotions yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
+                key={announcement.id}
+                author={{
+                  stageName: announcement.profiles?.stage_name || "Artist",
+                  avatarUrl: announcement.profiles?.avatar_url,
+                  specializationLabel: adminIds.has(announcement.profile_id) ? "Admin" : (announcement.profiles?.specialization || "User"),
+                  plan: announcement.profiles?.plan,
+                  verified: adminIds.has(announcement.profile_id),
+                }}
+                createdAt={announcement.created_at}
+                description={announcement.description}
+                location={announcement.location}
+                eventDate={announcement.event_date}
+                budget={announcement.budget}
+                formatEventDate={formatDateNoYear}
+                typeLabel="Announcement"
+                onAuthorClick={() => navigate(`/artist/${announcement.profile_id}`)}
+                menu={
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                        <MoreHorizontal className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => {
+                        if (!currentUserId) {
+                          navigate("/login");
+                          return;
+                        }
+                        setReportId(announcement.id);
+                      }}>
+                        <Flag className="h-4 w-4 mr-2" />
+                        Report
+                      </DropdownMenuItem>
+                      {currentUserId === announcement.profile_id && (
+                        <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
                         </DropdownMenuItem>
-                        {currentUserId === announcement.profile_id && <>
-                          <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </>}
-                        {isAdmin && currentUserId !== announcement.profile_id && (
-                          <DropdownMenuItem onClick={() => setAdminDeleteId(announcement.id)} className="text-destructive focus:text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete (admin)
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  {/* Content */}
-                  <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
-                  {(announcement.location || announcement.event_date || announcement.budget) && (
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
-                      {announcement.location && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
-                        </span>
                       )}
-                      {announcement.event_date && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {formatDateNoYear(announcement.event_date)}
-                        </span>
+                      {isAdmin && currentUserId !== announcement.profile_id && (
+                        <DropdownMenuItem onClick={() => setAdminDeleteId(announcement.id)} className="text-destructive focus:text-destructive">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete (admin)
+                        </DropdownMenuItem>
                       )}
-                      {announcement.budget && (
-                        <span className="flex items-center gap-1">
-                          <Euro className="h-3 w-3" />
-                          <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Action button */}
-                <div className="px-2 py-1">
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                }
+                footer={
                   <div className="flex items-center justify-around">
                     <Button variant="ghost" size="sm" onClick={() => {
                       if (!currentUserId) {
@@ -302,8 +256,8 @@ const Announcements = () => {
                       <span className="font-medium">Apply Now</span>
                     </Button>
                   </div>
-                </div>
-              </Card>);
+                }
+              />);
         })()}
           
           {currentUserId ? (
