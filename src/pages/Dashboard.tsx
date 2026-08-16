@@ -23,6 +23,7 @@ import { MUSIC_GENRES } from "@/lib/musicGenres";
 import { supabase } from "@/integrations/supabase/client";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
+import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
@@ -2679,7 +2680,7 @@ const Dashboard = () => {
                             />
 
                           ) : (
-                            <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
+                            <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
                               {filtered.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
