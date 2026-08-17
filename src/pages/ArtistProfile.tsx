@@ -954,7 +954,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         image={artist.avatar_url || undefined}
       />
       <Navigation />
-      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
           <OfficialProfileView
             profile={artist as any}
@@ -1027,7 +1027,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
       <Navigation />
-      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
 
           {/* Hero header — mirrors the User Dashboard */}
