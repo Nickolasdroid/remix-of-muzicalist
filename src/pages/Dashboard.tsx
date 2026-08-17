@@ -2010,17 +2010,9 @@ const Dashboard = () => {
                             <VerifiedBadge size="md" />
                           </div>
                           <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm mt-0.5 flex-wrap">
-                            <span className="font-medium">Official</span>
-                            {profile?.created_at && (
-                              <>
-                                <span className="opacity-70">•</span>
-                                <span>
-                                  Member since{" "}
-                                  {new Date(profile.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-                                </span>
-                              </>
-                            )}
+                            <span className="font-medium">Admin</span>
                           </div>
+
                           <SocialStats
                             className="mt-2"
                             followersCount={followersCount}
