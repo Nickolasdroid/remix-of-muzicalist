@@ -5,6 +5,8 @@ import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import SocialStats from "@/components/SocialStats";
+import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
 import { Button } from "@/components/ui/button";
