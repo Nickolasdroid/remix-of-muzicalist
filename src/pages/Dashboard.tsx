@@ -5,6 +5,8 @@ import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import SocialStats from "@/components/SocialStats";
+import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
 import { Button } from "@/components/ui/button";
@@ -1985,44 +1987,49 @@ const Dashboard = () => {
                       </div>
                     )}
 
-                    {/* Official / Brand account header */}
+                    {/* Admin account header — same component as the public admin profile */}
                     {isAdmin && (
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="relative group cursor-pointer flex-shrink-0">
-                          <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
-                            <Avatar className="w-20 h-20 md:w-28 md:h-28 border-2 md:border-4 border-background shadow-lg">
-                              <AvatarImage src={profile?.avatar_url} />
-                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                                <User className="h-10 w-10 text-accent" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <label htmlFor="avatar-upload-admin" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
-                              <Camera className="h-6 w-6 text-white" />
+                      <OfficialProfileHeader
+                        name={formData.stageName}
+                        avatarUrl={profile?.avatar_url}
+                        coverUrl={profile?.cover_url}
+                        coverTheme={profile?.cover_theme}
+                        plan={profile?.plan}
+                        followersCount={followersCount}
+                        followingCount={followingCount}
+                        onFollowersClick={() => setShowFollowersDialog(true)}
+                        onFollowingClick={() => setShowFollowingDialog(true)}
+                        avatarExtra={
+                          <>
+                            <label htmlFor="avatar-upload-admin" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer z-10">
+                              <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
                             </label>
+                            <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                          </>
+                        }
+                        coverExtra={
+                          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <label htmlFor="cover-upload-admin" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                              <Camera className="h-3.5 w-3.5" />
+                              {profile?.cover_url ? 'Change cover' : 'Add cover'}
+                            </label>
+                            <input id="cover-upload-admin" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
+                            {profile?.cover_url && (
+                              <button
+                                type="button"
+                                onClick={handleRemoveCover}
+                                disabled={isUploadingCover}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
+                                aria-label="Remove cover"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
                           </div>
-                          <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <h1 className="text-xl md:text-3xl font-display font-bold text-foreground truncate">
-                              {formData.stageName}
-                            </h1>
-                            <VerifiedBadge size="md" />
-                          </div>
-                          <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm mt-0.5 flex-wrap">
-                            <span className="font-medium">Admin</span>
-                          </div>
-
-                          <SocialStats
-                            className="mt-2"
-                            followersCount={followersCount}
-                            followingCount={followingCount}
-                            onFollowersClick={() => setShowFollowersDialog(true)}
-                            onFollowingClick={() => setShowFollowingDialog(true)}
-                          />
-                        </div>
-                      </div>
+                        }
+                      />
                     )}
+
 
 
 
