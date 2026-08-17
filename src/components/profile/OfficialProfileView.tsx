@@ -1,20 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileText, Megaphone, Clock } from "lucide-react";
+import { FileText, Megaphone } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import SocialStats from "@/components/SocialStats";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import { getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { getCoverGradient } from "@/lib/coverThemes";
 
 export interface OfficialProfileData {
   id: string;
   stage_name?: string | null;
   first_name?: string | null;
   avatar_url?: string | null;
+  cover_url?: string | null;
+  cover_theme?: string | null;
+  is_verified?: boolean | null;
   plan?: string | null;
   created_at?: string | null;
 }
+
 
 export interface OfficialPost {
   id: string;
@@ -106,64 +111,81 @@ const OfficialProfileView = ({
   onValueChange,
 }: Props) => {
   const name = profile.stage_name || profile.first_name || "Muzicalist";
-  const memberSince = profile.created_at
-    ? new Date(profile.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" })
-    : null;
 
   const author = {
     stageName: name,
     avatarUrl: profile.avatar_url,
-    specializationLabel: "Official",
+    specializationLabel: "Admin",
     plan: profile.plan,
   };
 
   return (
     <div className="space-y-5 md:space-y-6">
-      {/* Compact official header */}
-      <div className="flex items-center gap-4">
-        <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile.plan as any)} shadow-xl flex-shrink-0`}>
-          <Avatar className="w-20 h-20 md:w-28 md:h-28 border-2 md:border-4 border-background">
-            <AvatarImage src={profile.avatar_url || undefined} alt={name} />
-            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10 font-display font-bold text-2xl">
-              {name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          {headerExtra}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <h1
-              className="text-xl md:text-3xl font-display font-bold text-foreground truncate notranslate"
-              data-user-content="true"
-              data-no-translate="true"
-              translate="no"
-            >
-              {name}
-            </h1>
-            <VerifiedBadge size="md" />
-          </div>
-          <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm mt-0.5 flex-wrap">
-            <span className="font-medium">Official</span>
-            {memberSince && (
-              <>
-                <span className="opacity-70">•</span>
-                <Clock className="h-3.5 w-3.5" />
-                <span>Member since {memberSince}</span>
-              </>
-            )}
-          </div>
-          <SocialStats
-            className="mt-2"
-            followersCount={followersCount}
-            followingCount={followingCount}
-            onFollowersClick={onFollowersClick}
-            onFollowingClick={onFollowingClick}
-            showFollowButton={!isOwnProfile}
-            isFollowing={isFollowing}
-            onFollowToggle={onFollowToggle}
+      {/* Hero Header: Cover + overlapping avatar/name (same structure as User/Artist profiles) */}
+      <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
+        <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+          {profile.cover_url ? (
+            <img
+              src={profile.cover_url}
+              alt={`${name} cover`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0" style={{ background: getCoverGradient(profile.cover_theme) }} />
+          )}
+
+          {/* Smooth fade into the page background */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
+            style={{
+              background:
+                "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+            }}
           />
         </div>
+
+        <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-end gap-3 md:gap-4 lg:gap-5 relative z-10">
+          <div
+            className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile.plan as any)} shadow-xl flex-shrink-0`}
+          >
+            <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+              <AvatarImage src={profile.avatar_url || undefined} alt={name} />
+              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10 font-display font-bold text-2xl">
+                {name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            {headerExtra}
+          </div>
+          <div className="flex-1 min-w-0 pb-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <h1
+                className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate"
+                data-user-content="true"
+                data-no-translate="true"
+                translate="no"
+              >
+                {name}
+              </h1>
+              {profile.is_verified !== false && <VerifiedBadge size="md" label="Admin" />}
+            </div>
+            <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+              <span className="font-medium">Admin</span>
+            </div>
+          </div>
+        </div>
+
+        <SocialStats
+          className="mx-4 md:mx-0 mt-3 md:mt-4"
+          followersCount={followersCount}
+          followingCount={followingCount}
+          onFollowersClick={onFollowersClick}
+          onFollowingClick={onFollowingClick}
+          showFollowButton={!isOwnProfile}
+          isFollowing={isFollowing}
+          onFollowToggle={onFollowToggle}
+        />
       </div>
+
 
       <Tabs value={value} defaultValue={value ? undefined : defaultTab} onValueChange={onValueChange} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
