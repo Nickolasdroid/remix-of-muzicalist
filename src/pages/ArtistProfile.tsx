@@ -151,6 +151,8 @@ const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> =>
 
 const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const { t } = useTranslation();
+  const adminIds = useAdminIds();
+
   const {
     id: routeId
   } = useParams<{
