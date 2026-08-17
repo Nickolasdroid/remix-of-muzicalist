@@ -1,12 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileText, Megaphone } from "lucide-react";
-import VerifiedBadge from "@/components/VerifiedBadge";
-import SocialStats from "@/components/SocialStats";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
-import { getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getCoverGradient } from "@/lib/coverThemes";
+import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+
 
 export interface OfficialProfileData {
   id: string;
