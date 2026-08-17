@@ -113,6 +113,7 @@ const OfficialProfileView = ({
   const name = profile.stage_name || profile.first_name || "Muzicalist";
 
   const author = {
+    id: profile.id,
     stageName: name,
     avatarUrl: profile.avatar_url,
     specializationLabel: "Admin",

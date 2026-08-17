@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useAdminIds } from "@/hooks/useAdminIds";
 
 export interface FeedPostAuthor {
   id?: string;
@@ -66,6 +67,8 @@ const FeedPostCard = ({
   shares,
 }: FeedPostCardProps) => {
   const { t } = useTranslation();
+  const adminIds = useAdminIds();
+  const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   return (
     <Card className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
       <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
@@ -90,7 +93,7 @@ const FeedPostCard = ({
                 >
                   {author.stageName}
                 </h3>
-                {author.verified && <VerifiedBadge size="sm" />}
+                {isVerified && <VerifiedBadge size="sm" />}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
                 {author.specializationLabel && (

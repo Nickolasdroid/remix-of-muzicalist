@@ -8,8 +8,10 @@ import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
+import { useAdminIds } from "@/hooks/useAdminIds";
 
 export interface FeedAnnouncementAuthor {
+  id?: string;
   stageName: string;
   avatarUrl?: string | null;
   specializationLabel?: string;
@@ -65,6 +67,8 @@ const FeedAnnouncementCard = ({
   onAuthorClick,
   onMediaClick,
 }: FeedAnnouncementCardProps) => {
+  const adminIds = useAdminIds();
+  const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   const hasMeta = !!(location || eventDate || budget);
 
   return (
@@ -91,7 +95,7 @@ const FeedAnnouncementCard = ({
                 >
                   {author.stageName}
                 </h3>
-                {author.verified && <VerifiedBadge size="sm" />}
+                {isVerified && <VerifiedBadge size="sm" />}
                 {titleExtra}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
