@@ -994,11 +994,21 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
           </AlertDialog>
 
           <CommentsDialog
-            open={commentsTarget !== null}
+            open={!!commentsTarget}
             onOpenChange={(o) => { if (!o) setCommentsTarget(null); }}
-            targetId={commentsTarget?.id || ""}
-            targetType={commentsTarget?.type || "post"}
+            targetId={commentsTarget?.id ?? null}
+            targetType={commentsTarget?.type ?? "post"}
+            currentUserId={currentUserId}
+            onCountChange={(count) => {
+              if (!commentsTarget) return;
+              if (commentsTarget.type === "post") {
+                setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+              } else {
+                setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+              }
+            }}
           />
+
 
           <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
         </div>
