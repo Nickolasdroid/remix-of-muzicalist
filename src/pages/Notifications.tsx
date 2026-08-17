@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { ro as roLocale } from "date-fns/locale";
+import i18n, { translateTextsSync } from "@/i18n";
 import Navigation from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -76,6 +78,46 @@ const iconFor = (type: string, size = "h-5 w-5") => {
     default:
       return <Info className={cn(base, "text-muted-foreground")} />;
   }
+};
+
+// Canonical English phrase per notification type. This is what we translate,
+// so notifications are consistent regardless of what language the DB row was
+// saved in (older rows are RO, newer ones EN). The actor name is rendered
+// separately, so these phrases must NOT include the name.
+const messageForType = (type: string): string | null => {
+  switch (type) {
+    case "like": return "liked your post";
+    case "comment": return "commented on your post";
+    case "follow": return "started following you";
+    case "review": return "left you a review";
+    case "new_post": return "shared a new post";
+    case "new_announcement": return "posted a new announcement";
+    case "message": return "sent you a message";
+    default: return null;
+  }
+};
+
+// Strips a leading actor name from a DB message (older rows stored the message
+// as "Name liked your post", which duplicated the separately-rendered name).
+const stripActorName = (message: string, actorName?: string | null): string => {
+  if (!message) return message;
+  if (actorName && message.startsWith(actorName)) {
+    return message.slice(actorName.length).trimStart();
+  }
+  return message;
+};
+
+// Resolves the localized body text for a notification. Prefers a canonical
+// phrase built from the type (so it always translates cleanly); falls back to
+// the DB message for types that carry custom detail (bookings, etc.).
+const notificationBody = (n: Notification): string => {
+  const lang = i18n.language || "en";
+  const canonical = messageForType(n.type);
+  if (canonical) {
+    return translateTextsSync(lang, [canonical])[canonical] || canonical;
+  }
+  const raw = stripActorName(n.message || n.title || "", n.actor_name);
+  return translateTextsSync(lang, [raw])[raw] || raw;
 };
 
 const groupLabel = (date: Date): "Today" | "Yesterday" | "Earlier" => {
@@ -319,10 +361,13 @@ const Notifications = () => {
                   {n.actor_name}{" "}
                 </span>
               )}
-              <span>{n.message || n.title}</span>
+              <span>{notificationBody(n)}</span>
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+              {formatDistanceToNow(new Date(n.created_at), {
+                addSuffix: true,
+                locale: (i18n.language || "en").startsWith("ro") ? roLocale : undefined,
+              })}
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 mt-1">
