@@ -1985,31 +1985,53 @@ const Dashboard = () => {
                       </div>
                     )}
 
-                    {/* Admin compact header */}
+                    {/* Official / Brand account header */}
                     {isAdmin && (
-                      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
-                        <div className="relative group cursor-pointer">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="relative group cursor-pointer flex-shrink-0">
                           <div className={`p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)}`}>
-                            <Avatar className="w-24 h-24 md:w-32 md:h-32 border-3 border-background shadow-lg">
+                            <Avatar className="w-20 h-20 md:w-28 md:h-28 border-2 md:border-4 border-background shadow-lg">
                               <AvatarImage src={profile?.avatar_url} />
                               <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                                <User className="h-12 w-12 text-accent" />
+                                <User className="h-10 w-10 text-accent" />
                               </AvatarFallback>
                             </Avatar>
                             <label htmlFor="avatar-upload-admin" className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
                               <Camera className="h-6 w-6 text-white" />
                             </label>
                           </div>
-                          <div className="absolute bottom-1 right-1 z-20 bg-black/60 backdrop-blur rounded-full p-1">
-                            <VerifiedBadge size="md" />
-                          </div>
                           <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         </div>
-                        <h1 className="text-2xl md:text-4xl font-display font-bold text-foreground text-center md:text-left">
-                          {formData.stageName}
-                        </h1>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <h1 className="text-xl md:text-3xl font-display font-bold text-foreground truncate">
+                              {formData.stageName}
+                            </h1>
+                            <VerifiedBadge size="md" />
+                          </div>
+                          <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm mt-0.5 flex-wrap">
+                            <span className="font-medium">Official</span>
+                            {profile?.created_at && (
+                              <>
+                                <span className="opacity-70">•</span>
+                                <span>
+                                  Member since{" "}
+                                  {new Date(profile.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <SocialStats
+                            className="mt-2"
+                            followersCount={followersCount}
+                            followingCount={followingCount}
+                            onFollowersClick={() => setShowFollowersDialog(true)}
+                            onFollowingClick={() => setShowFollowingDialog(true)}
+                          />
+                        </div>
                       </div>
                     )}
+
 
 
                     {/* Tabs Section */}
