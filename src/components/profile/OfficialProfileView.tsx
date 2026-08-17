@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileText, Megaphone, User } from "lucide-react";
+import { FileText, Megaphone } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import SocialStats from "@/components/SocialStats";
 import FeedPostCard from "@/components/FeedPostCard";

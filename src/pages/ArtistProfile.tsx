@@ -947,8 +947,8 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
     const officialAnnouncements = announcements.filter((a) => !isAdExpired(a));
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
-        title={`${artist.stage_name || 'Muzicalist'} — Official | Muzicalist`}
-        description={`Official Muzicalist account. Follow our posts and announcements.`}
+        title={`${artist.stage_name || 'Muzicalist'} — Admin | Muzicalist`}
+        description={`Muzicalist admin account — posts and announcements.`}
         path={`/artist/${artist.slug ?? id}`}
         type="profile"
         image={artist.avatar_url || undefined}
