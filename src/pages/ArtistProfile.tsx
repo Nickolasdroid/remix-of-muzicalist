@@ -942,7 +942,72 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       </div>;
   }
 
+  // Official / Brand account (Muzicalist admin) — content-producing brand profile
+  if (id && adminIds.has(id)) {
+    const officialAnnouncements = announcements.filter((a) => !isAdExpired(a));
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      <SEO
+        title={`${artist.stage_name || 'Muzicalist'} — Official | Muzicalist`}
+        description={`Official Muzicalist account. Follow our posts and announcements.`}
+        path={`/artist/${artist.slug ?? id}`}
+        type="profile"
+        image={artist.avatar_url || undefined}
+      />
+      <Navigation />
+      <div className={`pt-16 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+          <OfficialProfileView
+            profile={artist as any}
+            posts={posts as any}
+            announcements={officialAnnouncements as any}
+            followersCount={followersCount}
+            followingCount={followingCount}
+            isFollowing={isFollowing}
+            isOwnProfile={isOwnProfile}
+            onFollowToggle={handleFollowToggle}
+            onFollowersClick={() => setFollowListMode("followers")}
+            onFollowingClick={() => setFollowListMode("following")}
+            onPostLike={handlePostLike}
+            onComments={(cid, type) => setCommentsTarget({ id: cid, type })}
+            onShare={(type) => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type })}
+            onMediaClick={(m) => setMediaPreview(m)}
+          />
+
+          <FollowListDialog
+            open={followListMode !== null}
+            onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
+            profileId={artist.id}
+            mode={followListMode || "followers"}
+          />
+
+          <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
+            <AlertDialogContent className="rounded-lg">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Unfollow</AlertDialogTitle>
+                <AlertDialogDescription>Are you sure you want to unfollow? You can follow again later.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={doUnfollow}>Unfollow</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <CommentsDialog
+            open={commentsTarget !== null}
+            onOpenChange={(o) => { if (!o) setCommentsTarget(null); }}
+            targetId={commentsTarget?.id || ""}
+            targetType={commentsTarget?.type || "post"}
+          />
+
+          <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+        </div>
+      </div>
+    </div>;
+  }
+
   // Simplified view for regular user accounts (no specialization)
+
   const isUserAccount = !artist.specialization;
   if (isUserAccount) {
     const activeAnnouncements = announcements.filter((a) => !isAdExpired(a));
