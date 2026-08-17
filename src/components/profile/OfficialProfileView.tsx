@@ -167,7 +167,7 @@ const OfficialProfileView = ({
               >
                 {name}
               </h1>
-              {profile.is_verified !== false && <VerifiedBadge size="md" />}
+              <VerifiedBadge size="md" />
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
               <span className="font-medium">Admin</span>
