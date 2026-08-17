@@ -2708,6 +2708,7 @@ const Dashboard = () => {
                                   <FeedPostCard
                                     key={`${item.__kind}-${item.id}`}
                                     author={{
+                                      id: profile?.id,
                                       stageName: profile?.stage_name || 'Artist',
                                       avatarUrl: profile?.avatar_url,
                                       specializationLabel: translateSpecialization(profile?.specialization),
@@ -3087,6 +3088,7 @@ const Dashboard = () => {
                               <FeedAnnouncementCard
                                 key={announcement.id}
                                 author={{
+                                  id: profile?.id,
                                   stageName: profile?.stage_name || "Artist",
                                   avatarUrl: profile?.avatar_url,
                                   specializationLabel: isAdmin ? "Admin" : (translateSpecialization(profile?.specialization) || "User"),

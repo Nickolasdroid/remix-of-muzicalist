@@ -192,6 +192,7 @@ const Announcements = () => {
           return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promotions" ? "No promotions yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
                 key={announcement.id}
                 author={{
+                  id: announcement.profile_id,
                   stageName: announcement.profiles?.stage_name || "Artist",
                   avatarUrl: announcement.profiles?.avatar_url,
                   specializationLabel: adminIds.has(announcement.profile_id) ? "Admin" : (announcement.profiles?.specialization || "User"),
