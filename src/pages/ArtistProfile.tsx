@@ -46,6 +46,8 @@ import ReportContentDialog, { ReportableType } from "@/components/ReportContentD
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
+import OfficialProfileView from "@/components/profile/OfficialProfileView";
+import { useAdminIds } from "@/hooks/useAdminIds";
 import i18n, { translateTextsSync } from "@/i18n";
 interface Profile {
   id: string;
