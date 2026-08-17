@@ -21,7 +21,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import { ro as roLocale } from "date-fns/locale";
-import i18n, { translateTextsSync } from "@/i18n";
+import i18n, { translateTextsSync, translateTexts } from "@/i18n";
 import Navigation from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -143,6 +143,7 @@ const Notifications = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [dictReady, setDictReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userType, setUserType] = useState<string | null>(null);
@@ -152,6 +153,17 @@ const Notifications = () => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const touchStartX = useRef(0);
   const touchCurrentX = useRef(0);
+
+  useEffect(() => {
+    // The RO dictionary loads asynchronously; translateTextsSync returns empty
+    // strings until it's ready. Preload it (translateTexts awaits the load
+    // internally) and re-render once available so labels resolve correctly.
+    let active = true;
+    translateTexts(i18n.language || "en", ["liked your post"]).finally(() => {
+      if (active) setDictReady(true);
+    });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -483,7 +495,7 @@ const Notifications = () => {
             <h1 className="text-2xl font-bold">Notifications</h1>
           </div>
 
-          {loading ? (
+          {loading || (!dictReady && (i18n.language || "en").startsWith("ro")) ? (
             <div className="space-y-1">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="flex items-start gap-3 px-4 py-3.5 animate-pulse">
