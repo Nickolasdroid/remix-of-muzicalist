@@ -1,20 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileText, Megaphone, Clock } from "lucide-react";
+import { FileText, Megaphone, User } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import SocialStats from "@/components/SocialStats";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import { getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { getCoverGradient } from "@/lib/coverThemes";
 
 export interface OfficialProfileData {
   id: string;
   stage_name?: string | null;
   first_name?: string | null;
   avatar_url?: string | null;
+  cover_url?: string | null;
+  cover_theme?: string | null;
+  is_verified?: boolean | null;
   plan?: string | null;
   created_at?: string | null;
 }
+
 
 export interface OfficialPost {
   id: string;
