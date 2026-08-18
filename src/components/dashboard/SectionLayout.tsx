@@ -1,7 +1,6 @@
 import { ReactNode, isValidElement } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 /**
  * Shared layout primitives used by the artist dashboard sections
