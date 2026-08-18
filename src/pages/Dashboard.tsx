@@ -2836,9 +2836,10 @@ const Dashboard = () => {
                           </div> :
                         <SectionShell>
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
-                          <SectionHeader
+                          <SectionHeaderWithUsage
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
-                            title={`${t('dashboardAnnouncements.title', 'My Announcements')} (${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'})`}
+                            title={t('dashboardAnnouncements.title', 'Announcements')}
+                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
