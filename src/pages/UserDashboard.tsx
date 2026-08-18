@@ -580,6 +580,24 @@ const UserDashboard = () => {
                       </div>
                     )}
                   </Card>
+
+                  <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+                    <AlertDialogContent className="rounded-lg">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("userDashboard.deleteAdDescription")}</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => { if (deleteAnnouncementId) handleDeleteAnnouncement(deleteAnnouncementId); setDeleteAnnouncementId(null); }}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {t("userDashboard.delete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
 
                 {/* My Bookings */}
