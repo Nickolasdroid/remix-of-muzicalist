@@ -2562,9 +2562,10 @@ const Dashboard = () => {
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
 
-                          <SectionHeader
+                          <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
-                            title={`${t('dashboardPosts.title', 'My Posts')} (${postItems.length}/${postLimitLabel})`}
+                            title={t('dashboardPosts.title', 'Posts')}
+                            usage={`${postItems.length}/${postLimitLabel}`}
                             action={
                               <Button
                                 size="sm"
