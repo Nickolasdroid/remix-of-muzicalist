@@ -2912,48 +2912,26 @@ const Dashboard = () => {
                               </Dialog>
                             }
                           />
-                          <div id="announcements-list" className="-mx-4 md:mx-0">
-                            <div className="w-full max-w-[500px] mx-auto space-y-1">
+                          <div id="announcements-list">
+                            <div className="space-y-2">
                             {announcements.filter((a) => !a.is_premium).map((announcement) => (
-                              <FeedAnnouncementCard
+                              <AnnouncementManagementCard
                                 key={announcement.id}
-                                author={{
-                                  id: profile?.id,
-                                  stageName: profile?.stage_name || "Artist",
-                                  avatarUrl: profile?.avatar_url,
-                                  specializationLabel: isAdmin ? "Admin" : (translateSpecialization(profile?.specialization) || "User"),
-                                  plan: profile?.plan,
-                                  verified: !!profile?.is_verified,
-                                }}
-                                createdAt={announcement.created_at}
-                                description={announcement.description}
-                                location={announcement.location}
-                                eventDate={announcement.event_date}
-                                budget={announcement.budget}
-                                formatEventDate={formatDateNoYear}
-                                titleExtra={isAdExpired(announcement)
-                                  ? <Badge variant="outline" className="text-xs text-destructive border-destructive">Expired</Badge>
-                                  : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
-                                menu={
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" disabled={isSaving}>
-                                        <MoreHorizontal className="h-5 w-5" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                }
+                                announcement={announcement}
+                                disabled={isSaving}
+                                actions={[
+                                  {
+                                    key: "delete",
+                                    label: t("userDashboard.delete", "Delete"),
+                                    icon: Trash2,
+                                    destructive: true,
+                                    onSelect: () => setDeleteAnnouncementId(announcement.id),
+                                  },
+                                ]}
                               />
                             ))}
                             {announcements.filter((a) => !a.is_premium).length === 0 && (
                               <SectionEmptyState
-                                className="mx-4 md:mx-0"
                                 icon={<Megaphone className="h-10 w-10 opacity-50" />}
                                 title="No announcements yet"
                               />
