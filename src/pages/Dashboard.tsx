@@ -2857,7 +2857,7 @@ const Dashboard = () => {
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
                           <SectionHeader
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
-                            title="My Announcements"
+                            title={`${t('dashboardAnnouncements.title', 'My Announcements')} (${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'})`}
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
