@@ -65,7 +65,7 @@ import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVid
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
-import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
+import { SectionShell, SectionHeader, SectionHeaderWithUsage, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
