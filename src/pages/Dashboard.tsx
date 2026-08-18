@@ -276,6 +276,7 @@ const Dashboard = () => {
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
   const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
+  const [galleryTab, setGalleryTab] = useState<'photos' | 'videos'>('photos');
   const [videoUrl, setVideoUrl] = useState("");
   const [deleteGalleryItem, setDeleteGalleryItem] = useState<{
     id: string;
