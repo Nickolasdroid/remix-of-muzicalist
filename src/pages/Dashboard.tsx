@@ -2638,30 +2638,20 @@ const Dashboard = () => {
                                     onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
                                     onShare={() => sharePost({ profileId: profile?.id, stageName: profile?.stage_name || 'Artist', type: isPromo ? 'announcement' : 'post' })}
                                     metaExtra={
-                                      <>
-                                        <span>·</span>
-                                        <span className="inline-flex items-center gap-1 text-emerald-500">
-                                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                          {t('dashboardPosts.published', 'Published')}
-                                        </span>
-                                        {isPromo && (
-                                          expired ? (
-                                            <>
-                                              <span>·</span>
-                                              <span className="text-destructive">{t('dashboardPosts.expired', 'Expired')}</span>
-                                            </>
+                                      isPromo ? (
+                                        <>
+                                          <span>·</span>
+                                          {expired ? (
+                                            <span className="text-destructive">{t('dashboardPosts.expired', 'Expired')}</span>
                                           ) : (
-                                            <>
-                                              <span>·</span>
-                                              <span className="inline-flex items-center gap-1 text-accent">
-                                                <Megaphone className="h-3 w-3" />
-                                                {t('dashboardPosts.promoted', 'Promoted')}
-                                                {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
-                                              </span>
-                                            </>
-                                          )
-                                        )}
-                                      </>
+                                            <span className="inline-flex items-center gap-1 text-accent">
+                                              <Megaphone className="h-3 w-3" />
+                                              {t('dashboardPosts.promoted', 'Promoted')}
+                                              {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
+                                            </span>
+                                          )}
+                                        </>
+                                      ) : null
                                     }
                                     menu={
                                       <PostActionsMenu
