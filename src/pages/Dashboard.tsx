@@ -555,7 +555,6 @@ const Dashboard = () => {
       loadReviews();
       loadFollowing();
       loadFollowers();
-      loadAwaitingReplies();
     }
   }, [user]);
   const checkAuth = async () => {
