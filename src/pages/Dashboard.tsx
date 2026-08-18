@@ -2933,55 +2933,6 @@ const Dashboard = () => {
                               </Dialog>
                             }
                           />
-                          <SectionStats className="grid-cols-1">
-                            <SectionStatCard
-                              label="Announcements"
-                              info={<AdSlotInfoButton kind="ad" />}
-                              isOver={standardAdsUsed > STANDARD_AD_LIMIT}
-                              value={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
-                            />
-                          </SectionStats>
-                          {(() => {
-                            const nonPremium = announcements.filter((a) => !a.is_premium);
-                            const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
-                            const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
-                            const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
-                            return (
-                              <div className="space-y-3">
-                                <h3 className="text-base font-semibold text-foreground">Overview</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div onClick={() => navigate('/messages?tab=announcements&sub=requests')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
-                                    </div>
-                                    <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
-                                    </div>
-                                    <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
-                                    </div>
-                                    <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
-                                    </div>
-                                    <Repeat className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })()}
                           <div id="announcements-list" className="-mx-4 md:mx-0">
                             <div className="w-full max-w-[500px] mx-auto space-y-1">
                             {announcements.filter((a) => !a.is_premium).map((announcement) => (
