@@ -26,6 +26,7 @@ import FollowingManageDialog from "@/components/FollowingManageDialog";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
+import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 
 interface MediaPreview {
   url: string;
