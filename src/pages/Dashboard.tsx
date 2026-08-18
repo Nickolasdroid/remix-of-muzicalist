@@ -8,7 +8,7 @@ import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
 
 import CountryFlagIcon from "@/components/CountryFlagIcon";
-import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
