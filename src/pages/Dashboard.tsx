@@ -2948,203 +2948,207 @@ const Dashboard = () => {
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
                         <SectionShell>
-                        <SectionHeader
-                          icon={<Images className="h-5 w-5 text-accent" />}
-                          title="My Gallery"
-                          action={
-                          <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
-                            <DialogTrigger asChild>
-                              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
-                                <Plus className="h-4 w-4 mr-1" />
-                                Add
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Add</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4 mt-4">
-                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                                  {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="image">Image</TabsTrigger>
-                                    <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList> : <TabsList className="grid w-full grid-cols-1">
-                                    <TabsTrigger value="image">Image</TabsTrigger>
-                                  </TabsList>}
-                                  <TabsContent value="image" className="space-y-4">
-                                    <Label htmlFor="gallery-upload" className="cursor-pointer">
-                                      <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                        <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                        <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                      </div>
-                                    </Label>
-                                    <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
-                                  </TabsContent>
-                                  <TabsContent value="video" className="space-y-4">
-                                    <div className="space-y-3">
-                                      <div>
-                                        <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
-                                        <Input
-                                          id="gallery-video-url"
-                                          type="url"
-                                          placeholder="https://www.youtube.com/watch?v=…"
-                                          value={videoUrl}
-                                          onChange={(e) => setVideoUrl(e.target.value)}
-                                          className="mt-1.5"
-                                        />
-                                        {videoUrl && !isSupportedEmbed(videoUrl) && (
-                                          <p className="text-xs text-destructive mt-1.5">
-                                            Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
+                          <SectionHeaderWithUsage
+                            icon={<Images className="h-5 w-5 text-accent" />}
+                            title={t('dashboardGallery.title', 'Gallery')}
+                            usage={
+                              <>
+                                <Badge
+                                  variant="outline"
+                                  className={`rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 ${imagesOverLimit ? 'bg-destructive/10 text-destructive border-destructive/40' : 'bg-muted/30 text-muted-foreground'}`}
+                                >
+                                  {t('dashboardGallery.photos', 'Photos')} {imagesUsed}/{STANDARD_IMAGE_LIMIT}
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={`rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 ${videosOverLimit ? 'bg-destructive/10 text-destructive border-destructive/40' : 'bg-muted/30 text-muted-foreground'}`}
+                                >
+                                  {t('dashboardGallery.videos', 'Videos')} {videosUsed}/{STANDARD_VIDEO_LIMIT}
+                                </Badge>
+                              </>
+                            }
+                            action={
+                              <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    {t('userDashboard.add', 'Add')}
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>{t('userDashboard.add', 'Add')}</DialogTitle>
+                                  </DialogHeader>
+                                  <div className="space-y-4 mt-4">
+                                    <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
+                                      {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="image">Image</TabsTrigger>
+                                        <TabsTrigger value="video">Video</TabsTrigger>
+                                      </TabsList> : <TabsList className="grid w-full grid-cols-1">
+                                        <TabsTrigger value="image">Image</TabsTrigger>
+                                      </TabsList>}
+                                      <TabsContent value="image" className="space-y-4">
+                                        <Label htmlFor="gallery-upload" className="cursor-pointer">
+                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                            <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                          </div>
+                                        </Label>
+                                        <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
+                                      </TabsContent>
+                                      <TabsContent value="video" className="space-y-4">
+                                        <div className="space-y-3">
+                                          <div>
+                                            <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
+                                            <Input
+                                              id="gallery-video-url"
+                                              type="url"
+                                              placeholder="https://www.youtube.com/watch?v=…"
+                                              value={videoUrl}
+                                              onChange={(e) => setVideoUrl(e.target.value)}
+                                              className="mt-1.5"
+                                            />
+                                            {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                              <p className="text-xs text-destructive mt-1.5">
+                                                Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
+                                              </p>
+                                            )}
+                                            {videoUrl && isSupportedEmbed(videoUrl) && (
+                                              <p className="text-xs text-muted-foreground mt-1.5">
+                                                Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
+                                              </p>
+                                            )}
+                                          </div>
+                                          <Button
+                                            onClick={handleAddVideo}
+                                            disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                            className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                          >
+                                            {isSaving ? "Adding…" : "Embed link"}
+                                          </Button>
+                                          <p className="text-xs text-muted-foreground text-center">
+                                            Streamed directly from the source — no file is uploaded to our servers.
                                           </p>
-                                        )}
-                                        {videoUrl && isSupportedEmbed(videoUrl) && (
-                                          <p className="text-xs text-muted-foreground mt-1.5">
-                                            Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
-                                          </p>
-                                        )}
-                                      </div>
-                                      <Button
-                                        onClick={handleAddVideo}
-                                        disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
-                                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                                      >
-                                        {isSaving ? "Adding…" : "Embed link"}
-                                      </Button>
-                                      <p className="text-xs text-muted-foreground text-center">
-                                        Streamed directly from the source — no file is uploaded to our servers.
-                                      </p>
-                                    </div>
-                                  </TabsContent>
-                                </Tabs>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                          }
-                        />
-                        <SectionStats className="lg:grid-cols-2">
-                          <SectionStatCard
-                            label="Photos"
-                            isOver={imagesOverLimit}
-                            value={<>{imagesUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_IMAGE_LIMIT}</span></>}
+                                        </div>
+                                      </TabsContent>
+                                    </Tabs>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            }
                           />
-                          {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && (
-                            <SectionStatCard
-                              label="Videos"
-                              isOver={videosOverLimit}
-                              value={<>{videosUsed}<span className="text-muted-foreground text-lg"> / {STANDARD_VIDEO_LIMIT}</span></>}
-                            />
-                          )}
-                        </SectionStats>
-                        <div className="space-y-8">
-                          {galleryOverLimit && (
-                            <div
-                              className="flex items-start gap-3 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm"
-                              role="alert"
-                            >
-                              <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                              <div className="space-y-1">
-                                <p className="font-medium text-destructive">
-                                  Your gallery exceeds your current plan limits
-                                </p>
-                                <p className="text-muted-foreground">
-                                  Excess media is hidden from public view but remains stored
-                                  safely. Upgrade your subscription to restore visibility.
-                                </p>
+
+                          <Tabs value={galleryTab} onValueChange={(v) => setGalleryTab(v as 'photos' | 'videos')}>
+                            <TabsList className="w-full grid grid-cols-2 mb-2">
+                              <TabsTrigger value="photos">{t('dashboardGallery.photos', 'Photos')}</TabsTrigger>
+                              <TabsTrigger value="videos">{t('dashboardGallery.videos', 'Videos')}</TabsTrigger>
+                            </TabsList>
+
+                            {galleryOverLimit && (
+                              <div
+                                className="flex items-start gap-3 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm mb-4"
+                                role="alert"
+                              >
+                                <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                  <p className="font-medium text-destructive">
+                                    Your gallery exceeds your current plan limits
+                                  </p>
+                                  <p className="text-muted-foreground">
+                                    Excess media is hidden from public view but remains stored
+                                    safely. Upgrade your subscription to restore visibility.
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Photos Section */}
-                          <div>
-                            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
-                              <Images className="h-5 w-5 text-accent" />
-                              Photos
-                            </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter((item) => item.type === 'image').map((item) => {
-                                const hidden = galleryHiddenIds.has(item.id);
-                                return (
-                                  <div key={item.id} className="relative group">
-                                    <div
-                                      className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer relative"
-                                      onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
-                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
-                                    >
-                                      <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'opacity-40 grayscale' : ''}`} />
-                                      {hidden && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
-                                          <div className="rounded-full bg-background/80 p-2 shadow-md">
-                                            <Lock className="h-5 w-5 text-foreground" />
+                            <TabsContent value="photos" className="mt-0">
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                                {galleryItems.filter((item) => item.type === 'image').map((item) => {
+                                  const hidden = galleryHiddenIds.has(item.id);
+                                  return (
+                                    <div key={item.id} className="relative group">
+                                      <div
+                                        className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer relative"
+                                        onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
+                                        title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                      >
+                                        <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'opacity-40 grayscale' : ''}`} />
+                                        {hidden && (
+                                          <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+                                            <div className="rounded-full bg-background/80 p-2 shadow-md">
+                                              <Lock className="h-5 w-5 text-foreground" />
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        )}
+                                      </div>
+                                      <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                        id: item.id,
+                                        url: item.url,
+                                        type: item.type
+                                      }); }} disabled={isSaving}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
                                     </div>
-                                    <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
-                                      id: item.id,
-                                      url: item.url,
-                                      type: item.type
-                                    }); }} disabled={isSaving}>
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                );
-                              })}
-                              {galleryItems.filter((item) => item.type === 'image').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
-                                  No photos yet. Add your first image!
-                                </div>}
-                            </div>
-                          </div>
+                                  );
+                                })}
+                              </div>
+                              {galleryItems.filter((item) => item.type === 'image').length === 0 && (
+                                <SectionEmptyState
+                                  icon={<ImageIcon className="h-10 w-10 opacity-50" />}
+                                  title={t('dashboardGallery.noPhotos', 'No photos yet. Add your first image!')}
+                                />
+                              )}
+                            </TabsContent>
 
-                          {/* Videos Section - shown if plan supports videos OR user already has videos (e.g. after downgrade) */}
-                          {(STANDARD_VIDEO_LIMIT > 0 || videosUsed > 0) && <div>
-                            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
-                              <Play className="h-5 w-5 text-accent" />
-                              Videos
-                            </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                              {galleryItems.filter((item) => item.type === 'video').map((item) => {
-                                const hidden = galleryHiddenIds.has(item.id);
-                                const info = getEmbedInfo(item.url);
-                                return (
-                                  <div key={item.id} className="relative group">
-                                    <div
-                                      className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
-                                      onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
-                                      title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
-                                    >
-                                      {info?.thumbnail ? (
-                                        <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'opacity-30 grayscale' : 'opacity-80'}`} />
-                                      ) : null}
-                                      <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
-                                      {info && info.provider !== 'direct' && (
-                                        <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
-                                          {providerLabel(info.provider)}
-                                        </span>
-                                      )}
-                                      {hidden && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
-                                          <div className="rounded-full bg-background/80 p-2 shadow-md">
-                                            <Lock className="h-5 w-5 text-foreground" />
+                            <TabsContent value="videos" className="mt-0">
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                                {galleryItems.filter((item) => item.type === 'video').map((item) => {
+                                  const hidden = galleryHiddenIds.has(item.id);
+                                  const info = getEmbedInfo(item.url);
+                                  return (
+                                    <div key={item.id} className="relative group">
+                                      <div
+                                        className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
+                                        onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
+                                        title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
+                                      >
+                                        {info?.thumbnail ? (
+                                          <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'opacity-30 grayscale' : 'opacity-80'}`} />
+                                        ) : null}
+                                        <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
+                                        {info && info.provider !== 'direct' && (
+                                          <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
+                                            {providerLabel(info.provider)}
+                                          </span>
+                                        )}
+                                        {hidden && (
+                                          <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+                                            <div className="rounded-full bg-background/80 p-2 shadow-md">
+                                              <Lock className="h-5 w-5 text-foreground" />
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        )}
+                                      </div>
+                                      <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                        id: item.id,
+                                        url: item.url,
+                                        type: item.type
+                                      }); }} disabled={isSaving}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
                                     </div>
-                                    <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
-                                      id: item.id,
-                                      url: item.url,
-                                      type: item.type
-                                    }); }} disabled={isSaving}>
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                );
-                              })}
-                              {galleryItems.filter((item) => item.type === 'video').length === 0 && <div className="col-span-full text-center text-muted-foreground py-8">
-                                  No videos yet. Add your first video!
-                                </div>}
-                            </div>
-                          </div>}
-                        </div>
+                                  );
+                                })}
+                              </div>
+                              {galleryItems.filter((item) => item.type === 'video').length === 0 && (
+                                <SectionEmptyState
+                                  icon={<VideoIcon className="h-10 w-10 opacity-50" />}
+                                  title={t('dashboardGallery.noVideos', 'No videos yet. Add your first video!')}
+                                />
+                              )}
+                            </TabsContent>
+                          </Tabs>
                         </SectionShell>
 
                       </TabsContent>}
