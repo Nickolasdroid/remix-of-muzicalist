@@ -401,26 +401,6 @@ const Dashboard = () => {
     setSentBookingRequests(sent || []);
   };
 
-  const loadAwaitingReplies = async () => {
-    if (!user) return;
-    // Only conversations tied to announcements owned by this artist (i.e. applications to their ads)
-    const { data: convos } = await supabase
-      .from('conversations')
-      .select('id, artist_id, announcement_id, deleted_by_artist')
-      .eq('artist_id', user.id)
-      .not('announcement_id', 'is', null);
-    const visibleIds = (convos || [])
-      .filter((c: any) => !c.deleted_by_artist)
-      .map((c: any) => c.id);
-    if (!visibleIds.length) { setAwaitingRepliesCount(0); return; }
-    const { data: msgs } = await supabase
-      .from('messages')
-      .select('conversation_id')
-      .in('conversation_id', visibleIds)
-      .neq('sender_id', user.id)
-      .is('read_at', null);
-    setAwaitingRepliesCount(new Set((msgs || []).map((m: any) => m.conversation_id)).size);
-  };
   const loadPosts = async () => {
     if (!user) return;
     const {
