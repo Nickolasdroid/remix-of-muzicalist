@@ -2952,7 +2952,6 @@ const Dashboard = () => {
                                 eventDate={announcement.event_date}
                                 budget={announcement.budget}
                                 formatEventDate={formatDateNoYear}
-                                typeLabel="Announcement"
                                 titleExtra={isAdExpired(announcement)
                                   ? <Badge variant="outline" className="text-xs text-destructive border-destructive">Expired</Badge>
                                   : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}
