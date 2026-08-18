@@ -25,6 +25,7 @@ import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import FollowingManageDialog from "@/components/FollowingManageDialog";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
+import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 
 interface MediaPreview {
   url: string;
@@ -555,42 +556,19 @@ const UserDashboard = () => {
                     {announcements.length > 0 ? (
                       <div className="mt-3 space-y-2">
                         {announcements.slice(0, 3).map((ad) => (
-                          <div key={ad.id} className="flex items-start justify-between gap-2 p-3 rounded-lg bg-background/30 border border-border/50">
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm text-foreground line-clamp-2">{ad.description}</p>
-                              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                                <span>{formatSmartDate(ad.created_at)}</span>
-                                <span>·</span>
-                                {isAdExpired(ad) ? (
-                                  <span className="text-destructive">Expired</span>
-                                ) : (
-                                  <span>{getDaysRemaining(ad)}d left</span>
-                                )}
-                              </div>
-                            </div>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive shrink-0">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="rounded-lg">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
-                                  <AlertDialogDescription>{t("userDashboard.deleteAdDescription")}</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDeleteAnnouncement(ad.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    {t("userDashboard.delete")}
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
+                          <AnnouncementManagementCard
+                            key={ad.id}
+                            announcement={ad}
+                            actions={[
+                              {
+                                key: "delete",
+                                label: t("userDashboard.delete", "Delete"),
+                                icon: Trash2,
+                                destructive: true,
+                                onSelect: () => setDeleteAnnouncementId(ad.id),
+                              },
+                            ]}
+                          />
                         ))}
                       </div>
                     ) : (
