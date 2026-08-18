@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { ReactNode, isValidElement } from "react";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 /**
  * Shared layout primitives used by the artist dashboard sections
@@ -46,9 +46,13 @@ export function SectionHeader({
 }
 
 /**
- * Compact section header that displays the title with a small usage badge
- * (current/max) next to it. Designed to keep the Add button aligned on the
+ * Compact section header that displays the title with one or more small usage
+ * badges/pills next to it. Designed to keep the Add button aligned on the
  * right without truncating the title on mobile.
+ *
+ * `usage` can be a primitive (string/number) and will be wrapped in a Badge, or
+ * a ReactNode with multiple Badge elements for multi-metric sections like
+ * Gallery (Photos + Videos).
  */
 export function SectionHeaderWithUsage({
   icon,
@@ -63,24 +67,31 @@ export function SectionHeaderWithUsage({
   action?: ReactNode;
   className?: string;
 }) {
+  const usageContent =
+    typeof usage === "string" || typeof usage === "number" ? (
+      <Badge
+        variant="outline"
+        className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground"
+      >
+        {usage}
+      </Badge>
+    ) : (
+      usage
+    );
+
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-2 min-h-[36px]",
+        "flex items-start md:items-center justify-between gap-2 min-h-[36px]",
         className,
       )}
     >
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
         {icon && <div className="shrink-0 text-accent">{icon}</div>}
         <h2 className="text-base md:text-lg font-display font-bold truncate">
           {title}
         </h2>
-        <Badge
-          variant="outline"
-          className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground"
-        >
-          {usage}
-        </Badge>
+        {usageContent}
       </div>
       {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
     </div>
