@@ -239,6 +239,13 @@
   "dashboardAnnouncements": {
     "title": "Announcements"
   },
+  "dashboardGallery": {
+    "title": "Gallery",
+    "photos": "Photos",
+    "videos": "Videos",
+    "noPhotos": "No photos yet. Add your first image!",
+    "noVideos": "No videos yet. Add your first video!"
+  },
   "userDashboard": {
     "myAds": "Profile",
     "announcements": "Announcements",
