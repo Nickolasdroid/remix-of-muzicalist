@@ -2579,31 +2579,7 @@ const Dashboard = () => {
                           const merged = [...postItems, ...promoItems].sort((a, b) =>
                             new Date(b.__date).getTime() - new Date(a.__date).getTime()
                           );
-                          const filtered = merged.filter((it) => {
-                            if (postFilter === 'photos' && !(it.__kind === 'post' && it.__mediaType === 'image')) return false;
-                            if (postFilter === 'videos' && !(it.__kind === 'post' && it.__mediaType === 'video')) return false;
-                            if (postFilter === 'promotions') {
-                              const activePromo = it.__kind === 'promotion'
-                                || (!!(it as any).promoted_until && new Date((it as any).promoted_until).getTime() > Date.now());
-                              if (!activePromo) return false;
-                            }
-                            if (postSearch.trim()) {
-                              const q = postSearch.trim().toLowerCase();
-                              if (!it.__text.toLowerCase().includes(q)) return false;
-                            }
-                            return true;
-                          });
-                          const getTitle = (text: string) => {
-                            const t = (text || '').trim();
-                            if (!t) return 'Untitled post';
-                            const firstLine = t.split('\n')[0];
-                            return firstLine.length > 60 ? firstLine.slice(0, 60) + '…' : firstLine;
-                          };
-                          const formatTime = (iso: string) => {
-                            try {
-                              return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            } catch { return ''; }
-                          };
+                          const postLimitLabel = Number.isFinite(STANDARD_POST_LIMIT) ? STANDARD_POST_LIMIT : '∞';
                           return (
                         <SectionShell>
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
