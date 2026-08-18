@@ -283,6 +283,9 @@
     "report": "Raportează",
     "deleteAdmin": "Șterge (admin)"
   },
+  "dashboardAnnouncements": {
+    "title": "Anunțurile mele"
+  },
   "postPromotion": {
     "managePromotion": "Gestionează promovarea",
     "promoted": "Promovată",
