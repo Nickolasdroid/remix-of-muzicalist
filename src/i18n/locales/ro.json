@@ -286,6 +286,13 @@
   "dashboardAnnouncements": {
     "title": "Anunțuri"
   },
+  "dashboardGallery": {
+    "title": "Galerie",
+    "photos": "Fotografii",
+    "videos": "Videoclipuri",
+    "noPhotos": "Nu ai fotografii încă. Adaugă prima imagine!",
+    "noVideos": "Nu ai videoclipuri încă. Adaugă primul videoclip!"
+  },
   "postPromotion": {
     "managePromotion": "Gestionează promovarea",
     "promoted": "Promovată",
