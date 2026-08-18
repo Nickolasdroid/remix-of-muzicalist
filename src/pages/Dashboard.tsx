@@ -2608,7 +2608,7 @@ const Dashboard = () => {
                             />
                           ) : (
                             <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
-                              {filtered.map((item) => {
+                              {merged.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
                                 const isPostPromoted = !!postPromotedUntil && new Date(postPromotedUntil).getTime() > Date.now();
