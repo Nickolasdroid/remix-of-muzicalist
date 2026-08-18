@@ -2951,22 +2951,6 @@ const Dashboard = () => {
                           <SectionHeaderWithUsage
                             icon={<Images className="h-5 w-5 text-accent" />}
                             title={t('dashboardGallery.title', 'Gallery')}
-                            usage={
-                              <>
-                                <Badge
-                                  variant="outline"
-                                  className={`rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 ${imagesOverLimit ? 'bg-destructive/10 text-destructive border-destructive/40' : 'bg-muted/30 text-muted-foreground'}`}
-                                >
-                                  {t('dashboardGallery.photos', 'Photos')} {imagesUsed}/{STANDARD_IMAGE_LIMIT}
-                                </Badge>
-                                <Badge
-                                  variant="outline"
-                                  className={`rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 ${videosOverLimit ? 'bg-destructive/10 text-destructive border-destructive/40' : 'bg-muted/30 text-muted-foreground'}`}
-                                >
-                                  {t('dashboardGallery.videos', 'Videos')} {videosUsed}/{STANDARD_VIDEO_LIMIT}
-                                </Badge>
-                              </>
-                            }
                             action={
                               <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
                                 <DialogTrigger asChild>
@@ -3040,8 +3024,16 @@ const Dashboard = () => {
 
                           <Tabs value={galleryTab} onValueChange={(v) => setGalleryTab(v as 'photos' | 'videos')}>
                             <TabsList className="w-full grid grid-cols-2 mb-2">
-                              <TabsTrigger value="photos">{t('dashboardGallery.photos', 'Photos')}</TabsTrigger>
-                              <TabsTrigger value="videos">{t('dashboardGallery.videos', 'Videos')}</TabsTrigger>
+                              <TabsTrigger value="photos">
+                                {galleryTab === 'photos'
+                                  ? `${t('dashboardGallery.photos', 'Photos')} ${imagesUsed}/${STANDARD_IMAGE_LIMIT}`
+                                  : t('dashboardGallery.photos', 'Photos')}
+                              </TabsTrigger>
+                              <TabsTrigger value="videos">
+                                {galleryTab === 'videos'
+                                  ? `${t('dashboardGallery.videos', 'Videos')} ${videosUsed}/${STANDARD_VIDEO_LIMIT}`
+                                  : t('dashboardGallery.videos', 'Videos')}
+                              </TabsTrigger>
                             </TabsList>
 
                             {galleryOverLimit && (

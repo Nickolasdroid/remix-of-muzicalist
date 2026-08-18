@@ -63,11 +63,12 @@ export function SectionHeaderWithUsage({
 }: {
   icon?: ReactNode;
   title: ReactNode;
-  usage: ReactNode;
+  usage?: ReactNode;
   action?: ReactNode;
   className?: string;
 }) {
   const usageContent =
+    usage === undefined || usage === null ? null :
     typeof usage === "string" || typeof usage === "number" ? (
       <Badge
         variant="outline"
