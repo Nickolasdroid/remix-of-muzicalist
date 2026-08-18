@@ -260,10 +260,7 @@ const Dashboard = () => {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
-  const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
-  const [postSearch, setPostSearch] = useState("");
-  const [showPostSearch, setShowPostSearch] = useState(false);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   
