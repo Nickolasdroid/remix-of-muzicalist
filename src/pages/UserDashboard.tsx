@@ -54,6 +54,7 @@ const UserDashboard = () => {
 
   // Announcements state
   const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const [newAnnouncement, setNewAnnouncement] = useState({
     description: "",
     isPremium: false,
