@@ -64,7 +64,7 @@ import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVid
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
-import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionFilters, SectionEmptyState } from "@/components/dashboard/SectionLayout";
+import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
@@ -260,10 +260,7 @@ const Dashboard = () => {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
-  const [postFilter, setPostFilter] = useState<'all' | 'photos' | 'videos' | 'promotions'>('all');
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
-  const [postSearch, setPostSearch] = useState("");
-  const [showPostSearch, setShowPostSearch] = useState(false);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   
@@ -2579,31 +2576,7 @@ const Dashboard = () => {
                           const merged = [...postItems, ...promoItems].sort((a, b) =>
                             new Date(b.__date).getTime() - new Date(a.__date).getTime()
                           );
-                          const filtered = merged.filter((it) => {
-                            if (postFilter === 'photos' && !(it.__kind === 'post' && it.__mediaType === 'image')) return false;
-                            if (postFilter === 'videos' && !(it.__kind === 'post' && it.__mediaType === 'video')) return false;
-                            if (postFilter === 'promotions') {
-                              const activePromo = it.__kind === 'promotion'
-                                || (!!(it as any).promoted_until && new Date((it as any).promoted_until).getTime() > Date.now());
-                              if (!activePromo) return false;
-                            }
-                            if (postSearch.trim()) {
-                              const q = postSearch.trim().toLowerCase();
-                              if (!it.__text.toLowerCase().includes(q)) return false;
-                            }
-                            return true;
-                          });
-                          const getTitle = (text: string) => {
-                            const t = (text || '').trim();
-                            if (!t) return 'Untitled post';
-                            const firstLine = t.split('\n')[0];
-                            return firstLine.length > 60 ? firstLine.slice(0, 60) + '…' : firstLine;
-                          };
-                          const formatTime = (iso: string) => {
-                            try {
-                              return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            } catch { return ''; }
-                          };
+                          const postLimitLabel = Number.isFinite(STANDARD_POST_LIMIT) ? STANDARD_POST_LIMIT : '∞';
                           return (
                         <SectionShell>
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
@@ -2611,7 +2584,7 @@ const Dashboard = () => {
 
                           <SectionHeader
                             icon={<FileText className="h-5 w-5 text-accent" />}
-                            title={t('dashboardPosts.title', 'My Posts')}
+                            title={`${t('dashboardPosts.title', 'My Posts')} (${postItems.length}/${postLimitLabel})`}
                             action={
                               <Button
                                 size="sm"
@@ -2624,85 +2597,15 @@ const Dashboard = () => {
                             }
                           />
 
-                          {/* Compact stats bar */}
-                          {(() => {
-                            const totalLikes = merged.reduce((s, it: any) => s + (it.likes || 0), 0);
-                            const totalComments = merged.reduce((s, it: any) => s + (it.commentsCount || 0), 0);
-                            const activePromotions =
-                              promoItems.filter((p) => !isAdExpired(p as any)).length +
-                              postItems.filter((p: any) => !!p.promoted_until && new Date(p.promoted_until).getTime() > Date.now()).length;
-                            const stats = [
-                              { label: t('dashboardPosts.statPosts', 'Posts'), value: postItems.length, icon: <FileText className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.statLikes', 'Likes'), value: totalLikes, icon: <Heart className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.statComments', 'Comments'), value: totalComments, icon: <MessageCircle className="h-3.5 w-3.5" /> },
-                              { label: t('dashboardPosts.statPromotions', 'Promotions'), value: activePromotions, icon: <Megaphone className="h-3.5 w-3.5" /> },
-                            ];
-                            return (
-                              <div className="-mx-1 px-1 overflow-x-auto scrollbar-none">
-                                <div className="flex items-center gap-3 w-max sm:w-auto text-sm">
-                                  {stats.map((s, i) => (
-                                    <div key={s.label} className="flex items-center gap-3 shrink-0">
-                                      {i > 0 && <span className="text-border select-none">·</span>}
-                                      <span className="flex items-center gap-1.5 whitespace-nowrap">
-                                        <span className="text-accent/80 shrink-0">{s.icon}</span>
-                                        <span className="font-semibold text-foreground">{s.value}</span>
-                                        <span className="text-muted-foreground">{s.label}</span>
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-
-                          {/* Filters + search */}
-                          <div className="flex flex-col md:flex-row md:items-center gap-3">
-                            <div className="-mx-1 px-1 overflow-x-auto md:overflow-visible">
-                              <div className="flex items-center gap-2 w-max md:w-auto md:flex-wrap">
-                                {([
-                                  { id: 'all', label: t('dashboardPosts.filterAll', 'All') },
-                                  { id: 'photos', label: t('dashboardPosts.filterPhotos', 'Photos') },
-                                  { id: 'videos', label: t('dashboardPosts.filterVideos', 'Videos') },
-                                  { id: 'promotions', label: t('dashboardPosts.filterPromotions', 'Promotions') },
-                                ] as const).map((f) => (
-                                  <button
-                                    key={f.id}
-                                    onClick={() => setPostFilter(f.id as any)}
-                                    className={`shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-all duration-200 ${
-                                      postFilter === f.id
-                                        ? 'border-accent text-accent-foreground bg-accent'
-                                        : 'border-border text-muted-foreground hover:text-foreground hover:border-accent/40'
-                                    }`}
-                                  >
-                                    {f.label}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="relative md:ml-auto md:w-64">
-                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                value={postSearch}
-                                onChange={(e) => setPostSearch(e.target.value)}
-                                placeholder={t('dashboardPosts.searchPlaceholder', 'Search posts...')}
-                                className="rounded-lg pl-9 h-10"
-                              />
-                            </div>
-                          </div>
-
                           {/* Post list */}
-                          {filtered.length === 0 ? (
+                          {merged.length === 0 ? (
                             <SectionEmptyState
                               icon={<FileText className="h-10 w-10 opacity-50" />}
-                              title={postSearch || postFilter !== 'all'
-                                ? t('dashboardPosts.emptyFiltered', 'No posts match this filter.')
-                                : t('dashboardPosts.empty', 'No posts yet. Add your first post!')}
+                              title={t('dashboardPosts.empty', 'No posts yet. Add your first post!')}
                             />
-
                           ) : (
                             <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
-                              {filtered.map((item) => {
+                              {merged.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
                                 const isPostPromoted = !!postPromotedUntil && new Date(postPromotedUntil).getTime() > Date.now();
