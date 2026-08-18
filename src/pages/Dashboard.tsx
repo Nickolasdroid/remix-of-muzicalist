@@ -8,7 +8,7 @@ import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
 
 import CountryFlagIcon from "@/components/CountryFlagIcon";
-import { AdSlotInfoButton } from "@/components/AdSlotInfoButton";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,7 @@ import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, MessageCircle, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Tag, ArrowUp, Repeat, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -314,7 +314,7 @@ const Dashboard = () => {
 
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
   const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
-  const [awaitingRepliesCount, setAwaitingRepliesCount] = useState(0);
+  
 
   // Reviews state
   const [reviews, setReviews] = useState<any[]>([]);
@@ -401,26 +401,6 @@ const Dashboard = () => {
     setSentBookingRequests(sent || []);
   };
 
-  const loadAwaitingReplies = async () => {
-    if (!user) return;
-    // Only conversations tied to announcements owned by this artist (i.e. applications to their ads)
-    const { data: convos } = await supabase
-      .from('conversations')
-      .select('id, artist_id, announcement_id, deleted_by_artist')
-      .eq('artist_id', user.id)
-      .not('announcement_id', 'is', null);
-    const visibleIds = (convos || [])
-      .filter((c: any) => !c.deleted_by_artist)
-      .map((c: any) => c.id);
-    if (!visibleIds.length) { setAwaitingRepliesCount(0); return; }
-    const { data: msgs } = await supabase
-      .from('messages')
-      .select('conversation_id')
-      .in('conversation_id', visibleIds)
-      .neq('sender_id', user.id)
-      .is('read_at', null);
-    setAwaitingRepliesCount(new Set((msgs || []).map((m: any) => m.conversation_id)).size);
-  };
   const loadPosts = async () => {
     if (!user) return;
     const {
@@ -575,7 +555,6 @@ const Dashboard = () => {
       loadReviews();
       loadFollowing();
       loadFollowers();
-      loadAwaitingReplies();
     }
   }, [user]);
   const checkAuth = async () => {
@@ -2857,7 +2836,7 @@ const Dashboard = () => {
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
                           <SectionHeader
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
-                            title="My Announcements"
+                            title={`${t('dashboardAnnouncements.title', 'My Announcements')} (${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'})`}
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
@@ -2933,55 +2912,6 @@ const Dashboard = () => {
                               </Dialog>
                             }
                           />
-                          <SectionStats className="grid-cols-1">
-                            <SectionStatCard
-                              label="Announcements"
-                              info={<AdSlotInfoButton kind="ad" />}
-                              isOver={standardAdsUsed > STANDARD_AD_LIMIT}
-                              value={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
-                            />
-                          </SectionStats>
-                          {(() => {
-                            const nonPremium = announcements.filter((a) => !a.is_premium);
-                            const activeCount = nonPremium.filter((a) => !isAdExpired(a)).length;
-                            const toRenewCount = nonPremium.filter((a) => !isAdExpired(a) && getDaysRemaining(a) <= 2).length;
-                            const toRelistCount = nonPremium.filter((a) => isAdExpired(a)).length;
-                            return (
-                              <div className="space-y-3">
-                                <h3 className="text-base font-semibold text-foreground">Overview</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div onClick={() => navigate('/messages?tab=announcements&sub=requests')} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{awaitingRepliesCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Conversations awaiting reply</span>
-                                    </div>
-                                    <MessageCircle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{activeCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Active announcements</span>
-                                    </div>
-                                    <Tag className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRenewCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">Announcements to renew</span>
-                                    </div>
-                                    <ArrowUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                  <div onClick={() => document.getElementById('announcements-list')?.scrollIntoView({ behavior: 'smooth' })} className="rounded-lg border border-border/60 bg-card/50 p-3 flex items-start justify-between gap-2 min-h-[88px] cursor-pointer hover:bg-card hover:border-border transition-colors">
-                                    <div className="flex flex-col">
-                                      <span className="text-2xl font-bold leading-none text-foreground">{toRelistCount}</span>
-                                      <span className="text-xs text-muted-foreground mt-2 leading-snug">To delete and relist</span>
-                                    </div>
-                                    <Repeat className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })()}
                           <div id="announcements-list" className="-mx-4 md:mx-0">
                             <div className="w-full max-w-[500px] mx-auto space-y-1">
                             {announcements.filter((a) => !a.is_premium).map((announcement) => (
@@ -3001,7 +2931,6 @@ const Dashboard = () => {
                                 eventDate={announcement.event_date}
                                 budget={announcement.budget}
                                 formatEventDate={formatDateNoYear}
-                                typeLabel="Announcement"
                                 titleExtra={isAdExpired(announcement)
                                   ? <Badge variant="outline" className="text-xs text-destructive border-destructive">Expired</Badge>
                                   : <Badge variant="outline" className="text-xs">{getDaysRemaining(announcement)}d left</Badge>}

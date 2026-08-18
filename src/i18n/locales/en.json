@@ -236,6 +236,9 @@
     "report": "Report",
     "deleteAdmin": "Delete (admin)"
   },
+  "dashboardAnnouncements": {
+    "title": "My Announcements"
+  },
   "userDashboard": {
     "myAds": "Profile",
     "announcements": "Announcements",
