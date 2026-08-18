@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * Shared layout primitives used by the artist dashboard sections
@@ -39,6 +40,48 @@ export function SectionHeader({
         {icon}
         <span className="truncate">{title}</span>
       </h2>
+      {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
+    </div>
+  );
+}
+
+/**
+ * Compact section header that displays the title with a small usage badge
+ * (current/max) next to it. Designed to keep the Add button aligned on the
+ * right without truncating the title on mobile.
+ */
+export function SectionHeaderWithUsage({
+  icon,
+  title,
+  usage,
+  action,
+  className,
+}: {
+  icon?: ReactNode;
+  title: ReactNode;
+  usage: ReactNode;
+  action?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-2 min-h-[36px]",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        {icon && <div className="shrink-0 text-accent">{icon}</div>}
+        <h2 className="text-base md:text-lg font-display font-bold truncate">
+          {title}
+        </h2>
+        <Badge
+          variant="outline"
+          className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground"
+        >
+          {usage}
+        </Badge>
+      </div>
       {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
     </div>
   );

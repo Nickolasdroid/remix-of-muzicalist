@@ -65,7 +65,7 @@ import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVid
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
-import { SectionShell, SectionHeader, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
+import { SectionShell, SectionHeader, SectionHeaderWithUsage, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
@@ -2562,9 +2562,10 @@ const Dashboard = () => {
                           <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
 
-                          <SectionHeader
+                          <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
-                            title={`${t('dashboardPosts.title', 'My Posts')} (${postItems.length}/${postLimitLabel})`}
+                            title={t('dashboardPosts.title', 'Posts')}
+                            usage={`${postItems.length}/${postLimitLabel}`}
                             action={
                               <Button
                                 size="sm"
@@ -2835,9 +2836,10 @@ const Dashboard = () => {
                           </div> :
                         <SectionShell>
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
-                          <SectionHeader
+                          <SectionHeaderWithUsage
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
-                            title={`${t('dashboardAnnouncements.title', 'My Announcements')} (${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'})`}
+                            title={t('dashboardAnnouncements.title', 'Announcements')}
+                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>

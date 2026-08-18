@@ -7,7 +7,6 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -26,6 +25,7 @@ import FollowingManageDialog from "@/components/FollowingManageDialog";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
+import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 
 interface MediaPreview {
   url: string;
@@ -524,24 +524,23 @@ const UserDashboard = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* My Announcements */}
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
-                      <Megaphone className="h-4 w-4 text-accent shrink-0" />
-                      <span className="truncate">My Announcements</span>
-                      <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0">
-                        {standardAdsUsed}/{STANDARD_AD_LIMIT}
-                      </Badge>
-                    </h2>
-                    <Button
-                      size="sm"
-                      onClick={() => setShowAnnouncementDialog(true)}
-                      disabled={!canPublish}
-                      className="h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 text-xs"
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-1" />
-                      {t("userDashboard.add")}
-                    </Button>
-                  </div>
+                  <SectionHeaderWithUsage
+                    icon={<Megaphone className="h-4 w-4 md:h-5 md:w-5" />}
+                    title={t("userDashboard.announcements", "Announcements")}
+                    usage={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
+                    className="mb-2"
+                    action={
+                      <Button
+                        size="sm"
+                        onClick={() => setShowAnnouncementDialog(true)}
+                        disabled={!canPublish}
+                        className="h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 text-xs"
+                      >
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        {t("userDashboard.add")}
+                      </Button>
+                    }
+                  />
 
 
                   <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">

@@ -203,7 +203,7 @@
     "success": "Registration successful! Please check your email to verify your account."
   },
   "dashboardPosts": {
-    "title": "My Posts",
+    "title": "Posts",
     "createPost": "Add",
     "totalPosts": "Total Posts",
     "totalLikes": "Total Likes",
@@ -237,7 +237,7 @@
     "deleteAdmin": "Delete (admin)"
   },
   "dashboardAnnouncements": {
-    "title": "My Announcements"
+    "title": "Announcements"
   },
   "userDashboard": {
     "myAds": "Profile",
