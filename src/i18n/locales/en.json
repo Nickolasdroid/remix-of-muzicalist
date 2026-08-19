@@ -347,6 +347,7 @@
   "social": {
     "followers": "Followers",
     "following": "Following",
+    "followingThirdPerson": "Following",
     "follow": "Follow",
     "followingAction": "Following"
   }
