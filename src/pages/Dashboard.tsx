@@ -2947,79 +2947,70 @@ const Dashboard = () => {
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
                         <SectionShell>
-                          <SectionHeaderWithUsage
-                            icon={<Images className="h-5 w-5 text-accent" />}
-                            title={t('dashboardGallery.title', 'Gallery')}
-                            action={
-                              <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
-                                <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
-                                    <Plus className="h-4 w-4 mr-1" />
-                                    {t('userDashboard.add', 'Add')}
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>{t('userDashboard.add', 'Add')}</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4 mt-4">
-                                    <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                                      {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
-                                        <TabsTrigger value="image">Image</TabsTrigger>
-                                        <TabsTrigger value="video">Video</TabsTrigger>
-                                      </TabsList> : <TabsList className="grid w-full grid-cols-1">
-                                        <TabsTrigger value="image">Image</TabsTrigger>
-                                      </TabsList>}
-                                      <TabsContent value="image" className="space-y-4">
-                                        <Label htmlFor="gallery-upload" className="cursor-pointer">
-                                          <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                            <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                            <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                          </div>
-                                        </Label>
-                                        <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
-                                      </TabsContent>
-                                      <TabsContent value="video" className="space-y-4">
-                                        <div className="space-y-3">
-                                          <div>
-                                            <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
-                                            <Input
-                                              id="gallery-video-url"
-                                              type="url"
-                                              placeholder="https://www.youtube.com/watch?v=…"
-                                              value={videoUrl}
-                                              onChange={(e) => setVideoUrl(e.target.value)}
-                                              className="mt-1.5"
-                                            />
-                                            {videoUrl && !isSupportedEmbed(videoUrl) && (
-                                              <p className="text-xs text-destructive mt-1.5">
-                                                Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
-                                              </p>
-                                            )}
-                                            {videoUrl && isSupportedEmbed(videoUrl) && (
-                                              <p className="text-xs text-muted-foreground mt-1.5">
-                                                Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
-                                              </p>
-                                            )}
-                                          </div>
-                                          <Button
-                                            onClick={handleAddVideo}
-                                            disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
-                                            className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                                          >
-                                            {isSaving ? "Adding…" : "Embed link"}
-                                          </Button>
-                                          <p className="text-xs text-muted-foreground text-center">
-                                            Streamed directly from the source — no file is uploaded to our servers.
+                          {/* Hidden inputs powering the inline + slots */}
+                          <Input id="gallery-upload-inline" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
+
+                          <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>{t('userDashboard.add', 'Add')}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 mt-4">
+                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
+                                  {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="image">Image</TabsTrigger>
+                                    <TabsTrigger value="video">Video</TabsTrigger>
+                                  </TabsList> : <TabsList className="grid w-full grid-cols-1">
+                                    <TabsTrigger value="image">Image</TabsTrigger>
+                                  </TabsList>}
+                                  <TabsContent value="image" className="space-y-4">
+                                    <Label htmlFor="gallery-upload" className="cursor-pointer">
+                                      <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
+                                        <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
+                                        <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                      </div>
+                                    </Label>
+                                    <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
+                                  </TabsContent>
+                                  <TabsContent value="video" className="space-y-4">
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
+                                        <Input
+                                          id="gallery-video-url"
+                                          type="url"
+                                          placeholder="https://www.youtube.com/watch?v=…"
+                                          value={videoUrl}
+                                          onChange={(e) => setVideoUrl(e.target.value)}
+                                          className="mt-1.5"
+                                        />
+                                        {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-destructive mt-1.5">
+                                            Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
                                           </p>
-                                        </div>
-                                      </TabsContent>
-                                    </Tabs>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            }
-                          />
+                                        )}
+                                        {videoUrl && isSupportedEmbed(videoUrl) && (
+                                          <p className="text-xs text-muted-foreground mt-1.5">
+                                            Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
+                                          </p>
+                                        )}
+                                      </div>
+                                      <Button
+                                        onClick={handleAddVideo}
+                                        disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                      >
+                                        {isSaving ? "Adding…" : "Embed link"}
+                                      </Button>
+                                      <p className="text-xs text-muted-foreground text-center">
+                                        Streamed directly from the source — no file is uploaded to our servers.
+                                      </p>
+                                    </div>
+                                  </TabsContent>
+                                </Tabs>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
 
                           {galleryOverLimit && (
                             <div
@@ -3045,6 +3036,7 @@ const Dashboard = () => {
                             title={t('dashboardGallery.photos', 'Photos')}
                             usage={`${imagesUsed}/${STANDARD_IMAGE_LIMIT}`}
                           />
+
 
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                             {galleryItems.filter((item) => item.type === 'image').map((item) => {
