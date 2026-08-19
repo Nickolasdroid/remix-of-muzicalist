@@ -349,6 +349,7 @@
   "social": {
     "followers": "Urmăritori",
     "following": "Urmărești",
+    "followingThirdPerson": "Urmărește",
     "follow": "Urmărește",
     "followingAction": "Urmărești"
   }
