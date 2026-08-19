@@ -3126,13 +3126,19 @@ const Dashboard = () => {
                                 </div>
                               );
                             })}
+                            {videosUsed < STANDARD_VIDEO_LIMIT && (
+                              <button
+                                type="button"
+                                aria-label={t('dashboardGallery.videos', 'Videos')}
+                                onClick={() => { setGalleryUploadType('video'); setShowGalleryDialog(true); }}
+                                disabled={isSaving}
+                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                              >
+                                <Plus className="h-8 w-8 text-accent" />
+                              </button>
+                            )}
                           </div>
-                          {galleryItems.filter((item) => item.type === 'video').length === 0 && (
-                            <SectionEmptyState
-                              icon={<VideoIcon className="h-10 w-10 opacity-50" />}
-                              title={t('dashboardGallery.noVideos', 'No videos yet. Add your first video!')}
-                            />
-                          )}
+
                         </SectionShell>
 
                       </TabsContent>}
