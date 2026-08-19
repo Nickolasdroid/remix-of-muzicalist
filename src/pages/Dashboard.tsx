@@ -2945,7 +2945,7 @@ const Dashboard = () => {
                       </TabsContent>
 
                       {/* Gallery Tab */}
-                      {<TabsContent value="gallery">
+                      {!isAdmin && <TabsContent value="gallery">
                         <SectionShell>
                           <SectionHeaderWithUsage
                             icon={<Images className="h-5 w-5 text-accent" />}
