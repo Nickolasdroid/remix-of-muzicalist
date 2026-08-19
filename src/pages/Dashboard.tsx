@@ -3067,13 +3067,19 @@ const Dashboard = () => {
                                 </div>
                               );
                             })}
+                            {imagesUsed < STANDARD_IMAGE_LIMIT && (
+                              <button
+                                type="button"
+                                aria-label={t('dashboardGallery.photos', 'Photos')}
+                                onClick={() => document.getElementById('gallery-upload-inline')?.click()}
+                                disabled={isSaving}
+                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                              >
+                                <Plus className="h-8 w-8 text-accent" />
+                              </button>
+                            )}
                           </div>
-                          {galleryItems.filter((item) => item.type === 'image').length === 0 && (
-                            <SectionEmptyState
-                              icon={<ImageIcon className="h-10 w-10 opacity-50" />}
-                              title={t('dashboardGallery.noPhotos', 'No photos yet. Add your first image!')}
-                            />
-                          )}
+
 
                           {/* Videos section */}
                           <SectionHeaderWithUsage
