@@ -46,7 +46,7 @@ const SocialStats = ({
         disabled={!onFollowingClick}
         className="hover:text-foreground transition-colors disabled:cursor-default"
       >
-        <span className="font-semibold text-foreground">{followingCount}</span> {t("social.following")}
+        <span className="font-semibold text-foreground">{followingCount}</span> {t(showFollowButton ? "social.followingThirdPerson" : "social.following")}
       </button>
 
       {showFollowButton && (
