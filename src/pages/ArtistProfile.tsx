@@ -1073,8 +1073,20 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               </div>
             </div>
 
+            {/* Followers / Following — shared compact row */}
+            <SocialStats
+              className="mx-4 md:mx-0 mt-3 md:mt-4"
+              followersCount={followersCount}
+              followingCount={followingCount}
+              onFollowersClick={() => setFollowListMode("followers")}
+              onFollowingClick={() => setFollowListMode("following")}
+              showFollowButton={!isOwnProfile}
+              isFollowing={isFollowing}
+              onFollowToggle={handleFollowToggle}
+            />
+
             {/* Compact public stat row */}
-            <div className="mx-4 md:mx-0 mt-3 md:mt-4">
+            <div className="mx-4 md:mx-0 mt-3">
               <div className="w-full flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
                 <div className="flex flex-col items-start text-left">
                   <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
@@ -1087,17 +1099,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               </div>
             </div>
 
-            {/* Followers / Following — shared compact row */}
-            <SocialStats
-              className="mx-4 md:mx-0 mt-3"
-              followersCount={followersCount}
-              followingCount={followingCount}
-              onFollowersClick={() => setFollowListMode("followers")}
-              onFollowingClick={() => setFollowListMode("following")}
-              showFollowButton={!isOwnProfile}
-              isFollowing={isFollowing}
-              onFollowToggle={handleFollowToggle}
-            />
           </div>
 
           <FollowListDialog
@@ -1286,11 +1287,17 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     {artist.county && <span className="truncate">{artist.county}</span>}
                     {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                   </div>
-                  <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
-                    <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                    <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                    <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                  </div>
+                  <SocialStats
+                    className="mt-1.5 md:mt-2"
+                    followersCount={followersCount}
+                    followingCount={followingCount}
+                    onFollowersClick={() => setFollowListMode("followers")}
+                    onFollowingClick={() => setFollowListMode("following")}
+                    showFollowButton={!isOwnProfile}
+                    isFollowing={isFollowing}
+                    onFollowToggle={handleFollowToggle}
+                  />
+
                 </div>
               </div>
 
@@ -1362,17 +1369,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 </div>
               )}
 
-              {/* Social stats + Follow */}
-              <SocialStats
-                className="mx-4 md:mx-0 mt-3 md:mt-4"
-                followersCount={followersCount}
-                followingCount={followingCount}
-                onFollowersClick={() => setFollowListMode("followers")}
-                onFollowingClick={() => setFollowListMode("following")}
-                showFollowButton={!isOwnProfile}
-                isFollowing={isFollowing}
-                onFollowToggle={handleFollowToggle}
-              />
+
             </div>
 
 

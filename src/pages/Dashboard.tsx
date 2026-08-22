@@ -1903,11 +1903,14 @@ const Dashboard = () => {
                               {formData.county && <span className="truncate">{formData.county}</span>}
                               {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                             </div>
-                            <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
-                              <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                              <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                              <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                            </div>
+                            <SocialStats
+                              className="mt-1.5 md:mt-2"
+                              followersCount={followersCount}
+                              followingCount={followingCount}
+                              onFollowersClick={() => setShowFollowersDialog(true)}
+                              onFollowingClick={() => setShowFollowingDialog(true)}
+                            />
+
                           </div>
                         </div>
 
@@ -1952,14 +1955,7 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-                        {/* Followers row */}
-                        <SocialStats
-                          className="mx-4 md:mx-0 mt-3 md:mt-4"
-                          followersCount={followersCount}
-                          followingCount={followingCount}
-                          onFollowersClick={() => setShowFollowersDialog(true)}
-                          onFollowingClick={() => setShowFollowingDialog(true)}
-                        />
+
 
                       </div>
                     )}
