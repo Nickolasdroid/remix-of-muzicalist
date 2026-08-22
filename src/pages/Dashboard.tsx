@@ -2642,10 +2642,11 @@ const Dashboard = () => {
                                           {expired ? (
                                             <span className="text-destructive">{t('dashboardPosts.expired', 'Expired')}</span>
                                           ) : (
-                                            <span className="inline-flex items-center gap-1 text-accent">
-                                              <Megaphone className="h-3 w-3" />
-                                              {t('dashboardPosts.promoted', 'Promoted')}
-                                              {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
+                                            <span className="inline-flex items-center gap-1">
+                                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                                                {t('dashboardPosts.promoted', 'Promoted')}
+                                              </Badge>
+                                              {expirationLabel && <span className="opacity-80 text-accent">· {expirationLabel}</span>}
                                             </span>
                                           )}
                                         </>

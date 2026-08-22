@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
-import { Heart, MessageCircle, Send, Globe, Megaphone } from "lucide-react";
+import { Heart, MessageCircle, Send, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
@@ -108,10 +109,9 @@ const FeedPostCard = ({
                 {promoted && (
                   <>
                     <span>·</span>
-                    <span className="inline-flex items-center gap-1 text-accent">
-                      <Megaphone className="h-3 w-3" />
+                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                       {t("postPromotion.promoted", "Promoted")}
-                    </span>
+                    </Badge>
                   </>
                 )}
                 {metaExtra}
