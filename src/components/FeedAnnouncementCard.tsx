@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
-import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+import PostMediaFrame from "@/components/PostMediaFrame";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
@@ -150,21 +150,9 @@ const FeedAnnouncementCard = ({
       </div>
 
       {mediaUrl && (
-        <div className="mt-3 cursor-pointer bg-muted/30" onClick={onMediaClick}>
-          {mediaType === "video" ? (
-            <div className="relative w-full aspect-video">
-              <SmoothVideoPlayer src={mediaUrl} className="absolute inset-0 w-full h-full" onClick={(e) => e.stopPropagation()} />
-            </div>
-          ) : (
-            <img
-              src={mediaUrl}
-              alt="Announcement media"
-              loading="lazy"
-              className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity"
-            />
-          )}
-        </div>
+        <PostMediaFrame url={mediaUrl} type={mediaType} alt="Announcement media" onClick={onMediaClick} />
       )}
+
 
       {footer && <div className="px-2 py-1">{footer}</div>}
     </Card>
