@@ -106,16 +106,9 @@ const FeedAnnouncementCard = ({
                 <span>·</span>
                 <span>{formatSmartDate(createdAt)}</span>
                 <span>·</span>
-                <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{typeLabel}</Badge>
-                {promoted && (
-                  <>
-                    <span>·</span>
-                    <span className="inline-flex items-center gap-1 text-accent">
-                      <Megaphone className="h-3 w-3" />
-                      Promoted
-                    </span>
-                  </>
-                )}
+                <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                  {promoted ? t("postPromotion.promotedAnnouncement", "Promoted") : typeLabel}
+                </Badge>
                 {metaExtra}
               </div>
             </div>
