@@ -46,7 +46,7 @@ export const RANKING_WEIGHTS = {
 const hoursSince = (iso: string): number => {
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return 0;
-  return Math.max(0, (Date.now() - t) / 36e5;
+  return Math.max(0, (Date.now() - t) / 36e5);
 };
 
 /** Whether a promotion is currently active for an item. */
