@@ -2190,12 +2190,10 @@ const Dashboard = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
                           <div className="group">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <Music className="h-5 w-5 text-accent" />
-                                Music Genres
-                              </h3>
-                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
+                            <SectionHeaderWithUsage
+                              icon={<Music className="h-5 w-5 text-accent" />}
+                              title="Music Genres"
+                              action={editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
                             </div>
