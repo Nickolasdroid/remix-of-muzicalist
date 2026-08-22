@@ -416,28 +416,8 @@ const BookingRequests = () => {
                     </p>
                   </div>
 
-                  {!isUserView && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                          Email
-                        </Label>
-                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
-                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                          {selected.requester_email}
-                        </p>
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                          Phone
-                        </Label>
-                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                          {selected.requester_phone}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <BookingContactInfo bookingId={selected.id} status={selected.status} />
+
 
                   <div>
                     <Label className="text-xs text-muted-foreground uppercase tracking-wide">
