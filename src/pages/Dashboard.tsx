@@ -1646,6 +1646,17 @@ const Dashboard = () => {
       }).eq('id', request.id);
       if (updateError) throw updateError;
 
+      // Now that the booking is accepted, the requester's contact details
+      // become available to this artist through the secured RPC.
+      const { data: contactRows } = await (supabase as any).rpc('get_booking_contact', {
+        _booking_id: request.id
+      });
+      const contactRow = Array.isArray(contactRows) ? contactRows[0] : contactRows;
+      const requesterEmail = contactRow?.available ? contactRow.email : null;
+      const requesterPhone = contactRow?.available ? contactRow.phone : null;
+
+
+
       // Calculate all dates between start and end date - parse as local time
       const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
       const startDate = new Date(startYear, startMonth - 1, startDay);
