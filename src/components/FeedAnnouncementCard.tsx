@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { MapPin, Calendar, Euro } from "lucide-react";
+import { MapPin, Calendar, Euro, Megaphone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +30,8 @@ interface FeedAnnouncementCardProps {
   formatEventDate?: (date: string) => string;
   /** "Announcement" / "Promotion" badge label */
   typeLabel?: string;
+  /** Discreet indicator shown when an active promotion boost is applied */
+  promoted?: boolean;
   mediaUrl?: string | null;
   mediaType?: string | null;
   /** Extra chips rendered next to the author name (e.g. expiration) */
@@ -58,6 +60,7 @@ const FeedAnnouncementCard = ({
   budget,
   formatEventDate,
   typeLabel = "Announcement",
+  promoted = false,
   mediaUrl,
   mediaType,
   titleExtra,
@@ -104,6 +107,15 @@ const FeedAnnouncementCard = ({
                 <span>{formatSmartDate(createdAt)}</span>
                 <span>·</span>
                 <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{typeLabel}</Badge>
+                {promoted && (
+                  <>
+                    <span>·</span>
+                    <span className="inline-flex items-center gap-1 text-accent">
+                      <Megaphone className="h-3 w-3" />
+                      Promoted
+                    </span>
+                  </>
+                )}
                 {metaExtra}
               </div>
             </div>
