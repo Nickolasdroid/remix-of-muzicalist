@@ -2446,6 +2446,15 @@ export type Database = {
         Args: { _event_date: string; _profile_ids: string[] }
         Returns: string[]
       }
+      get_booking_contact: {
+        Args: { _booking_id: string }
+        Returns: {
+          available: boolean
+          email: string
+          name: string
+          phone: string
+        }[]
+      }
       get_moderation_case_details: { Args: { _case_id: string }; Returns: Json }
       get_moderation_case_timeline: {
         Args: { _case_id: string }
