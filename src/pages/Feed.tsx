@@ -554,10 +554,9 @@ const Feed = () => {
                           {item.promoted && (
                             <>
                               <span>·</span>
-                              <span className="inline-flex items-center gap-1 text-accent">
-                                <Megaphone className="h-3 w-3" />
+                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                 {t("postPromotion.promoted", "Promoted")}
-                              </span>
+                              </Badge>
                             </>
                           )}
                         </div>
