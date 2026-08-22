@@ -2,7 +2,11 @@ import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
-import { getPlanPriority } from "@/lib/planLimits";
+import { getPlanPriority, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
+import { rankFeedItems, isPromotionActive } from "@/lib/feedRanking";
+import { getPeriodStart } from "@/lib/billingPeriod";
+import PromotePostDialog from "@/components/PromotePostDialog";
+import { Megaphone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ExpandableText from "@/components/ExpandableText";
@@ -39,7 +43,6 @@ const Announcements = () => {
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [adsFilter, setAdsFilter] = useState<"all" | "promotions">("all");
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   
   const [hasMore, setHasMore] = useState(true);
@@ -50,6 +53,12 @@ const Announcements = () => {
   const adminIds = useAdminIds();
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
+  // Announcement promotion entitlement (tracked separately from post promotions)
+  const [promotionLimit, setPromotionLimit] = useState(0);
+  const [promotionsUsed, setPromotionsUsed] = useState(0);
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
+  const [isPromoting, setIsPromoting] = useState(false);
+  const promotionsRemaining = promotionLimit - promotionsUsed;
 
   useEffect(() => {
     // Run auth check in background; do NOT block the announcements fetch on it
@@ -58,11 +67,20 @@ const Announcements = () => {
         setCurrentUserId(session.user.id);
         const { data: prof } = await supabase
           .from('profiles')
-          .select('plan, specialization')
+          .select('plan, specialization, billing, subscription_current_period_end')
           .eq('id', session.user.id)
           .maybeSingle();
         if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
           setCanCreate(true);
+        }
+        if (prof?.specialization) {
+          setPromotionLimit(getAnnouncementPromotionLimit(prof.plan));
+          const { data: slots } = await supabase
+            .from('consumed_ad_slots')
+            .select('consumed_at, kind')
+            .eq('profile_id', session.user.id)
+            .gte('consumed_at', getPeriodStart(prof as any).toISOString());
+          setPromotionsUsed((slots || []).filter((sl: any) => sl.kind === PROMOTION_SLOT_KIND.announcement).length);
         }
       }
     });
@@ -106,8 +124,7 @@ const Announcements = () => {
             plan,
             country
           )
-        `)
-        .eq('is_premium', false);
+        `);
 
       const { data, error } = await query
         .order("created_at", { ascending: false })
@@ -122,12 +139,16 @@ const Announcements = () => {
         setHasMore(false);
       }
 
-      const sorted = [...(data || [])].sort((a, b) => {
-        const planA = getPlanPriority((a as any).profiles?.plan);
-        const planB = getPlanPriority((b as any).profiles?.plan);
-        if (planB !== planA) return planB - planA;
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
+      // ONE unified announcements feed: normal + promoted ranked together.
+      // Promotion is only one of several ranking signals (see lib/feedRanking).
+      const sorted = rankFeedItems(
+        (data || []).map((a: any) => ({
+          ...a,
+          type: 'announcement',
+          relevance: getPlanPriority(a.profiles?.plan),
+          promoted: isPromotionActive(a),
+        })),
+      );
 
       if (append) {
         setAnnouncements(prev => [...prev, ...sorted]);
@@ -150,7 +171,7 @@ const Announcements = () => {
   }, [page, fetchAnnouncements]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
-  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [announcements.length, adsFilter, loading, canCreate, page, hasMore]);
+  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [announcements.length, loading, canCreate, page, hasMore]);
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
@@ -164,32 +185,12 @@ const Announcements = () => {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           <h1 className="sr-only">Announcements &amp; Promotions</h1>
           
-          {/* Filter Tabs */}
-          <div className="flex gap-2 px-2 sm:px-0 py-2">
-            <Button
-              variant={adsFilter === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setAdsFilter("all")}
-              className={adsFilter === "all" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
-            >
-              All
-            </Button>
-            <Button
-              variant={adsFilter === "promotions" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setAdsFilter("promotions")}
-              className={adsFilter === "promotions" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
-            >
-              Promotions
-            </Button>
-          </div>
-
           {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
           const isGuest = !currentUserId;
           const GUEST_PREVIEW_COUNT = 2;
-          const filteredBase = announcements.filter(a => !isAdExpired(a)).filter(a => adsFilter === "promotions" ? a.is_premium : true);
+          const filteredBase = announcements.filter(a => !isAdExpired(a));
           const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">{adsFilter === "promotions" ? "No promotions yet." : "No announcements yet."}</div> : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
+          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
                 key={announcement.id}
                 author={{
                   id: announcement.profile_id,
@@ -206,6 +207,7 @@ const Announcements = () => {
                 budget={announcement.budget}
                 formatEventDate={formatDateNoYear}
                 typeLabel="Announcement"
+                promoted={!!announcement.promoted}
                 onAuthorClick={() => navigate(`/artist/${announcement.profile_id}`)}
                 menu={
                   <DropdownMenu>
@@ -225,6 +227,12 @@ const Announcements = () => {
                         <Flag className="h-4 w-4 mr-2" />
                         Report
                       </DropdownMenuItem>
+                      {currentUserId === announcement.profile_id && promotionLimit > 0 && (
+                        <DropdownMenuItem onClick={() => setPromoteTarget({ id: announcement.id, promotedUntil: announcement.promoted_until || null })}>
+                          <Megaphone className="h-4 w-4 mr-2" />
+                          {announcement.promoted ? "Manage promotion" : "Promote"}
+                        </DropdownMenuItem>
+                      )}
                       {currentUserId === announcement.profile_id && (
                         <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -331,6 +339,32 @@ const Announcements = () => {
             toast({ title: "Announcement removed", description: `Reason: ${reason}` });
           }
           setAdminDeleteId(null);
+        }}
+      />
+
+      <PromotePostDialog
+        open={!!promoteTarget}
+        onOpenChange={(open) => { if (!open) setPromoteTarget(null); }}
+        kind="announcement"
+        isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
+        promotedUntil={promoteTarget?.promotedUntil}
+        remaining={promotionsRemaining}
+        isSaving={isPromoting}
+        onConfirm={async () => {
+          if (!promoteTarget) return;
+          setIsPromoting(true);
+          try {
+            const { error } = await (supabase as any).rpc('promote_announcement', { p_announcement_id: promoteTarget.id });
+            if (error) throw error;
+            setPromotionsUsed((u) => u + 1);
+            setPromoteTarget(null);
+            toast({ title: "Success", description: "Announcement promoted!" });
+            fetchAnnouncements(0);
+          } catch (e: any) {
+            toast({ title: "Error", description: e.message || "Failed to promote announcement.", variant: "destructive" });
+          } finally {
+            setIsPromoting(false);
+          }
         }}
       />
 
