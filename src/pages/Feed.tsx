@@ -423,9 +423,14 @@ const Feed = () => {
             const GUEST_PREVIEW_COUNT = 2;
             const isGuest = !currentUserId;
             const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
-            return filtered.length === 0 ? <Card className="p-8 text-center">
+            return filtered.length === 0 ? (loadError ? <Card className="p-8 text-center space-y-3">
+              <p className="text-muted-foreground">Couldn't load the feed right now.</p>
+              <Button variant="outline" onClick={() => { setLoadError(false); setHasMore(true); setPage(0); setLoading(true); fetchPosts(0); }}>
+                Try again
+              </Button>
+            </Card> : <Card className="p-8 text-center">
               <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
-            </Card> : filtered.map(item =>
+            </Card>) : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
