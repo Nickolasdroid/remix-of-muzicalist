@@ -1074,7 +1074,7 @@ const Dashboard = () => {
       const { error } = await (supabase as any).rpc('promote_announcement', { p_announcement_id: id });
       if (error) throw error;
       setPromoteAnnouncementTarget(null);
-      toast({ title: "Success", description: t('postPromotion.successAnnouncement', 'Announcement promoted!') });
+      toast({ title: t('postPromotion.successTitleAnnouncement', 'Announcement promoted'), description: t('postPromotion.successBodyAnnouncement', 'Your announcement is now receiving increased distribution in the Muzicalist feed.') });
       await loadAnnouncements();
     } catch (e: any) {
       toast({ title: "Error", description: e.message || 'Failed to promote announcement.', variant: "destructive" });
@@ -1092,7 +1092,7 @@ const Dashboard = () => {
       await loadPosts();
       await loadAnnouncements();
       setPromoteTarget(null);
-      toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
+      toast({ title: t('postPromotion.successTitle', 'Post promoted'), description: t('postPromotion.successBody', 'Your post is now receiving increased distribution in the Muzicalist feed.') });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {

@@ -766,7 +766,7 @@ const Feed = () => {
             setPromotionsUsed((n) => n + 1);
             setPromoteTarget(null);
             await fetchPosts(0, false);
-            toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
+            toast({ title: t('postPromotion.successTitle', 'Post promoted'), description: t('postPromotion.successBody', 'Your post is now receiving increased distribution in the Muzicalist feed.') });
           } catch (e: any) {
             toast({ title: "Error", description: e.message, variant: "destructive" });
           } finally {
