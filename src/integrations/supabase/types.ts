@@ -1467,9 +1467,11 @@ export type Database = {
           id: string
           media_type: string | null
           media_url: string | null
+          post_kind: string
           profile_id: string
           promoted_at: string | null
           promoted_until: string | null
+          subject_profile_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1478,9 +1480,11 @@ export type Database = {
           id?: string
           media_type?: string | null
           media_url?: string | null
+          post_kind?: string
           profile_id: string
           promoted_at?: string | null
           promoted_until?: string | null
+          subject_profile_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1489,15 +1493,24 @@ export type Database = {
           id?: string
           media_type?: string | null
           media_url?: string | null
+          post_kind?: string
           profile_id?: string
           promoted_at?: string | null
           promoted_until?: string | null
+          subject_profile_id?: string | null
           updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "posts_profile_id_fkey"
             columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_subject_profile_id_fkey"
+            columns: ["subject_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -2335,6 +2348,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      create_artist_joined_post: {
+        Args: { _artist_id?: string }
+        Returns: string
       }
       create_email_template_version: {
         Args: {
