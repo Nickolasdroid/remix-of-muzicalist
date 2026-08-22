@@ -10,7 +10,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import PromotePostDialog from "@/components/PromotePostDialog";
-import { getPromotionLimit } from "@/lib/planLimits";
+import { getPostPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
+import { rankFeedItems, isPromotionActive } from "@/lib/feedRanking";
 import { getPeriodStart } from "@/lib/billingPeriod";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
@@ -55,6 +56,8 @@ interface FeedItem {
   type: "post" | "announcement";
   promoted?: boolean;
   promotedUntil?: string | null;
+  /** Optional ranking signal (see lib/feedRanking) */
+  engagement?: number;
 }
 
 interface MediaPreview {
@@ -65,7 +68,6 @@ interface MediaPreview {
 const Feed = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [feedFilter, setFeedFilter] = useState<"all" | "announcements">("all");
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
@@ -104,13 +106,13 @@ const Feed = () => {
           setCanCreate(true);
         }
         if (prof?.specialization) {
-          setPromotionLimit(getPromotionLimit(prof.plan));
+          setPromotionLimit(getPostPromotionLimit(prof.plan));
           const { data: slots } = await supabase
             .from('consumed_ad_slots')
             .select('consumed_at, kind')
             .eq('profile_id', session.user.id)
             .gte('consumed_at', getPeriodStart(prof as any).toISOString());
-          setPromotionsUsed((slots || []).filter((s: any) => s.kind === 'promotion').length);
+          setPromotionsUsed((slots || []).filter((s: any) => s.kind === PROMOTION_SLOT_KIND.post).length);
         }
       }
     });
@@ -216,16 +218,18 @@ const Feed = () => {
         likes: promoLikeCounts.get(a.id) || 0,
         commentsCount: promoCommentCounts.get(a.id) || 0,
         type: "announcement" as const,
+        promoted: isPromotionActive(a),
+        promotedUntil: a.promoted_until || null,
       }));
 
-      // Promoted posts keep the existing priority boost: they are ranked first,
-      // then everything else falls back to reverse-chronological order.
-      const combined = [...postsWithProfiles, ...promoItems].sort((a, b) => {
-        const pa = a.promoted ? 1 : 0;
-        const pb = b.promoted ? 1 : 0;
-        if (pa !== pb) return pb - pa;
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
+      // ONE unified feed: normal and promoted content ranked together.
+      // Promotion is only an extra ranking signal (see lib/feedRanking).
+      const combined = rankFeedItems(
+        [...postsWithProfiles, ...promoItems].map((item) => ({
+          ...item,
+          engagement: item.likes + item.commentsCount,
+        })),
+      );
 
       if (append) {
         setFeedItems(prev => [...prev, ...combined]);
@@ -255,7 +259,7 @@ const Feed = () => {
   }, [page, fetchPosts]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMorePosts, hasMore);
-  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [feedItems.length, feedFilter, loading, canCreate, page, hasMore]);
+  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [feedItems.length, loading, canCreate, page, hasMore]);
 
   const handleLike = async (id: string) => {
     if (!currentUserId) {
@@ -391,33 +395,13 @@ const Feed = () => {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           <h1 className="sr-only">Musical Community Feed</h1>
           
-          {/* Filter Tabs */}
-          <div className="flex gap-2 px-2 sm:px-0 py-2">
-            <Button
-              variant={feedFilter === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFeedFilter("all")}
-              className={feedFilter === "all" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
-            >
-              All
-            </Button>
-            <Button
-              variant={feedFilter === "announcements" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFeedFilter("announcements")}
-              className={feedFilter === "announcements" ? "bg-accent text-accent-foreground hover:bg-accent/90" : "border-border text-muted-foreground hover:text-foreground"}
-            >
-              Promotions
-            </Button>
-          </div>
-
           {(() => {
-            const filteredAll = feedFilter === "announcements" ? feedItems.filter(i => i.type === "announcement") : feedItems;
+            const filteredAll = feedItems;
             const GUEST_PREVIEW_COUNT = 2;
             const isGuest = !currentUserId;
             const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
             return filtered.length === 0 ? <Card className="p-8 text-center">
-              <p className="text-muted-foreground">{feedFilter === "announcements" ? "No announcements yet." : "No posts yet. Be the first to share something!"}</p>
+              <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
             </Card> : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */

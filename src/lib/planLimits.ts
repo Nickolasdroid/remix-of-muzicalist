@@ -63,14 +63,45 @@ export const getAdLimit = (plan?: string | null): number => {
   }
 };
 
-/** Promotion limits */
-export const getPromotionLimit = (plan?: string | null): number => {
+/**
+ * Promotion entitlements.
+ *
+ * A promotion is not a content type — it is a distribution boost applied to an
+ * existing Post or Announcement. Usage is tracked separately per content type,
+ * so a Post promotion can never consume an Announcement promotion (or vice versa).
+ */
+export type PromotionKind = 'post' | 'announcement';
+
+/** Post promotion limits (per billing period) */
+export const getPostPromotionLimit = (plan?: string | null): number => {
   switch (getPlan(plan)) {
     case 'Premium': return 5;
     case 'Standard': return 2;
-    default: return 0; // Free cannot post promotions
+    default: return 0; // Free has no post promotions
   }
 };
+
+/** Announcement promotion limits (per billing period) */
+export const getAnnouncementPromotionLimit = (plan?: string | null): number => {
+  switch (getPlan(plan)) {
+    case 'Premium': return 3;
+    case 'Standard': return 1;
+    default: return 0; // Free has no announcement promotions
+  }
+};
+
+/** Generic accessor by promotion kind */
+export const getPromotionLimitFor = (kind: PromotionKind, plan?: string | null): number =>
+  kind === 'announcement' ? getAnnouncementPromotionLimit(plan) : getPostPromotionLimit(plan);
+
+/** The `consumed_ad_slots.kind` value used to track each promotion type */
+export const PROMOTION_SLOT_KIND: Record<PromotionKind, string> = {
+  post: 'promotion',
+  announcement: 'announcement_promotion',
+};
+
+/** @deprecated Use getPostPromotionLimit — kept for backwards compatibility. */
+export const getPromotionLimit = getPostPromotionLimit;
 
 /** Social media link limit */
 export const getSocialLinkLimit = (plan?: string | null): number => {
