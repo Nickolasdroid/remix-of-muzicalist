@@ -84,6 +84,8 @@ const Feed = () => {
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   
   const [hasMore, setHasMore] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const errorNotifiedRef = useRef(false);
   const [page, setPage] = useState(0);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -248,6 +250,8 @@ const Feed = () => {
       } else {
         setFeedItems(combined);
       }
+      setLoadError(false);
+      errorNotifiedRef.current = false;
     } catch (error) {
       console.error('Error fetching posts:', error);
       // Stop the infinite-scroll sentinel from re-firing the same failed request
