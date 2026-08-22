@@ -37,6 +37,9 @@ import { translateSpecialization } from "@/lib/specializationLabel";
 
 const POSTS_PER_PAGE = 10;
 
+/** Known post sources. Unknown/future values fall back to "user" behaviour. */
+type PostKind = "user" | "artist_joined";
+
 interface FeedItem {
   id: string;
   profile_id: string;
@@ -55,6 +58,10 @@ interface FeedItem {
   likes: number;
   commentsCount: number;
   type: "post" | "announcement";
+  /** Post source: regular member post or auto-generated artist introduction */
+  postKind?: PostKind;
+  /** Only set for `artist_joined` posts: the artist being introduced */
+  subjectProfileId?: string | null;
   promoted?: boolean;
   promotedUntil?: string | null;
   /** Optional ranking signal (see lib/feedRanking) */
