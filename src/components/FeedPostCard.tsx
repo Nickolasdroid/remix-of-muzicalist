@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
-import { Heart, MessageCircle, Send, Globe, Megaphone } from "lucide-react";
+import { Heart, MessageCircle, Send, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
