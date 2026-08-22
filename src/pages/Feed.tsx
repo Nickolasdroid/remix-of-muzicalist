@@ -37,6 +37,9 @@ import { translateSpecialization } from "@/lib/specializationLabel";
 
 const POSTS_PER_PAGE = 10;
 
+/** Known post sources. Unknown/future values fall back to "user" behaviour. */
+type PostKind = "user" | "artist_joined";
+
 interface FeedItem {
   id: string;
   profile_id: string;
@@ -55,6 +58,10 @@ interface FeedItem {
   likes: number;
   commentsCount: number;
   type: "post" | "announcement";
+  /** Post source: regular member post or auto-generated artist introduction */
+  postKind?: PostKind;
+  /** Only set for `artist_joined` posts: the artist being introduced */
+  subjectProfileId?: string | null;
   promoted?: boolean;
   promotedUntil?: string | null;
   /** Optional ranking signal (see lib/feedRanking) */
@@ -77,6 +84,8 @@ const Feed = () => {
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   
   const [hasMore, setHasMore] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const errorNotifiedRef = useRef(false);
   const [page, setPage] = useState(0);
   const [canCreate, setCanCreate] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -128,7 +137,9 @@ const Feed = () => {
       const [postsRes, promosRes] = await Promise.all([
         supabase
           .from('posts')
-          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, profiles!inner (stage_name, avatar_url, specialization, plan)`)
+          // `posts` has two FKs to `profiles` (author + introduced artist), so the
+          // author embed must be disambiguated explicitly by constraint name.
+          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, post_kind, subject_profile_id, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan)`)
           .order('created_at', { ascending: false })
           .range(from, to),
         supabase
@@ -197,6 +208,8 @@ const Feed = () => {
         likes: postLikeCounts.get(post.id) || 0,
         commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
+        postKind: post.post_kind === "artist_joined" ? "artist_joined" : "user",
+        subjectProfileId: post.subject_profile_id ?? null,
         promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
         promotedUntil: post.promoted_until || null,
       }));
@@ -237,13 +250,22 @@ const Feed = () => {
       } else {
         setFeedItems(combined);
       }
+      setLoadError(false);
+      errorNotifiedRef.current = false;
     } catch (error) {
       console.error('Error fetching posts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load posts. Please try again.",
-        variant: "destructive"
-      });
+      // Stop the infinite-scroll sentinel from re-firing the same failed request
+      // in a loop; surface the failure once and let the user retry manually.
+      setHasMore(false);
+      setLoadError(true);
+      if (!errorNotifiedRef.current) {
+        errorNotifiedRef.current = true;
+        toast({
+          title: "Error",
+          description: "Failed to load posts. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -401,9 +423,14 @@ const Feed = () => {
             const GUEST_PREVIEW_COUNT = 2;
             const isGuest = !currentUserId;
             const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
-            return filtered.length === 0 ? <Card className="p-8 text-center">
+            return filtered.length === 0 ? (loadError ? <Card className="p-8 text-center space-y-3">
+              <p className="text-muted-foreground">Couldn't load the feed right now.</p>
+              <Button variant="outline" onClick={() => { setLoadError(false); setHasMore(true); setPage(0); setLoading(true); fetchPosts(0); }}>
+                Try again
+              </Button>
+            </Card> : <Card className="p-8 text-center">
               <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
-            </Card> : filtered.map(item =>
+            </Card>) : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
