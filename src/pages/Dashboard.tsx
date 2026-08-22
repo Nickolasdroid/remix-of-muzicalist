@@ -2068,10 +2068,10 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <User className="h-5 w-5 text-accent" />
-                              About Me
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<User className="h-5 w-5 text-accent" />}
+                              title="About Me"
+                            />
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
@@ -2125,10 +2125,10 @@ const Dashboard = () => {
                     };
                     return instrumentName ?
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="My Instrument:"
+                                    />
                                     <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
@@ -2137,10 +2137,10 @@ const Dashboard = () => {
                                   </div> :
 
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="My Instrument:"
+                                    />
                                     <InstrumentSelector
                         instruments={formData.instruments}
                         onInstrumentsChange={handleInstrumentsChange} />
@@ -2157,10 +2157,10 @@ const Dashboard = () => {
                             <Separator />
                             <div className="group">
                               <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                  <Users className="h-5 w-5 text-accent" />
-                                  Number of members
-                                </h3>
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Number of members"
+                                />
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
@@ -2190,15 +2190,13 @@ const Dashboard = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
                           <div className="group">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <Music className="h-5 w-5 text-accent" />
-                                Music Genres
-                              </h3>
-                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
+                            <SectionHeaderWithUsage
+                              icon={<Music className="h-5 w-5 text-accent" />}
+                              title="Music Genres"
+                              action={editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
-                            </div>
+                            />
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
@@ -2284,12 +2282,10 @@ const Dashboard = () => {
 
                           {/* Estimated Prices */}
                           <div className="group">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <DollarSign className="h-5 w-5 text-accent" />
-                                Estimated Prices
-                              </h3>
-                              {canSetEstimatedPrice(currentPlan) && (
+                            <SectionHeaderWithUsage
+                              icon={<DollarSign className="h-5 w-5 text-accent" />}
+                              title="Estimated Prices"
+                              action={canSetEstimatedPrice(currentPlan) && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -2299,7 +2295,7 @@ const Dashboard = () => {
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
                               )}
-                            </div>
+                            />
                             {!canSetEstimatedPrice(currentPlan) ? (
                               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Lock className="h-4 w-4" />
@@ -2353,7 +2349,10 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
+                          <SectionHeaderWithUsage
+                            title="Contact Information"
+                            className="mb-4"
+                          />
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -2398,15 +2397,13 @@ const Dashboard = () => {
 
                         {/* Social Networks */}
                         <div className="group">
-                          <div className="flex items-center justify-between mb-3 md:mb-4">
-                            <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
-                              <LinkIcon className="h-5 w-5 text-accent" />
-                              Social Networks
-                            </h3>
-                            {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
+                          <SectionHeaderWithUsage
+                            icon={<LinkIcon className="h-5 w-5 text-accent" />}
+                            title="Social Networks"
+                            action={editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
-                          </div>
+                          />
                           {editingField === 'social' ? <div className="space-y-3">
                               {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <AlertCircle className="h-3.5 w-3.5" />
@@ -2494,14 +2491,21 @@ const Dashboard = () => {
 
                         {/* Reviews Section */}
                         <div>
-                          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-left">
-                            <Star className="h-5 w-5 text-accent" />
-                            My Reviews
-                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                ({getAverageRating()} • {reviews.length})
-                              </span>}
-                          </h2>
-                          
+                          <SectionHeaderWithUsage
+                            icon={<Star className="h-5 w-5 text-accent" />}
+                            title={
+                              <>
+                                My Reviews
+                                {getAverageRating() && (
+                                  <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                    ({getAverageRating()} • {reviews.length})
+                                  </span>
+                                )}
+                              </>
+                            }
+                            className="mb-4"
+                          />
+
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
                                 {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
@@ -3198,10 +3202,10 @@ const Dashboard = () => {
                       {!isAdmin && <TabsContent value="calendar">
                         <div>
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <CalendarIcon className="h-5 w-5 text-accent" />
-                              My Calendar
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                              title="My Calendar"
+                            />
                             {isPremium(currentPlan) && (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />
@@ -3472,23 +3476,25 @@ const Dashboard = () => {
 
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
-                            <div className="flex items-center justify-between mb-4 gap-2">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5 text-accent" />
-                                Booking Requests
-                                {(() => {
-                                  const todayStr = new Date().toISOString().split("T")[0];
-                                  const newCount = bookingRequests.filter(
-                                    (r) => r.status === "pending" && r.event_date >= todayStr
-                                  ).length;
-                                  return newCount > 0 ? (
-                                    <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
-                                      {newCount}
-                                    </Badge>
-                                  ) : null;
-                                })()}
-                              </h3>
-                              {bookingRequests.length > 0 && (
+                            <SectionHeaderWithUsage
+                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                              title={
+                                <>
+                                  Booking Requests
+                                  {(() => {
+                                    const todayStr = new Date().toISOString().split("T")[0];
+                                    const newCount = bookingRequests.filter(
+                                      (r) => r.status === "pending" && r.event_date >= todayStr
+                                    ).length;
+                                    return newCount > 0 ? (
+                                      <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                        {newCount}
+                                      </Badge>
+                                    ) : null;
+                                  })()}
+                                </>
+                              }
+                              action={bookingRequests.length > 0 && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -3498,7 +3504,8 @@ const Dashboard = () => {
                                   See all
                                 </Button>
                               )}
-                            </div>
+                              className="mb-4"
+                            />
                             
                             {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
                                 <CardContent className="p-8 text-center">
@@ -3576,12 +3583,10 @@ const Dashboard = () => {
                                 navigate(`/booking-requests?tab=sent${f ? `&filter=${f}` : ''}`);
                               return (
                                 <>
-                                  <div className="flex items-center justify-between mb-4 gap-2">
-                                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <CalendarCheck className="h-5 w-5 text-accent" />
-                                      My Bookings
-                                    </h3>
-                                    {sentBookingRequests.length > 0 && (
+                                  <SectionHeaderWithUsage
+                                    icon={<CalendarCheck className="h-5 w-5 text-accent" />}
+                                    title="My Bookings"
+                                    action={sentBookingRequests.length > 0 && (
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -3591,7 +3596,8 @@ const Dashboard = () => {
                                         See all
                                       </Button>
                                     )}
-                                  </div>
+                                    className="mb-4"
+                                  />
 
                                   {sentBookingRequests.length === 0 ? (
                                     <Card className="border-2 border-dashed border-border/50">

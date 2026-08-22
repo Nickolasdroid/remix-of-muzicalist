@@ -47,6 +47,7 @@ import ReportContentDialog, { ReportableType } from "@/components/ReportContentD
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
+import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
 import { useAdminIds } from "@/hooks/useAdminIds";
 import i18n, { translateTextsSync } from "@/i18n";
@@ -1124,10 +1125,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
           {/* User's Announcements */}
           {activeAnnouncements.length > 0 && <div>
-            <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
-              <Megaphone className="h-5 w-5 text-accent" />
-              Announcements
-            </h2>
+            <SectionHeaderWithUsage
+              icon={<Megaphone className="h-5 w-5 text-accent" />}
+              title="Announcements"
+              className="mb-3"
+            />
             <div className="space-y-3">
               {activeAnnouncements.map((announcement) => <Card key={announcement.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
                   <div className="p-4">
@@ -1406,10 +1408,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 <TabsContent value="details" className="space-y-4 md:space-y-8">
                   {/* Description */}
                   <div>
-                    <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5 text-accent" />
-                      About
-                    </h2>
+                    <SectionHeaderWithUsage
+                      icon={<User className="h-5 w-5 text-accent" />}
+                      title="About"
+                      className="mb-4"
+                    />
                     {artist.bio ? (
                       <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
                         {artist.bio}
@@ -1431,10 +1434,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     const InstrumentIcon = getInstrumentIcon(instrumentName);
                     return (
                       <div className="flex items-center gap-2">
-                              <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                <Music2 className="h-5 w-5 text-accent" />
-                                Instrument:
-                              </h2>
+                              <SectionHeaderWithUsage
+                                icon={<Music2 className="h-5 w-5 text-accent" />}
+                                title="Instrument:"
+                              />
                               <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
                                 <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                 {instrumentName}
@@ -1451,10 +1454,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     <>
                       <Separator />
                       <div className="flex items-center gap-2">
-                        <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                          <Users className="h-5 w-5 text-accent" />
-                          Members:
-                        </h2>
+                        <SectionHeaderWithUsage
+                          icon={<Users className="h-5 w-5 text-accent" />}
+                          title="Members:"
+                        />
                         <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
                           {artist.band_members} members
                         </Badge>
@@ -1469,10 +1472,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
                     {/* Music Genres */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <Music className="h-5 w-5 text-accent" />
-                        Music Genres
-                      </h3>
+                      <SectionHeaderWithUsage
+                        icon={<Music className="h-5 w-5 text-accent" />}
+                        title="Music Genres"
+                        className="mb-4"
+                      />
                       <div className="flex flex-wrap gap-1.5 md:gap-2 justify-start">
                         {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm">
                               {genre}
@@ -1483,10 +1487,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                     {/* Estimated Prices */}
                     <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <h3 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-accent" />
-                        Estimated Prices
-                      </h3>
+                      <SectionHeaderWithUsage
+                        icon={<DollarSign className="h-5 w-5 text-accent" />}
+                        title="Estimated Prices"
+                        className="mb-4"
+                      />
                       <div className="space-y-1 md:space-y-2 text-left">
                         {canSetEstimatedPrice(artist.plan) ? (
                           <PricingEntriesDisplay profileId={artist.id} />
@@ -1501,7 +1506,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                   {/* Contact Information */}
                   <div>
-                    <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
+                    <SectionHeaderWithUsage
+                      title="Contact Information"
+                      className="mb-4"
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                       {currentUserId ? <>
                           {!artist.hide_email && <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
@@ -1560,7 +1568,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                   {/* Social Media */}
                   <div>
-                    <h3 className="text-xl font-display font-bold mb-4 text-left">Social Networks</h3>
+                    <SectionHeaderWithUsage
+                      title="Social Networks"
+                      className="mb-4"
+                    />
                     {currentUserId ?
                 <div className="flex flex-wrap gap-2 md:gap-3">
                         {(() => {
@@ -1596,13 +1607,20 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   {/* Reviews Section */}
                   <div>
                     <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                      <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
-                        <Star className="h-5 w-5 text-accent" />
-                        Reviews
-                        {getAverageRating() && <span className="text-lg font-display font-bold text-foreground">
-                            ({getAverageRating()} • {reviews.length})
-                          </span>}
-                      </h3>
+                      <SectionHeaderWithUsage
+                        icon={<Star className="h-5 w-5 text-accent" />}
+                        title={
+                          <>
+                            Reviews
+                            {getAverageRating() && (
+                              <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                ({getAverageRating()} • {reviews.length})
+                              </span>
+                            )}
+                          </>
+                        }
+                        className="mb-3 md:mb-4"
+                      />
                       {currentUserId !== id && <Button onClick={() => {
                     if (!currentUserId) {
                       toast({
@@ -1668,10 +1686,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 {/* Posts Tab */}
                 <TabsContent value="posts" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-accent" />
-                      Posts
-                    </h2>
+                    <SectionHeaderWithUsage
+                      icon={<FileText className="h-5 w-5 text-accent" />}
+                      title="Posts"
+                      className="mb-4"
+                    />
                     {!currentUserId ?
                 <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -1941,10 +1960,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 {/* Announcements Tab */}
                 <TabsContent value="announcements" className="space-y-4 md:space-y-6">
                   <div>
-                    <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                      <Megaphone className="h-5 w-5 text-accent" />
-                      Announcements
-                    </h2>
+                    <SectionHeaderWithUsage
+                      icon={<Megaphone className="h-5 w-5 text-accent" />}
+                      title="Announcements"
+                      className="mb-4"
+                    />
                     {!currentUserId ?
                 <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -2064,10 +2084,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   <div className="space-y-6 md:space-y-8">
                     {/* Photos Section */}
                     <div>
-                      <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <Images className="h-5 w-5 text-accent" />
-                        Photos
-                      </h2>
+                      <SectionHeaderWithUsage
+                        icon={<Images className="h-5 w-5 text-accent" />}
+                        title="Photos"
+                        className="mb-4"
+                      />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                         {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => setMediaPreview({
                       url: image.url,
@@ -2082,10 +2103,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                     {/* Videos Section */}
                     {getVideoLimit(artist.plan) > 0 && <div>
-                      <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                        <Play className="h-5 w-5 text-accent" />
-                        Videos
-                      </h2>
+                      <SectionHeaderWithUsage
+                        icon={<Play className="h-5 w-5 text-accent" />}
+                        title="Videos"
+                        className="mb-4"
+                      />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                         {getVideos().length > 0 ? getVideos().map((video, index) => {
                           const info = getEmbedInfo(video.url);
@@ -2117,10 +2139,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 {/* Calendar Tab */}
                 <TabsContent value="calendar">
                   <div>
-                    <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5 text-accent" />
-                      Calendar
-                    </h2>
+                    <SectionHeaderWithUsage
+                      icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                      title="Calendar"
+                      className="mb-4"
+                    />
                     
                     <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
                         {/* Legend - above calendar on mobile */}
