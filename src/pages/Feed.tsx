@@ -128,7 +128,9 @@ const Feed = () => {
       const [postsRes, promosRes] = await Promise.all([
         supabase
           .from('posts')
-          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, profiles!inner (stage_name, avatar_url, specialization, plan)`)
+          // `posts` has two FKs to `profiles` (author + introduced artist), so the
+          // author embed must be disambiguated explicitly by constraint name.
+          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, post_kind, subject_profile_id, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan)`)
           .order('created_at', { ascending: false })
           .range(from, to),
         supabase
