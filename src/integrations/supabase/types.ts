@@ -102,6 +102,8 @@ export type Database = {
           media_type: string | null
           media_url: string | null
           profile_id: string
+          promoted_at: string | null
+          promoted_until: string | null
           title: string
           updated_at: string
         }
@@ -117,6 +119,8 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           profile_id: string
+          promoted_at?: string | null
+          promoted_until?: string | null
           title: string
           updated_at?: string
         }
@@ -132,6 +136,8 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           profile_id?: string
+          promoted_at?: string | null
+          promoted_until?: string | null
           title?: string
           updated_at?: string
         }
@@ -2647,6 +2653,10 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      promote_announcement: {
+        Args: { p_announcement_id: string }
+        Returns: Json
       }
       promote_post: { Args: { p_post_id: string }; Returns: Json }
       publish_email_template_version: {
