@@ -33,8 +33,14 @@ import {
   Phone,
   Trash2,
 } from "lucide-react";
+import BookingContactInfo from "@/components/BookingContactInfo";
+
+// Private contact columns are excluded on purpose (see get_booking_contact RPC).
+const BOOKING_REQUEST_COLUMNS =
+  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
 
 type FilterKey = "all" | "pending" | "accepted" | "completed" | "rejected";
+
 
 const parseYMD = (s?: string | null) => {
   if (!s) return null;
