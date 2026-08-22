@@ -30,7 +30,7 @@ const SocialStats = ({
   const { t } = useTranslation();
 
   return (
-    <div className={`flex items-center gap-3 text-sm text-muted-foreground ${className}`}>
+    <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground ${className}`}>
       <button
         type="button"
         onClick={onFollowersClick}
