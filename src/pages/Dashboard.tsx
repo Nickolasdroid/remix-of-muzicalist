@@ -3476,23 +3476,25 @@ const Dashboard = () => {
 
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
-                            <div className="flex items-center justify-between mb-4 gap-2">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5 text-accent" />
-                                Booking Requests
-                                {(() => {
-                                  const todayStr = new Date().toISOString().split("T")[0];
-                                  const newCount = bookingRequests.filter(
-                                    (r) => r.status === "pending" && r.event_date >= todayStr
-                                  ).length;
-                                  return newCount > 0 ? (
-                                    <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
-                                      {newCount}
-                                    </Badge>
-                                  ) : null;
-                                })()}
-                              </h3>
-                              {bookingRequests.length > 0 && (
+                            <SectionHeaderWithUsage
+                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                              title={
+                                <>
+                                  Booking Requests
+                                  {(() => {
+                                    const todayStr = new Date().toISOString().split("T")[0];
+                                    const newCount = bookingRequests.filter(
+                                      (r) => r.status === "pending" && r.event_date >= todayStr
+                                    ).length;
+                                    return newCount > 0 ? (
+                                      <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                        {newCount}
+                                      </Badge>
+                                    ) : null;
+                                  })()}
+                                </>
+                              }
+                              action={bookingRequests.length > 0 && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -3502,7 +3504,8 @@ const Dashboard = () => {
                                   See all
                                 </Button>
                               )}
-                            </div>
+                              className="mb-4"
+                            />
                             
                             {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
                                 <CardContent className="p-8 text-center">
