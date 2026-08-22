@@ -309,7 +309,11 @@
     "close": "Închide",
     "success": "Postare promovată!",
     "notAvailable": "Planul tău nu include promovări de postări.",
-    "promote": "Promovează"
+    "promote": "Promovează",
+    "successTitle": "Postare promovată",
+    "successBody": "Postarea ta primește acum distribuție crescută în feedul Muzicalist.",
+    "successTitleAnnouncement": "Anunț promovat",
+    "successBodyAnnouncement": "Anunțul tău primește acum distribuție crescută în feedul Muzicalist."
   },
   "creationModal": {
     "postTitle": "Adaugă o postare",
