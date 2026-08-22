@@ -3083,7 +3083,7 @@ const Dashboard = () => {
 
                           {/* Videos section */}
                           <SectionHeaderWithUsage
-                            icon={<VideoIcon className="h-5 w-5 text-accent" />}
+                            icon={<Play className="h-5 w-5 text-accent" />}
                             title={t('dashboardGallery.videos', 'Videos')}
                             usage={`${videosUsed}/${STANDARD_VIDEO_LIMIT}`}
                           />
