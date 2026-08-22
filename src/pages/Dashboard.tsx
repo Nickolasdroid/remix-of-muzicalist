@@ -2595,7 +2595,19 @@ const Dashboard = () => {
                           <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
                             title={t('dashboardPosts.title', 'Posts')}
-                            usage={`${postItems.length}/${postLimitLabel}`}
+                            usage={
+                              <>
+                                <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground">
+                                  {`${postItems.length}/${postLimitLabel}`}
+                                </Badge>
+                                {PROMOTION_LIMIT > 0 && (
+                                  <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 gap-1 border-border/70 bg-muted/30 text-muted-foreground">
+                                    <Megaphone className="h-3 w-3" />
+                                    {`${promotionsUsed}/${Number.isFinite(PROMOTION_LIMIT) ? PROMOTION_LIMIT : '∞'}`}
+                                  </Badge>
+                                )}
+                              </>
+                            }
                             action={
                               <Button
                                 size="sm"
