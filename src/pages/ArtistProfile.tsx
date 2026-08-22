@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
+import PostMediaFrame from "@/components/PostMediaFrame";
 import ExpandableText from "@/components/ExpandableText";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -1153,14 +1154,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     <ExpandableText text={announcement.description} className="mt-3 text-sm" />
                   </div>
 
-                  {announcement.is_premium && announcement.media_url && <div className="cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                  {announcement.is_premium && announcement.media_url && <PostMediaFrame url={announcement.media_url} type={announcement.media_type} alt="Announcement media" className="mt-0" onClick={() => setMediaPreview({
                 url: announcement.media_url!,
                 type: announcement.media_type === "video" ? "video" : "image"
-              })}>
-                      {announcement.media_type === "video" ? <div className="relative w-full aspect-video">
-                          <video src={announcement.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" onClick={(e) => e.stopPropagation()} />
-                        </div> : <img src={announcement.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                    </div>}
+              })} />}
                 </Card>)}
             </div>
           </div>}
@@ -1768,15 +1765,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                   <ExpandableText text={promo.description} className="mt-3" />
                                 </div>
                                 {promo.media_url &&
-                            <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })}>
-                                    {promo.media_type === "video" ?
-                              <div className="relative w-full aspect-video pointer-events-none">
-                                        <video src={promo.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                      </div> :
-
-                              <img src={promo.media_url} alt="Promotion media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />
-                              }
-                                  </div>
+                            <PostMediaFrame url={promo.media_url} type={promo.media_type} alt="Promotion media" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })} />
                             }
                               <div className="flex items-center gap-2 px-2 py-0 mt-1">
                                 <div className="flex items-center">
@@ -1890,14 +1879,10 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                             </div>
                             
                             {/* Media */}
-                            {post.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                            {post.media_url && <PostMediaFrame url={post.media_url} type={post.media_type} alt="Post content" onClick={() => setMediaPreview({
                             url: post.media_url!,
                             type: post.media_type === "video" ? "video" : "image"
-                          })}>
-                                {post.media_type === "video" ? <div className="relative w-full aspect-video pointer-events-none">
-                                    <video src={post.media_url} className="absolute inset-0 w-full h-full object-contain bg-black" />
-                                  </div> : <img src={post.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity" />}
-                              </div>}
+                          })} />}
 
                             {/* Actions */}
                             <div className="flex items-center gap-2 px-2 py-0 mt-1">

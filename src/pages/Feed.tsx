@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import PostMediaFrame from "@/components/PostMediaFrame";
 import ExpandableText from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -475,14 +476,10 @@ const Feed = () => {
                     <ExpandableText text={item.content} className="mt-3 my-[5px]" />
                   </div>
                   
-                  {item.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                  {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Announcement media" onClick={() => setMediaPreview({
                     url: item.media_url!,
                     type: item.media_type === "video" ? "video" : "image"
-                  })}>
-                    {item.media_type === "video" ? <div className="relative w-full aspect-video">
-                        <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={item.media_url} alt="Announcement media" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
-                  </div>}
+                  })} />}
                   <div className="flex items-center gap-2 px-2 py-0 mt-1">
                     <div className="flex items-center">
                       <Button
@@ -606,14 +603,10 @@ const Feed = () => {
                   <ExpandableText text={item.content} className="mt-3 my-[5px]" />
                 </div>
                 
-                {item.media_url && <div className="mt-3 cursor-pointer bg-muted/30" onClick={() => setMediaPreview({
+                {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
             url: item.media_url!,
             type: item.media_type === "video" ? "video" : "image"
-          })}>
-            {item.media_type === "video" ? <div className="relative w-full aspect-video">
-                        <SmoothVideoPlayer src={item.media_url} className="absolute inset-0 w-full h-full" onClick={e => e.stopPropagation()} />
-                      </div> : <img src={item.media_url} alt="Post content" className="w-full h-auto max-h-[400px] object-contain hover:opacity-95 transition-opacity border-primary" />}
-                  </div>}
+          })} />}
                 <div className="flex items-center gap-2 px-2 py-0 mt-1">
                   <div className="flex items-center">
                     <Button
