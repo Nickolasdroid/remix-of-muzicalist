@@ -1512,14 +1512,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     />
                     <div className="space-y-3 text-left">
                       <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                        <div className="min-w-0">
-                          <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-accent flex-shrink-0" />
-                            Email
-                          </p>
-                          <p className="text-sm md:text-base text-foreground font-medium mt-1 tracking-wider truncate select-none">
-                            ••••••••@••••.com
-                          </p>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Mail className="h-4 w-4 text-accent flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs md:text-sm text-muted-foreground">
+                              Email
+                            </p>
+                            <p className="text-sm md:text-base text-foreground font-medium mt-1 tracking-wider truncate select-none">
+                              ••••••••@••••.com
+                            </p>
+                          </div>
                         </div>
                         <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       </div>
