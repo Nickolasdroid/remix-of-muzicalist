@@ -309,7 +309,11 @@
     "close": "Close",
     "success": "Post promoted!",
     "notAvailable": "Your plan does not include post promotions.",
-    "promote": "Promote"
+    "promote": "Promote",
+    "successTitle": "Post promoted",
+    "successBody": "Your post is now receiving increased distribution in the Muzicalist feed.",
+    "successTitleAnnouncement": "Announcement promoted",
+    "successBodyAnnouncement": "Your announcement is now receiving increased distribution in the Muzicalist feed."
   },
   "creationModal": {
     "postTitle": "Add a post",
