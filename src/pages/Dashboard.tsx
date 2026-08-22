@@ -2282,12 +2282,10 @@ const Dashboard = () => {
 
                           {/* Estimated Prices */}
                           <div className="group">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <DollarSign className="h-5 w-5 text-accent" />
-                                Estimated Prices
-                              </h3>
-                              {canSetEstimatedPrice(currentPlan) && (
+                            <SectionHeaderWithUsage
+                              icon={<DollarSign className="h-5 w-5 text-accent" />}
+                              title="Estimated Prices"
+                              action={canSetEstimatedPrice(currentPlan) && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -2297,7 +2295,7 @@ const Dashboard = () => {
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
                               )}
-                            </div>
+                            />
                             {!canSetEstimatedPrice(currentPlan) ? (
                               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Lock className="h-4 w-4" />
