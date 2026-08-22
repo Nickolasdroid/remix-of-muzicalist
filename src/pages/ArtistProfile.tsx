@@ -1510,7 +1510,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       title="Contact Information"
                       className="mb-4"
                     />
-                    <div className="space-y-3 text-left">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
                       <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                         <div className="flex items-center gap-3 min-w-0">
                           <Mail className="h-4 w-4 text-accent flex-shrink-0" />
@@ -1540,7 +1540,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                         </div>
                         <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       </div>
-
                     </div>
 
 
