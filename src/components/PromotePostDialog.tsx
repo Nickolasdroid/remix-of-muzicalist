@@ -17,6 +17,8 @@ interface PromotePostDialogProps {
   isPromoted: boolean;
   /** Expiration of the active promotion, when known */
   promotedUntil?: string | null;
+  /** Which content type is being promoted (entitlements are tracked separately) */
+  kind?: "post" | "announcement";
   /** Remaining monthly promotion entitlement */
   remaining: number;
   isSaving?: boolean;
@@ -31,6 +33,7 @@ const PromotePostDialog = ({
   open,
   onOpenChange,
   isPromoted,
+  kind = "post",
   promotedUntil,
   remaining,
   isSaving = false,
@@ -60,10 +63,15 @@ const PromotePostDialog = ({
           <DialogDescription>
             {isPromoted
               ? t("postPromotion.activeVisibility", "Additional visibility active")
-              : t(
-                  "postPromotion.description",
-                  "Your post will receive additional visibility in the Muzicalist feed.",
-                )}
+              : kind === "announcement"
+                ? t(
+                    "postPromotion.descriptionAnnouncement",
+                    "Your announcement will receive additional visibility in the Muzicalist feed.",
+                  )
+                : t(
+                    "postPromotion.description",
+                    "Your post will receive additional visibility in the Muzicalist feed.",
+                  )}
           </DialogDescription>
         </DialogHeader>
 
@@ -72,7 +80,9 @@ const PromotePostDialog = ({
             <div className="space-y-1">
               <p className="font-medium text-foreground flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-accent" />
-                {t("postPromotion.promotedTitle", "Promoted post")}
+                {kind === "announcement"
+                  ? t("postPromotion.promotedTitleAnnouncement", "Promoted announcement")
+                  : t("postPromotion.promotedTitle", "Promoted post")}
               </p>
               {untilLabel && (
                 <p className="text-muted-foreground">
@@ -104,7 +114,9 @@ const PromotePostDialog = ({
               disabled={isSaving || safeRemaining <= 0}
               className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              {t("postPromotion.confirm", "Promote post")}
+              {kind === "announcement"
+                ? t("postPromotion.confirmAnnouncement", "Promote announcement")
+                : t("postPromotion.confirm", "Promote post")}
             </Button>
           )}
         </DialogFooter>
