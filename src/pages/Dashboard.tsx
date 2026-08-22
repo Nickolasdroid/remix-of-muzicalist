@@ -1437,7 +1437,10 @@ const Dashboard = () => {
       const wantedName = (removedEvent.bookedBy ?? "").trim();
       const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
       const match = acceptedCandidates.find((req) => {
-        if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
+        // requester_email is private and not loaded client-side, so it can only
+        // be used for matching when it happens to be present.
+        if (wantedEmail && req.requester_email && normalize(req.requester_email) !== wantedEmail) return false;
+
         if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
         if (wantedTimes) {
           const reqTimes = extractTimesFromRequestMessage(req.message);
