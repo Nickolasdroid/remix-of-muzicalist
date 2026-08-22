@@ -1075,7 +1075,7 @@ const Dashboard = () => {
       if (error) throw error;
       setPromoteAnnouncementTarget(null);
       toast({ title: "Success", description: t('postPromotion.successAnnouncement', 'Announcement promoted!') });
-      await fetchProfile();
+      await loadAnnouncements();
     } catch (e: any) {
       toast({ title: "Error", description: e.message || 'Failed to promote announcement.', variant: "destructive" });
     } finally {
