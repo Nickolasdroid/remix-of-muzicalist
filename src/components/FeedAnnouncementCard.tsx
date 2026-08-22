@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
-import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+import PostMediaFrame from "@/components/PostMediaFrame";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
