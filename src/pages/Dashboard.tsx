@@ -2397,12 +2397,10 @@ const Dashboard = () => {
 
                         {/* Social Networks */}
                         <div className="group">
-                          <div className="flex items-center justify-between mb-3 md:mb-4">
-                            <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
-                              <LinkIcon className="h-5 w-5 text-accent" />
-                              Social Networks
-                            </h3>
-                            {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
+                          <SectionHeaderWithUsage
+                            icon={<LinkIcon className="h-5 w-5 text-accent" />}
+                            title="Social Networks"
+                            action={editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
                           </div>
