@@ -78,9 +78,10 @@ const BookingRequests = () => {
     setViewerRole(isArtist ? "artist" : "user");
 
     // Requests sent by me (as a requester) — available for users AND artists
+    // Contact columns are private: fetched per-booking via get_booking_contact.
     const { data: sentData } = await supabase
       .from("booking_requests")
-      .select("*")
+      .select(BOOKING_REQUEST_COLUMNS)
       .eq("requester_user_id", user.id)
       .neq("profile_id", user.id)
       .order("created_at", { ascending: false });
@@ -92,7 +93,7 @@ const BookingRequests = () => {
     if (isArtist) {
       const { data: receivedData } = await supabase
         .from("booking_requests")
-        .select("*")
+        .select(BOOKING_REQUEST_COLUMNS)
         .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
       received = receivedData || [];
