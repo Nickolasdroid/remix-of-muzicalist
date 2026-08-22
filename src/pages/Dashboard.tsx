@@ -392,20 +392,23 @@ const Dashboard = () => {
   };
   const loadBookingRequests = async () => {
     if (!user) return;
+    // NOTE: requester_email / requester_phone are private and never selected here.
+    // They are exchanged only through the get_booking_contact RPC once accepted.
     const {
       data
-    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).order('created_at', {
+    } = await supabase.from('booking_requests').select(BOOKING_REQUEST_COLUMNS).eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (data) setBookingRequests(data);
     const { data: sent } = await supabase
       .from('booking_requests')
-      .select('*')
+      .select(BOOKING_REQUEST_COLUMNS)
       .eq('requester_user_id', user.id)
       .neq('profile_id', user.id)
       .order('created_at', { ascending: false });
     setSentBookingRequests(sent || []);
   };
+
 
   const loadPosts = async () => {
     if (!user) return;
