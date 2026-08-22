@@ -1537,21 +1537,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                         <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       </div>
 
-                      <p className="text-xs md:text-sm text-muted-foreground">
-                        {currentUserId
-                          ? "Contact details are shared only after this artist accepts your booking request."
-                          : "Log in and send a booking request. Contact details are shared only after the artist accepts it."}
-                      </p>
-                      {!currentUserId && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-lg"
-                          onClick={() => navigate('/login')}
-                        >
-                          Log in
-                        </Button>
-                      )}
                     </div>
 
 
