@@ -60,6 +60,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
+import BookingContactInfo from "@/components/BookingContactInfo";
+
+// Private contact columns (requester_email / requester_phone) are intentionally
+// excluded — they are only reachable through the get_booking_contact RPC.
+const BOOKING_REQUEST_COLUMNS =
+  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
+
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
@@ -392,20 +399,23 @@ const Dashboard = () => {
   };
   const loadBookingRequests = async () => {
     if (!user) return;
+    // NOTE: requester_email / requester_phone are private and never selected here.
+    // They are exchanged only through the get_booking_contact RPC once accepted.
     const {
       data
-    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).order('created_at', {
+    } = await supabase.from('booking_requests').select(BOOKING_REQUEST_COLUMNS).eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (data) setBookingRequests(data);
     const { data: sent } = await supabase
       .from('booking_requests')
-      .select('*')
+      .select(BOOKING_REQUEST_COLUMNS)
       .eq('requester_user_id', user.id)
       .neq('profile_id', user.id)
       .order('created_at', { ascending: false });
     setSentBookingRequests(sent || []);
   };
+
 
   const loadPosts = async () => {
     if (!user) return;
@@ -1427,7 +1437,10 @@ const Dashboard = () => {
       const wantedName = (removedEvent.bookedBy ?? "").trim();
       const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
       const match = acceptedCandidates.find((req) => {
-        if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
+        // requester_email is private and not loaded client-side, so it can only
+        // be used for matching when it happens to be present.
+        if (wantedEmail && req.requester_email && normalize(req.requester_email) !== wantedEmail) return false;
+
         if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
         if (wantedTimes) {
           const reqTimes = extractTimesFromRequestMessage(req.message);
@@ -1633,6 +1646,17 @@ const Dashboard = () => {
       }).eq('id', request.id);
       if (updateError) throw updateError;
 
+      // Now that the booking is accepted, the requester's contact details
+      // become available to this artist through the secured RPC.
+      const { data: contactRows } = await (supabase as any).rpc('get_booking_contact', {
+        _booking_id: request.id
+      });
+      const contactRow = Array.isArray(contactRows) ? contactRows[0] : contactRows;
+      const requesterEmail = contactRow?.available ? contactRow.email : null;
+      const requesterPhone = contactRow?.available ? contactRow.phone : null;
+
+
+
       // Calculate all dates between start and end date - parse as local time
       const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
       const startDate = new Date(startYear, startMonth - 1, startDay);
@@ -1663,7 +1687,7 @@ const Dashboard = () => {
       }
 
       // Build the new booking entry text
-      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
+      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${requesterEmail ? '\nContact: ' + requesterEmail : ''}${requesterPhone ? '\nPhone: ' + requesterPhone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
 
       // Add all dates to the calendar, appending to existing entries if present
       for (const date of datesToBook) {
@@ -2353,23 +2377,18 @@ const Dashboard = () => {
                             title="Contact Information"
                             className="mb-4"
                           />
+                          <div className="mb-3 flex items-start gap-2 p-3 rounded-lg bg-secondary/50">
+                            <Lock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                            <p className="text-xs md:text-sm text-muted-foreground">
+                              Your email and phone are private. They are never shown on your public profile and are shared with a client only after you accept their booking request.
+                            </p>
+                          </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               <div className="flex-1 text-left">
                                 <p className="text-xs md:text-sm text-muted-foreground">Email</p>
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {formData.hideEmail ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
-                                <Switch
-                                  checked={!formData.hideEmail}
-                                  onCheckedChange={async (checked) => {
-                                    const newVal = !checked;
-                                    setFormData(prev => ({ ...prev, hideEmail: newVal }));
-                                    await supabase.from('profiles').update({ hide_email: newVal } as any).eq('id', user.id);
-                                  }}
-                                />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
@@ -2378,19 +2397,9 @@ const Dashboard = () => {
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
                                   <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  {formData.hidePhone ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
-                                  <Switch
-                                    checked={!formData.hidePhone}
-                                    onCheckedChange={async (checked) => {
-                                      const newVal = !checked;
-                                      setFormData(prev => ({ ...prev, hidePhone: newVal }));
-                                      await supabase.from('profiles').update({ hide_phone: newVal } as any).eq('id', user.id);
-                                    }}
-                                  />
-                                </div>
                               </div>
                           </div>
+
                         </div>
 
                         <Separator />
@@ -3686,22 +3695,11 @@ const Dashboard = () => {
                                       <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Email</Label>
-                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
-                                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                          {selectedBookingRequest.requester_email}
-                                        </p>
-                                      </div>
-                                      <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Phone</Label>
-                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                          {selectedBookingRequest.requester_phone}
-                                        </p>
-                                      </div>
-                                    </div>
+                                    <BookingContactInfo
+                                      bookingId={selectedBookingRequest.id}
+                                      status={selectedBookingRequest.status}
+                                    />
+
 
                                     <div>
                                       <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Date</Label>

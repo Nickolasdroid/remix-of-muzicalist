@@ -1510,58 +1510,30 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       title="Contact Information"
                       className="mb-4"
                     />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-                      {currentUserId ? <>
-                          {!artist.hide_email && <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                            <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                            <div className="text-left">
-                              <p className="text-xs md:text-sm text-muted-foreground">Email</p>
-                              <a href={`mailto:${artist.email}`} className="text-foreground hover:text-accent transition-colors text-sm md:text-base">
-                                {artist.email}
-                              </a>
-                            </div>
-                          </div>}
-                          {!artist.hide_phone && <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                            <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                            <div className="text-left">
-                              <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
-                              <a href={`tel:${artist.phone}`} className="text-foreground hover:text-accent transition-colors text-sm md:text-base">
-                                {artist.phone}
-                              </a>
-                            </div>
-                          </div>}
-                          {artist.hide_email && artist.hide_phone && <p className="text-muted-foreground text-sm col-span-full">No contact information available.</p>}
-                        </> : <>
-                          <button onClick={() => {
-                      toast({
-                        title: "Login Required",
-                        description: "Please log in or create an account to view contact information."
-                      });
-                      navigate('/login');
-                    }} className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left">
-                            <Mail className="h-5 w-5 text-accent" />
-                            <div className="flex-1">
-                              <p className="text-sm text-muted-foreground">Email</p>
-                              <p className="text-foreground">••••••••@••••.com</p>
-                            </div>
-                            <Lock className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <button onClick={() => {
-                      toast({
-                        title: "Login Required",
-                        description: "Please log in or create an account to view contact information."
-                      });
-                      navigate('/login');
-                    }} className="flex items-center gap-3 p-4 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors cursor-pointer text-left">
-                            <Phone className="h-5 w-5 text-accent" />
-                            <div className="flex-1">
-                              <p className="text-sm text-muted-foreground">Phone</p>
-                              <p className="text-foreground">+•• ••• ••• •••</p>
-                            </div>
-                            <Lock className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                        </>}
+                    <div className="flex items-start gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                      <Lock className="h-4 w-4 md:h-5 md:w-5 text-accent mt-0.5 flex-shrink-0" />
+                      <div className="text-left">
+                        <p className="text-sm md:text-base text-foreground font-medium">
+                          Contact details are private
+                        </p>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                          {currentUserId
+                            ? "Email and phone are shared only after this artist accepts your booking request."
+                            : "Log in and send a booking request. Contact details are shared only after the artist accepts it."}
+                        </p>
+                        {!currentUserId && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-3 rounded-lg"
+                            onClick={() => navigate('/login')}
+                          >
+                            Log in
+                          </Button>
+                        )}
+                      </div>
                     </div>
+
                   </div>
 
                   <Separator />

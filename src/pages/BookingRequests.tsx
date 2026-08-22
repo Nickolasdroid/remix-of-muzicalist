@@ -33,8 +33,14 @@ import {
   Phone,
   Trash2,
 } from "lucide-react";
+import BookingContactInfo from "@/components/BookingContactInfo";
+
+// Private contact columns are excluded on purpose (see get_booking_contact RPC).
+const BOOKING_REQUEST_COLUMNS =
+  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
 
 type FilterKey = "all" | "pending" | "accepted" | "completed" | "rejected";
+
 
 const parseYMD = (s?: string | null) => {
   if (!s) return null;
@@ -78,9 +84,10 @@ const BookingRequests = () => {
     setViewerRole(isArtist ? "artist" : "user");
 
     // Requests sent by me (as a requester) — available for users AND artists
+    // Contact columns are private: fetched per-booking via get_booking_contact.
     const { data: sentData } = await supabase
       .from("booking_requests")
-      .select("*")
+      .select(BOOKING_REQUEST_COLUMNS)
       .eq("requester_user_id", user.id)
       .neq("profile_id", user.id)
       .order("created_at", { ascending: false });
@@ -92,7 +99,7 @@ const BookingRequests = () => {
     if (isArtist) {
       const { data: receivedData } = await supabase
         .from("booking_requests")
-        .select("*")
+        .select(BOOKING_REQUEST_COLUMNS)
         .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
       received = receivedData || [];
@@ -416,28 +423,8 @@ const BookingRequests = () => {
                     </p>
                   </div>
 
-                  {!isUserView && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                          Email
-                        </Label>
-                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
-                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                          {selected.requester_email}
-                        </p>
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                          Phone
-                        </Label>
-                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                          {selected.requester_phone}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <BookingContactInfo bookingId={selected.id} status={selected.status} />
+
 
                   <div>
                     <Label className="text-xs text-muted-foreground uppercase tracking-wide">
