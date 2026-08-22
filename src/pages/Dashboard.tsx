@@ -2403,7 +2403,7 @@ const Dashboard = () => {
                             action={editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
-                          </div>
+                          />
                           {editingField === 'social' ? <div className="space-y-3">
                               {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <AlertCircle className="h-3.5 w-3.5" />
