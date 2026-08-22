@@ -1125,10 +1125,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
           {/* User's Announcements */}
           {activeAnnouncements.length > 0 && <div>
-            <h2 className="text-xl font-display font-bold mb-3 flex items-center gap-2">
-              <Megaphone className="h-5 w-5 text-accent" />
-              Announcements
-            </h2>
+            <SectionHeaderWithUsage
+              icon={<Megaphone className="h-5 w-5 text-accent" />}
+              title="Announcements"
+              className="mb-3"
+            />
             <div className="space-y-3">
               {activeAnnouncements.map((announcement) => <Card key={announcement.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
                   <div className="p-4">
