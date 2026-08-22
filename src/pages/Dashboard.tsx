@@ -1955,14 +1955,7 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-                        {/* Followers row */}
-                        <SocialStats
-                          className="mx-4 md:mx-0 mt-3 md:mt-4"
-                          followersCount={followersCount}
-                          followingCount={followingCount}
-                          onFollowersClick={() => setShowFollowersDialog(true)}
-                          onFollowingClick={() => setShowFollowingDialog(true)}
-                        />
+
 
                       </div>
                     )}
