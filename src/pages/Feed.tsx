@@ -206,6 +206,8 @@ const Feed = () => {
         likes: postLikeCounts.get(post.id) || 0,
         commentsCount: postCommentCounts.get(post.id) || 0,
         type: "post" as const,
+        postKind: post.post_kind === "artist_joined" ? "artist_joined" : "user",
+        subjectProfileId: post.subject_profile_id ?? null,
         promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
         promotedUntil: post.promoted_until || null,
       }));
@@ -248,11 +250,18 @@ const Feed = () => {
       }
     } catch (error) {
       console.error('Error fetching posts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load posts. Please try again.",
-        variant: "destructive"
-      });
+      // Stop the infinite-scroll sentinel from re-firing the same failed request
+      // in a loop; surface the failure once and let the user retry manually.
+      setHasMore(false);
+      setLoadError(true);
+      if (!errorNotifiedRef.current) {
+        errorNotifiedRef.current = true;
+        toast({
+          title: "Error",
+          description: "Failed to load posts. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
