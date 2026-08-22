@@ -39,15 +39,20 @@ const SocialStats = ({
       >
         <span className="font-semibold text-foreground">{followersCount}</span> {t("social.followers")}
       </button>
-      <span className="opacity-50" aria-hidden="true">·</span>
-      <button
-        type="button"
-        onClick={onFollowingClick}
-        disabled={!onFollowingClick}
-        className="hover:text-foreground transition-colors disabled:cursor-default"
-      >
-        <span className="font-semibold text-foreground">{followingCount}</span> {t(showFollowButton ? "social.followingThirdPerson" : "social.following")}
-      </button>
+      {!showFollowButton && (
+        <>
+          <span className="opacity-50" aria-hidden="true">·</span>
+          <button
+            type="button"
+            onClick={onFollowingClick}
+            disabled={!onFollowingClick}
+            className="hover:text-foreground transition-colors disabled:cursor-default"
+          >
+            <span className="font-semibold text-foreground">{followingCount}</span> {t("social.following")}
+          </button>
+        </>
+      )}
+
 
       {showFollowButton && (
         <Button
