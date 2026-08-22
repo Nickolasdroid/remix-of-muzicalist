@@ -3583,12 +3583,10 @@ const Dashboard = () => {
                                 navigate(`/booking-requests?tab=sent${f ? `&filter=${f}` : ''}`);
                               return (
                                 <>
-                                  <div className="flex items-center justify-between mb-4 gap-2">
-                                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <CalendarCheck className="h-5 w-5 text-accent" />
-                                      My Bookings
-                                    </h3>
-                                    {sentBookingRequests.length > 0 && (
+                                  <SectionHeaderWithUsage
+                                    icon={<CalendarCheck className="h-5 w-5 text-accent" />}
+                                    title="My Bookings"
+                                    action={sentBookingRequests.length > 0 && (
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -3598,7 +3596,8 @@ const Dashboard = () => {
                                         See all
                                       </Button>
                                     )}
-                                  </div>
+                                    className="mb-4"
+                                  />
 
                                   {sentBookingRequests.length === 0 ? (
                                     <Card className="border-2 border-dashed border-border/50">
