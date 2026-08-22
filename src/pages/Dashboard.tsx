@@ -2068,10 +2068,10 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <User className="h-5 w-5 text-accent" />
-                              About Me
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<User className="h-5 w-5 text-accent" />}
+                              title="About Me"
+                            />
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
@@ -2125,10 +2125,10 @@ const Dashboard = () => {
                     };
                     return instrumentName ?
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="My Instrument:"
+                                    />
                                     <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
@@ -2137,10 +2137,10 @@ const Dashboard = () => {
                                   </div> :
 
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="My Instrument:"
+                                    />
                                     <InstrumentSelector
                         instruments={formData.instruments}
                         onInstrumentsChange={handleInstrumentsChange} />
@@ -2157,10 +2157,10 @@ const Dashboard = () => {
                             <Separator />
                             <div className="group">
                               <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                  <Users className="h-5 w-5 text-accent" />
-                                  Number of members
-                                </h3>
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Number of members"
+                                />
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
@@ -2353,7 +2353,10 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
+                          <SectionHeaderWithUsage
+                            title="Contact Information"
+                            className="mb-4"
+                          />
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -3198,10 +3201,10 @@ const Dashboard = () => {
                       {!isAdmin && <TabsContent value="calendar">
                         <div>
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <CalendarIcon className="h-5 w-5 text-accent" />
-                              My Calendar
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                              title="My Calendar"
+                            />
                             {isPremium(currentPlan) && (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />
