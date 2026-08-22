@@ -61,7 +61,7 @@ import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
@@ -241,11 +241,15 @@ const Dashboard = () => {
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
   const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
   // Post promotions consume the existing monthly promotion entitlement.
-  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
+  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.post).length;
+  // Announcement promotions are a separate entitlement bucket.
+  const announcementPromotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.announcement).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
   const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
+  const ANNOUNCEMENT_PROMOTION_LIMIT = getAnnouncementPromotionLimit(currentPlan);
+  const announcementPromotionsRemaining = ANNOUNCEMENT_PROMOTION_LIMIT - announcementPromotionsUsed;
 
 
   // Posts state
@@ -262,6 +266,7 @@ const Dashboard = () => {
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
+  const [promoteAnnouncementTarget, setPromoteAnnouncementTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   
@@ -1062,6 +1067,22 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
+  /** Applies one promotion entitlement to an existing announcement. */
+  const handlePromoteAnnouncement = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await (supabase as any).rpc('promote_announcement', { p_announcement_id: id });
+      if (error) throw error;
+      setPromoteAnnouncementTarget(null);
+      toast({ title: "Success", description: t('postPromotion.successAnnouncement', 'Announcement promoted!') });
+      await fetchProfile();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message || 'Failed to promote announcement.', variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   /** Applies one monthly promotion entitlement to an existing post. */
   const handlePromotePost = async (id: string) => {
     setIsSaving(true);
@@ -2835,7 +2856,19 @@ const Dashboard = () => {
                           <SectionHeaderWithUsage
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
                             title={t('dashboardAnnouncements.title', 'Announcements')}
-                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
+                            usage={
+                              <>
+                                <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground">
+                                  {`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
+                                </Badge>
+                                {ANNOUNCEMENT_PROMOTION_LIMIT > 0 && (
+                                  <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 gap-1 border-border/70 bg-muted/30 text-muted-foreground">
+                                    <Megaphone className="h-3 w-3" />
+                                    {`${announcementPromotionsUsed}/${ANNOUNCEMENT_PROMOTION_LIMIT}`}
+                                  </Badge>
+                                )}
+                              </>
+                            }
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
@@ -2919,6 +2952,16 @@ const Dashboard = () => {
                                 announcement={announcement}
                                 disabled={isSaving}
                                 actions={[
+                                  ...(ANNOUNCEMENT_PROMOTION_LIMIT > 0 && !isAdExpired(announcement)
+                                    ? [{
+                                        key: "promote",
+                                        label: (announcement.promoted_until && new Date(announcement.promoted_until).getTime() > Date.now())
+                                          ? t('postPromotion.managePromotion', 'Manage promotion')
+                                          : t('postPromotion.promote', 'Promote'),
+                                        icon: Megaphone,
+                                        onSelect: () => setPromoteAnnouncementTarget({ id: announcement.id, promotedUntil: announcement.promoted_until || null }),
+                                      }]
+                                    : []),
                                   {
                                     key: "delete",
                                     label: t("userDashboard.delete", "Delete"),
@@ -2937,6 +2980,17 @@ const Dashboard = () => {
                             )}
                             </div>
                           </div>
+
+                          <PromotePostDialog
+                            open={!!promoteAnnouncementTarget}
+                            onOpenChange={(open) => { if (!open) setPromoteAnnouncementTarget(null); }}
+                            kind="announcement"
+                            isPromoted={!!promoteAnnouncementTarget?.promotedUntil && new Date(promoteAnnouncementTarget.promotedUntil).getTime() > Date.now()}
+                            promotedUntil={promoteAnnouncementTarget?.promotedUntil}
+                            remaining={announcementPromotionsRemaining}
+                            isSaving={isSaving}
+                            onConfirm={() => promoteAnnouncementTarget && handlePromoteAnnouncement(promoteAnnouncementTarget.id)}
+                          />
                         </SectionShell>}
                       </TabsContent>
 
