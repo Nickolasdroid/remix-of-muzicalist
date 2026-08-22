@@ -222,6 +222,7 @@
     "emptyFiltered": "No posts match this filter.",
     "published": "Published",
     "promoted": "Promoted",
+    "promotedAnnouncement": "Promoted",
     "expired": "Expired",
     "likes": "Likes",
     "comments": "Comments",
