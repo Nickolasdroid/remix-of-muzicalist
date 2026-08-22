@@ -1368,17 +1368,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                 </div>
               )}
 
-              {/* Social stats + Follow */}
-              <SocialStats
-                className="mx-4 md:mx-0 mt-3 md:mt-4"
-                followersCount={followersCount}
-                followingCount={followingCount}
-                onFollowersClick={() => setFollowListMode("followers")}
-                onFollowingClick={() => setFollowListMode("following")}
-                showFollowButton={!isOwnProfile}
-                isFollowing={isFollowing}
-                onFollowToggle={handleFollowToggle}
-              />
+
             </div>
 
 
