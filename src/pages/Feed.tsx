@@ -164,8 +164,8 @@ const Feed = () => {
       const postIds = posts.map(p => p.id);
       const promoIds = promotions.map(p => p.id);
 
-      // Batch likes counts, comment counts and (optionally) the current user's likes — eliminates N+1
-      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes] = await Promise.all([
+      // Batch likes counts, comment counts, mentions and (optionally) the current user's likes — eliminates N+1
+      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes, mentionsRes] = await Promise.all([
         postIds.length
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
@@ -178,7 +178,6 @@ const Feed = () => {
         currentUserId && promoIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', currentUserId).in('announcement_id', promoIds)
           : Promise.resolve({ data: [] as any[] }),
-      const [postCommentsRes, promoCommentsRes, mentionsRes] = await Promise.all([
         postIds.length
           ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
