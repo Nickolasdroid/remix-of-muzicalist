@@ -1260,7 +1260,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               </div>
 
               {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-              <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-end gap-3 md:gap-4 lg:gap-5 relative z-10">
+              <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                 <button
                   type="button"
                   onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
@@ -1276,7 +1276,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                   </Avatar>
                 </button>
 
-                <div className="flex-1 min-w-0 pb-1 md:pb-2">
+                <div className="flex-1 min-w-0">
                   <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                     {artist.stage_name}
                   </h1>
@@ -1287,7 +1287,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                   </div>
                   <SocialStats
-                    className="mt-1.5 md:mt-2"
+                    className="mt-1.5 md:mt-2 flex-nowrap"
                     followersCount={followersCount}
                     followingCount={followingCount}
                     onFollowersClick={() => setFollowListMode("followers")}
