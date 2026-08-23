@@ -4,7 +4,7 @@ import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Sen
 import { useTranslation } from "react-i18next";
 import PostMediaFrame from "@/components/PostMediaFrame";
 import ExpandableText, { TextMention } from "@/components/ExpandableText";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -77,6 +77,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +104,14 @@ const Feed = () => {
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [isPromoting, setIsPromoting] = useState(false);
   const promotionsRemaining = promotionLimit - promotionsUsed;
+
+  // Deep link support: /feed?post=<id> (used by mention notifications).
+  useEffect(() => {
+    const targetId = searchParams.get("post");
+    if (!targetId || loading) return;
+    const el = document.getElementById(`feed-post-${targetId}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [searchParams, loading, feedItems]);
 
   useEffect(() => {
     // Background auth check; doesn't block the feed fetch
