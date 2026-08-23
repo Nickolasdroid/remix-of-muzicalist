@@ -1,31 +1,26 @@
-## Ce am verificat
+# Make Welcome Posts reachable from the Official Muzicalist dashboard
 
-- Nu există nicăieri în aplicație un buton de „șterge poza de profil”. Funcția `handleRemoveAvatar` din `src/pages/Dashboard.tsx` (linia 746) există, dar nu este folosită în interfață — este cod mort.
-- La înregistrarea ca artist (`src/pages/RegisterArtist.tsx`), pasul 3 verifică doar că utilizatorul a *selectat* o imagine (`imageSrc`), nu și că imaginea a fost efectiv decupată și încărcată.
-- Uploadul propriu-zis se face după crearea contului, într-un bloc `try/catch` care doar scrie un avertisment în consolă. Dacă apelul eșuează — sau dacă zona de decupare nu a fost calculată — contul se creează oricum, fără poză.
-- În baza de date, cele 4 conturi fără poză (DJ VAELT, DjMarcu, Dj markuss, Elys) provin toate din înregistrarea pe email, fără o înregistrare în așteptare asociată. Deci nu s-a șters nimic: poza pur și simplu nu a ajuns niciodată pe server.
+## Findings (verified on the live app)
 
-Concluzie: nu a fost o ștergere, ci o scăpare în fluxul de înregistrare.
+The Welcome Posts UI is not broken or hidden. Signed in as admin and opened `/admin/dashboard`: the tab strip renders `Users · Artists · Subscriptions · Communications · Reports · Verifications · Welcome Posts`, and clicking **Welcome Posts** loads the full artist list with statuses, search, filters, checkboxes and the create action.
 
-## Ce vom face
+The reason it looked missing: it was only added to the admin management page `/admin/dashboard`, while the page being used is `/dashboard` — the Muzicalist Official profile dashboard, which currently shows only `Posts | Announcements` for admins.
 
-1. **Validare reală la pasul 3 din înregistrare**
-   - Pe lângă `imageSrc`, se verifică și existența zonei de decupare; dacă lipsește, se calculează implicit (imaginea întreagă) în loc să fie ignorată.
+## What to change
 
-2. **Uploadul devine blocant, nu „best effort”**
-   - Înainte de finalizare, imaginea decupată se generează și se validează.
-   - Dacă apelul către funcția de upload eșuează, se reîncearcă automat de câteva ori.
-   - Dacă tot eșuează, utilizatorul primește un mesaj clar de eroare și rămâne pe pas, în loc ca înregistrarea să continue fără poză.
+Add an admin-only third tab to the Official dashboard so the workflow is reachable where the admin actually works.
 
-3. **Verificare finală**
-   - După upload se confirmă că profilul are efectiv poză salvată; altfel se semnalează eroarea.
+- On `/dashboard`, when the account is admin, the tab strip becomes: `Posts | Announcements | Welcome Posts`.
+- The new tab renders the existing `AdminWelcomePostsTab` component — the same interface as in `/admin/dashboard`, with search, All / Not published / Published filters, avatars, name, category, county/country, status, checkbox selection, select-all-eligible, single and bulk create, preview/confirm, and View Post for published artists.
+- Non-admin artists and users see no change at all.
+- The tab remains available in `/admin/dashboard` as well; both entry points use the same component.
 
-4. **Curățare**
-   - Se elimină funcția nefolosită de ștergere a pozei din dashboard, ca să nu poată fi reactivată accidental. Rămâne doar înlocuirea pozei.
+## Technical notes
 
-Conturile existente fără poză rămân neatinse, conform alegerii tale.
+- `src/pages/Dashboard.tsx`: add a `welcome-posts` `TabsTrigger` + `TabsContent` inside the existing `isAdmin` branch, switch the admin `TabsList` from `grid-cols-2` to `grid-cols-3`, and allow `welcome-posts` in the tab-normalisation effect (line ~110) that currently forces admins back to Posts/Announcements. Keep `?tab=welcome-posts` deep-linking working like the other tabs.
+- The component needs the admin profile list it already consumes in `/admin/dashboard` (`profiles`, `roles`, `loading`, `adminProfile`). On `/dashboard` those aren't loaded, so fetch them lazily inside the tab (only when the admin opens it) rather than adding a page-wide query.
+- No backend work: `create_artist_joined_post(_artist_id)` and `admin_list_artist_joined_posts()` stay exactly as they are, no new `artist_joined` mechanism, Lexya's post untouched, no automatic publishing on registration.
 
-## Detalii tehnice
+## Verification
 
-- Fișiere: `src/pages/RegisterArtist.tsx` (validare pas 3, `getAvatarBase64`, `handleSubmit`), `src/pages/Dashboard.tsx` (ștergere cod mort `handleRemoveAvatar`).
-- Fără modificări de bază de date și fără modificări la funcția `upload-artist-avatar`.
+Reload `/dashboard` as the Muzicalist admin, confirm the third tab appears, open it, confirm the artist list and statuses load (Lexya shown as Published, duplicate creation blocked), and confirm a regular artist's dashboard is unchanged.
