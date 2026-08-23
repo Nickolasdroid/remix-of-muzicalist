@@ -627,7 +627,7 @@ const Feed = () => {
                     />
                   </div>
 
-                  <ExpandableText text={item.content} className="mt-3 my-[5px]" />
+                  <ExpandableText text={item.content} className="mt-3 my-[5px]" mentions={item.mentions} />
                 </div>
                 
                 {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
