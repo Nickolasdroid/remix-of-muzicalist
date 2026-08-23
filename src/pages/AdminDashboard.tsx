@@ -9,6 +9,7 @@ import CommunicationsPanel from "@/components/admin/CommunicationsPanel";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import AdminArtistsTab from "@/components/admin/AdminArtistsTab";
 import AdminReportsTab from "@/components/admin/AdminReportsTab";
+import AdminWelcomePostsTab from "@/components/admin/AdminWelcomePostsTab";
 import { Badge as CountBadge } from "@/components/ui/badge";
 import type { AdminProfile } from "@/components/admin/adminProfileTypes";
 
