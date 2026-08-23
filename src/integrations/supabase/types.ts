@@ -2196,6 +2196,14 @@ export type Database = {
           stage_name: string
         }[]
       }
+      admin_list_artist_joined_posts: {
+        Args: never
+        Returns: {
+          created_at: string
+          post_id: string
+          subject_profile_id: string
+        }[]
+      }
       admin_list_profiles: {
         Args: never
         Returns: {
