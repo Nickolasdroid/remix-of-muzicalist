@@ -228,6 +228,7 @@ const Feed = () => {
         type: "post" as const,
         postKind: post.post_kind === "artist_joined" ? "artist_joined" : "user",
         subjectProfileId: post.subject_profile_id ?? null,
+        mentions: mentionsByPost.get(post.id) || [],
         promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
         promotedUntil: post.promoted_until || null,
       }));
