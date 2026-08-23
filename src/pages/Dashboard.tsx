@@ -3028,6 +3028,13 @@ const Dashboard = () => {
                         </SectionShell>}
                       </TabsContent>
 
+                      {/* Welcome Posts Tab (admin only) */}
+                      {isAdmin && <TabsContent value="welcome-posts">
+                        <AdminWelcomePostsSection />
+                      </TabsContent>}
+
+
+
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
                         <SectionShell>
