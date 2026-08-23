@@ -3,7 +3,7 @@ import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import PostMediaFrame from "@/components/PostMediaFrame";
-import ExpandableText from "@/components/ExpandableText";
+import ExpandableText, { TextMention } from "@/components/ExpandableText";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
