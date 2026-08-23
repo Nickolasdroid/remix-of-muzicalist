@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+import AdminWelcomePostsSection from "@/components/admin/AdminWelcomePostsSection";
 
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 
