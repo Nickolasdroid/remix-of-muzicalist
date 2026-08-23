@@ -178,11 +178,19 @@ const Feed = () => {
         currentUserId && promoIds.length
           ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', currentUserId).in('announcement_id', promoIds)
           : Promise.resolve({ data: [] as any[] }),
+      const [postCommentsRes, promoCommentsRes, mentionsRes] = await Promise.all([
         postIds.length
           ? (supabase as any).from('comments').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
         promoIds.length
           ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', promoIds)
+          : Promise.resolve({ data: [] as any[] }),
+        // One batched request for every mention on this page — no N+1.
+        postIds.length
+          ? (supabase as any)
+              .from('post_mentions')
+              .select('post_id, mentioned_profile_id, profiles!post_mentions_mentioned_profile_id_fkey (stage_name, slug)')
+              .in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
       ]);
 
@@ -196,6 +204,15 @@ const Feed = () => {
       (postCommentsRes.data || []).forEach((r: any) => postCommentCounts.set(r.post_id, (postCommentCounts.get(r.post_id) || 0) + 1));
       const promoCommentCounts = new Map<string, number>();
       (promoCommentsRes.data || []).forEach((r: any) => promoCommentCounts.set(r.announcement_id, (promoCommentCounts.get(r.announcement_id) || 0) + 1));
+      // Mentions are optional: posts without any simply get an empty list.
+      const mentionsByPost = new Map<string, TextMention[]>();
+      ((mentionsRes as any)?.data || []).forEach((r: any) => {
+        if (!r.profiles?.stage_name) return;
+        const list = mentionsByPost.get(r.post_id) || [];
+        list.push({ profileId: r.mentioned_profile_id, name: r.profiles.stage_name, slug: r.profiles.slug });
+        mentionsByPost.set(r.post_id, list);
+      });
+
 
       const postsWithProfiles: FeedItem[] = posts.map((post: any) => ({
         id: post.id,
