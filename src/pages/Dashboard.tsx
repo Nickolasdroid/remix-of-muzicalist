@@ -107,10 +107,11 @@ const Dashboard = () => {
 
   // Force admins to allowed sections only
   useEffect(() => {
-    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
+    if (isAdmin && !["posts", "announcements", "welcome-posts"].includes(profileSection)) {
       setProfileSection("posts");
     }
   }, [isAdmin, profileSection]);
+
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
