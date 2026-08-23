@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Send, Globe } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ExpandableText from "@/components/ExpandableText";
+import ExpandableText, { TextMention } from "@/components/ExpandableText";
 import PostMediaFrame from "@/components/PostMediaFrame";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,8 @@ interface FeedPostCardProps {
   promoted?: boolean;
   /** Extra metadata rendered in the meta row (e.g. status badges) */
   metaExtra?: ReactNode;
+  /** Real profile mentions attached to this content (from `post_mentions`) */
+  mentions?: TextMention[];
   /** Three-dot menu element rendered in the top-right corner */
   menu?: ReactNode;
   onAuthorClick?: () => void;
@@ -59,6 +61,7 @@ const FeedPostCard = ({
   isLiked = false,
   promoted = false,
   metaExtra,
+  mentions,
   menu,
   onAuthorClick,
   onMediaClick,
@@ -122,7 +125,7 @@ const FeedPostCard = ({
           {menu}
         </div>
 
-        {content && <ExpandableText text={content} className="mt-3 my-[5px]" />}
+        {content && <ExpandableText text={content} className="mt-3 my-[5px]" mentions={mentions} />}
       </div>
 
       {mediaUrl && (
