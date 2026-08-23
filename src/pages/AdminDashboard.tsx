@@ -174,6 +174,15 @@ const AdminDashboard = () => {
             <TabsContent value="verifications" className="mt-4">
               <AdminVerificationsTab />
             </TabsContent>
+
+            <TabsContent value="welcome-posts" className="mt-4">
+              <AdminWelcomePostsTab
+                profiles={profiles}
+                roles={roles}
+                loading={loading}
+                adminProfile={profiles.find((p) => roles[p.id] === "admin") ?? null}
+              />
+            </TabsContent>
           </Tabs>
         </div>
       </main>
