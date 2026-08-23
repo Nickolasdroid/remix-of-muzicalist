@@ -9,6 +9,7 @@ import CommunicationsPanel from "@/components/admin/CommunicationsPanel";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import AdminArtistsTab from "@/components/admin/AdminArtistsTab";
 import AdminReportsTab from "@/components/admin/AdminReportsTab";
+import AdminWelcomePostsTab from "@/components/admin/AdminWelcomePostsTab";
 import { Badge as CountBadge } from "@/components/ui/badge";
 import type { AdminProfile } from "@/components/admin/adminProfileTypes";
 
@@ -96,6 +97,7 @@ const AdminDashboard = () => {
                 )}
               </TabsTrigger>
               <TabsTrigger value="verifications">Verifications</TabsTrigger>
+              <TabsTrigger value="welcome-posts">Welcome Posts</TabsTrigger>
 
             </TabsList>
 
@@ -171,6 +173,15 @@ const AdminDashboard = () => {
 
             <TabsContent value="verifications" className="mt-4">
               <AdminVerificationsTab />
+            </TabsContent>
+
+            <TabsContent value="welcome-posts" className="mt-4">
+              <AdminWelcomePostsTab
+                profiles={profiles}
+                roles={roles}
+                loading={loading}
+                adminProfile={profiles.find((p) => roles[p.id] === "admin") ?? null}
+              />
             </TabsContent>
           </Tabs>
         </div>
