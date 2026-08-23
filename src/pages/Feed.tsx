@@ -64,6 +64,7 @@ interface FeedItem {
   subjectProfileId?: string | null;
   /** Real profile mentions attached to this content (from `post_mentions`) */
   mentions?: TextMention[];
+  promoted?: boolean;
   promotedUntil?: string | null;
   /** Optional ranking signal (see lib/feedRanking) */
   engagement?: number;
