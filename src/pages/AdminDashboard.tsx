@@ -97,6 +97,7 @@ const AdminDashboard = () => {
                 )}
               </TabsTrigger>
               <TabsTrigger value="verifications">Verifications</TabsTrigger>
+              <TabsTrigger value="welcome-posts">Welcome Posts</TabsTrigger>
 
             </TabsList>
 
