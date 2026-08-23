@@ -3,8 +3,8 @@ import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import PostMediaFrame from "@/components/PostMediaFrame";
-import ExpandableText from "@/components/ExpandableText";
-import { useNavigate, Link } from "react-router-dom";
+import ExpandableText, { TextMention } from "@/components/ExpandableText";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -62,6 +62,8 @@ interface FeedItem {
   postKind?: PostKind;
   /** Only set for `artist_joined` posts: the artist being introduced */
   subjectProfileId?: string | null;
+  /** Real profile mentions attached to this content (from `post_mentions`) */
+  mentions?: TextMention[];
   promoted?: boolean;
   promotedUntil?: string | null;
   /** Optional ranking signal (see lib/feedRanking) */
@@ -75,6 +77,7 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,6 +104,14 @@ const Feed = () => {
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [isPromoting, setIsPromoting] = useState(false);
   const promotionsRemaining = promotionLimit - promotionsUsed;
+
+  // Deep link support: /feed?post=<id> (used by mention notifications).
+  useEffect(() => {
+    const targetId = searchParams.get("post");
+    if (!targetId || loading) return;
+    const el = document.getElementById(`feed-post-${targetId}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [searchParams, loading, feedItems]);
 
   useEffect(() => {
     // Background auth check; doesn't block the feed fetch
@@ -162,8 +173,8 @@ const Feed = () => {
       const postIds = posts.map(p => p.id);
       const promoIds = promotions.map(p => p.id);
 
-      // Batch likes counts, comment counts and (optionally) the current user's likes — eliminates N+1
-      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes] = await Promise.all([
+      // Batch likes counts, comment counts, mentions and (optionally) the current user's likes — eliminates N+1
+      const [postLikesRes, promoLikesRes, userPostLikesRes, userPromoLikesRes, postCommentsRes, promoCommentsRes, mentionsRes] = await Promise.all([
         postIds.length
           ? supabase.from('post_likes').select('post_id').in('post_id', postIds)
           : Promise.resolve({ data: [] as any[] }),
@@ -182,6 +193,13 @@ const Feed = () => {
         promoIds.length
           ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', promoIds)
           : Promise.resolve({ data: [] as any[] }),
+        // One batched request for every mention on this page — no N+1.
+        postIds.length
+          ? (supabase as any)
+              .from('post_mentions')
+              .select('post_id, mentioned_profile_id, profiles!post_mentions_mentioned_profile_id_fkey (stage_name, slug)')
+              .in('post_id', postIds)
+          : Promise.resolve({ data: [] as any[] }),
       ]);
 
       const postLikeCounts = new Map<string, number>();
@@ -194,6 +212,15 @@ const Feed = () => {
       (postCommentsRes.data || []).forEach((r: any) => postCommentCounts.set(r.post_id, (postCommentCounts.get(r.post_id) || 0) + 1));
       const promoCommentCounts = new Map<string, number>();
       (promoCommentsRes.data || []).forEach((r: any) => promoCommentCounts.set(r.announcement_id, (promoCommentCounts.get(r.announcement_id) || 0) + 1));
+      // Mentions are optional: posts without any simply get an empty list.
+      const mentionsByPost = new Map<string, TextMention[]>();
+      ((mentionsRes as any)?.data || []).forEach((r: any) => {
+        if (!r.profiles?.stage_name) return;
+        const list = mentionsByPost.get(r.post_id) || [];
+        list.push({ profileId: r.mentioned_profile_id, name: r.profiles.stage_name, slug: r.profiles.slug });
+        mentionsByPost.set(r.post_id, list);
+      });
+
 
       const postsWithProfiles: FeedItem[] = posts.map((post: any) => ({
         id: post.id,
@@ -210,6 +237,7 @@ const Feed = () => {
         type: "post" as const,
         postKind: post.post_kind === "artist_joined" ? "artist_joined" : "user",
         subjectProfileId: post.subject_profile_id ?? null,
+        mentions: mentionsByPost.get(post.id) || [],
         promoted: !!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now(),
         promotedUntil: post.promoted_until || null,
       }));
@@ -549,7 +577,7 @@ const Feed = () => {
                 </Card>
               ) : (
                 /* Regular Post Card */
-                <Card key={item.id} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
+                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
                 <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -627,7 +655,7 @@ const Feed = () => {
                     />
                   </div>
 
-                  <ExpandableText text={item.content} className="mt-3 my-[5px]" />
+                  <ExpandableText text={item.content} className="mt-3 my-[5px]" mentions={item.mentions} />
                 </div>
                 
                 {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
