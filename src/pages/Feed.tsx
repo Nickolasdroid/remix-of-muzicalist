@@ -62,7 +62,8 @@ interface FeedItem {
   postKind?: PostKind;
   /** Only set for `artist_joined` posts: the artist being introduced */
   subjectProfileId?: string | null;
-  promoted?: boolean;
+  /** Real profile mentions attached to this content (from `post_mentions`) */
+  mentions?: TextMention[];
   promotedUntil?: string | null;
   /** Optional ranking signal (see lib/feedRanking) */
   engagement?: number;
