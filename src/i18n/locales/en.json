@@ -355,5 +355,13 @@
     "followingThirdPerson": "Following",
     "follow": "Follow",
     "followingAction": "Following"
+  },
+  "likes": {
+    "likedBy": "Liked by",
+    "empty": "No likes yet.",
+    "user": "User",
+    "member": "Member",
+    "loadMore": "Load more",
+    "viewLikes": "View who liked this"
   }
 }
