@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { User, Loader2 } from "lucide-react";
@@ -41,6 +43,7 @@ interface LikesDialogProps {
 export const LikesDialog = ({ open, onOpenChange, targetId, targetType = "post" }: LikesDialogProps) => {
   const { t } = useTranslation();
   const adminIds = useAdminIds();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [profiles, setProfiles] = useState<LikerProfile[]>([]);
@@ -103,13 +106,8 @@ export const LikesDialog = ({ open, onOpenChange, targetId, targetType = "post" 
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-lg">
-        <DialogHeader>
-          <DialogTitle>{t("likes.likedBy", "Liked by")}</DialogTitle>
-        </DialogHeader>
-        <div className="max-h-[60vh] overflow-y-auto -mx-2 px-2">
+  const list = (
+    <>
           {loading ? (
             <div className="py-8 flex justify-center text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -173,7 +171,30 @@ export const LikesDialog = ({ open, onOpenChange, targetId, targetType = "post" 
               </Button>
             </div>
           )}
-        </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[85vh] flex flex-col">
+          <DrawerHeader className="border-b text-center">
+            <DrawerTitle className="text-center">{t("likes.likedBy", "Liked by")}</DrawerTitle>
+            <DrawerDescription className="sr-only">People who liked this</DrawerDescription>
+          </DrawerHeader>
+          <div className="flex-1 overflow-y-auto px-2 py-2">{list}</div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-lg">
+        <DialogHeader>
+          <DialogTitle>{t("likes.likedBy", "Liked by")}</DialogTitle>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-y-auto -mx-2 px-2">{list}</div>
       </DialogContent>
     </Dialog>
   );
