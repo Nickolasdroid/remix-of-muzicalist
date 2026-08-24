@@ -2649,6 +2649,7 @@ const Dashboard = () => {
                                 return (
                                   <FeedPostCard
                                     key={`${item.__kind}-${item.id}`}
+                                    postId={item.id}
                                     author={{
                                       id: profile?.id,
                                       stageName: profile?.stage_name || 'Artist',
