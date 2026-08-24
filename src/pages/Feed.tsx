@@ -16,6 +16,7 @@ import { rankFeedItems, isPromotionActive } from "@/lib/feedRanking";
 import { getPeriodStart } from "@/lib/billingPeriod";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
+import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
@@ -547,7 +548,7 @@ const Feed = () => {
                       >
                         <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
                       </Button>
-                      {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
+                      <LikeCountButton count={item.likes} targetId={item.id} targetType="announcement" />
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="flex items-center">
@@ -674,7 +675,7 @@ const Feed = () => {
                     >
                       <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
                     </Button>
-                    {item.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{item.likes}</span>}
+                    <LikeCountButton count={item.likes} targetId={item.id} />
                   </div>
 
                   <div className="flex items-center gap-1">
