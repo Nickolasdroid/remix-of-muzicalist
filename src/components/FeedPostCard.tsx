@@ -11,6 +11,7 @@ import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useAdminIds } from "@/hooks/useAdminIds";
+import { LikeCountButton } from "@/components/LikesDialog";
 
 export interface FeedPostAuthor {
   id?: string;
@@ -44,6 +45,8 @@ interface FeedPostCardProps {
   onComment?: () => void;
   onShare?: () => void;
   shares?: number;
+  /** Enables the clickable "Liked by" list */
+  postId?: string;
 }
 
 
@@ -69,6 +72,7 @@ const FeedPostCard = ({
   onComment,
   onShare,
   shares,
+  postId,
 }: FeedPostCardProps) => {
   const { t } = useTranslation();
   const adminIds = useAdminIds();
@@ -145,7 +149,9 @@ const FeedPostCard = ({
           >
             <Heart className={`!h-7 !w-7 ${isLiked ? "fill-current" : ""}`} />
           </Button>
-          {likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{likes}</span>}
+          {likes > 0 && (postId
+            ? <LikeCountButton count={likes} targetId={postId} />
+            : <span className="text-lg font-semibold text-foreground -ml-1">{likes}</span>)}
         </div>
 
         <div className="flex items-center gap-1">

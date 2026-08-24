@@ -357,5 +357,13 @@
     "followingThirdPerson": "Urmărește",
     "follow": "Urmărește",
     "followingAction": "Urmărești"
+  },
+  "likes": {
+    "likedBy": "Apreciat de",
+    "empty": "Încă nicio apreciere.",
+    "user": "Utilizator",
+    "member": "Membru",
+    "loadMore": "Încarcă mai multe",
+    "viewLikes": "Vezi cine a apreciat"
   }
 }

@@ -164,6 +164,7 @@ const OfficialProfileView = ({
                 posts.map((post) => (
                   <FeedPostCard
                     key={post.id}
+                    postId={post.id}
                     author={author}
                     content={post.content}
                     createdAt={post.created_at}

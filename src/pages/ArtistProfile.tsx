@@ -10,6 +10,7 @@ import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import { genreLabel } from "@/lib/genreLabel";
+import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Button } from "@/components/ui/button";
@@ -1779,7 +1780,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                   >
                                     <Heart className={`lucide lucide-heart !h-7 !w-7 ${(promo as any).isLiked ? 'fill-current' : ''}`} />
                                   </Button>
-                                  {((promo as any).likes || 0) > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{(promo as any).likes}</span>}
+                                  <LikeCountButton count={(promo as any).likes || 0} targetId={promo.id} targetType="announcement" />
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <div className="flex items-center">
@@ -1897,7 +1898,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                 >
                                   <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? 'fill-current' : ''}`} />
                                 </Button>
-                                {post.likes > 0 && <span className="text-lg font-semibold text-foreground -ml-1">{post.likes}</span>}
+                                <LikeCountButton count={post.likes} targetId={post.id} />
                               </div>
 
                               <div className="flex items-center gap-1">
