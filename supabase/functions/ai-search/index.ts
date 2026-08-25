@@ -361,25 +361,37 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     });
 
     if (!aiResp.ok) {
+      const errorText = await aiResp.text();
+      console.error("AI gateway error:", aiResp.status, errorText);
+
+      let gatewayMessage: string | null = null;
+      try {
+        const parsed = JSON.parse(errorText);
+        gatewayMessage = parsed?.details || parsed?.message || parsed?.error?.message || null;
+      } catch (_) {
+        gatewayMessage = null;
+      }
+
       if (aiResp.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ error: gatewayMessage || "Rate limit exceeded. Please try again later." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (aiResp.status === 402) {
+      // 402 = out of credits, 403 = blocked by workspace policy / credit limit.
+      // Both are terminal: pass the gateway explanation straight through.
+      if (aiResp.status === 402 || aiResp.status === 403) {
         return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: gatewayMessage || "AI credits unavailable for this workspace." }),
+          { status: aiResp.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await aiResp.text();
-      console.error("AI gateway error:", aiResp.status, errorText);
       return new Response(
-        JSON.stringify({ error: "AI service temporarily unavailable" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: gatewayMessage || "AI service temporarily unavailable" }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
 
     const aiData = await aiResp.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
