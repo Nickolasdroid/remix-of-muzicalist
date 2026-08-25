@@ -43,20 +43,25 @@ const AISearchBar = () => {
         body: { query: query.trim() }
       });
 
-      if (error) {
-        console.error("Search error:", error);
-        if (error.message.includes("429")) {
-          toast.error("Too many requests. Please try again later.");
-        } else if (error.message.includes("402")) {
-          toast.error("Service temporarily unavailable. Please contact support.");
-        } else {
-          toast.error("Failed to process search. Please try again.");
+      // Non-2xx responses still carry a JSON body with a human-readable `error`.
+      if (error || data?.error) {
+        let message = data?.error as string | undefined;
+        if (!message && error && "context" in error) {
+          try {
+            const body = await (error as any).context?.json?.();
+            message = body?.error;
+          } catch (_) {
+            message = undefined;
+          }
         }
+        console.error("Search error:", message || error);
+        toast.error(message || "Failed to process search. Please try again.");
         return;
       }
 
       if (data?.response) setResponse(data.response);
       if (Array.isArray(data?.artists)) setArtists(data.artists);
+
     } catch (error) {
       console.error("Search error:", error);
       toast.error("An unexpected error occurred. Please try again.");
