@@ -678,6 +678,15 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       artists = [];
     }
 
+    // Keep only real artist accounts (role = artist, and not busy on the requested date),
+    // then cap the result set. Done in JS to avoid an oversized `id=in.(...)` URL.
+    if (artists && artists.length > 0) {
+      const before = artists.length;
+      artists = artists.filter((a: any) => artistIdSet.has(a.id)).slice(0, 24);
+      console.log(`Artist-role filter: kept ${artists.length}/${before}`);
+    }
+
+
     if (criteria.excluded_country && artists) {
       const excludedVariants = getCountryVariants(criteria.excluded_country);
       artists = artists.filter((a: any) => !matchesCountry(a.country, excludedVariants));
