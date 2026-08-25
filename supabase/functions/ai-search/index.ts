@@ -546,6 +546,77 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       criteria.instrument
     );
 
+    // ---------- Location (county/city) normalization ----------
+    // The AI returns the place name as written by the user ("clujnapoca", "Cluj-Napoca", "Cluj",
+    // "Bucuresti"), while the DB stores canonical county names with diacritics ("Cluj", "București").
+    // Normalize both sides and map well-known cities to their county before filtering.
+    const normLoc = (s: string) =>
+      stripDiacritics(String(s || ""))
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+
+    // City / locality -> county (normalized keys). Covers Romanian county seats and common spellings.
+    const CITY_TO_COUNTY: Record<string, string> = {
+      clujnapoca: "Cluj", napoca: "Cluj",
+      bucuresti: "București", bucharest: "București", bucuresci: "București",
+      iasi: "Iași", timisoara: "Timiș", brasov: "Brașov", constanta: "Constanța",
+      craiova: "Dolj", galati: "Galați", ploiesti: "Prahova", oradea: "Bihor",
+      brailia: "Brăila", braila: "Brăila", arad: "Arad", pitesti: "Argeș",
+      sibiu: "Sibiu", bacau: "Bacău", targumures: "Mureș", tirgumures: "Mureș",
+      baiamare: "Maramureș", buzau: "Buzău", botosani: "Botoșani",
+      satumare: "Satu Mare", ramnicuvalcea: "Vâlcea", suceava: "Suceava",
+      piatraneamt: "Neamț", drobetaturnuseverin: "Mehedinți", focsani: "Vrancea",
+      targujiu: "Gorj", tulcea: "Tulcea", targoviste: "Dâmbovița",
+      resita: "Caraș-Severin", slatina: "Olt", bistrita: "Bistrița-Năsăud",
+      albaiulia: "Alba", deva: "Hunedoara", hunedoara: "Hunedoara",
+      zalau: "Sălaj", sfantugheorghe: "Covasna", vaslui: "Vaslui",
+      giurgiu: "Giurgiu", miercureaciuc: "Harghita", alexandria: "Teleorman",
+      calarasi: "Călărași", slobozia: "Ialomița", medias: "Sibiu",
+      clujeana: "Cluj", turda: "Cluj", dej: "Cluj", campia: "Cluj",
+      gherla: "Cluj", floresti: "Cluj",
+    };
+
+    // Resolve the user's place name to the actual county values present in the database.
+    const resolveCountyValues = async (input: string, ids: string[]): Promise<string[]> => {
+      const key = normLoc(input);
+      if (!key) return [];
+      const candidates = new Set<string>();
+      candidates.add(key);
+      if (CITY_TO_COUNTY[key]) candidates.add(normLoc(CITY_TO_COUNTY[key]));
+      // Also try the first token ("cluj napoca" -> "cluj") so a city implies its county name.
+      const firstToken = normLoc(String(input).split(/[\s,\-–]+/)[0] || "");
+      if (firstToken.length >= 3) candidates.add(firstToken);
+
+      const { data: countyRows, error: countyErr } = await supabase
+        .from("profiles")
+        .select("county")
+        .in("id", ids.length > 0 ? ids : ["00000000-0000-0000-0000-000000000000"])
+        .not("county", "is", null);
+      if (countyErr) console.error("County lookup error:", countyErr);
+
+      const dbCounties = Array.from(
+        new Set((countyRows || []).map((r: any) => r.county).filter(Boolean))
+      );
+
+      const matched = dbCounties.filter((c: string) => {
+        const n = normLoc(c);
+        return Array.from(candidates).some(
+          (cand) =>
+            n === cand ||
+            (cand.length >= 3 && (n.startsWith(cand) || cand.startsWith(n))) ||
+            (cand.length >= 4 && (n.includes(cand) || cand.includes(n)))
+        );
+      });
+
+      console.log(`County "${input}" -> candidates [${Array.from(candidates).join(", ")}] -> DB values [${matched.join(", ")}]`);
+      return matched;
+    };
+
+    let countyValues: string[] | null = null;
+    if (criteria.county) {
+      countyValues = await resolveCountyValues(criteria.county, artistIds);
+    }
+
     // Helper to run a query against the artist subset
     const baseSelect = "id, stage_name, first_name, last_name, avatar_url, specialization, music_genres, country, county, instruments, bio, plan, estimated_price";
 
@@ -560,7 +631,15 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       // country is stored as ISO code (e.g. "FR") in DB; AI returns ISO code, but accept names too
       q = q.in("country", getCountryVariants(criteria.country));
     }
-    if (criteria.county) q = q.ilike("county", `%${criteria.county}%`);
+    if (criteria.county) {
+      if (countyValues && countyValues.length > 0) {
+        q = q.in("county", countyValues);
+      } else {
+        // No normalized match — fall back to the previous loose substring behaviour
+        q = q.ilike("county", `%${criteria.county}%`);
+      }
+    }
+
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
     if (criteria.instrument) {
       // Use the LAST word of the canonical instrument as a flexible substring match
