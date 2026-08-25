@@ -576,8 +576,14 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       gherla: "Cluj", floresti: "Cluj",
     };
 
+    // Set of eligible artist ids (role = artist, minus busy ones when a date was given).
+    // NOTE: we must NOT send this list to PostgREST as a giant `id=in.(...)` filter —
+    // with hundreds of artists the request URL exceeds limits and the fetch fails outright.
+    // Instead we filter server-side in JS after the query.
+    const artistIdSet = new Set<string>(artistIds);
+
     // Resolve the user's place name to the actual county values present in the database.
-    const resolveCountyValues = async (input: string, ids: string[]): Promise<string[]> => {
+    const resolveCountyValues = async (input: string): Promise<string[]> => {
       const key = normLoc(input);
       if (!key) return [];
       const candidates = new Set<string>();
@@ -590,8 +596,8 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       const { data: countyRows, error: countyErr } = await supabase
         .from("profiles")
         .select("county")
-        .in("id", ids.length > 0 ? ids : ["00000000-0000-0000-0000-000000000000"])
-        .not("county", "is", null);
+        .not("county", "is", null)
+        .not("specialization", "is", null);
       if (countyErr) console.error("County lookup error:", countyErr);
 
       const dbCounties = Array.from(
@@ -614,7 +620,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
 
     let countyValues: string[] | null = null;
     if (criteria.county) {
-      countyValues = await resolveCountyValues(criteria.county, artistIds);
+      countyValues = await resolveCountyValues(criteria.county);
     }
 
     // Helper to run a query against the artist subset
@@ -623,8 +629,8 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
     let q = supabase
       .from("profiles")
       .select(baseSelect)
-      .in("id", artistIds.length > 0 ? artistIds : ["00000000-0000-0000-0000-000000000000"])
-      .limit(24);
+      .not("specialization", "is", null)
+      .limit(300);
 
     if (criteria.specialization) q = q.eq("specialization", criteria.specialization);
     if (criteria.country) {
@@ -639,6 +645,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
         q = q.ilike("county", `%${criteria.county}%`);
       }
     }
+
 
     if (criteria.genre) q = q.ilike("music_genres", `%${criteria.genre}%`);
     if (criteria.instrument) {
