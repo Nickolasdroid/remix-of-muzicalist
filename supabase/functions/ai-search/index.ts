@@ -512,14 +512,13 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
           .select("profile_id")
           .eq("status", "blocked")
           .gte("event_date", startDate)
-          .lte("event_date", endDate)
-          .in("profile_id", artistIds),
+          .lte("event_date", endDate),
         supabase
           .from("booking_requests")
           .select("profile_id, event_date, event_end_date")
-          .eq("status", "accepted")
-          .in("profile_id", artistIds),
+          .eq("status", "accepted"),
       ]);
+
 
       const busyIds = new Set<string>();
       (busyCal || []).forEach((r: any) => busyIds.add(r.profile_id));
