@@ -870,12 +870,13 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
         const { data: fallback, error: fbError } = await supabase
           .from("profiles")
           .select(baseSelect)
-          .in("id", artistIds)
+          .not("specialization", "is", null)
           .or(orParts.join(","))
-          .limit(24);
+          .limit(300);
         if (fbError) console.error("Fallback error:", fbError);
-        artists = fallback || [];
+        artists = (fallback || []).filter((a: any) => artistIdSet.has(a.id)).slice(0, 24);
       }
+
     }
 
     let enrichedArtists = artists || [];
