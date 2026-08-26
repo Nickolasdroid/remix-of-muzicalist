@@ -2386,12 +2386,6 @@ const Dashboard = () => {
                             title="Contact Information"
                             className="mb-4"
                           />
-                          <div className="mb-3 flex items-start gap-2 p-3 rounded-lg bg-secondary/50">
-                            <Lock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                            <p className="text-xs md:text-sm text-muted-foreground">
-                              Your email and phone are private. They are never shown on your public profile and are shared with a client only after you accept their booking request.
-                            </p>
-                          </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
