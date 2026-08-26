@@ -689,19 +689,21 @@ const Messages = () => {
             {selectedConversation || pendingArtist ? <>
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center justify-between gap-3">
-                  <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
-                    <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
-                    <AvatarFallback>
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-center flex-1 min-w-0 px-2">
-                    <span className="font-semibold text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
-                    </span>
-                    <span className="text-xs text-muted-foreground text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
-                    </span>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
+                      <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start min-w-0">
+                      <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
+                      </span>
+                      <span className="text-xs text-muted-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
+                      </span>
+                    </div>
                   </div>
                   {selectedConversation ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -883,23 +885,31 @@ const Messages = () => {
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="p-3 border-b border-border flex items-center justify-between gap-3 bg-background">
-                  <Button variant="ghost" size="icon" onClick={() => {
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Button variant="ghost" size="icon" className="shrink-0" onClick={() => {
                 setSelectedConversation(null);
                 setPendingArtist(null);
               }}>
-                    <ArrowLeft className="h-5 w-5" />
-                  </Button>
-                  <div className="flex flex-col items-center flex-1 min-w-0 px-2">
-                    <span className="font-semibold text-base text-center truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
-                    </span>
-                    <span className="text-xs text-muted-foreground text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
-                    </span>
+                      <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                    <Avatar className={`h-9 w-9 shrink-0 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
+                      <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start min-w-0">
+                      <span className="font-semibold text-base truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
+                      </span>
+                      <span className="text-xs text-muted-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
+                      </span>
+                    </div>
                   </div>
                   {selectedConversation ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="shrink-0">
                           <MoreVertical className="h-5 w-5" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -909,7 +919,7 @@ const Messages = () => {
                           Delete conversation
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu> : <div className="w-10" />}
+                    </DropdownMenu> : <div className="w-10 shrink-0" />}
                 </div>
 
                 {/* Announcement context header */}
