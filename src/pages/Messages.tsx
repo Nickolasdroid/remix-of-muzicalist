@@ -688,22 +688,22 @@ const Messages = () => {
           <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-background">
             {selectedConversation || pendingArtist ? <>
                 {/* Header */}
-                <div className="p-4 border-b border-border flex items-center gap-3">
+                <div className="p-4 border-b border-border flex items-center justify-between gap-3">
                   <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
                     <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
                     <AvatarFallback>
                       <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col flex-1">
-                    <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                  <div className="flex flex-col items-center flex-1 min-w-0 px-2">
+                    <span className="font-semibold text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "User"}
+                    <span className="text-xs text-muted-foreground text-center">
+                      {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
                     </span>
                   </div>
-                  {selectedConversation && <DropdownMenu>
+                  {selectedConversation ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
                           <MoreVertical className="h-5 w-5" />
@@ -715,7 +715,7 @@ const Messages = () => {
                           Delete conversation
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>}
+                    </DropdownMenu> : <div className="w-10" />}
                 </div>
 
                 {/* Announcement context header */}
