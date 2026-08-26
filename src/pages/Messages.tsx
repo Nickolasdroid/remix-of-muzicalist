@@ -699,7 +699,7 @@ const Messages = () => {
                     <span className="font-semibold text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
-                    <span className="text-xs text-muted-foreground text-center">
+                    <span className="text-xs text-muted-foreground text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
                     </span>
                   </div>
