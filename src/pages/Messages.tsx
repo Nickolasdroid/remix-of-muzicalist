@@ -570,6 +570,7 @@ const Messages = () => {
       navigate("/");
     }
   };
+  const conversationActive = !!(selectedConversation || pendingArtist);
   if (loading && !user) {
     return <div className="min-h-screen md:ml-64 bg-background">
         <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} />
@@ -577,7 +578,7 @@ const Messages = () => {
       </div>;
   }
   return <div className="min-h-screen md:ml-64 bg-background">
-      <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} />
+      <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} hideMobileHeader={conversationActive} />
       
       <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen">
         {/* Desktop: Grid layout */}
