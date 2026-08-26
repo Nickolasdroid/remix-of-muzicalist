@@ -94,6 +94,9 @@ const Messages = () => {
   const {
     toast
   } = useToast();
+  const {
+    t
+  } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
