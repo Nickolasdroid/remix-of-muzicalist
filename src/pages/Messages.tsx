@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
+import { translateSpecialization } from "@/lib/specializationLabel";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
