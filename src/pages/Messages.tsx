@@ -879,31 +879,25 @@ const Messages = () => {
 
 
           {/* Mobile: Chat overlay */}
-          {(selectedConversation || pendingArtist) && <div className="fixed top-14 bottom-16 left-0 right-0 z-40 bg-background">
+          {(selectedConversation || pendingArtist) && <div className="fixed top-0 bottom-16 left-0 right-0 z-40 bg-background">
               <div className="flex flex-col h-full">
                 {/* Header */}
-                <div className="p-3 border-b border-border flex items-center gap-3 bg-background">
+                <div className="p-3 border-b border-border flex items-center justify-between gap-3 bg-background">
                   <Button variant="ghost" size="icon" onClick={() => {
                 setSelectedConversation(null);
                 setPendingArtist(null);
               }}>
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
-                  <Avatar className={`h-9 w-9 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
-                    <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-semibold text-sm truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                  <div className="flex flex-col items-center flex-1 min-w-0 px-2">
+                    <span className="font-semibold text-base text-center truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                       {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : pendingArtist?.specialization || "User"}
+                    <span className="text-xs text-muted-foreground text-center">
+                      {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
                     </span>
                   </div>
-                  {selectedConversation && <DropdownMenu>
+                  {selectedConversation ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
                           <MoreVertical className="h-5 w-5" />
@@ -915,7 +909,7 @@ const Messages = () => {
                           Delete conversation
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>}
+                    </DropdownMenu> : <div className="w-10" />}
                 </div>
 
                 {/* Announcement context header */}
