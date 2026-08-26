@@ -689,19 +689,21 @@ const Messages = () => {
             {selectedConversation || pendingArtist ? <>
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center justify-between gap-3">
-                  <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
-                    <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
-                    <AvatarFallback>
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-center flex-1 min-w-0 px-2">
-                    <span className="font-semibold text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
-                    </span>
-                    <span className="text-xs text-muted-foreground text-center notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
-                    </span>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
+                      <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col items-start min-w-0">
+                      <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
+                      </span>
+                      <span className="text-xs text-muted-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
+                      </span>
+                    </div>
                   </div>
                   {selectedConversation ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
