@@ -486,7 +486,7 @@ const Messages = () => {
   };
   const getOtherSpecialization = (conv: Conversation) => {
     const profile = getOtherProfile(conv);
-    return profile.specialization || "User";
+    return translateSpecialization(profile.specialization) || t('common.user', 'User');
   };
   const formatMessageDate = (date: Date) => {
     if (isToday(date)) return "Today";
