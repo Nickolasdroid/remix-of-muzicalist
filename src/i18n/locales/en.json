@@ -10,7 +10,8 @@
     "select": "Select",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "user": "User"
   },
   "navigation": {
     "home": "Home",

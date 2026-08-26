@@ -10,7 +10,8 @@
     "select": "Selectează",
     "loading": "Se încarcă...",
     "error": "Eroare",
-    "success": "Succes"
+    "success": "Succes",
+    "user": "Utilizator"
   },
   "navigation": {
     "home": "Acasă",
