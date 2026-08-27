@@ -318,7 +318,7 @@
     "successBodyAnnouncement": "Your announcement is now receiving increased distribution in the Muzicalist feed."
   },
   "creationModal": {
-    "postTitle": "Add a post",
+    "postTitle": "Add Post",
     "announcementTitle": "Add an announcement",
     "postsAvailable_one": "{{count}} post available",
     "postsAvailable_other": "{{count}} posts available",
@@ -328,6 +328,7 @@
     "validDays": "Valid for {{count}} days",
     "shareQuestion": "What do you want to share?",
     "postPlaceholder": "Write something about your post...",
+    "caption": "Caption",
     "media": "Media",
     "mediaHint": "Attach a photo or a video to your post.",
     "photo": "Photo",
