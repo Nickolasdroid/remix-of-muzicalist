@@ -318,7 +318,7 @@
     "successBodyAnnouncement": "Anunțul tău primește acum distribuție crescută în feedul Muzicalist."
   },
   "creationModal": {
-    "postTitle": "Adaugă o postare",
+    "postTitle": "Adaugă postare",
     "announcementTitle": "Adaugă un anunț",
     "postsAvailable_one": "{{count}} postare disponibilă",
     "postsAvailable_few": "{{count}} postări disponibile",
@@ -330,6 +330,7 @@
     "validDays": "Valabil {{count}} zile",
     "shareQuestion": "Ce vrei să împărtășești?",
     "postPlaceholder": "Scrie ceva despre postarea ta...",
+    "caption": "Legendă",
     "media": "Media",
     "mediaHint": "Atașează o fotografie sau un videoclip la postare.",
     "photo": "Fotografie",

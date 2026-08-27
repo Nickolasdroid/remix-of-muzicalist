@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
@@ -273,6 +273,7 @@ const Dashboard = () => {
   const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
+  const postCaptionRef = useRef<HTMLTextAreaElement>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [promoteAnnouncementTarget, setPromoteAnnouncementTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
@@ -2767,59 +2768,41 @@ const Dashboard = () => {
                             if (!open) setPostMediaType('image');
                           }}>
                             <CreationModalShell
-                              title={t('creationModal.postTitle', 'Add a post')}
-                              meta={<>
-                                {Number.isFinite(STANDARD_POST_LIMIT) && (
+                              title={t('creationModal.postTitle', 'Add Post')}
+                              meta={
+                                Number.isFinite(STANDARD_POST_LIMIT) ? (
                                   <UsagePill
                                     icon={<Images className="h-3 w-3" />}
                                     tone={Math.max(postsRemaining, 0) === 0 ? "warning" : "accent"}
                                   >
                                     {t('creationModal.postsAvailable', { count: Math.max(postsRemaining, 0), defaultValue: '{{count}} posts available' })}
                                   </UsagePill>
-                                )}
-                                <UsagePill icon={<Clock className="h-3 w-3" />}>
-                                  {t('creationModal.resetsAtRenewal', 'Resets at renewal')}
-                                </UsagePill>
-                              </>}
+                                ) : null
+                              }
                               footer={
                                 <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
                                   {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishPost', 'Publish post')}
                                 </Button>
                               }
                             >
-                              <CreationSection title={t('creationModal.shareQuestion', 'What do you want to share?')}>
-                                <Textarea
-                                  value={newPost.content}
-                                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })}
-                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
-                                  rows={4}
-                                  maxLength={200}
-                                  className="resize-none rounded-lg bg-muted/20 border-border/70 p-3.5 text-sm leading-relaxed focus-visible:ring-accent/40"
-                                />
-                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
-                              </CreationSection>
-
-                              <CreationSection
-                                title={t('creationModal.media', 'Media')}
-                                description={t('creationModal.mediaHint', 'Attach a photo or a video to your post.')}
-                                variant="secondary"
-                              >
+                              {/* Media — primary */}
+                              <CreationSection title={t('creationModal.media', 'Media')} variant="secondary">
                                 {!newPost.mediaUrl && postUploadProgress === null && (
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="flex items-center gap-3">
                                     <Label
                                       htmlFor="post-image-inner"
                                       onClick={() => setPostMediaType('image')}
-                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
+                                      className="flex-1 cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors h-14 flex items-center justify-center gap-2 text-sm font-medium"
                                     >
-                                      <ImageIcon className="h-5 w-5 text-accent" />
+                                      <ImageIcon className="h-4 w-4 text-accent" />
                                       {t('creationModal.photo', 'Photo')}
                                     </Label>
                                     <Label
                                       htmlFor="post-video-inner"
                                       onClick={() => setPostMediaType('video')}
-                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
+                                      className="flex-1 cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors h-14 flex items-center justify-center gap-2 text-sm font-medium"
                                     >
-                                      <VideoIcon className="h-5 w-5 text-accent" />
+                                      <VideoIcon className="h-4 w-4 text-accent" />
                                       {t('creationModal.video', 'Video')}
                                     </Label>
                                     <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
@@ -2828,10 +2811,21 @@ const Dashboard = () => {
                                 )}
 
                                 {newPost.mediaUrl && (
-                                  <div className="relative overflow-hidden rounded-lg border border-border/70">
-                                    {newPost.mediaType === 'video'
-                                      ? <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full max-h-52 aspect-video" />
-                                      : <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-44 object-cover" />}
+                                  <div className="relative overflow-hidden rounded-lg border border-border/70 bg-muted/20 flex items-center justify-center">
+                                    {newPost.mediaType === 'video' ? (
+                                      <video
+                                        src={newPost.mediaUrl}
+                                        controls
+                                        preload="metadata"
+                                        className="w-auto max-w-full h-auto max-h-[240px] sm:max-h-[280px] object-contain rounded-lg bg-black"
+                                      />
+                                    ) : (
+                                      <img
+                                        src={newPost.mediaUrl}
+                                        alt="Upload preview"
+                                        className="w-auto max-w-full h-auto max-h-[240px] sm:max-h-[280px] object-contain"
+                                      />
+                                    )}
                                     <Button
                                       size="icon"
                                       variant="secondary"
@@ -2857,10 +2851,26 @@ const Dashboard = () => {
                                     <Progress value={postUploadProgress} />
                                   </div>
                                 )}
+                              </CreationSection>
 
-                                {!newPost.mediaUrl && postUploadProgress === null && (
-                                  <p className="text-[11px] text-muted-foreground/70">{t('creationModal.mediaRequired', 'A photo or a video is required.')}</p>
-                                )}
+                              {/* Caption — secondary */}
+                              <CreationSection title={t('creationModal.caption', 'Caption')} variant="secondary">
+                                <Textarea
+                                  ref={postCaptionRef}
+                                  value={newPost.content}
+                                  onChange={(e) => {
+                                    setNewPost({ ...newPost, content: e.target.value.slice(0, 200) });
+                                    if (postCaptionRef.current) {
+                                      postCaptionRef.current.style.height = 'auto';
+                                      postCaptionRef.current.style.height = `${Math.min(postCaptionRef.current.scrollHeight, 136)}px`;
+                                    }
+                                  }}
+                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
+                                  rows={2}
+                                  maxLength={200}
+                                  className="resize-none rounded-lg bg-muted/20 border-border/70 px-3 py-2.5 text-sm leading-relaxed focus-visible:ring-accent/40 max-h-[136px] overflow-hidden"
+                                />
+                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
                               </CreationSection>
                             </CreationModalShell>
                           </Dialog>
