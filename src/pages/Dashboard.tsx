@@ -79,7 +79,7 @@ import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
-import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -2868,7 +2868,7 @@ const Dashboard = () => {
                                   placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
                                   rows={2}
                                   maxLength={200}
-                                  className="resize-none rounded-lg bg-muted/20 border-border/70 px-3 py-2.5 text-sm leading-relaxed focus-visible:ring-accent/40 max-h-[136px] overflow-hidden"
+                                  className="resize-none rounded-lg bg-muted/20 border-border/70 px-3 py-2.5 text-sm leading-relaxed focus-visible:ring-accent/40 !min-h-[64px] max-h-[136px] overflow-hidden"
                                 />
                                 <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
                               </CreationSection>
