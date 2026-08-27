@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import SmoothVideoPlayer from "./SmoothVideoPlayer";
+import ImageLightbox from "./ImageLightbox";
 import { getEmbedInfo } from "@/lib/mediaEmbed";
 
 interface MediaPreview {
@@ -14,32 +14,14 @@ interface InstagramZoomPreviewProps {
   onClose: () => void;
 }
 
-const MIN_SCALE = 1;
-const MAX_SCALE = 5;
-const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
-
 const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => {
-  const [isLandscape, setIsLandscape] = useState(false);
-  const [scale, setScale] = useState(1);
-  const [tx, setTx] = useState(0);
-  const [ty, setTy] = useState(0);
-  const dragging = useRef(false);
-  const lastPoint = useRef({ x: 0, y: 0 });
-  const pinch = useRef<{ startDist: number; startScale: number } | null>(null);
-
-  useEffect(() => {
-    setScale(1);
-    setTx(0);
-    setTy(0);
-  }, [media?.url]);
-
-  const resetZoom = () => {
-    setScale(1);
-    setTx(0);
-    setTy(0);
-  };
-
   if (!media) return null;
+
+  // Images use the single standardized viewer (same as the profile picture viewer)
+  if (media.type !== "video") {
+    return <ImageLightbox src={media.url} onClose={onClose} />;
+  }
+
 
   const handleWheel = (e: React.WheelEvent) => {
     const next = clamp(scale * (1 + (-e.deltaY * 0.003)), MIN_SCALE, MAX_SCALE);
