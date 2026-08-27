@@ -79,7 +79,7 @@ import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
-import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
