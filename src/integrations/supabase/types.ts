@@ -1614,6 +1614,7 @@ export type Database = {
           is_permanent_suspension: boolean
           is_verified: boolean
           last_name: string
+          mentions_allow_from: Database["public"]["Enums"]["mention_permission"]
           music_genres: string | null
           notification_preferences: Json
           number_of_events: number
@@ -1671,6 +1672,7 @@ export type Database = {
           is_permanent_suspension?: boolean
           is_verified?: boolean
           last_name: string
+          mentions_allow_from?: Database["public"]["Enums"]["mention_permission"]
           music_genres?: string | null
           notification_preferences?: Json
           number_of_events?: number
@@ -1728,6 +1730,7 @@ export type Database = {
           is_permanent_suspension?: boolean
           is_verified?: boolean
           last_name?: string
+          mentions_allow_from?: Database["public"]["Enums"]["mention_permission"]
           music_genres?: string | null
           notification_preferences?: Json
           number_of_events?: number
@@ -2277,6 +2280,10 @@ export type Database = {
       auto_reactivate_expired_suspensions: { Args: never; Returns: number }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
       billing_period_start: { Args: { _user_id: string }; Returns: string }
+      can_mention: {
+        Args: { _actor: string; _target: string }
+        Returns: boolean
+      }
       change_case_priority: {
         Args: {
           _case_id: string
@@ -2608,6 +2615,7 @@ export type Database = {
           is_permanent_suspension: boolean
           is_verified: boolean
           last_name: string
+          mentions_allow_from: Database["public"]["Enums"]["mention_permission"]
           music_genres: string | null
           notification_preferences: Json
           number_of_events: number
@@ -2838,6 +2846,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      search_mentionable_profiles: {
+        Args: { _limit?: number; _query: string }
+        Returns: {
+          avatar_url: string
+          id: string
+          slug: string
+          specialization: string
+          stage_name: string
+        }[]
+      }
       self_downgrade_to_free: { Args: never; Returns: undefined }
       slugify: { Args: { input: string }; Returns: string }
       soft_delete_conversation: {
@@ -2926,6 +2944,7 @@ export type Database = {
     }
     Enums: {
       artist_specialization: "Singer" | "Instrumentalist" | "DJ" | "Band"
+      mention_permission: "everyone" | "artists" | "following" | "nobody"
       moderation_case_status:
         | "open"
         | "triaged"
@@ -3082,6 +3101,7 @@ export const Constants = {
   public: {
     Enums: {
       artist_specialization: ["Singer", "Instrumentalist", "DJ", "Band"],
+      mention_permission: ["everyone", "artists", "following", "nobody"],
       moderation_case_status: [
         "open",
         "triaged",
