@@ -49,6 +49,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
 };
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
+type MentionsAllowFrom = "everyone" | "artists" | "following" | "nobody";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
