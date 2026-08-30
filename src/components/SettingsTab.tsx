@@ -1643,12 +1643,53 @@ const SettingsTab = ({
         />
       ),
       mentions_tags: (
-        <ComingSoonPanel
-          icon={AtSign}
-          title="Mentions & Tags"
-          description="Decide who is allowed to mention or tag you in posts, announcements and comments. Configurable rules are on the way."
-        />
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <AtSign className="h-5 w-5 text-accent" />
+              Mentions
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Choose who can mention you in posts, announcements and comments.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3 max-w-3xl">
+            <Label className="text-sm font-medium">Who can mention you?</Label>
+            <RadioGroup
+              value={mentionsAllowFrom}
+              onValueChange={(v) => applyMentionsAllowFrom(v as MentionsAllowFrom)}
+              className="space-y-2"
+            >
+              {([
+                { value: "everyone", label: "Everyone", hint: "Anyone on Muzicalist can mention you" },
+                { value: "artists", label: "Artists", hint: "Only artist accounts can mention you" },
+                { value: "following", label: "People you follow", hint: "Only accounts you follow can mention you" },
+                { value: "nobody", label: "No one", hint: "No one can mention you" },
+              ] as { value: MentionsAllowFrom; label: string; hint: string }[]).map((opt) => (
+                <label
+                  key={opt.value}
+                  htmlFor={`mentions-${opt.value}`}
+                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                    mentionsAllowFrom === opt.value
+                      ? "border-accent/50 bg-accent/5"
+                      : "border-border hover:border-muted-foreground/50"
+                  }`}
+                >
+                  <RadioGroupItem value={opt.value} id={`mentions-${opt.value}`} className="mt-0.5" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{opt.label}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{opt.hint}</div>
+                  </div>
+                </label>
+              ))}
+            </RadioGroup>
+          </div>
+        </div>
       ),
+
       display_settings: (
         <ComingSoonPanel
           icon={Monitor}
