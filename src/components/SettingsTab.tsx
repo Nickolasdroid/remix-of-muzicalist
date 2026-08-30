@@ -296,6 +296,25 @@ const SettingsTab = ({
     applyCommentsAllowFrom(next);
   };
 
+  const applyMentionsAllowFrom = async (next: MentionsAllowFrom) => {
+    if (next === mentionsAllowFrom) return;
+    const prev = mentionsAllowFrom;
+    setMentionsAllowFrom(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ mentions_allow_from: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setMentionsAllowFrom(prev);
+      toast({ title: "Error", description: "Could not update mentions preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Mentions preference updated." });
+    }
+  };
+
+
   const applyCommentsAllowGifs = async (next: boolean) => {
     setCommentsAllowGifs(next);
     const { data: { user } } = await supabase.auth.getUser();
