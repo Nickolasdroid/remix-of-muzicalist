@@ -109,6 +109,7 @@ const SettingsTab = ({
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
   const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
+  const [mentionsAllowFrom, setMentionsAllowFrom] = useState<MentionsAllowFrom>("everyone");
   const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
   const [showDisableCommentsConfirm, setShowDisableCommentsConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
