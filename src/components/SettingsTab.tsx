@@ -233,7 +233,7 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences, mentions_allow_from")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
@@ -241,6 +241,9 @@ const SettingsTab = ({
       }
       if (data && (data as any).comments_allow_from) {
         setCommentsAllowFrom((data as any).comments_allow_from as CommentsAllowFrom);
+      }
+      if (data && (data as any).mentions_allow_from) {
+        setMentionsAllowFrom((data as any).mentions_allow_from as MentionsAllowFrom);
       }
       if (data && typeof (data as any).comments_allow_gifs === "boolean") {
         setCommentsAllowGifs((data as any).comments_allow_gifs);
