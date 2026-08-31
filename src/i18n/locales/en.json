@@ -365,5 +365,21 @@
     "member": "Member",
     "loadMore": "Load more",
     "viewLikes": "View who liked this"
+  },
+  "profileMenu": {
+    "title": "Profile options",
+    "editProfile": "Edit profile",
+    "shareProfile": "Share profile",
+    "copyLink": "Copy profile link",
+    "settings": "Settings",
+    "block": "Block",
+    "unblock": "Unblock",
+    "reportProfile": "Report profile",
+    "linkCopied": "Profile link copied.",
+    "linkCopyFailed": "Unable to copy link",
+    "blocked": "Profile blocked",
+    "unblocked": "Profile unblocked",
+    "blockedDesc": "You can no longer follow or message each other.",
+    "blockFailed": "Action failed"
   }
 }
