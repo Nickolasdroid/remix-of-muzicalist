@@ -2044,6 +2044,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_user_id?: string
+          blocker_user_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -2689,6 +2710,7 @@ export type Database = {
       }
       is_account_active: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
       is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       list_moderation_cases: {
         Args: {

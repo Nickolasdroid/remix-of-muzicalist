@@ -367,5 +367,21 @@
     "member": "Membru",
     "loadMore": "Încarcă mai multe",
     "viewLikes": "Vezi cine a apreciat"
+  },
+  "profileMenu": {
+    "title": "Opțiuni profil",
+    "editProfile": "Editează profilul",
+    "shareProfile": "Distribuie profilul",
+    "copyLink": "Copiază linkul profilului",
+    "settings": "Setări",
+    "block": "Blochează",
+    "unblock": "Deblochează",
+    "reportProfile": "Raportează profilul",
+    "linkCopied": "Linkul profilului a fost copiat.",
+    "linkCopyFailed": "Linkul nu a putut fi copiat",
+    "blocked": "Profil blocat",
+    "unblocked": "Profil deblocat",
+    "blockedDesc": "Nu vă mai puteți urmări sau trimite mesaje.",
+    "blockFailed": "Acțiunea a eșuat"
   }
 }

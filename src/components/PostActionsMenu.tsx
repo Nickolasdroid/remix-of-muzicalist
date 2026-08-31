@@ -31,6 +31,8 @@ interface PostActionsMenuProps {
   /** Controlled open state (optional) */
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Accessible/sheet title override (defaults to "Post options") */
+  title?: string;
 }
 
 /**
@@ -38,9 +40,10 @@ interface PostActionsMenuProps {
  * Mobile → bottom sheet drawer, Desktop → dropdown. Used by both Feed and Dashboard
  * so the interaction pattern stays identical across the product.
  */
-const PostActionsMenu = ({ actions, disabled, open, onOpenChange }: PostActionsMenuProps) => {
+const PostActionsMenu = ({ actions, disabled, open, onOpenChange, title }: PostActionsMenuProps) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const menuTitle = title ?? t("dashboardPosts.postOptions", "Post options");
 
   const trigger = (
     <Button
@@ -48,7 +51,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange }: PostActionsM
       size="icon"
       className="h-8 w-8 rounded-full shrink-0"
       disabled={disabled}
-      aria-label={t("dashboardPosts.postOptions", "Post options")}
+      aria-label={menuTitle}
     >
       <MoreHorizontal className="h-5 w-5" />
     </Button>
@@ -61,7 +64,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange }: PostActionsM
         <DrawerContent className="rounded-t-xl">
           <DrawerHeader className="pb-2">
             <DrawerTitle className="text-base font-semibold">
-              {t("dashboardPosts.postOptions", "Post options")}
+              {menuTitle}
             </DrawerTitle>
           </DrawerHeader>
           <div className="flex flex-col gap-1 px-4 pb-8">
