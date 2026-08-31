@@ -1635,13 +1635,7 @@ const SettingsTab = ({
           description="Control who can find and view your profile, contact details and availability. More granular visibility options are coming soon."
         />
       ),
-      blocked_users: (
-        <ComingSoonPanel
-          icon={UserX}
-          title="Blocked Users"
-          description="Manage the list of users you have blocked. Blocked users won't be able to view your profile, message you or interact with your content. This area is coming soon."
-        />
-      ),
+      blocked_users: <BlockedUsersPanel />,
       mentions_tags: (
         <div className="space-y-6">
           <div>
