@@ -383,5 +383,21 @@
     "unblocked": "Profil deblocat",
     "blockedDesc": "Nu vă mai puteți urmări sau trimite mesaje.",
     "blockFailed": "Acțiunea a eșuat"
+  },
+  "settings": {
+    "blocked": {
+      "title": "Utilizatori blocați",
+      "description": "Gestionează utilizatorii și artiștii pe care i-ai blocat. Profilurile blocate nu îți pot vedea profilul, nu îți pot trimite mesaje și nu pot interacționa cu conținutul tău.",
+      "emptyTitle": "Nu blochezi pe nimeni",
+      "emptyDesc": "Nu ai blocat încă niciun utilizator sau artist.",
+      "loadFailed": "Lista de profiluri blocate nu a putut fi încărcată"
+    }
+  },
+  "accountType": {
+    "user": "Utilizator",
+    "singer": "Solist",
+    "dj": "DJ",
+    "instrumentalist": "Instrumentist",
+    "band": "Trupă"
   }
 }

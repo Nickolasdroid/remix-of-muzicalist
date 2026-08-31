@@ -21,6 +21,7 @@ import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 import { getCountryName } from "@/lib/countryFlags";
 import VerificationCard from "@/components/VerificationCard";
 import ReportProblemForm from "@/components/ReportProblemForm";
+import BlockedUsersPanel from "@/components/BlockedUsersPanel";
 
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification";
@@ -1635,13 +1636,7 @@ const SettingsTab = ({
           description="Control who can find and view your profile, contact details and availability. More granular visibility options are coming soon."
         />
       ),
-      blocked_users: (
-        <ComingSoonPanel
-          icon={UserX}
-          title="Blocked Users"
-          description="Manage the list of users you have blocked. Blocked users won't be able to view your profile, message you or interact with your content. This area is coming soon."
-        />
-      ),
+      blocked_users: <BlockedUsersPanel />,
       mentions_tags: (
         <div className="space-y-6">
           <div>

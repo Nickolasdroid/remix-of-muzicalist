@@ -381,5 +381,21 @@
     "unblocked": "Profile unblocked",
     "blockedDesc": "You can no longer follow or message each other.",
     "blockFailed": "Action failed"
+  },
+  "settings": {
+    "blocked": {
+      "title": "Blocked Users",
+      "description": "Manage the users and artists you've blocked. Blocked profiles can't view your profile, message you, or interact with your content.",
+      "emptyTitle": "You're not blocking anyone",
+      "emptyDesc": "You haven't blocked any users or artists yet.",
+      "loadFailed": "Could not load blocked profiles"
+    }
+  },
+  "accountType": {
+    "user": "User",
+    "singer": "Singer",
+    "dj": "DJ",
+    "instrumentalist": "Instrumentalist",
+    "band": "Band"
   }
 }
