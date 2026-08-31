@@ -48,6 +48,7 @@ import ReportContentDialog, { ReportableType } from "@/components/ReportContentD
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
+import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
 import { useAdminIds } from "@/hooks/useAdminIds";
@@ -1044,6 +1045,19 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
                 }}
               />
+
+                {/* Secondary profile actions */}
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
+                  <div className="rounded-full bg-black/45 backdrop-blur-sm border border-white/15 text-white hover:bg-black/60 transition-colors">
+                    <ProfileActionsMenu
+                      profileId={artist.id}
+                      profileName={`${artist.first_name || ""} ${artist.last_name || ""}`.trim()}
+                      isOwnProfile={isOwnProfile}
+                      currentUserId={currentUserId}
+                      isArtist={false}
+                    />
+                  </div>
+                </div>
               <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                 <div className="relative p-1 rounded-full shadow-xl flex-shrink-0">
                   <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
@@ -1258,6 +1272,19 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     <VerifiedBadge size="md" />
                   </div>
                 )}
+
+                {/* Secondary profile actions */}
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
+                  <div className="rounded-full bg-black/45 backdrop-blur-sm border border-white/15 text-white hover:bg-black/60 transition-colors">
+                    <ProfileActionsMenu
+                      profileId={artist.id}
+                      profileName={artist.stage_name}
+                      isOwnProfile={isOwnProfile}
+                      currentUserId={currentUserId}
+                      isArtist={true}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Avatar overlapping cover bottom + info below (Facebook-style) */}

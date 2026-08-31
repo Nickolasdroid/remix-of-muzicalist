@@ -195,7 +195,12 @@ const ProfileActionsMenu = ({
 
   return (
     <>
-      <PostActionsMenu actions={actions} open={open} onOpenChange={setOpen} />
+      <PostActionsMenu
+        actions={actions}
+        open={open}
+        onOpenChange={setOpen}
+        title={t("profileMenu.title", "Profile options")}
+      />
       <ReportContentDialog
         open={reportOpen}
         onOpenChange={setReportOpen}
