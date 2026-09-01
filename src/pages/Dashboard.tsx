@@ -286,9 +286,11 @@ const Dashboard = () => {
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits (plan-based) — counted per billing period, resets each cycle.
+  // Post limits — counted per billing period from real posts, resets each cycle.
   const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
+  const postsUsed = createdThisPeriod(posts);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
+
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
