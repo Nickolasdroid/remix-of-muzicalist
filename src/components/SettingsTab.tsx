@@ -1908,6 +1908,14 @@ const DesktopSettingsLayout = ({
                                   navigate("/about");
                                   return;
                                 }
+                                if (item.id === "privacy_policy") {
+                                  navigate("/privacy-policy");
+                                  return;
+                                }
+                                if (item.id === "terms_of_service") {
+                                  navigate("/terms-of-service");
+                                  return;
+                                }
                                 setActiveSection(item.id);
                               }}
                               className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
