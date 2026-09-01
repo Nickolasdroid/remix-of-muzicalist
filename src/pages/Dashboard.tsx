@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
@@ -6,7 +6,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
-import AdminWelcomePostsSection from "@/components/admin/AdminWelcomePostsSection";
 
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 
@@ -31,7 +30,7 @@ import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManag
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, Sparkles } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, EyeOff, Eye, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -61,17 +60,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
-import BookingContactInfo from "@/components/BookingContactInfo";
-
-// Private contact columns (requester_email / requester_phone) are intentionally
-// excluded — they are only reachable through the get_booking_contact RPC.
-const BOOKING_REQUEST_COLUMNS =
-  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
-
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { resolveEffectivePlan, entitlementErrorMessage } from "@/lib/entitlements";
-import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
-import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
@@ -81,7 +71,7 @@ import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
-
+import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -110,11 +100,10 @@ const Dashboard = () => {
 
   // Force admins to allowed sections only
   useEffect(() => {
-    if (isAdmin && !["posts", "announcements", "welcome-posts"].includes(profileSection)) {
+    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
       setProfileSection("posts");
     }
   }, [isAdmin, profileSection]);
-
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
@@ -235,39 +224,28 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Entitlements: the database (public.get_my_entitlements) is authoritative.
-  // Static planLimits helpers are only a fallback until the RPC resolves.
-  const { entitlements: serverEntitlements } = useEntitlements();
-  const currentPlan = serverEntitlements?.effective_plan ?? resolveEffectivePlan(profile);
-  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'announcements', getAdLimit(currentPlan));
-  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'post_promotions', getPromotionLimit(currentPlan));
+  // Announcement limits (plan-based)
+  const currentPlan = profile?.plan;
+  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
+  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
-
-  // Per-billing-period usage counters. Post/announcement usage is derived from
-  // the real content rows created during the current period (same rule the
-  // server-side triggers apply); consumed_ad_slots is used only for promotions.
+  // Per-billing-period usage counters. Counters reset automatically at the
+  // start of each new subscription cycle (monthly or yearly).
   const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
   const periodStart = getPeriodStart(profile);
   const periodEnd = getPeriodEnd(profile);
   const activeConsumedSlots = consumedSlots.filter(
     (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
-  const createdThisPeriod = (rows: any[]) =>
-    rows.filter((r) => r?.created_at && new Date(r.created_at).getTime() >= periodStart.getTime()).length;
-  const standardAdsUsed = createdThisPeriod(announcements);
+  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
+  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
   // Post promotions consume the existing monthly promotion entitlement.
-  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.post).length;
-  // Announcement promotions are a separate entitlement bucket.
-  const announcementPromotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.announcement).length;
+  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
   const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
-  const ANNOUNCEMENT_PROMOTION_LIMIT = serverLimit(serverEntitlements, 'announcement_promotions', getAnnouncementPromotionLimit(currentPlan));
-  const announcementPromotionsRemaining = ANNOUNCEMENT_PROMOTION_LIMIT - announcementPromotionsUsed;
-
-
 
 
   // Posts state
@@ -282,21 +260,17 @@ const Dashboard = () => {
   const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
-  const postCaptionRef = useRef<HTMLTextAreaElement>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
-  const [promoteAnnouncementTarget, setPromoteAnnouncementTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
   const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits — counted per billing period from real posts, resets each cycle.
-  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'posts', getPostLimit(currentPlan));
-  const postsUsed = createdThisPeriod(posts);
+  // Post limits (plan-based) — counted per billing period, resets each cycle.
+  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
-
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -310,8 +284,8 @@ const Dashboard = () => {
   } | null>(null);
 
   // Gallery limits (plan-based)
-  const STANDARD_IMAGE_LIMIT = serverLimit(serverEntitlements, 'gallery_images', getImageLimit(currentPlan));
-  const STANDARD_VIDEO_LIMIT = serverLimit(serverEntitlements, 'gallery_videos', getVideoLimit(currentPlan));
+  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
+  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
@@ -413,23 +387,20 @@ const Dashboard = () => {
   };
   const loadBookingRequests = async () => {
     if (!user) return;
-    // NOTE: requester_email / requester_phone are private and never selected here.
-    // They are exchanged only through the get_booking_contact RPC once accepted.
     const {
       data
-    } = await supabase.from('booking_requests').select(BOOKING_REQUEST_COLUMNS).eq('profile_id', user.id).order('created_at', {
+    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (data) setBookingRequests(data);
     const { data: sent } = await supabase
       .from('booking_requests')
-      .select(BOOKING_REQUEST_COLUMNS)
+      .select('*')
       .eq('requester_user_id', user.id)
       .neq('profile_id', user.id)
       .order('created_at', { ascending: false });
     setSentBookingRequests(sent || []);
   };
-
 
   const loadPosts = async () => {
     if (!user) return;
@@ -979,6 +950,12 @@ const Dashboard = () => {
         budget: newAnnouncement.budget || null
       }).select('id').single();
       if (error) throw error;
+      // Record usage for this billing period.
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: inserted?.id ?? null,
+      });
       await loadAnnouncements();
       setNewAnnouncement({
         description: "",
@@ -997,7 +974,7 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: entitlementErrorMessage(error, "Failed to add announcement."),
+        description: error.message,
         variant: "destructive"
       });
     } finally {
@@ -1011,6 +988,8 @@ const Dashboard = () => {
         error
       } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
       await loadAnnouncements();
       toast({
         title: "Success",
@@ -1053,6 +1032,13 @@ const Dashboard = () => {
         media_type: newPost.mediaType || null
       }).select('id').single();
       if (error) throw error;
+      // Record usage for this billing period.
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: insertedPost?.id ?? null,
+        kind: 'post',
+      });
       await loadPosts();
       await loadAnnouncements();
       setNewPost({
@@ -1069,29 +1055,13 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: entitlementErrorMessage(error, "Failed to create post."),
+        description: error.message,
         variant: "destructive"
       });
     } finally {
       setIsSaving(false);
     }
   };
-  /** Applies one promotion entitlement to an existing announcement. */
-  const handlePromoteAnnouncement = async (id: string) => {
-    setIsSaving(true);
-    try {
-      const { error } = await (supabase as any).rpc('promote_announcement', { p_announcement_id: id });
-      if (error) throw error;
-      setPromoteAnnouncementTarget(null);
-      toast({ title: t('postPromotion.successTitleAnnouncement', 'Announcement promoted'), description: t('postPromotion.successBodyAnnouncement', 'Your announcement is now receiving increased distribution in the Muzicalist feed.') });
-      await loadAnnouncements();
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message || 'Failed to promote announcement.', variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   /** Applies one monthly promotion entitlement to an existing post. */
   const handlePromotePost = async (id: string) => {
     setIsSaving(true);
@@ -1101,7 +1071,7 @@ const Dashboard = () => {
       await loadPosts();
       await loadAnnouncements();
       setPromoteTarget(null);
-      toast({ title: t('postPromotion.successTitle', 'Post promoted'), description: t('postPromotion.successBody', 'Your post is now receiving increased distribution in the Muzicalist feed.') });
+      toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -1115,6 +1085,8 @@ const Dashboard = () => {
         error
       } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
       await loadPosts();
       await loadAnnouncements();
       toast({
@@ -1434,10 +1406,7 @@ const Dashboard = () => {
       const wantedName = (removedEvent.bookedBy ?? "").trim();
       const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
       const match = acceptedCandidates.find((req) => {
-        // requester_email is private and not loaded client-side, so it can only
-        // be used for matching when it happens to be present.
-        if (wantedEmail && req.requester_email && normalize(req.requester_email) !== wantedEmail) return false;
-
+        if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
         if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
         if (wantedTimes) {
           const reqTimes = extractTimesFromRequestMessage(req.message);
@@ -1643,17 +1612,6 @@ const Dashboard = () => {
       }).eq('id', request.id);
       if (updateError) throw updateError;
 
-      // Now that the booking is accepted, the requester's contact details
-      // become available to this artist through the secured RPC.
-      const { data: contactRows } = await (supabase as any).rpc('get_booking_contact', {
-        _booking_id: request.id
-      });
-      const contactRow = Array.isArray(contactRows) ? contactRows[0] : contactRows;
-      const requesterEmail = contactRow?.available ? contactRow.email : null;
-      const requesterPhone = contactRow?.available ? contactRow.phone : null;
-
-
-
       // Calculate all dates between start and end date - parse as local time
       const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
       const startDate = new Date(startYear, startMonth - 1, startDay);
@@ -1684,7 +1642,7 @@ const Dashboard = () => {
       }
 
       // Build the new booking entry text
-      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${requesterEmail ? '\nContact: ' + requesterEmail : ''}${requesterPhone ? '\nPhone: ' + requesterPhone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
+      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
 
       // Add all dates to the calendar, appending to existing entries if present
       for (const date of datesToBook) {
@@ -1819,7 +1777,7 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div className={`pt-14 md:pt-8 ${activeTab === "settings" ? "pb-[calc(4rem+1.25rem+env(safe-area-inset-bottom))] md:pb-8 bg-background" : "pb-24 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
+      <div className={`pt-14 md:pt-8 ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8 bg-background" : "pb-24 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
         <div className={`container mx-auto max-w-4xl ${activeTab === "settings" ? "px-0 md:px-0" : "px-4 md:px-0"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
@@ -1945,14 +1903,11 @@ const Dashboard = () => {
                               {formData.county && <span className="truncate">{formData.county}</span>}
                               {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                             </div>
-                            <SocialStats
-                              className="mt-1.5 md:mt-2"
-                              followersCount={followersCount}
-                              followingCount={followingCount}
-                              onFollowersClick={() => setShowFollowersDialog(true)}
-                              onFollowingClick={() => setShowFollowingDialog(true)}
-                            />
-
+                            <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
+                              <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
+                              <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
+                              <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                            </div>
                           </div>
                         </div>
 
@@ -1997,7 +1952,14 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-
+                        {/* Followers row */}
+                        <SocialStats
+                          className="mx-4 md:mx-0 mt-3 md:mt-4"
+                          followersCount={followersCount}
+                          followingCount={followingCount}
+                          onFollowersClick={() => setShowFollowersDialog(true)}
+                          onFollowingClick={() => setShowFollowingDialog(true)}
+                        />
 
                       </div>
                     )}
@@ -2050,7 +2012,7 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-3' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
+                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
                         {!isAdmin && (
                           <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
@@ -2068,13 +2030,6 @@ const Dashboard = () => {
                           <span className="hidden lg:inline">Announcements</span>
                           <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                         </TabsTrigger>
-                        {isAdmin && (
-                          <TabsTrigger value="welcome-posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Sparkles strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Welcome Posts</span>
-                            <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
-                          </TabsTrigger>
-                        )}
                         {!isAdmin && (
                           <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
@@ -2096,10 +2051,10 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <SectionHeaderWithUsage
-                              icon={<User className="h-5 w-5 text-accent" />}
-                              title="About Me"
-                            />
+                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                              <User className="h-5 w-5 text-accent" />
+                              About Me
+                            </h2>
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
@@ -2153,10 +2108,10 @@ const Dashboard = () => {
                     };
                     return instrumentName ?
                     <div className="flex items-center gap-2">
-                                    <SectionHeaderWithUsage
-                                      icon={<Music2 className="h-5 w-5 text-accent" />}
-                                      title="My Instrument:"
-                                    />
+                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                                      <Music2 className="h-5 w-5 text-accent" />
+                                      My Instrument:
+                                    </h2>
                                     <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
@@ -2165,10 +2120,10 @@ const Dashboard = () => {
                                   </div> :
 
                     <div className="flex items-center gap-2">
-                                    <SectionHeaderWithUsage
-                                      icon={<Music2 className="h-5 w-5 text-accent" />}
-                                      title="My Instrument:"
-                                    />
+                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                                      <Music2 className="h-5 w-5 text-accent" />
+                                      My Instrument:
+                                    </h2>
                                     <InstrumentSelector
                         instruments={formData.instruments}
                         onInstrumentsChange={handleInstrumentsChange} />
@@ -2185,10 +2140,10 @@ const Dashboard = () => {
                             <Separator />
                             <div className="group">
                               <div className="flex items-center justify-between mb-3">
-                                <SectionHeaderWithUsage
-                                  icon={<Users className="h-5 w-5 text-accent" />}
-                                  title="Number of members"
-                                />
+                                <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                  <Users className="h-5 w-5 text-accent" />
+                                  Number of members
+                                </h3>
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
@@ -2218,13 +2173,15 @@ const Dashboard = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
                           {/* Music Genres */}
                           <div className="group">
-                            <SectionHeaderWithUsage
-                              icon={<Music className="h-5 w-5 text-accent" />}
-                              title="Music Genres"
-                              action={editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                <Music className="h-5 w-5 text-accent" />
+                                Music Genres
+                              </h3>
+                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
-                            />
+                            </div>
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
@@ -2310,10 +2267,12 @@ const Dashboard = () => {
 
                           {/* Estimated Prices */}
                           <div className="group">
-                            <SectionHeaderWithUsage
-                              icon={<DollarSign className="h-5 w-5 text-accent" />}
-                              title="Estimated Prices"
-                              action={canSetEstimatedPrice(currentPlan) && (
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                <DollarSign className="h-5 w-5 text-accent" />
+                                Estimated Prices
+                              </h3>
+                              {canSetEstimatedPrice(currentPlan) && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -2323,7 +2282,7 @@ const Dashboard = () => {
                                   <Edit2 className="h-4 w-4" />
                                 </Button>
                               )}
-                            />
+                            </div>
                             {!canSetEstimatedPrice(currentPlan) ? (
                               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Lock className="h-4 w-4" />
@@ -2336,12 +2295,12 @@ const Dashboard = () => {
                                   profileId={user?.id}
                                   country={profile?.country}
                                   editable={false}
-                                  maxEntries={serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))}
+                                  maxEntries={getEstimatedPriceLimit(currentPlan)}
                                   onCountChange={setPricingCount}
                                 />
-                                {pricingCount >= serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan)) && (
+                                {pricingCount >= getEstimatedPriceLimit(currentPlan) && (
                                   <p className="text-xs text-muted-foreground mt-2">
-                                    You reached the limit of {serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))} prices for your plan.
+                                    You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
                                   </p>
                                 )}
                                 <Dialog
@@ -2363,7 +2322,7 @@ const Dashboard = () => {
                                       profileId={user?.id}
                                       country={profile?.country}
                                       editable={true}
-                                      maxEntries={serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))}
+                                      maxEntries={getEstimatedPriceLimit(currentPlan)}
                                     />
                                   </DialogContent>
                                 </Dialog>
@@ -2377,16 +2336,24 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <SectionHeaderWithUsage
-                            title="Contact Information"
-                            className="mb-4"
-                          />
+                          <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                               <div className="flex-1 text-left">
                                 <p className="text-xs md:text-sm text-muted-foreground">Email</p>
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {formData.hideEmail ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
+                                <Switch
+                                  checked={!formData.hideEmail}
+                                  onCheckedChange={async (checked) => {
+                                    const newVal = !checked;
+                                    setFormData(prev => ({ ...prev, hideEmail: newVal }));
+                                    await supabase.from('profiles').update({ hide_email: newVal } as any).eq('id', user.id);
+                                  }}
+                                />
                               </div>
                             </div>
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
@@ -2395,29 +2362,41 @@ const Dashboard = () => {
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
                                   <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
                                 </div>
+                                <div className="flex items-center gap-2">
+                                  {formData.hidePhone ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
+                                  <Switch
+                                    checked={!formData.hidePhone}
+                                    onCheckedChange={async (checked) => {
+                                      const newVal = !checked;
+                                      setFormData(prev => ({ ...prev, hidePhone: newVal }));
+                                      await supabase.from('profiles').update({ hide_phone: newVal } as any).eq('id', user.id);
+                                    }}
+                                  />
+                                </div>
                               </div>
                           </div>
-
                         </div>
 
                         <Separator />
 
                         {/* Social Networks */}
                         <div className="group">
-                          <SectionHeaderWithUsage
-                            icon={<LinkIcon className="h-5 w-5 text-accent" />}
-                            title="Social Networks"
-                            action={editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
+                          <div className="flex items-center justify-between mb-3 md:mb-4">
+                            <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
+                              <LinkIcon className="h-5 w-5 text-accent" />
+                              Social Networks
+                            </h3>
+                            {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
-                          />
+                          </div>
                           {editingField === 'social' ? <div className="space-y-3">
                               {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <AlertCircle className="h-3.5 w-3.5" />
                                 Free plan: only 1 social media link visible. Upgrade for more.
                               </p>}
                               {(() => {
-                                const socialLimit = serverLimit(serverEntitlements, 'social_links', getSocialLinkLimit(currentPlan));
+                                const socialLimit = getSocialLinkLimit(currentPlan);
                                 const filledCount = countFilledSocialLinks(formData);
                                 const canAddMore = (fieldValue: string) => fieldValue || filledCount < socialLimit;
                                 return <>
@@ -2498,21 +2477,14 @@ const Dashboard = () => {
 
                         {/* Reviews Section */}
                         <div>
-                          <SectionHeaderWithUsage
-                            icon={<Star className="h-5 w-5 text-accent" />}
-                            title={
-                              <>
-                                My Reviews
-                                {getAverageRating() && (
-                                  <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                    ({getAverageRating()} • {reviews.length})
-                                  </span>
-                                )}
-                              </>
-                            }
-                            className="mb-4"
-                          />
-
+                          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-left">
+                            <Star className="h-5 w-5 text-accent" />
+                            My Reviews
+                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                ({getAverageRating()} • {reviews.length})
+                              </span>}
+                          </h2>
+                          
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
                                 {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
@@ -2556,7 +2528,7 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) && posts.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
@@ -2593,19 +2565,7 @@ const Dashboard = () => {
                           <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
                             title={t('dashboardPosts.title', 'Posts')}
-                            usage={
-                              <>
-                                <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground">
-                                  {`${postItems.length}/${postLimitLabel}`}
-                                </Badge>
-                                {PROMOTION_LIMIT > 0 && (
-                                  <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 gap-1 border-border/70 bg-muted/30 text-muted-foreground">
-                                    <Megaphone className="h-3 w-3" />
-                                    {`${promotionsUsed}/${Number.isFinite(PROMOTION_LIMIT) ? PROMOTION_LIMIT : '∞'}`}
-                                  </Badge>
-                                )}
-                              </>
-                            }
+                            usage={`${postItems.length}/${postLimitLabel}`}
                             action={
                               <Button
                                 size="sm"
@@ -2638,7 +2598,6 @@ const Dashboard = () => {
                                 return (
                                   <FeedPostCard
                                     key={`${item.__kind}-${item.id}`}
-                                    postId={item.id}
                                     author={{
                                       id: profile?.id,
                                       stageName: profile?.stage_name || 'Artist',
@@ -2666,11 +2625,10 @@ const Dashboard = () => {
                                           {expired ? (
                                             <span className="text-destructive">{t('dashboardPosts.expired', 'Expired')}</span>
                                           ) : (
-                                            <span className="inline-flex items-center gap-1">
-                                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                                {t('dashboardPosts.promoted', 'Promoted')}
-                                              </Badge>
-                                              {expirationLabel && <span className="opacity-80 text-accent">· {expirationLabel}</span>}
+                                            <span className="inline-flex items-center gap-1 text-accent">
+                                              <Megaphone className="h-3 w-3" />
+                                              {t('dashboardPosts.promoted', 'Promoted')}
+                                              {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
                                             </span>
                                           )}
                                         </>
@@ -2762,41 +2720,59 @@ const Dashboard = () => {
                             if (!open) setPostMediaType('image');
                           }}>
                             <CreationModalShell
-                              title={t('creationModal.postTitle', 'Add Post')}
-                              meta={
-                                Number.isFinite(STANDARD_POST_LIMIT) ? (
+                              title={t('creationModal.postTitle', 'Add a post')}
+                              meta={<>
+                                {Number.isFinite(STANDARD_POST_LIMIT) && (
                                   <UsagePill
                                     icon={<Images className="h-3 w-3" />}
                                     tone={Math.max(postsRemaining, 0) === 0 ? "warning" : "accent"}
                                   >
                                     {t('creationModal.postsAvailable', { count: Math.max(postsRemaining, 0), defaultValue: '{{count}} posts available' })}
                                   </UsagePill>
-                                ) : null
-                              }
+                                )}
+                                <UsagePill icon={<Clock className="h-3 w-3" />}>
+                                  {t('creationModal.resetsAtRenewal', 'Resets at renewal')}
+                                </UsagePill>
+                              </>}
                               footer={
                                 <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
                                   {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishPost', 'Publish post')}
                                 </Button>
                               }
                             >
-                              {/* Media — primary */}
-                              <CreationSection title={t('creationModal.media', 'Media')} variant="secondary">
+                              <CreationSection title={t('creationModal.shareQuestion', 'What do you want to share?')}>
+                                <Textarea
+                                  value={newPost.content}
+                                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })}
+                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
+                                  rows={4}
+                                  maxLength={200}
+                                  className="resize-none rounded-lg bg-muted/20 border-border/70 p-3.5 text-sm leading-relaxed focus-visible:ring-accent/40"
+                                />
+                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
+                              </CreationSection>
+
+                              <CreationSection
+                                title={t('creationModal.media', 'Media')}
+                                description={t('creationModal.mediaHint', 'Attach a photo or a video to your post.')}
+                                variant="secondary"
+                              >
                                 {!newPost.mediaUrl && postUploadProgress === null && (
-                                  <div className="flex items-center gap-3">
+                                  <div className="grid grid-cols-2 gap-3">
                                     <Label
                                       htmlFor="post-image-inner"
                                       onClick={() => setPostMediaType('image')}
-                                      className="flex-1 cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors h-14 flex items-center justify-center gap-2 text-sm font-medium"
+                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
                                     >
-                                      <ImageIcon className="h-4 w-4 text-accent" />
+                                      <ImageIcon className="h-5 w-5 text-accent" />
                                       {t('creationModal.photo', 'Photo')}
                                     </Label>
                                     <Label
                                       htmlFor="post-video-inner"
                                       onClick={() => setPostMediaType('video')}
-                                      className="flex-1 cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors h-14 flex items-center justify-center gap-2 text-sm font-medium"
+                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
                                     >
-                                      <VideoIcon className="h-4 w-4 text-accent" />
+                                      <VideoIcon className="h-5 w-5 text-accent" />
                                       {t('creationModal.video', 'Video')}
                                     </Label>
                                     <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
@@ -2805,21 +2781,10 @@ const Dashboard = () => {
                                 )}
 
                                 {newPost.mediaUrl && (
-                                  <div className="relative overflow-hidden rounded-lg border border-border/70 bg-muted/20 flex items-center justify-center">
-                                    {newPost.mediaType === 'video' ? (
-                                      <video
-                                        src={newPost.mediaUrl}
-                                        controls
-                                        preload="metadata"
-                                        className="w-auto max-w-full h-auto max-h-[240px] sm:max-h-[280px] object-contain rounded-lg bg-black"
-                                      />
-                                    ) : (
-                                      <img
-                                        src={newPost.mediaUrl}
-                                        alt="Upload preview"
-                                        className="w-auto max-w-full h-auto max-h-[240px] sm:max-h-[280px] object-contain"
-                                      />
-                                    )}
+                                  <div className="relative overflow-hidden rounded-lg border border-border/70">
+                                    {newPost.mediaType === 'video'
+                                      ? <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full max-h-52 aspect-video" />
+                                      : <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-44 object-cover" />}
                                     <Button
                                       size="icon"
                                       variant="secondary"
@@ -2845,26 +2810,10 @@ const Dashboard = () => {
                                     <Progress value={postUploadProgress} />
                                   </div>
                                 )}
-                              </CreationSection>
 
-                              {/* Caption — secondary */}
-                              <CreationSection title={t('creationModal.caption', 'Caption')} variant="secondary">
-                                <Textarea
-                                  ref={postCaptionRef}
-                                  value={newPost.content}
-                                  onChange={(e) => {
-                                    setNewPost({ ...newPost, content: e.target.value.slice(0, 200) });
-                                    if (postCaptionRef.current) {
-                                      postCaptionRef.current.style.height = 'auto';
-                                      postCaptionRef.current.style.height = `${Math.min(postCaptionRef.current.scrollHeight, 136)}px`;
-                                    }
-                                  }}
-                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
-                                  rows={2}
-                                  maxLength={200}
-                                  className="resize-none rounded-lg bg-muted/20 border-border/70 px-3 py-2.5 text-sm leading-relaxed focus-visible:ring-accent/40 !min-h-[64px] max-h-[136px] overflow-hidden"
-                                />
-                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
+                                {!newPost.mediaUrl && postUploadProgress === null && (
+                                  <p className="text-[11px] text-muted-foreground/70">{t('creationModal.mediaRequired', 'A photo or a video is required.')}</p>
+                                )}
                               </CreationSection>
                             </CreationModalShell>
                           </Dialog>
@@ -2877,7 +2826,7 @@ const Dashboard = () => {
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) && announcements.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
@@ -2890,19 +2839,7 @@ const Dashboard = () => {
                           <SectionHeaderWithUsage
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
                             title={t('dashboardAnnouncements.title', 'Announcements')}
-                            usage={
-                              <>
-                                <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 border-border/70 bg-muted/30 text-muted-foreground">
-                                  {`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
-                                </Badge>
-                                {ANNOUNCEMENT_PROMOTION_LIMIT > 0 && (
-                                  <Badge variant="outline" className="rounded-lg text-[11px] font-medium shrink-0 px-1.5 h-5 gap-1 border-border/70 bg-muted/30 text-muted-foreground">
-                                    <Megaphone className="h-3 w-3" />
-                                    {`${announcementPromotionsUsed}/${ANNOUNCEMENT_PROMOTION_LIMIT}`}
-                                  </Badge>
-                                )}
-                              </>
-                            }
+                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             action={
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
@@ -2986,16 +2923,6 @@ const Dashboard = () => {
                                 announcement={announcement}
                                 disabled={isSaving}
                                 actions={[
-                                  ...(ANNOUNCEMENT_PROMOTION_LIMIT > 0 && !isAdExpired(announcement)
-                                    ? [{
-                                        key: "promote",
-                                        label: (announcement.promoted_until && new Date(announcement.promoted_until).getTime() > Date.now())
-                                          ? t('postPromotion.managePromotion', 'Manage promotion')
-                                          : t('postPromotion.promote', 'Promote'),
-                                        icon: Megaphone,
-                                        onSelect: () => setPromoteAnnouncementTarget({ id: announcement.id, promotedUntil: announcement.promoted_until || null }),
-                                      }]
-                                    : []),
                                   {
                                     key: "delete",
                                     label: t("userDashboard.delete", "Delete"),
@@ -3014,26 +2941,8 @@ const Dashboard = () => {
                             )}
                             </div>
                           </div>
-
-                          <PromotePostDialog
-                            open={!!promoteAnnouncementTarget}
-                            onOpenChange={(open) => { if (!open) setPromoteAnnouncementTarget(null); }}
-                            kind="announcement"
-                            isPromoted={!!promoteAnnouncementTarget?.promotedUntil && new Date(promoteAnnouncementTarget.promotedUntil).getTime() > Date.now()}
-                            promotedUntil={promoteAnnouncementTarget?.promotedUntil}
-                            remaining={announcementPromotionsRemaining}
-                            isSaving={isSaving}
-                            onConfirm={() => promoteAnnouncementTarget && handlePromoteAnnouncement(promoteAnnouncementTarget.id)}
-                          />
                         </SectionShell>}
                       </TabsContent>
-
-                      {/* Welcome Posts Tab (admin only) */}
-                      {isAdmin && <TabsContent value="welcome-posts">
-                        <AdminWelcomePostsSection />
-                      </TabsContent>}
-
-
 
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
@@ -3174,7 +3083,7 @@ const Dashboard = () => {
 
                           {/* Videos section */}
                           <SectionHeaderWithUsage
-                            icon={<Play className="h-5 w-5 text-accent" />}
+                            icon={<VideoIcon className="h-5 w-5 text-accent" />}
                             title={t('dashboardGallery.videos', 'Videos')}
                             usage={`${videosUsed}/${STANDARD_VIDEO_LIMIT}`}
                           />
@@ -3238,10 +3147,10 @@ const Dashboard = () => {
                       {!isAdmin && <TabsContent value="calendar">
                         <div>
                           <div className="flex items-center justify-between mb-4">
-                            <SectionHeaderWithUsage
-                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                              title="My Calendar"
-                            />
+                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                              <CalendarIcon className="h-5 w-5 text-accent" />
+                              My Calendar
+                            </h2>
                             {isPremium(currentPlan) && (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />
@@ -3512,25 +3421,23 @@ const Dashboard = () => {
 
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
-                            <SectionHeaderWithUsage
-                              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                              title={
-                                <>
-                                  Booking Requests
-                                  {(() => {
-                                    const todayStr = new Date().toISOString().split("T")[0];
-                                    const newCount = bookingRequests.filter(
-                                      (r) => r.status === "pending" && r.event_date >= todayStr
-                                    ).length;
-                                    return newCount > 0 ? (
-                                      <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
-                                        {newCount}
-                                      </Badge>
-                                    ) : null;
-                                  })()}
-                                </>
-                              }
-                              action={bookingRequests.length > 0 && (
+                            <div className="flex items-center justify-between mb-4 gap-2">
+                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                <CalendarIcon className="h-5 w-5 text-accent" />
+                                Booking Requests
+                                {(() => {
+                                  const todayStr = new Date().toISOString().split("T")[0];
+                                  const newCount = bookingRequests.filter(
+                                    (r) => r.status === "pending" && r.event_date >= todayStr
+                                  ).length;
+                                  return newCount > 0 ? (
+                                    <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                      {newCount}
+                                    </Badge>
+                                  ) : null;
+                                })()}
+                              </h3>
+                              {bookingRequests.length > 0 && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -3540,8 +3447,7 @@ const Dashboard = () => {
                                   See all
                                 </Button>
                               )}
-                              className="mb-4"
-                            />
+                            </div>
                             
                             {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
                                 <CardContent className="p-8 text-center">
@@ -3619,10 +3525,12 @@ const Dashboard = () => {
                                 navigate(`/booking-requests?tab=sent${f ? `&filter=${f}` : ''}`);
                               return (
                                 <>
-                                  <SectionHeaderWithUsage
-                                    icon={<CalendarCheck className="h-5 w-5 text-accent" />}
-                                    title="My Bookings"
-                                    action={sentBookingRequests.length > 0 && (
+                                  <div className="flex items-center justify-between mb-4 gap-2">
+                                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                      <CalendarCheck className="h-5 w-5 text-accent" />
+                                      My Bookings
+                                    </h3>
+                                    {sentBookingRequests.length > 0 && (
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -3632,8 +3540,7 @@ const Dashboard = () => {
                                         See all
                                       </Button>
                                     )}
-                                    className="mb-4"
-                                  />
+                                  </div>
 
                                   {sentBookingRequests.length === 0 ? (
                                     <Card className="border-2 border-dashed border-border/50">
@@ -3722,11 +3629,22 @@ const Dashboard = () => {
                                       <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
                                     </div>
 
-                                    <BookingContactInfo
-                                      bookingId={selectedBookingRequest.id}
-                                      status={selectedBookingRequest.status}
-                                    />
-
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Email</Label>
+                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
+                                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                          {selectedBookingRequest.requester_email}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Phone</Label>
+                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
+                                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                          {selectedBookingRequest.requester_phone}
+                                        </p>
+                                      </div>
+                                    </div>
 
                                     <div>
                                       <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Date</Label>
