@@ -233,22 +233,24 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Announcement limits (plan-based)
-  const currentPlan = profile?.plan;
+  // Announcement limits (effective plan = plan + Stripe status, mirrors public.effective_plan)
+  const currentPlan = resolveEffectivePlan(profile);
   const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
-  // Per-billing-period usage counters. Counters reset automatically at the
-  // start of each new subscription cycle (monthly or yearly).
+  // Per-billing-period usage counters. Post/announcement usage is derived from
+  // the real content rows created during the current period (same rule the
+  // server-side triggers apply); consumed_ad_slots is used only for promotions.
   const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
   const periodStart = getPeriodStart(profile);
   const periodEnd = getPeriodEnd(profile);
   const activeConsumedSlots = consumedSlots.filter(
     (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
+  const createdThisPeriod = (rows: any[]) =>
+    rows.filter((r) => r?.created_at && new Date(r.created_at).getTime() >= periodStart.getTime()).length;
+  const standardAdsUsed = createdThisPeriod(announcements);
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
-  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
   // Post promotions consume the existing monthly promotion entitlement.
   const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.post).length;
   // Announcement promotions are a separate entitlement bucket.
@@ -259,6 +261,7 @@ const Dashboard = () => {
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
   const ANNOUNCEMENT_PROMOTION_LIMIT = getAnnouncementPromotionLimit(currentPlan);
   const announcementPromotionsRemaining = ANNOUNCEMENT_PROMOTION_LIMIT - announcementPromotionsUsed;
+
 
 
   // Posts state
