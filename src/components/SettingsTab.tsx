@@ -1566,7 +1566,6 @@ const SettingsTab = ({
       promotion: PromotionContent,
       help: HelpContent,
       report: ReportContent,
-      about: AboutContent,
       privacy_policy: PrivacyPolicyContent,
       terms_of_service: TermsOfServiceContent,
       logout: LogoutContent,
