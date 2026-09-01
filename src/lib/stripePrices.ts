@@ -1,7 +1,10 @@
 // Frontend mirror of Stripe price_id mapping. Keep in sync with
 // supabase/functions/_shared/stripePriceMap.ts
+import { resolveEffectivePlan } from "@/lib/entitlements";
+
 export type Plan = "Free" | "Standard" | "Premium";
 export type Billing = "monthly" | "yearly";
+
 
 export const STRIPE_PRICES: Record<string, { plan: Exclude<Plan, "Free">; billing: Billing }> = {
   price_1TSEqwKBZxdkesfhjRUVTm8l: { plan: "Standard", billing: "monthly" },
