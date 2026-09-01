@@ -42,7 +42,7 @@ import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import ImageLightbox from "@/components/ImageLightbox";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, canPost, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
@@ -165,6 +165,8 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const id = artistId ?? routeId;
   const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
+  // Publicly entitled social links, resolved server-side (public.get_public_social_links)
+  const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[] | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -335,6 +337,11 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         setArtist(profileData ? { ...profileData, email: contact.email, phone: contact.phone } : null);
       }
       setLoading(false);
+
+      // Social links limited by the artist's effective plan, resolved server-side
+      (supabase as any)
+        .rpc('get_public_social_links', { _profile_id: id })
+        .then(({ data }: any) => setSocialLinks(Array.isArray(data) ? data : []));
 
       // Fetch count of accepted booking requests (events performed via Muzicalist)
       (supabase as any)
@@ -1584,7 +1591,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     {currentUserId ?
                 <div className="flex flex-wrap gap-2 md:gap-3">
                         {(() => {
-                          const visibleLinks = getVisibleSocialLinks(artist, artist.plan);
+                          const visibleLinks = socialLinks ?? getVisibleSocialLinks(artist, artist.plan);
                           const iconMap: Record<string, React.ReactNode> = {
                             facebook: <Facebook className="h-5 w-5 md:h-6 md:w-6 text-accent" />,
                             instagram: <Instagram className="h-5 w-5 md:h-6 md:w-6 text-accent" />,
