@@ -263,8 +263,8 @@ const Dashboard = () => {
   const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
   const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
-  const ANNOUNCEMENT_PROMOTION_LIMIT = getAnnouncementPromotionLimit(currentPlan);
-  const announcementPromotionsRemaining = ANNOUNCEMENT_PROMOTION_LIMIT - announcementPromotionsUsed;
+  const ANNOUNCEMENT_PROMOTION_LIMIT = serverLimit(serverEntitlements, 'announcement_promotions', getAnnouncementPromotionLimit(currentPlan));
+
 
 
 
