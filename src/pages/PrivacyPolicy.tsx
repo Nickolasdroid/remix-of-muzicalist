@@ -16,13 +16,13 @@ const PrivacyPolicy = () => {
     <div className={`min-h-screen ${user ? 'md:ml-64' : ''}`}>
       <Navigation />
       
-      <div className={`pt-20 ${user ? 'md:pt-8' : 'md:pt-24'} pb-12 px-4 md:px-8`}>
+      <div className={`pt-16 ${user ? 'md:pt-8' : 'md:pt-24'} pb-12 px-4 md:px-8`}>
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-3xl md:text-5xl font-display font-bold mb-8 text-foreground">
+          <h1 className="text-2xl md:text-5xl font-display font-bold mb-6 md:mb-8 text-foreground">
             Privacy Policy
           </h1>
           
-          <div className="prose prose-lg dark:prose-invert max-w-none space-y-8 text-muted-foreground">
+          <div className="prose prose-sm md:prose-lg dark:prose-invert max-w-none space-y-6 md:space-y-8 text-muted-foreground">
             <p className="text-sm text-muted-foreground">
               Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </p>
