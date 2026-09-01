@@ -23,10 +23,18 @@ export const PRICE_BY_PLAN: Record<"Standard" | "Premium", Record<Billing, strin
 
 /**
  * Returns the effective plan after considering Stripe subscription_status.
- * Only "active" or "trialing" grant access to paid plan features.
+ * Thin wrapper over the single entitlement resolver in `@/lib/entitlements`
+ * (which mirrors the authoritative `public.effective_plan()` database function).
  */
-export function getEffectivePlan(plan?: string | null, status?: string | null): Plan {
-  if (!plan || plan === "Free") return "Free";
-  if (status === "active" || status === "trialing") return plan as Plan;
-  return "Free";
+export function getEffectivePlan(
+  plan?: string | null,
+  status?: string | null,
+  currentPeriodEnd?: string | null
+): Plan {
+  return resolveEffectivePlan({
+    plan,
+    subscription_status: status,
+    subscription_current_period_end: currentPeriodEnd,
+  });
 }
+
