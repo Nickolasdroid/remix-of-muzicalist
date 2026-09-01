@@ -70,6 +70,7 @@ const BOOKING_REQUEST_COLUMNS =
 
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { resolveEffectivePlan, entitlementErrorMessage } from "@/lib/entitlements";
+import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
@@ -292,7 +293,7 @@ const Dashboard = () => {
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits — counted per billing period from real posts, resets each cycle.
-  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
+  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'posts', getPostLimit(currentPlan));
   const postsUsed = createdThisPeriod(posts);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
@@ -309,8 +310,8 @@ const Dashboard = () => {
   } | null>(null);
 
   // Gallery limits (plan-based)
-  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
-  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
+  const STANDARD_IMAGE_LIMIT = serverLimit(serverEntitlements, 'gallery_images', getImageLimit(currentPlan));
+  const STANDARD_VIDEO_LIMIT = serverLimit(serverEntitlements, 'gallery_videos', getVideoLimit(currentPlan));
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
@@ -2335,12 +2336,12 @@ const Dashboard = () => {
                                   profileId={user?.id}
                                   country={profile?.country}
                                   editable={false}
-                                  maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                  maxEntries={serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))}
                                   onCountChange={setPricingCount}
                                 />
-                                {pricingCount >= getEstimatedPriceLimit(currentPlan) && (
+                                {pricingCount >= serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan)) && (
                                   <p className="text-xs text-muted-foreground mt-2">
-                                    You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
+                                    You reached the limit of {serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))} prices for your plan.
                                   </p>
                                 )}
                                 <Dialog
@@ -2362,7 +2363,7 @@ const Dashboard = () => {
                                       profileId={user?.id}
                                       country={profile?.country}
                                       editable={true}
-                                      maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                      maxEntries={serverLimit(serverEntitlements, 'pricing_entries', getEstimatedPriceLimit(currentPlan))}
                                     />
                                   </DialogContent>
                                 </Dialog>
@@ -2416,7 +2417,7 @@ const Dashboard = () => {
                                 Free plan: only 1 social media link visible. Upgrade for more.
                               </p>}
                               {(() => {
-                                const socialLimit = getSocialLinkLimit(currentPlan);
+                                const socialLimit = serverLimit(serverEntitlements, 'social_links', getSocialLinkLimit(currentPlan));
                                 const filledCount = countFilledSocialLinks(formData);
                                 const canAddMore = (fieldValue: string) => fieldValue || filledCount < socialLimit;
                                 return <>
