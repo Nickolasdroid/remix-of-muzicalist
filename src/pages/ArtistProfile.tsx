@@ -1709,7 +1709,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                      </Card> : !canPost(artist.plan) ?
+                      </Card> : posts.length === 0 && announcements.filter((a) => a.is_premium && !isAdExpired(a)).length === 0 ?
                 <Card className="p-8 text-center">
                         <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">This artist doesn't have any posts yet.</p>
@@ -1983,7 +1983,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                     </Card> : !canPost(artist.plan) ?
+                     </Card> : announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length === 0 ?
                 <Card className="p-8 text-center">
                         <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">This artist doesn't have any announcements yet.</p>
