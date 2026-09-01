@@ -10,8 +10,7 @@
     "select": "Selectează",
     "loading": "Se încarcă...",
     "error": "Eroare",
-    "success": "Succes",
-    "user": "Utilizator"
+    "success": "Succes"
   },
   "navigation": {
     "home": "Acasă",
@@ -30,7 +29,7 @@
     "register": "Înregistrare",
     "logout": "Deconectare",
     "profile": "Profil",
-    "settings": "Setări",
+    "settings": "Setări și activități",
     "more": "Mai mult",
     "myPlan": "Planul meu",
     "adminDashboard": "Panou admin",
@@ -297,7 +296,6 @@
   "postPromotion": {
     "managePromotion": "Gestionează promovarea",
     "promoted": "Promovată",
-    "promotedAnnouncement": "Promovat",
     "title": "Promovare postare",
     "description": "Postarea ta va primi vizibilitate suplimentară în feedul Muzicalist.",
     "available_one": "{{count}} promovare disponibilă luna aceasta",
@@ -311,14 +309,10 @@
     "close": "Închide",
     "success": "Postare promovată!",
     "notAvailable": "Planul tău nu include promovări de postări.",
-    "promote": "Promovează",
-    "successTitle": "Postare promovată",
-    "successBody": "Postarea ta primește acum distribuție crescută în feedul Muzicalist.",
-    "successTitleAnnouncement": "Anunț promovat",
-    "successBodyAnnouncement": "Anunțul tău primește acum distribuție crescută în feedul Muzicalist."
+    "promote": "Promovează"
   },
   "creationModal": {
-    "postTitle": "Adaugă postare",
+    "postTitle": "Adaugă o postare",
     "announcementTitle": "Adaugă un anunț",
     "postsAvailable_one": "{{count}} postare disponibilă",
     "postsAvailable_few": "{{count}} postări disponibile",
@@ -330,7 +324,6 @@
     "validDays": "Valabil {{count}} zile",
     "shareQuestion": "Ce vrei să împărtășești?",
     "postPlaceholder": "Scrie ceva despre postarea ta...",
-    "caption": "Legendă",
     "media": "Media",
     "mediaHint": "Atașează o fotografie sau un videoclip la postare.",
     "photo": "Fotografie",
@@ -359,45 +352,5 @@
     "followingThirdPerson": "Urmărește",
     "follow": "Urmărește",
     "followingAction": "Urmărești"
-  },
-  "likes": {
-    "likedBy": "Apreciat de",
-    "empty": "Încă nicio apreciere.",
-    "user": "Utilizator",
-    "member": "Membru",
-    "loadMore": "Încarcă mai multe",
-    "viewLikes": "Vezi cine a apreciat"
-  },
-  "profileMenu": {
-    "title": "Opțiuni profil",
-    "editProfile": "Editează profilul",
-    "shareProfile": "Distribuie profilul",
-    "copyLink": "Copiază linkul profilului",
-    "settings": "Setări",
-    "block": "Blochează",
-    "unblock": "Deblochează",
-    "reportProfile": "Raportează profilul",
-    "linkCopied": "Linkul profilului a fost copiat.",
-    "linkCopyFailed": "Linkul nu a putut fi copiat",
-    "blocked": "Profil blocat",
-    "unblocked": "Profil deblocat",
-    "blockedDesc": "Nu vă mai puteți urmări sau trimite mesaje.",
-    "blockFailed": "Acțiunea a eșuat"
-  },
-  "settings": {
-    "blocked": {
-      "title": "Utilizatori blocați",
-      "description": "Gestionează utilizatorii și artiștii pe care i-ai blocat. Profilurile blocate nu îți pot vedea profilul, nu îți pot trimite mesaje și nu pot interacționa cu conținutul tău.",
-      "emptyTitle": "Nu blochezi pe nimeni",
-      "emptyDesc": "Nu ai blocat încă niciun utilizator sau artist.",
-      "loadFailed": "Lista de profiluri blocate nu a putut fi încărcată"
-    }
-  },
-  "accountType": {
-    "user": "Utilizator",
-    "singer": "Solist",
-    "dj": "DJ",
-    "instrumentalist": "Instrumentist",
-    "band": "Trupă"
   }
 }
