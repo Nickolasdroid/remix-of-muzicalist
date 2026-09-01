@@ -1942,7 +1942,7 @@ export const RO_TEXT: Record<string, string> = {
   "Serbian Dinar": "Dinar sârbesc",
   "Service temporarily unavailable. Please contact support.": "Serviciu temporar indisponibil. Te rugăm să contactezi echipa de suport.",
   "Set your experience level": "Setează-ți nivelul de experiență",
-  "Settings": "Setări",
+  "Settings": "Setări și activități",
   "Sex": "Sex",
   "Seychelles": "Seychelles",
   "Share": "Distribuie",
