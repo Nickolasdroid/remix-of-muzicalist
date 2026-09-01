@@ -107,7 +107,7 @@ const Dashboard = () => {
   const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
 
   const settingsSectionTitles: Record<SettingSection, string> = {
-    main: "Settings",
+    main: t('navigation.settings'),
     account: "Account",
     system: "System",
     email: "Email Address",
@@ -135,7 +135,7 @@ const Dashboard = () => {
 
   const getMobileTitle = () => {
     if (activeTab === "settings") {
-      return settingsSectionTitles[settingsSection] || "Settings";
+      return settingsSectionTitles[settingsSection] || t('navigation.settings');
     }
     return undefined;
   };
