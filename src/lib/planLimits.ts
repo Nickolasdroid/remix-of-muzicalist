@@ -1,8 +1,14 @@
 /**
  * Plan-based feature limits and utilities.
+ *
+ * IMPORTANT: these numbers are a display mirror of the authoritative database
+ * definition in `public.plan_limits(text)`. Enforcement happens server-side
+ * (insert triggers + SECURITY DEFINER RPCs); keep both in sync when changing
+ * a limit.
  */
 
 export type PlanType = 'Free' | 'Standard' | 'Premium';
+
 
 /** Returns a numeric priority for sorting (higher = shown first) */
 export const getPlanPriority = (plan?: string | null): number => {
