@@ -2706,6 +2706,13 @@ export type Database = {
           status: string
         }[]
       }
+      get_public_social_links: {
+        Args: { _profile_id: string }
+        Returns: {
+          platform: string
+          url: string
+        }[]
+      }
       get_user_type: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
