@@ -48,6 +48,13 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   system: true,
 };
 
+const SUPPORT_DESTINATIONS: Partial<Record<SettingSection, string>> = {
+  help: "/help",
+  about: "/about",
+  privacy_policy: "/privacy-policy",
+  terms_of_service: "/terms-of-service",
+};
+
 type CommentsAllowFrom = "everyone" | "following" | "off";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
@@ -1333,20 +1340,6 @@ const SettingsTab = ({
     </div>
   );
 
-  const HelpContent = (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">Help & Support</h2>
-        <p className="text-sm text-muted-foreground mt-1">Find answers and get assistance</p>
-      </div>
-      <Separator />
-      <Button onClick={() => navigate('/help')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-        <HelpCircle className="h-4 w-4 mr-2" />
-        Go to Help & Support
-      </Button>
-    </div>
-  );
-
   const ReportContent = (
     <div className="space-y-6">
       <div>
@@ -1536,7 +1529,6 @@ const SettingsTab = ({
       language: LanguageContent,
       theme: ThemeContent,
       promotion: PromotionContent,
-      help: HelpContent,
       report: ReportContent,
       logout: LogoutContent,
       delete: DeleteContent,
@@ -1874,16 +1866,9 @@ const DesktopSettingsLayout = ({
                           <li key={item.id}>
                             <button
                               onClick={() => {
-                                if (item.id === "about") {
-                                  navigate("/about");
-                                  return;
-                                }
-                                if (item.id === "privacy_policy") {
-                                  navigate("/privacy-policy");
-                                  return;
-                                }
-                                if (item.id === "terms_of_service") {
-                                  navigate("/terms-of-service");
+                                const supportDestination = SUPPORT_DESTINATIONS[item.id];
+                                if (supportDestination) {
+                                  navigate(supportDestination);
                                   return;
                                 }
                                 setActiveSection(item.id);
