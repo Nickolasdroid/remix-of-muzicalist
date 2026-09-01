@@ -234,10 +234,13 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Announcement limits (effective plan = plan + Stripe status, mirrors public.effective_plan)
-  const currentPlan = resolveEffectivePlan(profile);
-  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
-  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
+  // Entitlements: the database (public.get_my_entitlements) is authoritative.
+  // Static planLimits helpers are only a fallback until the RPC resolves.
+  const { entitlements: serverEntitlements } = useEntitlements();
+  const currentPlan = serverEntitlements?.effective_plan ?? resolveEffectivePlan(profile);
+  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'announcements', getAdLimit(currentPlan));
+  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : serverLimit(serverEntitlements, 'post_promotions', getPromotionLimit(currentPlan));
+
 
   // Per-billing-period usage counters. Post/announcement usage is derived from
   // the real content rows created during the current period (same rule the
