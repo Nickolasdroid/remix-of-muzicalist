@@ -1538,8 +1538,6 @@ const SettingsTab = ({
       promotion: PromotionContent,
       help: HelpContent,
       report: ReportContent,
-      privacy_policy: PrivacyPolicyContent,
-      terms_of_service: TermsOfServiceContent,
       logout: LogoutContent,
       delete: DeleteContent,
       billing: (
