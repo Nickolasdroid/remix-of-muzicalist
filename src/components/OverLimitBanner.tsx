@@ -16,12 +16,12 @@ const LABELS: Record<OverLimitBannerProps["kind"], string> = {
 };
 
 /**
- * Warning shown when a user is over the per-billing-period limit
- * (typically right after a plan downgrade). Existing content is preserved;
- * new creations are paused until the next billing-cycle reset.
+ * Notice shown when the account has used its full creation allowance for the
+ * current billing period. Existing content is never removed — only new
+ * creation pauses until the counter resets.
  */
 export const OverLimitBanner = ({ kind, used, limit, resetDate, className = "" }: OverLimitBannerProps) => {
-  if (used <= limit) return null;
+  if (used < limit || limit === 0) return null;
   const label = LABELS[kind];
   const formattedReset = resetDate
     ? resetDate.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
@@ -34,17 +34,18 @@ export const OverLimitBanner = ({ kind, used, limit, resetDate, className = "" }
       <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
       <div className="space-y-1">
         <p className="font-medium text-destructive">
-          {label}: {used}/{limit} — over your plan limit
+          {label}: {used}/{limit} used this billing period
         </p>
         <p className="text-muted-foreground">
-          Your current subscription allows fewer {label.toLowerCase()} than you've already
-          used this period. Existing content stays live, but you can't create new{" "}
-          {label.toLowerCase()} until your counter resets at the next billing cycle
+          You've used your {label.toLowerCase()} allowance for this billing period. All of your
+          existing {label.toLowerCase()} stay published — you can create new ones once your
+          allowance resets
           {formattedReset ? ` (${formattedReset})` : ""}.
         </p>
       </div>
     </div>
   );
 };
+
 
 export default OverLimitBanner;

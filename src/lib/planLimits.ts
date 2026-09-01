@@ -1,8 +1,14 @@
 /**
  * Plan-based feature limits and utilities.
+ *
+ * IMPORTANT: these numbers are a display mirror of the authoritative database
+ * definition in `public.plan_limits(text)`. Enforcement happens server-side
+ * (insert triggers + SECURITY DEFINER RPCs); keep both in sync when changing
+ * a limit.
  */
 
 export type PlanType = 'Free' | 'Standard' | 'Premium';
+
 
 /** Returns a numeric priority for sorting (higher = shown first) */
 export const getPlanPriority = (plan?: string | null): number => {
@@ -193,10 +199,12 @@ export const countFilledSocialLinks = (formData: {
 /**
  * Gallery visibility helper.
  *
- * Returns the gallery item IDs that should remain visible to the public
- * based on the artist's current plan. Rule: keep OLDEST uploads visible
- * first; hide the most recent uploads that exceed the plan limit. Media is
- * never deleted on downgrade — only visibility changes.
+ * Product rule: a subscription controls what an artist can UPLOAD, never what
+ * happens to media they legitimately uploaded in the past. Existing media
+ * therefore always stays publicly visible, even after a downgrade — plan
+ * limits are enforced only at insert time (server-side trigger
+ * `enforce_gallery_quota`). This helper is kept for API compatibility and now
+ * always reports every item as visible.
  */
 export interface GalleryItemForVisibility {
   id: string;
@@ -206,32 +214,12 @@ export interface GalleryItemForVisibility {
 
 export const computeGalleryVisibility = <T extends GalleryItemForVisibility>(
   items: T[],
-  plan?: string | null
+  _plan?: string | null
 ): { visibleIds: Set<string>; hiddenIds: Set<string> } => {
-  const imageLimit = getImageLimit(plan);
-  const videoLimit = getVideoLimit(plan);
-
-  const sortAsc = (a: T, b: T) => {
-    const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
-    const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
-    return ta - tb;
+  return {
+    visibleIds: new Set(items.map((i) => i.id)),
+    hiddenIds: new Set<string>(),
   };
-
-  const images = items.filter((i) => i.type === 'image').slice().sort(sortAsc);
-  const videos = items.filter((i) => i.type === 'video').slice().sort(sortAsc);
-
-  const visibleIds = new Set<string>();
-  const hiddenIds = new Set<string>();
-
-  images.forEach((item, idx) => {
-    if (idx < imageLimit) visibleIds.add(item.id);
-    else hiddenIds.add(item.id);
-  });
-  videos.forEach((item, idx) => {
-    if (idx < videoLimit) visibleIds.add(item.id);
-    else hiddenIds.add(item.id);
-  });
-
-  return { visibleIds, hiddenIds };
 };
+
 

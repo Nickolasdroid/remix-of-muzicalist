@@ -69,6 +69,7 @@ const BOOKING_REQUEST_COLUMNS =
   "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
 
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { resolveEffectivePlan, entitlementErrorMessage } from "@/lib/entitlements";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
@@ -233,22 +234,24 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Announcement limits (plan-based)
-  const currentPlan = profile?.plan;
+  // Announcement limits (effective plan = plan + Stripe status, mirrors public.effective_plan)
+  const currentPlan = resolveEffectivePlan(profile);
   const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
   const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
 
-  // Per-billing-period usage counters. Counters reset automatically at the
-  // start of each new subscription cycle (monthly or yearly).
+  // Per-billing-period usage counters. Post/announcement usage is derived from
+  // the real content rows created during the current period (same rule the
+  // server-side triggers apply); consumed_ad_slots is used only for promotions.
   const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
   const periodStart = getPeriodStart(profile);
   const periodEnd = getPeriodEnd(profile);
   const activeConsumedSlots = consumedSlots.filter(
     (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
+  const createdThisPeriod = (rows: any[]) =>
+    rows.filter((r) => r?.created_at && new Date(r.created_at).getTime() >= periodStart.getTime()).length;
+  const standardAdsUsed = createdThisPeriod(announcements);
   const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
-  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
   // Post promotions consume the existing monthly promotion entitlement.
   const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === PROMOTION_SLOT_KIND.post).length;
   // Announcement promotions are a separate entitlement bucket.
@@ -259,6 +262,7 @@ const Dashboard = () => {
   const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
   const ANNOUNCEMENT_PROMOTION_LIMIT = getAnnouncementPromotionLimit(currentPlan);
   const announcementPromotionsRemaining = ANNOUNCEMENT_PROMOTION_LIMIT - announcementPromotionsUsed;
+
 
 
   // Posts state
@@ -283,9 +287,11 @@ const Dashboard = () => {
   
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
-  // Post limits (plan-based) — counted per billing period, resets each cycle.
+  // Post limits — counted per billing period from real posts, resets each cycle.
   const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
+  const postsUsed = createdThisPeriod(posts);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
+
 
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -968,12 +974,6 @@ const Dashboard = () => {
         budget: newAnnouncement.budget || null
       }).select('id').single();
       if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: inserted?.id ?? null,
-      });
       await loadAnnouncements();
       setNewAnnouncement({
         description: "",
@@ -992,7 +992,7 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: entitlementErrorMessage(error, "Failed to add announcement."),
         variant: "destructive"
       });
     } finally {
@@ -1006,8 +1006,6 @@ const Dashboard = () => {
         error
       } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
-      // Free the slot for the current billing period.
-      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
       await loadAnnouncements();
       toast({
         title: "Success",
@@ -1050,13 +1048,6 @@ const Dashboard = () => {
         media_type: newPost.mediaType || null
       }).select('id').single();
       if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: insertedPost?.id ?? null,
-        kind: 'post',
-      });
       await loadPosts();
       await loadAnnouncements();
       setNewPost({
@@ -1073,7 +1064,7 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: entitlementErrorMessage(error, "Failed to create post."),
         variant: "destructive"
       });
     } finally {
@@ -1119,8 +1110,6 @@ const Dashboard = () => {
         error
       } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
-      // Free the slot for the current billing period.
-      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
       await loadPosts();
       await loadAnnouncements();
       toast({
@@ -2562,7 +2551,7 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) && posts.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
@@ -2883,7 +2872,7 @@ const Dashboard = () => {
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!isAdmin && !canPost(currentPlan) && announcements.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>

@@ -2501,6 +2501,7 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      effective_plan: { Args: { _user_id: string }; Returns: string }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
@@ -2604,6 +2605,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_my_entitlements: { Args: never; Returns: Json }
       get_my_full_profile: {
         Args: never
         Returns: {
@@ -2754,6 +2756,8 @@ export type Database = {
         }
         Returns: number
       }
+      plan_limit: { Args: { _key: string; _user_id: string }; Returns: number }
+      plan_limits: { Args: { _plan: string }; Returns: Json }
       promote_announcement: {
         Args: { p_announcement_id: string }
         Returns: Json
