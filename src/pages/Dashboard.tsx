@@ -69,6 +69,7 @@ const BOOKING_REQUEST_COLUMNS =
   "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
 
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { resolveEffectivePlan, entitlementErrorMessage } from "@/lib/entitlements";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
@@ -973,12 +974,6 @@ const Dashboard = () => {
         budget: newAnnouncement.budget || null
       }).select('id').single();
       if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: inserted?.id ?? null,
-      });
       await loadAnnouncements();
       setNewAnnouncement({
         description: "",
@@ -997,7 +992,7 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: entitlementErrorMessage(error, "Failed to add announcement."),
         variant: "destructive"
       });
     } finally {
@@ -1011,8 +1006,6 @@ const Dashboard = () => {
         error
       } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
-      // Free the slot for the current billing period.
-      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
       await loadAnnouncements();
       toast({
         title: "Success",
@@ -1055,13 +1048,6 @@ const Dashboard = () => {
         media_type: newPost.mediaType || null
       }).select('id').single();
       if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: insertedPost?.id ?? null,
-        kind: 'post',
-      });
       await loadPosts();
       await loadAnnouncements();
       setNewPost({
@@ -1078,7 +1064,7 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: entitlementErrorMessage(error, "Failed to create post."),
         variant: "destructive"
       });
     } finally {
@@ -1124,8 +1110,6 @@ const Dashboard = () => {
         error
       } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
-      // Free the slot for the current billing period.
-      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
       await loadPosts();
       await loadAnnouncements();
       toast({
