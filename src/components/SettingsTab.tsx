@@ -1347,20 +1347,6 @@ const SettingsTab = ({
     </div>
   );
 
-  const AboutContent = (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">About</h2>
-        <p className="text-sm text-muted-foreground mt-1">Learn more about Muzicalist</p>
-      </div>
-      <Separator />
-      <Button onClick={() => navigate('/about')} className="bg-accent text-accent-foreground hover:bg-accent/90">
-        <Info className="h-4 w-4 mr-2" />
-        Go to About
-      </Button>
-    </div>
-  );
-
   const PrivacyPolicyContent = (
     <div className="space-y-6">
       <div>
@@ -1580,7 +1566,6 @@ const SettingsTab = ({
       promotion: PromotionContent,
       help: HelpContent,
       report: ReportContent,
-      about: AboutContent,
       privacy_policy: PrivacyPolicyContent,
       terms_of_service: TermsOfServiceContent,
       logout: LogoutContent,
@@ -1867,6 +1852,7 @@ const DesktopSettingsLayout = ({
   isMobile: boolean;
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
 
@@ -1917,7 +1903,13 @@ const DesktopSettingsLayout = ({
                         return (
                           <li key={item.id}>
                             <button
-                              onClick={() => setActiveSection(item.id)}
+                              onClick={() => {
+                                if (item.id === "about") {
+                                  navigate("/about");
+                                  return;
+                                }
+                                setActiveSection(item.id);
+                              }}
                               className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
                                 isActive ? activeCls : idleCls
                               }`}
