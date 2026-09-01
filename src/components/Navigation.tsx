@@ -278,7 +278,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     : [
         { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
         { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
-        ...(userType === 'admin' ? [] : [{ to: '/my-plan', icon: Crown, label: t('navigation.myPlan', 'My Plan') }]),
+        ...(userType === 'artist' ? [{ to: '/my-plan', icon: Crown, label: t('navigation.myPlan', 'My Plan') }] : []),
         { to: '/dashboard?tab=profile', icon: User, label: t('navigation.profile') },
       ];
 
