@@ -75,6 +75,8 @@ export const mapEntitlementError = (error: unknown): string | null => {
     return "You've reached your gallery limit for this plan.";
   if (message.includes("PRICING_PLAN_REQUIRED"))
     return "Estimated pricing is available with a Standard or Premium plan.";
+  if (message.includes("SOCIAL_LINK_LIMIT_REACHED"))
+    return "Your plan allows fewer social links. Upgrade to add more.";
   if (message.includes("PRICING_LIMIT_REACHED"))
     return "You've reached the maximum number of pricing entries for your plan.";
 
