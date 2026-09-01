@@ -1867,6 +1867,7 @@ const DesktopSettingsLayout = ({
   isMobile: boolean;
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
 
