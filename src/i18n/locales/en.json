@@ -10,8 +10,7 @@
     "select": "Select",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success",
-    "user": "User"
+    "success": "Success"
   },
   "navigation": {
     "home": "Home",
@@ -30,7 +29,7 @@
     "register": "Register",
     "logout": "Logout",
     "profile": "Profile",
-    "settings": "Settings",
+    "settings": "Settings & Activity",
     "more": "More",
     "myPlan": "My Plan",
     "adminDashboard": "Admin Dashboard",
@@ -223,7 +222,6 @@
     "emptyFiltered": "No posts match this filter.",
     "published": "Published",
     "promoted": "Promoted",
-    "promotedAnnouncement": "Promoted",
     "expired": "Expired",
     "likes": "Likes",
     "comments": "Comments",
@@ -311,14 +309,10 @@
     "close": "Close",
     "success": "Post promoted!",
     "notAvailable": "Your plan does not include post promotions.",
-    "promote": "Promote",
-    "successTitle": "Post promoted",
-    "successBody": "Your post is now receiving increased distribution in the Muzicalist feed.",
-    "successTitleAnnouncement": "Announcement promoted",
-    "successBodyAnnouncement": "Your announcement is now receiving increased distribution in the Muzicalist feed."
+    "promote": "Promote"
   },
   "creationModal": {
-    "postTitle": "Add Post",
+    "postTitle": "Add a post",
     "announcementTitle": "Add an announcement",
     "postsAvailable_one": "{{count}} post available",
     "postsAvailable_other": "{{count}} posts available",
@@ -328,7 +322,6 @@
     "validDays": "Valid for {{count}} days",
     "shareQuestion": "What do you want to share?",
     "postPlaceholder": "Write something about your post...",
-    "caption": "Caption",
     "media": "Media",
     "mediaHint": "Attach a photo or a video to your post.",
     "photo": "Photo",
@@ -357,45 +350,5 @@
     "followingThirdPerson": "Following",
     "follow": "Follow",
     "followingAction": "Following"
-  },
-  "likes": {
-    "likedBy": "Liked by",
-    "empty": "No likes yet.",
-    "user": "User",
-    "member": "Member",
-    "loadMore": "Load more",
-    "viewLikes": "View who liked this"
-  },
-  "profileMenu": {
-    "title": "Profile options",
-    "editProfile": "Edit profile",
-    "shareProfile": "Share profile",
-    "copyLink": "Copy profile link",
-    "settings": "Settings",
-    "block": "Block",
-    "unblock": "Unblock",
-    "reportProfile": "Report profile",
-    "linkCopied": "Profile link copied.",
-    "linkCopyFailed": "Unable to copy link",
-    "blocked": "Profile blocked",
-    "unblocked": "Profile unblocked",
-    "blockedDesc": "You can no longer follow or message each other.",
-    "blockFailed": "Action failed"
-  },
-  "settings": {
-    "blocked": {
-      "title": "Blocked Users",
-      "description": "Manage the users and artists you've blocked. Blocked profiles can't view your profile, message you, or interact with your content.",
-      "emptyTitle": "You're not blocking anyone",
-      "emptyDesc": "You haven't blocked any users or artists yet.",
-      "loadFailed": "Could not load blocked profiles"
-    }
-  },
-  "accountType": {
-    "user": "User",
-    "singer": "Singer",
-    "dj": "DJ",
-    "instrumentalist": "Instrumentalist",
-    "band": "Band"
   }
 }
