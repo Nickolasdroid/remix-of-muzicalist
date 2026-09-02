@@ -2131,10 +2131,11 @@ const Dashboard = () => {
                                   </div> :
 
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
                                     <InstrumentSelector
                         instruments={formData.instruments}
                         onInstrumentsChange={handleInstrumentsChange} />
