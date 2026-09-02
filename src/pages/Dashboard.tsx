@@ -1905,8 +1905,8 @@ const Dashboard = () => {
                             </label>
                             <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                           </div>
-                          <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate">
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {formData.stageName}
                             </h1>
                             <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -1915,12 +1915,16 @@ const Dashboard = () => {
                               {formData.county && <span className="truncate">{formData.county}</span>}
                               {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                             </div>
-                            <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
-                              <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                              <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                              <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                            </div>
+                            {/* Owner view: Followers + Following, same visual language as the public profile */}
+                            <SocialStats
+                              className="mt-1.5 md:mt-2 flex-nowrap"
+                              followersCount={followersCount}
+                              followingCount={followingCount}
+                              onFollowersClick={() => setShowFollowersDialog(true)}
+                              onFollowingClick={() => setShowFollowingDialog(true)}
+                            />
                           </div>
+
                         </div>
 
 
