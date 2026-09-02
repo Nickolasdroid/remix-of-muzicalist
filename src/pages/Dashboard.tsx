@@ -47,7 +47,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import EditableField from "@/components/EditableField";
-import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout } from "@/components/ArtistAvailabilityCalendar";
+import { Calendar } from "@/components/ui/calendar";
 import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -3172,19 +3172,42 @@ const Dashboard = () => {
                       {/* Calendar Tab */}
                       {!isAdmin && <TabsContent value="calendar">
                         <div>
-                          <SectionHeaderWithUsage
-                            icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                            title="My Calendar"
-                            className="mb-4"
-                            action={isPremium(currentPlan) ? (
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
+                              <CalendarIcon className="h-5 w-5 text-accent" />
+                              My Calendar
+                            </h2>
+                            {isPremium(currentPlan) && (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />
                                 Statistics
                               </Button>
-                            ) : undefined}
-                          />
-                          <AvailabilityCalendarLayout>
-                            <ArtistAvailabilityCalendar selected={selectedDate} onSelect={(date) => {
+                            )}
+                          </div>
+                          <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
+                            {/* Legend - above calendar on mobile */}
+                            <div className="w-full lg:hidden">
+                              <div className="p-3 rounded-lg bg-secondary/50">
+                                
+                                <div className="flex justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-destructive/70"></div>
+                                    <span className="text-xs text-muted-foreground">Booked</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-muted/80"></div>
+                                    <span className="text-xs text-muted-foreground">Unavailable</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-5 h-5 rounded bg-emerald-500"></div>
+                                    <span className="text-xs text-muted-foreground">Available</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {/* Calendar */}
+                            <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
+                              <Calendar mode="single" selected={selectedDate} onSelect={(date) => {
                       if (!date) {
                         setSelectedDate(undefined);
                         setUserChangedStatus(false);
@@ -3212,7 +3235,17 @@ const Dashboard = () => {
                         setEventStatus('available');
                         setEventNotes("");
                       }
-                    }} busyDates={calendarEvents.filter((e) => e.status === 'busy' || e.status === 'booked').map((e) => parseYMDToLocalDate(e.event_date))} blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))} />
+                    }} className="rounded-lg border border-border shadow-sm pointer-events-auto" classNames={{
+                      day_selected: "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
+                      day_today: "bg-emerald-500/30 text-foreground"
+                    }} modifiers={{
+                      busy: calendarEvents.filter((e) => e.status === 'busy').map((e) => parseYMDToLocalDate(e.event_date)),
+                      blocked: calendarEvents.filter((e) => e.status === 'blocked').map((e) => parseYMDToLocalDate(e.event_date))
+                    }} modifiersClassNames={{
+                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
+                    }} />
+                            </div>
                             
                             {/* Date Details Form */}
                             {(() => {
@@ -3392,7 +3425,25 @@ const Dashboard = () => {
                             })()}
 
                             
-                          </AvailabilityCalendarLayout>
+                            {/* Legend - desktop only */}
+                            <div className="hidden lg:block p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-48">
+                              <h4 className="font-semibold text-foreground mb-2 md:mb-3">Legend</h4>
+                              <div className="flex flex-col gap-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-destructive/70"></div>
+                                  <span className="text-sm text-muted-foreground">Booked</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-muted/80"></div>
+                                  <span className="text-sm text-muted-foreground">Unavailable</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-emerald-500"></div>
+                                  <span className="text-sm text-muted-foreground">Available</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
