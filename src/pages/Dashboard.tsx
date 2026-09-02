@@ -2482,17 +2482,26 @@ const Dashboard = () => {
                             </div>}
                          </div>
 
-                        <Separator className="my-8" />
+                        <Separator />
 
-                        {/* Reviews Section */}
+                        {/* Reviews Section — same structure as the public artist profile */}
                         <div>
-                          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-left">
-                            <Star className="h-5 w-5 text-accent" />
-                            My Reviews
-                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                ({getAverageRating()} • {reviews.length})
-                              </span>}
-                          </h2>
+                          <SectionHeaderWithUsage
+                            icon={<Star className="h-5 w-5 text-accent" />}
+                            title={
+                              <>
+                                Reviews
+                                {getAverageRating() && (
+                                  <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                    {' '}({getAverageRating()} • {reviews.length})
+                                  </span>
+                                )}
+                              </>
+                            }
+                            className="mb-3 md:mb-4"
+                          />
+
+
                           
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
