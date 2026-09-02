@@ -2512,10 +2512,14 @@ const Dashboard = () => {
                                       </button>
                                       <div className="flex items-center gap-3">
                                         <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                          {review.reviewer_avatar_url && (
+                                            <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />
+                                          )}
                                           <AvatarFallback className="bg-accent/10 text-accent text-sm">
                                             {review.reviewer_name.charAt(0).toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
+
                                         <div className="flex-1 min-w-0">
                                           <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
                                           <span className="text-xs text-muted-foreground">
