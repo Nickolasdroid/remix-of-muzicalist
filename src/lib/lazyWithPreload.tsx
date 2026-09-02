@@ -26,16 +26,15 @@ function isChunkLoadError(error: unknown) {
   );
 }
 
-function reloadOnce(): boolean {
-  if (typeof window === "undefined") return false;
+function reloadOnce() {
+  if (typeof window === "undefined") return;
   try {
-    if (sessionStorage.getItem(RELOAD_FLAG)) return false;
+    if (sessionStorage.getItem(RELOAD_FLAG)) return;
     sessionStorage.setItem(RELOAD_FLAG, "1");
   } catch {
     /* storage indisponibil - continuăm oricum */
   }
   window.location.reload();
-  return true;
 }
 
 if (typeof window !== "undefined") {
@@ -55,39 +54,20 @@ export function lazyWithPreload<T extends ComponentType<any>>(
 ): PreloadableComponent<T> {
   let promise: Promise<{ default: T }> | null = null;
 
-  const sleep = (ms: number) =>
-    new Promise((resolve) => window.setTimeout(resolve, ms));
-
-  const loadWithRetry = async (): Promise<{ default: T }> => {
-    const delays = [0, 400, 1200];
-    let lastError: unknown;
-
-    for (const delay of delays) {
-      if (delay) await sleep(delay);
-      try {
-        return await factory();
-      } catch (error) {
-        lastError = error;
-        // Erorile care nu au legătură cu chunk-urile se propagă imediat.
-        if (!isChunkLoadError(error)) {
-          promise = null;
-          throw error;
-        }
-      }
-    }
-
-    // Toate încercările au eșuat: chunk-ul chiar nu mai există (deploy nou).
-    // Facem un singur reload și lăsăm promisiunea nerezolvată ca Suspense
-    // să afișeze fallback-ul în loc de un ecran alb.
-    promise = null;
-    if (reloadOnce()) {
-      return new Promise<{ default: T }>(() => {});
-    }
-    throw lastError;
-  };
-
   const load = () => {
-    if (!promise) promise = loadWithRetry();
+    if (!promise) {
+      promise = factory().catch((error) => {
+        // Resetăm memoizarea ca următoarea încercare să nu refolosească
+        // promisiunea respinsă.
+        promise = null;
+        if (!isChunkLoadError(error)) throw error;
+        return factory().catch((retryError) => {
+          promise = null;
+          if (isChunkLoadError(retryError)) reloadOnce();
+          throw retryError;
+        });
+      });
+    }
     return promise;
   };
 
@@ -95,4 +75,3 @@ export function lazyWithPreload<T extends ComponentType<any>>(
   Component.preload = load;
   return Component;
 }
-
