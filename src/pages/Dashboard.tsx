@@ -482,19 +482,31 @@ const Dashboard = () => {
     } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
-    if (data) setReviews(data);
+    if (!data) return;
+    // Enrich with reviewer avatars — same presentation as the public profile.
+    const reviewerIds = Array.from(new Set(data.map((r: any) => r.reviewer_user_id).filter(Boolean)));
+    let avatarMap: Record<string, string | null> = {};
+    if (reviewerIds.length > 0) {
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', reviewerIds as string[]);
+      avatarMap = Object.fromEntries((profs || []).map((p: any) => [p.id, p.avatar_url]));
+    }
+    setReviews(data.map((r: any) => ({ ...r, reviewer_avatar_url: r.reviewer_user_id ? avatarMap[r.reviewer_user_id] ?? null : null })));
   };
   const loadFollowing = async () => {
     if (!user) return;
-    const { data, count } = await supabase.
+    const { data } = await supabase.
     from('followers').
-    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' }).
+    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)').
     eq('follower_id', user.id);
-    setFollowingCount(count || 0);
-    if (data) {
-      setFollowingArtists(data.map((f: any) => f.profiles).filter(Boolean));
-    }
+    // Count only rows whose target profile still exists — same rule as the public profile.
+    const artists = (data || []).map((f: any) => f.profiles).filter(Boolean);
+    setFollowingArtists(artists);
+    setFollowingCount(artists.length);
   };
+
   const loadFollowers = async () => {
     if (!user) return;
     const { data } = await supabase
@@ -1880,7 +1892,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-                        <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-end gap-3 md:gap-4 lg:gap-5 relative z-10">
+                        <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                           <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
                             <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
                               <AvatarImage src={profile?.avatar_url} />
@@ -1893,8 +1905,8 @@ const Dashboard = () => {
                             </label>
                             <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                           </div>
-                          <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate">
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {formData.stageName}
                             </h1>
                             <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -1903,12 +1915,16 @@ const Dashboard = () => {
                               {formData.county && <span className="truncate">{formData.county}</span>}
                               {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                             </div>
-                            <div className="flex items-center gap-1.5 md:gap-2 mt-1.5 md:mt-2">
-                              <Star className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />
-                              <span className="text-foreground text-sm md:text-base font-semibold">{getAverageRating() || '—'}</span>
-                              <span className="text-muted-foreground text-xs md:text-sm">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                            </div>
+                            {/* Owner view: Followers + Following, same visual language as the public profile */}
+                            <SocialStats
+                              className="mt-1.5 md:mt-2 flex-nowrap"
+                              followersCount={followersCount}
+                              followingCount={followingCount}
+                              onFollowersClick={() => setShowFollowersDialog(true)}
+                              onFollowingClick={() => setShowFollowingDialog(true)}
+                            />
                           </div>
+
                         </div>
 
 
@@ -1952,14 +1968,7 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-                        {/* Followers row */}
-                        <SocialStats
-                          className="mx-4 md:mx-0 mt-3 md:mt-4"
-                          followersCount={followersCount}
-                          followingCount={followingCount}
-                          onFollowersClick={() => setShowFollowersDialog(true)}
-                          onFollowingClick={() => setShowFollowingDialog(true)}
-                        />
+
 
                       </div>
                     )}
@@ -2051,14 +2060,15 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <User className="h-5 w-5 text-accent" />
-                              About Me
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<User className="h-5 w-5 text-accent" />}
+                              title="About"
+                            />
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
                           </div>
+
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={(e) => {
                     if (e.target.value.length <= 200) {
@@ -2108,10 +2118,11 @@ const Dashboard = () => {
                     };
                     return instrumentName ?
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
                                     <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
@@ -2120,10 +2131,11 @@ const Dashboard = () => {
                                   </div> :
 
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
                                     <InstrumentSelector
                         instruments={formData.instruments}
                         onInstrumentsChange={handleInstrumentsChange} />
@@ -2140,10 +2152,11 @@ const Dashboard = () => {
                             <Separator />
                             <div className="group">
                               <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                  <Users className="h-5 w-5 text-accent" />
-                                  Number of members
-                                </h3>
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Members:"
+                                />
+
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
@@ -2174,10 +2187,11 @@ const Dashboard = () => {
                           {/* Music Genres */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <Music className="h-5 w-5 text-accent" />
-                                Music Genres
-                              </h3>
+                              <SectionHeaderWithUsage
+                                icon={<Music className="h-5 w-5 text-accent" />}
+                                title="Music Genres"
+                              />
+
                               {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
@@ -2268,10 +2282,11 @@ const Dashboard = () => {
                           {/* Estimated Prices */}
                           <div className="group">
                             <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <DollarSign className="h-5 w-5 text-accent" />
-                                Estimated Prices
-                              </h3>
+                              <SectionHeaderWithUsage
+                                icon={<DollarSign className="h-5 w-5 text-accent" />}
+                                title="Estimated Prices"
+                              />
+
                               {canSetEstimatedPrice(currentPlan) && (
                                 <Button
                                   size="sm"
@@ -2336,7 +2351,7 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
+                          <SectionHeaderWithUsage title="Contact Information" className="mb-4" />
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
@@ -2382,10 +2397,8 @@ const Dashboard = () => {
                         {/* Social Networks */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-3 md:mb-4">
-                            <h3 className="text-xl font-display font-bold flex items-center gap-2 text-left">
-                              <LinkIcon className="h-5 w-5 text-accent" />
-                              Social Networks
-                            </h3>
+                            <SectionHeaderWithUsage title="Social Networks" />
+
                             {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
@@ -2473,17 +2486,26 @@ const Dashboard = () => {
                             </div>}
                          </div>
 
-                        <Separator className="my-8" />
+                        <Separator />
 
-                        {/* Reviews Section */}
+                        {/* Reviews Section — same structure as the public artist profile */}
                         <div>
-                          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-left">
-                            <Star className="h-5 w-5 text-accent" />
-                            My Reviews
-                            {getAverageRating() && <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                ({getAverageRating()} • {reviews.length})
-                              </span>}
-                          </h2>
+                          <SectionHeaderWithUsage
+                            icon={<Star className="h-5 w-5 text-accent" />}
+                            title={
+                              <>
+                                Reviews
+                                {getAverageRating() && (
+                                  <span className="text-base md:text-lg font-display font-bold text-foreground">
+                                    {' '}({getAverageRating()} • {reviews.length})
+                                  </span>
+                                )}
+                              </>
+                            }
+                            className="mb-3 md:mb-4"
+                          />
+
+
                           
                           {reviews.length > 0 ? <Carousel className="w-full">
                               <CarouselContent className="-ml-2 md:-ml-4">
@@ -2494,10 +2516,14 @@ const Dashboard = () => {
                                       </button>
                                       <div className="flex items-center gap-3">
                                         <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                          {review.reviewer_avatar_url && (
+                                            <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />
+                                          )}
                                           <AvatarFallback className="bg-accent/10 text-accent text-sm">
                                             {review.reviewer_name.charAt(0).toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
+
                                         <div className="flex-1 min-w-0">
                                           <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
                                           <span className="text-xs text-muted-foreground">
@@ -2518,11 +2544,11 @@ const Dashboard = () => {
                               </CarouselContent>
                               <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
                               <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                            </Carousel> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
-                              <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                              <p className="text-muted-foreground">No reviews yet</p>
-                              <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
+                            </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                              <p className="text-sm text-muted-foreground">No reviews yet</p>
                             </div>}
+
                         </div>
                       </TabsContent>}
 
