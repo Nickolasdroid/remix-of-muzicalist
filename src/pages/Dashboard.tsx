@@ -2060,14 +2060,15 @@ const Dashboard = () => {
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                              <User className="h-5 w-5 text-accent" />
-                              About Me
-                            </h2>
+                            <SectionHeaderWithUsage
+                              icon={<User className="h-5 w-5 text-accent" />}
+                              title="About"
+                            />
                             {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
                           </div>
+
                           {editingField === 'bio' ? <div className="space-y-2">
                               <Textarea value={formData.bio} onChange={(e) => {
                     if (e.target.value.length <= 200) {
