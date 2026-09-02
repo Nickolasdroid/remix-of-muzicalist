@@ -18,7 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Calendar } from "@/components/ui/calendar";
+import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
@@ -2161,40 +2161,14 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       className="mb-4"
                     />
                     
-                    <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-4 items-start">
-                        {/* Legend - above calendar on mobile */}
-                        <div className="w-full lg:hidden">
-                          <div className="p-3 rounded-lg bg-secondary/50">
-                            
-                            <div className="flex justify-between">
-                              <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded bg-destructive/70"></div>
-                                <span className="text-xs text-muted-foreground">Booked</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded bg-muted/80"></div>
-                                <span className="text-xs text-muted-foreground">Unavailable</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded bg-emerald-500"></div>
-                                <span className="text-xs text-muted-foreground">Available</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Calendar */}
-                        <div className="flex-shrink-0 w-full flex justify-center lg:justify-start lg:w-auto">
-                          <Calendar mode="single" selected={selectedDate} onSelect={handleDateSelect} className="rounded-lg border border-border shadow-sm pointer-events-auto" classNames={{
-                      day_selected: "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
-                      day_today: "bg-emerald-500/30 text-foreground",
-                    }} modifiers={{
-                      busy: getBusyDates(),
-                      blocked: getBlockedDates()
-                    }} modifiersClassNames={{
-                      busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                      blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80"
-                    }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} />
-                        </div>
+                    <AvailabilityCalendarLayout>
+                        <ArtistAvailabilityCalendar
+                          selected={selectedDate}
+                          onSelect={handleDateSelect}
+                          busyDates={getBusyDates()}
+                          blockedDates={getBlockedDates()}
+                          disablePastDates
+                        />
                         {/* Date details / prompt (matches dashboard positioning) */}
                         <div className="w-full lg:min-w-0 lg:w-auto">
                           {selectedDate ? <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
@@ -2207,7 +2181,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           day: 'numeric'
                         })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground bg-emerald-500"}>
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
                             </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
@@ -2215,25 +2189,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                             </div>}
                         </div>
 
-                        {/* Legend - desktop only */}
-                        <div className="hidden lg:block p-3 md:p-4 rounded-lg bg-secondary/50 flex-shrink-0 w-48">
-                          <h4 className="font-semibold text-foreground mb-2 md:mb-3">Legend</h4>
-                          <div className="flex flex-col gap-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded bg-destructive/70"></div>
-                              <span className="text-sm text-muted-foreground">Booked</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded bg-muted/80"></div>
-                              <span className="text-sm text-muted-foreground">Unavailable</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded bg-emerald-500"></div>
-                              <span className="text-sm text-muted-foreground">Available</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    </AvailabilityCalendarLayout>
                   </div>
                 </TabsContent>
 
