@@ -2351,7 +2351,7 @@ const Dashboard = () => {
 
                         {/* Contact Information */}
                         <div>
-                          <h3 className="text-xl font-display font-bold mb-4 text-left">Contact Information</h3>
+                          <SectionHeaderWithUsage title="Contact Information" className="mb-4" />
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                               <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
