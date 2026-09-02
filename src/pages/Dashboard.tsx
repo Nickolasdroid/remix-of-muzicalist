@@ -482,19 +482,31 @@ const Dashboard = () => {
     } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
-    if (data) setReviews(data);
+    if (!data) return;
+    // Enrich with reviewer avatars — same presentation as the public profile.
+    const reviewerIds = Array.from(new Set(data.map((r: any) => r.reviewer_user_id).filter(Boolean)));
+    let avatarMap: Record<string, string | null> = {};
+    if (reviewerIds.length > 0) {
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', reviewerIds as string[]);
+      avatarMap = Object.fromEntries((profs || []).map((p: any) => [p.id, p.avatar_url]));
+    }
+    setReviews(data.map((r: any) => ({ ...r, reviewer_avatar_url: r.reviewer_user_id ? avatarMap[r.reviewer_user_id] ?? null : null })));
   };
   const loadFollowing = async () => {
     if (!user) return;
-    const { data, count } = await supabase.
+    const { data } = await supabase.
     from('followers').
-    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)', { count: 'exact' }).
+    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)').
     eq('follower_id', user.id);
-    setFollowingCount(count || 0);
-    if (data) {
-      setFollowingArtists(data.map((f: any) => f.profiles).filter(Boolean));
-    }
+    // Count only rows whose target profile still exists — same rule as the public profile.
+    const artists = (data || []).map((f: any) => f.profiles).filter(Boolean);
+    setFollowingArtists(artists);
+    setFollowingCount(artists.length);
   };
+
   const loadFollowers = async () => {
     if (!user) return;
     const { data } = await supabase
