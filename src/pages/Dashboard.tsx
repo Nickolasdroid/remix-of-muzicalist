@@ -2540,11 +2540,11 @@ const Dashboard = () => {
                               </CarouselContent>
                               <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
                               <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                            </Carousel> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
-                              <Star className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                              <p className="text-muted-foreground">No reviews yet</p>
-                              <p className="text-sm text-muted-foreground mt-1">Reviews from your clients will appear here</p>
+                            </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
+                              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                              <p className="text-sm text-muted-foreground">No reviews yet</p>
                             </div>}
+
                         </div>
                       </TabsContent>}
 
