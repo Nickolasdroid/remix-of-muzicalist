@@ -2118,10 +2118,11 @@ const Dashboard = () => {
                     };
                     return instrumentName ?
                     <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                                      <Music2 className="h-5 w-5 text-accent" />
-                                      My Instrument:
-                                    </h2>
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
                                     <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
