@@ -2970,6 +2970,7 @@ const Dashboard = () => {
                                 </CreationModalShell>
 
                               </Dialog>
+                              )
                             }
                           />
                           <div id="announcements-list">
