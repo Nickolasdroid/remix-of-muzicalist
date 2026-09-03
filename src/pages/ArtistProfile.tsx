@@ -45,6 +45,7 @@ import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
+import PostActionsMenu from "@/components/PostActionsMenu";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
@@ -1775,28 +1776,26 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                         </div>
                                       </div>
                                     </div>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                          <MoreHorizontal className="h-5 w-5" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => {
-                                      if (!currentUserId) { navigate("/login"); return; }
-                                      setReportTarget({ id: promo.id, type: "announcement" });
-                                    }}>
-                                          <Flag className="h-4 w-4 mr-2" />
-                                          Report Problem
-                                        </DropdownMenuItem>
-                                        {isOwnProfile && (
-                                          <DropdownMenuItem onClick={() => setDeleteAnnouncementId(promo.id)} className="text-destructive focus:text-destructive">
-                                            <Trash2 className="h-4 w-4 mr-2" />
-                                            Delete
-                                          </DropdownMenuItem>
-                                        )}
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <PostActionsMenu
+                                      actions={[
+                                        {
+                                          key: 'report',
+                                          label: t('dashboardPosts.report', 'Report'),
+                                          icon: Flag,
+                                          onSelect: () => {
+                                            if (!currentUserId) { navigate("/login"); return; }
+                                            setReportTarget({ id: promo.id, type: "announcement" });
+                                          },
+                                        },
+                                        ...(isOwnProfile ? [{
+                                          key: 'delete',
+                                          label: t('dashboardPosts.delete', 'Delete'),
+                                          icon: Trash2,
+                                          destructive: true,
+                                          onSelect: () => setDeleteAnnouncementId(promo.id),
+                                        }] : []),
+                                      ]}
+                                    />
                                   </div>
                                   <ExpandableText text={promo.description} className="mt-3" />
                                 </div>
@@ -1886,28 +1885,26 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                   </div>
                                 </div>
                                 
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                      <MoreHorizontal className="h-5 w-5" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => {
-                                    if (!currentUserId) { navigate("/login"); return; }
-                                    setReportTarget({ id: post.id, type: "post" });
-                                  }}>
-                                      <Flag className="h-4 w-4 mr-2" />
-                                      Report Problem
-                                    </DropdownMenuItem>
-                                    {isOwnProfile && (
-                                      <DropdownMenuItem onClick={() => setDeletePostId(post.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    )}
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                <PostActionsMenu
+                                  actions={[
+                                    {
+                                      key: 'report',
+                                      label: t('dashboardPosts.report', 'Report'),
+                                      icon: Flag,
+                                      onSelect: () => {
+                                        if (!currentUserId) { navigate("/login"); return; }
+                                        setReportTarget({ id: post.id, type: "post" });
+                                      },
+                                    },
+                                    ...(isOwnProfile ? [{
+                                      key: 'delete',
+                                      label: t('dashboardPosts.delete', 'Delete'),
+                                      icon: Trash2,
+                                      destructive: true,
+                                      onSelect: () => setDeletePostId(post.id),
+                                    }] : []),
+                                  ]}
+                                />
                               </div>
 
                               {/* Content */}
@@ -2036,28 +2033,26 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                   </div>
                                 </div>
                                 
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                      <MoreHorizontal className="h-5 w-5" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => {
-                              if (!currentUserId) { navigate("/login"); return; }
-                              setReportTarget({ id: announcement.id, type: "announcement" });
-                            }}>
-                                      <Flag className="h-4 w-4 mr-2" />
-                                      Report Problem
-                                    </DropdownMenuItem>
-                                    {isOwnProfile && <>
-                                      <DropdownMenuItem onClick={() => setDeleteAnnouncementId(announcement.id)} className="text-destructive focus:text-destructive">
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </>}
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                <PostActionsMenu
+                                  actions={[
+                                    {
+                                      key: 'report',
+                                      label: t('dashboardPosts.report', 'Report'),
+                                      icon: Flag,
+                                      onSelect: () => {
+                                        if (!currentUserId) { navigate("/login"); return; }
+                                        setReportTarget({ id: announcement.id, type: "announcement" });
+                                      },
+                                    },
+                                    ...(isOwnProfile ? [{
+                                      key: 'delete',
+                                      label: t('dashboardPosts.delete', 'Delete'),
+                                      icon: Trash2,
+                                      destructive: true,
+                                      onSelect: () => setDeleteAnnouncementId(announcement.id),
+                                    }] : []),
+                                  ]}
+                                />
                               </div>
 
                               {/* Content */}
