@@ -356,5 +356,10 @@
     "followingThirdPerson": "Following",
     "follow": "Follow",
     "followingAction": "Following"
+  },
+  "quotaInfo": {
+    "posts": "Post slots regenerate 30 days after publishing. Deleting a post does not immediately free up the slot.",
+    "announcements": "Announcement slots regenerate 30 days after publishing. Deleting an announcement does not immediately free up the slot.",
+    "label": "Quota information"
   }
 }

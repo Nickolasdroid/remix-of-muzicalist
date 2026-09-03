@@ -58,12 +58,15 @@ export function SectionHeaderWithUsage({
   icon,
   title,
   usage,
+  info,
   action,
   className,
 }: {
   icon?: ReactNode;
   title: ReactNode;
   usage?: ReactNode;
+  /** Optional subtle info affordance rendered next to the usage badge */
+  info?: ReactNode;
   action?: ReactNode;
   className?: string;
 }) {
@@ -93,6 +96,7 @@ export function SectionHeaderWithUsage({
           {title}
         </h2>
         {usageContent}
+        {info}
       </div>
       {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
     </div>

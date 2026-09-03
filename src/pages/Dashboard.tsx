@@ -76,6 +76,7 @@ import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed"
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
+import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 const Dashboard = () => {
   const {
     toast
@@ -2630,6 +2631,7 @@ const Dashboard = () => {
                             icon={<FileText className="h-5 w-5 text-accent" />}
                             title={t('dashboardPosts.title', 'Posts')}
                             usage={`${postItems.length}/${postLimitLabel}`}
+                            info={<QuotaInfoButton kind="posts" />}
                             action={
                               canCreatePosts ? (
                                 <Button
@@ -2918,6 +2920,7 @@ const Dashboard = () => {
                             icon={<Megaphone className="h-5 w-5 text-accent" />}
                             title={t('dashboardAnnouncements.title', 'Announcements')}
                             usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
+                            info={<QuotaInfoButton kind="announcements" />}
                             action={
                               !canCreateAnnouncements ? (
                                 <Button
