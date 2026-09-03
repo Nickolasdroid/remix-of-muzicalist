@@ -45,6 +45,7 @@ import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
 import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
+import PostActionsMenu from "@/components/PostActionsMenu";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
 import FollowListDialog from "@/components/FollowListDialog";
