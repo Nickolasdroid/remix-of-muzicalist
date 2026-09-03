@@ -272,6 +272,14 @@ const Dashboard = () => {
   const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
+  /**
+   * Creation entitlement (current plan) is intentionally kept SEPARATE from
+   * visibility of content the owner already created. A downgrade blocks new
+   * creation but never hides historical Posts / Announcements.
+   */
+  const canCreatePosts = isAdmin || canPost(currentPlan);
+  const canCreateAnnouncements = isAdmin || canPost(currentPlan);
+
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
@@ -2554,7 +2562,7 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!canCreatePosts && posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
@@ -2593,14 +2601,26 @@ const Dashboard = () => {
                             title={t('dashboardPosts.title', 'Posts')}
                             usage={`${postItems.length}/${postLimitLabel}`}
                             action={
-                              <Button
-                                size="sm"
-                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                {t('dashboardPosts.createPost', 'Add')}
-                              </Button>
+                              canCreatePosts ? (
+                                <Button
+                                  size="sm"
+                                  onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                  className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  {t('dashboardPosts.createPost', 'Add')}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              )
                             }
                           />
 
@@ -2852,7 +2872,7 @@ const Dashboard = () => {
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        {!isAdmin && !canPost(currentPlan) ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {!canCreateAnnouncements && announcements.filter((a) => !a.is_premium).length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
@@ -2867,6 +2887,17 @@ const Dashboard = () => {
                             title={t('dashboardAnnouncements.title', 'Announcements')}
                             usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             action={
+                              !canCreateAnnouncements ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              ) : (
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
@@ -2939,6 +2970,7 @@ const Dashboard = () => {
                                 </CreationModalShell>
 
                               </Dialog>
+                              )
                             }
                           />
                           <div id="announcements-list">
