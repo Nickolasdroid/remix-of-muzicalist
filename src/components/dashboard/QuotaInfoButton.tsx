@@ -38,8 +38,6 @@ export const QuotaInfoButton = ({ kind }: QuotaInfoButtonProps) => {
           onClick={(e) => e.stopPropagation()}
           onPointerEnter={(e) => { if (e.pointerType === "mouse") setOpen(true); }}
           onPointerLeave={(e) => { if (e.pointerType === "mouse") setOpen(false); }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
         >
           <Info className="h-3.5 w-3.5" />
         </button>
