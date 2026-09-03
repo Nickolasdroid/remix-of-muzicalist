@@ -2872,7 +2872,9 @@ const Dashboard = () => {
 
                       {/* Announcements Tab */}
                       <TabsContent value="announcements" className="space-y-4">
-                        {!canCreateAnnouncements && announcements.filter((a) => !a.is_premium).length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                        {/* Locked state only when creation is blocked AND the owner has no existing announcements at all (promoted ones included). */}
+                        {!canCreateAnnouncements && announcements.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
                             <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
