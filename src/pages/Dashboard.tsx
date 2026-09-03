@@ -3174,7 +3174,7 @@ const Dashboard = () => {
                               <button
                                 type="button"
                                 aria-label={t('dashboardGallery.videos', 'Videos')}
-                                onClick={() => { setGalleryUploadType('video'); setShowGalleryDialog(true); }}
+                                onClick={() => setShowGalleryDialog(true)}
                                 disabled={isSaving}
                                 className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
                               >
