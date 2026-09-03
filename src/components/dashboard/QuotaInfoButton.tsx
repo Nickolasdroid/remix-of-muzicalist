@@ -37,10 +37,10 @@ export const QuotaInfoButton = ({ kind }: QuotaInfoButtonProps) => {
           className="shrink-0 inline-flex items-center justify-center text-muted-foreground/70 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-full"
           onClick={(e) => {
             e.stopPropagation();
-            setOpen((v) => !v);
+            setOpen(true);
           }}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
+          onPointerEnter={(e) => { if (e.pointerType === "mouse") setOpen(true); }}
+          onPointerLeave={(e) => { if (e.pointerType === "mouse") setOpen(false); }}
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
         >
