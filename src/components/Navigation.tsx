@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage, translateTextsSync } from "@/i18n";
@@ -76,31 +76,41 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     navigate('/');
   };
 
+  // Track the currently loaded user id so we only refetch profile/role when the
+  // user actually changes (login/logout) — NOT on every auth event such as
+  // TOKEN_REFRESHED, which fires on navigation and caused the "My Plan" flash.
+  const loadedUserIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    const loadUserData = async (sessionUser: any) => {
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('avatar_url, stage_name, plan, country')
+        .eq('id', sessionUser.id)
+        .single();
+      setProfile(profileData);
+
+      if (profileData?.country) {
+        setSelectedCountry(profileData.country);
+      }
+
+      // Fetch user type
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', sessionUser.id)
+        .maybeSingle();
+      setUserType(roleData?.user_type || null);
+    };
+
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
-        // Fetch profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('avatar_url, stage_name, plan, country')
-          .eq('id', session.user.id)
-          .single();
-        setProfile(profileData);
-        
-        if (profileData?.country) {
-          setSelectedCountry(profileData.country);
-        }
-        
-        // Fetch user type
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('user_type')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-        setUserType(roleData?.user_type || null);
+        loadedUserIdRef.current = session.user.id;
+        await loadUserData(session.user);
       }
     };
 
@@ -108,30 +118,17 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('avatar_url, stage_name, plan, country')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            setProfile(data);
-            if (data?.country) {
-              setSelectedCountry(data.country);
-            }
-          });
-        
-        // Fetch user type
-        supabase
-          .from('user_roles')
-          .select('user_type')
-          .eq('user_id', session.user.id)
-          .maybeSingle()
-          .then(({ data }) => {
-            setUserType(data?.user_type || null);
-          });
+        // Only refetch when the user id actually changed. Token refreshes and
+        // other auth events on navigation keep the same id and must not reset
+        // profile/userType (which caused the sidebar items to flash).
+        if (loadedUserIdRef.current !== session.user.id) {
+          loadedUserIdRef.current = session.user.id;
+          loadUserData(session.user);
+        }
       } else {
+        loadedUserIdRef.current = null;
         setProfile(null);
         setUserType(null);
       }
