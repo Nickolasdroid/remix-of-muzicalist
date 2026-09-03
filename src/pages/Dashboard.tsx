@@ -317,9 +317,9 @@ const Dashboard = () => {
     type: string;
   } | null>(null);
 
-  // Gallery limits (plan-based)
-  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
-  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
+  // Gallery limits (plan-based; server entitlements win when loaded)
+  const STANDARD_IMAGE_LIMIT = serverLimit(entitlements, 'gallery_images', getImageLimit(currentPlan));
+  const STANDARD_VIDEO_LIMIT = serverLimit(entitlements, 'gallery_videos', getVideoLimit(currentPlan));
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
