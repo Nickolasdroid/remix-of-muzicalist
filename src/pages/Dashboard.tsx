@@ -84,6 +84,10 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { isAdmin } = useUserRole();
+  // Authoritative server-side entitlements (effective plan, limits, current
+  // billing-period usage). The local counters below are only a fallback while
+  // this request is in flight.
+  const { entitlements, refresh: refreshEntitlements } = useEntitlements();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
