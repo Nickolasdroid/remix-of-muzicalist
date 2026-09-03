@@ -283,7 +283,6 @@ const Dashboard = () => {
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
-  const [galleryUploadType, setGalleryUploadType] = useState<'image' | 'video'>('image');
   const [videoUrl, setVideoUrl] = useState("");
   const [deleteGalleryItem, setDeleteGalleryItem] = useState<{
     id: string;
@@ -3016,58 +3015,43 @@ const Dashboard = () => {
                                 <DialogTitle>{t('userDashboard.add', 'Add')}</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4 mt-4">
-                                <Tabs value={galleryUploadType} onValueChange={(v) => setGalleryUploadType(v as 'image' | 'video')}>
-                                  {STANDARD_VIDEO_LIMIT > 0 ? <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="image">Image</TabsTrigger>
-                                    <TabsTrigger value="video">Video</TabsTrigger>
-                                  </TabsList> : <TabsList className="grid w-full grid-cols-1">
-                                    <TabsTrigger value="image">Image</TabsTrigger>
-                                  </TabsList>}
-                                  <TabsContent value="image" className="space-y-4">
-                                    <Label htmlFor="gallery-upload" className="cursor-pointer">
-                                      <div className="border-2 border-dashed border-accent/50 rounded-lg p-8 text-center hover:border-accent transition-colors">
-                                        <Upload className="h-12 w-12 mx-auto mb-2 text-accent" />
-                                        <p className="text-sm text-muted-foreground">Click to upload image</p>
-                                      </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {t('dashboardGallery.videoLinkDescription', 'Paste a YouTube, SoundCloud, Spotify or Vimeo link')}
+                                </p>
+                                <div className="space-y-3">
+                                  <div>
+                                    <Label htmlFor="gallery-video-url" className="sr-only">
+                                      {t('dashboardGallery.videoUrlLabel', 'Video link')}
                                     </Label>
-                                    <Input id="gallery-upload" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
-                                  </TabsContent>
-                                  <TabsContent value="video" className="space-y-4">
-                                    <div className="space-y-3">
-                                      <div>
-                                        <Label htmlFor="gallery-video-url">Paste a YouTube, SoundCloud, Spotify or Vimeo link</Label>
-                                        <Input
-                                          id="gallery-video-url"
-                                          type="url"
-                                          placeholder="https://www.youtube.com/watch?v=…"
-                                          value={videoUrl}
-                                          onChange={(e) => setVideoUrl(e.target.value)}
-                                          className="mt-1.5"
-                                        />
-                                        {videoUrl && !isSupportedEmbed(videoUrl) && (
-                                          <p className="text-xs text-destructive mt-1.5">
-                                            Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.
-                                          </p>
-                                        )}
-                                        {videoUrl && isSupportedEmbed(videoUrl) && (
-                                          <p className="text-xs text-muted-foreground mt-1.5">
-                                            Detected: {providerLabel(getEmbedInfo(videoUrl)!.provider)}. The clip stays on the artist's account — we only embed it.
-                                          </p>
-                                        )}
-                                      </div>
-                                      <Button
-                                        onClick={handleAddVideo}
-                                        disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
-                                        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                                      >
-                                        {isSaving ? "Adding…" : "Embed link"}
-                                      </Button>
-                                      <p className="text-xs text-muted-foreground text-center">
-                                        Streamed directly from the source — no file is uploaded to our servers.
+                                    <Input
+                                      id="gallery-video-url"
+                                      type="url"
+                                      placeholder="https://www.youtube.com/watch?v=…"
+                                      value={videoUrl}
+                                      onChange={(e) => setVideoUrl(e.target.value)}
+                                    />
+                                    {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                      <p className="text-xs text-destructive mt-1.5">
+                                        {t('dashboardGallery.unsupportedLink', 'Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.')}
                                       </p>
-                                    </div>
-                                  </TabsContent>
-                                </Tabs>
+                                    )}
+                                    {videoUrl && isSupportedEmbed(videoUrl) && (
+                                      <p className="text-xs text-muted-foreground mt-1.5">
+                                        {t('dashboardGallery.detectedProvider', 'Detected: {{provider}}. The clip stays on the artist\'s account — we only embed it.', { provider: providerLabel(getEmbedInfo(videoUrl)!.provider) })}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <Button
+                                    onClick={handleAddVideo}
+                                    disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                  >
+                                    {isSaving ? t('common.creating', 'Adding…') : t('dashboardGallery.embedLink', 'Embed link')}
+                                  </Button>
+                                  <p className="text-xs text-muted-foreground text-center">
+                                    {t('dashboardGallery.streamedDirectly', 'Streamed directly from the source — no file is uploaded to our servers.')}
+                                  </p>
+                                </div>
                               </div>
                             </DialogContent>
                           </Dialog>
@@ -3190,7 +3174,7 @@ const Dashboard = () => {
                               <button
                                 type="button"
                                 aria-label={t('dashboardGallery.videos', 'Videos')}
-                                onClick={() => { setGalleryUploadType('video'); setShowGalleryDialog(true); }}
+                                onClick={() => setShowGalleryDialog(true)}
                                 disabled={isSaving}
                                 className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
                               >
