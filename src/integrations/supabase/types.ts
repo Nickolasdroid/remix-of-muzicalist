@@ -340,6 +340,30 @@ export type Database = {
           },
         ]
       }
+      content_creation_events: {
+        Row: {
+          content_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          profile_id: string
+        }
+        Insert: {
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          profile_id: string
+        }
+        Update: {
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          profile_id?: string
+        }
+        Relationships: []
+      }
       content_reports: {
         Row: {
           content_id: string
@@ -2420,6 +2444,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      consumed_creation_slots: {
+        Args: { _kind: string; _user_id: string }
+        Returns: number
       }
       create_artist_joined_post: {
         Args: { _artist_id?: string }
