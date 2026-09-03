@@ -372,6 +372,8 @@ const Dashboard = () => {
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
     // Pull usage rows since the start of the current billing period.
     const cutoffIso = getPeriodStartIso(profile);
     const [{ data }, slotsRes] = await Promise.all([
