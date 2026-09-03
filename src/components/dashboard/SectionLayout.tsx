@@ -58,12 +58,15 @@ export function SectionHeaderWithUsage({
   icon,
   title,
   usage,
+  info,
   action,
   className,
 }: {
   icon?: ReactNode;
   title: ReactNode;
   usage?: ReactNode;
+  /** Optional subtle info affordance rendered next to the usage badge */
+  info?: ReactNode;
   action?: ReactNode;
   className?: string;
 }) {
