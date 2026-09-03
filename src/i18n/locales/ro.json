@@ -291,7 +291,13 @@
     "photos": "Fotografii",
     "videos": "Videoclipuri",
     "noPhotos": "Nu ai fotografii încă. Adaugă prima imagine!",
-    "noVideos": "Nu ai videoclipuri încă. Adaugă primul videoclip!"
+    "noVideos": "Nu ai videoclipuri încă. Adaugă primul videoclip!",
+    "videoLinkDescription": "Lipsește un link de YouTube, SoundCloud, Spotify sau Vimeo",
+    "videoUrlLabel": "Link videoclip",
+    "unsupportedLink": "Link neacceptat. Folosește un URL de YouTube, SoundCloud, Spotify sau Vimeo.",
+    "detectedProvider": "Detectat: {{provider}}. Clipul rămâne în contul artistului — noi doar îl încorporăm.",
+    "embedLink": "Link de încorporat",
+    "streamedDirectly": "Redat direct de la sursă — niciun fișier nu este încărcat pe serverele noastre."
   },
   "postPromotion": {
     "managePromotion": "Gestionează promovarea",
