@@ -294,8 +294,10 @@ const Dashboard = () => {
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based) — counted per billing period, resets each cycle.
-  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
-  const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
+  const STANDARD_POST_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'posts', getPostLimit(currentPlan));
+  const postsRemaining = Math.max(STANDARD_POST_LIMIT - postsUsed, 0);
 
   /**
    * Creation entitlement (current plan) is intentionally kept SEPARATE from
