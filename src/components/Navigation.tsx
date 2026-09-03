@@ -54,8 +54,23 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     return translated || mobileTitle;
   })();
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [userType, setUserType] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(() => {
+    // Seed from cache so a remount (Navigation is mounted per-page) doesn't
+    // start from null and flash the sidebar without cached-dependent items.
+    try {
+      const cached = sessionStorage.getItem('nav_profile');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [userType, setUserType] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem('nav_user_type') || null;
+    } catch {
+      return null;
+    }
+  });
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -90,6 +105,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         .eq('id', sessionUser.id)
         .single();
       setProfile(profileData);
+      try {
+        sessionStorage.setItem('nav_profile', JSON.stringify(profileData ?? null));
+      } catch {}
 
       if (profileData?.country) {
         setSelectedCountry(profileData.country);
@@ -101,7 +119,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         .select('user_type')
         .eq('user_id', sessionUser.id)
         .maybeSingle();
-      setUserType(roleData?.user_type || null);
+      const resolvedType = roleData?.user_type || null;
+      setUserType(resolvedType);
+      try {
+        if (resolvedType) sessionStorage.setItem('nav_user_type', resolvedType);
+        else sessionStorage.removeItem('nav_user_type');
+      } catch {}
     };
 
     const checkSession = async () => {
@@ -110,7 +133,16 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       if (session?.user) {
         loadedUserIdRef.current = session.user.id;
+        // Refresh in background; cached state already seeded the UI so there's
+        // no flash on this remount.
         await loadUserData(session.user);
+      } else {
+        try {
+          sessionStorage.removeItem('nav_profile');
+          sessionStorage.removeItem('nav_user_type');
+        } catch {}
+        setProfile(null);
+        setUserType(null);
       }
     };
 
@@ -129,6 +161,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         }
       } else {
         loadedUserIdRef.current = null;
+        try {
+          sessionStorage.removeItem('nav_profile');
+          sessionStorage.removeItem('nav_user_type');
+        } catch {}
         setProfile(null);
         setUserType(null);
       }
