@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout } from "@/components/ArtistAvailabilityCalendar";
+import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
@@ -2182,7 +2182,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                           day: 'numeric'
                         })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : "bg-accent text-accent-foreground"}>
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : calendarAvailabilityStyles.availableBadge}>
                                 {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
                               </Badge>
                             </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
@@ -2351,7 +2351,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                       const hasSlots = slots.length > 0;
                       let label = "Available";
-                      let cls = "bg-accent text-accent-foreground bg-emerald-500";
+                      let cls: string = calendarAvailabilityStyles.availableBadge;
                       if (blocked) {
                         label = "Unavailable";
                         cls = "bg-muted text-muted-foreground";

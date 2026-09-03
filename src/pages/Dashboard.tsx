@@ -47,7 +47,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import InstrumentSelector from "@/components/InstrumentSelector";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 import EditableField from "@/components/EditableField";
-import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout } from "@/components/ArtistAvailabilityCalendar";
+import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -3240,7 +3240,7 @@ const Dashboard = () => {
                                               ? 'bg-destructive/10 text-destructive border-destructive/30'
                                               : pastEvent.status === 'blocked'
                                               ? 'bg-muted text-muted-foreground border-border'
-                                              : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
+                                              : calendarAvailabilityStyles.availableSurface
                                           }`}>
                                             {pastEvent.status === 'busy' || pastEvent.status === 'booked' ? 'Booked' : pastEvent.status === 'blocked' ? 'Unavailable' : 'Available'}
                                           </div>
@@ -3286,7 +3286,7 @@ const Dashboard = () => {
                                 }
                               }
                             }}>
-                                            <SelectTrigger className={showAsBooked ? "text-destructive" : eventStatus === 'available' ? "text-emerald-500" : ""}>
+                                            <SelectTrigger className={showAsBooked ? "text-destructive" : eventStatus === 'available' ? calendarAvailabilityStyles.availableText : ""}>
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
