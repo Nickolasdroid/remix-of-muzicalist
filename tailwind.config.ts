@@ -43,6 +43,10 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        calendar: {
+          available: "hsl(var(--calendar-available))",
+          "available-foreground": "hsl(var(--calendar-available-foreground))",
+        },
         notification: {
           unread: "hsl(var(--notification-unread))",
           "unread-hover": "hsl(var(--notification-unread-hover))",

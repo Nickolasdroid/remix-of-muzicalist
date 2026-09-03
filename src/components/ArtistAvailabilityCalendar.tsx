@@ -10,13 +10,15 @@ interface ArtistAvailabilityCalendarProps {
 }
 
 export const calendarAvailabilityStyles = {
-  availableSwatch: "bg-emerald-500",
+  availableSwatch: "bg-calendar-available",
   availableDay:
-    "bg-emerald-500 text-background hover:bg-emerald-500 hover:text-background focus:bg-emerald-500 focus:text-background",
-  availableToday: "bg-emerald-500/30 text-foreground",
-  availableBadge: "bg-emerald-500 text-background hover:bg-emerald-500",
-  availableText: "text-emerald-500",
-  availableSurface: "bg-emerald-500/10 text-emerald-500 border-emerald-500/30",
+    "bg-calendar-available text-calendar-available-foreground hover:bg-calendar-available hover:text-calendar-available-foreground focus:bg-calendar-available focus:text-calendar-available-foreground",
+  availableToday: "bg-calendar-available/30 text-foreground",
+  availableBadge:
+    "bg-calendar-available text-calendar-available-foreground hover:bg-calendar-available",
+  availableText: "text-calendar-available",
+  availableSurface:
+    "bg-calendar-available/10 text-calendar-available border-calendar-available/30",
 } as const;
 
 const legendItems = [
