@@ -229,10 +229,14 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Announcement limits (plan-based)
+  // Announcement limits (plan-based). Server entitlements win when loaded.
   const currentPlan = profile?.plan;
-  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
-  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
+  const STANDARD_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcements', getAdLimit(currentPlan));
+  const PREMIUM_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcement_promotions', getPromotionLimit(currentPlan));
 
   // Per-billing-period usage counters. Counters reset automatically at the
   // start of each new subscription cycle (monthly or yearly).
@@ -242,15 +246,31 @@ const Dashboard = () => {
   const activeConsumedSlots = consumedSlots.filter(
     (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
-  const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
-  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
+  /** Server usage (authoritative) with the legacy slot counter as fallback. */
+  const usageOf = (key: string, fallback: number): number => {
+    const value = entitlements?.usage?.[key];
+    return typeof value === 'number' ? value : fallback;
+  };
+  const standardAdsUsed = usageOf(
+    'announcements',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length,
+  );
+  const premiumAdsUsed = usageOf(
+    'announcement_promotions',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length,
+  );
+  const postsUsed = usageOf('posts', activeConsumedSlots.filter((s) => s.kind === 'post').length);
   // Post promotions consume the existing monthly promotion entitlement.
-  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
-  const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
-  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
-  const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
-  const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
+  const promotionsUsed = usageOf(
+    'post_promotions',
+    activeConsumedSlots.filter((s) => s.kind === 'promotion').length,
+  );
+  const standardAdsRemaining = Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0);
+  const premiumAdsRemaining = Math.max(PREMIUM_AD_LIMIT - premiumAdsUsed, 0);
+  const PROMOTION_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'post_promotions', getPromotionLimit(currentPlan));
+  const promotionsRemaining = Math.max(PROMOTION_LIMIT - promotionsUsed, 0);
 
 
   // Posts state
