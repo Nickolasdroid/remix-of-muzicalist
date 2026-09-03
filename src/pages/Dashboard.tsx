@@ -2601,14 +2601,26 @@ const Dashboard = () => {
                             title={t('dashboardPosts.title', 'Posts')}
                             usage={`${postItems.length}/${postLimitLabel}`}
                             action={
-                              <Button
-                                size="sm"
-                                onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
-                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                {t('dashboardPosts.createPost', 'Add')}
-                              </Button>
+                              canCreatePosts ? (
+                                <Button
+                                  size="sm"
+                                  onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                  className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  {t('dashboardPosts.createPost', 'Add')}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              )
                             }
                           />
 
