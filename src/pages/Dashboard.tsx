@@ -75,6 +75,7 @@ import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 const Dashboard = () => {
   const {
     toast
@@ -83,6 +84,10 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const { isAdmin } = useUserRole();
+  // Authoritative server-side entitlements (effective plan, limits, current
+  // billing-period usage). The local counters below are only a fallback while
+  // this request is in flight.
+  const { entitlements, refresh: refreshEntitlements } = useEntitlements();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -224,10 +229,14 @@ const Dashboard = () => {
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
-  // Announcement limits (plan-based)
+  // Announcement limits (plan-based). Server entitlements win when loaded.
   const currentPlan = profile?.plan;
-  const STANDARD_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getAdLimit(currentPlan);
-  const PREMIUM_AD_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPromotionLimit(currentPlan);
+  const STANDARD_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcements', getAdLimit(currentPlan));
+  const PREMIUM_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcement_promotions', getPromotionLimit(currentPlan));
 
   // Per-billing-period usage counters. Counters reset automatically at the
   // start of each new subscription cycle (monthly or yearly).
@@ -237,15 +246,31 @@ const Dashboard = () => {
   const activeConsumedSlots = consumedSlots.filter(
     (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
   );
-  const standardAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length;
-  const premiumAdsUsed = activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length;
-  const postsUsed = activeConsumedSlots.filter((s) => s.kind === 'post').length;
+  /** Server usage (authoritative) with the legacy slot counter as fallback. */
+  const usageOf = (key: string, fallback: number): number => {
+    const value = entitlements?.usage?.[key];
+    return typeof value === 'number' ? value : fallback;
+  };
+  const standardAdsUsed = usageOf(
+    'announcements',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length,
+  );
+  const premiumAdsUsed = usageOf(
+    'announcement_promotions',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length,
+  );
+  const postsUsed = usageOf('posts', activeConsumedSlots.filter((s) => s.kind === 'post').length);
   // Post promotions consume the existing monthly promotion entitlement.
-  const promotionsUsed = activeConsumedSlots.filter((s) => s.kind === 'promotion').length;
-  const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
-  const premiumAdsRemaining = PREMIUM_AD_LIMIT - premiumAdsUsed;
-  const PROMOTION_LIMIT = PREMIUM_AD_LIMIT;
-  const promotionsRemaining = PROMOTION_LIMIT - promotionsUsed;
+  const promotionsUsed = usageOf(
+    'post_promotions',
+    activeConsumedSlots.filter((s) => s.kind === 'promotion').length,
+  );
+  const standardAdsRemaining = Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0);
+  const premiumAdsRemaining = Math.max(PREMIUM_AD_LIMIT - premiumAdsUsed, 0);
+  const PROMOTION_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'post_promotions', getPromotionLimit(currentPlan));
+  const promotionsRemaining = Math.max(PROMOTION_LIMIT - promotionsUsed, 0);
 
 
   // Posts state
@@ -269,8 +294,10 @@ const Dashboard = () => {
   const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
 
   // Post limits (plan-based) — counted per billing period, resets each cycle.
-  const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
-  const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
+  const STANDARD_POST_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'posts', getPostLimit(currentPlan));
+  const postsRemaining = Math.max(STANDARD_POST_LIMIT - postsUsed, 0);
 
   /**
    * Creation entitlement (current plan) is intentionally kept SEPARATE from
@@ -290,9 +317,9 @@ const Dashboard = () => {
     type: string;
   } | null>(null);
 
-  // Gallery limits (plan-based)
-  const STANDARD_IMAGE_LIMIT = getImageLimit(currentPlan);
-  const STANDARD_VIDEO_LIMIT = getVideoLimit(currentPlan);
+  // Gallery limits (plan-based; server entitlements win when loaded)
+  const STANDARD_IMAGE_LIMIT = serverLimit(entitlements, 'gallery_images', getImageLimit(currentPlan));
+  const STANDARD_VIDEO_LIMIT = serverLimit(entitlements, 'gallery_videos', getVideoLimit(currentPlan));
 
   // Calculate used gallery items
   const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
@@ -345,6 +372,8 @@ const Dashboard = () => {
   // Data loading functions (defined early to avoid hoisting issues)
   const loadAnnouncements = async () => {
     if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
     // Pull usage rows since the start of the current billing period.
     const cutoffIso = getPeriodStartIso(profile);
     const [{ data }, slotsRes] = await Promise.all([
@@ -411,6 +440,8 @@ const Dashboard = () => {
 
   const loadPosts = async () => {
     if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
     const {
       data
     } = await supabase.from('posts').select('*').eq('profile_id', user.id).order('created_at', {
