@@ -96,6 +96,7 @@ export function SectionHeaderWithUsage({
           {title}
         </h2>
         {usageContent}
+        {info}
       </div>
       {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
     </div>
