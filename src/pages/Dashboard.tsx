@@ -2887,6 +2887,17 @@ const Dashboard = () => {
                             title={t('dashboardAnnouncements.title', 'Announcements')}
                             usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             action={
+                              !canCreateAnnouncements ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              ) : (
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
