@@ -440,6 +440,8 @@ const Dashboard = () => {
 
   const loadPosts = async () => {
     if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
     const {
       data
     } = await supabase.from('posts').select('*').eq('profile_id', user.id).order('created_at', {
