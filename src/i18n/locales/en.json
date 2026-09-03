@@ -244,7 +244,13 @@
     "photos": "Photos",
     "videos": "Videos",
     "noPhotos": "No photos yet. Add your first image!",
-    "noVideos": "No videos yet. Add your first video!"
+    "noVideos": "No videos yet. Add your first video!",
+    "videoLinkDescription": "Paste a YouTube, SoundCloud, Spotify or Vimeo link",
+    "videoUrlLabel": "Video link",
+    "unsupportedLink": "Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.",
+    "detectedProvider": "Detected: {{provider}}. The clip stays on the artist's account — we only embed it.",
+    "embedLink": "Embed link",
+    "streamedDirectly": "Streamed directly from the source — no file is uploaded to our servers."
   },
   "userDashboard": {
     "myAds": "Profile",
