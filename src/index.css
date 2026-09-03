@@ -50,6 +50,10 @@ All colors MUST be HSL.
     --accent: 45 75% 55%;             /* #D4AF37 / #F5C542 gold */
     --accent-foreground: 240 10% 6%;
 
+    /* Calendar availability status — Tailwind emerald-500, intentionally separate from brand gold */
+    --calendar-available: 160 84% 39%;
+    --calendar-available-foreground: 240 10% 6%;
+
     /* Quiet amber surface used for unread social notifications */
     --notification-unread: 42 32% 13%;
     --notification-unread-hover: 42 34% 16%;
@@ -104,6 +108,9 @@ All colors MUST be HSL.
 
     --accent: 45 75% 45%;
     --accent-foreground: 0 0% 100%;
+
+    --calendar-available: 160 84% 39%;
+    --calendar-available-foreground: 240 10% 6%;
 
     --notification-unread: 43 48% 94%;
     --notification-unread-hover: 43 50% 91%;

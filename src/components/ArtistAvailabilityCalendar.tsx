@@ -9,10 +9,22 @@ interface ArtistAvailabilityCalendarProps {
   disablePastDates?: boolean;
 }
 
+export const calendarAvailabilityStyles = {
+  availableSwatch: "bg-calendar-available",
+  availableDay:
+    "bg-calendar-available text-calendar-available-foreground hover:bg-calendar-available hover:text-calendar-available-foreground focus:bg-calendar-available focus:text-calendar-available-foreground",
+  availableToday: "bg-calendar-available/30 text-foreground",
+  availableBadge:
+    "bg-calendar-available text-calendar-available-foreground hover:bg-calendar-available",
+  availableText: "text-calendar-available",
+  availableSurface:
+    "bg-calendar-available/10 text-calendar-available border-calendar-available/30",
+} as const;
+
 const legendItems = [
   { label: "Booked", swatch: "bg-destructive/70" },
   { label: "Unavailable", swatch: "bg-muted/80" },
-  { label: "Available", swatch: "bg-accent" },
+  { label: "Available", swatch: calendarAvailabilityStyles.availableSwatch },
 ];
 
 function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
@@ -59,9 +71,8 @@ export function ArtistAvailabilityCalendar({
         onSelect={onSelect}
         className="pointer-events-auto rounded-lg border border-border shadow-sm"
         classNames={{
-          day_selected:
-            "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-          day_today: "bg-accent/30 text-foreground",
+          day_selected: calendarAvailabilityStyles.availableDay,
+          day_today: calendarAvailabilityStyles.availableToday,
         }}
         modifiers={{ busy: busyDates, blocked: blockedDates }}
         modifiersClassNames={{
