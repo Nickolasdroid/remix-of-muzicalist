@@ -2630,6 +2630,7 @@ const Dashboard = () => {
                             icon={<FileText className="h-5 w-5 text-accent" />}
                             title={t('dashboardPosts.title', 'Posts')}
                             usage={`${postItems.length}/${postLimitLabel}`}
+                            info={<QuotaInfoButton kind="posts" />}
                             action={
                               canCreatePosts ? (
                                 <Button
