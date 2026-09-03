@@ -272,6 +272,14 @@ const Dashboard = () => {
   const STANDARD_POST_LIMIT = isAdmin ? Number.POSITIVE_INFINITY : getPostLimit(currentPlan);
   const postsRemaining = STANDARD_POST_LIMIT - postsUsed;
 
+  /**
+   * Creation entitlement (current plan) is intentionally kept SEPARATE from
+   * visibility of content the owner already created. A downgrade blocks new
+   * creation but never hides historical Posts / Announcements.
+   */
+  const canCreatePosts = isAdmin || canPost(currentPlan);
+  const canCreateAnnouncements = isAdmin || canPost(currentPlan);
+
   // Gallery state
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [showGalleryDialog, setShowGalleryDialog] = useState(false);
