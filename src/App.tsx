@@ -34,6 +34,7 @@ const AboutUs = lazyWithPreload(() => import("./pages/AboutUs"));
 const Login = lazyWithPreload(() => import("./pages/Login"));
 const ResetPassword = lazyWithPreload(() => import("./pages/ResetPassword"));
 const Dashboard = lazyWithPreload(() => import("./pages/Dashboard"));
+const CreatePost = lazyWithPreload(() => import("./pages/CreatePost"));
 const UserDashboard = lazyWithPreload(() => import("./pages/UserDashboard"));
 const ArtistProfileRoute = lazyWithPreload(() => import("./pages/ArtistProfileRoute"));
 const BookArtist = lazyWithPreload(() => import("./pages/BookArtist"));
@@ -75,6 +76,7 @@ registerPreload("/register", Register.preload);
 registerPreload("/register/artist", RegisterArtist.preload);
 registerPreload("/register/user", RegisterUser.preload);
 registerPreload("/dashboard", Dashboard.preload);
+registerPreload("/dashboard/posts/new", CreatePost.preload);
 registerPreload("/user-dashboard", UserDashboard.preload);
 registerPreload("/artist/", ArtistProfileRoute.preload);
 registerPreload("/book/", BookArtist.preload);
@@ -147,6 +149,7 @@ const App = () => (
             <Route path="/register/artist" element={<RegisterArtist />} />
             <Route path="/register/user" element={<RegisterUser />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/posts/new" element={<CreatePost />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/artist/:id" element={<ArtistProfileRoute />} />
             <Route path="/book/:id" element={<BookArtist />} />

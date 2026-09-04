@@ -167,7 +167,7 @@ const Dashboard = () => {
       setProfileSection(section);
     }
     if (searchParams.get('new') === '1') {
-      if (section === 'posts') setShowPostDialog(true);
+      if (section === 'posts') navigate('/dashboard/posts/new', { replace: true });
       if (section === 'announcements') setShowAnnouncementDialog(true);
     }
     const commentsId = searchParams.get('commentsId');
@@ -275,15 +275,7 @@ const Dashboard = () => {
   // Posts state
   const [posts, setPosts] = useState<any[]>([]);
   const [monthlyPostsCount, setMonthlyPostsCount] = useState(0);
-  const [newPost, setNewPost] = useState({
-    content: "",
-    mediaUrl: "",
-    mediaType: ""
-  });
-  const [showPostDialog, setShowPostDialog] = useState(false);
-  const [postMediaType, setPostMediaType] = useState<'image' | 'video'>('image');
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
-  const [postUploadProgress, setPostUploadProgress] = useState<number | null>(null);
   const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
@@ -296,8 +288,6 @@ const Dashboard = () => {
   const STANDARD_POST_LIMIT = isAdmin
     ? Number.POSITIVE_INFINITY
     : serverLimit(entitlements, 'posts', getPostLimit(currentPlan));
-  const postsRemaining = Math.max(STANDARD_POST_LIMIT - postsUsed, 0);
-
   /**
    * Creation entitlement (current plan) is intentionally kept SEPARATE from
    * visibility of content the owner already created. A downgrade blocks new
@@ -1058,57 +1048,6 @@ const Dashboard = () => {
 
 
   // Posts functions
-  const handleAddPost = async () => {
-    if (!user || !newPost.content || !newPost.mediaUrl) return;
-
-    // Check post limit (per billing period, resets at renewal)
-    if (postsUsed >= STANDARD_POST_LIMIT) {
-      toast({
-        title: "Limit reached",
-        description: `You can only create ${STANDARD_POST_LIMIT} posts per billing period. Your counter resets at the next renewal.`,
-        variant: "destructive"
-      });
-      return;
-    }
-    setIsSaving(true);
-    try {
-      const { data: insertedPost, error } = await supabase.from('posts').insert({
-        profile_id: user.id,
-        content: newPost.content,
-        media_url: newPost.mediaUrl || null,
-        media_type: newPost.mediaType || null
-      }).select('id').single();
-      if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: insertedPost?.id ?? null,
-        kind: 'post',
-      });
-      await loadPosts();
-      await loadAnnouncements();
-      setNewPost({
-        content: "",
-        mediaUrl: "",
-        mediaType: ""
-      });
-      setShowPostDialog(false);
-      setPostMediaType('image');
-      toast({
-        title: "Success",
-        description: "Post created!"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
   /** Applies one monthly promotion entitlement to an existing post. */
   const handlePromotePost = async (id: string) => {
     setIsSaving(true);
@@ -1172,64 +1111,6 @@ const Dashboard = () => {
       setIsSaving(false);
     }
   };
-  const handlePostImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setIsSaving(true);
-    setPostUploadProgress(0);
-    try {
-      const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPostUploadProgress(p));
-      setNewPost({
-        ...newPost,
-        mediaUrl: publicUrl,
-        mediaType: 'image'
-      });
-      toast({
-        title: "Success",
-        description: "Image uploaded!"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-      setPostUploadProgress(null);
-      e.target.value = "";
-    }
-  };
-
-  const handlePostVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    if (file.size > 500 * 1024 * 1024) {
-      toast({ title: "Error", description: "Video file size must not exceed 500 MB.", variant: "destructive" });
-      e.target.value = "";
-      return;
-    }
-    setIsSaving(true);
-    setPostUploadProgress(0);
-    try {
-      const fileName = `${user.id}/posts/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setPostUploadProgress(p));
-      setNewPost({
-        ...newPost,
-        mediaUrl: publicUrl,
-        mediaType: 'video'
-      });
-      toast({ title: "Success", description: "Video uploaded!" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-      setPostUploadProgress(null);
-      e.target.value = "";
-    }
-  };
-
   // Gallery functions
   const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2610,7 +2491,7 @@ const Dashboard = () => {
                               canCreatePosts ? (
                                 <Button
                                   size="sm"
-                                  onClick={() => { setPostMediaType('image'); setShowPostDialog(true); }}
+                                  onClick={() => navigate('/dashboard/posts/new')}
                                   className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                                 >
                                   <Plus className="h-4 w-4 mr-1" />
@@ -2765,110 +2646,6 @@ const Dashboard = () => {
                             </DialogContent>
                           </Dialog>
 
-
-                          {/* Add Post dialog (controlled) */}
-                          <Dialog open={showPostDialog} onOpenChange={(open) => {
-                            setShowPostDialog(open);
-                            if (!open) setPostMediaType('image');
-                          }}>
-                            <CreationModalShell
-                              title={t('creationModal.postTitle', 'Add a post')}
-                              meta={<>
-                                {Number.isFinite(STANDARD_POST_LIMIT) && (
-                                  <UsagePill
-                                    icon={<Images className="h-3 w-3" />}
-                                    tone={Math.max(postsRemaining, 0) === 0 ? "warning" : "accent"}
-                                  >
-                                    {t('creationModal.postsAvailable', { count: Math.max(postsRemaining, 0), defaultValue: '{{count}} posts available' })}
-                                  </UsagePill>
-                                )}
-                                <UsagePill icon={<Clock className="h-3 w-3" />}>
-                                  {t('creationModal.resetsAtRenewal', 'Resets at renewal')}
-                                </UsagePill>
-                              </>}
-                              footer={
-                                <Button onClick={handleAddPost} disabled={isSaving || !newPost.content || !newPost.mediaUrl} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
-                                  {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishPost', 'Publish post')}
-                                </Button>
-                              }
-                            >
-                              <CreationSection title={t('creationModal.shareQuestion', 'What do you want to share?')}>
-                                <Textarea
-                                  value={newPost.content}
-                                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value.slice(0, 200) })}
-                                  placeholder={t('creationModal.postPlaceholder', 'Write something about your post...')}
-                                  rows={4}
-                                  maxLength={200}
-                                  className="resize-none rounded-lg bg-muted/20 border-border/70 p-3.5 text-sm leading-relaxed focus-visible:ring-accent/40"
-                                />
-                                <p className="text-[11px] text-muted-foreground/80 text-right">{newPost.content.length}/200</p>
-                              </CreationSection>
-
-                              <CreationSection
-                                title={t('creationModal.media', 'Media')}
-                                description={t('creationModal.mediaHint', 'Attach a photo or a video to your post.')}
-                                variant="secondary"
-                              >
-                                {!newPost.mediaUrl && postUploadProgress === null && (
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <Label
-                                      htmlFor="post-image-inner"
-                                      onClick={() => setPostMediaType('image')}
-                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
-                                    >
-                                      <ImageIcon className="h-5 w-5 text-accent" />
-                                      {t('creationModal.photo', 'Photo')}
-                                    </Label>
-                                    <Label
-                                      htmlFor="post-video-inner"
-                                      onClick={() => setPostMediaType('video')}
-                                      className="cursor-pointer rounded-lg border border-border/70 bg-muted/20 hover:bg-muted/40 hover:border-accent/50 transition-colors py-4 flex flex-col items-center justify-center gap-2 text-sm font-medium"
-                                    >
-                                      <VideoIcon className="h-5 w-5 text-accent" />
-                                      {t('creationModal.video', 'Video')}
-                                    </Label>
-                                    <Input id="post-image-inner" type="file" accept="image/*" onChange={handlePostImageUpload} className="hidden" />
-                                    <Input id="post-video-inner" type="file" accept="video/*" onChange={handlePostVideoUpload} className="hidden" />
-                                  </div>
-                                )}
-
-                                {newPost.mediaUrl && (
-                                  <div className="relative overflow-hidden rounded-lg border border-border/70">
-                                    {newPost.mediaType === 'video'
-                                      ? <SmoothVideoPlayer src={newPost.mediaUrl} className="w-full max-h-52 aspect-video" />
-                                      : <img src={newPost.mediaUrl} alt="Upload preview" className="w-full h-44 object-cover" />}
-                                    <Button
-                                      size="icon"
-                                      variant="secondary"
-                                      aria-label={t('creationModal.removeMedia', 'Remove')}
-                                      className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 hover:bg-background"
-                                      onClick={() => setNewPost({ ...newPost, mediaUrl: "", mediaType: "" })}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                )}
-
-                                {postUploadProgress !== null && (
-                                  <div className="rounded-lg border border-border/70 bg-muted/20 p-4 space-y-2.5">
-                                    <div className="flex items-center justify-between">
-                                      <p className="text-sm font-medium">
-                                        {postMediaType === 'video'
-                                          ? t('creationModal.uploadingVideo', 'Uploading video…')
-                                          : t('creationModal.uploadingImage', 'Uploading image…')}
-                                      </p>
-                                      <p className="text-sm text-muted-foreground">{postUploadProgress}%</p>
-                                    </div>
-                                    <Progress value={postUploadProgress} />
-                                  </div>
-                                )}
-
-                                {!newPost.mediaUrl && postUploadProgress === null && (
-                                  <p className="text-[11px] text-muted-foreground/70">{t('creationModal.mediaRequired', 'A photo or a video is required.')}</p>
-                                )}
-                              </CreationSection>
-                            </CreationModalShell>
-                          </Dialog>
 
                         </SectionShell>
 
