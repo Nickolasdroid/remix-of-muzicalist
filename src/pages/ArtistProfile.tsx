@@ -1205,26 +1205,39 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         path={`/artist/${artist.slug ?? id}`}
         type="profile"
         image={artist.avatar_url || undefined}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "MusicGroup",
-          name: artist.stage_name,
-          url: `https://muzicalist.com/artist/${artist.slug ?? id}`,
-          ...(artist.avatar_url ? { image: artist.avatar_url } : {}),
-          ...(artist.music_genres ? { genre: artist.music_genres } : {}),
-          ...(artist.county || artist.country
-            ? {
-                location: {
-                  "@type": "Place",
-                  address: {
-                    "@type": "PostalAddress",
-                    ...(artist.county ? { addressLocality: artist.county } : {}),
-                    ...(artist.country ? { addressCountry: artist.country } : {}),
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "MusicGroup",
+            "@id": `https://muzicalist.com/artist/${artist.slug ?? id}#artist`,
+            name: artist.stage_name,
+            url: `https://muzicalist.com/artist/${artist.slug ?? id}`,
+            ...(artist.avatar_url ? { image: artist.avatar_url } : {}),
+            ...(artist.music_genres ? { genre: artist.music_genres } : {}),
+            ...(artist.county || artist.country
+              ? {
+                  location: {
+                    "@type": "Place",
+                    address: {
+                      "@type": "PostalAddress",
+                      ...(artist.county ? { addressLocality: artist.county } : {}),
+                      ...(artist.country ? { addressCountry: artist.country } : {}),
+                    },
                   },
-                },
-              }
-            : {}),
-        }}
+                }
+              : {}),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            url: `https://muzicalist.com/artist/${artist.slug ?? id}`,
+            name: `${artist.stage_name} | Muzicalist`,
+            mainEntity: {
+              "@id": `https://muzicalist.com/artist/${artist.slug ?? id}#artist`,
+            },
+          },
+        ]}
+
       />
       <Navigation />
       
