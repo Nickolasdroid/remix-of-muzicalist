@@ -352,6 +352,28 @@
     "publishAnnouncement": "Publică anunțul",
     "mediaRequired": "Este necesară o fotografie sau un videoclip."
   },
+  "postComposer": {
+    "backToPosts": "Înapoi la Postări",
+    "title": "Creează o postare",
+    "subtitle": "Împărtășește ceva cu comunitatea ta.",
+    "previewTitle": "Previzualizare",
+    "previewHint": "Așa va apărea postarea ta în Feed.",
+    "emptyPreview": "Postarea ta va apărea aici exact în forma în care o vor vedea ceilalți utilizatori.",
+    "artistFallback": "Artist",
+    "photoSelected": "Fotografie selectată",
+    "videoSelected": "Videoclip selectat",
+    "imageUploaded": "Fotografia a fost încărcată!",
+    "videoUploaded": "Videoclipul a fost încărcat!",
+    "videoSizeError": "Fișierul video nu poate depăși 500 MB.",
+    "uploadError": "Fișierul media nu a putut fi încărcat.",
+    "created": "Postarea a fost creată!",
+    "publishError": "Postarea nu a putut fi publicată.",
+    "loadError": "Pagina de creare nu a putut fi încărcată.",
+    "profileUnavailable": "Profilul artistului nu a putut fi încărcat.",
+    "limitReachedTitle": "Limită atinsă",
+    "limitReached": "Nu mai ai sloturi disponibile pentru postări momentan.",
+    "planRequired": "Postările sunt disponibile cu un plan Standard sau Premium."
+  },
   "social": {
     "followers": "Urmăritori",
     "following": "Urmărești",

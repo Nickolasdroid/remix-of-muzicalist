@@ -350,6 +350,28 @@
     "publishAnnouncement": "Publish announcement",
     "mediaRequired": "A photo or a video is required."
   },
+  "postComposer": {
+    "backToPosts": "Back to Posts",
+    "title": "Create a post",
+    "subtitle": "Share something with your community.",
+    "previewTitle": "Preview",
+    "previewHint": "This is how your post will appear in the Feed.",
+    "emptyPreview": "Your post will appear here exactly as other users will see it.",
+    "artistFallback": "Artist",
+    "photoSelected": "Photo selected",
+    "videoSelected": "Video selected",
+    "imageUploaded": "Image uploaded!",
+    "videoUploaded": "Video uploaded!",
+    "videoSizeError": "Video file size must not exceed 500 MB.",
+    "uploadError": "Media could not be uploaded.",
+    "created": "Post created!",
+    "publishError": "The post could not be published.",
+    "loadError": "The composer could not be loaded.",
+    "profileUnavailable": "Artist profile could not be loaded.",
+    "limitReachedTitle": "Limit reached",
+    "limitReached": "You have no post slots available right now.",
+    "planRequired": "Posts are available with a Standard or Premium plan."
+  },
   "social": {
     "followers": "Followers",
     "following": "Following",
