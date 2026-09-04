@@ -211,9 +211,7 @@ const Dashboard = () => {
     tiktokUrl: "",
     spotifyUrl: "",
     instruments: "",
-    bandMembers: "",
-    hidePhone: false,
-    hideEmail: false
+    bandMembers: ""
   });
 
   // Announcements state
@@ -659,9 +657,7 @@ const Dashboard = () => {
         tiktokUrl: profileData.tiktok_url || "",
         spotifyUrl: profileData.spotify_url || "",
         instruments: profileData.instruments || "",
-        bandMembers: (profileData as any).band_members?.toString() || "",
-        hidePhone: profileData.hide_phone || false,
-        hideEmail: profileData.hide_email || false
+        bandMembers: (profileData as any).band_members?.toString() || ""
       });
 
       // Count accepted booking requests for this artist
@@ -2398,34 +2394,12 @@ const Dashboard = () => {
                                 <p className="text-xs md:text-sm text-muted-foreground">Email</p>
                                 <span className="text-foreground text-sm md:text-base">{formData.email}</span>
                               </div>
-                              <div className="flex items-center gap-2">
-                                {formData.hideEmail ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
-                                <Switch
-                                  checked={!formData.hideEmail}
-                                  onCheckedChange={async (checked) => {
-                                    const newVal = !checked;
-                                    setFormData(prev => ({ ...prev, hideEmail: newVal }));
-                                    await supabase.from('profiles').update({ hide_email: newVal } as any).eq('id', user.id);
-                                  }}
-                                />
-                              </div>
                             </div>
                             <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                                 <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                                 <div className="flex-1 text-left">
                                   <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
                                   <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {formData.hidePhone ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-muted-foreground" />}
-                                  <Switch
-                                    checked={!formData.hidePhone}
-                                    onCheckedChange={async (checked) => {
-                                      const newVal = !checked;
-                                      setFormData(prev => ({ ...prev, hidePhone: newVal }));
-                                      await supabase.from('profiles').update({ hide_phone: newVal } as any).eq('id', user.id);
-                                    }}
-                                  />
                                 </div>
                               </div>
                           </div>
