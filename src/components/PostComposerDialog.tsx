@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Camera, Clock3, Image as ImageIcon, Loader2, Replace, User, Video, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,7 +57,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const [draft, setDraft] = useState<DraftPost>(EMPTY_DRAFT);
 
   useEffect(() => {
-    if (!open || profile) return;
+    if (!open) return;
     let active = true;
     setLoadingProfile(true);
     (async () => {
@@ -79,7 +79,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
       }
     })();
     return () => { active = false; };
-  }, [open, profile, t, toast]);
+  }, [open, t, toast]);
 
   const postLimit = isAdmin
     ? Number.POSITIVE_INFINITY
@@ -131,7 +131,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     }
   };
 
-  const handleMediaInput = async (event: React.ChangeEvent<HTMLInputElement>, kind: "image" | "video") => {
+  const handleMediaInput = async (event: ChangeEvent<HTMLInputElement>, kind: "image" | "video") => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (file) await uploadMedia(file, kind);

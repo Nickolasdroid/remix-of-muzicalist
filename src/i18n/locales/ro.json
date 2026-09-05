@@ -386,7 +386,7 @@
     "followingAction": "Urmărești"
   },
   "quotaInfo": {
-    "posts": "Sloturile pentru postări se regenerează la 30 de zile de la publicare. Ștergerea unei postări nu eliberează imediat slotul.",
+    "posts": "Postările sunt disponibile în limita planului tău. Fiecare slot utilizat se regenerează automat după 30 de zile de la consumare. Ștergerea unei postări nu eliberează imediat slotul.",
     "announcements": "Sloturile pentru anunțuri se regenerează la 30 de zile de la publicare. Ștergerea unui anunț nu eliberează imediat slotul.",
     "label": "Informații despre cotă"
   }
