@@ -356,10 +356,6 @@
     "backToPosts": "Înapoi la Postări",
     "title": "Creează o postare",
     "subtitle": "Împărtășește ceva cu comunitatea ta.",
-    "thoughtPlaceholder": "La ce te gândești?",
-    "addToPost": "Adaugă la postare",
-    "mediaPreviewAlt": "Conținut media selectat pentru postare",
-    "unlimitedPosts": "Postări nelimitate",
     "previewTitle": "Previzualizare",
     "previewHint": "Așa va apărea postarea ta în Feed.",
     "emptyPreview": "Postarea ta va apărea aici exact în forma în care o vor vedea ceilalți utilizatori.",
@@ -386,7 +382,7 @@
     "followingAction": "Urmărești"
   },
   "quotaInfo": {
-    "posts": "Postările sunt disponibile în limita planului tău. Fiecare slot utilizat se regenerează automat după 30 de zile de la consumare. Ștergerea unei postări nu eliberează imediat slotul.",
+    "posts": "Sloturile pentru postări se regenerează la 30 de zile de la publicare. Ștergerea unei postări nu eliberează imediat slotul.",
     "announcements": "Sloturile pentru anunțuri se regenerează la 30 de zile de la publicare. Ștergerea unui anunț nu eliberează imediat slotul.",
     "label": "Informații despre cotă"
   }

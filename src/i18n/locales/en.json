@@ -354,10 +354,6 @@
     "backToPosts": "Back to Posts",
     "title": "Create a post",
     "subtitle": "Share something with your community.",
-    "thoughtPlaceholder": "What’s on your mind?",
-    "addToPost": "Add to your post",
-    "mediaPreviewAlt": "Selected post media",
-    "unlimitedPosts": "Unlimited posts",
     "previewTitle": "Preview",
     "previewHint": "This is how your post will appear in the Feed.",
     "emptyPreview": "Your post will appear here exactly as other users will see it.",
@@ -384,7 +380,7 @@
     "followingAction": "Following"
   },
   "quotaInfo": {
-    "posts": "Posts are available within your plan limit. Each used slot regenerates automatically 30 days after it is consumed. Deleting a post does not immediately free up the slot.",
+    "posts": "Post slots regenerate 30 days after publishing. Deleting a post does not immediately free up the slot.",
     "announcements": "Announcement slots regenerate 30 days after publishing. Deleting an announcement does not immediately free up the slot.",
     "label": "Quota information"
   }

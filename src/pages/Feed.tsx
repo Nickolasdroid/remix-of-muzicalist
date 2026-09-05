@@ -35,7 +35,6 @@ import CommentsDialog from "@/components/CommentsDialog";
 import { sharePost } from "@/lib/sharePost";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
-import PostComposerDialog from "@/components/PostComposerDialog";
 
 const POSTS_PER_PAGE = 10;
 
@@ -93,7 +92,6 @@ const Feed = () => {
   const errorNotifiedRef = useRef(false);
   const [page, setPage] = useState(0);
   const [canCreate, setCanCreate] = useState(false);
-  const [showPostComposer, setShowPostComposer] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const adminIds = useAdminIds();
@@ -735,7 +733,7 @@ const Feed = () => {
 
       {canCreate && (
         <Button
-          onClick={() => setShowPostComposer(true)}
+          onClick={() => navigate('/dashboard/posts/new')}
           size="icon"
           aria-label="Create post"
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
@@ -745,15 +743,6 @@ const Feed = () => {
       )}
 
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
-      <PostComposerDialog
-        open={showPostComposer}
-        onOpenChange={setShowPostComposer}
-        onPublished={async () => {
-          setPage(0);
-          setHasMore(true);
-          await fetchPosts(0, false);
-        }}
-      />
 
 
       {/* Delete Post Confirmation Dialog */}
