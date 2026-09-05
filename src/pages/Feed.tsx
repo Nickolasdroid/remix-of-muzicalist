@@ -19,6 +19,7 @@ import { toast } from "@/hooks/use-toast";
 import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import PostComposerDialog from "@/components/post/PostComposerDialog";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import GuestContentGate from "@/components/GuestContentGate";
@@ -139,6 +140,8 @@ const Feed = () => {
       }
     });
   }, []);
+
+  const [showComposer, setShowComposer] = useState(false);
 
   const fetchPosts = useCallback(async (pageNum: number, append: boolean = false) => {
     try {
@@ -733,7 +736,7 @@ const Feed = () => {
 
       {canCreate && (
         <Button
-          onClick={() => navigate('/dashboard/posts/new')}
+          onClick={() => setShowComposer(true)}
           size="icon"
           aria-label="Create post"
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
@@ -741,6 +744,12 @@ const Feed = () => {
           <Plus className="h-6 w-6" />
         </Button>
       )}
+
+      <PostComposerDialog
+        open={showComposer}
+        onOpenChange={setShowComposer}
+        onPublished={async () => { setPage(0); setHasMore(true); await fetchPosts(0, false); }}
+      />
 
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 

@@ -372,7 +372,8 @@
     "profileUnavailable": "Profilul artistului nu a putut fi încărcat.",
     "limitReachedTitle": "Limită atinsă",
     "limitReached": "Nu mai ai sloturi disponibile pentru postări momentan.",
-    "planRequired": "Postările sunt disponibile cu un plan Standard sau Premium."
+    "planRequired": "Postările sunt disponibile cu un plan Standard sau Premium.",
+    "addToPost": "Adaugă la postare"
   },
   "social": {
     "followers": "Urmăritori",

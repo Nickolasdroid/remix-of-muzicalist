@@ -370,7 +370,8 @@
     "profileUnavailable": "Artist profile could not be loaded.",
     "limitReachedTitle": "Limit reached",
     "limitReached": "You have no post slots available right now.",
-    "planRequired": "Posts are available with a Standard or Premium plan."
+    "planRequired": "Posts are available with a Standard or Premium plan.",
+    "addToPost": "Add to your post"
   },
   "social": {
     "followers": "Followers",

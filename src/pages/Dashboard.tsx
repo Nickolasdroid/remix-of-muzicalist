@@ -76,6 +76,7 @@ import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed"
 import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
+import PostComposerDialog from "@/components/post/PostComposerDialog";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 const Dashboard = () => {
   const {
@@ -167,7 +168,7 @@ const Dashboard = () => {
       setProfileSection(section);
     }
     if (searchParams.get('new') === '1') {
-      if (section === 'posts') navigate('/dashboard/posts/new', { replace: true });
+      if (section === 'posts') setShowPostDialog(true);
       if (section === 'announcements') setShowAnnouncementDialog(true);
     }
     const commentsId = searchParams.get('commentsId');
@@ -226,6 +227,7 @@ const Dashboard = () => {
     budget: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  const [showPostDialog, setShowPostDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
 
   // Announcement limits (plan-based). Server entitlements win when loaded.
@@ -2491,7 +2493,7 @@ const Dashboard = () => {
                               canCreatePosts ? (
                                 <Button
                                   size="sm"
-                                  onClick={() => navigate('/dashboard/posts/new')}
+                                  onClick={() => setShowPostDialog(true)}
                                   className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                                 >
                                   <Plus className="h-4 w-4 mr-1" />
@@ -3815,6 +3817,11 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <PostComposerDialog
+        open={showPostDialog}
+        onOpenChange={setShowPostDialog}
+        onPublished={async () => { await loadPosts(); }}
+      />
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
       <CommentsDialog
         open={!!commentsTarget}
