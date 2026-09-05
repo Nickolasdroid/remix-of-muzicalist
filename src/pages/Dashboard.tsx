@@ -77,6 +77,7 @@ import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
+import PostComposerDialog from "@/components/PostComposerDialog";
 const Dashboard = () => {
   const {
     toast
@@ -103,6 +104,7 @@ const Dashboard = () => {
   const [responseRate, setResponseRate] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
+  const [showPostComposer, setShowPostComposer] = useState(searchParams.get('new') === '1' && searchParams.get('section') === 'posts');
 
   // Force admins to allowed sections only
   useEffect(() => {
@@ -167,7 +169,7 @@ const Dashboard = () => {
       setProfileSection(section);
     }
     if (searchParams.get('new') === '1') {
-      if (section === 'posts') navigate('/dashboard/posts/new', { replace: true });
+      if (section === 'posts') setShowPostComposer(true);
       if (section === 'announcements') setShowAnnouncementDialog(true);
     }
     const commentsId = searchParams.get('commentsId');
@@ -2491,7 +2493,7 @@ const Dashboard = () => {
                               canCreatePosts ? (
                                 <Button
                                   size="sm"
-                                  onClick={() => navigate('/dashboard/posts/new')}
+                                  onClick={() => setShowPostComposer(true)}
                                   className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                                 >
                                   <Plus className="h-4 w-4 mr-1" />
@@ -3816,6 +3818,11 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <PostComposerDialog
+        open={showPostComposer}
+        onOpenChange={setShowPostComposer}
+        onPublished={loadPosts}
+      />
       <CommentsDialog
         open={!!commentsTarget}
         onOpenChange={(open) => { if (!open) setCommentsTarget(null); }}
