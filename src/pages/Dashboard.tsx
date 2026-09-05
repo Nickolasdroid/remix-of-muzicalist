@@ -2686,12 +2686,6 @@ const Dashboard = () => {
                                   {t('common.upgrade', 'Upgrade')}
                                 </Button>
                               ) : (
-                              <PostComposerDialog
-                                open={showPostDialog}
-                                onOpenChange={setShowPostDialog}
-                                onPublished={async () => { await loadPosts(); }}
-                              />
-
                               <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
                                 <DialogTrigger asChild>
                                   <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
@@ -3823,6 +3817,11 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <PostComposerDialog
+        open={showPostDialog}
+        onOpenChange={setShowPostDialog}
+        onPublished={async () => { await loadPosts(); }}
+      />
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
       <CommentsDialog
         open={!!commentsTarget}
