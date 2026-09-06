@@ -66,7 +66,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const postsUsed = typeof entitlements?.usage?.posts === "number" ? entitlements.usage.posts : 0;
   const postsRemaining = Number.isFinite(postLimit) ? Math.max(postLimit - postsUsed, 0) : Number.POSITIVE_INFINITY;
   const canCreate = isAdmin || canPost(profile?.plan);
-  const isValid = content.trim().length > 0 && Boolean(mediaUrl);
+  const isValid = content.trim().length > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -166,8 +166,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
         .insert({
           profile_id: userId,
           content,
-          media_url: mediaUrl,
-          media_type: mediaType,
+          media_url: mediaUrl || null,
+          media_type: mediaType || null,
         })
         .select("id")
         .single();
@@ -336,9 +336,6 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             </div>
           )}
 
-          {!mediaUrl && uploadProgress === null && (
-            <p className="text-xs text-muted-foreground">{t("creationModal.mediaRequired", "A photo or a video is required.")}</p>
-          )}
         </section>
 
         {/* Quota */}
