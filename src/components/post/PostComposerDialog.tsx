@@ -92,7 +92,15 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     return () => { cancelled = true; };
   }, [open, refreshEntitlements]);
 
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [content]);
+
   const resetDraft = () => {
+
     setContent("");
     setMediaUrl("");
     setMediaType("");
