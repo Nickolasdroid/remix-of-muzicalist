@@ -237,13 +237,14 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
         {/* Text */}
         <div className="space-y-1.5">
           <Textarea
+            ref={textareaRef}
             value={content}
             onChange={(event) => setContent(event.target.value.slice(0, MAX_LENGTH))}
             placeholder={t("creationModal.postPlaceholder", "Write something about your post...")}
             maxLength={MAX_LENGTH}
-            rows={7}
-            className="min-h-[170px] resize-none rounded-lg border-border/70 bg-background/50 p-4 text-base leading-relaxed transition-colors focus-visible:ring-accent/40"
+            className="min-h-[88px] max-h-[220px] resize-none overflow-y-auto rounded-lg border-border/70 bg-background/50 p-4 text-base leading-relaxed transition-colors focus-visible:ring-accent/40"
           />
+
           <p className="text-right text-xs tabular-nums text-muted-foreground">{content.length}/{MAX_LENGTH}</p>
         </div>
 
