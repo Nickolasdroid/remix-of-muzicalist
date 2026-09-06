@@ -166,8 +166,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
         .insert({
           profile_id: userId,
           content,
-          media_url: mediaUrl,
-          media_type: mediaType,
+          media_url: mediaUrl || null,
+          media_type: mediaType || null,
         })
         .select("id")
         .single();
