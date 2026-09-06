@@ -16,9 +16,10 @@ interface CreationModalShellProps {
   footer?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  bodyClassName?: string;
 }
 
-export const CreationModalShell = ({ title, meta, footer, children, className }: CreationModalShellProps) => (
+export const CreationModalShell = ({ title, meta, footer, children, className, bodyClassName }: CreationModalShellProps) => (
   <DialogContent
     className={cn(
       "p-0 gap-0 overflow-hidden rounded-lg w-[calc(100%-1.5rem)] sm:w-full max-w-[480px]",
@@ -31,7 +32,7 @@ export const CreationModalShell = ({ title, meta, footer, children, className }:
       {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
     </DialogHeader>
 
-    <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 space-y-6">{children}</div>
+    <div className={cn("flex-1 overflow-y-auto overscroll-contain px-5 py-5 space-y-6", bodyClassName)}>{children}</div>
 
     {footer && (
       <div className="px-5 py-4 border-t border-border/60 bg-background">{footer}</div>

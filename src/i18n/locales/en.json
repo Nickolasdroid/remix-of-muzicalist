@@ -319,7 +319,7 @@
   },
   "creationModal": {
     "postTitle": "Add a post",
-    "announcementTitle": "Add an announcement",
+    "announcementTitle": "Create an announcement",
     "postsAvailable_one": "{{count}} post available",
     "postsAvailable_other": "{{count}} posts available",
     "announcementsAvailable_one": "{{count}} announcement available",
@@ -342,7 +342,7 @@
     "announcementPlaceholder": "Tell artists what you're looking for...",
     "eventDetails": "Event details",
     "location": "Location",
-    "locationPlaceholder": "Search any location worldwide...",
+    "locationPlaceholder": "Search for a location...",
     "eventDate": "Event date",
     "budget": "Budget",
     "budgetPlaceholder": "e.g. 500",
@@ -382,7 +382,7 @@
   },
   "quotaInfo": {
     "posts": "Post slots regenerate 30 days after publishing. Deleting a post does not immediately free up the slot.",
-    "announcements": "Announcement slots regenerate 30 days after publishing. Deleting an announcement does not immediately free up the slot.",
+    "announcements": "Used announcement slots are not restored immediately when an announcement is deleted. The used slot becomes available again 30 days after it was used.",
     "label": "Quota information"
   }
 }
