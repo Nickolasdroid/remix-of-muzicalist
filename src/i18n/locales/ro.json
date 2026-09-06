@@ -319,7 +319,7 @@
   },
   "creationModal": {
     "postTitle": "Adaugă o postare",
-    "announcementTitle": "Adaugă un anunț",
+    "announcementTitle": "Creează un anunț",
     "postsAvailable_one": "{{count}} postare disponibilă",
     "postsAvailable_few": "{{count}} postări disponibile",
     "postsAvailable_other": "{{count}} de postări disponibile",
@@ -341,10 +341,10 @@
     "publishPost": "Publică postarea",
     "publishing": "Se publică...",
     "description": "Descriere",
-    "announcementPlaceholder": "Spune-le artiștilor ce cauți...",
+    "announcementPlaceholder": "Spune artiștilor ce cauți...",
     "eventDetails": "Detalii eveniment",
     "location": "Locație",
-    "locationPlaceholder": "Caută orice locație din lume...",
+    "locationPlaceholder": "Caută o locație...",
     "eventDate": "Data evenimentului",
     "budget": "Buget",
     "budgetPlaceholder": "ex. 500",
@@ -384,7 +384,7 @@
   },
   "quotaInfo": {
     "posts": "Sloturile pentru postări se regenerează la 30 de zile de la publicare. Ștergerea unei postări nu eliberează imediat slotul.",
-    "announcements": "Sloturile pentru anunțuri se regenerează la 30 de zile de la publicare. Ștergerea unui anunț nu eliberează imediat slotul.",
+    "announcements": "Anunțurile utilizate nu se eliberează imediat dacă un anunț este șters. Slotul utilizat se regenerează după 30 de zile de la utilizare.",
     "label": "Informații despre cotă"
   }
 }
