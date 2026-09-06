@@ -48,6 +48,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const { entitlements, refresh: refreshEntitlements } = useEntitlements();
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
 
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<ComposerProfile | null>(null);
