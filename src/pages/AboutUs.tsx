@@ -20,14 +20,9 @@ const STEPS = [
   { icon: TrendingUp, title: "Grow", desc: "Book, collaborate and create opportunities." },
 ];
 
-const STATS = [
-  { value: PLATFORM_STATS.artists, label: "Artists" },
-  { value: PLATFORM_STATS.countries, label: "Countries" },
-  { value: PLATFORM_STATS.eventsBooked, label: "Events" },
-  { value: "10K+", label: "Profile Views" },
-];
-
-const AuthenticatedView = () => (
+const AuthenticatedView = () => {
+  const { stats } = usePlatformStats();
+  return (
   <>
     {/* SECTION 1 — HERO */}
     <section className="relative overflow-hidden pt-24 md:pt-16 pb-20 md:pb-32 px-6 md:px-10">
