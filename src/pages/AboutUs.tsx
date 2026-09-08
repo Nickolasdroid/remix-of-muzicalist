@@ -118,9 +118,11 @@ const AuthenticatedView = () => {
       </div>
     </section>
   </>
-);
+  );
+};
 
 const PublicAboutPage = () => {
+  const { stats } = usePlatformStats();
   return (
     <div className="bg-[#050505] text-foreground">
       {/* SECTION 1 — HERO */}
