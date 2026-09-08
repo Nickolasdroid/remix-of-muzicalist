@@ -262,7 +262,12 @@ const PublicAboutPage = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
-            {STATS.map((stat) => (
+            {[
+              { label: "Artists", value: formatPlatformStat(stats?.artists) },
+              { label: "Countries", value: formatPlatformStat(stats?.countries) },
+              { label: "Users", value: formatPlatformStat(stats?.users) },
+              { label: "Events", value: formatPlatformStat(stats?.eventsBooked) },
+            ].map((stat) => (
               <div key={stat.label} className="group relative bg-[#080808] py-12 md:py-16 px-6 text-center transition-all duration-500 hover:bg-[#0c0c0c]">
                 <div className="absolute inset-0 bg-gradient-to-b from-accent/0 to-accent/[0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
