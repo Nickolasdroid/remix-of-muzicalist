@@ -11,7 +11,7 @@ import heroConcert from "@/assets/about-hero-concert.webp";
 import storyLive from "@/assets/about-story-live.webp";
 import storyNetwork from "@/assets/about-story-network.webp";
 import worldNetwork from "@/assets/about-world-network.webp";
-import { PLATFORM_STATS } from "@/lib/platformStats";
+import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
 
 const STEPS = [
   { icon: Search, title: "Discover", desc: "Search and discover talented artists." },
