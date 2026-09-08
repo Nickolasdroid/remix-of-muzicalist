@@ -1,52 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-
-
-interface PlatformStats {
-  artists: number;
-  countries: number;
-  users: number;
-  eventsBooked: number;
-}
-
-const formatCount = (value: number) => `${value}+`;
+import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
 
 const PlatformStatsBar = () => {
-  const [stats, setStats] = useState<PlatformStats | null>(null);
-
-  const loadStats = useCallback(async () => {
-    const { data, error } = await supabase.rpc("get_platform_stats");
-    if (error) {
-      console.error("Error loading platform stats:", error);
-      return;
-    }
-    const row = Array.isArray(data) ? data[0] : data;
-    if (!row) return;
-    setStats({
-      artists: Number(row.artists ?? 0),
-      countries: Number(row.countries ?? 0),
-      users: Number(row.users ?? 0),
-      eventsBooked: Number(row.events_booked ?? 0),
-    });
-  }, []);
-
-  useEffect(() => {
-    loadStats();
-    const interval = window.setInterval(loadStats, 60000);
-    const onFocus = () => loadStats();
-    window.addEventListener("focus", onFocus);
-    return () => {
-      window.clearInterval(interval);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, [loadStats]);
-
+  const { stats } = usePlatformStats();
 
   const items = [
-    { label: "Countries", value: stats ? formatCount(stats.countries) : "—" },
-    { label: "Artists", value: stats ? formatCount(stats.artists) : "—" },
-    { label: "Users", value: stats ? formatCount(stats.users) : "—" },
-    { label: "Events Booked", value: stats ? formatCount(stats.eventsBooked) : "—" },
+    { label: "Countries", value: formatPlatformStat(stats?.countries) },
+    { label: "Artists", value: formatPlatformStat(stats?.artists) },
+    { label: "Users", value: formatPlatformStat(stats?.users) },
+    { label: "Events Booked", value: formatPlatformStat(stats?.eventsBooked) },
   ];
 
   return (
