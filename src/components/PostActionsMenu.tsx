@@ -10,7 +10,6 @@ import {
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -62,12 +61,8 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange, title }: PostA
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
         <DrawerContent className="rounded-t-xl">
-          <DrawerHeader className="pb-2">
-            <DrawerTitle className="text-base font-semibold">
-              {menuTitle}
-            </DrawerTitle>
-          </DrawerHeader>
-          <div className="flex flex-col gap-1 px-4 pb-8">
+          <DrawerTitle className="sr-only">{menuTitle}</DrawerTitle>
+          <div className="flex flex-col gap-1 px-4 pb-8 pt-2">
             {actions.map((action) => (
               <button
                 key={action.key}
