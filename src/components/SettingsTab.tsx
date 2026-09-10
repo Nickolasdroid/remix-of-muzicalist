@@ -21,6 +21,7 @@ import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
 import { getCountryName } from "@/lib/countryFlags";
 import VerificationCard from "@/components/VerificationCard";
 import ReportProblemForm from "@/components/ReportProblemForm";
+import BlockedUsersPanel from "@/components/BlockedUsersPanel";
 
 
 export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification";
