@@ -57,6 +57,7 @@ const SUPPORT_DESTINATIONS: Partial<Record<SettingSection, string>> = {
 };
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
+type MentionsAllowFrom = "everyone" | "artists" | "following" | "nobody";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
@@ -116,6 +117,7 @@ const SettingsTab = ({
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
   const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
+  const [mentionsAllowFrom, setMentionsAllowFrom] = useState<MentionsAllowFrom>("everyone");
   const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
   const [showDisableCommentsConfirm, setShowDisableCommentsConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -239,7 +241,7 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs, mentions_allow_from, notification_preferences")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
@@ -247,6 +249,9 @@ const SettingsTab = ({
       }
       if (data && (data as any).comments_allow_from) {
         setCommentsAllowFrom((data as any).comments_allow_from as CommentsAllowFrom);
+      }
+      if (data && (data as any).mentions_allow_from) {
+        setMentionsAllowFrom((data as any).mentions_allow_from as MentionsAllowFrom);
       }
       if (data && typeof (data as any).comments_allow_gifs === "boolean") {
         setCommentsAllowGifs((data as any).comments_allow_gifs);
@@ -287,6 +292,24 @@ const SettingsTab = ({
       toast({ title: "Error", description: "Could not update comments preference.", variant: "destructive" });
     } else {
       toast({ title: "Saved", description: "Comments preference updated." });
+    }
+  };
+
+  const applyMentionsAllowFrom = async (next: MentionsAllowFrom) => {
+    if (next === mentionsAllowFrom) return;
+    const prev = mentionsAllowFrom;
+    setMentionsAllowFrom(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ mentions_allow_from: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setMentionsAllowFrom(prev);
+      toast({ title: "Error", description: "Could not update mentions preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Mentions preference updated." });
     }
   };
 
@@ -1562,11 +1585,49 @@ const SettingsTab = ({
       blocked_users: <BlockedUsersPanel />,
 
       mentions_tags: (
-        <ComingSoonPanel
-          icon={AtSign}
-          title="Mentions & Tags"
-          description="Decide who is allowed to mention or tag you in posts, announcements and comments. Configurable rules are on the way."
-        />
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <AtSign className="h-5 w-5 text-accent" />
+              Mentions &amp; Tags
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Decide who is allowed to mention or tag you in posts, announcements and comments
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3 max-w-3xl">
+            <Label className="text-sm font-medium">Who can mention or tag you?</Label>
+            <RadioGroup
+              value={mentionsAllowFrom}
+              onValueChange={(v) => applyMentionsAllowFrom(v as MentionsAllowFrom)}
+              className="space-y-2"
+            >
+              {([
+                { value: "everyone", label: "Everyone", hint: "Anyone can mention or tag you." },
+                { value: "artists", label: "Artists", hint: "Only artists can mention or tag you." },
+                { value: "following", label: "People I follow", hint: "Only people you follow can mention or tag you." },
+                { value: "nobody", label: "No one", hint: "Nobody can mention or tag you." },
+              ] as { value: MentionsAllowFrom; label: string; hint: string }[]).map((opt) => (
+                <label
+                  key={opt.value}
+                  htmlFor={`mentions-${opt.value}`}
+                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                    mentionsAllowFrom === opt.value ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
+                  }`}
+                >
+                  <RadioGroupItem value={opt.value} id={`mentions-${opt.value}`} className="mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium">{opt.label}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{opt.hint}</div>
+                  </div>
+                </label>
+              ))}
+            </RadioGroup>
+          </div>
+        </div>
       ),
       display_settings: (
         <ComingSoonPanel
