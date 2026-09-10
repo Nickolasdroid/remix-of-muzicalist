@@ -241,7 +241,7 @@ const SettingsTab = ({
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("allow_promotion, comments_allow_from, comments_allow_gifs, notification_preferences")
+        .select("allow_promotion, comments_allow_from, comments_allow_gifs, mentions_allow_from, notification_preferences")
         .eq("id", user.id)
         .maybeSingle();
       if (data && typeof (data as any).allow_promotion === "boolean") {
@@ -249,6 +249,9 @@ const SettingsTab = ({
       }
       if (data && (data as any).comments_allow_from) {
         setCommentsAllowFrom((data as any).comments_allow_from as CommentsAllowFrom);
+      }
+      if (data && (data as any).mentions_allow_from) {
+        setMentionsAllowFrom((data as any).mentions_allow_from as MentionsAllowFrom);
       }
       if (data && typeof (data as any).comments_allow_gifs === "boolean") {
         setCommentsAllowGifs((data as any).comments_allow_gifs);
@@ -289,6 +292,24 @@ const SettingsTab = ({
       toast({ title: "Error", description: "Could not update comments preference.", variant: "destructive" });
     } else {
       toast({ title: "Saved", description: "Comments preference updated." });
+    }
+  };
+
+  const applyMentionsAllowFrom = async (next: MentionsAllowFrom) => {
+    if (next === mentionsAllowFrom) return;
+    const prev = mentionsAllowFrom;
+    setMentionsAllowFrom(next);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ mentions_allow_from: next } as any)
+      .eq("id", user.id);
+    if (error) {
+      setMentionsAllowFrom(prev);
+      toast({ title: "Error", description: "Could not update mentions preference.", variant: "destructive" });
+    } else {
+      toast({ title: "Saved", description: "Mentions preference updated." });
     }
   };
 
