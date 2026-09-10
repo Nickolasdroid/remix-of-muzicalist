@@ -57,6 +57,7 @@ const SUPPORT_DESTINATIONS: Partial<Record<SettingSection, string>> = {
 };
 
 type CommentsAllowFrom = "everyone" | "following" | "off";
+type MentionsAllowFrom = "everyone" | "artists" | "following" | "nobody";
 
 const LANGUAGE_OPTIONS = WORLD_LANGUAGES;
 
@@ -116,6 +117,7 @@ const SettingsTab = ({
   const [showPromotionInfo, setShowPromotionInfo] = useState(false);
   const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
   const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
+  const [mentionsAllowFrom, setMentionsAllowFrom] = useState<MentionsAllowFrom>("everyone");
   const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
   const [showDisableCommentsConfirm, setShowDisableCommentsConfirm] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
