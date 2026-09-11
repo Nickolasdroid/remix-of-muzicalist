@@ -1919,7 +1919,8 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                               </div>
 
                               {/* Content */}
-                              <ExpandableText text={post.content} className="mt-3" />
+                              {/* Posts are limited to 200 chars at creation — always render the full text, no "more" control. */}
+                              <ExpandableText text={post.content} maxLength={200} className="mt-3" />
                             </div>
                             
                             {/* Media */}
