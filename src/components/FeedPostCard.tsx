@@ -129,7 +129,11 @@ const FeedPostCard = ({
           {menu}
         </div>
 
-        {content && <ExpandableText text={content} className="mt-3 my-[5px]" mentions={mentions} />}
+        {content && (
+          // Posts are capped at 200 characters at creation time, so the full
+          // text always renders — no truncation and no "more" control.
+          <ExpandableText text={content} maxLength={200} className="mt-3 my-[5px]" mentions={mentions} />
+        )}
       </div>
 
       {mediaUrl && (
