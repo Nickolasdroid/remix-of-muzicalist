@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { User, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { loadArtistCardMeta, getCachedArtistCardMeta } from "@/lib/artistCardMeta";
 import { getCountryName } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { getThumbUrl } from "@/lib/imageUrl";
 
 interface ArtistProfileCardProps {
   id: string;
@@ -18,36 +19,20 @@ interface ArtistProfileCardProps {
 }
 
 const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
-  const [rating, setRating] = useState<number | null>(null);
-  const [reviewCount, setReviewCount] = useState<number>(0);
-  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const initial = getCachedArtistCardMeta(id);
+  const [rating, setRating] = useState<number | null>(initial?.rating ?? null);
+  const [reviewCount, setReviewCount] = useState<number>(initial?.reviewCount ?? 0);
+  const [createdAt, setCreatedAt] = useState<string | null>(initial?.createdAt ?? null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const [{ data: reviews }, { data: profile }] = await Promise.all([
-        supabase.from('reviews').select('rating').eq('profile_id', id),
-        supabase.from('profiles').select('created_at').eq('id', id).maybeSingle(),
-      ]);
-
-      if (reviews && reviews.length > 0) {
-        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-        setRating(Math.round(avg * 10) / 10);
-        setReviewCount(reviews.length);
-      }
-      if (profile?.created_at) {
-        setCreatedAt(profile.created_at);
-      }
-    };
-
-    fetchData();
-
-    const channel = supabase
-      .channel(`reviews-${id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews', filter: `profile_id=eq.${id}` }, () => {
-        fetchData();
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    let active = true;
+    loadArtistCardMeta(id).then((meta) => {
+      if (!active) return;
+      setRating(meta.rating);
+      setReviewCount(meta.reviewCount);
+      setCreatedAt(meta.createdAt);
+    });
+    return () => { active = false; };
   }, [id]);
 
 
@@ -62,9 +47,13 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
           <PlanBadge plan={plan} />
           {imageUrl ? (
             <img 
-              src={imageUrl} 
+              src={getThumbUrl(imageUrl, 320)} 
               alt={stageName} 
-              className="w-full h-full object-cover"
+              width={320}
+              height={320}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover bg-muted"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">

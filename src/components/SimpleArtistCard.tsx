@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import PlanBadge from "@/components/PlanBadge";
 import NewArtistBadge from "@/components/NewArtistBadge";
+import { getThumbUrl } from "@/lib/imageUrl";
 
 interface SimpleArtistCardProps {
   id: string;
@@ -20,7 +21,15 @@ const SimpleArtistCard = ({ id, stageName, imageUrl, plan, createdAt }: SimpleAr
         <NewArtistBadge createdAt={createdAt} />
         <div className="w-full h-full">
           {imageUrl ? (
-            <img src={imageUrl} alt={stageName} className="w-full h-full object-cover" />
+            <img
+              src={getThumbUrl(imageUrl, 320)}
+              alt={stageName}
+              width={320}
+              height={320}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover bg-muted"
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-accent/30 to-accent/10" />
           )}
