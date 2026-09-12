@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { User, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { loadArtistCardMeta, getCachedArtistCardMeta } from "@/lib/artistCardMeta";
 import { getCountryName } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
