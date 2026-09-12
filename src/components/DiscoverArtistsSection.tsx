@@ -7,6 +7,7 @@ import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { getThumbUrl } from "@/lib/imageUrl";
 import {
   Carousel,
   CarouselContent,
