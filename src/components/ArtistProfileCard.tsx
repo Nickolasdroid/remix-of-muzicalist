@@ -19,36 +19,20 @@ interface ArtistProfileCardProps {
 }
 
 const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
-  const [rating, setRating] = useState<number | null>(null);
-  const [reviewCount, setReviewCount] = useState<number>(0);
-  const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const initial = getCachedArtistCardMeta(id);
+  const [rating, setRating] = useState<number | null>(initial?.rating ?? null);
+  const [reviewCount, setReviewCount] = useState<number>(initial?.reviewCount ?? 0);
+  const [createdAt, setCreatedAt] = useState<string | null>(initial?.createdAt ?? null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const [{ data: reviews }, { data: profile }] = await Promise.all([
-        supabase.from('reviews').select('rating').eq('profile_id', id),
-        supabase.from('profiles').select('created_at').eq('id', id).maybeSingle(),
-      ]);
-
-      if (reviews && reviews.length > 0) {
-        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-        setRating(Math.round(avg * 10) / 10);
-        setReviewCount(reviews.length);
-      }
-      if (profile?.created_at) {
-        setCreatedAt(profile.created_at);
-      }
-    };
-
-    fetchData();
-
-    const channel = supabase
-      .channel(`reviews-${id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews', filter: `profile_id=eq.${id}` }, () => {
-        fetchData();
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    let active = true;
+    loadArtistCardMeta(id).then((meta) => {
+      if (!active) return;
+      setRating(meta.rating);
+      setReviewCount(meta.reviewCount);
+      setCreatedAt(meta.createdAt);
+    });
+    return () => { active = false; };
   }, [id]);
 
 
