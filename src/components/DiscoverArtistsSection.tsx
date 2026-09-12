@@ -138,9 +138,13 @@ const DiscoverArtistsSection = () => {
                         <PlanBadge plan={artist.plan} />
                         {artist.avatar_url ? (
                           <img
-                            src={artist.avatar_url}
+                            src={getThumbUrl(artist.avatar_url, 320)}
                             alt={artist.stage_name}
-                            className="w-full h-full object-cover"
+                            width={320}
+                            height={320}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover bg-muted"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">

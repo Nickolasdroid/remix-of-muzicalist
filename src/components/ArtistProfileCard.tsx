@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCountryName } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { getThumbUrl } from "@/lib/imageUrl";
 
 interface ArtistProfileCardProps {
   id: string;
@@ -62,9 +63,13 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
           <PlanBadge plan={plan} />
           {imageUrl ? (
             <img 
-              src={imageUrl} 
+              src={getThumbUrl(imageUrl, 320)} 
               alt={stageName} 
-              className="w-full h-full object-cover"
+              width={320}
+              height={320}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover bg-muted"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">

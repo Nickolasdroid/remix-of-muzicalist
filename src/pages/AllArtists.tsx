@@ -6,6 +6,7 @@ import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { getThumbUrl } from "@/lib/imageUrl";
 
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
@@ -113,9 +114,13 @@ const AllArtists = () => {
                       <PlanBadge plan={artist.plan} />
                       {artist.avatar_url ? (
                         <img
-                          src={artist.avatar_url}
+                          src={getThumbUrl(artist.avatar_url, 320)}
                           alt={artist.stage_name}
-                          className="w-full h-full object-cover"
+                          width={320}
+                          height={320}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover bg-muted"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
