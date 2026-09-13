@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, BookOpenCheck } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
