@@ -31,6 +31,7 @@
     "profile": "Profil",
     "settings": "Setări și activități",
     "more": "Mai mult",
+    "rules": "Reguli",
     "myPlan": "Planul meu",
     "adminDashboard": "Panou admin",
     "logOutQuestion": "Te deconectezi?",
@@ -45,7 +46,8 @@
     "plansPricing": "Planuri și prețuri",
     "allRightsReserved": "Toate drepturile rezervate.",
     "privacyPolicy": "Politica de confidențialitate",
-    "termsConditions": "Termeni și condiții"
+    "termsConditions": "Termeni și condiții",
+    "faq": "Întrebări frecvente"
   },
   "auth": {
     "login": {
@@ -386,5 +388,49 @@
     "posts": "Sloturile pentru postări se regenerează la 30 de zile de la publicare. Ștergerea unei postări nu eliberează imediat slotul.",
     "announcements": "Anunțurile utilizate nu se eliberează imediat dacă un anunț este șters. Slotul utilizat se regenerează după 30 de zile de la utilizare.",
     "label": "Informații despre cotă"
+  },
+  "rules": {
+    "seoTitle": "Reguli pentru profilurile artiștilor | Muzicalist",
+    "seoDescription": "Descoperă recomandările Muzicalist pentru fotografii de profil reprezentative și profiluri artistice profesioniste și autentice.",
+    "title": "Regulile Muzicalist",
+    "intro": "Ajută-ne să păstrăm Muzicalist profesionist, autentic și util pentru toată lumea.",
+    "explanation": "Profilurile corecte și reprezentative îi ajută pe oameni să recunoască artiștii potriviți, să le înțeleagă activitatea și să rezerve cu încredere.",
+    "photo": {
+      "title": "1. Folosește o fotografie de profil reprezentativă",
+      "description": "Alege o fotografie recentă și de bună calitate, în care tu sau formația ta sunteți ușor de recunoscut, iar activitatea artistică este clară.",
+      "principle": "Când cineva îți vede fotografia de profil, ar trebui să înțeleagă imediat cine ești și ce faci ca artist muzical."
+    },
+    "recommended": {
+      "title": "Recomandat",
+      "intro": "Acestea sunt recomandări practice, nu formate foto obligatorii.",
+      "singer": { "label": "Solist", "text": "Un portret clar sau o fotografie de calitate din timpul unui recital." },
+      "dj": { "label": "DJ", "text": "O fotografie ușor de recunoscut la pupitru sau un portret profesional clar." },
+      "instrumentalist": { "label": "Instrumentist", "text": "O fotografie clară alături de instrumentul principal, ideal din timpul unei interpretări." },
+      "band": { "label": "Formație", "text": "O fotografie de grup clară și actuală, în care apar membrii formației." },
+      "other": { "label": "Altă categorie", "text": "O fotografie care reprezintă clar rolul, momentul artistic sau prestația ta muzicală." }
+    },
+    "avoid": {
+      "title": "De evitat",
+      "blurry": "Fotografii neclare, întunecate sau de calitate slabă, în care artistul abia se vede.",
+      "distant": "Fotografii realizate de la prea mare distanță sau în care persoana nu poate fi recunoscută.",
+      "unrelated": "Imagini fără legătură cu tine sau cu activitatea ta muzicală.",
+      "promotional": "Sigle, postere, afișe sau materiale promoționale cu mult text folosite ca fotografie de profil.",
+      "edited": "Imagini editate excesiv, care fac artistul dificil de recunoscut.",
+      "group": "Profilurile individuale ar trebui să evite fotografiile de grup neclare. Fotografiile de grup sunt potrivite pentru profilurile formațiilor."
+    },
+    "why": {
+      "title": "De ce este important?",
+      "intro": "Fotografia de profil te reprezintă în întreaga platformă Muzicalist și îi ajută pe oameni să te identifice rapid oriunde apare profilul tău.",
+      "search": "Rezultatele căutării",
+      "categories": "Categoriile de artiști",
+      "countries": "Țări și regiuni",
+      "rankings": "Clasamente",
+      "feeds": "Fluxuri de conținut",
+      "profile": "Profilul tău public"
+    },
+    "standards": {
+      "title": "Standarde și recomandări ale platformei",
+      "description": "Aceste îndrumări descriu standardele profesionale și recomandările Muzicalist. Nu toate sunt aplicate automat. Singura cerință obligatorie privind fotografia este adăugarea unei poze de profil la înregistrarea ca artist; aceste îndrumări nu introduc restricții de încărcare sau moderare automată."
+    }
   }
 }

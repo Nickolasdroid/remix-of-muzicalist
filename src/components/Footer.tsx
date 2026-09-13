@@ -28,6 +28,9 @@ const Footer = () => {
   }, {
     title: t("footer.faq", "FAQ"),
     href: "/help"
+  }, {
+    title: t("navigation.rules", "Rules"),
+    href: "/rules"
   }];
   const artistLinks = [{
     title: t("footer.registerAsArtist", "Register as Artist"),

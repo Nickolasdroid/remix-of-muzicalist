@@ -56,6 +56,7 @@ const AdminEmailTemplates = lazyWithPreload(() => import("./pages/AdminEmailTemp
 const AdminEditTemplate = lazyWithPreload(() => import("./pages/AdminEditTemplate"));
 const AdminModeration = lazyWithPreload(() => import("./pages/AdminModeration"));
 const BookingRequests = lazyWithPreload(() => import("./pages/BookingRequests"));
+const Rules = lazyWithPreload(() => import("./pages/Rules"));
 const NotFound = lazyWithPreload(() => import("./pages/NotFound"));
 
 // Leagă fiecare path public de preload-ul lui, ca PrefetchLink (hover/focus)
@@ -91,6 +92,7 @@ registerPreload("/plans", PlansPricing.preload);
 registerPreload("/my-plan", MyPlan.preload);
 registerPreload("/help", HelpSupport.preload);
 registerPreload("/booking-requests", BookingRequests.preload);
+registerPreload("/rules", Rules.preload);
 
 const queryClient = new QueryClient();
 
@@ -164,6 +166,7 @@ const App = () => (
             <Route path="/my-plan" element={<MyPlan />} />
             <Route path="/help" element={<HelpSupport />} />
             <Route path="/booking-requests" element={<BookingRequests />} />
+            <Route path="/rules" element={<Rules />} />
             <Route
               path="/admin/dashboard"
               element={

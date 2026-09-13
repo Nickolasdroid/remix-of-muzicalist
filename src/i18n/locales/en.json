@@ -31,6 +31,7 @@
     "profile": "Profile",
     "settings": "Settings & Activity",
     "more": "More",
+    "rules": "Rules",
     "myPlan": "My Plan",
     "adminDashboard": "Admin Dashboard",
     "logOutQuestion": "Log out?",
@@ -45,7 +46,8 @@
     "plansPricing": "Plans & Pricing",
     "allRightsReserved": "All rights reserved.",
     "privacyPolicy": "Privacy & Policy",
-    "termsConditions": "Terms & Conditions"
+    "termsConditions": "Terms & Conditions",
+    "faq": "FAQ"
   },
   "auth": {
     "login": {
@@ -384,5 +386,49 @@
     "posts": "Post slots regenerate 30 days after publishing. Deleting a post does not immediately free up the slot.",
     "announcements": "Used announcement slots are not restored immediately when an announcement is deleted. The used slot becomes available again 30 days after it was used.",
     "label": "Quota information"
+  },
+  "rules": {
+    "seoTitle": "Rules for Artist Profiles | Muzicalist",
+    "seoDescription": "Read Muzicalist's recommendations for representative artist profile photos and professional, authentic profiles.",
+    "title": "Muzicalist Rules",
+    "intro": "Help keep Muzicalist professional, authentic and useful for everyone.",
+    "explanation": "Accurate, representative profiles help people recognize the right artists, understand their work and book with confidence.",
+    "photo": {
+      "title": "1. Use a representative profile photo",
+      "description": "Choose a recent, high-quality photo in which you or your band are clearly recognizable and your artistic activity is easy to understand.",
+      "principle": "When someone sees your profile photo, they should immediately understand who you are and what you do as a musical artist."
+    },
+    "recommended": {
+      "title": "Recommended",
+      "intro": "These are practical recommendations, not mandatory photo formats.",
+      "singer": { "label": "Singer", "text": "A clear portrait or a high-quality photo of you performing." },
+      "dj": { "label": "DJ", "text": "A recognizable photo at the decks or a clear professional portrait." },
+      "instrumentalist": { "label": "Instrumentalist", "text": "A clear photo with your main instrument, ideally while performing." },
+      "band": { "label": "Band / Formation", "text": "A clear, current group photo showing the members of the band." },
+      "other": { "label": "Other", "text": "A photo that clearly represents your musical role, act or performance." }
+    },
+    "avoid": {
+      "title": "Avoid",
+      "blurry": "Blurry, dark or low-quality photos where the artist is barely visible.",
+      "distant": "Photos taken from too far away or where the subject cannot be recognized.",
+      "unrelated": "Unrelated images that do not represent you or your musical activity.",
+      "promotional": "Logos, posters, flyers or text-heavy promotional graphics as profile photos.",
+      "edited": "Heavily edited images that make the artist difficult to recognize.",
+      "group": "Individual profiles should avoid unclear group photos. Group photos are appropriate for band profiles."
+    },
+    "why": {
+      "title": "Why does this matter?",
+      "intro": "Your profile photo represents you across Muzicalist and helps people identify you quickly wherever your profile appears.",
+      "search": "Search results",
+      "categories": "Artist categories",
+      "countries": "Countries and regions",
+      "rankings": "Rankings",
+      "feeds": "Feeds",
+      "profile": "Your public profile"
+    },
+    "standards": {
+      "title": "Platform standards and recommendations",
+      "description": "These guidelines describe Muzicalist's professional standards and recommendations. They are not all automatically enforced. The only mandatory photo requirement is providing a profile photo during artist registration; these guidelines do not add upload restrictions or automatic moderation."
+    }
   }
 }
