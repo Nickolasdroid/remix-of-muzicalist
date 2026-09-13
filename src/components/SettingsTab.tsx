@@ -554,6 +554,7 @@ const SettingsTab = ({
       items: [
         { id: "help", label: "Help & Support", icon: HelpCircle },
         { id: "report", label: "Report an Issue", icon: Flag },
+        { id: "rules", label: "Rules", icon: BookOpenCheck },
         { id: "about", label: "About", icon: Info },
         { id: "privacy_policy", label: "Privacy Policy", icon: FileText },
         { id: "terms_of_service", label: "Terms of Service", icon: FileText },
@@ -1487,6 +1488,7 @@ const SettingsTab = ({
       items: [
         { id: "help", label: "Help Center", icon: HelpCircle },
         { id: "report", label: "Report a Problem", icon: Flag },
+        { id: "rules", label: "Rules", icon: BookOpenCheck },
         { id: "about", label: "About Muzicalist", icon: Info },
         { id: "privacy_policy", label: "Privacy Policy", icon: FileText },
         { id: "terms_of_service", label: "Terms of Service", icon: FileText },
