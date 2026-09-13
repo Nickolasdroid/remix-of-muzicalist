@@ -671,17 +671,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   </Link>
                 )}
 
-                <Link
-                  to="/rules"
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive('/rules')
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
-                  }`}
-                >
-                  <BookOpenCheck className="h-5 w-5" />
-                  <span className="font-medium">{t('navigation.rules')}</span>
-                </Link>
                 
                 {user && (
                   <>
