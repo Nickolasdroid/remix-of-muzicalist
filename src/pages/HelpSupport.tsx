@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +25,7 @@ import {
   Receipt,
   Building2,
   Globe,
+  BookOpenCheck,
 } from "lucide-react";
 
 
@@ -289,6 +291,7 @@ const faqSections = [
 ];
 
 const HelpSupport = () => {
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -361,6 +364,13 @@ const HelpSupport = () => {
               Useful Links
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                to="/rules"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
+              >
+                <BookOpenCheck className="h-4 w-4 text-accent" />
+                <span className="text-sm font-medium text-foreground">{t("navigation.rules")}</span>
+              </Link>
               <Link
                 to="/about"
                 className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"

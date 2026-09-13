@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, BookOpenCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
@@ -456,6 +456,20 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   </Link>
                 )}
 
+                <Link
+                  to="/rules"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
+                    isActive('/rules') ? 'text-accent' : 'text-foreground'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <BookOpenCheck className={`h-5 w-5 ${isActive('/rules') ? 'text-accent' : 'text-muted-foreground'}`} />
+                    <span className="text-sm font-semibold">{t('navigation.rules')}</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </Link>
+
 
                 {/* Logout */}
                 <button
@@ -669,6 +683,18 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     <span className="font-medium">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
                   </Link>
                 )}
+
+                <Link
+                  to="/rules"
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                    isActive('/rules')
+                      ? 'bg-accent/20 text-accent'
+                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  }`}
+                >
+                  <BookOpenCheck className="h-5 w-5" />
+                  <span className="font-medium">{t('navigation.rules')}</span>
+                </Link>
                 
                 {user && (
                   <>
