@@ -1761,6 +1761,7 @@ export const RO_TEXT: Record<string, string> = {
   "Report submitted": "Raportare trimisă",
   "Report Type": "Tip raport",
   "Report updated.": "Raport actualizat.",
+  "Rules": "Reguli",
   "Reported post": "Postare raportată",
   "Reporter": "Raportor",
   "Reporter email": "E-mail raportor",

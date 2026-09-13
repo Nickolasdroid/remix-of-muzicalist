@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText, Check, X as XIcon, Loader2 } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, BookOpenCheck, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText, Check, X as XIcon, Loader2 } from "lucide-react";
 import BillingSection from "@/components/BillingSection";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -24,7 +24,7 @@ import ReportProblemForm from "@/components/ReportProblemForm";
 import BlockedUsersPanel from "@/components/BlockedUsersPanel";
 
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification" | "rules";
 
 export type NotificationPreferenceKey =
   | "reviews"
@@ -51,6 +51,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
 
 const SUPPORT_DESTINATIONS: Partial<Record<SettingSection, string>> = {
   help: "/help",
+  rules: "/rules",
   about: "/about",
   privacy_policy: "/privacy-policy",
   terms_of_service: "/terms-of-service",
