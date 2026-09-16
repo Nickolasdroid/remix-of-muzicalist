@@ -12,6 +12,12 @@
     "error": "Eroare",
     "success": "Succes"
   },
+  "artistCard": {
+    "newArtist": "Artist nou",
+    "noReviews": "Fără recenzii",
+    "reviewCount_one": "{{count}} recenzie",
+    "reviewCount_other": "{{count}} recenzii"
+  },
   "navigation": {
     "home": "Acasă",
     "categories": "Categorii",

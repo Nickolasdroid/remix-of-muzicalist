@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, Star, User, Trophy, Crown } from "lucide-react";
+import { ChevronRight, User, Trophy, Crown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 
 interface PreviewArtist {
   stage_name: string;
@@ -126,19 +127,11 @@ const LeaderboardPreviewSection = () => {
                         >
                           {artist.stage_name}
                         </p>
-                        <div className="flex items-center justify-center gap-1 mt-1">
-                          <Star className={`${isFirst ? "h-4 w-4" : "h-3 w-3"} text-accent fill-accent`} />
-                          <span
-                            className={`font-semibold text-accent ${isFirst ? "text-sm md:text-base" : "text-xs md:text-sm"}`}
-                          >
-                            {artist.rating.toFixed(1)}
-                          </span>
-                        </div>
-                        <p
-                          className={`text-muted-foreground mt-0.5 ${isFirst ? "text-[11px] md:text-xs" : "text-[10px] md:text-xs"}`}
-                        >
-                          {artist.review_count} reviews
-                        </p>
+                        <ArtistCardStatusBadge
+                          rating={artist.rating}
+                          reviewCount={artist.review_count}
+                          className="mt-1"
+                        />
                       </div>
                     </div>
                     <div

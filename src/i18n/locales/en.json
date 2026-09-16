@@ -12,6 +12,12 @@
     "error": "Error",
     "success": "Success"
   },
+  "artistCard": {
+    "newArtist": "New artist",
+    "noReviews": "No reviews",
+    "reviewCount_one": "{{count}} review",
+    "reviewCount_other": "{{count}} reviews"
+  },
   "navigation": {
     "home": "Home",
     "categories": "Categories",

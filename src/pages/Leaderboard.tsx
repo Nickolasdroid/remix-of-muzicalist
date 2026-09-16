@@ -19,6 +19,7 @@ import PlanBadge from "@/components/PlanBadge";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import { getCountryNameVariants } from "@/lib/countryFlags";
+import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 
 const allCountries = [{
   name: "Afghanistan",
@@ -965,15 +966,11 @@ const Leaderboard = () => {
                                   <p className={`font-semibold text-foreground group-hover:text-accent transition-colors truncate notranslate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`} data-user-content="true" data-no-translate="true" translate="no">
                                     {artist.stage_name}
                                   </p>
-                                  <div className="flex items-center justify-center gap-1 mt-1">
-                                    <Star className={`${isFirst ? "h-4 w-4" : "h-3 w-3"} text-accent fill-accent`} />
-                                    <span className={`font-semibold text-accent ${isFirst ? "text-sm md:text-base" : "text-xs md:text-sm"}`}>
-                                      {(artistRatings[artist.id] || 0).toFixed(1)}
-                                    </span>
-                                  </div>
-                                  <p className={`text-muted-foreground mt-0.5 ${isFirst ? "text-[11px] md:text-xs" : "text-[10px] md:text-xs"}`}>
-                                    {artistReviewCounts[artist.id] || 0} reviews
-                                  </p>
+                                  <ArtistCardStatusBadge
+                                    rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
+                                    reviewCount={artistReviewCounts[artist.id] || 0}
+                                    className="mt-1"
+                                  />
                                 </div>
                               </Link>
                               {/* Pedestal */}

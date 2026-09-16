@@ -5,4 +5,4 @@
 - [x] Move Rules into Settings & Activity → Support, removing standalone More menu entry.
 - [x] Verify routes, localization, responsive layouts, and build health.
 - [x] Rebuild Rules as a localized, scalable category-and-accordion center.
-- [ ] Standardize rating and review-count pills across artist cards.
+- [x] Standardize rating and review-count pills across artist cards.
