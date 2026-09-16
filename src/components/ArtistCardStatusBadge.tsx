@@ -28,7 +28,7 @@ const ArtistCardStatusBadge = ({ createdAt, rating, reviewCount, className }: Ar
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center gap-1 rounded-full border border-border/70 bg-secondary/80 px-2 py-1 text-[11px] leading-none whitespace-nowrap",
+        "inline-flex max-w-full items-center gap-0.5 rounded-full border border-border/70 bg-secondary/80 px-1.5 py-1 text-[9px] leading-none whitespace-nowrap sm:gap-1 sm:px-2 sm:text-[11px]",
         className,
       )}
     >
