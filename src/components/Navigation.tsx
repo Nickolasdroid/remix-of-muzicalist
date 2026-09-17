@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage, translateTextsSync } from "@/i18n";
 import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
+import { Button } from "./ui/button";
 
 interface NavigationProps {
   mobileTitle?: string;
@@ -336,19 +337,20 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link to="/login" aria-label={t('navigation.account', 'Account')} className="-mr-2">
-            <button className="h-10 w-10 rounded-full border flex items-center justify-center text-accent hover:text-accent/90 bg-[hsl(var(--header-button-bg))] border-[hsl(var(--header-button-border))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:border-[hsl(var(--header-button-border-hover))] transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-              <User className="h-[22px] w-[22px]" />
-            </button>
-          </Link>
+        <div className="flex items-center gap-2" aria-label={t('navigation.authActions', 'Authentication')}>
+          <Button asChild variant="ghost" size="sm" className="h-9 rounded-lg border border-[hsl(var(--header-button-border))] bg-[hsl(var(--header-button-bg))] px-3 text-sm font-medium text-foreground hover:border-[hsl(var(--header-button-border-hover))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:text-foreground focus-visible:ring-accent/50">
+            <Link to="/login">{t('navigation.loginDesktop')}</Link>
+          </Button>
+          <Button asChild size="sm" className="h-9 rounded-lg border border-accent/70 bg-accent px-3 text-sm font-semibold text-accent-foreground shadow-none transition-colors hover:bg-accent/90 focus-visible:ring-accent/50">
+            <Link to="/register">{t('navigation.registerDesktop')}</Link>
+          </Button>
         </div>
       </nav>
       )}
 
       {/* Mobile: Top Header Bar */}
       <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
-        <div className="flex items-center justify-between h-14 px-4">
+        <div className={`flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {mobileTitle ? (
             <button
@@ -510,7 +512,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : null}
 
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1" aria-label={!user ? t('navigation.authActions', 'Authentication') : undefined}>
             {user ? (
               <button
                 onClick={() => navigate('/notifications')}
@@ -526,11 +528,14 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 )}
               </button>
             ) : (
-            <Link to="/login" aria-label={t('navigation.account', 'Account')} className="-mr-2">
-              <button className="h-10 w-10 rounded-full border flex items-center justify-center text-accent hover:text-accent/90 bg-[hsl(var(--header-button-bg))] border-[hsl(var(--header-button-border))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:border-[hsl(var(--header-button-border-hover))] transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-                <User className="h-[22px] w-[22px]" />
-              </button>
-            </Link>
+              <>
+                <Button asChild variant="ghost" size="sm" className="h-8 rounded-lg border border-[hsl(var(--header-button-border))] bg-[hsl(var(--header-button-bg))] px-2 text-xs font-medium text-foreground hover:border-[hsl(var(--header-button-border-hover))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:text-foreground focus-visible:ring-accent/50 min-[375px]:px-2.5">
+                  <Link to="/login">{t('navigation.loginMobile')}</Link>
+                </Button>
+                <Button asChild size="sm" className="h-8 rounded-lg border border-accent/70 bg-accent px-2 text-xs font-semibold text-accent-foreground shadow-none transition-colors hover:bg-accent/90 focus-visible:ring-accent/50 min-[375px]:px-2.5">
+                  <Link to="/register">{t('navigation.registerMobile')}</Link>
+                </Button>
+              </>
             )}
           </div>
         </div>
