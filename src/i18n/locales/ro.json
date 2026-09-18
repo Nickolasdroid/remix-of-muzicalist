@@ -18,6 +18,15 @@
     "reviewCount_one": "{{count}} recenzie",
     "reviewCount_other": "{{count}} recenzii"
   },
+  "reviewModal": {
+    "title": "Recenzie pentru",
+    "subtitle": "Împărtășește experiența ta cu acest artist",
+    "rating": "Evaluare",
+    "commentLabel": "Recenzia ta (opțional)",
+    "commentPlaceholder": "Împărtășește experiența ta...",
+    "submit": "Trimite recenzia",
+    "submitting": "Se trimite..."
+  },
   "navigation": {
     "home": "Acasă",
     "categories": "Categorii",

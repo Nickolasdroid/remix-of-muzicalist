@@ -196,8 +196,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
     message: ""
   });
   const [reviewForm, setReviewForm] = useState({
-    name: "",
-    email: "",
     rating: 5,
     comment: ""
   });
@@ -291,11 +289,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         if (mergedProfile) {
           setCurrentUserProfile(mergedProfile);
           const fullName = `${mergedProfile.first_name} ${mergedProfile.last_name}`.trim();
-          setReviewForm((prev) => ({
-            ...prev,
-            name: fullName,
-            email: mergedProfile.email || session.user.email || ''
-          }));
           setBookingForm((prev) => ({
             ...prev,
             name: fullName,
@@ -304,10 +297,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
           }));
         } else {
           // Fallback to auth email if no profile exists
-          setReviewForm((prev) => ({
-            ...prev,
-            email: session.user.email || ''
-          }));
           setBookingForm((prev) => ({
             ...prev,
             email: session.user.email || ''
@@ -847,18 +836,17 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const formatDate = formatSmartDate;
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id) return;
+    if (!id || !currentUserId) return;
+    const comment = reviewForm.comment.trim();
+    if (reviewForm.rating < 1 || reviewForm.rating > 5 || comment.length > 100) return;
     setSubmittingReview(true);
     try {
       const {
         error
-      } = await supabase.from('reviews').insert({
+      } = await (supabase as any).from('reviews').insert({
         profile_id: id,
-        reviewer_name: reviewForm.name.trim(),
-        reviewer_email: reviewForm.email.trim(),
         rating: reviewForm.rating,
-        comment: reviewForm.comment.trim() || null,
-        reviewer_user_id: currentUserId
+        comment: comment || null
       });
       if (error) throw error;
 
@@ -876,8 +864,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       });
       setReviewDialogOpen(false);
       setReviewForm({
-        name: "",
-        email: "",
         rating: 5,
         comment: ""
       });
@@ -2291,31 +2277,17 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
               </Dialog>
 
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-display">Review <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
+                <DialogContent className="rounded-lg sm:max-w-[460px]">
+                  <DialogHeader className="space-y-1.5">
+                    <DialogTitle className="text-xl font-display sm:text-2xl">{t('reviewModal.title')} <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
                     <DialogDescription>
-                      Share your experience with this artist
+                      {t('reviewModal.subtitle')}
                     </DialogDescription>
                   </DialogHeader>
-                  <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4">
+                  <form onSubmit={handleReviewSubmit} className="mt-2 space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="reviewerName">Your Name</Label>
-                      <Input id="reviewerName" placeholder="Your name" value={reviewForm.name} onChange={(e) => setReviewForm({
-                    ...reviewForm,
-                    name: e.target.value
-                  })} required maxLength={100} readOnly={!!currentUserProfile} className={currentUserProfile ? "bg-muted cursor-not-allowed" : ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reviewerEmail">Your Email</Label>
-                      <Input id="reviewerEmail" type="email" placeholder="your.email@example.com" value={reviewForm.email} onChange={(e) => setReviewForm({
-                    ...reviewForm,
-                    email: e.target.value
-                  })} required maxLength={255} readOnly={!!currentUserProfile || !!currentUserId} className={currentUserProfile || currentUserId ? "bg-muted cursor-not-allowed" : ""} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Rating</Label>
-                      <div className="py-2">
+                      <Label>{t('reviewModal.rating')}</Label>
+                      <div className="py-1">
                         {renderStars(reviewForm.rating, true, (rating) => setReviewForm({
                       ...reviewForm,
                       rating
@@ -2324,16 +2296,16 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="reviewComment">Your Review (Optional)</Label>
+                        <Label htmlFor="reviewComment">{t('reviewModal.commentLabel')}</Label>
                         <span className="text-xs text-muted-foreground">{reviewForm.comment.length}/100</span>
                       </div>
-                      <Textarea id="reviewComment" placeholder="Share your experience..." value={reviewForm.comment} onChange={(e) => setReviewForm({
+                      <Textarea id="reviewComment" placeholder={t('reviewModal.commentPlaceholder')} value={reviewForm.comment} onChange={(e) => setReviewForm({
                     ...reviewForm,
                     comment: e.target.value
                   })} rows={3} maxLength={100} />
                     </div>
                     <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={submittingReview}>
-                      {submittingReview ? "Submitting..." : "Submit Review"}
+                      {submittingReview ? t('reviewModal.submitting') : t('reviewModal.submit')}
                     </Button>
                   </form>
                 </DialogContent>

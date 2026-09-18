@@ -18,6 +18,15 @@
     "reviewCount_one": "{{count}} review",
     "reviewCount_other": "{{count}} reviews"
   },
+  "reviewModal": {
+    "title": "Review",
+    "subtitle": "Share your experience with this artist",
+    "rating": "Rating",
+    "commentLabel": "Your Review (Optional)",
+    "commentPlaceholder": "Share your experience...",
+    "submit": "Submit Review",
+    "submitting": "Submitting..."
+  },
   "navigation": {
     "home": "Home",
     "categories": "Categories",
