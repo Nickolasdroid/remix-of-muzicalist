@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, type ReactNode } from "react";
 import { FileText, Megaphone } from "lucide-react";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
@@ -60,14 +61,14 @@ interface Props {
   onShare?: (type: "post" | "announcement") => void;
   onMediaClick?: (media: { url: string; type: "image" | "video" }) => void;
   /** Rendered next to the header name (dashboard-only controls, e.g. avatar upload) */
-  headerExtra?: React.ReactNode;
+  headerExtra?: ReactNode;
   /** Rendered above the Posts list (dashboard "+ Add" controls) */
-  postsToolbar?: React.ReactNode;
+  postsToolbar?: ReactNode;
   /** Rendered above the Announcements list (dashboard "+ Add" controls) */
-  announcementsToolbar?: React.ReactNode;
+  announcementsToolbar?: ReactNode;
   /** Per-item three-dot menu (dashboard management actions) */
-  renderPostMenu?: (post: OfficialPost) => React.ReactNode;
-  renderAnnouncementMenu?: (a: OfficialAnnouncement) => React.ReactNode;
+  renderPostMenu?: (post: OfficialPost) => ReactNode;
+  renderAnnouncementMenu?: (a: OfficialAnnouncement) => ReactNode;
   defaultTab?: string;
   value?: string;
   onValueChange?: (v: string) => void;
@@ -111,7 +112,7 @@ const OfficialProfileView = ({
 }: Props) => {
   const name = profile.stage_name || profile.first_name || "Muzicalist";
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
-  const [openGridPost, setOpenGridPost] = React.useState<PostsGridItem | null>(null);
+  const [openGridPost, setOpenGridPost] = useState<PostsGridItem | null>(null);
 
   const author = {
     id: profile.id,
