@@ -53,6 +53,8 @@ import SocialStats from "@/components/SocialStats";
 import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
+import FeedPostCard from "@/components/FeedPostCard";
+import { FullPostDialog, PostsGrid, PostsViewSwitcher, usePostsViewMode, type PostsGridItem } from "@/components/post/PostsView";
 import { useAdminIds } from "@/hooks/useAdminIds";
 import i18n, { translateTextsSync } from "@/i18n";
 interface Profile {
@@ -202,6 +204,8 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [postsViewMode, setPostsViewMode] = usePostsViewMode();
+  const [openGridPost, setOpenGridPost] = useState<PostsGridItem | null>(null);
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
@@ -1705,6 +1709,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                       icon={<FileText className="h-5 w-5 text-accent" />}
                       title="Posts"
                       className="mb-4"
+                      action={<PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />}
                     />
                     {!currentUserId ?
                 <Card className="p-8 text-center">
@@ -1742,6 +1747,43 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     const combined = [...postItems, ...promotions].sort(
                       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                     );
+
+                    if (postsViewMode === "grid") {
+                      const gridItems: PostsGridItem[] = combined.map((item) => ({
+                        id: item.id,
+                        kind: item.type === "promotion" ? "promotion" : "post",
+                        text: item.content || "",
+                        mediaUrl: item.media_url,
+                        mediaType: item.media_type,
+                      }));
+                      const selected = openGridPost ? combined.find((item) => item.id === openGridPost.id && item.type === openGridPost.kind) : null;
+                      const selectedIsPromo = selected?.type === "promotion";
+                      return <>
+                        <PostsGrid items={gridItems} onOpen={setOpenGridPost} />
+                        <FullPostDialog open={!!selected} onOpenChange={(open) => { if (!open) setOpenGridPost(null); }}>
+                          {selected && <FeedPostCard
+                            author={{ id: artist?.id, stageName: artist?.stage_name || "Artist", avatarUrl: artist?.avatar_url, specializationLabel: translateSpecialization(artist?.specialization), plan: artist?.plan }}
+                            content={selected.content || ""}
+                            createdAt={selected.created_at}
+                            mediaUrl={selected.media_url}
+                            mediaType={selected.media_type}
+                            likes={(selected as any).likes || 0}
+                            commentsCount={(selected as any).commentsCount || 0}
+                            isLiked={(selected as any).isLiked}
+                            promoted={!selectedIsPromo && !!(selected as any).promoted_until && new Date((selected as any).promoted_until).getTime() > Date.now()}
+                            postId={selectedIsPromo ? undefined : selected.id}
+                            onMediaClick={() => selected.media_url && setMediaPreview({ url: selected.media_url, type: selected.media_type === "video" ? "video" : "image" })}
+                            onLike={() => selectedIsPromo ? handleAnnouncementLike(selected.id) : handlePostLike(selected.id)}
+                            onComment={() => setCommentsTarget({ id: selected.id, type: selectedIsPromo ? "announcement" : "post" })}
+                            onShare={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: selectedIsPromo ? "announcement" : "post" })}
+                            menu={<PostActionsMenu actions={[
+                              { key: "report", label: t("dashboardPosts.report", "Report"), icon: Flag, onSelect: () => { if (!currentUserId) { navigate("/login"); return; } setReportTarget({ id: selected.id, type: selectedIsPromo ? "announcement" : "post" }); } },
+                              ...(isOwnProfile ? [{ key: "delete", label: t("dashboardPosts.delete", "Delete"), icon: Trash2, destructive: true, onSelect: () => selectedIsPromo ? setDeleteAnnouncementId(selected.id) : setDeletePostId(selected.id) }] : []),
+                            ]} />}
+                          />}
+                        </FullPostDialog>
+                      </>;
+                    }
 
                     return combined.length > 0 ? combined.map((item) => {
                       if (item.type === 'promotion') {
