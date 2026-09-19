@@ -2560,7 +2560,7 @@ const Dashboard = () => {
                                     likes={(item as any).likes || 0}
                                     commentsCount={(item as any).commentsCount || 0}
                                     isLiked={(item as any).isLiked}
-                                    promoted={isPromoted}
+                                    promoted={isPromo || isPromoted}
                                     shares={(item as any).shares || 0}
                                     onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === "video" ? "video" : "image" })}
                                     onLike={() => isPromo ? handleAnnouncementLike(item.id) : handlePostLike(item.id)}

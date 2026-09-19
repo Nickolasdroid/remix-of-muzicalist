@@ -1770,7 +1770,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                             likes={(selected as any).likes || 0}
                             commentsCount={(selected as any).commentsCount || 0}
                             isLiked={(selected as any).isLiked}
-                            promoted={!selectedIsPromo && !!(selected as any).promoted_until && new Date((selected as any).promoted_until).getTime() > Date.now()}
+                            promoted={selectedIsPromo || (!!(selected as any).promoted_until && new Date((selected as any).promoted_until).getTime() > Date.now())}
                             postId={selectedIsPromo ? undefined : selected.id}
                             onMediaClick={() => selected.media_url && setMediaPreview({ url: selected.media_url, type: selected.media_type === "video" ? "video" : "image" })}
                             onLike={() => selectedIsPromo ? handleAnnouncementLike(selected.id) : handlePostLike(selected.id)}
