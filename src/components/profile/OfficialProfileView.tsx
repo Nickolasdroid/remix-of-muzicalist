@@ -1,8 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, type ReactNode } from "react";
 import { FileText, Megaphone } from "lucide-react";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
+import { FullPostDialog, PostsGrid, PostsViewSwitcher, usePostsViewMode, type PostsGridItem } from "@/components/post/PostsView";
 
 
 export interface OfficialProfileData {
@@ -58,14 +61,14 @@ interface Props {
   onShare?: (type: "post" | "announcement") => void;
   onMediaClick?: (media: { url: string; type: "image" | "video" }) => void;
   /** Rendered next to the header name (dashboard-only controls, e.g. avatar upload) */
-  headerExtra?: React.ReactNode;
+  headerExtra?: ReactNode;
   /** Rendered above the Posts list (dashboard "+ Add" controls) */
-  postsToolbar?: React.ReactNode;
+  postsToolbar?: ReactNode;
   /** Rendered above the Announcements list (dashboard "+ Add" controls) */
-  announcementsToolbar?: React.ReactNode;
+  announcementsToolbar?: ReactNode;
   /** Per-item three-dot menu (dashboard management actions) */
-  renderPostMenu?: (post: OfficialPost) => React.ReactNode;
-  renderAnnouncementMenu?: (a: OfficialAnnouncement) => React.ReactNode;
+  renderPostMenu?: (post: OfficialPost) => ReactNode;
+  renderAnnouncementMenu?: (a: OfficialAnnouncement) => ReactNode;
   defaultTab?: string;
   value?: string;
   onValueChange?: (v: string) => void;
@@ -108,6 +111,8 @@ const OfficialProfileView = ({
   onValueChange,
 }: Props) => {
   const name = profile.stage_name || profile.first_name || "Muzicalist";
+  const [postsViewMode, setPostsViewMode] = usePostsViewMode();
+  const [openGridPost, setOpenGridPost] = useState<PostsGridItem | null>(null);
 
   const author = {
     id: profile.id,
@@ -152,7 +157,12 @@ const OfficialProfileView = ({
         </TabsList>
 
         <TabsContent value="posts">
-          {postsToolbar}
+          <SectionHeaderWithUsage
+            icon={<FileText className="h-5 w-5 text-accent" />}
+            title="Posts"
+            action={<div className="flex items-center gap-2"><PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />{postsToolbar}</div>}
+            className="mb-4"
+          />
           <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
             <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
               {posts.length === 0 ? (
@@ -160,6 +170,36 @@ const OfficialProfileView = ({
                   <FileText className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
                   <p className="text-muted-foreground">No posts yet.</p>
                 </div>
+              ) : postsViewMode === "grid" ? (
+                <>
+                  <PostsGrid
+                    items={posts.map((post) => ({ id: post.id, kind: "post", text: post.content, mediaUrl: post.media_url, mediaType: post.media_type }))}
+                    onOpen={setOpenGridPost}
+                  />
+                  <FullPostDialog open={!!openGridPost} onOpenChange={(open) => { if (!open) setOpenGridPost(null); }}>
+                    {openGridPost && (() => {
+                      const post = posts.find((candidate) => candidate.id === openGridPost.id);
+                      if (!post) return null;
+                      return <FeedPostCard
+                        postId={post.id}
+                        author={author}
+                        content={post.content}
+                        createdAt={post.created_at}
+                        mediaUrl={post.media_url}
+                        mediaType={post.media_type}
+                        likes={post.likes || 0}
+                        commentsCount={post.commentsCount || 0}
+                        isLiked={!!post.isLiked}
+                        promoted={!!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now()}
+                        menu={renderPostMenu?.(post)}
+                        onLike={() => onPostLike?.(post.id)}
+                        onComment={() => onComments?.(post.id, "post")}
+                        onShare={() => onShare?.("post")}
+                        onMediaClick={() => post.media_url && onMediaClick?.({ url: post.media_url, type: post.media_type === "video" ? "video" : "image" })}
+                      />;
+                    })()}
+                  </FullPostDialog>
+                </>
               ) : (
                 posts.map((post) => (
                   <FeedPostCard

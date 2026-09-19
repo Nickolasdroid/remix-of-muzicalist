@@ -77,6 +77,7 @@ import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import PostComposerDialog from "@/components/post/PostComposerDialog";
+import { FullPostDialog, PostsGrid, PostsViewSwitcher, usePostsViewMode, type PostsGridItem } from "@/components/post/PostsView";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 const Dashboard = () => {
   const {
@@ -94,6 +95,8 @@ const Dashboard = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [postsViewMode, setPostsViewMode] = usePostsViewMode();
+  const [openGridPost, setOpenGridPost] = useState<PostsGridItem | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
@@ -2498,8 +2501,9 @@ const Dashboard = () => {
                             title={t('dashboardPosts.title', 'Posts')}
                             usage={`${postItems.length}/${postLimitLabel}`}
                             info={<QuotaInfoButton kind="posts" />}
-                            action={
-                              canCreatePosts ? (
+                            action={<>
+                              <PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />
+                              {canCreatePosts ? (
                                 <Button
                                   size="sm"
                                   onClick={() => setShowPostDialog(true)}
@@ -2518,8 +2522,8 @@ const Dashboard = () => {
                                   <Lock className="h-4 w-4 mr-1" />
                                   {t('common.upgrade', 'Upgrade')}
                                 </Button>
-                              )
-                            }
+                              )}
+                            </>}
                           />
 
                           {/* Post list */}
@@ -2528,6 +2532,49 @@ const Dashboard = () => {
                               icon={<FileText className="h-10 w-10 opacity-50" />}
                               title={t('dashboardPosts.empty', 'No posts yet. Add your first post!')}
                             />
+                          ) : postsViewMode === "grid" ? (
+                            <>
+                              <PostsGrid
+                                items={merged.map((item) => ({
+                                  id: item.id,
+                                  kind: item.__kind,
+                                  text: item.__text,
+                                  mediaUrl: item.__mediaUrl,
+                                  mediaType: item.__mediaType,
+                                }))}
+                                onOpen={setOpenGridPost}
+                              />
+                              <FullPostDialog open={!!openGridPost} onOpenChange={(open) => { if (!open) setOpenGridPost(null); }}>
+                                {openGridPost && (() => {
+                                  const item = merged.find((candidate) => candidate.id === openGridPost.id && candidate.__kind === openGridPost.kind);
+                                  if (!item) return null;
+                                  const isPromo = item.__kind === "promotion";
+                                  const promotedUntil = item.__kind === "post" ? ((item as any).promoted_until || null) : null;
+                                  const isPromoted = !!promotedUntil && new Date(promotedUntil).getTime() > Date.now();
+                                  return <FeedPostCard
+                                    author={{ id: profile?.id, stageName: profile?.stage_name || "Artist", avatarUrl: profile?.avatar_url, specializationLabel: translateSpecialization(profile?.specialization), plan: profile?.plan }}
+                                    content={item.__text}
+                                    createdAt={item.__date}
+                                    mediaUrl={item.__mediaUrl}
+                                    mediaType={item.__mediaType}
+                                    likes={(item as any).likes || 0}
+                                    commentsCount={(item as any).commentsCount || 0}
+                                    isLiked={(item as any).isLiked}
+                                    promoted={isPromo || isPromoted}
+                                    shares={(item as any).shares || 0}
+                                    onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === "video" ? "video" : "image" })}
+                                    onLike={() => isPromo ? handleAnnouncementLike(item.id) : handlePostLike(item.id)}
+                                    onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? "announcement" : "post" })}
+                                    onShare={() => sharePost({ profileId: profile?.id, stageName: profile?.stage_name || "Artist", type: isPromo ? "announcement" : "post" })}
+                                    menu={<PostActionsMenu disabled={isSaving} actions={[
+                                      { key: "edit", label: t("dashboardPosts.edit", "Edit"), icon: Pencil, onSelect: () => setEditItem({ id: item.id, kind: isPromo ? "promotion" : "post", text: item.__text }) },
+                                      ...(!isPromo ? [{ key: "promote", label: isPromoted ? t("postPromotion.managePromotion", "Manage promotion") : t("postPromotion.promote", "Promote"), icon: Megaphone, onSelect: () => setPromoteTarget({ id: item.id, promotedUntil }) }] : []),
+                                      { key: "delete", label: t("dashboardPosts.delete", "Delete"), icon: Trash2, destructive: true, onSelect: () => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id) },
+                                    ]} />}
+                                  />;
+                                })()}
+                              </FullPostDialog>
+                            </>
                           ) : (
                             <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
                               {merged.map((item) => {
