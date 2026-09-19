@@ -258,6 +258,15 @@
     "report": "Report",
     "deleteAdmin": "Delete (admin)"
   },
+  "postsView": {
+    "switcher": "Post view",
+    "list": "List view",
+    "grid": "Grid view",
+    "openPhoto": "Open photo post",
+    "openVideo": "Open video post",
+    "openText": "Open text post",
+    "postDetails": "Post details"
+  },
   "dashboardAnnouncements": {
     "title": "Announcements"
   },

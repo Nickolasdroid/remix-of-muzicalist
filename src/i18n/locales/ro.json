@@ -305,6 +305,15 @@
     "report": "Raportează",
     "deleteAdmin": "Șterge (admin)"
   },
+  "postsView": {
+    "switcher": "Afișare postări",
+    "list": "Vizualizare listă",
+    "grid": "Vizualizare grilă",
+    "openPhoto": "Deschide postarea foto",
+    "openVideo": "Deschide postarea video",
+    "openText": "Deschide postarea text",
+    "postDetails": "Detalii postare"
+  },
   "dashboardAnnouncements": {
     "title": "Anunțuri"
   },
