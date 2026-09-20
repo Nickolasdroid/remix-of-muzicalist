@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CountryPickerButton from "@/components/CountryPickerButton";
-import { getCountryNameVariants } from "@/lib/countryFlags";
+import { getCountryNameVariants, getCountryName } from "@/lib/countryFlags";
 
 
 const Counties = () => {
