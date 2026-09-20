@@ -2560,6 +2560,13 @@ export type Database = {
         }[]
       }
       get_admin_user_ids: { Args: never; Returns: string[] }
+      get_artist_country_counts: {
+        Args: never
+        Returns: {
+          artist_count: number
+          country: string
+        }[]
+      }
       get_booked_profile_ids: {
         Args: { _event_date: string; _profile_ids: string[] }
         Returns: string[]
