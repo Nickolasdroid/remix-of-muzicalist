@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CountryPickerButton from "@/components/CountryPickerButton";
-import { getCountryNameVariants } from "@/lib/countryFlags";
+import { getCountryNameVariants, getCountryName } from "@/lib/countryFlags";
 
 
 const Counties = () => {
@@ -26,17 +26,18 @@ const Counties = () => {
         return;
       }
 
-      const { data: rows } = await supabase
-        .from('profiles')
-        .select('country')
-        .not('country', 'is', null)
-        .not('specialization', 'is', null);
+      // Efficient server-side ranking: country with the most active artists first.
+      const { data: rows } = await supabase.rpc('get_artist_country_counts');
 
-      const uniqueCountries = [...new Set((rows || []).map((r: any) => r.country))]
-        .filter(Boolean)
-        .sort((a: string, b: string) => a.localeCompare(b));
+      const ranked = (rows || []) as { country: string; artist_count: number }[];
+      const topCount = ranked[0]?.artist_count ?? 0;
+      // Deterministic tie-break: among countries with the same highest count,
+      // pick alphabetically by full country name.
+      const top = ranked
+        .filter((r) => r.artist_count === topCount)
+        .sort((a, b) => getCountryName(a.country).localeCompare(getCountryName(b.country)))[0];
 
-      setSelectedCountry(uniqueCountries[0] || null);
+      setSelectedCountry(top?.country || null);
     };
     checkAuth();
   }, [navigate]);
