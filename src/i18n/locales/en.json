@@ -12,6 +12,14 @@
     "error": "Error",
     "success": "Success"
   },
+  "announcementsPage": {
+    "loading": "Loading announcements...",
+    "emptyTitle": "No announcements yet",
+    "emptyDescription": "Announcements published by artists will appear here.",
+    "errorTitle": "Announcements couldn't be loaded",
+    "errorMessage": "Something went wrong while loading announcements.",
+    "retry": "Try again"
+  },
   "artistCard": {
     "newArtist": "New artist",
     "noReviews": "No reviews",
