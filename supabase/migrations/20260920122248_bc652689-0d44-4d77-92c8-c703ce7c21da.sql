@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.get_artist_country_counts() FROM anon, public;
