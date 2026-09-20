@@ -12,6 +12,14 @@
     "error": "Eroare",
     "success": "Succes"
   },
+  "announcementsPage": {
+    "loading": "Se încarcă anunțurile...",
+    "emptyTitle": "Nu există încă anunțuri",
+    "emptyDescription": "Anunțurile publicate de artiști vor apărea aici.",
+    "errorTitle": "Anunțurile nu au putut fi încărcate",
+    "errorMessage": "A apărut o problemă la încărcarea anunțurilor.",
+    "retry": "Încearcă din nou"
+  },
   "artistCard": {
     "newArtist": "Artist nou",
     "noReviews": "Fără recenzii",

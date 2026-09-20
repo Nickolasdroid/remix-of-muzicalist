@@ -30,6 +30,10 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import AdminDeleteContentDialog from "@/components/AdminDeleteContentDialog";
 import ReportContentDialog from "@/components/ReportContentDialog";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
+import { EmptyState } from "@/components/admin/platform/EmptyState";
+import { ErrorState } from "@/components/admin/platform/ErrorState";
+import { LoadingState } from "@/components/admin/platform/LoadingState";
+import { useTranslation } from "react-i18next";
 
 const ANNOUNCEMENTS_PER_PAGE = 10;
 
@@ -38,9 +42,11 @@ interface MediaPreview {
   type: "image" | "video";
 }
 const Announcements = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
@@ -108,6 +114,8 @@ const Announcements = () => {
   };
 
   const fetchAnnouncements = useCallback(async (pageNum: number, append: boolean = false) => {
+    if (!append) setLoading(true);
+    setRequestError(null);
     try {
       const from = pageNum * ANNOUNCEMENTS_PER_PAGE;
       const to = from + ANNOUNCEMENTS_PER_PAGE - 1;
@@ -132,6 +140,7 @@ const Announcements = () => {
 
       if (error) {
         console.error("Error fetching announcements:", error);
+        setRequestError(t("announcementsPage.errorMessage"));
         return;
       }
 
@@ -158,7 +167,7 @@ const Announcements = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchAnnouncements(0);
@@ -185,12 +194,36 @@ const Announcements = () => {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           <h1 className="sr-only">Announcements &amp; Promotions</h1>
           
-          {loading ? <div className="text-center text-muted-foreground">Loading announcements...</div> : (() => {
+          {loading ? (
+            <LoadingState
+              label={t("announcementsPage.loading")}
+              className="border-0 bg-transparent py-16"
+            />
+          ) : requestError ? (
+            <ErrorState
+              title={t("announcementsPage.errorTitle")}
+              message={requestError}
+              retryLabel={t("announcementsPage.retry")}
+              onRetry={() => {
+                setPage(0);
+                setHasMore(true);
+                void fetchAnnouncements(0);
+              }}
+              className="border-border/60 bg-card/40 py-16"
+            />
+          ) : (() => {
           const isGuest = !currentUserId;
           const GUEST_PREVIEW_COUNT = 2;
           const filteredBase = announcements.filter(a => !isAdExpired(a));
           const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
-          return filteredAnnouncements.length === 0 ? <div className="text-center text-muted-foreground border-0 rounded-none">No announcements yet.</div> : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
+          return filteredAnnouncements.length === 0 ? (
+            <EmptyState
+              icon={<Megaphone className="h-5 w-5 text-accent" />}
+              title={t("announcementsPage.emptyTitle")}
+              description={t("announcementsPage.emptyDescription")}
+              className="border-border/60 bg-card/40 py-16"
+            />
+          ) : filteredAnnouncements.map(announcement => <FeedAnnouncementCard
                 key={announcement.id}
                 author={{
                   id: announcement.profile_id,
@@ -282,7 +315,7 @@ const Announcements = () => {
               )}
             </div>
           ) : (
-            announcements.length > 0 && (
+            announcements.some((announcement) => !isAdExpired(announcement)) && (
               <GuestContentGate
                 title="Sign in to see all announcements"
                 description="Create a free account or log in to browse every opportunity and apply to gigs."
