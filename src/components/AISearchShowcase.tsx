@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Star } from "lucide-react";
+import { Sparkles, ArrowRight, Star, Headphones, Music, Music2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // Uses the preloaded public WebP (see <link rel="preload"> in index.html)
 const heroConcert = "/hero-concert.webp";
 
 const mockResults = [
-{ name: "DJ Alex Beat", location: "Cluj Napoca", rating: 5.0, avatar: "🎧" },
-{ name: "DJ SoundWave", location: "Cluj Napoca", rating: 5.0, avatar: "🎵" },
-{ name: "DJ ElectroNight", location: "Cluj Napoca", rating: 5.0, avatar: "🎶" }];
+{ name: "DJ Alex Beat", location: "Cluj Napoca", rating: 5.0, Icon: Headphones },
+{ name: "DJ SoundWave", location: "Cluj Napoca", rating: 5.0, Icon: Music },
+{ name: "DJ ElectroNight", location: "Cluj Napoca", rating: 5.0, Icon: Music2 }];
 
 
 const AISearchShowcase = () => {
@@ -56,8 +56,8 @@ const AISearchShowcase = () => {
                   key={artist.name}
                   className={`flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/60 px-4 py-3 ${index >= 1 ? 'blur-[2px] md:blur-none' : 'md:blur-none'}`}>
                 
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg shrink-0">
-                      {artist.avatar}
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <artist.Icon className="h-5 w-5 text-accent" aria-hidden="true" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-foreground">{artist.name}</p>

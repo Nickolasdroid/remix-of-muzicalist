@@ -17,7 +17,6 @@ export type SubscriptionPlan = {
   id: 'Free' | 'Standard' | 'Premium';
   name: string;
   monthlyPrice: number;
-  emoji: string;
   description: string;
   features: PlanFeature[];
   tagline: string;
@@ -31,7 +30,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'Free',
     name: 'Free',
     monthlyPrice: 0,
-    emoji: '🟢',
     description: 'Start your presence on Muzicalist',
     features: [
       { text: 'Basic artist profile', included: true },
@@ -51,7 +49,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Performance analytics (profile views, booking requests, engagement)', included: false },
       { text: 'Eligible for homepage featuring', included: false },
     ],
-    tagline: '👉 Perfect for getting started and exploring the platform',
+    tagline: 'Perfect for getting started and exploring the platform',
     cta: 'Current Plan',
     registerCta: 'Continue with Free',
     highlighted: false,
@@ -60,7 +58,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'Standard',
     name: 'Standard',
     monthlyPrice: 12,
-    emoji: '🟡',
     description: 'Get discovered. Attract more clients. Grow your bookings.',
     features: [
       { text: 'Standard Artist Badge', included: true },
@@ -80,7 +77,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Performance analytics (profile views, booking requests, engagement)', included: false },
       { text: 'Eligible for homepage featuring', included: false },
     ],
-    tagline: '👉 Designed to help you gain more exposure and consistent booking opportunities',
+    tagline: 'Designed to help you gain more exposure and consistent booking opportunities',
     cta: 'Upgrade',
     registerCta: 'Choose Standard',
     highlighted: true,
@@ -89,7 +86,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     id: 'Premium',
     name: 'Premium',
     monthlyPrice: 24,
-    emoji: '🔶',
     description: 'Maximize your visibility. Build authority. Get booked consistently.',
     features: [
       { text: 'Premium Artist Badge', included: true },
@@ -110,7 +106,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Performance analytics (profile views, booking requests, engagement)', included: true },
       { text: 'Eligible for homepage featuring', included: true },
     ],
-    tagline: '👉 Built for artists who want more visibility and steady income from events',
+    tagline: 'Built for artists who want more visibility and steady income from events',
     cta: 'Upgrade',
     registerCta: 'Choose Premium',
     highlighted: false,

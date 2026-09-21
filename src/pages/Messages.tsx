@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X, Check, CheckCheck } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -750,8 +750,8 @@ const Messages = () => {
                               minute: '2-digit'
                             })}
                                 </span>
-                                {msg.sender_id === user?.id && <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
-                                    {msg.read_at ? '✓✓' : '✓'}
+                                {msg.sender_id === user?.id && <span className={`inline-flex ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`} aria-label={msg.read_at ? t('messages.read', 'Read') : t('messages.sent', 'Sent')}>
+                                    {msg.read_at ? <CheckCheck className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
                                   </span>}
                               </div>
                             </div>
@@ -952,8 +952,8 @@ const Messages = () => {
                               minute: '2-digit'
                             })}
                                 </span>
-                                {msg.sender_id === user?.id && <span className={`text-xs ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`}>
-                                    {msg.read_at ? '✓✓' : '✓'}
+                                {msg.sender_id === user?.id && <span className={`inline-flex ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`} aria-label={msg.read_at ? t('messages.read', 'Read') : t('messages.sent', 'Sent')}>
+                                    {msg.read_at ? <CheckCheck className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
                                   </span>}
                               </div>
                             </div>
