@@ -20,6 +20,11 @@
     "errorMessage": "Something went wrong while loading announcements.",
     "retry": "Try again"
   },
+  "platformStats": {
+    "artists": "Artists",
+    "countries": "Countries",
+    "categories": "Categories"
+  },
   "artistCard": {
     "newArtist": "New artist",
     "noReviews": "No reviews",
