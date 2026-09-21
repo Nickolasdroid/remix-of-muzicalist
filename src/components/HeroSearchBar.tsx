@@ -18,8 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag, getCountryName, getCountryCode } from "@/lib/countryFlags";
 // countryAdminDivisions (~55KB) is loaded lazily after mount — see below.
 import { useEffect } from "react";
-
-const categories = ["Singer", "Instrumentalist", "DJ", "Band"] as const;
+import { ARTIST_CATEGORIES } from "@/lib/artistCategories";
 
 const HeroSearchBar = () => {
   const navigate = useNavigate();
@@ -159,7 +158,7 @@ const HeroSearchBar = () => {
   // --- Category picker content ---
   const categoryContent = (
     <div className="space-y-0.5 p-2">
-      {categories.map((cat) => (
+      {ARTIST_CATEGORIES.map((cat) => (
         <button
           key={cat}
           type="button"

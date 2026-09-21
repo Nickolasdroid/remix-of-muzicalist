@@ -1,5 +1,5 @@
 import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
-import { ARTIST_CATEGORIES } from "@/components/HeroSearchBar";
+import { ARTIST_CATEGORIES } from "@/lib/artistCategories";
 import { useTranslation } from "react-i18next";
 
 const PlatformStatsBar = () => {
