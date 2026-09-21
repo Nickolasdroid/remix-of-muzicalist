@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X, Check, CheckCheck } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { translateSpecialization } from "@/lib/specializationLabel";

@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 
 import { Button } from "@/components/ui/button";
-import { Check, X, Crown, Info } from "lucide-react";
+import { Check, X, Crown, Info, Star } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -146,8 +146,9 @@ const PlansPricing = () => {
                 )}
                 {!isCurrentPlan && isPremiumPlan && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className="bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                      ⭐ Best for Professionals
+                    <span className="inline-flex items-center gap-1.5 bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                      <Star className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      Best for Professionals
                     </span>
                   </div>
                 )}
