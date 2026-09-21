@@ -20,6 +20,11 @@
     "errorMessage": "A apărut o problemă la încărcarea anunțurilor.",
     "retry": "Încearcă din nou"
   },
+  "platformStats": {
+    "artists": "Artiști",
+    "countries": "Țări",
+    "categories": "Categorii"
+  },
   "artistCard": {
     "newArtist": "Artist nou",
     "noReviews": "Fără recenzii",

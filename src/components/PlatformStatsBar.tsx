@@ -1,13 +1,15 @@
 import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
+import { ARTIST_CATEGORIES } from "@/components/HeroSearchBar";
+import { useTranslation } from "react-i18next";
 
 const PlatformStatsBar = () => {
   const { stats } = usePlatformStats();
+  const { t } = useTranslation();
 
   const items = [
-    { label: "Countries", value: formatPlatformStat(stats?.countries) },
-    { label: "Artists", value: formatPlatformStat(stats?.artists) },
-    { label: "Users", value: formatPlatformStat(stats?.users) },
-    { label: "Events Booked", value: formatPlatformStat(stats?.eventsBooked) },
+    { label: t("platformStats.artists"), value: formatPlatformStat(stats?.artists) },
+    { label: t("platformStats.countries"), value: formatPlatformStat(stats?.countries) },
+    { label: t("platformStats.categories"), value: String(ARTIST_CATEGORIES.length) },
   ];
 
   return (
@@ -19,7 +21,7 @@ const PlatformStatsBar = () => {
             <span className="flex items-center gap-1 text-lg md:text-2xl font-display font-bold text-accent">
               {item.value}
             </span>
-            <span className="text-[10px] md:text-sm text-muted-foreground">{item.label}</span>
+            <span className="text-[10px] md:text-sm text-muted-foreground text-center whitespace-nowrap">{item.label}</span>
           </div>
         </div>
       ))}
