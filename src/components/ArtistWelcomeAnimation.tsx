@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Mic } from "lucide-react";
 
 /**
  * ArtistWelcomeAnimation — transition-only welcome screen shown once after
@@ -214,12 +215,11 @@ export default function ArtistWelcomeAnimation({ userName = "", onFinish, durati
           style={{
             width: 84, height: 84, margin: "0 auto 20px", borderRadius: "50%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 38,
             background: "radial-gradient(circle at 35% 30%, #FFD700, #B8860B 75%)",
             animation: "mzl-pop 0.7s cubic-bezier(.2,1.4,.4,1) 0.25s both, mzl-glow 2.6s ease-in-out 1s infinite",
           }}
         >
-          🎤
+          <Mic size={38} strokeWidth={2} color="#1A1206" aria-hidden="true" />
         </div>
 
         <div
