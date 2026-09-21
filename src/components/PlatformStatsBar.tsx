@@ -7,8 +7,8 @@ const PlatformStatsBar = () => {
   const { t } = useTranslation();
 
   const items = [
-    { label: t("platformStats.artists"), value: formatPlatformStat(stats?.artists) },
     { label: t("platformStats.countries"), value: formatPlatformStat(stats?.countries) },
+    { label: t("platformStats.artists"), value: formatPlatformStat(stats?.artists) },
     { label: t("platformStats.categories"), value: String(ARTIST_CATEGORIES.length) },
   ];
 
