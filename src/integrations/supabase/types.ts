@@ -2721,8 +2721,12 @@ export type Database = {
         Returns: {
           artists: number
           average_rating: number
+          bands: number
           countries: number
+          djs: number
           events_booked: number
+          instrumentalists: number
+          singers: number
           users: number
         }[]
       }

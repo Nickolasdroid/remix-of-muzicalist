@@ -23,7 +23,11 @@
   "platformStats": {
     "artists": "Artiști",
     "countries": "Țări",
-    "categories": "Categorii"
+    "categories": "Categorii",
+    "singers": "Soliști",
+    "instrumentalists": "Instrumentiști",
+    "djs": "DJ",
+    "bands": "Formații"
   },
   "artistCard": {
     "newArtist": "Artist nou",

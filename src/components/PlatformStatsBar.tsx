@@ -1,15 +1,16 @@
-import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
-import { ARTIST_CATEGORIES } from "@/lib/artistCategories";
+import { usePlatformStats } from "@/hooks/usePlatformStats";
 import { useTranslation } from "react-i18next";
 
 const PlatformStatsBar = () => {
   const { stats } = usePlatformStats();
   const { t } = useTranslation();
+  const formatCategoryCount = (value: number | undefined) => value === undefined ? "—" : String(value);
 
   const items = [
-    { label: t("platformStats.countries"), value: formatPlatformStat(stats?.countries) },
-    { label: t("platformStats.artists"), value: formatPlatformStat(stats?.artists) },
-    { label: t("platformStats.categories"), value: String(ARTIST_CATEGORIES.length) },
+    { label: t("platformStats.singers"), value: formatCategoryCount(stats?.singers) },
+    { label: t("platformStats.instrumentalists"), value: formatCategoryCount(stats?.instrumentalists) },
+    { label: t("platformStats.djs"), value: formatCategoryCount(stats?.djs) },
+    { label: t("platformStats.bands"), value: formatCategoryCount(stats?.bands) },
   ];
 
   return (
