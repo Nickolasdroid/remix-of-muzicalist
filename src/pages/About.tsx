@@ -88,10 +88,10 @@ const About = () => {
             Browse by Category
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
-            <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/categories/Singers" />
-            <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/categories/DJs" />
-            <CategoryCard title="Band" description="Musical groups" icon={BandIcon as any} href="/categories/Bands" />
-            <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/categories/Instrumentalists" />
+            <CategoryCard title="Singer" description="Professional vocalists" icon={Mic} href="/categories/Singers" count={categoryCounts.Singer} />
+            <CategoryCard title="DJ" description="Expert DJs" icon={Headphones} href="/categories/DJs" count={categoryCounts.DJ} />
+            <CategoryCard title="Band" description="Musical groups" icon={BandIcon as any} href="/categories/Bands" count={categoryCounts.Band} />
+            <CategoryCard title="Instrumentalist" description="Skilled musicians" icon={Guitar} href="/categories/Instrumentalists" count={categoryCounts.Instrumentalist} />
           </div>
         </div>
       </section>
