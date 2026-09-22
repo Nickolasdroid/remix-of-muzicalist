@@ -11,8 +11,10 @@ import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
 import CategoryCard from "@/components/CategoryCard";
 import HeroSearchBar from "@/components/HeroSearchBar";
 import PlatformStatsBar from "@/components/PlatformStatsBar";
+import { useCategoryCounts } from "@/hooks/useCategoryCounts";
 
 const About = () => {
+  const categoryCounts = useCategoryCounts();
   return (
     <div className="min-h-screen">
       <Navigation />
