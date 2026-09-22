@@ -10,3 +10,4 @@
 - [x] Compact the artist review modal and derive reviewer identity securely from the signed-in account.
 - [x] Add a shared Posts list/grid switcher to public artist profiles and artist dashboards.
 - [x] Verify full-post interactions, session persistence, responsive grids, and build health.
+- [x] Replace homepage platform totals with live active-artist counts for all four categories.

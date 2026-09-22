@@ -6,6 +6,10 @@ export interface PlatformStats {
   countries: number;
   users: number;
   eventsBooked: number;
+  singers: number;
+  instrumentalists: number;
+  djs: number;
+  bands: number;
 }
 
 /** Format used across the app for platform statistics (e.g. `468+`). */
@@ -33,6 +37,10 @@ export function usePlatformStats() {
       countries: Number(row.countries ?? 0),
       users: Number(row.users ?? 0),
       eventsBooked: Number(row.events_booked ?? 0),
+      singers: Number(row.singers ?? 0),
+      instrumentalists: Number(row.instrumentalists ?? 0),
+      djs: Number(row.djs ?? 0),
+      bands: Number(row.bands ?? 0),
     });
   }, []);
 

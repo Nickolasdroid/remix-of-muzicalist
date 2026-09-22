@@ -1,5 +1,4 @@
 import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
-import { ARTIST_CATEGORIES } from "@/lib/artistCategories";
 import { useTranslation } from "react-i18next";
 
 const PlatformStatsBar = () => {
@@ -7,9 +6,10 @@ const PlatformStatsBar = () => {
   const { t } = useTranslation();
 
   const items = [
-    { label: t("platformStats.countries"), value: formatPlatformStat(stats?.countries) },
-    { label: t("platformStats.artists"), value: formatPlatformStat(stats?.artists) },
-    { label: t("platformStats.categories"), value: String(ARTIST_CATEGORIES.length) },
+    { label: t("platformStats.singers"), value: formatPlatformStat(stats?.singers) },
+    { label: t("platformStats.instrumentalists"), value: formatPlatformStat(stats?.instrumentalists) },
+    { label: t("platformStats.djs"), value: formatPlatformStat(stats?.djs) },
+    { label: t("platformStats.bands"), value: formatPlatformStat(stats?.bands) },
   ];
 
   return (

@@ -23,7 +23,11 @@
   "platformStats": {
     "artists": "Artists",
     "countries": "Countries",
-    "categories": "Categories"
+    "categories": "Categories",
+    "singers": "Singers",
+    "instrumentalists": "Instrumentalists",
+    "djs": "DJ",
+    "bands": "Bands"
   },
   "artistCard": {
     "newArtist": "New artist",
