@@ -1,8 +1,8 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Grid3X3, Images, List, Play, Type } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { getThumbUrl } from "@/lib/imageUrl";
@@ -97,8 +97,11 @@ function mediaThumbnail(item: PostsGridItem) {
   return getEmbedInfo(item.mediaUrl)?.thumbnail || null;
 }
 
-export function PostsGrid({ items, onOpen }: { items: PostsGridItem[]; onOpen: (item: PostsGridItem) => void }) {
+export const postDetailPath = (id: string, kind?: string) => `/post/${id}${kind === "promotion" ? "?kind=promotion" : ""}`;
+
+export function PostsGrid({ items }: { items: PostsGridItem[] }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="grid w-full grid-cols-3 gap-1 sm:gap-1.5" data-testid="posts-grid">
@@ -117,7 +120,7 @@ export function PostsGrid({ items, onOpen }: { items: PostsGridItem[]; onOpen: (
             type="button"
             variant="ghost"
             aria-label={label}
-            onClick={() => onOpen(item)}
+            onClick={() => navigate(postDetailPath(item.id, item.kind))}
             className="group relative aspect-square h-auto min-w-0 overflow-hidden rounded-sm border border-border/60 bg-card p-0 text-left hover:bg-card focus-visible:ring-2 focus-visible:ring-accent"
           >
             {thumbnail ? (
@@ -137,17 +140,5 @@ export function PostsGrid({ items, onOpen }: { items: PostsGridItem[]; onOpen: (
         );
       })}
     </div>
-  );
-}
-
-export function FullPostDialog({ open, onOpenChange, children }: { open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode }) {
-  const { t } = useTranslation();
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] w-[calc(100%-1rem)] max-w-[520px] overflow-y-auto rounded-lg border-border bg-background p-2 pt-10 sm:p-4 sm:pt-10">
-        <DialogTitle className="sr-only">{t("postsView.postDetails", "Post details")}</DialogTitle>
-        {children}
-      </DialogContent>
-    </Dialog>
   );
 }
