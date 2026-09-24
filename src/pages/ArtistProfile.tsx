@@ -1750,7 +1750,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     if (postsViewMode === "grid") {
                       const gridItems = combined.map((item) => ({
                         id: item.id,
-                        kind: item.type === "promotion" ? "promotion" : "post",
+                        kind: (item.type === "promotion" ? "promotion" : "post") as "promotion" | "post",
                         text: item.content || "",
                         mediaUrl: item.media_url,
                         mediaType: item.media_type,

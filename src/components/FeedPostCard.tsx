@@ -47,6 +47,8 @@ interface FeedPostCardProps {
   shares?: number;
   /** Enables the clickable "Liked by" list */
   postId?: string;
+  /** Opens the dedicated post page when the post body is clicked */
+  onOpen?: () => void;
 }
 
 
@@ -73,6 +75,7 @@ const FeedPostCard = ({
   onShare,
   shares,
   postId,
+  onOpen,
 }: FeedPostCardProps) => {
   const { t } = useTranslation();
   const adminIds = useAdminIds();
@@ -132,7 +135,12 @@ const FeedPostCard = ({
         {content && (
           // Posts are capped at 200 characters at creation time, so the full
           // text always renders — no truncation and no "more" control.
-          <ExpandableText text={content} maxLength={200} className="mt-3 my-[5px]" mentions={mentions} />
+          <div
+            onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
+            className={onOpen ? "cursor-pointer" : undefined}
+          >
+            <ExpandableText text={content} maxLength={200} className="mt-3 my-[5px]" mentions={mentions} />
+          </div>
         )}
       </div>
 
