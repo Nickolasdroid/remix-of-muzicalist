@@ -1,26 +1,13 @@
 /**
- * Subscription-based styling utilities for consistent avatar/profile styling across the app.
+ * Avatar styling utilities.
  *
- * Premium tier: fixed gold outline
- * Standard tier: fixed white outline
- * Free tier: no outline at all
+ * Subscription-based avatar borders/rings were removed: every plan uses the
+ * same (former Free) presentation. Helpers keep their signatures so callers
+ * need no changes. Subscription logic itself is unaffected.
  */
 
-const normalizePlan = (plan?: string | null): string => (plan || '').trim().toLowerCase();
+export const getAvatarOutlineClasses = (_plan?: string | null): string => '!p-0 !bg-transparent';
 
-export const getAvatarOutlineClasses = (plan?: string | null): string => {
-  const normalizedPlan = normalizePlan(plan);
-  if (normalizedPlan === 'premium') return 'bg-amber-400';
-  if (normalizedPlan === 'standard') return 'bg-white';
-  return '!p-0 !bg-transparent';
-};
+export const getAvatarOutlineClassesLarge = (plan?: string | null): string => getAvatarOutlineClasses(plan);
 
-export const getAvatarOutlineClassesLarge = (plan?: string | null): string => {
-  return getAvatarOutlineClasses(plan);
-};
-
-export const getAvatarRingClasses = (plan?: string | null): string => {
-  if (plan === 'Premium') return 'ring-2 ring-amber-400 ring-offset-2 ring-offset-background';
-  if (plan === 'Standard') return 'ring-2 ring-white ring-offset-2 ring-offset-background';
-  return '';
-};
+export const getAvatarRingClasses = (_plan?: string | null): string => '';
