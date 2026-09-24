@@ -18,6 +18,7 @@ import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
 // slower devices/networks. Index stays eager because it's the landing page.
 // lazyWithPreload = ca lazy, dar cu .preload() ca să scoatem pauza la navigare.
 const Feed = lazyWithPreload(() => import("./pages/Feed"));
+const PostDetail = lazyWithPreload(() => import("./pages/PostDetail"));
 const Leaderboard = lazyWithPreload(() => import("./pages/Leaderboard"));
 const Register = lazyWithPreload(() => import("./pages/Register"));
 const RegisterArtist = lazyWithPreload(() => import("./pages/RegisterArtist"));
@@ -154,6 +155,7 @@ const App = () => (
             <Route path="/dashboard/posts/new" element={<CreatePost />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/artist/:id" element={<ArtistProfileRoute />} />
+            <Route path="/post/:id" element={<PostDetail />} />
             <Route path="/book/:id" element={<BookArtist />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/notifications" element={<Notifications />} />

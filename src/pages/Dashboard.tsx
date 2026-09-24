@@ -77,7 +77,7 @@ import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import PostComposerDialog from "@/components/post/PostComposerDialog";
-import { FullPostDialog, PostsGrid, PostsViewSwitcher, usePostsViewMode, type PostsGridItem } from "@/components/post/PostsView";
+import { PostsGrid, PostsViewSwitcher, usePostsViewMode } from "@/components/post/PostsView";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 const Dashboard = () => {
   const {
@@ -96,7 +96,6 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
-  const [openGridPost, setOpenGridPost] = useState<PostsGridItem | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [isAddingPrice, setIsAddingPrice] = useState(false);
@@ -1765,7 +1764,6 @@ const Dashboard = () => {
                                 <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
                                 <div className="grid grid-cols-5 gap-2">
                                   {COVER_THEMES.map((theme) => {
-                                    const selected = profile?.cover_theme === theme.id;
                                     return (
                                       <button
                                         key={theme.id}
@@ -2542,38 +2540,7 @@ const Dashboard = () => {
                                   mediaUrl: item.__mediaUrl,
                                   mediaType: item.__mediaType,
                                 }))}
-                                onOpen={setOpenGridPost}
                               />
-                              <FullPostDialog open={!!openGridPost} onOpenChange={(open) => { if (!open) setOpenGridPost(null); }}>
-                                {openGridPost && (() => {
-                                  const item = merged.find((candidate) => candidate.id === openGridPost.id && candidate.__kind === openGridPost.kind);
-                                  if (!item) return null;
-                                  const isPromo = item.__kind === "promotion";
-                                  const promotedUntil = item.__kind === "post" ? ((item as any).promoted_until || null) : null;
-                                  const isPromoted = !!promotedUntil && new Date(promotedUntil).getTime() > Date.now();
-                                  return <FeedPostCard
-                                    author={{ id: profile?.id, stageName: profile?.stage_name || "Artist", avatarUrl: profile?.avatar_url, specializationLabel: translateSpecialization(profile?.specialization), plan: profile?.plan }}
-                                    content={item.__text}
-                                    createdAt={item.__date}
-                                    mediaUrl={item.__mediaUrl}
-                                    mediaType={item.__mediaType}
-                                    likes={(item as any).likes || 0}
-                                    commentsCount={(item as any).commentsCount || 0}
-                                    isLiked={(item as any).isLiked}
-                                    promoted={isPromo || isPromoted}
-                                    shares={(item as any).shares || 0}
-                                    onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === "video" ? "video" : "image" })}
-                                    onLike={() => isPromo ? handleAnnouncementLike(item.id) : handlePostLike(item.id)}
-                                    onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? "announcement" : "post" })}
-                                    onShare={() => sharePost({ profileId: profile?.id, stageName: profile?.stage_name || "Artist", type: isPromo ? "announcement" : "post" })}
-                                    menu={<PostActionsMenu disabled={isSaving} actions={[
-                                      { key: "edit", label: t("dashboardPosts.edit", "Edit"), icon: Pencil, onSelect: () => setEditItem({ id: item.id, kind: isPromo ? "promotion" : "post", text: item.__text }) },
-                                      ...(!isPromo ? [{ key: "promote", label: isPromoted ? t("postPromotion.managePromotion", "Manage promotion") : t("postPromotion.promote", "Promote"), icon: Megaphone, onSelect: () => setPromoteTarget({ id: item.id, promotedUntil }) }] : []),
-                                      { key: "delete", label: t("dashboardPosts.delete", "Delete"), icon: Trash2, destructive: true, onSelect: () => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id) },
-                                    ]} />}
-                                  />;
-                                })()}
-                              </FullPostDialog>
                             </>
                           ) : (
                             <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
