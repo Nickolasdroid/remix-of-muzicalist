@@ -139,7 +139,12 @@ const FeedPostCard = ({
             onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
             className={onOpen ? "cursor-pointer" : undefined}
           >
+            <div
+            onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
+            className={onOpen ? "cursor-pointer" : undefined}
+          >
             <ExpandableText text={content} maxLength={200} className="mt-3 my-[5px]" mentions={mentions} />
+          </div>
           </div>
         )}
       </div>
