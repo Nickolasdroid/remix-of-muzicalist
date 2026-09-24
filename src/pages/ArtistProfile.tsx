@@ -54,7 +54,7 @@ import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
 import FeedPostCard from "@/components/FeedPostCard";
-import { PostsGrid, PostsViewSwitcher, usePostsViewMode } from "@/components/post/PostsView";
+import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
 import { useAdminIds } from "@/hooks/useAdminIds";
 import i18n, { translateTextsSync } from "@/i18n";
 interface Profile {
@@ -1811,7 +1811,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                                       ]}
                                     />
                                   </div>
-                                  <ExpandableText text={promo.description} className="mt-3" />
+                                  <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(promo.id, "promotion")); }}><ExpandableText text={promo.description} className="mt-3" /></div>
                                 </div>
                                 {promo.media_url &&
                             <PostMediaFrame url={promo.media_url} type={promo.media_type} alt="Promotion media" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })} />
@@ -1923,7 +1923,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                               {/* Content */}
                               {/* Posts are limited to 200 chars at creation — always render the full text, no "more" control. */}
-                              <ExpandableText text={post.content} maxLength={200} className="mt-3" />
+                              <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(post.id)); }}><ExpandableText text={post.content} maxLength={200} className="mt-3" /></div>
                             </div>
                             
                             {/* Media */}

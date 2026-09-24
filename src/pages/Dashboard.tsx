@@ -77,7 +77,7 @@ import PricingEntriesEditor from "@/components/PricingEntriesEditor";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import PostComposerDialog from "@/components/post/PostComposerDialog";
-import { PostsGrid, PostsViewSwitcher, usePostsViewMode } from "@/components/post/PostsView";
+import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 const Dashboard = () => {
   const {
@@ -2572,6 +2572,7 @@ const Dashboard = () => {
                                     isLiked={(item as any).isLiked}
                                     promoted={isPostPromoted}
                                     shares={(item as any).shares || 0}
+                                    onOpen={() => navigate(postDetailPath(item.id, item.__kind))}
                                     onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
                                     onLike={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
                                     onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
