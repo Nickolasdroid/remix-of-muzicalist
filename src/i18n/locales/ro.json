@@ -469,51 +469,120 @@
       "artisticContent": {
         "title": "Conținutul artistic",
         "rules": {
-          "relevant": { "title": "1. Publică doar conținut relevant pentru activitatea ta muzicală", "body": "Distribuie interpretări, repetiții, lansări, proiecte, momente din culise și noutăți profesionale legate de activitatea ta muzicală. Păstrează conținutul personal sau comercial fără legătură în afara prezenței tale artistice." },
-          "copyright": { "title": "2. Respectă drepturile de autor", "body": "Încarcă sau distribuie doar muzică, imagini și videoclipuri care îți aparțin ori pentru care ai permisiune. Menționează colaboratorii și titularii drepturilor atunci când atribuirea este necesară." },
-          "attribution": { "title": "3. Nu publica materiale atribuite altui artist", "body": "Nu prezenta niciodată înregistrarea, imaginea, interpretarea sau realizarea altui artist ca fiind a ta. Identifică în mod clar coverurile, colaborările, materialele licențiate și aparițiile invitaților." },
-          "qualityMedia": { "title": "4. Folosește fotografii și videoclipuri relevante și de calitate", "body": "Alege materiale care îți prezintă clar activitatea și pot fi urmărite sau ascultate confortabil. Evită materialele foarte comprimate, înșelătoare, duplicate sau fără legătură, care nu îi ajută pe oameni să îți înțeleagă activitatea artistică." }
+          "relevant": {
+            "title": "1. Publică doar conținut relevant pentru activitatea ta muzicală",
+            "body": "Distribuie interpretări, repetiții, lansări, proiecte, momente din culise și noutăți profesionale legate de activitatea ta muzicală. Păstrează conținutul personal sau comercial fără legătură în afara prezenței tale artistice."
+          },
+          "copyright": {
+            "title": "2. Respectă drepturile de autor",
+            "body": "Încarcă sau distribuie doar muzică, imagini și videoclipuri care îți aparțin ori pentru care ai permisiune. Menționează colaboratorii și titularii drepturilor atunci când atribuirea este necesară."
+          },
+          "attribution": {
+            "title": "3. Nu publica materiale atribuite altui artist",
+            "body": "Nu prezenta niciodată înregistrarea, imaginea, interpretarea sau realizarea altui artist ca fiind a ta. Identifică în mod clar coverurile, colaborările, materialele licențiate și aparițiile invitaților."
+          },
+          "qualityMedia": {
+            "title": "4. Folosește fotografii și videoclipuri relevante și de calitate",
+            "body": "Alege materiale care îți prezintă clar activitatea și pot fi urmărite sau ascultate confortabil. Evită materialele foarte comprimate, înșelătoare, duplicate sau fără legătură, care nu îi ajută pe oameni să îți înțeleagă activitatea artistică."
+          }
         }
       },
       "posts": {
         "title": "Postări și anunțuri",
         "rules": {
-          "postRules": { "title": "1. Reguli pentru postări", "body": "Folosește postările pentru a distribui comunității noutăți autentice și conținut artistic. Păstrează descrierile corecte, materialele relevante și prezintă în mod adecvat persoanele sau colaboratorii incluși." },
-          "announcementRules": { "title": "2. Reguli pentru anunțuri", "body": "Anunțurile trebuie să descrie o oportunitate reală de eveniment, cu cerințe, locație, dată, buget și context de contact clare, acolo unde este cazul. Actualizează sau elimină informațiile care nu mai sunt valabile." },
-          "promotionRules": { "title": "3. Reguli pentru promovări", "body": "Promovările trebuie să descrie corect artistul, serviciul, evenimentul sau oferta promovată. Nu folosi urgență falsă, rezultate inventate, condiții ascunse sau comparații înșelătoare." },
-          "avoidContent": { "title": "4. Conținut care trebuie evitat", "body": "Evită postările repetate, afirmațiile înșelătoare, publicitatea fără legătură, cererile artificiale de interacțiune, materialele copiate, limbajul abuziv, linkurile nesigure și conținutul creat în principal pentru manipularea vizibilității." }
+          "postRules": {
+            "title": "1. Reguli pentru postări",
+            "body": "Folosește postările pentru a distribui comunității noutăți autentice și conținut artistic. Păstrează descrierile corecte, materialele relevante și prezintă în mod adecvat persoanele sau colaboratorii incluși."
+          },
+          "announcementRules": {
+            "title": "2. Reguli pentru anunțuri",
+            "body": "Anunțurile trebuie să descrie o oportunitate reală de eveniment, cu cerințe, locație, dată, buget și context de contact clare, acolo unde este cazul. Actualizează sau elimină informațiile care nu mai sunt valabile."
+          },
+          "promotionRules": {
+            "title": "3. Reguli pentru promovări",
+            "body": "Promovările trebuie să descrie corect artistul, serviciul, evenimentul sau oferta promovată. Nu folosi urgență falsă, rezultate inventate, condiții ascunse sau comparații înșelătoare."
+          },
+          "avoidContent": {
+            "title": "4. Conținut care trebuie evitat",
+            "body": "Evită postările repetate, afirmațiile înșelătoare, publicitatea fără legătură, cererile artificiale de interacțiune, materialele copiate, limbajul abuziv, linkurile nesigure și conținutul creat în principal pentru manipularea vizibilității."
+          }
         }
       },
       "interaction": {
         "title": "Interacțiunea cu utilizatorii",
         "rules": {
-          "respect": { "title": "1. Respectă ceilalți utilizatori și artiști", "body": "Comunică profesionist chiar și atunci când nu ești de acord. Nu insulta, amenința, discrimina și nu umili public un alt membru al comunității." },
-          "harassment": { "title": "2. Nu hărțui și nu abuza sistemul de mesagerie", "body": "Nu trimite în mod repetat mesaje nedorite, conținut sexual sau amenințător, nu presa utilizatorii să răspundă și nu continua să contactezi pe cineva care ți-a cerut clar să te oprești." },
-          "spam": { "title": "3. Nu folosi platforma pentru spam", "body": "Evită mesajele în masă, solicitările repetate, linkurile irelevante, comunicarea automată și mesajele promoționale identice trimise fără o legătură legitimă cu destinatarul." },
-          "misleading": { "title": "4. Nu induce în eroare alți utilizatori", "body": "Fii sincer în privința identității, disponibilității, experienței, tarifelor și intențiilor tale. Nu ascunde condiții importante și nu face promisiuni pe care nu le poți îndeplini în mod rezonabil."
+          "respect": {
+            "title": "1. Respectă ceilalți utilizatori și artiști",
+            "body": "Comunică profesionist chiar și atunci când nu ești de acord. Nu insulta, amenința, discrimina și nu umili public un alt membru al comunității."
+          },
+          "harassment": {
+            "title": "2. Nu hărțui și nu abuza sistemul de mesagerie",
+            "body": "Nu trimite în mod repetat mesaje nedorite, conținut sexual sau amenințător, nu presa utilizatorii să răspundă și nu continua să contactezi pe cineva care ți-a cerut clar să te oprești."
+          },
+          "spam": {
+            "title": "3. Nu folosi platforma pentru spam",
+            "body": "Evită mesajele în masă, solicitările repetate, linkurile irelevante, comunicarea automată și mesajele promoționale identice trimise fără o legătură legitimă cu destinatarul."
+          },
+          "misleading": {
+            "title": "4. Nu induce în eroare alți utilizatori",
+            "body": "Fii sincer în privința identității, disponibilității, experienței, tarifelor și intențiilor tale. Nu ascunde condiții importante și nu face promisiuni pe care nu le poți îndeplini în mod rezonabil."
           }
         }
       },
       "bookings": {
         "title": "Rezervări și evenimente",
         "rules": {
-          "confirmed": { "title": "1. Respectă rezervările confirmate", "body": "Tratează o rezervare acceptată ca pe un angajament profesional. Păstrează liberă data stabilită și anunță rapid cealaltă parte dacă o situație excepțională poate afecta evenimentul." },
-          "intent": { "title": "2. Nu accepta rezervări pe care nu intenționezi să le onorezi", "body": "Acceptă doar solicitările pe care le poți îndeplini în mod realist. Nu bloca date în mod speculativ, nu accepta angajamente care se suprapun și nu accepta doar pentru a obține datele de contact." },
-          "eventInfo": { "title": "3. Oferă informații corecte despre eveniment", "body": "Comunică informații corecte despre dată, oră, locație, format, durată, public, echipament, condiții de acces și buget, astfel încât ambele părți să poată lua decizii informate." },
-          "agreements": { "title": "4. Respectă comunicarea și înțelegerile stabilite prin platformă", "body": "Păstrează mesajele clare și profesionale, confirmă schimbările importante și respectă serviciile, programul și condițiile de plată stabilite prin Muzicalist, dacă ambele părți nu convin asupra unor modificări."
+          "confirmed": {
+            "title": "1. Respectă rezervările confirmate",
+            "body": "Tratează o rezervare acceptată ca pe un angajament profesional. Păstrează liberă data stabilită și anunță rapid cealaltă parte dacă o situație excepțională poate afecta evenimentul."
+          },
+          "intent": {
+            "title": "2. Nu accepta rezervări pe care nu intenționezi să le onorezi",
+            "body": "Acceptă doar solicitările pe care le poți îndeplini în mod realist. Nu bloca date în mod speculativ, nu accepta angajamente care se suprapun și nu accepta doar pentru a obține datele de contact."
+          },
+          "eventInfo": {
+            "title": "3. Oferă informații corecte despre eveniment",
+            "body": "Comunică informații corecte despre dată, oră, locație, format, durată, public, echipament, condiții de acces și buget, astfel încât ambele părți să poată lua decizii informate."
+          },
+          "agreements": {
+            "title": "4. Respectă comunicarea și înțelegerile stabilite prin platformă",
+            "body": "Păstrează mesajele clare și profesionale, confirmă schimbările importante și respectă serviciile, programul și condițiile de plată stabilite prin Muzicalist, dacă ambele părți nu convin asupra unor modificări."
           }
         }
       },
       "safety": {
         "title": "Siguranță și comportament",
         "rules": {
-          "prohibited": { "title": "1. Conținut interzis", "body": "Nu publica materiale ilegale, amenințătoare, instigatoare la ură, de exploatare sexuală, violente sau care încalcă viața privată, instrucțiuni periculoase ori conținut care atacă persoane pe baza unor caracteristici protejate." },
-          "abuse": { "title": "2. Spam și comportament abuziv", "body": "Perturbarea coordonată, promovarea nedorită repetată, manipularea reacțiilor sau recenziilor, intimidarea și încercările de a suprasolicita funcțiile platformei nu sunt acceptate." },
-          "impersonation": { "title": "3. Impersonare", "body": "Nu pretinde că ești un alt artist, utilizator, companie sau reprezentant. Conturile fan, tribut și de management trebuie să își descrie clar relația și să nu creeze confuzie privind identitatea." },
-          "fraud": { "title": "4. Fraudă și tentative de înșelăciune", "body": "Nu solicita plăți înșelătoare, nu folosi oferte false de rezervare, linkuri de tip phishing, servicii prezentate eronat și nu încerca să obții bani, date de acces sau informații personale prin manipulare."
+          "prohibited": {
+            "title": "1. Conținut interzis",
+            "body": "Nu publica materiale ilegale, amenințătoare, instigatoare la ură, de exploatare sexuală, violente sau care încalcă viața privată, instrucțiuni periculoase ori conținut care atacă persoane pe baza unor caracteristici protejate."
+          },
+          "abuse": {
+            "title": "2. Spam și comportament abuziv",
+            "body": "Perturbarea coordonată, promovarea nedorită repetată, manipularea reacțiilor sau recenziilor, intimidarea și încercările de a suprasolicita funcțiile platformei nu sunt acceptate."
+          },
+          "impersonation": {
+            "title": "3. Impersonare",
+            "body": "Nu pretinde că ești un alt artist, utilizator, companie sau reprezentant. Conturile fan, tribut și de management trebuie să își descrie clar relația și să nu creeze confuzie privind identitatea."
+          },
+          "fraud": {
+            "title": "4. Fraudă și tentative de înșelăciune",
+            "body": "Nu solicita plăți înșelătoare, nu folosi oferte false de rezervare, linkuri de tip phishing, servicii prezentate eronat și nu încerca să obții bani, date de acces sau informații personale prin manipulare."
           }
         }
       }
     }
+  },
+  "postDetail": {
+    "title": "Postare",
+    "back": "Înapoi",
+    "notFound": "Această postare nu mai este disponibilă",
+    "error": "Postarea nu a putut fi încărcată",
+    "retry": "Încearcă din nou",
+    "deleted": "Șters",
+    "deleteError": "Nu s-a putut șterge",
+    "deleteTitle": "Ștergi această postare?",
+    "deleteDesc": "Această acțiune nu poate fi anulată.",
+    "cancel": "Anulează"
   }
 }

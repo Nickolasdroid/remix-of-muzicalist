@@ -1764,6 +1764,7 @@ const Dashboard = () => {
                                 <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
                                 <div className="grid grid-cols-5 gap-2">
                                   {COVER_THEMES.map((theme) => {
+                                    const selected = profile?.cover_theme === theme.id;
                                     return (
                                       <button
                                         key={theme.id}

@@ -467,51 +467,120 @@
       "artisticContent": {
         "title": "Artistic Content",
         "rules": {
-          "relevant": { "title": "1. Publish only content relevant to your musical activity", "body": "Share performances, rehearsals, releases, projects, behind-the-scenes moments and professional updates connected to your musical work. Keep unrelated personal or commercial content off your artist presence." },
-          "copyright": { "title": "2. Respect copyright", "body": "Only upload or share music, images and videos you own or are authorized to use. Credit collaborators and rights holders whenever attribution is required." },
-          "attribution": { "title": "3. Do not publish material attributed to another artist", "body": "Never present another artist's recording, image, performance or achievement as your own. Clearly identify covers, collaborations, licensed material and guest appearances." },
-          "qualityMedia": { "title": "4. Use relevant, high-quality photos and videos", "body": "Choose media that clearly presents your work and can be viewed or heard comfortably. Avoid heavily compressed, misleading, duplicated or unrelated material that does not help people understand your artistic activity." }
+          "relevant": {
+            "title": "1. Publish only content relevant to your musical activity",
+            "body": "Share performances, rehearsals, releases, projects, behind-the-scenes moments and professional updates connected to your musical work. Keep unrelated personal or commercial content off your artist presence."
+          },
+          "copyright": {
+            "title": "2. Respect copyright",
+            "body": "Only upload or share music, images and videos you own or are authorized to use. Credit collaborators and rights holders whenever attribution is required."
+          },
+          "attribution": {
+            "title": "3. Do not publish material attributed to another artist",
+            "body": "Never present another artist's recording, image, performance or achievement as your own. Clearly identify covers, collaborations, licensed material and guest appearances."
+          },
+          "qualityMedia": {
+            "title": "4. Use relevant, high-quality photos and videos",
+            "body": "Choose media that clearly presents your work and can be viewed or heard comfortably. Avoid heavily compressed, misleading, duplicated or unrelated material that does not help people understand your artistic activity."
+          }
         }
       },
       "posts": {
         "title": "Posts & Announcements",
         "rules": {
-          "postRules": { "title": "1. Rules for posts", "body": "Use posts to share authentic updates and artistic content with your community. Keep descriptions accurate, media relevant and any people or collaborators properly represented." },
-          "announcementRules": { "title": "2. Rules for announcements", "body": "Announcements should describe a genuine event opportunity with clear requirements, location, date, budget and contact context where applicable. Update or remove information that is no longer current." },
-          "promotionRules": { "title": "3. Rules for promotions", "body": "Promotions must accurately describe the artist, service, event or offer being promoted. Do not use false urgency, fabricated results, hidden conditions or misleading comparisons." },
-          "avoidContent": { "title": "4. Content to avoid", "body": "Avoid repeated posts, deceptive claims, unrelated advertising, engagement bait, copied material, abusive language, unsafe links and content intended mainly to manipulate visibility or contact users without a legitimate purpose." }
+          "postRules": {
+            "title": "1. Rules for posts",
+            "body": "Use posts to share authentic updates and artistic content with your community. Keep descriptions accurate, media relevant and any people or collaborators properly represented."
+          },
+          "announcementRules": {
+            "title": "2. Rules for announcements",
+            "body": "Announcements should describe a genuine event opportunity with clear requirements, location, date, budget and contact context where applicable. Update or remove information that is no longer current."
+          },
+          "promotionRules": {
+            "title": "3. Rules for promotions",
+            "body": "Promotions must accurately describe the artist, service, event or offer being promoted. Do not use false urgency, fabricated results, hidden conditions or misleading comparisons."
+          },
+          "avoidContent": {
+            "title": "4. Content to avoid",
+            "body": "Avoid repeated posts, deceptive claims, unrelated advertising, engagement bait, copied material, abusive language, unsafe links and content intended mainly to manipulate visibility or contact users without a legitimate purpose."
+          }
         }
       },
       "interaction": {
         "title": "Interaction with Users",
         "rules": {
-          "respect": { "title": "1. Respect other users and artists", "body": "Communicate professionally even when you disagree. Do not insult, threaten, discriminate against or publicly shame another member of the community." },
-          "harassment": { "title": "2. Do not harass others or abuse messaging", "body": "Do not send unwanted repeated messages, sexual or threatening content, pressure users for a response or continue contacting someone who has clearly asked you to stop." },
-          "spam": { "title": "3. Do not use the platform for spam", "body": "Avoid mass messaging, repeated solicitations, irrelevant links, automated outreach and identical promotional messages sent without a legitimate connection to the recipient." },
-          "misleading": { "title": "4. Do not mislead other users", "body": "Be honest about your identity, availability, experience, pricing and intentions. Do not conceal important conditions or make promises you cannot reasonably fulfill."
+          "respect": {
+            "title": "1. Respect other users and artists",
+            "body": "Communicate professionally even when you disagree. Do not insult, threaten, discriminate against or publicly shame another member of the community."
+          },
+          "harassment": {
+            "title": "2. Do not harass others or abuse messaging",
+            "body": "Do not send unwanted repeated messages, sexual or threatening content, pressure users for a response or continue contacting someone who has clearly asked you to stop."
+          },
+          "spam": {
+            "title": "3. Do not use the platform for spam",
+            "body": "Avoid mass messaging, repeated solicitations, irrelevant links, automated outreach and identical promotional messages sent without a legitimate connection to the recipient."
+          },
+          "misleading": {
+            "title": "4. Do not mislead other users",
+            "body": "Be honest about your identity, availability, experience, pricing and intentions. Do not conceal important conditions or make promises you cannot reasonably fulfill."
           }
         }
       },
       "bookings": {
         "title": "Bookings & Events",
         "rules": {
-          "confirmed": { "title": "1. Honor confirmed bookings", "body": "Treat an accepted booking as a professional commitment. Keep the agreed date available and notify the other party promptly if an exceptional issue may affect the event." },
-          "intent": { "title": "2. Do not accept bookings you do not intend to honor", "body": "Accept only requests you can reasonably fulfill. Do not hold dates speculatively, accept conflicting commitments or use acceptance only to obtain contact details." },
-          "eventInfo": { "title": "3. Provide accurate event information", "body": "Share correct details about the date, time, location, format, duration, audience, equipment, access requirements and budget so both parties can make informed decisions." },
-          "agreements": { "title": "4. Respect communication and agreements made through the platform", "body": "Keep messages clear and professional, confirm important changes and honor the scope, timing and payment terms agreed through Muzicalist unless both parties agree to revise them."
+          "confirmed": {
+            "title": "1. Honor confirmed bookings",
+            "body": "Treat an accepted booking as a professional commitment. Keep the agreed date available and notify the other party promptly if an exceptional issue may affect the event."
+          },
+          "intent": {
+            "title": "2. Do not accept bookings you do not intend to honor",
+            "body": "Accept only requests you can reasonably fulfill. Do not hold dates speculatively, accept conflicting commitments or use acceptance only to obtain contact details."
+          },
+          "eventInfo": {
+            "title": "3. Provide accurate event information",
+            "body": "Share correct details about the date, time, location, format, duration, audience, equipment, access requirements and budget so both parties can make informed decisions."
+          },
+          "agreements": {
+            "title": "4. Respect communication and agreements made through the platform",
+            "body": "Keep messages clear and professional, confirm important changes and honor the scope, timing and payment terms agreed through Muzicalist unless both parties agree to revise them."
           }
         }
       },
       "safety": {
         "title": "Safety & Conduct",
         "rules": {
-          "prohibited": { "title": "1. Prohibited content", "body": "Do not publish illegal, threatening, hateful, sexually exploitative, violent or privacy-violating material, dangerous instructions or content that targets people based on protected characteristics." },
-          "abuse": { "title": "2. Spam and abusive behavior", "body": "Coordinated disruption, repeated unwanted promotion, manipulation of reactions or reviews, intimidation and attempts to overwhelm platform features are not acceptable." },
-          "impersonation": { "title": "3. Impersonation", "body": "Do not pretend to be another artist, user, company or representative. Fan, tribute and management accounts must describe their relationship clearly and must not create confusion about identity." },
-          "fraud": { "title": "4. Fraud and scam attempts", "body": "Do not request deceptive payments, use false booking offers, send phishing links, misrepresent services or attempt to obtain money, credentials or personal information through manipulation."
+          "prohibited": {
+            "title": "1. Prohibited content",
+            "body": "Do not publish illegal, threatening, hateful, sexually exploitative, violent or privacy-violating material, dangerous instructions or content that targets people based on protected characteristics."
+          },
+          "abuse": {
+            "title": "2. Spam and abusive behavior",
+            "body": "Coordinated disruption, repeated unwanted promotion, manipulation of reactions or reviews, intimidation and attempts to overwhelm platform features are not acceptable."
+          },
+          "impersonation": {
+            "title": "3. Impersonation",
+            "body": "Do not pretend to be another artist, user, company or representative. Fan, tribute and management accounts must describe their relationship clearly and must not create confusion about identity."
+          },
+          "fraud": {
+            "title": "4. Fraud and scam attempts",
+            "body": "Do not request deceptive payments, use false booking offers, send phishing links, misrepresent services or attempt to obtain money, credentials or personal information through manipulation."
           }
         }
       }
     }
+  },
+  "postDetail": {
+    "title": "Post",
+    "back": "Back",
+    "notFound": "This post is no longer available",
+    "error": "Could not load this post",
+    "retry": "Try again",
+    "deleted": "Deleted",
+    "deleteError": "Could not delete",
+    "deleteTitle": "Delete this post?",
+    "deleteDesc": "This action cannot be undone.",
+    "cancel": "Cancel"
   }
 }
