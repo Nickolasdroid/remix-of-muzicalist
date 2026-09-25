@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import FeedPostCard from "@/components/FeedPostCard";
+import Navigation from "@/components/Navigation";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import CommentsDialog from "@/components/CommentsDialog";
 import ReportContentDialog from "@/components/ReportContentDialog";
@@ -140,7 +141,8 @@ const PostDetail = () => {
   const promoted = isPromo || (!!item?.promotedUntil && new Date(item.promotedUntil).getTime() > Date.now());
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen ${userId ? "md:ml-64" : ""} bg-background`}>
+      <div className="hidden md:block"><Navigation /></div>
       <div className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex h-12 max-w-2xl items-center gap-2 px-2">
           <Button variant="ghost" size="icon" onClick={goBack} aria-label={t("postDetail.back", "Back")} className="h-10 w-10">
