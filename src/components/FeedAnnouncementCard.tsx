@@ -78,7 +78,7 @@ const FeedAnnouncementCard = ({
 
   return (
     <Card className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-      <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
+      <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-4 sm:px-[6px] py-[3px]">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(author.plan as any)}`}>
@@ -154,7 +154,7 @@ const FeedAnnouncementCard = ({
       )}
 
 
-      {footer && <div className="px-2 py-1">{footer}</div>}
+      {footer && <div className="px-4 sm:px-2 py-1">{footer}</div>}
     </Card>
   );
 };
