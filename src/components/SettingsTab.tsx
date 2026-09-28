@@ -650,7 +650,7 @@ const SettingsTab = ({
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Email Address</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Your email address is used for login and notifications
         </p>
       </div>
@@ -806,7 +806,7 @@ const SettingsTab = ({
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Report an Issue</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Send us feedback or report a problem
         </p>
       </div>
@@ -822,7 +822,7 @@ const SettingsTab = ({
       <div className="p-4 space-y-4">
         <div>
           <h2 className="text-lg font-semibold">Language</h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground">
             Choose your preferred language
           </p>
         </div>
@@ -867,7 +867,7 @@ const SettingsTab = ({
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Theme</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Choose between dark and light appearance
         </p>
       </div>
@@ -900,7 +900,7 @@ const SettingsTab = ({
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Sign Out</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Sign out of your account on this device
         </p>
       </div>
@@ -934,7 +934,7 @@ const SettingsTab = ({
     <div className="p-4 space-y-4">
       <div>
         <h2 className="text-lg font-semibold text-destructive">Delete Account</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Permanently delete your account and all data
         </p>
       </div>
@@ -973,8 +973,7 @@ const SettingsTab = ({
   const CommentsSectionContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Comments</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Choose who can comment on your posts and announcements
         </p>
       </div>
@@ -1084,8 +1083,7 @@ const SettingsTab = ({
   const NotificationsSectionContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Notifications</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Choose which notifications you want to receive
         </p>
       </div>
@@ -1127,8 +1125,7 @@ const SettingsTab = ({
   const EmailContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Email Address</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Your email address is used for login and notifications
         </p>
       </div>
@@ -1148,8 +1145,7 @@ const SettingsTab = ({
   const PasswordContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Change Password</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
         </p>
       </div>
@@ -1246,8 +1242,7 @@ const SettingsTab = ({
   const LanguageContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Language</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Choose your preferred language
         </p>
       </div>
@@ -1313,8 +1308,7 @@ const SettingsTab = ({
   const ThemeContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Theme</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Choose between dark and light appearance
         </p>
       </div>
@@ -1345,8 +1339,7 @@ const SettingsTab = ({
   const PromotionContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Promotion</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Manage how Muzicalist promotes your profile
         </p>
       </div>
@@ -1369,11 +1362,7 @@ const SettingsTab = ({
   const ReportContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <Flag className="h-5 w-5 text-accent" />
-          Report an Issue
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">Send us feedback or report a problem</p>
+        <p className="text-sm text-muted-foreground">Send us feedback or report a problem</p>
       </div>
       <Separator />
       <div className="max-w-2xl">
@@ -1386,8 +1375,7 @@ const SettingsTab = ({
   const LogoutContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Sign Out</h2>
-        <p className="text-sm text-muted-foreground mt-1">Sign out of your account on this device</p>
+        <p className="text-sm text-muted-foreground">Sign out of your account on this device</p>
       </div>
       <Separator />
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
@@ -1418,8 +1406,7 @@ const SettingsTab = ({
   const DeleteContent = (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-destructive">Delete Account</h2>
-        <p className="text-sm text-muted-foreground mt-1">Permanently delete your account and all data</p>
+        <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
       </div>
       <Separator />
       <AlertDialog>
@@ -1526,11 +1513,7 @@ const SettingsTab = ({
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-accent" />
-            Identity Verification
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground">
             Verify your identity to earn a verified badge on your public profile and build trust with clients.
           </p>
         </div>
@@ -1562,11 +1545,7 @@ const SettingsTab = ({
       billing: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-accent" />
-              Billing & Subscription
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground">
               Manage your billing details, invoices and subscription
             </p>
           </div>
@@ -1590,11 +1569,7 @@ const SettingsTab = ({
       mentions_tags: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-              <AtSign className="h-5 w-5 text-accent" />
-              Mentions &amp; Tags
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground">
               Decide who is allowed to mention or tag you in posts, announcements and comments
             </p>
           </div>
@@ -1695,11 +1670,7 @@ const ComingSoonPanel = ({
 }) => (
   <div className="space-y-6 animate-fade-in">
     <div>
-      <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-        <Icon className="h-5 w-5 text-accent" />
-        {title}
-      </h2>
-      <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>
+      <p className="text-sm text-muted-foreground max-w-2xl">{description}</p>
     </div>
     <Separator />
     {actionLabel && onAction ? (
@@ -1771,11 +1742,7 @@ const EditProfilePanel = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <User className="h-5 w-5 text-accent" />
-          Edit Profile
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+        <p className="text-sm text-muted-foreground max-w-2xl">
           Update your personal information. Email cannot be changed.
         </p>
       </div>
