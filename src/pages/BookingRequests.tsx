@@ -255,7 +255,7 @@ const BookingRequests = () => {
             </Button>
           </div>
 
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4 hidden md:flex items-center gap-2">
             <CalendarIcon className="h-6 w-6 text-accent" />
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
               {isArtistViewer ? "Booking Requests" : "My Bookings"}

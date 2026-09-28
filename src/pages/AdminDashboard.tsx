@@ -76,7 +76,7 @@ const AdminDashboard = () => {
       <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-7xl">
           <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
+            <h1 className="hidden md:block text-2xl md:text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground text-sm mt-1">
               Manage platform users, artist accounts, subscriptions and communications.
             </p>
