@@ -154,7 +154,7 @@ const FeedPostCard = ({
       )}
 
 
-      <div className="flex items-center gap-2 px-2.5 sm:px-2 py-0 mt-1">
+      <div className="flex items-center gap-2 px-4 sm:px-2 py-0 mt-1">
         <div className="flex items-center">
           <Button
             variant="ghost"
