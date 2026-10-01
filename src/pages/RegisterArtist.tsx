@@ -903,7 +903,7 @@ const RegisterArtist = () => {
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                           <SelectValue placeholder={formData.country ? t("artistRegistration.placeholders.selectCounty") : t("artistRegistration.placeholders.selectCountryFirst", "Select a country first")} />
                         </SelectTrigger>
-                        <SelectContent side="bottom" avoidCollisions={false}>
+                        <SelectContent side="bottom">
                           {availableRegions.map((region) => <SelectItem key={region} value={region}>{region}</SelectItem>)}
                         </SelectContent>
                       </Select>
@@ -992,7 +992,7 @@ const RegisterArtist = () => {
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                         <SelectValue placeholder={t("artistRegistration.placeholders.careerStart")} />
                       </SelectTrigger>
-                      <SelectContent side="bottom" avoidCollisions={false}>
+                      <SelectContent side="bottom">
                         {Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i).map((year) =>
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                         )}
