@@ -564,7 +564,7 @@ Use null for unspecified fields. Do NOT put generic chit-chat or random question
       sibiu: "Sibiu", bacau: "Bacău", targumures: "Mureș", tirgumures: "Mureș",
       baiamare: "Maramureș", buzau: "Buzău", botosani: "Botoșani",
       satumare: "Satu Mare", ramnicuvalcea: "Vâlcea", suceava: "Suceava",
-      piatraneamt: "Neamț", drobetaturnuseverin: "Mehedinți", focsani: "Vrancea",
+      piatraneamt: "Neamț", drobetaturnuseverin: "Mehedinți", focsani: "Vrancea", vrancea: "Vrancea", adjud: "Vrancea",
       targujiu: "Gorj", tulcea: "Tulcea", targoviste: "Dâmbovița",
       resita: "Caraș-Severin", slatina: "Olt", bistrita: "Bistrița-Năsăud",
       albaiulia: "Alba", deva: "Hunedoara", hunedoara: "Hunedoara",
