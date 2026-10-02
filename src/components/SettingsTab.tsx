@@ -1716,14 +1716,10 @@ const EditProfilePanel = () => {
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!firstName.trim() || !lastName.trim()) {
-      toast({ title: "Error", description: "First name and last name are required.", variant: "destructive" });
-      return;
-    }
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ first_name: firstName.trim(), last_name: lastName.trim(), gender } as any)
+      .update({ gender } as any)
       .eq("id", userId);
     setSaving(false);
     if (error) {
@@ -1779,11 +1775,13 @@ const EditProfilePanel = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="ep-first">First name</Label>
-            <Input id="ep-first" value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={loading} className="rounded-lg" />
+            <Input id="ep-first" value={firstName} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+            <p className="text-xs text-muted-foreground">First name cannot be modified.</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="ep-last">Last name</Label>
-            <Input id="ep-last" value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={loading} className="rounded-lg" />
+            <Input id="ep-last" value={lastName} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+            <p className="text-xs text-muted-foreground">Last name cannot be modified.</p>
           </div>
         </div>
         <div className="space-y-2">
