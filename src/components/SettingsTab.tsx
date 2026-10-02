@@ -1687,7 +1687,6 @@ const EditProfilePanel = () => {
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [gender, setGender] = useState<string>("prefer_not_to_say");
   const [country, setCountry] = useState("");
   const [county, setCounty] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
@@ -1704,7 +1703,6 @@ const EditProfilePanel = () => {
         setPhone((data as any).phone || "");
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
-        setGender((data as any).gender || "prefer_not_to_say");
         setCountry((data as any).country || "");
         setCounty((data as any).county || "");
       } else {
@@ -1779,34 +1777,6 @@ const EditProfilePanel = () => {
             <Label htmlFor="ep-last">Last name</Label>
             <Input id="ep-last" value={lastName} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
           </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Sex</Label>
-          <RadioGroup value={gender} onValueChange={setGender} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {[
-              { v: "male", l: "Male" },
-              { v: "female", l: "Female" },
-              { v: "other", l: "Other" },
-              { v: "prefer_not_to_say", l: "Prefer not to say" },
-            ].map((opt) => (
-              <label
-                key={opt.v}
-                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
-              >
-                <RadioGroupItem value={opt.v} id={`ep-gender-${opt.v}`} />
-                <span className="text-sm">{opt.l}</span>
-              </label>
-            ))}
-          </RadioGroup>
-        </div>
-        <div className="pt-2">
-          <Button
-            onClick={handleSave}
-            disabled={saving || loading}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg"
-          >
-            {saving ? "Saving..." : "Save changes"}
-          </Button>
         </div>
       </div>
     </div>
