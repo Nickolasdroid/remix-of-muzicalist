@@ -649,7 +649,6 @@ const SettingsTab = ({
   const MobileEmailSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Email Address</h2>
         <p className="text-sm text-muted-foreground">
           Your email address is used for login and notifications
         </p>
@@ -805,7 +804,6 @@ const SettingsTab = ({
   const MobileReportSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Report an Issue</h2>
         <p className="text-sm text-muted-foreground">
           Send us feedback or report a problem
         </p>
@@ -821,7 +819,6 @@ const SettingsTab = ({
     return (
       <div className="p-4 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Language</h2>
           <p className="text-sm text-muted-foreground">
             Choose your preferred language
           </p>
@@ -866,7 +863,6 @@ const SettingsTab = ({
   const MobileThemeSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Theme</h2>
         <p className="text-sm text-muted-foreground">
           Choose between dark and light appearance
         </p>
@@ -899,7 +895,6 @@ const SettingsTab = ({
   const MobileLogoutSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Sign Out</h2>
         <p className="text-sm text-muted-foreground">
           Sign out of your account on this device
         </p>
@@ -933,7 +928,6 @@ const SettingsTab = ({
   const MobileDeleteSection = () => (
     <div className="p-4 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-destructive">Delete Account</h2>
         <p className="text-sm text-muted-foreground">
           Permanently delete your account and all data
         </p>

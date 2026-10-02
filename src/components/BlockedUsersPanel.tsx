@@ -115,11 +115,7 @@ const BlockedUsersPanel = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <UserX className="h-5 w-5 text-accent" />
-          {t("settings.blocked.title", "Blocked Users")}
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           {t(
             "settings.blocked.description",
             "Manage the users and artists you've blocked. Blocked profiles can't view your profile, message you, or interact with your content."
