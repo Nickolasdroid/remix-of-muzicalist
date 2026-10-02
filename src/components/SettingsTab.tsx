@@ -1682,7 +1682,6 @@ const ComingSoonPanel = ({
 const EditProfilePanel = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -1712,20 +1711,6 @@ const EditProfilePanel = () => {
     })();
   }, []);
 
-  const handleSave = async () => {
-    if (!userId) return;
-    setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ gender } as any)
-      .eq("id", userId);
-    setSaving(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Saved", description: "Profile updated successfully." });
-    }
-  };
 
   return (
     <div className="space-y-6 animate-fade-in">
