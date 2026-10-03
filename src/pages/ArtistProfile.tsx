@@ -1202,6 +1202,16 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
+  const goBackFromReviews = () => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`));
+  const writeReviewButton = currentUserId !== id ? <Button onClick={() => {
+    if (!currentUserId) {
+      toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
+      navigate('/login');
+      return;
+    }
+    setReviewDialogOpen(true);
+  }} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
+
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
@@ -1246,28 +1256,21 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         ]}
 
       />
-      <Navigation />
+      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation />}
       
       {isReviewsView && (() => {
         const reviewLimit = getReviewDisplayLimit(artist?.plan);
         const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
         return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
           <div className="mx-auto w-full max-w-3xl">
-            <div className="flex items-center gap-2 py-3">
-              <Button variant="ghost" size="icon" aria-label="Back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`))}>
+            <div className="hidden md:flex items-center gap-2 py-3">
+              <Button variant="ghost" size="icon" aria-label="Back" onClick={goBackFromReviews}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <h1 className="text-xl font-semibold text-foreground">Reviews</h1>
-              {currentUserId !== id && <Button onClick={() => {
-                if (!currentUserId) {
-                  toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
-                  navigate('/login');
-                  return;
-                }
-                setReviewDialogOpen(true);
-              }} size="sm" className="ml-auto bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button>}
+              {writeReviewButton}
             </div>
-            <p className="mb-3 text-sm text-muted-foreground notranslate" data-user-content="true" translate="no">{artist.stage_name}</p>
+            <p className="mb-3 pt-3 md:pt-0 text-sm text-muted-foreground notranslate" data-user-content="true" translate="no">{artist.stage_name}</p>
             {reviews.length > 0 ? <>
               <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
               <div className="grid gap-3 md:grid-cols-2">

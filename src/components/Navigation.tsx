@@ -32,9 +32,11 @@ interface NavigationProps {
   mobileBackPath?: string | number;
   onMobileBack?: () => void;
   hideMobileHeader?: boolean;
+  /** Replaces the right-side mobile header actions (e.g. a page CTA). */
+  mobileAction?: React.ReactNode;
 }
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -512,8 +514,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : null}
 
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
-          <div className="flex shrink-0 items-center gap-1" aria-label={!user ? t('navigation.authActions', 'Authentication') : undefined}>
-            {user ? (
+          <div className="ml-auto flex shrink-0 items-center gap-1" aria-label={!user && !mobileAction ? t('navigation.authActions', 'Authentication') : undefined}>
+            {mobileAction ? mobileAction : user ? (
               <button
                 onClick={() => navigate('/notifications')}
                 onMouseEnter={() => preloadForPath('/notifications')}
