@@ -155,6 +155,7 @@ const App = () => (
             <Route path="/dashboard/posts/new" element={<CreatePost />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/artist/:id" element={<ArtistProfileRoute />} />
+            <Route path="/artist/:id/reviews" element={<ArtistProfileRoute view="reviews" />} />
             <Route path="/post/:id" element={<PostDetail />} />
             <Route path="/book/:id" element={<BookArtist />} />
             <Route path="/messages" element={<Messages />} />
