@@ -917,7 +917,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-5 w-5 ${star <= rating ? 'text-accent fill-accent' : 'text-muted-foreground'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`} onClick={() => interactive && onRate?.(star)} />)}
       </div>;
   };
-  if (loading) {
     const renderReviewCard = (review: Review) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
       {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
       <div className="flex items-center gap-3">
@@ -934,7 +933,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
     </div>;
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
+  if (loading) {
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
         <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
