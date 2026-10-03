@@ -29,7 +29,7 @@ const ReviewsSummary = ({ ratings, average, onViewAll }: ReviewsSummaryProps) =>
         <ul className="flex-1 space-y-1.5">
           {counts.map(({ s, n }) => (
             <li key={s} className="flex items-center gap-3 text-sm">
-              <span className="w-14 shrink-0 text-muted-foreground">{s} {s === 1 ? "star" : "stars"}</span>
+              <span className="w-16 shrink-0 whitespace-nowrap text-muted-foreground">{s} {s === 1 ? "star" : "stars"}</span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div className="h-full rounded-full bg-accent" style={{ width: total ? `${(n / total) * 100}%` : 0 }} />
               </div>
