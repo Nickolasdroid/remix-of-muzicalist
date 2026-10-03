@@ -972,39 +972,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         image={artist.avatar_url || undefined}
       />
       <Navigation />
-      {isReviewsView && (() => {
-        const reviewLimit = getReviewDisplayLimit(artist?.plan);
-        const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
-        return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
-          <div className="mx-auto w-full max-w-3xl">
-            <div className="flex items-center gap-2 py-3">
-              <Button variant="ghost" size="icon" aria-label="Back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`))}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <h1 className="text-xl font-semibold text-foreground">Reviews</h1>
-              {currentUserId !== id && <Button onClick={() => {
-                if (!currentUserId) {
-                  toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
-                  navigate('/login');
-                  return;
-                }
-                setReviewDialogOpen(true);
-              }} size="sm" className="ml-auto bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button>}
-            </div>
-            <p className="mb-3 text-sm text-muted-foreground notranslate" data-user-content="true" translate="no">{artist.stage_name}</p>
-            {reviews.length > 0 ? <>
-              <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
-              <div className="grid gap-3 md:grid-cols-2">
-                {visibleReviews.map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
-              </div>
-            </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
-              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No reviews yet</p>
-            </div>}
-          </div>
-        </div>;
-      })()}
-      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
           <OfficialProfileView
             profile={artist as any}
@@ -1280,7 +1248,39 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       />
       <Navigation />
       
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      {isReviewsView && (() => {
+        const reviewLimit = getReviewDisplayLimit(artist?.plan);
+        const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
+        return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
+          <div className="mx-auto w-full max-w-3xl">
+            <div className="flex items-center gap-2 py-3">
+              <Button variant="ghost" size="icon" aria-label="Back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`))}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-xl font-semibold text-foreground">Reviews</h1>
+              {currentUserId !== id && <Button onClick={() => {
+                if (!currentUserId) {
+                  toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
+                  navigate('/login');
+                  return;
+                }
+                setReviewDialogOpen(true);
+              }} size="sm" className="ml-auto bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button>}
+            </div>
+            <p className="mb-3 text-sm text-muted-foreground notranslate" data-user-content="true" translate="no">{artist.stage_name}</p>
+            {reviews.length > 0 ? <>
+              <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
+              <div className="grid gap-3 md:grid-cols-2">
+                {visibleReviews.map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
+              </div>
+            </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No reviews yet</p>
+            </div>}
+          </div>
+        </div>;
+      })()}
+      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div ref={profileContentRef} className="container mx-auto max-w-4xl px-4 md:px-0">
           <Link to="/leaderboard">
             
