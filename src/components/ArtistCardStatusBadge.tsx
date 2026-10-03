@@ -1,26 +1,27 @@
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-
-const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 interface ArtistCardStatusBadgeProps {
   createdAt?: string | null;
   rating: number | null;
   reviewCount: number;
+  /** Shown instead of review text when the artist has no reviews. */
+  specialization?: string | null;
+  location?: string | null;
   className?: string;
 }
 
-const ArtistCardStatusBadge = ({ createdAt, rating, reviewCount, className }: ArtistCardStatusBadgeProps) => {
+const ArtistCardStatusBadge = ({ rating, reviewCount, specialization, location, className }: ArtistCardStatusBadgeProps) => {
   const { t } = useTranslation();
-  const isNew = createdAt
-    ? Date.now() - new Date(createdAt).getTime() < NEW_ARTIST_WINDOW_MS
-    : false;
 
   if (rating === null || reviewCount === 0) {
+    const info = [translateSpecialization(specialization), location].filter(Boolean).join(" · ");
+    if (!info) return null;
     return (
-      <span className={cn("text-xs font-medium text-muted-foreground", className)}>
-        {isNew ? t("artistCard.newArtist") : t("artistCard.noReviews")}
+      <span className={cn("truncate text-xs font-medium text-muted-foreground", className)}>
+        {info}
       </span>
     );
   }
