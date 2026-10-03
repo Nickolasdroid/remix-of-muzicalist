@@ -175,6 +175,8 @@ const DiscoverArtistsSection = () => {
                             createdAt={artist.created_at}
                             rating={artist.rating}
                             reviewCount={artist.reviewCount}
+                            specialization={artist.specialization}
+                            location={artist.county}
                           />
                         </div>
                       </div>

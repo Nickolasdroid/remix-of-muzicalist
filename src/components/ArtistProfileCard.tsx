@@ -23,6 +23,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
   const [rating, setRating] = useState<number | null>(initial?.rating ?? null);
   const [reviewCount, setReviewCount] = useState<number>(initial?.reviewCount ?? 0);
   const [createdAt, setCreatedAt] = useState<string | null>(initial?.createdAt ?? null);
+  const [specialization, setSpecialization] = useState<string | null>(initial?.specialization ?? null);
 
   useEffect(() => {
     let active = true;
@@ -31,6 +32,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
       setRating(meta.rating);
       setReviewCount(meta.reviewCount);
       setCreatedAt(meta.createdAt);
+      setSpecialization(meta.specialization ?? null);
     });
     return () => { active = false; };
   }, [id]);
@@ -89,7 +91,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
             </p>
           )}
           <div className="flex items-center justify-between min-h-[20px]">
-            <ArtistCardStatusBadge createdAt={createdAt} rating={rating} reviewCount={reviewCount} />
+            <ArtistCardStatusBadge createdAt={createdAt} rating={rating} reviewCount={reviewCount} specialization={specialization} location={county} />
           </div>
 
         </div>
