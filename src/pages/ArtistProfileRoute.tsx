@@ -17,7 +17,7 @@ const UUID_RE =
  * Internally, ArtistProfile always receives the UUID so every data
  * query keeps working unchanged.
  */
-const ArtistProfileRoute = () => {
+const ArtistProfileRoute = ({ view }: { view?: "reviews" } = {}) => {
   const { id: param } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [resolvedId, setResolvedId] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const ArtistProfileRoute = () => {
           window.history.replaceState(
             window.history.state,
             "",
-            `/artist/${data.slug}`
+            `/artist/${data.slug}${view === "reviews" ? "/reviews" : ""}`
           );
         }
         return;
@@ -70,7 +70,7 @@ const ArtistProfileRoute = () => {
 
   if (notFound) {
     // Let ArtistProfile show its own "artist not found" state.
-    return <ArtistProfile artistId={param} />;
+    return <ArtistProfile artistId={param} view={view} />;
   }
 
   if (!resolvedId) {
@@ -81,7 +81,7 @@ const ArtistProfileRoute = () => {
     );
   }
 
-  return <ArtistProfile artistId={resolvedId} />;
+  return <ArtistProfile key={view ?? "profile"} artistId={resolvedId} view={view} />;
 };
 
 export default ArtistProfileRoute;

@@ -22,7 +22,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
+import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import { Send } from "lucide-react";
@@ -156,7 +156,8 @@ const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> =>
   }));
 };
 
-const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
+const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews" } = {}) => {
+  const isReviewsView = view === "reviews";
   const { t } = useTranslation();
   const adminIds = useAdminIds();
 
@@ -185,7 +186,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
-  const [allReviewsOpen, setAllReviewsOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
@@ -917,6 +917,22 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
         {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-5 w-5 ${star <= rating ? 'text-accent fill-accent' : 'text-muted-foreground'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`} onClick={() => interactive && onRate?.(star)} />)}
       </div>;
   };
+    const renderReviewCard = (review: Review) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
+      {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
+      <div className="flex items-center gap-3">
+        <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+          {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
+          <AvatarFallback className="bg-accent/10 text-accent text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
+          <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        </div>
+      </div>
+      <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}</div>
+      {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
+    </div>;
+
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
@@ -1232,7 +1248,39 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
       />
       <Navigation />
       
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      {isReviewsView && (() => {
+        const reviewLimit = getReviewDisplayLimit(artist?.plan);
+        const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
+        return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
+          <div className="mx-auto w-full max-w-3xl">
+            <div className="flex items-center gap-2 py-3">
+              <Button variant="ghost" size="icon" aria-label="Back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`))}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-xl font-semibold text-foreground">Reviews</h1>
+              {currentUserId !== id && <Button onClick={() => {
+                if (!currentUserId) {
+                  toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
+                  navigate('/login');
+                  return;
+                }
+                setReviewDialogOpen(true);
+              }} size="sm" className="ml-auto bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button>}
+            </div>
+            <p className="mb-3 text-sm text-muted-foreground notranslate" data-user-content="true" translate="no">{artist.stage_name}</p>
+            {reviews.length > 0 ? <>
+              <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
+              <div className="grid gap-3 md:grid-cols-2">
+                {visibleReviews.map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
+              </div>
+            </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No reviews yet</p>
+            </div>}
+          </div>
+        </div>;
+      })()}
+      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
         <div ref={profileContentRef} className="container mx-auto max-w-4xl px-4 md:px-0">
           <Link to="/leaderboard">
             
@@ -1624,101 +1672,19 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
 
                   <Separator />
 
-                  {/* Reviews Section */}
-                  <div>
-                    <div className="flex flex-row items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4">
-                      <SectionHeaderWithUsage
-                        icon={<Star className="h-5 w-5 text-accent" />}
-                        title={
-                          <>
-                            Reviews
-                          </>
-                        }
-                        className="mb-3 md:mb-4"
-                      />
-                      {currentUserId !== id && <Button onClick={() => {
-                    if (!currentUserId) {
-                      toast({
-                        title: "Login Required",
-                        description: "Please log in or create an account to write a review."
-                      });
-                      navigate('/login');
-                      return;
-                    }
-                    setReviewDialogOpen(true);
-                  }} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">
-                          Write a Review
-                        </Button>}
-                    </div>
-
-                    {reviews.length > 0 ? (() => {
-                      const reviewLimit = getReviewDisplayLimit(artist?.plan);
-                      const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
-                      const renderCard = (review: any) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
-                                {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                    {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
-                                    <AvatarFallback className="bg-accent/10 text-accent text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 min-w-0">
-                                    <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
-                                    <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                  </div>
-                                </div>
-                                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}</div>
-                                {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
-                              </div>;
-                      return <>
-                      <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} onViewAll={() => setAllReviewsOpen(true)} />
-                      <Dialog open={allReviewsOpen} onOpenChange={setAllReviewsOpen}>
-                        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto rounded-lg">
-                          <DialogHeader><DialogTitle>All reviews</DialogTitle></DialogHeader>
-                          <div className="space-y-3">{visibleReviews.map((review) => <div key={review.id}>{renderCard(review)}</div>)}</div>
-                        </DialogContent>
-                      </Dialog>
-                      <Carousel className="w-full">
-                        <CarouselContent className="-ml-2 md:-ml-4">
-                          {visibleReviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
-                              <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
-                                {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review">
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>}
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                    {review.reviewer_avatar_url && (
-                                      <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />
-                                    )}
-                                    <AvatarFallback className="bg-accent/10 text-accent text-sm">
-                                      {review.reviewer_name.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 min-w-0">
-                                    <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                      {new Date(review.created_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="flex gap-0.5">
-                                  {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
-                                </div>
-                                {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
-                              </div>
-                            </CarouselItem>)}
-                        </CarouselContent>
-                        <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
-                        <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                      </Carousel></>;
-                    })() : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
-                        <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">No reviews yet</p>
-                      </div>}
-                  </div>
+                  {/* Reviews entry → dedicated reviews page */}
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/artist/${artist.slug ?? id}/reviews`)}
+                    className="flex w-full items-center gap-3 rounded-lg py-2 text-left transition-colors hover:text-accent"
+                  >
+                    <Star className="h-5 w-5 shrink-0 text-accent" />
+                    <span className="text-lg font-semibold text-foreground">Reviews</span>
+                    <span className="ml-auto truncate text-sm text-muted-foreground tabular-nums">
+                      {getAverageRating() ? `${getAverageRating()}/5 · ${reviews.length} ${reviews.length === 1 ? "review" : "reviews"}` : "No reviews yet"}
+                    </span>
+                    <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  </button>
                 </TabsContent>
 
                 {/* Posts Tab */}
