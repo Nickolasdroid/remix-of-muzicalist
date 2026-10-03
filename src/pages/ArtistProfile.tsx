@@ -1683,9 +1683,14 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   >
                     <Star className="h-5 w-5 shrink-0 text-accent" />
                     <span className="text-lg font-semibold text-foreground">Reviews</span>
-                    <span className="ml-auto truncate text-sm text-muted-foreground tabular-nums">
-                      {getAverageRating() ? `${getAverageRating()}/5 · ${reviews.length} ${reviews.length === 1 ? "review" : "reviews"}` : "No reviews yet"}
-                    </span>
+                    {reviews.length > 0 ? (
+                      <span key={`rv-${reviews.length}-${getAverageRating()}`} className="ml-auto truncate text-sm text-muted-foreground tabular-nums">
+                        <span className="notranslate" translate="no">{getAverageRating()}/5 · {reviews.length}</span>{" "}
+                        <span key={reviews.length === 1 ? "one" : "many"}>{reviews.length === 1 ? "review" : "reviews"}</span>
+                      </span>
+                    ) : (
+                      <span key="rv-empty" className="ml-auto truncate text-sm text-muted-foreground">No reviews yet</span>
+                    )}
                     <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
                   </button>
                 </TabsContent>
