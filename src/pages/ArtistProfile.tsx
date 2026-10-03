@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
+import ReviewsSummary from "@/components/ReviewsSummary";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
 
@@ -184,6 +185,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
   } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [allReviewsOpen, setAllReviewsOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
@@ -1630,11 +1632,6 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                         title={
                           <>
                             Reviews
-                            {getAverageRating() && (
-                              <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                ({getAverageRating()} • {reviews.length})
-                              </span>
-                            )}
                           </>
                         }
                         className="mb-3 md:mb-4"
@@ -1657,7 +1654,30 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                     {reviews.length > 0 ? (() => {
                       const reviewLimit = getReviewDisplayLimit(artist?.plan);
                       const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
-                      return <Carousel className="w-full">
+                      const renderCard = (review: any) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
+                                {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
+                                <div className="flex items-center gap-3">
+                                  <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+                                    {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
+                                    <AvatarFallback className="bg-accent/10 text-accent text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-1 min-w-0">
+                                    <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
+                                    <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                  </div>
+                                </div>
+                                <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}</div>
+                                {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
+                              </div>;
+                      return <>
+                      <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} onViewAll={() => setAllReviewsOpen(true)} />
+                      <Dialog open={allReviewsOpen} onOpenChange={setAllReviewsOpen}>
+                        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto rounded-lg">
+                          <DialogHeader><DialogTitle>All reviews</DialogTitle></DialogHeader>
+                          <div className="space-y-3">{visibleReviews.map((review) => <div key={review.id}>{renderCard(review)}</div>)}</div>
+                        </DialogContent>
+                      </Dialog>
+                      <Carousel className="w-full">
                         <CarouselContent className="-ml-2 md:-ml-4">
                           {visibleReviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                               <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
@@ -1693,7 +1713,7 @@ const ArtistProfile = ({ artistId }: { artistId?: string } = {}) => {
                         </CarouselContent>
                         <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
                         <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                      </Carousel>;
+                      </Carousel></>;
                     })() : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
                         <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground">No reviews yet</p>
