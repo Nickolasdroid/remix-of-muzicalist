@@ -776,6 +776,15 @@ const Leaderboard = () => {
 
   const currentArtists = getArtistsBySpecialization(categoryMap[selectedCategory]);
 
+  // Progressive rendering of the complete ranking (data is already loaded in one query).
+  const PAGE_SIZE = 20;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [selectedCategory, selectedCounty, selectedCountry]);
+  const { loadMoreRef } = useInfiniteScroll(
+    async () => setVisibleCount((c) => c + PAGE_SIZE),
+    visibleCount < currentArtists.length,
+  );
+
   // Show loading while checking auth
   if (!isAuthChecked) {
     return (
