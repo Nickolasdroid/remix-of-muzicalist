@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import GuestThemeGuard from "./components/GuestThemeGuard";
 import AdminRoute from "./components/AdminRoute";
 import MetaPixel from "./components/MetaPixel";
+import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
 import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
@@ -128,6 +129,7 @@ const App = () => (
         <GuestThemeGuard />
         <AutoTranslatePageText />
         <RoutePrefetcher />
+        <ChunkErrorBoundary>
         <Suspense fallback={<RouteFallback />}>
           <main>
           <Routes>
@@ -240,6 +242,7 @@ const App = () => (
           </Routes>
           </main>
         </Suspense>
+        </ChunkErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
