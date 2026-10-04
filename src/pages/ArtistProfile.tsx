@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
@@ -267,7 +268,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       setCurrentUserId(userId);
 
       // Redirect to appropriate dashboard if viewing own profile
-      if (userId && userId === id) {
+      if (userId && userId === id && !isReviewsView) {
         // Check if user is an artist or regular user
         const {
           data: roleData
@@ -1676,23 +1677,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   <Separator />
 
                   {/* Reviews entry → dedicated reviews page */}
-                  <button
-                    type="button"
+                  <ReviewsEntryRow
+                    count={reviews.length}
+                    average={getAverageRating()}
                     onClick={() => navigate(`/artist/${artist.slug ?? id}/reviews`)}
-                    className="flex w-full items-center gap-3 rounded-lg py-2 text-left transition-colors hover:text-accent"
-                  >
-                    <Star className="h-5 w-5 shrink-0 text-accent" />
-                    <span className="text-lg font-semibold text-foreground">Reviews</span>
-                    {reviews.length > 0 ? (
-                      <span key={`rv-${reviews.length}-${getAverageRating()}`} className="ml-auto truncate text-sm text-muted-foreground tabular-nums">
-                        <span className="notranslate" translate="no">{getAverageRating()}/5 · {reviews.length}</span>{" "}
-                        <span key={reviews.length === 1 ? "one" : "many"}>{reviews.length === 1 ? "review" : "reviews"}</span>
-                      </span>
-                    ) : (
-                      <span key="rv-empty" className="ml-auto truncate text-sm text-muted-foreground">No reviews yet</span>
-                    )}
-                    <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-                  </button>
+                  />
                 </TabsContent>
 
                 {/* Posts Tab */}
