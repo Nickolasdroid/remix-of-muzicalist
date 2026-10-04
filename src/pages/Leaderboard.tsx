@@ -20,6 +20,9 @@ import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import { getCountryNameVariants } from "@/lib/countryFlags";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { getThumbUrl } from "@/lib/imageUrl";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 const allCountries = [{
   name: "Afghanistan",
@@ -855,11 +858,6 @@ const Leaderboard = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-start gap-2 mb-3 md:max-w-3xl md:mx-auto">
-            <Crown className="h-5 w-5 text-accent fill-accent" />
-            <span className="text-sm md:text-base font-bold tracking-wider text-accent uppercase">Top 10 Artists</span>
-          </div>
-
           <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
@@ -988,39 +986,36 @@ const Leaderboard = () => {
                   );
                 })()}
 
-                {/* Ranks 4+ table */}
+                {/* Ranks 4+ — complete ranking, rendered progressively */}
                 {currentArtists.length > 3 && (
-                  <Table className="table-fixed w-full">
-                    <TableHeader>
-                      <TableRow className="bg-transparent border-b border-border hover:bg-transparent">
-                        <TableHead className="w-10 md:w-16 text-center font-semibold text-foreground px-2 md:px-4">Rank</TableHead>
-                        <TableHead className="text-center font-semibold text-foreground px-2 md:px-4">Profile</TableHead>
-                        <TableHead className="w-12 md:w-24 text-center font-semibold text-foreground px-1 md:px-4 text-xs md:text-sm">Reviews</TableHead>
-                        <TableHead className="w-12 md:w-20 text-center font-semibold text-foreground px-1 md:px-4"><Star className="h-4 w-4 mx-auto text-accent fill-accent" /></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {currentArtists.slice(3).map((artist, index) => <TableRow key={artist.id} className="border-b border-border/50 hover:bg-accent/10 transition-colors">
-                          <TableCell className="text-center font-bold text-base md:text-lg text-foreground px-2 md:px-4">{index + 4}</TableCell>
-                          <TableCell className="px-2 md:px-4">
-                            <Link to={`/artist/${artist.id}`} className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity">
-                              <div className="relative flex-shrink-0">
-                                <Avatar className="h-9 w-9 md:h-11 md:w-11">
-                                  <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                                  <AvatarFallback className="bg-muted">
-                                    <User className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
-                                  </AvatarFallback>
-                                </Avatar>
-                                
-                              </div>
-                              <span className="font-medium text-foreground hover:text-accent transition-colors text-base md:text-lg truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
-                            </Link>
-                          </TableCell>
-                          <TableCell className="text-center text-muted-foreground text-sm md:text-base px-1 md:px-4">{artistReviewCounts[artist.id] || 0}</TableCell>
-                          <TableCell className="text-center font-semibold text-accent text-sm md:text-base px-1 md:px-4">{(artistRatings[artist.id] || 0).toFixed(1)}</TableCell>
-                        </TableRow>)}
-                    </TableBody>
-                  </Table>
+                  <ol className="divide-y divide-border/50 border-t border-border">
+                    {currentArtists.slice(3, visibleCount).map((artist, index) => (
+                      <li key={artist.id}>
+                        <Link to={`/artist/${artist.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-accent/10">
+                          <span className="w-8 shrink-0 text-center text-base font-bold tabular-nums text-foreground">{index + 4}</span>
+                          <Avatar className="h-11 w-11 shrink-0">
+                            <AvatarImage src={artist.avatar_url ? getThumbUrl(artist.avatar_url, 96) : undefined} alt={artist.stage_name} loading="lazy" />
+                            <AvatarFallback className="bg-muted"><User className="h-5 w-5 text-muted-foreground" /></AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1 space-y-0.5">
+                            <p className="truncate font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}
+                            </p>
+                            <ArtistCardStatusBadge
+                              rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
+                              reviewCount={artistReviewCounts[artist.id] || 0}
+                            />
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                {visibleCount < currentArtists.length && (
+                  <div ref={loadMoreRef} className="flex justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-accent" />
+                  </div>
                 )}
               </> : <div className="text-center py-16">
                 <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
