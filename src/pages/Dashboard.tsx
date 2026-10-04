@@ -2395,68 +2395,12 @@ const Dashboard = () => {
 
                         <Separator />
 
-                        {/* Reviews Section — same structure as the public artist profile */}
-                        <div>
-                          <SectionHeaderWithUsage
-                            icon={<Star className="h-5 w-5 text-accent" />}
-                            title={
-                              <>
-                                Reviews
-                                {getAverageRating() && (
-                                  <span className="text-base md:text-lg font-display font-bold text-foreground">
-                                    {' '}({getAverageRating()} • {reviews.length})
-                                  </span>
-                                )}
-                              </>
-                            }
-                            className="mb-3 md:mb-4"
-                          />
-
-
-                          
-                          {reviews.length > 0 ? <Carousel className="w-full">
-                              <CarouselContent className="-ml-2 md:-ml-4">
-                                {reviews.map((review) => <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 lg:basis-1/3">
-                                    <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 hover:border-accent/40 transition-colors bg-card/50 h-full relative">
-                                      <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review" disabled={isSaving}>
-                                        <Trash2 className="h-4 w-4" />
-                                      </button>
-                                      <div className="flex items-center gap-3">
-                                        <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
-                                          {review.reviewer_avatar_url && (
-                                            <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />
-                                          )}
-                                          <AvatarFallback className="bg-accent/10 text-accent text-sm">
-                                            {review.reviewer_name.charAt(0).toUpperCase()}
-                                          </AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex-1 min-w-0">
-                                          <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
-                                          <span className="text-xs text-muted-foreground">
-                                            {new Date(review.created_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <div className="flex gap-0.5">
-                                        {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}
-                                      </div>
-                                      {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
-                                    </div>
-                                  </CarouselItem>)}
-                              </CarouselContent>
-                              <CarouselPrevious className="hidden md:flex left-0 -translate-x-1/2" />
-                              <CarouselNext className="hidden md:flex right-0 translate-x-1/2" />
-                            </Carousel> : <div className="text-center py-8 border border-dashed border-accent/30 rounded-lg">
-                              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">No reviews yet</p>
-                            </div>}
-
-                        </div>
+                        {/* Reviews entry → shared dedicated reviews page */}
+                        <ReviewsEntryRow
+                          count={reviews.length}
+                          average={getAverageRating()}
+                          onClick={() => user?.id && navigate(`/artist/${user.id}/reviews`)}
+                        />
                       </TabsContent>}
 
                       {/* Posts Tab */}
