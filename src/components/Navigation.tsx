@@ -505,7 +505,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               ) : location.pathname === '/notifications' ? (
                 <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
-                <Link to="/feed" className="flex items-center gap-2">
+                <Link to="/feed" className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2">
                   <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
                   <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
                 </Link>
