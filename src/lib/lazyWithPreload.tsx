@@ -26,11 +26,14 @@ function isChunkLoadError(error: unknown) {
   );
 }
 
-function reloadOnce(): boolean {
+// Reload at most once per 30s window — prevents loops while still allowing
+// recovery after each new deploy (a sticky flag could block later reloads).
+export function reloadOnce(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    if (sessionStorage.getItem(RELOAD_FLAG)) return false;
-    sessionStorage.setItem(RELOAD_FLAG, "1");
+    const last = Number(sessionStorage.getItem(RELOAD_FLAG) || 0);
+    if (Date.now() - last < 30000) return false;
+    sessionStorage.setItem(RELOAD_FLAG, String(Date.now()));
   } catch {
     /* storage indisponibil - continuăm oricum */
   }
@@ -39,15 +42,11 @@ function reloadOnce(): boolean {
 }
 
 if (typeof window !== "undefined") {
-  // După o încărcare reușită, resetăm flag-ul ca un viitor deploy să poată
-  // declanșa din nou un reload.
-  window.setTimeout(() => {
-    try {
-      sessionStorage.removeItem(RELOAD_FLAG);
-    } catch {
-      /* noop */
-    }
-  }, 10000);
+  // Vite emits this when a preloaded chunk (or its CSS) is missing after a
+  // new deploy. Reload to fetch the fresh index.html instead of a blank screen.
+  window.addEventListener("vite:preloadError", (event) => {
+    if (reloadOnce()) event.preventDefault();
+  });
 }
 
 export function lazyWithPreload<T extends ComponentType<any>>(
