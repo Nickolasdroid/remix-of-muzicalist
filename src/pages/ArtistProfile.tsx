@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";

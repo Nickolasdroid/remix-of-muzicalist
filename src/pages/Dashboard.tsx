@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
