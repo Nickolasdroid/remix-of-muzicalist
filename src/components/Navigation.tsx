@@ -489,21 +489,21 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
           {/* Center: Custom mobile title or page title (logged in) or nothing */}
           {mobileTitle ? (
-            <span className="font-display font-bold text-foreground text-lg ml-1">{localizedMobileTitle}</span>
+            <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{localizedMobileTitle}</span>
           ) : user ? (
             <>
               {(location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings') ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.settings')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.settings')}</span>
               ) : location.pathname === '/leaderboard' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.leaderboard')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.leaderboard')}</span>
               ) : location.pathname === '/countries' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.countries', 'Countries')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.countries', 'Countries')}</span>
               ) : location.pathname === '/counties' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.regions', 'Regions')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.regions', 'Regions')}</span>
               ) : location.pathname === '/categories' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
               ) : location.pathname === '/notifications' ? (
-                <span className="font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
                 <Link to="/feed" className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2">
                   <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
