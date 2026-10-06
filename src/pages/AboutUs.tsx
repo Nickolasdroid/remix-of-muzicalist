@@ -11,7 +11,9 @@ import heroConcert from "@/assets/about-hero-concert.webp";
 import storyLive from "@/assets/about-story-live.webp";
 import storyNetwork from "@/assets/about-story-network.webp";
 import worldNetwork from "@/assets/about-world-network.webp";
-import { usePlatformStats, formatPlatformStat } from "@/hooks/usePlatformStats";
+import { usePlatformStats } from "@/hooks/usePlatformStats";
+import { useTranslation } from "react-i18next";
+const formatCategoryStat = (v: number | undefined) => (v === undefined ? "—" : String(v));
 
 const STEPS = [
   { icon: Search, title: "Discover", desc: "Search and discover talented artists." },
@@ -22,6 +24,7 @@ const STEPS = [
 
 const AuthenticatedView = () => {
   const { stats } = usePlatformStats();
+  const { t } = useTranslation();
   return (
   <>
     {/* SECTION 1 — HERO */}
@@ -79,11 +82,12 @@ const AuthenticatedView = () => {
             Numbers that matter.
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
           {[
-            { label: "Artists", value: formatPlatformStat(stats?.artists) },
-            { label: "Countries", value: formatPlatformStat(stats?.countries) },
-            { label: "Events", value: formatPlatformStat(stats?.eventsBooked) },
+            { label: t("platformStats.singers"), value: formatCategoryStat(stats?.singers) },
+            { label: t("platformStats.instrumentalists"), value: formatCategoryStat(stats?.instrumentalists) },
+            { label: t("platformStats.djs"), value: formatCategoryStat(stats?.djs) },
+            { label: t("platformStats.bands"), value: formatCategoryStat(stats?.bands) },
           ].map((stat) => (
             <div key={stat.label} className="group relative bg-[#080808] py-12 md:py-16 px-8 text-center transition-all duration-500 hover:bg-[#0c0c0c]">
               <div className="absolute inset-0 bg-gradient-to-b from-accent/0 via-accent/0 to-accent/[0.04] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -123,6 +127,7 @@ const AuthenticatedView = () => {
 
 const PublicAboutPage = () => {
   const { stats } = usePlatformStats();
+  const { t } = useTranslation();
   return (
     <div className="bg-[#050505] text-foreground">
       {/* SECTION 1 — HERO */}
@@ -263,11 +268,11 @@ const PublicAboutPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
             {[
-              { label: "Artists", value: formatPlatformStat(stats?.artists) },
-              { label: "Countries", value: formatPlatformStat(stats?.countries) },
-              { label: "Users", value: formatPlatformStat(stats?.users) },
-              { label: "Events", value: formatPlatformStat(stats?.eventsBooked) },
-            ].map((stat) => (
+            { label: t("platformStats.singers"), value: formatCategoryStat(stats?.singers) },
+            { label: t("platformStats.instrumentalists"), value: formatCategoryStat(stats?.instrumentalists) },
+            { label: t("platformStats.djs"), value: formatCategoryStat(stats?.djs) },
+            { label: t("platformStats.bands"), value: formatCategoryStat(stats?.bands) },
+          ].map((stat) => (
               <div key={stat.label} className="group relative bg-[#080808] py-12 md:py-16 px-6 text-center transition-all duration-500 hover:bg-[#0c0c0c]">
                 <div className="absolute inset-0 bg-gradient-to-b from-accent/0 to-accent/[0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative">
