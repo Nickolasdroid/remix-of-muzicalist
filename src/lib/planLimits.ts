@@ -118,14 +118,8 @@ export const getSocialLinkLimit = (plan?: string | null): number => {
   }
 };
 
-/** Review visibility limit (null = unlimited) */
-export const getReviewDisplayLimit = (plan?: string | null): number | null => {
-  switch (getPlan(plan)) {
-    case 'Premium': return null; // unlimited
-    case 'Standard': return null; // unlimited
-    default: return 3; // Free: only 3 most recent
-  }
-};
+/** Reviews are a platform-level feature: never limited by plan (null = unlimited). */
+export const getReviewDisplayLimit = (_plan?: string | null): number | null => null;
 
 /** Whether the plan can set estimated pricing */
 export const canSetEstimatedPrice = (plan?: string | null): boolean => {
