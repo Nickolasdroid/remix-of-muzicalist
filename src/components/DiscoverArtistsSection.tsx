@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { User, ChevronRight, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
+import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -167,7 +167,7 @@ const DiscoverArtistsSection = () => {
                         </h3>
 
                         <p className="text-xs text-muted-foreground truncate text-left">
-                          {translateSpecialization(artist.specialization)}{[artist.county, artist.country ? getCountryName(artist.country) : null].filter(Boolean).length ? ` · ${[artist.county, artist.country ? getCountryName(artist.country) : null].filter(Boolean).join(', ')}` : ''} {flag}
+                          {translateSpecialization(artist.specialization)}{artist.county ? ` · ${artist.county}` : ''} {flag}
                         </p>
 
                         <div className="flex items-center justify-between min-h-[20px]">

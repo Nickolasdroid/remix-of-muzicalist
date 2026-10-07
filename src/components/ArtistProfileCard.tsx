@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { User, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadArtistCardMeta, getCachedArtistCardMeta } from "@/lib/artistCardMeta";
-import { getCountryName } from "@/lib/countryFlags";
+import { getCountryFlag } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 import { getThumbUrl } from "@/lib/imageUrl";
@@ -19,12 +19,15 @@ interface ArtistProfileCardProps {
   searchDate?: string | null;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country: countryProp, county: countyProp, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const initial = getCachedArtistCardMeta(id);
   const [rating, setRating] = useState<number | null>(initial?.rating ?? null);
   const [reviewCount, setReviewCount] = useState<number>(initial?.reviewCount ?? 0);
   const [createdAt, setCreatedAt] = useState<string | null>(initial?.createdAt ?? null);
   const [specialization, setSpecialization] = useState<string | null>(initial?.specialization ?? null);
+  const [loc, setLoc] = useState({ county: initial?.county ?? null, country: initial?.country ?? null });
+  const county = countyProp ?? loc.county;
+  const country = countryProp ?? loc.country;
 
   useEffect(() => {
     let active = true;
@@ -34,6 +37,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
       setReviewCount(meta.reviewCount);
       setCreatedAt(meta.createdAt);
       setSpecialization(meta.specialization ?? null);
+      setLoc({ county: meta.county ?? null, country: meta.country ?? null });
     });
     return () => { active = false; };
   }, [id]);
@@ -87,7 +91,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
             <p className="text-xs text-muted-foreground truncate flex items-center gap-0.5">
               <MapPin className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">
-                {[translateSpecialization(specialization), [county, country ? getCountryName(country) : null].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
+                {[translateSpecialization(specialization), county].filter(Boolean).join(' · ')}{country && getCountryFlag(country) ? ` ${getCountryFlag(country)}` : ''}
               </span>
             </p>
           )}

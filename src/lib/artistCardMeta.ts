@@ -5,6 +5,8 @@ export interface ArtistCardMeta {
   reviewCount: number;
   createdAt: string | null;
   specialization?: string | null;
+  county?: string | null;
+  country?: string | null;
 }
 
 const cache = new Map<string, ArtistCardMeta>();
@@ -26,7 +28,7 @@ async function flush() {
 
   const [{ data: reviews }, { data: profiles }] = await Promise.all([
     supabase.from("reviews").select("profile_id, rating").in("profile_id", ids),
-    supabase.from("profiles").select("id, created_at, specialization").in("id", ids),
+    supabase.from("profiles").select("id, created_at, specialization, county, country").in("id", ids),
   ]);
 
   const ratings = new Map<string, number[]>();
@@ -37,7 +39,8 @@ async function flush() {
   });
   const created = new Map<string, string | null>();
   const specs = new Map<string, string | null>();
-  (profiles || []).forEach((p: any) => { created.set(p.id, p.created_at); specs.set(p.id, p.specialization ?? null); });
+  const locs = new Map<string, { county: string | null; country: string | null }>();
+  (profiles || []).forEach((p: any) => { created.set(p.id, p.created_at); specs.set(p.id, p.specialization ?? null); locs.set(p.id, { county: p.county ?? null, country: p.country ?? null }); });
 
   ids.forEach((id) => {
     const list = ratings.get(id);
@@ -48,6 +51,8 @@ async function flush() {
       reviewCount: list?.length ?? 0,
       createdAt: created.get(id) ?? null,
       specialization: specs.get(id) ?? null,
+      county: locs.get(id)?.county ?? null,
+      country: locs.get(id)?.country ?? null,
     };
     cache.set(id, meta);
     inflight.delete(id);
