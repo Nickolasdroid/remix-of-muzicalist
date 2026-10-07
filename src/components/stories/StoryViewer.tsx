@@ -34,6 +34,7 @@ const StoryViewer = ({ groups, startGroupIndex, currentUserId, onSeen, onDeleted
   const [groupIndex, setGroupIndex] = useState(startGroupIndex);
   const [storyIndex, setStoryIndex] = useState(() => firstUnseenIndex(groups[startGroupIndex], seenRef.current));
   const [loadedId, setLoadedId] = useState<string | null>(null);
+  const [failedId, setFailedId] = useState<string | null>(null);
   const [held, setHeld] = useState(false);
   const [tabHidden, setTabHidden] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -187,9 +188,14 @@ const StoryViewer = ({ groups, startGroupIndex, currentUserId, onSeen, onDeleted
           alt={group.author.stage_name}
           className="absolute inset-0 w-full h-full object-contain"
           onLoad={() => setLoadedId(story.id)}
-          onError={() => setLoadedId(story.id)}
+          onError={() => { setFailedId(story.id); setLoadedId(story.id); }}
           draggable={false}
         />
+        {failedId === story.id && (
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-white/80 text-sm">
+            The image couldn't be loaded.
+          </div>
+        )}
         {!loaded && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-white/80" />
