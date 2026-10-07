@@ -192,3 +192,9 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
   text-shadow: none !important;
 }
 
+
+/* Stories: per-story progress bar in the viewer (duration set inline). */
+@keyframes story-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
