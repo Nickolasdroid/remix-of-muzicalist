@@ -1917,7 +1917,7 @@ export const RO_TEXT: Record<string, string> = {
   "Select time": "Selectează ora",
   "Select type": "Selectează tipul",
   "Select Your Instrument": "Selectează-ți instrumentul",
-  "Select your music genres": "Selectează-ți genurile muzicale",
+  "Display your music genres": "Afișează-ți genurile muzicale",
   "selected": "selectat",
   "Selected Date": "Data selectată",
   "Selfie": "Selfie",
