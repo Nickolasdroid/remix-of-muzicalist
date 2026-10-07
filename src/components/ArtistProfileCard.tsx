@@ -19,12 +19,15 @@ interface ArtistProfileCardProps {
   searchDate?: string | null;
 }
 
-const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
+const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country: countryProp, county: countyProp, availabilityStatus, searchDate }: ArtistProfileCardProps) => {
   const initial = getCachedArtistCardMeta(id);
   const [rating, setRating] = useState<number | null>(initial?.rating ?? null);
   const [reviewCount, setReviewCount] = useState<number>(initial?.reviewCount ?? 0);
   const [createdAt, setCreatedAt] = useState<string | null>(initial?.createdAt ?? null);
   const [specialization, setSpecialization] = useState<string | null>(initial?.specialization ?? null);
+  const [loc, setLoc] = useState({ county: initial?.county ?? null, country: initial?.country ?? null });
+  const county = countyProp ?? loc.county;
+  const country = countryProp ?? loc.country;
 
   useEffect(() => {
     let active = true;
@@ -34,6 +37,7 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
       setReviewCount(meta.reviewCount);
       setCreatedAt(meta.createdAt);
       setSpecialization(meta.specialization ?? null);
+      setLoc({ county: meta.county ?? null, country: meta.country ?? null });
     });
     return () => { active = false; };
   }, [id]);
