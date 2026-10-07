@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag } from "@/lib/countryFlags";
+import { getCountryFlag, getCountryName } from "@/lib/countryFlags";
 import PlanBadge from "@/components/PlanBadge";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
@@ -136,7 +136,7 @@ const AllArtists = () => {
 
                       <p className="text-xs text-muted-foreground truncate text-left">
                         {translateSpecialization(artist.specialization)}
-                        {artist.county ? ` · ${artist.county}` : ""} {flag}
+                        {[artist.county, artist.country ? getCountryName(artist.country) : null].filter(Boolean).length ? ` · ${[artist.county, artist.country ? getCountryName(artist.country) : null].filter(Boolean).join(', ')}` : ''} {flag}
                       </p>
 
                       <div className="flex items-center justify-between min-h-[20px]">
