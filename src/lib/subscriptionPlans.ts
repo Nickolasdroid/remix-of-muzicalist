@@ -64,7 +64,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Display your music genres', included: true },
       { text: 'Unlimited messaging, direct contact & artist connections', included: true },
       { text: 'Publish up to 15 posts/month', included: true },
-      { text: '5 Announcements + 2 Post Promotions/month', included: true },
+      { text: 'Publish 5 announcements + 2 post promotions/month', included: true },
       { text: 'Calendar: booking requests (by day)', included: true },
       { text: 'Display your estimated pricing publicly', included: true },
       { text: 'Up to 3 visible social links', included: true },
@@ -91,7 +91,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Display your music genres', included: true },
       
       { text: 'Publish up to 30 posts/month', included: true },
-      { text: '10 Announcements + 5 Post Promotions/month', included: true },
+      { text: 'Publish 10 announcements + 5 post promotions/month', included: true },
       { text: 'Unlimited messaging, direct contact & artist connections', included: true },
       { text: 'Professional calendar: Unlimited booking requests by day & time intervals', included: true },
       { text: 'Display your estimated pricing publicly', included: true },
