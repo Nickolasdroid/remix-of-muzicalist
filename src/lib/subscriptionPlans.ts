@@ -34,7 +34,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     features: [
       { text: 'Basic artist profile', included: true },
       { text: 'Gallery: up to 5 images (no video support)', included: true },
-      { text: 'Select your music genres', included: true },
+      { text: 'Display your music genres', included: true },
       { text: 'Messaging, direct contact & artist connections', included: true },
       { text: 'Calendar: booking requests (by day)', included: true },
       { text: '1 visible social media link', included: true },
@@ -61,7 +61,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     features: [
       { text: 'Standard Artist Badge', included: true },
       { text: 'Gallery: up to 10 images & 2 videos', included: true },
-      { text: 'Select your music genres', included: true },
+      { text: 'Display your music genres', included: true },
       { text: 'Unlimited messaging, direct contact & artist connections', included: true },
       { text: 'Publish up to 15 posts/month', included: true },
       { text: '5 Announcements + 2 Post Promotions/month', included: true },
@@ -88,7 +88,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     features: [
       { text: 'Premium Artist Badge', included: true },
       { text: 'Gallery: up to 15 images & 5 videos', included: true },
-      { text: 'Select your music genres', included: true },
+      { text: 'Display your music genres', included: true },
       
       { text: 'Publish up to 30 posts/month', included: true },
       { text: '10 Announcements + 5 Post Promotions/month', included: true },
