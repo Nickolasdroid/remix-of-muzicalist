@@ -2487,4 +2487,5 @@ export const RO_TEXT: Record<string, string> = {
   "Story deleted": "Story șters",
   "Couldn't delete the story": "Story-ul nu a putut fi șters",
   "Delete story": "Șterge story-ul",
+  "The image couldn't be loaded.": "Imaginea nu a putut fi încărcată.",
 };
