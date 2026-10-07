@@ -64,7 +64,12 @@ const StoryComposerDialog = ({ open, userId, onOpenChange, onPublished }: StoryC
       onOpenChange(false);
     } catch (err) {
       if (err instanceof StoryPlanError) setPlanBlocked(true);
-      else toast({ title: "Couldn't publish the story", description: "Please try again.", variant: "destructive" });
+      else {
+        // Surface the real reason (e.g. missing bucket/table) so problems are diagnosable.
+        const reason = err instanceof Error ? err.message : (err as any)?.message || String(err);
+        console.error("[stories] publish failed", err);
+        toast({ title: "Couldn't publish the story", description: reason || "Please try again.", variant: "destructive" });
+      }
     } finally {
       setPublishing(false);
     }
