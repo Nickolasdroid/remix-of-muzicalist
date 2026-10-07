@@ -1,3 +1,4 @@
+import { translateSpecialization } from "@/lib/specializationLabel";
 import { Link } from "react-router-dom";
 import { User, MapPin, CalendarCheck, CalendarX } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -82,11 +83,11 @@ const ArtistProfileCard = ({ id, stageName, imageUrl, plan, country, county, ava
           <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
             {stageName}
           </h3>
-          {(country || county) && (
+          {(specialization || country || county) && (
             <p className="text-xs text-muted-foreground truncate flex items-center gap-0.5">
               <MapPin className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">
-                {[county, country ? getCountryName(country) : null].filter(Boolean).join(', ')}
+                {[translateSpecialization(specialization), [county, country ? getCountryName(country) : null].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
               </span>
             </p>
           )}

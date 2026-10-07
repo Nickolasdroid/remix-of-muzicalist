@@ -1,7 +1,6 @@
 import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { translateSpecialization } from "@/lib/specializationLabel";
 
 interface ArtistCardStatusBadgeProps {
   createdAt?: string | null;
@@ -13,18 +12,11 @@ interface ArtistCardStatusBadgeProps {
   className?: string;
 }
 
-const ArtistCardStatusBadge = ({ rating, reviewCount, specialization, location, className }: ArtistCardStatusBadgeProps) => {
+const ArtistCardStatusBadge = ({ rating, reviewCount, className }: ArtistCardStatusBadgeProps) => {
   const { t } = useTranslation();
 
-  if (rating === null || reviewCount === 0) {
-    const info = [translateSpecialization(specialization), location].filter(Boolean).join(" · ");
-    if (!info) return null;
-    return (
-      <span className={cn("truncate text-xs font-medium text-muted-foreground", className)}>
-        {info}
-      </span>
-    );
-  }
+  // Category/location is rendered once by the card itself; no reviews -> no badge.
+  if (rating === null || reviewCount === 0) return null;
 
   return (
     <span
