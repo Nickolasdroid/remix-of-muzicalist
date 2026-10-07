@@ -36,6 +36,7 @@ import CommentsDialog from "@/components/CommentsDialog";
 import { sharePost } from "@/lib/sharePost";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
+import StoriesBar from "@/components/stories/StoriesBar";
 
 const POSTS_PER_PAGE = 10;
 
@@ -449,6 +450,8 @@ const Feed = () => {
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           <h1 className="sr-only">Musical Community Feed</h1>
+
+          <StoriesBar currentUserId={currentUserId} canPublish={canCreate} />
           
           {(() => {
             const filteredAll = feedItems;
