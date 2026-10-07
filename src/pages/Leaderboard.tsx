@@ -1009,7 +1009,7 @@ const Leaderboard = () => {
                           <div className="min-w-0 flex-1 space-y-0.5">
                             <p className="truncate font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
                             <p className="truncate text-xs text-muted-foreground">
-                              {[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}
+                              {[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}{artist.country && getCountryFlag(artist.country) ? ` ${getCountryFlag(artist.country)}` : ""}
                             </p>
                             <ArtistCardStatusBadge
                               rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
