@@ -66,6 +66,20 @@ export async function fetchStoryGroups(
     seen = new Set([...seen, ...((views || []) as { story_id: string }[]).map((v) => v.story_id)]);
   }
 
+  // Resolve image URLs through signed links so stories display whether the
+  // "stories" bucket is public or private (Lovable creates buckets private).
+  const signed = await supabase.storage
+    .from("stories")
+    .createSignedUrls(rows.map((r) => r.storage_path), 60 * 60 * 24);
+  const urlByPath = new Map<string, string>();
+  for (const item of signed.data || []) {
+    if (item.path && item.signedUrl) urlByPath.set(item.path, item.signedUrl);
+  }
+  for (const row of rows) {
+    const url = urlByPath.get(row.storage_path);
+    if (url) row.media_url = url;
+  }
+
   const byAuthor = new Map<string, StoryGroup>();
   for (const row of rows) {
     if (!row.profiles) continue;
