@@ -33,6 +33,7 @@
     "newArtist": "Artist nou",
     "noReviews": "Fără recenzii",
     "reviewCount_one": "{{count}} recenzie",
+    "reviewCount_few": "{{count}} recenzii",
     "reviewCount_other": "{{count}} recenzii"
   },
   "reviewModal": {
