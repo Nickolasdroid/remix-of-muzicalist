@@ -24,6 +24,7 @@ import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import FollowingManageDialog from "@/components/FollowingManageDialog";
 import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
+import { entitlementErrorMessage } from "@/lib/entitlements";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 
@@ -334,7 +335,7 @@ const UserDashboard = () => {
       setShowAnnouncementDialog(false);
       toast({ title: t("common.success"), description: "Announcement posted successfully!" });
     } catch (error: any) {
-      toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+      toast({ title: t("common.error"), description: entitlementErrorMessage(error), variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
