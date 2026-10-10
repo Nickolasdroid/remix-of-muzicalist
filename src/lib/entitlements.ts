@@ -65,6 +65,10 @@ export const mapEntitlementError = (error: unknown): string | null => {
     return "Posts are available with a Standard or Premium plan.";
   if (message.includes("POST_LIMIT_REACHED"))
     return "You've reached your post limit for this billing period.";
+  if (message.includes("USER_ANNOUNCEMENT_LIMIT_REACHED"))
+    return "You can only have 1 announcement at a time. Delete it to post a new one.";
+  if (message.includes("USER_ANNOUNCEMENT_TEXT_ONLY"))
+    return "Announcements from user accounts can contain text only.";
   if (message.includes("ANNOUNCEMENT_PLAN_REQUIRED"))
     return "Announcements are available with a Standard or Premium plan.";
   if (message.includes("ANNOUNCEMENT_LIMIT_REACHED"))
