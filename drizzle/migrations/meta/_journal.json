@@ -15,6 +15,13 @@
       "when": 1791622974951,
       "tag": "0001_allow_regular_user_announcements",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791747454513,
+      "tag": "0002_gallery_positions_and_active_visibility",
+      "breakpoints": true
     }
   ]
 }

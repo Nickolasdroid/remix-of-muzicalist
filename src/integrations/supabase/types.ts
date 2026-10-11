@@ -854,6 +854,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          position: number
           profile_id: string
           thumbnail_url: string | null
           type: string
@@ -862,6 +863,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          position?: number
           profile_id: string
           thumbnail_url?: string | null
           type: string
@@ -870,6 +872,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          position?: number
           profile_id?: string
           thumbnail_url?: string | null
           type?: string
@@ -2596,6 +2599,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      gallery_item_is_active: { Args: { _id: string }; Returns: boolean }
       generate_moderation_case_number: { Args: never; Returns: string }
       get_accepted_events_count: {
         Args: { _profile_id: string }
@@ -2933,6 +2937,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      reorder_gallery_items: {
+        Args: { _ids: string[]; _type: string }
+        Returns: undefined
       }
       restore_email_template_version: {
         Args: { _version_id: string }
