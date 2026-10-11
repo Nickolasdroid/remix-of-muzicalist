@@ -31,7 +31,7 @@ import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManag
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -332,8 +332,26 @@ const Dashboard = () => {
 
   // Visibility map: items uploaded after plan limits are kept stored but hidden
   // from public profile view. Owner still sees them with a lock overlay.
-  const galleryVisibility = computeGalleryVisibility(galleryItems, currentPlan);
-  const galleryHiddenIds = galleryVisibility.hiddenIds;
+  // Mirrors public.gallery_item_is_active(): items beyond the limit, by position, are inactive.
+  const galleryHiddenIds = new Set<string>([
+    ...galleryItems.filter((i) => i.type === 'image').slice(STANDARD_IMAGE_LIMIT).map((i) => i.id),
+    ...galleryItems.filter((i) => i.type === 'video').slice(STANDARD_VIDEO_LIMIT).map((i) => i.id),
+  ]);
+  const moveGalleryItem = async (id: string, type: string, dir: -1 | 1) => {
+    const list = galleryItems.filter((i) => i.type === type);
+    const idx = list.findIndex((i) => i.id === id);
+    const to = idx + dir;
+    if (idx < 0 || to < 0 || to >= list.length) return;
+    const next = list.slice();
+    [next[idx], next[to]] = [next[to], next[idx]];
+    const others = galleryItems.filter((i) => i.type !== type);
+    setGalleryItems(type === 'image' ? [...next, ...others] : [...others, ...next]);
+    const { error } = await (supabase as any).rpc('reorder_gallery_items', { _type: type, _ids: next.map((i) => i.id) });
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+    }
+    await loadGalleryItems();
+  };
   const imagesOverLimit = imagesUsed > STANDARD_IMAGE_LIMIT;
   const videosOverLimit = videosUsed > STANDARD_VIDEO_LIMIT;
   const galleryOverLimit = imagesOverLimit || videosOverLimit;
@@ -412,9 +430,9 @@ const Dashboard = () => {
     if (!user) return;
     const {
       data
-    } = await supabase.from('gallery_items').select('*').eq('profile_id', user.id).order('created_at', {
-      ascending: false
-    });
+    } = await supabase.from('gallery_items').select('*').eq('profile_id', user.id).order('position', {
+      ascending: true
+    }).order('created_at', { ascending: true });
     if (data) setGalleryItems(data);
   };
   const loadCalendarEvents = async () => {
@@ -2831,8 +2849,8 @@ const Dashboard = () => {
                                   Your gallery exceeds your current plan limits
                                 </p>
                                 <p className="text-muted-foreground">
-                                  Excess media is hidden from public view but remains stored
-                                  safely. Upgrade your subscription to restore visibility.
+                                  Items marked with a lock are hidden from your public profile but stay saved.
+                                  Move them earlier, delete others or upgrade to show them again.
                                 </p>
                               </div>
                             </div>
@@ -2847,7 +2865,7 @@ const Dashboard = () => {
 
 
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                            {galleryItems.filter((item) => item.type === 'image').map((item) => {
+                            {galleryItems.filter((item) => item.type === 'image').map((item, idx, arr) => {
                               const hidden = galleryHiddenIds.has(item.id);
                               return (
                                 <div key={item.id} className="relative group">
@@ -2856,14 +2874,22 @@ const Dashboard = () => {
                                     onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
                                     title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
                                   >
-                                    <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'opacity-40 grayscale' : ''}`} />
+                                    <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'grayscale' : ''}`} />
                                     {hidden && (
-                                      <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
-                                        <div className="rounded-full bg-background/80 p-2 shadow-md">
-                                          <Lock className="h-5 w-5 text-foreground" />
+                                      <div className="pointer-events-none absolute inset-0 bg-background/35">
+                                        <div className="absolute bottom-2 left-2 rounded-full bg-background/85 p-1.5 shadow-md" aria-label={t('dashboardGallery.inactive', 'Inactive')}>
+                                          <Lock className="h-3.5 w-3.5 text-foreground" />
                                         </div>
                                       </div>
                                     )}
+                                  </div>
+                                  <div className="absolute bottom-2 right-2 flex gap-1">
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveEarlier', 'Move earlier')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'image', -1); }} disabled={isSaving || idx === 0}>
+                                      <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveLater', 'Move later')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'image', 1); }} disabled={isSaving || idx === arr.length - 1}>
+                                      <ChevronRight className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                   <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
                                     id: item.id,
@@ -2897,7 +2923,7 @@ const Dashboard = () => {
                           />
 
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                            {galleryItems.filter((item) => item.type === 'video').map((item) => {
+                            {galleryItems.filter((item) => item.type === 'video').map((item, idx, arr) => {
                               const hidden = galleryHiddenIds.has(item.id);
                               const info = getEmbedInfo(item.url);
                               return (
@@ -2908,7 +2934,7 @@ const Dashboard = () => {
                                     title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
                                   >
                                     {info?.thumbnail ? (
-                                      <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'opacity-30 grayscale' : 'opacity-80'}`} />
+                                      <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'grayscale opacity-70' : 'opacity-80'}`} />
                                     ) : null}
                                     <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
                                     {info && info.provider !== 'direct' && (
@@ -2917,12 +2943,20 @@ const Dashboard = () => {
                                       </span>
                                     )}
                                     {hidden && (
-                                      <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
-                                        <div className="rounded-full bg-background/80 p-2 shadow-md">
-                                          <Lock className="h-5 w-5 text-foreground" />
+                                      <div className="pointer-events-none absolute inset-0 bg-background/35">
+                                        <div className="absolute bottom-2 left-2 rounded-full bg-background/85 p-1.5 shadow-md" aria-label={t('dashboardGallery.inactive', 'Inactive')}>
+                                          <Lock className="h-3.5 w-3.5 text-foreground" />
                                         </div>
                                       </div>
                                     )}
+                                  </div>
+                                  <div className="absolute bottom-2 right-2 flex gap-1">
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveEarlier', 'Move earlier')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'video', -1); }} disabled={isSaving || idx === 0}>
+                                      <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveLater', 'Move later')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'video', 1); }} disabled={isSaving || idx === arr.length - 1}>
+                                      <ChevronRight className="h-4 w-4" />
+                                    </Button>
                                   </div>
                                   <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
                                     id: item.id,

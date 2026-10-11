@@ -377,7 +377,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           .eq('profile_id', id)
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
-        supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at').eq('profile_id', id),
+        supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at, position').eq('profile_id', id).order('position', { ascending: true }),
         (supabase as any).rpc('get_public_calendar', { _profile_id: id }),
         supabase.from('reviews')
           .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
@@ -831,7 +831,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return ta - tb;
     });
   const getImages = () =>
-    sortAscByCreated(galleryItems.filter((item) => item.type === 'image'));
+    galleryItems.filter((item) => item.type === 'image').slice(0, isOwnGalleryView ? undefined : getImageLimit(artist?.plan));
   const getVideos = () =>
     sortAscByCreated(galleryItems.filter((item) => item.type === 'video'));
   const getAverageRating = () => {
