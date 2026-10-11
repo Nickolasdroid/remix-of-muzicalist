@@ -58,7 +58,7 @@ async function syncSubscription(subscription: Stripe.Subscription, fallbackProfi
   const planInfo = getPlanFromPriceId(priceId);
 
   const status = subscription.status;
-  const isActive = status === "active" || status === "trialing";
+  const isActive = status === "active" || status === "trialing" || status === "past_due"; // past_due grace handled by effective_plan()
   const periodEnd = subscription.current_period_end
     ? new Date(subscription.current_period_end * 1000).toISOString()
     : null;
@@ -221,7 +221,7 @@ Deno.serve(async (req) => {
               const priceId = item?.price?.id;
               const planInfo = getPlanFromPriceId(priceId);
               const status = sub.status;
-              const isActive = status === "active" || status === "trialing";
+              const isActive = status === "active" || status === "trialing" || status === "past_due"; // past_due grace handled by effective_plan()
               if (planInfo && isActive) {
                 const effectiveProfileId =
                   profileId ?? (await findProfileIdByCustomer(customerId ?? ""));

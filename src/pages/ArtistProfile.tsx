@@ -831,9 +831,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return ta - tb;
     });
   const getImages = () =>
-    sortAscByCreated(galleryItems.filter((item) => item.type === 'image')).slice(0, getImageLimit(artist?.plan));
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'image'));
   const getVideos = () =>
-    sortAscByCreated(galleryItems.filter((item) => item.type === 'video')).slice(0, getVideoLimit(artist?.plan));
+    sortAscByCreated(galleryItems.filter((item) => item.type === 'video'));
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
@@ -2112,7 +2112,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     </div>
 
                     {/* Videos Section */}
-                    {getVideoLimit(artist.plan) > 0 && <div>
+                    {getVideos().length > 0 && <div>
                       <SectionHeaderWithUsage
                         icon={<Play className="h-5 w-5 text-accent" />}
                         title="Videos"
