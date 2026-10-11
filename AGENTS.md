@@ -1,0 +1,1 @@
+- Gallery public visibility is decided server-side by gallery_items.position vs the effective plan limit (gallery_item_is_active in the SELECT policy); owners see all items. Why: downgrades never delete media, and public queries must not leak inactive items.
