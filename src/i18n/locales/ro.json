@@ -336,6 +336,9 @@
     "title": "Anunțuri"
   },
   "dashboardGallery": {
+    "inactive": "Inactiv",
+    "moveEarlier": "Mută mai în față",
+    "moveLater": "Mută mai în spate",
     "title": "Galerie",
     "photos": "Fotografii",
     "videos": "Videoclipuri",

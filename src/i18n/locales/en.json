@@ -288,6 +288,9 @@
     "title": "Announcements"
   },
   "dashboardGallery": {
+    "inactive": "Inactive",
+    "moveEarlier": "Move earlier",
+    "moveLater": "Move later",
     "title": "Gallery",
     "photos": "Photos",
     "videos": "Videos",
