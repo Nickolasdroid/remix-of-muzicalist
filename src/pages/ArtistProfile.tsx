@@ -831,9 +831,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return ta - tb;
     });
   const getImages = () =>
-    galleryItems.filter((item) => item.type === 'image').slice(0, isOwnGalleryView ? undefined : getImageLimit(artist?.plan));
+    galleryItems.filter((item) => item.type === 'image'); // server returns only active items, in position order
   const getVideos = () =>
-    sortAscByCreated(galleryItems.filter((item) => item.type === 'video'));
+    galleryItems.filter((item) => item.type === 'video');
   const getAverageRating = () => {
     if (reviews.length === 0) return null;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
