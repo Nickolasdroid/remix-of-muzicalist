@@ -271,6 +271,7 @@ const Search = () => {
                     <Link
                       key={artist.id}
                       to={`/artist/${artist.id}`}
+                      onClick={() => trackActivityEvent("search_result_click")}
                       className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
                     >
                       <Avatar className="h-12 w-12 border-2 border-border">
@@ -324,6 +325,7 @@ const Search = () => {
                 <Link
                   key={artist.id}
                   to={`/artist/${artist.id}`}
+                  onClick={() => trackActivityEvent("search_result_click")}
                   className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
                 >
                   <Avatar className="h-12 w-12 border-2 border-border">
