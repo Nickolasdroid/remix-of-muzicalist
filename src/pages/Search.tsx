@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import { Link, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
@@ -89,6 +90,7 @@ const Search = () => {
   };
 
   const handleAISearch = async () => {
+    trackActivityEvent("search_performed");
     if (!searchQuery.trim()) {
       toast.error("Please enter a search query");
       return;

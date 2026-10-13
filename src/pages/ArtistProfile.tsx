@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
@@ -312,6 +313,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     };
     checkAuth();
   }, []);
+  useEffect(() => { if (id && view !== "reviews") trackActivityEvent("artist_profile_view"); }, [id, view]);
+
   useEffect(() => {
     const fetchArtistData = async () => {
       if (!id) return;

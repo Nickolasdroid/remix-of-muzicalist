@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import SEO from "@/components/SEO";
 import { formatDateNoYear, formatSmartDate } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
@@ -65,6 +66,8 @@ const Announcements = () => {
   const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
   const [isPromoting, setIsPromoting] = useState(false);
   const promotionsRemaining = promotionLimit - promotionsUsed;
+
+  useEffect(() => { trackActivityEvent("announcements_view"); }, []);
 
   useEffect(() => {
     // Run auth check in background; do NOT block the announcements fetch on it

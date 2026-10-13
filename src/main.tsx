@@ -6,6 +6,9 @@ import "./index.css";
 
 // Import i18n after React
 import "./i18n";
+import { startActivityTracking } from "@/lib/activityTracker";
+
+startActivityTracking();
 
 // iOS Safari ignores `user-scalable=no` in the viewport meta, so pinch-to-zoom
 // on the page is blocked here via the iOS-only `gesture*` events. These events
