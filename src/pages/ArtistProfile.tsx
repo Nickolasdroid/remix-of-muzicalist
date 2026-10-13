@@ -2103,7 +2103,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         className="mb-4"
                       />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => setMediaPreview({
+                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => { trackActivityEvent("gallery_media_open"); } } onClickCapture={() => {}} data-x="" onMouseUp={() => setMediaPreview({
                       url: image.url,
                       type: "image"
                     })}>
