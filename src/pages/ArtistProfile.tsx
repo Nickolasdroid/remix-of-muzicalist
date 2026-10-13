@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
@@ -312,6 +313,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     };
     checkAuth();
   }, []);
+  useEffect(() => { if (id && view !== "reviews") trackActivityEvent("artist_profile_view"); }, [id, view]);
+
   useEffect(() => {
     const fetchArtistData = async () => {
       if (!id) return;
@@ -2100,10 +2103,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         className="mb-4"
                       />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => setMediaPreview({
-                      url: image.url,
-                      type: "image"
-                    })}>
+                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => {
+                      trackActivityEvent("gallery_media_open");
+                      setMediaPreview({ url: image.url, type: "image" });
+                    }}>
                             <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
                           </div>) : <div className="col-span-full text-center text-muted-foreground py-8">
                             No photos available yet.

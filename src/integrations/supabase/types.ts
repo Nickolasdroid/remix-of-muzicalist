@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -64,6 +64,102 @@ export type Database = {
           reason?: string
           suspended_until?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_daily: {
+        Row: {
+          account_type: string
+          active_seconds: number
+          day: string
+          sessions: number
+          user_id: string
+        }
+        Insert: {
+          account_type: string
+          active_seconds?: number
+          day: string
+          sessions?: number
+          user_id: string
+        }
+        Update: {
+          account_type?: string
+          active_seconds?: number
+          day?: string
+          sessions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_event_counts: {
+        Row: {
+          count: number
+          day: string
+          event: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          day: string
+          event: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          day?: string
+          event?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_event_dedupe: {
+        Row: {
+          client_event_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          client_event_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          client_event_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_sessions: {
+        Row: {
+          account_type: string
+          active_seconds: number
+          client_tab_id: string | null
+          id: string
+          last_seen_at: string
+          last_seq: number
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          account_type: string
+          active_seconds?: number
+          client_tab_id?: string | null
+          id?: string
+          last_seen_at?: string
+          last_seq?: number
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          account_type?: string
+          active_seconds?: number
+          client_tab_id?: string | null
+          id?: string
+          last_seen_at?: string
+          last_seq?: number
+          started_at?: string
           user_id?: string
         }
         Relationships: []
@@ -2226,6 +2322,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activity_heartbeat: {
+        Args: { _active_seconds: number; _seq: number; _tab_id: string }
+        Returns: undefined
+      }
       add_case_action: {
         Args: {
           _action_key: string
@@ -2298,6 +2398,28 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      admin_activity_account_detail: {
+        Args: { _from: string; _to: string; _user: string }
+        Returns: Json
+      }
+      admin_activity_accounts: {
+        Args: {
+          _from: string
+          _limit?: number
+          _offset?: number
+          _plan?: string
+          _search?: string
+          _sort?: string
+          _status?: string
+          _to: string
+          _type?: string
+        }
+        Returns: Json
+      }
+      admin_activity_overview: {
+        Args: { _from: string; _to: string }
+        Returns: Json
       }
       admin_get_profiles_basic: {
         Args: { _ids: string[] }
@@ -2874,6 +2996,7 @@ export type Database = {
         Returns: Json
       }
       promote_post: { Args: { p_post_id: string }; Returns: Json }
+      prune_activity_data: { Args: never; Returns: undefined }
       publish_email_template_version: {
         Args: { _version_id: string }
         Returns: {
@@ -3013,6 +3136,10 @@ export type Database = {
           _user_id: string
         }
         Returns: string
+      }
+      track_activity_event: {
+        Args: { _client_event_id: string; _event: string }
+        Returns: undefined
       }
       try_lock_email_campaign: {
         Args: { _campaign_id: string }

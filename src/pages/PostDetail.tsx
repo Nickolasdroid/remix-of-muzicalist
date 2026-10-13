@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, FileX, Flag, Loader2, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -105,6 +106,7 @@ const PostDetail = () => {
   }, [id, isPromo]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (id) trackActivityEvent("post_view"); }, [id]);
 
   const goBack = () => {
     if (window.history.state?.idx > 0) navigate(-1);

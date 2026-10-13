@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar as CalendarIcon, Clock } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -71,6 +72,8 @@ const BookArtist = () => {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => { trackActivityEvent("booking_started"); }, []);
 
   useEffect(() => {
     let mounted = true;

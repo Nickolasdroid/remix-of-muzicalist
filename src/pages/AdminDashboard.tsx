@@ -9,6 +9,7 @@ import CommunicationsPanel from "@/components/admin/CommunicationsPanel";
 import AdminUsersTab from "@/components/admin/AdminUsersTab";
 import AdminArtistsTab from "@/components/admin/AdminArtistsTab";
 import AdminReportsTab from "@/components/admin/AdminReportsTab";
+import AdminActivityTab from "@/components/admin/activity/AdminActivityTab";
 import AdminWelcomePostsTab from "@/components/admin/AdminWelcomePostsTab";
 import { Badge as CountBadge } from "@/components/ui/badge";
 import type { AdminProfile } from "@/components/admin/adminProfileTypes";
@@ -86,6 +87,7 @@ const AdminDashboard = () => {
             <TabsList className="rounded-lg flex-wrap h-auto">
               <TabsTrigger value="users">Users ({usersCount})</TabsTrigger>
               <TabsTrigger value="artists">Artists ({artistsCount})</TabsTrigger>
+              <TabsTrigger value="activity">Activity & Analytics</TabsTrigger>
               <TabsTrigger value="subscriptions">Subscriptions ({subscribers.length})</TabsTrigger>
               <TabsTrigger value="communications">Communications</TabsTrigger>
               <TabsTrigger value="reports" className="gap-2">
@@ -107,6 +109,10 @@ const AdminDashboard = () => {
 
             <TabsContent value="artists" className="mt-4">
               <AdminArtistsTab profiles={profiles} roles={roles} loading={loading} refresh={fetchAll} />
+            </TabsContent>
+
+            <TabsContent value="activity" className="mt-4">
+              <AdminActivityTab />
             </TabsContent>
 
             <TabsContent value="subscriptions" className="mt-4">
