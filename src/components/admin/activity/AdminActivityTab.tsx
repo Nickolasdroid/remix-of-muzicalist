@@ -304,15 +304,15 @@ const AdminActivityTab = () => {
           </Select>
         </FilterBar>
         <div className="overflow-x-auto">
-          <DataTable
+          <DataTable<AccountRow>
             columns={columns}
             rows={rows}
-            getRowId={(r) => r.id}
+            getRowId={(r: AccountRow) => r.id}
             loading={tLoading}
             error={tError}
             onRetry={loadAccounts}
             emptyTitle="No accounts match these filters"
-            onRowClick={setSelected}
+            onRowClick={(r: AccountRow) => setSelected(r)}
             sortKey={sort}
             sortDirection="desc"
             onSortChange={setSort}
