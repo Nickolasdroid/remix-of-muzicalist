@@ -2280,17 +2280,17 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </Dialog>
 
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-                <DialogContent className="rounded-lg sm:max-w-[460px]">
-                  <DialogHeader className="space-y-1.5">
-                    <DialogTitle className="text-xl font-display sm:text-2xl">{t('reviewModal.title')} <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
-                    <DialogDescription>
+                <DialogContent className="rounded-lg w-[calc(100%-2rem)] sm:max-w-[460px] gap-0 p-5 sm:p-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] overflow-x-hidden">
+                  <DialogHeader className="space-y-0 text-left">
+                    <DialogTitle className="px-8 text-center text-lg font-display sm:text-xl leading-snug break-words">{t('reviewModal.title')} <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span></DialogTitle>
+                    <DialogDescription className="pt-3 text-left">
                       {t('reviewModal.subtitle')}
                     </DialogDescription>
                   </DialogHeader>
-                  <form onSubmit={handleReviewSubmit} className="mt-2 space-y-4">
+                  <form onSubmit={handleReviewSubmit} className="mt-5 space-y-5">
                     <div className="space-y-2">
-                      <Label>{t('reviewModal.rating')}</Label>
-                      <div className="py-1">
+                      <Label className="block">{t('reviewModal.rating')}</Label>
+                      <div className="flex justify-start">
                         {renderStars(reviewForm.rating, true, (rating) => setReviewForm({
                       ...reviewForm,
                       rating
@@ -2298,11 +2298,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="reviewComment">{t('reviewModal.commentLabel')}</Label>
-                        <span className="text-xs text-muted-foreground">{reviewForm.comment.length}/100</span>
+                      <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="reviewComment" className="leading-none">{t('reviewModal.commentLabel')}</Label>
+                        <span className="text-xs leading-none text-muted-foreground tabular-nums">{reviewForm.comment.length}/100</span>
                       </div>
-                      <Textarea id="reviewComment" placeholder={t('reviewModal.commentPlaceholder')} value={reviewForm.comment} onChange={(e) => setReviewForm({
+                      <Textarea id="reviewComment" className="w-full" placeholder={t('reviewModal.commentPlaceholder')} value={reviewForm.comment} onChange={(e) => setReviewForm({
                     ...reviewForm,
                     comment: e.target.value
                   })} rows={3} maxLength={100} />
