@@ -1508,11 +1508,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       className="mb-4"
                     />
                     {artist.bio ? (
-                      <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-base text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
                         {artist.bio}
                       </p>
                     ) : (
-                      <p className="text-muted-foreground leading-relaxed text-sm md:text-lg text-left">
+                      <p className="text-muted-foreground leading-relaxed text-sm md:text-base text-left">
                         No bio available.
                       </p>
                     )}
