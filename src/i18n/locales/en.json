@@ -574,6 +574,14 @@
       }
     }
   },
+  "notificationsPage": {
+    "groups": {
+      "recent": "Recent",
+      "week": "This week",
+      "earlier": "Earlier",
+      "older": "Older"
+    }
+  },
   "postDetail": {
     "title": "Post",
     "back": "Back",

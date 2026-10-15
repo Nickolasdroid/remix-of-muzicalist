@@ -577,6 +577,14 @@
       }
     }
   },
+  "notificationsPage": {
+    "groups": {
+      "recent": "Recente",
+      "week": "Săptămâna aceasta",
+      "earlier": "Anterioare",
+      "older": "Mai vechi"
+    }
+  },
   "postDetail": {
     "title": "Postare",
     "back": "Înapoi",
