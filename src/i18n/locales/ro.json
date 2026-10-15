@@ -13,6 +13,7 @@
     "success": "Succes"
   },
   "announcementsPage": {
+    "announcementLabel": "Anunț",
     "loading": "Se încarcă anunțurile...",
     "emptyTitle": "Nu există încă anunțuri",
     "emptyDescription": "Anunțurile publicate de artiști vor apărea aici.",
