@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
+import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
@@ -1182,7 +1183,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           <span>·</span>
                           <span>{formatSmartDate(announcement.created_at)}</span>
                           <span>·</span>
-                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">{announcement.is_premium ? 'Promotion' : 'Announcement'}</Badge>
+                          <AnnouncementTypeBadge kind={announcement.is_premium ? "promotion" : "announcement"} />
                         </div>
                       </div>
                     </div>

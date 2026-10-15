@@ -13,6 +13,7 @@
     "success": "Success"
   },
   "announcementsPage": {
+    "announcementLabel": "Announcement",
     "loading": "Loading announcements...",
     "emptyTitle": "No announcements yet",
     "emptyDescription": "Announcements published by artists will appear here.",

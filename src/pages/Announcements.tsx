@@ -242,7 +242,6 @@ const Announcements = () => {
                 eventDate={announcement.event_date}
                 budget={announcement.budget}
                 formatEventDate={formatDateNoYear}
-                typeLabel="Announcement"
                 promoted={!!announcement.promoted}
                 onAuthorClick={() => navigate(`/artist/${announcement.profile_id}`)}
                 menu={

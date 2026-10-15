@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { MapPin, Calendar, Euro } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import AnnouncementTypeBadge, { type AnnouncementKind } from "@/components/AnnouncementTypeBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
 import PostMediaFrame from "@/components/PostMediaFrame";
@@ -9,7 +9,6 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { formatSmartDate } from "@/lib/utils";
 import { useAdminIds } from "@/hooks/useAdminIds";
-import { useTranslation } from "react-i18next";
 
 export interface FeedAnnouncementAuthor {
   id?: string;
@@ -29,8 +28,8 @@ interface FeedAnnouncementCardProps {
   budget?: string | number | null;
   /** Formats the event date the same way in every context */
   formatEventDate?: (date: string) => string;
-  /** "Announcement" / "Promotion" badge label */
-  typeLabel?: string;
+  /** "announcement" renders the compact icon, "promotion" the text label */
+  kind?: AnnouncementKind;
   /** Discreet indicator shown when an active promotion boost is applied */
   promoted?: boolean;
   mediaUrl?: string | null;
@@ -60,7 +59,7 @@ const FeedAnnouncementCard = ({
   eventDate,
   budget,
   formatEventDate,
-  typeLabel = "Announcement",
+  kind = "announcement",
   promoted = false,
   mediaUrl,
   mediaType,
@@ -71,7 +70,6 @@ const FeedAnnouncementCard = ({
   onAuthorClick,
   onMediaClick,
 }: FeedAnnouncementCardProps) => {
-  const { t } = useTranslation();
   const adminIds = useAdminIds();
   const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   const hasMeta = !!(location || eventDate || budget);
@@ -108,9 +106,7 @@ const FeedAnnouncementCard = ({
                 <span>·</span>
                 <span>{formatSmartDate(createdAt)}</span>
                 <span>·</span>
-                <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                  {promoted ? t("postPromotion.promotedAnnouncement", "Promoted") : typeLabel}
-                </Badge>
+                <AnnouncementTypeBadge kind={kind} promoted={promoted} />
                 {metaExtra}
               </div>
             </div>
