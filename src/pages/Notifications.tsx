@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, TouchEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Bell,
   Star,
@@ -20,7 +21,7 @@ import {
   AtSign,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { ro as roLocale } from "date-fns/locale";
 import i18n, { translateTextsSync, translateTexts } from "@/i18n";
 import Navigation from "@/components/Navigation";
@@ -124,12 +125,6 @@ const notificationBody = (n: Notification): string => {
   return translateTextsSync(lang, [raw])[raw] || raw;
 };
 
-const groupLabel = (date: Date): "Today" | "Yesterday" | "Earlier" => {
-  if (isToday(date)) return "Today";
-  if (isYesterday(date)) return "Yesterday";
-  return "Earlier";
-};
-
 const notificationTypeToPrefKey = (t: string): string | null => {
   switch (t) {
     case "review": return "reviews";
@@ -145,6 +140,7 @@ const notificationTypeToPrefKey = (t: string): string | null => {
 
 const Notifications = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [dictReady, setDictReady] = useState(false);
@@ -313,21 +309,30 @@ const Notifications = () => {
     return notificationPrefs[key] !== false;
   });
 
-  // Sort: unread first, then by date desc
-  const sorted = [...visible].sort((a, b) => {
-    if (!!a.read_at !== !!b.read_at) return a.read_at ? 1 : -1;
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-  });
-
-  // Group by day bucket, preserving unread-first section
-  const unread = sorted.filter((n) => !n.read_at);
-  const read = sorted.filter((n) => n.read_at);
-  const groupByDay = (items: Notification[]) => {
-    const buckets: Record<string, Notification[]> = { Today: [], Yesterday: [], Earlier: [] };
-    items.forEach((n) => buckets[groupLabel(new Date(n.created_at))].push(n));
-    return buckets;
+  // Age-based grouping (dynamic): recent <24h, week <7d, earlier <30d, older ≥30d.
+  // Invalid or missing timestamps fall into "older" and sort last, never crashing.
+  const timestampOf = (n: Notification): number => {
+    const ts = n.created_at ? new Date(n.created_at).getTime() : NaN;
+    return Number.isFinite(ts) ? ts : -Infinity;
   };
-  const readGroups = groupByDay(read);
+  const sorted = [...visible].sort((a, b) => timestampOf(b) - timestampOf(a));
+
+  const HOUR = 3_600_000;
+  const GROUP_ORDER = ["recent", "week", "earlier", "older"] as const;
+  const groupFor = (n: Notification): (typeof GROUP_ORDER)[number] => {
+    const ts = timestampOf(n);
+    if (ts === -Infinity) return "older";
+    const age = Date.now() - ts;
+    if (age < 24 * HOUR) return "recent";
+    if (age < 7 * 24 * HOUR) return "week";
+    if (age < 30 * 24 * HOUR) return "earlier";
+    return "older";
+  };
+  const groups = GROUP_ORDER.map((key) => ({
+    key,
+    label: t(`notificationsPage.groups.${key}`),
+    items: sorted.filter((n) => groupFor(n) === key),
+  }));
 
   const renderCard = (n: Notification) => {
     const isSwiping = swipeId === n.id;
@@ -525,17 +530,9 @@ const Notifications = () => {
             </div>
           ) : (
             <div>
-              {unread.length > 0 && (
-                <div>
-                  <h2 className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-accent">
-                    New
-                  </h2>
-                  <div className="divide-y divide-border/40">{unread.map(renderCard)}</div>
-                </div>
-              )}
-              <Section label="Today" items={readGroups.Today} />
-              <Section label="Yesterday" items={readGroups.Yesterday} />
-              <Section label="Earlier" items={readGroups.Earlier} />
+              {groups.map((g) => (
+                <Section key={g.key} label={g.label} items={g.items} />
+              ))}
             </div>
           )}
         </div>
