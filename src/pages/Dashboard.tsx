@@ -2683,7 +2683,6 @@ const Dashboard = () => {
                                 </DialogTrigger>
                                 <CreationModalShell
                                   title={t('creationModal.announcementTitle', 'Create an announcement')}
-                                  className="max-w-[580px]"
                                   bodyClassName="space-y-4 py-4"
                                   meta={<>
                                     {Number.isFinite(STANDARD_AD_LIMIT) && (
