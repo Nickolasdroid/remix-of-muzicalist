@@ -2683,7 +2683,7 @@ const Dashboard = () => {
                                 </DialogTrigger>
                                 <CreationModalShell
                                   title={t('creationModal.announcementTitle', 'Create an announcement')}
-                                  className="max-w-[680px]"
+                                  className="max-w-[580px]"
                                   bodyClassName="space-y-4 py-4"
                                   meta={<>
                                     {Number.isFinite(STANDARD_AD_LIMIT) && (
@@ -2722,8 +2722,8 @@ const Dashboard = () => {
                                   </CreationSection>
 
                                   <CreationSection title={t('creationModal.eventDetails', 'Event details')} variant="secondary" className="border-t border-border/60 pt-4">
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                      <div className="sm:col-span-2">
+                                    <div className="grid gap-3">
+                                      <div>
                                         <FieldLabel htmlFor="announcement-location-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
                                           {t('creationModal.location', 'Location')}
                                         </FieldLabel>
