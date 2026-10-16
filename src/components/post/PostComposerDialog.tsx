@@ -204,7 +204,6 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <CreationModalShell
         title={t("postComposer.title", "Create a post")}
-        className="max-w-[680px]"
         footer={
           <Button
             type="button"

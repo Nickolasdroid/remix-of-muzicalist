@@ -22,7 +22,7 @@ interface CreationModalShellProps {
 export const CreationModalShell = ({ title, meta, footer, children, className, bodyClassName }: CreationModalShellProps) => (
   <DialogContent
     className={cn(
-      "p-0 gap-0 overflow-hidden rounded-lg w-[calc(100%-1.5rem)] sm:w-full max-w-[480px]",
+      "p-0 gap-0 overflow-hidden overflow-x-hidden rounded-lg !w-[calc(100vw-32px)] !max-w-[480px]",
       "max-h-[92dvh] flex flex-col",
       className
     )}
