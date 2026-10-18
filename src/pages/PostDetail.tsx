@@ -154,7 +154,7 @@ const PostDetail = () => {
         </div>
       </div>
 
-      <main className="mx-auto max-w-2xl pb-24 pt-2 md:pt-4">
+      <main className="mx-auto max-w-2xl pb-4 md:pb-24 pt-2 md:pt-4">
         {status === "loading" && (
           <div className="flex justify-center py-16 text-muted-foreground"><Loader2 className="h-6 w-6 animate-spin" /></div>
         )}

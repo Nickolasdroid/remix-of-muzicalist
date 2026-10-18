@@ -23,7 +23,6 @@ import { Link, useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import GuestContentGate from "@/components/GuestContentGate";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminIds } from "@/hooks/useAdminIds";
@@ -183,7 +182,6 @@ const Announcements = () => {
   }, [page, fetchAnnouncements]);
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
-  const needsBottomSpacing = useMobileBottomNavSpacing(contentRef, [announcements.length, loading, canCreate, page, hasMore]);
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
