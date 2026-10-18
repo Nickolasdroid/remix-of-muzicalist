@@ -36,6 +36,16 @@ interface NavigationProps {
   mobileAction?: React.ReactNode;
 }
 
+/** Reserves body space for the fixed mobile bottom bar while it is rendered. */
+const BottomNavSpacer = ({ active }: { active: boolean }) => {
+  useEffect(() => {
+    if (!active) return;
+    document.body.classList.add('has-mobile-bottom-nav');
+    return () => document.body.classList.remove('has-mobile-bottom-nav');
+  }, [active]);
+  return null;
+};
+
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -326,6 +336,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
+
+  const showBottomNav = !!user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings'));
 
   return (
     <>
