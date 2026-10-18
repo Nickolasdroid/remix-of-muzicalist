@@ -37,7 +37,7 @@ const Register = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background pb-24 md:pb-4">
+    <div className="min-h-screen flex flex-col bg-background pb-6 md:pb-4">
       <SEO title="Create your account | Muzicalist" description="Join Muzicalist as an artist or event organizer. Book musicians worldwide or grow your artist career." path="/register" />
       <AuthHeader />
 

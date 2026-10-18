@@ -90,7 +90,7 @@ const CountySpecializationArtists = () => {
       <SEO title={`${specialization} in ${county} — Book Now | Muzicalist`} description={`Browse and book the best ${specialization?.toLowerCase()} in ${county}. See reviews, prices and availability, then send a booking request on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}/${encodeURIComponent(specialization ?? "")}`} />
       <Navigation mobileTitle={county} mobileBackPath={`/counties/${county}`} />
       
-      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-20">
+      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-6 md:pb-20">
         <div className="hidden md:flex items-center justify-between mb-6 md:mb-8">
           <Link to={`/counties/${county}`}>
             <Button variant="outline" className="h-9 px-3">

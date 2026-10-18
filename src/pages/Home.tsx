@@ -59,7 +59,7 @@ const Home = () => {
 
 
       {/* Search Artists Worldwide Section */}
-      <section className="py-10 md:py-14 lg:py-20 px-4 md:px-6 lg:px-8 pb-24 md:pb-16 lg:pb-20 bg-muted/30">
+      <section className="py-10 md:py-14 lg:py-20 px-4 md:px-6 lg:px-8 pb-6 md:pb-16 lg:pb-20 bg-muted/30">
         <div className="container mx-auto px-0">
           <div className="text-center px-2">
             <h2 className="text-xl md:text-4xl lg:text-5xl font-display font-bold mb-2 md:mb-4 text-foreground">

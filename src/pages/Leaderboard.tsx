@@ -798,7 +798,7 @@ const Leaderboard = () => {
       <SEO title="Top Rated Artists — Leaderboard | Muzicalist" description="See the highest-rated musical artists on Muzicalist, ranked by client reviews and engagement. Find proven performers for your next event." path="/leaderboard" />
       <Navigation />
       
-      <div className="relative z-10 pt-16 md:pt-8 pb-24 md:pb-20 px-0">
+      <div className="relative z-10 pt-16 md:pt-8 pb-6 md:pb-20 px-0">
         <div className="px-4 md:container md:mx-auto">
           <div className="text-center mb-8 md:mb-12 py-0">
             <h1 className="hidden md:flex items-center justify-center gap-3 text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">

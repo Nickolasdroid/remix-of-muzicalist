@@ -28,7 +28,7 @@ const AuthenticatedView = () => {
   return (
   <>
     {/* SECTION 1 — HERO */}
-    <section className="relative overflow-hidden pt-24 md:pt-16 pb-20 md:pb-32 px-6 md:px-10">
+    <section className="relative overflow-hidden pt-24 md:pt-16 pb-6 md:pb-32 px-6 md:px-10">
       <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${heroConcert})` }} />
       <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/70 via-[#050505]/85 to-[#050505]" />
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-accent/10 blur-[120px]" />

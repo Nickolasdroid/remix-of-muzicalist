@@ -120,7 +120,7 @@ const Categories = () => {
       <SEO title="Artist Categories — Singers, Bands, DJs & Instrumentalists | Muzicalist" description="Explore musical artists by category: professional singers, complete bands, expert DJs and skilled instrumentalists, ready to book for your event." path="/categories" />
       <Navigation />
       
-      <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
+      <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
         <div className="text-center mb-8 md:mb-16">
           <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
           

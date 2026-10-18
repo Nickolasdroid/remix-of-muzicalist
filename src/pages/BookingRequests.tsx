@@ -241,7 +241,7 @@ const BookingRequests = () => {
   return (
     <>
       <Navigation mobileTitle="Booking Requests" />
-      <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
+      <main className="md:ml-64 pt-14 md:pt-0 pb-6 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-3xl">
           <div className="hidden md:flex items-center gap-2 mb-6">
             <Button

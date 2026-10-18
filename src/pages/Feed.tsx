@@ -417,7 +417,7 @@ const Feed = () => {
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
         <Navigation />
-        <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-20 md:pb-12`}>
+        <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-12`}>
           <div className="max-w-2xl mx-auto">
             <h1 className="text-4xl font-display font-bold text-foreground mb-8">Posts</h1>
             <div className="space-y-6">
@@ -447,7 +447,7 @@ const Feed = () => {
       />
       <Navigation />
       
-      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} ${needsBottomSpacing ? 'pb-16' : 'pb-0'} md:pb-0 px-0`}>
+      <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
           <h1 className="sr-only">Musical Community Feed</h1>
 

@@ -198,3 +198,12 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
+
+/* Global: reserve room for the fixed mobile bottom navigation (64px bar +
+   device safe area). Toggled by Navigation only while the bar is rendered,
+   so desktop and pages without the bar get no extra space. */
+@media (max-width: 767px) {
+  body.has-mobile-bottom-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+}
