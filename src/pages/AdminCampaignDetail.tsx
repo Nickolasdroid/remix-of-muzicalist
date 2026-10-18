@@ -51,7 +51,7 @@ const AdminCampaignDetail = () => {
     return (
       <>
         <Navigation mobileTitle="Campaign" />
-        <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
+        <main className="md:ml-64 pt-14 md:pt-0 pb-6 md:pb-0 min-h-screen bg-background">
           <div className="container mx-auto px-4 py-6 max-w-4xl">
           <button
             onClick={() => navigate("/admin/communications/campaigns")}
@@ -87,7 +87,7 @@ const AdminCampaignDetail = () => {
   return (
     <>
       <Navigation mobileTitle="Campaign" />
-      <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-0 min-h-screen bg-background">
+      <main className="md:ml-64 pt-14 md:pt-0 pb-6 md:pb-0 min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6 max-w-4xl">
             <button
               onClick={() => navigate("/admin/communications/campaigns")}

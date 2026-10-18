@@ -336,7 +336,7 @@ const CategoryArtists = () => {
       />
       <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} />
       
-      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20`}>
+      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <Link to={currentUserId ? "/categories" : "/"} className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">

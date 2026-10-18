@@ -941,7 +941,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   if (loading) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
-        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
+        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
             <p className="text-lg md:text-xl text-muted-foreground">Loading artist profile...</p>
           </div>
@@ -951,7 +951,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   if (!artist) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
         <Navigation />
-        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
+        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
             <h1 className="text-2xl md:text-4xl font-display font-bold mb-4">Artist Not Found</h1>
             <Link to="/">
@@ -977,7 +977,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         image={artist.avatar_url || undefined}
       />
       <Navigation />
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
           <OfficialProfileView
             profile={artist as any}
@@ -1050,7 +1050,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
       <Navigation />
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
 
           {/* Hero header — mirrors the User Dashboard */}
@@ -1266,7 +1266,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       {isReviewsView && (() => {
         const reviewLimit = getReviewDisplayLimit(artist?.plan);
         const visibleReviews = reviewLimit ? reviews.slice(0, reviewLimit) : reviews;
-        return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-4`}>
+        return <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
           <div className="mx-auto w-full max-w-3xl">
             <div className="hidden md:flex items-center gap-2 py-3">
               <Button variant="ghost" size="icon" aria-label="Back" onClick={goBackFromReviews}>
@@ -1288,7 +1288,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           </div>
         </div>;
       })()}
-      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-24 md:pb-20 px-0 md:px-4`}>
+      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
         <div ref={profileContentRef} className="container mx-auto max-w-4xl px-4 md:px-0">
           <Link to="/leaderboard">
             

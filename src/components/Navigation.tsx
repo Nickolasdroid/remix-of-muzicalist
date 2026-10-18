@@ -36,6 +36,16 @@ interface NavigationProps {
   mobileAction?: React.ReactNode;
 }
 
+/** Reserves body space for the fixed mobile bottom bar while it is rendered. */
+const BottomNavSpacer = ({ active }: { active: boolean }) => {
+  useEffect(() => {
+    if (!active) return;
+    document.body.classList.add('has-mobile-bottom-nav');
+    return () => document.body.classList.remove('has-mobile-bottom-nav');
+  }, [active]);
+  return null;
+};
+
 const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -327,6 +337,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
+  const showBottomNav = !!user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings'));
+
   return (
     <>
       {/* Desktop: Top Header Bar - Only when NOT logged in */}
@@ -544,7 +556,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       </nav>
 
       {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
-      {user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings')) && (
+      <BottomNavSpacer active={showBottomNav} />
+      {showBottomNav && (
         <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (

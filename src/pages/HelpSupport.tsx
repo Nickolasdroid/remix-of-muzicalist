@@ -313,7 +313,7 @@ const HelpSupport = () => {
       />
       <Navigation mobileTitle="Help & Support" mobileBackPath={-1} />
 
-      <main className="md:ml-64 pt-14 md:pt-0 pb-20 md:pb-8">
+      <main className="md:ml-64 pt-14 md:pt-0 pb-6 md:pb-8">
         <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
           {/* Header */}
           <div className="text-center mb-10 hidden md:block">
