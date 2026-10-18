@@ -48,7 +48,6 @@ import ImageLightbox from "@/components/ImageLightbox";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
-import { useMobileBottomNavSpacing } from "@/hooks/use-mobile-bottom-nav-spacing";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
@@ -215,7 +214,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const profileContentRef = useRef<HTMLDivElement>(null);
-  const needsBottomSpacing = useMobileBottomNavSpacing(profileContentRef, [posts.length, announcements.length, galleryItems.length, reviews.length, calendarEvents.length, loading]);
 
   const handleDeletePost = async (postId: string) => {
     try {
