@@ -389,7 +389,7 @@ const Notifications = () => {
                   onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchEnd={(e) => e.stopPropagation()}
-                  onPointerDown={() => {}}
+                  onPointerDown={() => setPressedAvatarId(n.id)}
                   onPointerUp={() => {
                     const id = n.id;
                     window.setTimeout(() => setPressedAvatarId((cur) => (cur === id ? null : cur)), 180);
