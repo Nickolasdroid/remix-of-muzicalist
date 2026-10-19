@@ -208,9 +208,23 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
   }
 }
 
-/* Notification avatars: a brief gold outline while the avatar is held down.
-   Toggled imperatively (never via state) so the tap cannot re-render the list
-   between mousedown and mouseup, which would swallow the click. */
-.notif-avatar-pressed {
-  box-shadow: 0 0 0 2px hsl(var(--accent)) !important;
+/* Notification avatars: gold outline on hover, while held and on keyboard
+   focus. States live here (not as Tailwind variants) because the ring utility
+   does not resolve under :focus-visible in this stylesheet. The held state is
+   toggled imperatively, never via state, so a tap cannot re-render the list
+   between mousedown and mouseup and swallow the click. */
+.notif-avatar {
+  transition: opacity 150ms ease, box-shadow 150ms ease;
+}
+.notif-avatar:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 0 2px hsl(var(--accent) / 0.7);
+}
+.notif-avatar:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--accent));
+}
+.notif-avatar:active,
+.notif-avatar.notif-avatar-pressed {
+  box-shadow: 0 0 0 2px hsl(var(--accent));
 }

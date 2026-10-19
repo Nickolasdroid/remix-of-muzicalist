@@ -396,12 +396,7 @@ const Notifications = () => {
                   onPointerCancel={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
                   onPointerLeave={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
                   onBlur={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
-                  className={cn(
-                    cls,
-                    "cursor-pointer transition-[opacity,box-shadow] duration-150 hover:opacity-80",
-                    "hover:ring-2 hover:ring-accent/70 active:ring-2 active:ring-accent",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                  )}
+                  className={cn(cls, "notif-avatar cursor-pointer")}
                 >
                   {inner}
                 </button>
