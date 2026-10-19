@@ -207,3 +207,10 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Notification avatars: a brief gold outline while the avatar is held down.
+   Toggled imperatively (never via state) so the tap cannot re-render the list
+   between mousedown and mouseup, which would swallow the click. */
+.notif-avatar-pressed {
+  box-shadow: 0 0 0 2px hsl(var(--accent)) !important;
+}

@@ -389,20 +389,19 @@ const Notifications = () => {
                   onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchEnd={(e) => e.stopPropagation()}
-                  onPointerDown={() => setPressedAvatarId(n.id)}
-                  onPointerUp={() => {
-                    const id = n.id;
-                    window.setTimeout(() => setPressedAvatarId((cur) => (cur === id ? null : cur)), 180);
+                  onPointerDown={(e) => e.currentTarget.classList.add("notif-avatar-pressed")}
+                  onPointerUp={(e) => {
+                    const el = e.currentTarget;
+                    window.setTimeout(() => el.classList.remove("notif-avatar-pressed"), 180);
                   }}
-                  onPointerCancel={() => setPressedAvatarId((cur) => (cur === n.id ? null : cur))}
-                  onPointerLeave={() => setPressedAvatarId((cur) => (cur === n.id ? null : cur))}
-                  onBlur={() => setPressedAvatarId((cur) => (cur === n.id ? null : cur))}
+                  onPointerCancel={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
+                  onPointerLeave={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
+                  onBlur={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
                   className={cn(
                     cls,
-                    "cursor-pointer transition-[opacity,box-shadow] duration-150 hover:opacity-80 focus-visible:outline-none",
-                    pressedAvatarId === n.id
-                      ? "ring-2 ring-accent"
-                      : "hover:ring-2 hover:ring-accent/70 active:ring-2 active:ring-accent focus-visible:ring-2 focus-visible:ring-accent",
+                    "cursor-pointer transition-[opacity,box-shadow] duration-150 hover:opacity-80",
+                    "hover:ring-2 hover:ring-accent/70 active:ring-2 active:ring-accent",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   )}
                 >
                   {inner}
