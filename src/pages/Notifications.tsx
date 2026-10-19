@@ -149,6 +149,7 @@ const Notifications = () => {
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
   const [actorAvatars, setActorAvatars] = useState<Record<string, string | null>>({});
+  const [pressedAvatarId, setPressedAvatarId] = useState<string | null>(null);
   const [actorProfileIds, setActorProfileIds] = useState<Set<string>>(new Set());
   const [swipeId, setSwipeId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
