@@ -149,6 +149,7 @@ const Notifications = () => {
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
   const [actorAvatars, setActorAvatars] = useState<Record<string, string | null>>({});
+  const [actorProfileIds, setActorProfileIds] = useState<Set<string>>(new Set());
   const [swipeId, setSwipeId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const touchStartX = useRef(0);
@@ -196,6 +197,11 @@ const Notifications = () => {
     if (ids.length === 0) return;
     (async () => {
       const { data } = await supabase.from("profiles").select("id, avatar_url").in("id", ids);
+      setActorProfileIds((prev) => {
+        const next = new Set(prev);
+        (data || []).forEach((p: any) => next.add(p.id));
+        return next;
+      });
       setActorAvatars((prev) => {
         const next = { ...prev };
         ids.forEach((id) => { next[id] = null; });
@@ -359,8 +365,9 @@ const Notifications = () => {
           )}
         >
           <div className="relative flex-shrink-0 mt-0.5">
-            <div className="h-11 w-11 rounded-full overflow-hidden bg-secondary/40 flex items-center justify-center">
-              {n.actor_id && actorAvatars[n.actor_id] ? (
+            {(() => {
+              const canOpen = !!n.actor_id && actorProfileIds.has(n.actor_id);
+              const inner = n.actor_id && actorAvatars[n.actor_id] ? (
                 <img
                   src={actorAvatars[n.actor_id] as string}
                   alt={n.actor_name || "avatar"}
@@ -371,8 +378,22 @@ const Notifications = () => {
                 <span className="text-sm font-semibold text-muted-foreground">
                   {(n.actor_name || "?").charAt(0).toUpperCase()}
                 </span>
-              )}
-            </div>
+              );
+              const cls = "h-11 w-11 rounded-full overflow-hidden bg-secondary/40 flex items-center justify-center";
+              if (!canOpen) return <div className={cls}>{inner}</div>;
+              return (
+                <button
+                  type="button"
+                  aria-label={n.actor_name || "Profile"}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                  className={cn(cls, "cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent")}
+                >
+                  {inner}
+                </button>
+              );
+            })()}
             <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-background border border-border flex items-center justify-center">
               {iconFor(n.type, "h-3 w-3")}
             </div>
