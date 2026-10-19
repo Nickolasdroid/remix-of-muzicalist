@@ -388,7 +388,15 @@ const Notifications = () => {
                   onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
                   onTouchStart={(e) => e.stopPropagation()}
                   onTouchEnd={(e) => e.stopPropagation()}
-                  className={cn(cls, "cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent")}
+                  onPointerDown={(e) => e.currentTarget.classList.add("notif-avatar-pressed")}
+                  onPointerUp={(e) => {
+                    const el = e.currentTarget;
+                    window.setTimeout(() => el.classList.remove("notif-avatar-pressed"), 180);
+                  }}
+                  onPointerCancel={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
+                  onPointerLeave={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
+                  onBlur={(e) => e.currentTarget.classList.remove("notif-avatar-pressed")}
+                  className={cn(cls, "notif-avatar cursor-pointer")}
                 >
                   {inner}
                 </button>
