@@ -343,6 +343,10 @@ const Notifications = () => {
   const renderCard = (n: Notification) => {
     const isSwiping = swipeId === n.id;
     const offset = isSwiping ? swipeOffset : 0;
+    // The sender's picture and name act as profile links only when the actor
+    // really has a profile we can open; otherwise both stay plain text.
+    const canOpenProfile = !!n.actor_id && actorProfileIds.has(n.actor_id);
+
     return (
       <div key={n.id} className="relative overflow-hidden">
         {/* Swipe reveal delete */}
@@ -366,8 +370,8 @@ const Notifications = () => {
         >
           <div className="relative flex-shrink-0 mt-0.5">
             {(() => {
-              const canOpen = !!n.actor_id && actorProfileIds.has(n.actor_id);
               const inner = n.actor_id && actorAvatars[n.actor_id] ? (
+
                 <img
                   src={actorAvatars[n.actor_id] as string}
                   alt={n.actor_name || "avatar"}
@@ -380,7 +384,7 @@ const Notifications = () => {
                 </span>
               );
               const cls = "h-11 w-11 rounded-full overflow-hidden bg-secondary/40 flex items-center justify-center";
-              if (!canOpen) return <div className={cls}>{inner}</div>;
+              if (!canOpenProfile) return <div className={cls}>{inner}</div>;
               return (
                 <button
                   type="button"
@@ -408,11 +412,24 @@ const Notifications = () => {
           </div>
           <div className="flex-1 min-w-0">
             <p className={cn("text-sm leading-snug", !n.read_at ? "text-foreground" : "text-muted-foreground")}>
-              {n.actor_name && (
-                <span className="font-semibold text-foreground notranslate" translate="no">
-                  {n.actor_name}{" "}
-                </span>
-              )}
+              {n.actor_name &&
+                (canOpenProfile ? (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
+                    className="notif-name inline font-semibold text-foreground notranslate -mx-1 px-1 py-1"
+                    translate="no"
+                  >
+                    {n.actor_name}
+                  </button>
+                ) : (
+                  <span className="font-semibold text-foreground notranslate" translate="no">
+                    {n.actor_name}
+                  </span>
+                ))}{" "}
+
               <span>{notificationBody(n)}</span>
             </p>
             <p className="text-xs text-muted-foreground mt-1">
