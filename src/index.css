@@ -228,3 +228,38 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
 .notif-avatar.notif-avatar-pressed {
   box-shadow: 0 0 0 2px hsl(var(--accent));
 }
+
+/* Notification sender names: the same affordance as clickable names elsewhere
+   in the app (underline on hover, never permanently), plus a keyboard focus
+   ring. The tap target is widened with an absolutely positioned pseudo-element
+   rather than padding, because padding on this element would grow the line box
+   and shift the card layout. */
+.notif-name {
+  position: relative;
+  cursor: pointer;
+  text-decoration-line: none;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 150ms ease, color 150ms ease;
+}
+.notif-name::after {
+  content: "";
+  position: absolute;
+  inset: -4px -4px;
+}
+
+
+.notif-name:hover {
+  text-decoration-line: underline;
+  text-decoration-color: hsl(var(--accent) / 0.7);
+}
+.notif-name:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+  border-radius: 4px;
+  text-decoration-line: none;
+}
+.notif-name:active {
+  color: hsl(var(--accent));
+}
+
