@@ -419,7 +419,7 @@ const Notifications = () => {
                     onClick={(e) => { e.stopPropagation(); navigate(`/artist/${n.actor_id}`); }}
                     onTouchStart={(e) => e.stopPropagation()}
                     onTouchEnd={(e) => e.stopPropagation()}
-                    className="notif-name inline font-semibold text-foreground notranslate -mx-1 px-1 py-1"
+                    className="notif-name font-semibold text-foreground notranslate"
                     translate="no"
                   >
                     {n.actor_name}

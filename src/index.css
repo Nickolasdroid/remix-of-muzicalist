@@ -231,17 +231,23 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
 
 /* Notification sender names: the same affordance as clickable names elsewhere
    in the app (underline on hover, never permanently), plus a keyboard focus
-   ring. The element is kept display:inline on purpose: its padding then
-   widens the tap target without growing the line box, so the card layout is
-   byte-identical to a plain name. */
+   ring. The tap target is widened with an absolutely positioned pseudo-element
+   rather than padding, because padding on this element would grow the line box
+   and shift the card layout. */
 .notif-name {
-  display: inline;
+  position: relative;
   cursor: pointer;
   text-decoration-line: none;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
   transition: text-decoration-color 150ms ease, color 150ms ease;
 }
+.notif-name::after {
+  content: "";
+  position: absolute;
+  inset: -4px -4px;
+}
+
 
 .notif-name:hover {
   text-decoration-line: underline;
