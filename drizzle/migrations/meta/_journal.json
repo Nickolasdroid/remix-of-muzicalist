@@ -36,6 +36,13 @@
       "when": 1792613491766,
       "tag": "0004_verified_booking_reviews",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792615649800,
+      "tag": "0005_booking_offers_flow",
+      "breakpoints": true
     }
   ]
 }
