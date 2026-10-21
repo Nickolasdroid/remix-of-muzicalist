@@ -25,7 +25,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight } from "lucide-react";
+import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import { Send } from "lucide-react";
@@ -126,6 +126,7 @@ interface Review {
   comment: string | null;
   created_at: string;
   reviewer_user_id: string | null;
+  is_verified_booking?: boolean;
   reviewer_avatar_url?: string | null;
 }
 interface Post {
@@ -190,6 +191,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [checkingReviewEligibility, setCheckingReviewEligibility] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
   const [bookingForm, setBookingForm] = useState({
     name: "",
@@ -382,7 +384,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         supabase.from('gallery_items').select('id, type, url, thumbnail_url, created_at, position').eq('profile_id', id).order('position', { ascending: true }),
         (supabase as any).rpc('get_public_calendar', { _profile_id: id }),
         supabase.from('reviews')
-          .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id')
+          .select('id, reviewer_name, rating, comment, created_at, reviewer_user_id, is_verified_booking')
           .eq('profile_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('posts')
@@ -861,7 +863,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       // Refetch reviews
       const {
         data: reviewsData
-      } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', id).order('created_at', {
+      } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id, is_verified_booking').eq('profile_id', id).order('created_at', {
         ascending: false
       });
       const reviewsWithAvatars = await enrichReviewsWithAvatars(reviewsData || []);
@@ -876,9 +878,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         comment: ""
       });
     } catch (error) {
+      const message = (error as { message?: string } | null)?.message ?? "";
       toast({
         title: "Error",
-        description: "Failed to submit review. Please try again.",
+        description: message.includes("REVIEW_REQUIRES_COMPLETED_BOOKING")
+          ? "You can review this artist after an event booked through Muzicalist has taken place."
+          : "Failed to submit review. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -930,6 +935,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         <div className="flex-1 min-w-0">
           <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
           <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          {review.is_verified_booking && <span className="mt-1 flex w-fit items-center gap-1 text-xs font-medium text-emerald-500"><BadgeCheck className="h-3.5 w-3.5" />Verified booking</span>}
         </div>
       </div>
       <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}</div>
@@ -1206,14 +1212,31 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
   const goBackFromReviews = () => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`));
-  const writeReviewButton = currentUserId !== id ? <Button onClick={() => {
+  const openReviewDialog = async () => {
     if (!currentUserId) {
       toast({ title: "Login Required", description: "Please log in or create an account to write a review." });
       navigate('/login');
       return;
     }
-    setReviewDialogOpen(true);
-  }} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
+    if (!id || checkingReviewEligibility) return;
+    setCheckingReviewEligibility(true);
+    try {
+      const { data, error } = await (supabase as any).rpc('can_review_artist', { _profile_id: id });
+      if (error) throw error;
+      if (data === 'ok') {
+        setReviewDialogOpen(true);
+      } else if (data === 'already_reviewed') {
+        toast({ title: "Already reviewed", description: "You have already left a review for this artist." });
+      } else if (data === 'no_completed_booking') {
+        toast({ title: "Reviews are for confirmed bookings", description: "You can review this artist after an event booked through Muzicalist has taken place." });
+      }
+    } catch {
+      toast({ title: "Error", description: "Failed to submit review. Please try again.", variant: "destructive" });
+    } finally {
+      setCheckingReviewEligibility(false);
+    }
+  };
+  const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
