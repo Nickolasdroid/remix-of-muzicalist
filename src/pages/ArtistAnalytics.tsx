@@ -58,7 +58,7 @@ const ArtistAnalytics = () => {
         .eq("profile_id", userId);
 
       const totalRequests = requests?.length || 0;
-      const pendingRequests = requests?.filter((r) => r.status === "pending").length || 0;
+      const pendingRequests = requests?.filter((r) => r.status === "pending" || r.status === "offered").length || 0;
       const acceptedRequests = requests?.filter((r) => r.status === "accepted").length || 0;
       const rejectedRequests = requests?.filter((r) => r.status === "rejected").length || 0;
 

@@ -34,10 +34,14 @@ import {
   Trash2,
 } from "lucide-react";
 import BookingContactInfo from "@/components/BookingContactInfo";
+import BookingOfferDialog from "@/components/BookingOfferDialog";
+import BookingOfferPanel from "@/components/BookingOfferPanel";
+import { BOOKING_OFFER_COLUMNS } from "@/lib/bookingOffers";
 
 // Private contact columns are excluded on purpose (see get_booking_contact RPC).
 const BOOKING_REQUEST_COLUMNS =
-  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at";
+  "id, profile_id, requester_name, requester_user_id, event_date, event_end_date, event_type, message, status, created_at, updated_at, " +
+  BOOKING_OFFER_COLUMNS;
 
 type FilterKey = "all" | "pending" | "accepted" | "completed" | "rejected";
 
@@ -60,6 +64,8 @@ const BookingRequests = () => {
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [viewerRole, setViewerRole] = useState<"user" | "artist" | null>(null);
+  const [viewerId, setViewerId] = useState<string | null>(null);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
 
   const filter = (searchParams.get("filter") as FilterKey) || "all";
   const tab = (searchParams.get("tab") as "received" | "sent") || "received";
@@ -82,6 +88,7 @@ const BookingRequests = () => {
     const userType = (roleRow?.user_type as string) || "user";
     const isArtist = userType !== "user";
     setViewerRole(isArtist ? "artist" : "user");
+    setViewerId(user.id);
 
     // Requests sent by me (as a requester) — available for users AND artists
     // Contact columns are private: fetched per-booking via get_booking_contact.
@@ -106,8 +113,10 @@ const BookingRequests = () => {
       setReceivedRequests(received);
     }
 
-    // Resolve artist display info for sent requests
-    const artistIds = Array.from(new Set(sent.map((r: any) => r.profile_id).filter(Boolean)));
+    // Resolve artist display info for sent requests (and my own stage name, for confirmations)
+    const artistIds = Array.from(
+      new Set([...sent.map((r: any) => r.profile_id), ...(isArtist ? [user.id] : [])].filter(Boolean))
+    );
     if (artistIds.length > 0) {
       const { data: profiles } = await supabase
         .from("profiles")
@@ -117,6 +126,10 @@ const BookingRequests = () => {
       (profiles || []).forEach((p: any) => (map[p.id] = p));
       setArtistProfiles(map);
     }
+    // Keep the open details dialog in sync with the fresh data
+    setSelected((prev: any) =>
+      prev ? [...sent, ...received].find((r: any) => r.id === prev.id) || prev : prev
+    );
     setLoading(false);
   };
 
@@ -133,7 +146,8 @@ const BookingRequests = () => {
 
   // Categorize each request the same way as the dashboard counters
   const categorize = (r: any): "pending" | "accepted" | "completed" | "rejected" => {
-    if (r.status === "pending") return "pending";
+    // An open offer is still waiting for an answer, so it counts as pending
+    if (r.status === "pending" || r.status === "offered") return "pending";
     if (r.status === "rejected") return "rejected";
     if (r.status === "accepted") {
       const d = parseYMD(r.event_end_date || r.event_date);
@@ -173,18 +187,18 @@ const BookingRequests = () => {
     });
   };
 
-  const updateStatus = async (id: string, status: "accepted" | "rejected") => {
+  const declineRequest = async (id: string) => {
     setIsSaving(true);
     const { error } = await supabase
       .from("booking_requests")
-      .update({ status })
+      .update({ status: "rejected" })
       .eq("id", id);
     setIsSaving(false);
     if (error) {
       toast({ title: "Update failed", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: status === "accepted" ? "Booking accepted" : "Booking declined" });
+    toast({ title: "Booking declined" });
     setOpen(false);
     load();
   };
@@ -211,8 +225,12 @@ const BookingRequests = () => {
       ? "bg-blue-500/20 text-blue-500 border-blue-500/30 rounded-lg"
       : "bg-destructive/20 text-destructive border-destructive/30 rounded-lg";
 
-  const statusLabel = (cat: string) =>
-    cat === "pending"
+  const statusLabel = (cat: string, r?: any) =>
+    r?.status === "offered"
+      ? isUserView
+        ? "Offer received"
+        : "Offer sent"
+      : cat === "pending"
       ? "Pending"
       : cat === "accepted"
       ? "Confirmed"
@@ -341,7 +359,7 @@ const BookingRequests = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <p className="font-semibold text-foreground truncate">{primaryName}</p>
-                        <Badge className={statusBadgeClass(cat)}>{statusLabel(cat)}</Badge>
+                        <Badge className={statusBadgeClass(cat)}>{statusLabel(cat, request)}</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{formatDate(request.event_date)}</span>
@@ -375,7 +393,7 @@ const BookingRequests = () => {
             return (
               <div className="space-y-4 mt-2">
                 <div className="flex items-center justify-between">
-                  <Badge className={statusBadgeClass(cat)}>{statusLabel(cat)}</Badge>
+                  <Badge className={statusBadgeClass(cat)}>{statusLabel(cat, selected)}</Badge>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
@@ -422,6 +440,17 @@ const BookingRequests = () => {
                       {isUserView ? artist?.stage_name || "Artist" : selected.requester_name}
                     </p>
                   </div>
+
+                  <BookingOfferPanel
+                    booking={selected}
+                    viewer={isUserView ? "requester" : "artist"}
+                    artistName={
+                      artistProfiles[selected.profile_id]?.stage_name ||
+                      (isUserView ? "Artist" : artistProfiles[viewerId || ""]?.stage_name || "Artist")
+                    }
+                    onEditOffer={() => setOfferDialogOpen(true)}
+                    onChanged={load}
+                  />
 
                   <BookingContactInfo bookingId={selected.id} status={selected.status} />
 
@@ -497,22 +526,24 @@ const BookingRequests = () => {
                   </div>
                 </div>
 
-                {!isUserView && selected.status === "pending" && (
+                {!isUserView && (selected.status === "pending" || selected.status === "offered") && (
                   <div className="flex gap-2">
-                    <Button
-                      className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                      onClick={() => updateStatus(selected.id, "accepted")}
-                      disabled={isSaving}
-                    >
-                      Accept
-                    </Button>
+                    {selected.status === "pending" && (
+                      <Button
+                        className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+                        onClick={() => setOfferDialogOpen(true)}
+                        disabled={isSaving}
+                      >
+                        Send offer
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       className="flex-1 rounded-lg"
-                      onClick={() => updateStatus(selected.id, "rejected")}
+                      onClick={() => declineRequest(selected.id)}
                       disabled={isSaving}
                     >
-                      Decline
+                      {selected.status === "offered" ? "Withdraw offer" : "Decline"}
                     </Button>
                   </div>
                 )}
@@ -521,6 +552,13 @@ const BookingRequests = () => {
           })()}
         </DialogContent>
       </Dialog>
+
+      <BookingOfferDialog
+        open={offerDialogOpen}
+        onOpenChange={setOfferDialogOpen}
+        booking={selected}
+        onSent={load}
+      />
     </>
   );
 };

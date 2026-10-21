@@ -59,8 +59,7 @@ const BookingContactInfo = ({ bookingId, status, className }: BookingContactInfo
         <div>
           <p className="text-sm font-medium text-foreground">Contact details are hidden</p>
           <p className="text-xs text-muted-foreground">
-            Email and phone become visible to both parties only after the booking request is
-            accepted.
+            Email and phone become visible to both parties only after the booking is confirmed.
           </p>
         </div>
       </div>

@@ -428,7 +428,7 @@ const UserDashboard = () => {
             return new Date(y, m - 1, d);
           };
 
-          const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+          const pendingBookings = bookings.filter(b => b.status === 'pending' || b.status === 'offered').length;
           const acceptedActive = bookings.filter(b => {
             const d = parseYMD(b.event_end_date || b.event_date);
             return b.status === 'accepted' && d && d >= today;

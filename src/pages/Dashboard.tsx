@@ -80,6 +80,8 @@ import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
 import PostComposerDialog from "@/components/post/PostComposerDialog";
 import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
+import BookingOfferDialog from "@/components/BookingOfferDialog";
+import BookingOfferPanel from "@/components/BookingOfferPanel";
 const Dashboard = () => {
   const {
     toast
@@ -370,6 +372,8 @@ const Dashboard = () => {
 
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
   const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
+  const [offerBooking, setOfferBooking] = useState<any | null>(null);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   
 
   // Reviews state
@@ -1561,91 +1565,11 @@ const Dashboard = () => {
   };
 
   // Booking request functions
-  const handleAcceptBooking = async (request: any) => {
-    setIsSaving(true);
-    try {
-      // Update the booking request status to accepted
-      const {
-        error: updateError
-      } = await supabase.from('booking_requests').update({
-        status: 'accepted'
-      }).eq('id', request.id);
-      if (updateError) throw updateError;
-
-      // Calculate all dates between start and end date - parse as local time
-      const [startYear, startMonth, startDay] = request.event_date.split('-').map(Number);
-      const startDate = new Date(startYear, startMonth - 1, startDay);
-      let endDate = startDate;
-      if (request.event_end_date) {
-        const [endYear, endMonth, endDay] = request.event_end_date.split('-').map(Number);
-        endDate = new Date(endYear, endMonth - 1, endDay);
-      }
-      const datesToBook: string[] = [];
-      const currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        // Format as YYYY-MM-DD using local date components
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        datesToBook.push(`${year}-${month}-${day}`);
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
-      // Extract time info from the request message
-      const timeMatch = request.message?.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
-      const timeInfo = timeMatch ? `Time: ${timeMatch[1]} - ${timeMatch[2]}` : '';
-
-      // Extract additional details from the message (remove the time line)
-      let additionalDetails = '';
-      if (request.message) {
-        additionalDetails = request.message.replace(/Time:\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}\s*-\s*(?:[\w\s,]+\s+)?\d{1,2}:\d{2}/i, '').trim();
-      }
-
-      // Build the new booking entry text
-      const newBookingEntry = `${timeInfo ? timeInfo + '\n' : ''}Booked by: ${request.requester_name}\nEvent: ${request.event_type || 'Event'}${request.requester_email ? '\nContact: ' + request.requester_email : ''}${request.requester_phone ? '\nPhone: ' + request.requester_phone : ''}${additionalDetails ? '\nDetails: ' + additionalDetails : ''}`;
-
-      // Add all dates to the calendar, appending to existing entries if present
-      for (const date of datesToBook) {
-        // Check if there's an existing calendar event for this date
-        const {
-          data: existingRows
-        } = await (supabase as any).rpc('get_my_calendar_event_for_date', { _event_date: date });
-        const existingEvent = Array.isArray(existingRows) && existingRows[0] ? existingRows[0] : null;
-        let updatedNotes = newBookingEntry;
-        if (datesToBook.length > 1) {
-          updatedNotes += `\n(Day ${datesToBook.indexOf(date) + 1} of ${datesToBook.length})`;
-        }
-        if (existingEvent && existingEvent.status === 'busy' && existingEvent.notes) {
-          // Append to existing notes with a separator
-          updatedNotes = existingEvent.notes + '\n\n---\n\n' + updatedNotes;
-        }
-        const {
-          error: calendarError
-        } = await supabase.from('calendar_events').upsert({
-          profile_id: user!.id,
-          event_date: date,
-          status: 'busy',
-          notes: updatedNotes
-        }, {
-          onConflict: 'profile_id,event_date'
-        });
-        if (calendarError) throw calendarError;
-      }
-      await loadBookingRequests();
-      await loadCalendarEvents();
-      toast({
-        title: "Success",
-        description: `Booking accepted and ${datesToBook.length > 1 ? datesToBook.length + ' days' : '1 day'} added to calendar!`
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
+  // Accepting a request now means sending a priced offer. The booking is confirmed (and the
+  // calendar marked busy, server-side) when the organizer accepts the offer.
+  const handleAcceptBooking = (request: any) => {
+    setOfferBooking(request);
+    setOfferDialogOpen(true);
   };
   const handleDeclineBooking = async (requestId: string) => {
     setIsSaving(true);
@@ -3255,8 +3179,8 @@ const Dashboard = () => {
                                           <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap mb-1">
                                               <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
-                                              <Badge className={request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : request.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
-                                                {request.status === 'pending' ? 'Pending' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
+                                              <Badge className={request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : request.status === 'offered' ? 'bg-accent/15 text-accent border-accent/30' : request.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
+                                                {request.status === 'pending' ? 'Pending' : request.status === 'offered' ? 'Offer sent' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
                                               </Badge>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -3279,7 +3203,7 @@ const Dashboard = () => {
                                         
                                         {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
                                             <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90">
-                                              Accept
+                                              Send offer
                                             </Button>
                                             <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1 md:flex-none">
                                               Decline
@@ -3301,7 +3225,7 @@ const Dashboard = () => {
                                 const [y, m, d] = String(s).split('-').map(Number);
                                 return new Date(y, m - 1, d);
                               };
-                              const sentPending = sentBookingRequests.filter((b) => b.status === 'pending').length;
+                              const sentPending = sentBookingRequests.filter((b) => b.status === 'pending' || b.status === 'offered').length;
                               const sentConfirmed = sentBookingRequests.filter((b) => {
                                 const d = parseYMD(b.event_end_date || b.event_date);
                                 return b.status === 'accepted' && d && d >= todayD;
@@ -3385,8 +3309,8 @@ const Dashboard = () => {
                               </DialogHeader>
                               {selectedBookingRequest && <div className="space-y-4 mt-2">
                                   <div className="flex items-center justify-between">
-                                    <Badge className={selectedBookingRequest.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : selectedBookingRequest.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
-                                      {selectedBookingRequest.status === 'pending' ? 'Pending' : selectedBookingRequest.status === 'accepted' ? 'Accepted' : 'Declined'}
+                                    <Badge className={selectedBookingRequest.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : selectedBookingRequest.status === 'offered' ? 'bg-accent/15 text-accent border-accent/30' : selectedBookingRequest.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
+                                      {selectedBookingRequest.status === 'pending' ? 'Pending' : selectedBookingRequest.status === 'offered' ? 'Offer sent' : selectedBookingRequest.status === 'accepted' ? 'Accepted' : 'Declined'}
                                     </Badge>
                                     <AlertDialog>
                                       <AlertDialogTrigger asChild>
@@ -3418,6 +3342,13 @@ const Dashboard = () => {
                                       <Label className="text-xs text-muted-foreground uppercase tracking-wide">Requester</Label>
                                       <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
                                     </div>
+
+                                    <BookingOfferPanel
+                                      booking={selectedBookingRequest}
+                                      viewer="artist"
+                                      artistName={profile?.stage_name || 'Artist'}
+                                      onEditOffer={() => handleAcceptBooking(selectedBookingRequest)}
+                                    />
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                       <div>
@@ -3490,24 +3421,34 @@ const Dashboard = () => {
 
 
                                   <div className="flex gap-2">
-                                    {selectedBookingRequest.status === 'pending' && <>
-                                      <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
+                                    {(selectedBookingRequest.status === 'pending' || selectedBookingRequest.status === 'offered') && <>
+                                      {selectedBookingRequest.status === 'pending' && <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
                             handleAcceptBooking(selectedBookingRequest);
                             setShowBookingDetailDialog(false);
                           }} disabled={isSaving}>
-                                          Accept
-                                        </Button>
+                                          Send offer
+                                        </Button>}
                                       <Button variant="outline" className="flex-1" onClick={() => {
                             handleDeclineBooking(selectedBookingRequest.id);
                             setShowBookingDetailDialog(false);
                           }} disabled={isSaving}>
-                                          Decline
+                                          {selectedBookingRequest.status === 'offered' ? 'Withdraw offer' : 'Decline'}
                                         </Button>
                                     </>}
                                   </div>
                                 </div>}
                             </DialogContent>
                           </Dialog>
+
+                          <BookingOfferDialog
+                            open={offerDialogOpen}
+                            onOpenChange={setOfferDialogOpen}
+                            booking={offerBooking}
+                            onSent={() => {
+                              setShowBookingDetailDialog(false);
+                              loadBookingRequests();
+                            }}
+                          />
                         </div>
                       </TabsContent>}
                     </Tabs>
