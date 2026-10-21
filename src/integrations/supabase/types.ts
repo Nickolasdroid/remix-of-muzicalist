@@ -2056,9 +2056,11 @@ export type Database = {
       }
       reviews: {
         Row: {
+          booking_request_id: string | null
           comment: string | null
           created_at: string
           id: string
+          is_verified_booking: boolean
           profile_id: string
           rating: number
           reviewer_email: string
@@ -2066,9 +2068,11 @@ export type Database = {
           reviewer_user_id: string | null
         }
         Insert: {
+          booking_request_id?: string | null
           comment?: string | null
           created_at?: string
           id?: string
+          is_verified_booking?: boolean
           profile_id: string
           rating: number
           reviewer_email: string
@@ -2076,9 +2080,11 @@ export type Database = {
           reviewer_user_id?: string | null
         }
         Update: {
+          booking_request_id?: string | null
           comment?: string | null
           created_at?: string
           id?: string
+          is_verified_booking?: boolean
           profile_id?: string
           rating?: number
           reviewer_email?: string
@@ -2086,6 +2092,13 @@ export type Database = {
           reviewer_user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_booking_request_id_fkey"
+            columns: ["booking_request_id"]
+            isOneToOne: false
+            referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_profile_id_fkey"
             columns: ["profile_id"]
@@ -2515,6 +2528,7 @@ export type Database = {
         Args: { _actor: string; _target: string }
         Returns: boolean
       }
+      can_review_artist: { Args: { _profile_id: string }; Returns: string }
       change_case_priority: {
         Args: {
           _case_id: string
@@ -2720,6 +2734,10 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      find_reviewable_booking: {
+        Args: { _profile_id: string; _user_id: string }
+        Returns: string
       }
       gallery_item_is_active: { Args: { _id: string }; Returns: boolean }
       generate_moderation_case_number: { Args: never; Returns: string }
