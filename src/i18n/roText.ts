@@ -2488,4 +2488,9 @@ export const RO_TEXT: Record<string, string> = {
   "Couldn't delete the story": "Story-ul nu a putut fi șters",
   "Delete story": "Șterge story-ul",
   "The image couldn't be loaded.": "Imaginea nu a putut fi încărcată.",
+  "Verified booking": "Rezervare verificată",
+  "Already reviewed": "Recenzie deja trimisă",
+  "You have already left a review for this artist.": "Ai lăsat deja o recenzie acestui artist.",
+  "Reviews are for confirmed bookings": "Recenziile sunt pentru rezervări confirmate",
+  "You can review this artist after an event booked through Muzicalist has taken place.": "Poți lăsa o recenzie după ce un eveniment rezervat prin Muzicalist a avut loc.",
 };
