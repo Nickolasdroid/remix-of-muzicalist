@@ -249,12 +249,18 @@ export type Database = {
       }
       booking_requests: {
         Row: {
+          confirmed_at: string | null
           created_at: string
+          declined_by: string | null
           event_date: string
           event_end_date: string | null
           event_type: string | null
           id: string
           message: string | null
+          offer_currency: string | null
+          offer_note: string | null
+          offer_price: number | null
+          offer_sent_at: string | null
           profile_id: string
           requester_email: string
           requester_name: string
@@ -264,12 +270,18 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          confirmed_at?: string | null
           created_at?: string
+          declined_by?: string | null
           event_date: string
           event_end_date?: string | null
           event_type?: string | null
           id?: string
           message?: string | null
+          offer_currency?: string | null
+          offer_note?: string | null
+          offer_price?: number | null
+          offer_sent_at?: string | null
           profile_id: string
           requester_email: string
           requester_name: string
@@ -279,12 +291,18 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          confirmed_at?: string | null
           created_at?: string
+          declined_by?: string | null
           event_date?: string
           event_end_date?: string | null
           event_type?: string | null
           id?: string
           message?: string | null
+          offer_currency?: string | null
+          offer_note?: string | null
+          offer_price?: number | null
+          offer_sent_at?: string | null
           profile_id?: string
           requester_email?: string
           requester_name?: string
@@ -3083,6 +3101,10 @@ export type Database = {
         Args: { _ids: string[]; _type: string }
         Returns: undefined
       }
+      respond_to_booking_offer: {
+        Args: { _accept: boolean; _booking_id: string }
+        Returns: string
+      }
       restore_email_template_version: {
         Args: { _version_id: string }
         Returns: {
@@ -3139,6 +3161,15 @@ export type Database = {
         }[]
       }
       self_downgrade_to_free: { Args: never; Returns: undefined }
+      send_booking_offer: {
+        Args: {
+          _booking_id: string
+          _currency: string
+          _note?: string
+          _price: number
+        }
+        Returns: undefined
+      }
       slugify: { Args: { input: string }; Returns: string }
       soft_delete_conversation: {
         Args: { _conversation_id: string }
