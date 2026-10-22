@@ -247,6 +247,62 @@ export type Database = {
           },
         ]
       }
+      booking_contracts: {
+        Row: {
+          artist_accepted_at: string
+          artist_id: string
+          artist_party: Json
+          booking_request_id: string
+          contract_number: string
+          created_at: string
+          id: string
+          organizer_accept_ip: string | null
+          organizer_accepted_at: string
+          organizer_id: string
+          organizer_party: Json
+          template_version: string
+          terms: Json
+        }
+        Insert: {
+          artist_accepted_at: string
+          artist_id: string
+          artist_party: Json
+          booking_request_id: string
+          contract_number: string
+          created_at?: string
+          id?: string
+          organizer_accept_ip?: string | null
+          organizer_accepted_at: string
+          organizer_id: string
+          organizer_party: Json
+          template_version?: string
+          terms: Json
+        }
+        Update: {
+          artist_accepted_at?: string
+          artist_id?: string
+          artist_party?: Json
+          booking_request_id?: string
+          contract_number?: string
+          created_at?: string
+          id?: string
+          organizer_accept_ip?: string | null
+          organizer_accepted_at?: string
+          organizer_id?: string
+          organizer_party?: Json
+          template_version?: string
+          terms?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_contracts_booking_request_id_fkey"
+            columns: ["booking_request_id"]
+            isOneToOne: true
+            referencedRelation: "booking_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_requests: {
         Row: {
           confirmed_at: string | null
@@ -261,6 +317,7 @@ export type Database = {
           offer_note: string | null
           offer_price: number | null
           offer_sent_at: string | null
+          offer_terms_accepted_at: string | null
           profile_id: string
           requester_email: string
           requester_name: string
@@ -282,6 +339,7 @@ export type Database = {
           offer_note?: string | null
           offer_price?: number | null
           offer_sent_at?: string | null
+          offer_terms_accepted_at?: string | null
           profile_id: string
           requester_email: string
           requester_name: string
@@ -303,6 +361,7 @@ export type Database = {
           offer_note?: string | null
           offer_price?: number | null
           offer_sent_at?: string | null
+          offer_terms_accepted_at?: string | null
           profile_id?: string
           requester_email?: string
           requester_name?: string
@@ -510,6 +569,68 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      contract_profiles: {
+        Row: {
+          address: string | null
+          bank: string | null
+          city: string | null
+          country: string | null
+          county: string | null
+          created_at: string
+          cui: string | null
+          entity_type: string
+          iban: string | null
+          legal_name: string
+          reg_com: string | null
+          representative: string | null
+          updated_at: string
+          user_id: string
+          vat_payer: boolean
+        }
+        Insert: {
+          address?: string | null
+          bank?: string | null
+          city?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          cui?: string | null
+          entity_type?: string
+          iban?: string | null
+          legal_name: string
+          reg_com?: string | null
+          representative?: string | null
+          updated_at?: string
+          user_id: string
+          vat_payer?: boolean
+        }
+        Update: {
+          address?: string | null
+          bank?: string | null
+          city?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          cui?: string | null
+          entity_type?: string
+          iban?: string | null
+          legal_name?: string
+          reg_com?: string | null
+          representative?: string | null
+          updated_at?: string
+          user_id?: string
+          vat_payer?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversations: {
         Row: {
@@ -2667,6 +2788,7 @@ export type Database = {
         Args: { _kind: string; _user_id: string }
         Returns: number
       }
+      contract_party_snapshot: { Args: { _user_id: string }; Returns: Json }
       create_artist_joined_post: {
         Args: { _artist_id?: string }
         Returns: string
@@ -3102,7 +3224,12 @@ export type Database = {
         Returns: undefined
       }
       respond_to_booking_offer: {
-        Args: { _accept: boolean; _booking_id: string }
+        Args: {
+          _accept: boolean
+          _accept_terms?: boolean
+          _booking_id: string
+          _event_location?: string
+        }
         Returns: string
       }
       restore_email_template_version: {
@@ -3163,6 +3290,7 @@ export type Database = {
       self_downgrade_to_free: { Args: never; Returns: undefined }
       send_booking_offer: {
         Args: {
+          _accept_terms?: boolean
           _booking_id: string
           _currency: string
           _note?: string

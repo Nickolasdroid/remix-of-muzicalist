@@ -43,6 +43,13 @@
       "when": 1792615649800,
       "tag": "0005_booking_offers_flow",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792690199701,
+      "tag": "0006_booking_contracts",
+      "breakpoints": true
     }
   ]
 }
