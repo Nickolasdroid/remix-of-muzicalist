@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarDays, CalendarRange, Info, Loader2, Moon, X } from "lucide-react";
+import { AlertCircle, CalendarDays, CalendarRange, Clock, Info, Loader2, Moon, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ interface BookingRequestDialogProps {
   setForm: (f: BookingRequestForm) => void;
   onSubmit: (e: React.FormEvent) => void;
   submitting?: boolean;
+  /** Hours already booked on this day (shown, and checked live against the chosen time) */
+  busySlots?: { startTime: string; endTime: string }[];
 }
 
 const toneClass: Record<AvailabilityTone, string> = {
@@ -52,6 +54,33 @@ const QUICK_EVENT_TYPES = ["Wedding", "Baptism", "18th Birthday", "Birthday Part
 const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
+};
+
+/** "23:59" is how "until midnight" is stored; show it as 00:00. */
+const showTime = (t: string) => (t === "23:59" ? "00:00" : t);
+
+/** Do two intervals on the same day overlap? An end at or before the start runs past midnight. */
+export const timeSlotsOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+  const s1 = toMinutes(start1);
+  let e1 = toMinutes(end1);
+  const s2 = toMinutes(start2);
+  let e2 = toMinutes(end2);
+  if (e1 <= s1) e1 += 24 * 60;
+  if (e2 <= s2) e2 += 24 * 60;
+  return s1 < e2 && e1 > s2;
+};
+
+/** The booked slot the requested time clashes with on the selected day, if any. */
+export const findSlotClash = (
+  date: Date,
+  form: Pick<BookingRequestForm, "startTime" | "endTime" | "endDate">,
+  busySlots: { startTime: string; endTime: string }[]
+) => {
+  if (!form.startTime || !form.endTime || busySlots.length === 0) return null;
+  const sameDay = resolveBookingEndDate(date, form).toDateString() === date.toDateString();
+  // Only the part of the request that falls on this day can clash with this day's bookings
+  const end = sameDay ? form.endTime : "23:59";
+  return busySlots.find((s) => timeSlotsOverlap(form.startTime, end, s.startTime, s.endTime)) || null;
 };
 
 /** The day the event ends: the chosen end date, or the next day when it runs past midnight. */
@@ -81,6 +110,7 @@ const BookingRequestDialog = ({
   setForm,
   onSubmit,
   submitting = false,
+  busySlots = [],
 }: BookingRequestDialogProps) => {
   const [multiDayOpen, setMultiDayOpen] = useState(false);
   const [pickedType, setPickedType] = useState<string | null>(null);
@@ -100,6 +130,8 @@ const BookingRequestDialog = ({
   const multiDay = !!form.endDate && form.endDate.toDateString() !== date.toDateString();
   const overnight = !multiDay && end.toDateString() !== date.toDateString();
   const timesIncomplete = allowTimes && (!!form.startTime !== !!form.endTime);
+  const clash = allowTimes ? findSlotClash(date, form, busySlots) : null;
+  const sortedBusy = [...busySlots].sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -135,6 +167,18 @@ const BookingRequestDialog = ({
               </p>
             </div>
 
+            {allowTimes && sortedBusy.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5 shrink-0" />
+                <span>Already booked:</span>
+                {sortedBusy.map((s, i) => (
+                  <span key={i} className="rounded-md bg-destructive/10 px-1.5 py-0.5 text-destructive/90 tabular-nums notranslate" translate="no">
+                    {showTime(s.startTime)} – {showTime(s.endTime)}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {allowTimes && (
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
@@ -156,6 +200,19 @@ const BookingRequestDialog = ({
                   />
                 </div>
               </div>
+            )}
+
+            {clash && (
+              <p className="flex items-start gap-1.5 rounded-lg bg-destructive/10 px-2.5 py-2 text-xs text-destructive">
+                <AlertCircle className="h-3.5 w-3.5 mt-px shrink-0" />
+                <span>
+                  <span>This time overlaps with a booking</span>{" "}
+                  <span className="notranslate tabular-nums" translate="no">
+                    ({showTime(clash.startTime)} – {showTime(clash.endTime)})
+                  </span>
+                  . <span>Choose another time.</span>
+                </span>
+              </p>
             )}
 
             {overnight && (
@@ -260,7 +317,7 @@ const BookingRequestDialog = ({
 
           <Button
             type="submit"
-            disabled={submitting || timesIncomplete || !form.eventType.trim()}
+            disabled={submitting || timesIncomplete || !!clash || !form.eventType.trim()}
             className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
           >
             {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}

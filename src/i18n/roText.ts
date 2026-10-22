@@ -2659,4 +2659,8 @@ export const RO_TEXT: Record<string, string> = {
   "The artist is booked for the whole day.": "Artistul este rezervat toată ziua.",
   "The other hours of this day are free. You can send a request for a different time.": "Celelalte ore din această zi sunt libere. Poți trimite o cerere pentru alt interval.",
   "Request another time": "Solicită alt interval orar",
+  "Already booked:": "Deja rezervat:",
+  "This time overlaps with a booking": "Intervalul se suprapune cu o rezervare",
+  "Choose another time.": "Alege alt interval.",
+  "This time overlaps with a booking. Choose another time.": "Intervalul se suprapune cu o rezervare. Alege alt interval.",
 };

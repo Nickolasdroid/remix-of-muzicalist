@@ -29,7 +29,7 @@ import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarChe
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import DateAvailabilityDialog from "@/components/DateAvailabilityDialog";
-import BookingRequestDialog, { resolveBookingEndDate, type AvailabilityTone } from "@/components/BookingRequestDialog";
+import BookingRequestDialog, { findSlotClash, resolveBookingEndDate, type AvailabilityTone } from "@/components/BookingRequestDialog";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
 
@@ -694,22 +694,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       setBookingDialogOpen(true);
     }
   };
-  // Check if two time slots overlap
-  const doTimeSlotsOverlap = (start1: string, end1: string, start2: string, end2: string) => {
-    const toMinutes = (time: string) => {
-      const [h, m] = time.split(':').map(Number);
-      return h * 60 + m;
-    };
-    const s1 = toMinutes(start1);
-    let e1 = toMinutes(end1);
-    const s2 = toMinutes(start2);
-    let e2 = toMinutes(end2);
-    // A slot that ends at or before its start runs past midnight
-    if (e1 <= s1) e1 += 24 * 60;
-    if (e2 <= s2) e2 += 24 * 60;
-    // Overlap if one starts before the other ends and ends after the other starts
-    return s1 < e2 && e1 > s2;
-  };
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !id) return;
@@ -740,18 +724,14 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         });
         return;
       }
-      if (bookingForm.startTime && bookingForm.endTime) {
-        // The request may continue after midnight: only the part on this day can clash here
-        const requestEnd = isSameDay ? bookingForm.endTime : "23:59";
-        const clash = busySlots.find((slot) => doTimeSlotsOverlap(bookingForm.startTime, requestEnd, slot.startTime, slot.endTime));
-        if (clash) {
-          toast({
-            title: "Time Slot Conflict",
-            description: `This time slot overlaps with an existing booking (${clash.startTime} - ${clash.endTime === "23:59" ? "00:00" : clash.endTime}). Please select a different time.`,
-            variant: "destructive"
-          });
-          return;
-        }
+      const clash = findSlotClash(selectedDate, bookingForm, busySlots);
+      if (clash) {
+        toast({
+          title: "Time Slot Conflict",
+          description: "This time overlaps with a booking. Choose another time.",
+          variant: "destructive"
+        });
+        return;
       }
     }
     setSubmittingBooking(true);
@@ -2299,6 +2279,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 setForm={setBookingForm}
                 onSubmit={handleBookingSubmit}
                 submitting={submittingBooking}
+                busySlots={
+                  selectedDate && isBusyDate(selectedDate)
+                    ? getEventsForDate(selectedDate).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes))
+                    : []
+                }
               />
           </div>
         </div>
