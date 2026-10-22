@@ -1,0 +1,3672 @@
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import ReviewsEntryRow from "@/components/ReviewsEntryRow";
+import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
+import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
+import ExpandableText from "@/components/ExpandableText";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import SocialStats from "@/components/SocialStats";
+import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
+
+import CountryFlagIcon from "@/components/CountryFlagIcon";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { genreLabel } from "@/lib/genreLabel";
+import { MUSIC_GENRES } from "@/lib/musicGenres";
+import { supabase } from "@/integrations/supabase/client";
+import { translateSpecialization } from "@/lib/specializationLabel";
+import FeedPostCard from "@/components/FeedPostCard";
+import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
+import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
+import PromotePostDialog from "@/components/PromotePostDialog";
+import PostActionsMenu from "@/components/PostActionsMenu";
+import { sharePost } from "@/lib/sharePost";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { COVER_THEMES, getCoverGradient } from "@/lib/coverThemes";
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
+import CommentsDialog from "@/components/CommentsDialog";
+import VerifiedBadge from "@/components/VerifiedBadge";
+
+import { Switch } from "@/components/ui/switch";
+import { isAdExpired, getDaysRemaining, getAdExpirationDate } from "@/lib/adExpiration";
+import { getCurrencyForCountry } from "@/lib/countryCurrencies";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import InstrumentSelector from "@/components/InstrumentSelector";
+import { getInstrumentIcon } from "@/lib/instrumentIcons";
+import EditableField from "@/components/EditableField";
+import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
+import BookedEventsList, { parseBookedEvents, type BookedEvent } from "@/components/BookedEventsList";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import GenrePickerDialog from "@/components/GenrePickerDialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+// react-easy-crop e o librărie grea folosită DOAR când userul deschide
+// crop-ul de imagine (showCropper). O încărcăm lazy ca să iasă complet din
+// chunk-ul inițial al Dashboard-ului — se descarcă abia la prima deschidere
+// a cropper-ului. `Area` e doar un tip, deci import type (zero cost runtime).
+import type { Area } from "react-easy-crop";
+const Cropper = lazy(() => import("react-easy-crop"));
+import { parseYMDToLocalDate } from "@/lib/utils";
+import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
+import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
+import OverLimitBanner from "@/components/OverLimitBanner";
+import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
+import { SectionShell, SectionHeader, SectionHeaderWithUsage, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
+import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
+import { Progress } from "@/components/ui/progress";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import { useIsMobile } from "@/hooks/use-mobile";
+import InstagramZoomPreview from "@/components/InstagramZoomPreview";
+import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
+import { getEmbedInfo, isSupportedEmbed, providerLabel } from "@/lib/mediaEmbed";
+import PricingEntriesEditor from "@/components/PricingEntriesEditor";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
+import PostComposerDialog from "@/components/post/PostComposerDialog";
+import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
+import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
+import BookingOfferDialog from "@/components/BookingOfferDialog";
+import BookingDetailsDialog from "@/components/BookingDetailsDialog";
+const Dashboard = () => {
+  const {
+    toast
+  } = useToast();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const { isAdmin } = useUserRole();
+  // Authoritative server-side entitlements (effective plan, limits, current
+  // billing-period usage). The local counters below are only a fallback while
+  // this request is in flight.
+  const { entitlements, refresh: refreshEntitlements } = useEntitlements();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
+  const [postsViewMode, setPostsViewMode] = usePostsViewMode();
+  const [profile, setProfile] = useState<any>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [isAddingPrice, setIsAddingPrice] = useState(false);
+  const [pricingCount, setPricingCount] = useState(0);
+  const [pricingDialogOpen, setPricingDialogOpen] = useState(false);
+  const [pricingRefreshKey, setPricingRefreshKey] = useState(0);
+  const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
+  const [responseRate, setResponseRate] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+  const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
+
+  // Force admins to allowed sections only
+  useEffect(() => {
+    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
+      setProfileSection("posts");
+    }
+  }, [isAdmin, profileSection]);
+  const [settingsSection, setSettingsSection] = useState<SettingSection>("main");
+
+  const settingsSectionTitles: Record<SettingSection, string> = {
+    main: t('navigation.settings'),
+    account: "Account",
+    system: "System",
+    email: "Email Address",
+    password: "Password & Security",
+    language: "Language",
+    theme: "Theme",
+    promotion: "Promotion",
+    comments: "Comments",
+    notifications: "Notifications",
+    report: "Report a Problem",
+    logout: "Sign Out",
+    delete: "Delete Account",
+    help: "Help Center",
+    about: "About Muzicalist",
+    billing: "Billing & Subscription",
+    edit_profile: "Edit Profile",
+    profile_visibility: "Profile Visibility",
+    blocked_users: "Blocked Users",
+    mentions_tags: "Mentions & Tags",
+    display_settings: "Display Settings",
+    privacy_policy: "Privacy Policy",
+    terms_of_service: "Terms of Service",
+    verification: "Identity Verification",
+    rules: "Rules",
+    contract_details: "Contract Details",
+  };
+
+  const getMobileTitle = () => {
+    if (activeTab === "settings") {
+      return settingsSectionTitles[settingsSection] || t('navigation.settings');
+    }
+    return undefined;
+  };
+
+  const getMobileBackPath = (): string | number | undefined => {
+    if (activeTab === "settings") {
+      if (settingsSection !== "main") {
+        return undefined; // will be handled by onBack
+      }
+      return -1;
+    }
+    return undefined;
+  };
+
+  // Update active tab when URL params change
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+    const section = searchParams.get('section');
+    if (section) {
+      setProfileSection(section);
+    }
+    if (searchParams.get('new') === '1') {
+      if (section === 'posts') setShowPostDialog(true);
+      if (section === 'announcements') setShowAnnouncementDialog(true);
+    }
+    const commentsId = searchParams.get('commentsId');
+    const commentsType = searchParams.get('commentsType');
+    if (commentsId && (commentsType === 'post' || commentsType === 'announcement')) {
+      setCommentsTarget({ id: commentsId, type: commentsType });
+    }
+  }, [searchParams]);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0
+  });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [coverImageSrc, setCoverImageSrc] = useState<string | null>(null);
+  const [coverCrop, setCoverCrop] = useState({ x: 0, y: 0 });
+  const [coverZoom, setCoverZoom] = useState(1);
+  const [coverCroppedAreaPixels, setCoverCroppedAreaPixels] = useState<Area | null>(null);
+  const [showCoverCropper, setShowCoverCropper] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    stageName: "",
+    email: "",
+    phone: "",
+    county: "",
+    country: "",
+    specialization: "",
+    musicGenres: "",
+    
+    numberOfEvents: "",
+    careerStartYear: "",
+    bio: "",
+    estimatedPrice: "",
+    facebookUrl: "",
+    instagramUrl: "",
+    youtubeUrl: "",
+    tiktokUrl: "",
+    spotifyUrl: "",
+    instruments: "",
+    bandMembers: ""
+  });
+
+  // Announcements state
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    description: "",
+    isPremium: false,
+    mediaUrl: "",
+    mediaType: "",
+    location: "",
+    eventDate: "",
+    budget: ""
+  });
+  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  const [showPostDialog, setShowPostDialog] = useState(false);
+  const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
+  const announcementTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textarea = announcementTextareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+  }, [newAnnouncement.description]);
+
+  // Announcement limits (plan-based). Server entitlements win when loaded.
+  const currentPlan = profile?.plan;
+  const STANDARD_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcements', getAdLimit(currentPlan));
+  const PREMIUM_AD_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'announcement_promotions', getPromotionLimit(currentPlan));
+
+  // Per-billing-period usage counters. Counters reset automatically at the
+  // start of each new subscription cycle (monthly or yearly).
+  const [consumedSlots, setConsumedSlots] = useState<{ is_premium: boolean; consumed_at: string; kind?: string }[]>([]);
+  const periodStart = getPeriodStart(profile);
+  const periodEnd = getPeriodEnd(profile);
+  const activeConsumedSlots = consumedSlots.filter(
+    (s) => new Date(s.consumed_at).getTime() >= periodStart.getTime(),
+  );
+  /** Server usage (authoritative) with the legacy slot counter as fallback. */
+  const usageOf = (key: string, fallback: number): number => {
+    const value = entitlements?.usage?.[key];
+    return typeof value === 'number' ? value : fallback;
+  };
+  const standardAdsUsed = usageOf(
+    'announcements',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && !s.is_premium).length,
+  );
+  const premiumAdsUsed = usageOf(
+    'announcement_promotions',
+    activeConsumedSlots.filter((s) => (s.kind ?? 'ad') === 'ad' && s.is_premium).length,
+  );
+  const postsUsed = usageOf('posts', activeConsumedSlots.filter((s) => s.kind === 'post').length);
+  // Post promotions consume the existing monthly promotion entitlement.
+  const promotionsUsed = usageOf(
+    'post_promotions',
+    activeConsumedSlots.filter((s) => s.kind === 'promotion').length,
+  );
+  const standardAdsRemaining = Math.max(STANDARD_AD_LIMIT - standardAdsUsed, 0);
+  const premiumAdsRemaining = Math.max(PREMIUM_AD_LIMIT - premiumAdsUsed, 0);
+  const PROMOTION_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'post_promotions', getPromotionLimit(currentPlan));
+  const promotionsRemaining = Math.max(PROMOTION_LIMIT - promotionsUsed, 0);
+
+
+  // Posts state
+  const [posts, setPosts] = useState<any[]>([]);
+  const [monthlyPostsCount, setMonthlyPostsCount] = useState(0);
+  const [deletePostId, setDeletePostId] = useState<string | null>(null);
+  const [announcementUploadProgress, setAnnouncementUploadProgress] = useState<number | null>(null);
+  const [promoteTarget, setPromoteTarget] = useState<{ id: string; promotedUntil: string | null } | null>(null);
+  const [editItem, setEditItem] = useState<{ id: string; kind: 'post' | 'promotion'; text: string } | null>(null);
+  const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
+  
+  
+  const [mediaPreview, setMediaPreview] = useState<{ url: string; type: "image" | "video" } | null>(null);
+
+  // Post limits (plan-based) — counted per billing period, resets each cycle.
+  const STANDARD_POST_LIMIT = isAdmin
+    ? Number.POSITIVE_INFINITY
+    : serverLimit(entitlements, 'posts', getPostLimit(currentPlan));
+  /**
+   * Creation entitlement (current plan) is intentionally kept SEPARATE from
+   * visibility of content the owner already created. A downgrade blocks new
+   * creation but never hides historical Posts / Announcements.
+   */
+  const canCreatePosts = isAdmin || canPost(currentPlan);
+  const canCreateAnnouncements = isAdmin || canPost(currentPlan);
+
+  // Gallery state
+  const [galleryItems, setGalleryItems] = useState<any[]>([]);
+  const [showGalleryDialog, setShowGalleryDialog] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [deleteGalleryItem, setDeleteGalleryItem] = useState<{
+    id: string;
+    url: string;
+    type: string;
+  } | null>(null);
+
+  // Gallery limits (plan-based; server entitlements win when loaded)
+  const STANDARD_IMAGE_LIMIT = serverLimit(entitlements, 'gallery_images', getImageLimit(currentPlan));
+  const STANDARD_VIDEO_LIMIT = serverLimit(entitlements, 'gallery_videos', getVideoLimit(currentPlan));
+
+  // Calculate used gallery items
+  const imagesUsed = galleryItems.filter((item) => item.type === 'image').length;
+  const videosUsed = galleryItems.filter((item) => item.type === 'video').length;
+  const imagesRemaining = STANDARD_IMAGE_LIMIT - imagesUsed;
+  const videosRemaining = STANDARD_VIDEO_LIMIT - videosUsed;
+
+  // Visibility map: items uploaded after plan limits are kept stored but hidden
+  // from public profile view. Owner still sees them with a lock overlay.
+  // Mirrors public.gallery_item_is_active(): items beyond the limit, by position, are inactive.
+  const galleryHiddenIds = new Set<string>([
+    ...galleryItems.filter((i) => i.type === 'image').slice(STANDARD_IMAGE_LIMIT).map((i) => i.id),
+    ...galleryItems.filter((i) => i.type === 'video').slice(STANDARD_VIDEO_LIMIT).map((i) => i.id),
+  ]);
+  const moveGalleryItem = async (id: string, type: string, dir: -1 | 1) => {
+    const list = galleryItems.filter((i) => i.type === type);
+    const idx = list.findIndex((i) => i.id === id);
+    const to = idx + dir;
+    if (idx < 0 || to < 0 || to >= list.length) return;
+    const next = list.slice();
+    [next[idx], next[to]] = [next[to], next[idx]];
+    const others = galleryItems.filter((i) => i.type !== type);
+    setGalleryItems(type === 'image' ? [...next, ...others] : [...others, ...next]);
+    const { error } = await (supabase as any).rpc('reorder_gallery_items', { _type: type, _ids: next.map((i) => i.id) });
+    if (error) {
+      toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
+    }
+    await loadGalleryItems();
+  };
+  const imagesOverLimit = imagesUsed > STANDARD_IMAGE_LIMIT;
+  const videosOverLimit = videosUsed > STANDARD_VIDEO_LIMIT;
+  const galleryOverLimit = imagesOverLimit || videosOverLimit;
+
+  // Calendar state
+  const isMobile = useIsMobile();
+  const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [eventStatus, setEventStatus] = useState<'blocked' | 'available'>('available');
+  const [userChangedStatus, setUserChangedStatus] = useState(false);
+  const [eventNotes, setEventNotes] = useState("");
+
+  // Booking requests state
+  const [bookingRequests, setBookingRequests] = useState<any[]>([]);
+  const [sentBookingRequests, setSentBookingRequests] = useState<any[]>([]);
+
+  const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
+  const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
+  const [offerBooking, setOfferBooking] = useState<any | null>(null);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
+  
+
+  // Reviews state
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+
+  // Following state
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followingArtists, setFollowingArtists] = useState<any[]>([]);
+  const [showFollowingDialog, setShowFollowingDialog] = useState(false);
+  const [unfollowTargetId, setUnfollowTargetId] = useState<string | null>(null);
+
+  // Followers state
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followersList, setFollowersList] = useState<any[]>([]);
+  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
+  const [removeFollowerTargetId, setRemoveFollowerTargetId] = useState<string | null>(null);
+
+  const romanianCounties = ["Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"];
+
+  // Data loading functions (defined early to avoid hoisting issues)
+  const loadAnnouncements = async () => {
+    if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
+    // Pull usage rows since the start of the current billing period.
+    const cutoffIso = getPeriodStartIso(profile);
+    const [{ data }, slotsRes] = await Promise.all([
+      supabase.from('announcements').select('*').eq('profile_id', user.id).order('created_at', { ascending: false }),
+      (supabase as any)
+        .from('consumed_ad_slots')
+        .select('is_premium, consumed_at, kind')
+        .eq('profile_id', user.id)
+        .gte('consumed_at', cutoffIso),
+    ]);
+    if (slotsRes?.data) setConsumedSlots(slotsRes.data);
+    if (data) {
+      const announcementIds = data.map((announcement: any) => announcement.id);
+      const [likesRes, myLikesRes, commentsRes] = await Promise.all([
+        announcementIds.length ? (supabase as any).from('announcement_likes').select('announcement_id').in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+        announcementIds.length ? (supabase as any).from('announcement_likes').select('announcement_id').eq('user_id', user.id).in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+        announcementIds.length ? (supabase as any).from('comments').select('announcement_id').in('announcement_id', announcementIds) : Promise.resolve({ data: [] }),
+      ]);
+      const likeCounts = new Map<string, number>();
+      (likesRes.data || []).forEach((r: any) => likeCounts.set(r.announcement_id, (likeCounts.get(r.announcement_id) || 0) + 1));
+      const myLikes = new Set<string>((myLikesRes.data || []).map((r: any) => r.announcement_id));
+      const commentCounts = new Map<string, number>();
+      (commentsRes.data || []).forEach((r: any) => commentCounts.set(r.announcement_id, (commentCounts.get(r.announcement_id) || 0) + 1));
+      setAnnouncements(data.map((announcement: any) => ({
+        ...announcement,
+        likes: likeCounts.get(announcement.id) || 0,
+        isLiked: myLikes.has(announcement.id),
+        commentsCount: commentCounts.get(announcement.id) || 0,
+      })));
+    }
+  };
+  const loadGalleryItems = async () => {
+    if (!user) return;
+    const {
+      data
+    } = await supabase.from('gallery_items').select('*').eq('profile_id', user.id).order('position', {
+      ascending: true
+    }).order('created_at', { ascending: true });
+    if (data) setGalleryItems(data);
+  };
+  const loadCalendarEvents = async () => {
+    if (!user) return;
+    const {
+      data
+    } = await (supabase as any).rpc('get_my_calendar_events');
+    if (data) setCalendarEvents(data);
+  };
+  const loadBookingRequests = async () => {
+    if (!user) return;
+    const {
+      data
+    } = await supabase.from('booking_requests').select('*').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
+    if (data) setBookingRequests(data);
+    const { data: sent } = await supabase
+      .from('booking_requests')
+      .select('*')
+      .eq('requester_user_id', user.id)
+      .neq('profile_id', user.id)
+      .order('created_at', { ascending: false });
+    setSentBookingRequests(sent || []);
+  };
+
+  const loadPosts = async () => {
+    if (!user) return;
+    // Keep the authoritative server usage counters in sync.
+    refreshEntitlements();
+    const {
+      data
+    } = await supabase.from('posts').select('*').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
+    if (data) {
+      const postIds = data.map((post: any) => post.id);
+      const [likesRes, myLikesRes, commentsRes] = await Promise.all([
+        postIds.length ? supabase.from('post_likes').select('post_id').in('post_id', postIds) : Promise.resolve({ data: [] }),
+        postIds.length ? supabase.from('post_likes').select('post_id').eq('user_id', user.id).in('post_id', postIds) : Promise.resolve({ data: [] }),
+        postIds.length ? (supabase as any).from('comments').select('post_id').in('post_id', postIds) : Promise.resolve({ data: [] }),
+      ]);
+      const likeCounts = new Map<string, number>();
+      (likesRes.data || []).forEach((r: any) => likeCounts.set(r.post_id, (likeCounts.get(r.post_id) || 0) + 1));
+      const myLikes = new Set<string>((myLikesRes.data || []).map((r: any) => r.post_id));
+      const commentCounts = new Map<string, number>();
+      (commentsRes.data || []).forEach((r: any) => commentCounts.set(r.post_id, (commentCounts.get(r.post_id) || 0) + 1));
+      setPosts(data.map((post: any) => ({
+        ...post,
+        likes: likeCounts.get(post.id) || 0,
+        isLiked: myLikes.has(post.id),
+        commentsCount: commentCounts.get(post.id) || 0,
+      })));
+
+      // Calculate posts created this month
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const postsThisMonth = data.filter((post) => new Date(post.created_at) >= startOfMonth);
+      setMonthlyPostsCount(postsThisMonth.length);
+    }
+  };
+  const handlePostLike = async (postId: string) => {
+    if (!user) return;
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    setPosts((items) => items.map((p) => p.id === postId ? {
+      ...p,
+      isLiked: !p.isLiked,
+      likes: p.isLiked ? Math.max(0, (p.likes || 0) - 1) : (p.likes || 0) + 1
+    } : p));
+    try {
+      if (post.isLiked) {
+        await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.id);
+      } else {
+        await supabase.from('post_likes').insert({ post_id: postId, user_id: user.id });
+      }
+    } catch (error) {
+      setPosts((items) => items.map((p) => p.id === postId ? post : p));
+      console.error('Error toggling post like:', error);
+    }
+  };
+  const handleAnnouncementLike = async (announcementId: string) => {
+    if (!user) return;
+    const announcement = announcements.find((a) => a.id === announcementId);
+    if (!announcement) return;
+    setAnnouncements((items) => items.map((a) => a.id === announcementId ? {
+      ...a,
+      isLiked: !a.isLiked,
+      likes: a.isLiked ? Math.max(0, (a.likes || 0) - 1) : (a.likes || 0) + 1
+    } : a));
+    try {
+      if (announcement.isLiked) {
+        await (supabase as any).from('announcement_likes').delete().eq('announcement_id', announcementId).eq('user_id', user.id);
+      } else {
+        await (supabase as any).from('announcement_likes').insert({ announcement_id: announcementId, user_id: user.id });
+      }
+    } catch (error) {
+      setAnnouncements((items) => items.map((a) => a.id === announcementId ? announcement : a));
+      console.error('Error toggling announcement like:', error);
+    }
+  };
+  const loadReviews = async () => {
+    if (!user) return;
+    const {
+      data
+    } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', user.id).order('created_at', {
+      ascending: false
+    });
+    if (!data) return;
+    // Enrich with reviewer avatars — same presentation as the public profile.
+    const reviewerIds = Array.from(new Set(data.map((r: any) => r.reviewer_user_id).filter(Boolean)));
+    let avatarMap: Record<string, string | null> = {};
+    if (reviewerIds.length > 0) {
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', reviewerIds as string[]);
+      avatarMap = Object.fromEntries((profs || []).map((p: any) => [p.id, p.avatar_url]));
+    }
+    setReviews(data.map((r: any) => ({ ...r, reviewer_avatar_url: r.reviewer_user_id ? avatarMap[r.reviewer_user_id] ?? null : null })));
+  };
+  const loadFollowing = async () => {
+    if (!user) return;
+    const { data } = await supabase.
+    from('followers').
+    select('artist_id, profiles!followers_artist_id_fkey(id, stage_name, avatar_url, specialization, county)').
+    eq('follower_id', user.id);
+    // Count only rows whose target profile still exists — same rule as the public profile.
+    const artists = (data || []).map((f: any) => f.profiles).filter(Boolean);
+    setFollowingArtists(artists);
+    setFollowingCount(artists.length);
+  };
+
+  const loadFollowers = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('followers')
+      .select('follower_id')
+      .eq('artist_id', user.id);
+    if (data && data.length > 0) {
+      const followerIds = data.map((f: any) => f.follower_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, stage_name, avatar_url, specialization, county')
+        .in('id', followerIds);
+      setFollowersList(profiles || []);
+      setFollowersCount(profiles?.length || 0);
+    } else {
+      setFollowersList([]);
+      setFollowersCount(0);
+    }
+  };
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('reviews').delete().eq('id', reviewId);
+      if (error) throw error;
+      setReviews(reviews.filter((r) => r.id !== reviewId));
+      toast({
+        title: "Review Deleted",
+        description: "The review has been successfully deleted."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete review. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setDeleteReviewId(null);
+    }
+  };
+  const getAverageRating = () => {
+    if (reviews.length === 0) return null;
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews.length).toFixed(1);
+  };
+  useEffect(() => {
+    checkAuth();
+  }, []);
+  useEffect(() => {
+    if (user) {
+      loadAnnouncements();
+      loadGalleryItems();
+      loadCalendarEvents();
+      loadBookingRequests();
+      loadPosts();
+      loadReviews();
+      loadFollowing();
+      loadFollowers();
+    }
+  }, [user]);
+  const checkAuth = async () => {
+    try {
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      // Role guard: regular users must never see the artist dashboard.
+      const { data: roleRow } = await supabase
+        .from('user_roles')
+        .select('user_type')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      if ((roleRow?.user_type as string) === 'user') {
+        navigate('/user-dashboard', { replace: true });
+        return;
+      }
+      setUser(session.user);
+      const {
+        data: profileRows,
+        error
+      } = await (supabase as any).rpc('get_my_full_profile');
+      const profileData = Array.isArray(profileRows) ? profileRows[0] : profileRows;
+      if (error) throw error;
+      setProfile(profileData);
+      setFormData({
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        stageName: profileData.stage_name || "",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        county: profileData.county || "",
+        country: profileData.country || "",
+        specialization: profileData.specialization || "",
+        musicGenres: profileData.music_genres || "",
+        
+        numberOfEvents: profileData.number_of_events?.toString() || "",
+        careerStartYear: profileData.career_start_year?.toString() || "",
+        bio: profileData.bio || "",
+        estimatedPrice: profileData.estimated_price || "",
+        facebookUrl: profileData.facebook_url || "",
+        instagramUrl: profileData.instagram_url || "",
+        youtubeUrl: profileData.youtube_url || "",
+        tiktokUrl: profileData.tiktok_url || "",
+        spotifyUrl: profileData.spotify_url || "",
+        instruments: profileData.instruments || "",
+        bandMembers: (profileData as any).band_members?.toString() || ""
+      });
+
+      // Count accepted booking requests for this artist
+      const { count: acceptedCount } = await supabase
+        .from('booking_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('profile_id', profileData.id)
+        .eq('status', 'accepted');
+      setAcceptedEventsCount(acceptedCount || 0);
+
+      // Response rate
+      const { data: allReqs } = await supabase
+        .from('booking_requests')
+        .select('status')
+        .eq('profile_id', profileData.id);
+      if (!allReqs || allReqs.length === 0) {
+        setResponseRate(null);
+      } else {
+        const responded = allReqs.filter((r: any) => r.status && r.status !== 'pending').length;
+        setResponseRate(Math.round((responded / allReqs.length) * 100));
+      }
+    } catch (error: any) {
+      console.error('Auth check error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleLogout = async () => {
+    try {
+      // Clear local state first
+      setUser(null);
+      setProfile(null);
+      // Sign out from Supabase (ignore errors if session already invalid)
+      await supabase.auth.signOut({
+        scope: 'local'
+      });
+    } catch (error) {
+      // Ignore errors - session might already be invalid
+      console.log('Logout completed');
+    }
+    navigate('/');
+  };
+  const formatPostDate = formatSmartDate;
+  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Allow picking the same file again
+    e.target.value = "";
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<Blob> => {
+    const image = new Image();
+    image.src = imageSrc;
+    await new Promise((resolve) => {
+      image.onload = resolve;
+    });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas context');
+    }
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+      }, 'image/jpeg', 0.95);
+    });
+  };
+  const handleSaveAvatar = async () => {
+    if (!imageSrc || !croppedAreaPixels || !user) return;
+    setIsSaving(true);
+    try {
+      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const fileName = `${user.id}/avatar.jpg`;
+      const {
+        error: uploadError
+      } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
+        contentType: "image/jpeg",
+        cacheControl: "0",
+        upsert: true
+      });
+      if (uploadError) throw uploadError;
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from("avatars").getPublicUrl(fileName);
+
+      // Bust browser cache so the new image appears instantly
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
+      const {
+        error: updateError
+      } = await supabase.from("profiles").update({
+        avatar_url: freshUrl
+      }).eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({
+        ...(prev ?? {}),
+        avatar_url: freshUrl
+      }));
+      setShowCropper(false);
+      setImageSrc(null);
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile picture.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Cover image must be under 8MB.", variant: "destructive" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCoverImageSrc(reader.result as string);
+      setCoverCrop({ x: 0, y: 0 });
+      setCoverZoom(1);
+      setShowCoverCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+  const handleSaveCover = async () => {
+    if (!coverImageSrc || !coverCroppedAreaPixels || !user) return;
+    setIsUploadingCover(true);
+    try {
+      const croppedBlob = await getCroppedImg(coverImageSrc, coverCroppedAreaPixels);
+      const fileName = `${user.id}/cover.jpg`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
+        contentType: "image/jpeg",
+        cacheControl: "0",
+        upsert: true,
+      });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      const freshUrl = `${publicUrl}?v=${Date.now()}`;
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: freshUrl } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: freshUrl }));
+      setShowCoverCropper(false);
+      setCoverImageSrc(null);
+      toast({ title: "Success", description: "Cover image updated." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to upload cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+  const handleRemoveCover = async () => {
+    if (!user) return;
+    setIsUploadingCover(true);
+    try {
+      await supabase.storage.from("avatars").remove([`${user.id}/cover.jpg`, `${user.id}/cover.png`]);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ cover_url: null } as any)
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_url: null }));
+      toast({ title: "Success", description: "Cover image removed." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to remove cover.", variant: "destructive" });
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+  const handleSelectCoverTheme = async (themeId: string) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ cover_theme: themeId } as any)
+        .eq("id", user.id);
+      if (error) throw error;
+      setProfile((prev: any) => ({ ...(prev ?? {}), cover_theme: themeId }));
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to update theme.", variant: "destructive" });
+    }
+  };
+  const startEditing = (field: string) => {
+
+    setEditingField(field);
+  };
+  const cancelEditing = () => {
+    setEditingField(null);
+    checkAuth();
+  };
+  const saveField = async (field: string) => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const updateData: any = {};
+      switch (field) {
+        case 'names':
+          updateData.stage_name = formData.stageName;
+          break;
+        case 'contact':
+          updateData.phone = formData.phone;
+          break;
+        case 'location':
+          updateData.county = formData.county;
+          break;
+        case 'genres':
+          updateData.music_genres = formData.musicGenres;
+          break;
+        case 'experience':
+          updateData.number_of_events = parseInt(formData.numberOfEvents);
+          break;
+        case 'bio':
+          updateData.bio = formData.bio;
+          break;
+        case 'price':
+          updateData.estimated_price = formData.estimatedPrice;
+          break;
+        case 'social':
+          updateData.facebook_url = formData.facebookUrl;
+          updateData.instagram_url = formData.instagramUrl;
+          updateData.youtube_url = formData.youtubeUrl;
+          updateData.tiktok_url = formData.tiktokUrl;
+          updateData.spotify_url = formData.spotifyUrl;
+          break;
+        case 'instruments':
+          updateData.instruments = formData.instruments;
+          break;
+        case 'bandMembers': {
+          const n = parseInt(formData.bandMembers);
+          updateData.band_members = formData.bandMembers.trim() === "" || isNaN(n) ? null : Math.max(2, n);
+          break;
+        }
+      }
+      const {
+        error
+      } = await supabase.from('profiles').update(updateData).eq('id', user.id);
+      if (error) throw error;
+      await checkAuth();
+      setEditingField(null);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Announcements functions
+  const handleAnnouncementMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.type.startsWith('video/') && file.size > 500 * 1024 * 1024) {
+      toast({ title: "Error", description: "Video file size must not exceed 500 MB.", variant: "destructive" });
+      e.target.value = "";
+      return;
+    }
+    setIsSaving(true);
+    setAnnouncementUploadProgress(0);
+    try {
+      const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
+      const publicUrl = await uploadFileWithProgress('avatars', fileName, file, (p) => setAnnouncementUploadProgress(p));
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      setNewAnnouncement({
+        ...newAnnouncement,
+        mediaUrl: publicUrl,
+        mediaType
+      });
+      toast({
+        title: "Success",
+        description: "Media uploaded!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setAnnouncementUploadProgress(null);
+      e.target.value = "";
+    }
+  };
+  const handleAddAnnouncement = async () => {
+    if (!user || !newAnnouncement.description) return;
+    if (standardAdsUsed >= STANDARD_AD_LIMIT) {
+      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const todayDate = new Date().toISOString().split('T')[0];
+      const { data: inserted, error } = await supabase.from('announcements').insert({
+        profile_id: user.id,
+        title: "Announcement",
+        date: todayDate,
+        description: newAnnouncement.description,
+        is_premium: false,
+        media_url: newAnnouncement.mediaUrl || null,
+        media_type: newAnnouncement.mediaType || null,
+        location: newAnnouncement.location || null,
+        event_date: newAnnouncement.eventDate || null,
+        budget: newAnnouncement.budget || null
+      }).select('id').single();
+      if (error) throw error;
+      // Record usage for this billing period.
+      await (supabase as any).from('consumed_ad_slots').insert({
+        profile_id: user.id,
+        is_premium: false,
+        announcement_id: inserted?.id ?? null,
+      });
+      await loadAnnouncements();
+      setNewAnnouncement({
+        description: "",
+        isPremium: false,
+        mediaUrl: "",
+        mediaType: "",
+        location: "",
+        eventDate: "",
+        budget: ""
+      });
+      setShowAnnouncementDialog(false);
+      toast({
+        title: "Success",
+        description: "Announcement added!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteAnnouncement = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('announcements').delete().eq('id', id);
+      if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
+      await loadAnnouncements();
+      toast({
+        title: "Success",
+        description: "Announcement deleted!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setDeleteAnnouncementId(null);
+    }
+  };
+
+  // Promotion functions (in Posts section)
+
+
+  // Posts functions
+  /** Applies one monthly promotion entitlement to an existing post. */
+  const handlePromotePost = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await (supabase as any).rpc('promote_post', { p_post_id: id });
+      if (error) throw error;
+      await loadPosts();
+      await loadAnnouncements();
+      setPromoteTarget(null);
+      toast({ title: "Success", description: t('postPromotion.success', 'Post promoted!') });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeletePost = async (id: string) => {
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('posts').delete().eq('id', id);
+      if (error) throw error;
+      // Free the slot for the current billing period.
+      await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
+      await loadPosts();
+      await loadAnnouncements();
+      toast({
+        title: "Success",
+        description: "Post deleted!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setDeletePostId(null);
+    }
+  };
+  const handleSaveEditItem = async () => {
+    if (!editItem) return;
+    setIsSaving(true);
+    try {
+      if (editItem.kind === 'promotion') {
+        const { error } = await supabase.from('announcements').update({ description: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadAnnouncements();
+      } else {
+        const { error } = await supabase.from('posts').update({ content: editItem.text }).eq('id', editItem.id);
+        if (error) throw error;
+        await loadPosts();
+      }
+      toast({ title: "Success", description: t('dashboardPosts.updated', 'Updated!') });
+      setEditItem(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  // Gallery functions
+  const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Check image limit
+    if (imagesUsed >= STANDARD_IMAGE_LIMIT) {
+      toast({
+        title: "Limit reached",
+        description: `You can only add up to ${STANDARD_IMAGE_LIMIT} images with your subscription.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const sanitizedName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileName = `${user.id}/gallery/${Date.now()}_${sanitizedName}`;
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const {
+        error: insertError
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'image',
+        url: publicUrl
+      });
+      if (insertError) throw insertError;
+      await loadGalleryItems();
+      setShowGalleryDialog(false);
+      toast({
+        title: "Success",
+        description: "Image uploaded!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleGalleryVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Check video limit
+    if (videosUsed >= STANDARD_VIDEO_LIMIT) {
+      toast({
+        title: "Limit reached",
+        description: `You can only add up to ${STANDARD_VIDEO_LIMIT} videos with your subscription.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check file size (500 MB limit)
+    const maxSize = 500 * 1024 * 1024; // 500 MB in bytes
+    if (file.size > maxSize) {
+      toast({
+        title: "Error",
+        description: "Video file size must not exceed 500 MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const sanitizedName = file.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileName = `${user.id}/gallery/videos/${Date.now()}_${sanitizedName}`;
+      const {
+        error: uploadError
+      } = await supabase.storage.from('avatars').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const {
+        error: insertError
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'video',
+        url: publicUrl
+      });
+      if (insertError) throw insertError;
+      await loadGalleryItems();
+      setShowGalleryDialog(false);
+      toast({
+        title: "Success",
+        description: "Video uploaded!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleAddVideo = async () => {
+    if (!user || !videoUrl) return;
+    if (!isSupportedEmbed(videoUrl)) {
+      toast({
+        title: "Unsupported link",
+        description: "Paste a valid YouTube, SoundCloud, Spotify or Vimeo URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('gallery_items').insert({
+        profile_id: user.id,
+        type: 'video',
+        url: videoUrl.trim()
+      });
+      if (error) throw error;
+      await loadGalleryItems();
+      setVideoUrl("");
+      setShowGalleryDialog(false);
+      toast({
+        title: "Success",
+        description: "Embed added!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteGalleryItem = async (id: string, url: string, type: string) => {
+    setIsSaving(true);
+    try {
+      // Check if it's an uploaded file (stored in our storage bucket)
+      if (url.includes('supabase.co/storage')) {
+        const filePath = url.split('/').slice(-4).join('/');
+        await supabase.storage.from('avatars').remove([filePath]);
+      }
+      const {
+        error
+      } = await supabase.from('gallery_items').delete().eq('id', id);
+      if (error) throw error;
+      await loadGalleryItems();
+      toast({
+        title: "Success",
+        description: "Item deleted!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+      setDeleteGalleryItem(null);
+    }
+  };
+
+  // Calendar functions
+  const getBookingRequestForDate = (date: Date) => {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return bookingRequests.find((req) => req.event_date === dateStr && req.status === 'accepted');
+  };
+  const getBookedEventKey = (event: BookedEvent) => {
+    return [event.timeSlot?.trim() ?? "", event.bookedBy?.trim() ?? "", event.contact?.trim() ?? "", event.phone?.trim() ?? "", event.eventType?.trim() ?? ""].join("|");
+  };
+  const extractTimeFromTimeSlotText = (timeSlot?: string) => {
+    if (!timeSlot) return null;
+    const match = timeSlot.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+    if (!match) return null;
+    return {
+      startTime: match[1],
+      endTime: match[2]
+    };
+  };
+  const extractTimesFromRequestMessage = (message?: string | null) => {
+    if (!message) return null;
+    const match = message.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
+    if (!match) return null;
+    return {
+      startTime: match[1],
+      endTime: match[2]
+    };
+  };
+  const doesRequestCoverDate = (request: any, dateStr: string) => {
+    const start = request.event_date as string | undefined;
+    const end = request.event_end_date as string | null | undefined || start;
+    if (!start || !end) return false;
+    // ISO date strings are safe for lexicographic comparison
+    return dateStr >= start && dateStr <= end;
+  };
+  const rejectAcceptedBookingRequestsForBookedEvents = async (dateStr: string, removedEvents: BookedEvent[]) => {
+    if (!user || removedEvents.length === 0) return 0;
+    const normalize = (v?: string | null) => (v ?? "").trim().toLowerCase();
+    const acceptedCandidates = bookingRequests.filter((req) => {
+      return req.profile_id === user.id && req.status === 'accepted' && doesRequestCoverDate(req, dateStr);
+    });
+    const idsToReject = new Set<string>();
+    for (const removedEvent of removedEvents) {
+      const wantedEmail = normalize(removedEvent.contact);
+      const wantedName = (removedEvent.bookedBy ?? "").trim();
+      const wantedTimes = extractTimeFromTimeSlotText(removedEvent.timeSlot);
+      const match = acceptedCandidates.find((req) => {
+        if (wantedEmail && normalize(req.requester_email) !== wantedEmail) return false;
+        if (wantedName && (req.requester_name ?? "").trim() !== wantedName) return false;
+        if (wantedTimes) {
+          const reqTimes = extractTimesFromRequestMessage(req.message);
+          if (!reqTimes) return false;
+          return reqTimes.startTime === wantedTimes.startTime && reqTimes.endTime === wantedTimes.endTime;
+        }
+        return true;
+      });
+      if (match?.id) idsToReject.add(match.id);
+    }
+    if (idsToReject.size === 0) return 0;
+    const {
+      error
+    } = await supabase.from('booking_requests').update({
+      status: 'rejected'
+    }).in('id', Array.from(idsToReject));
+    if (error) throw error;
+    return idsToReject.size;
+  };
+  const [showBookingWarningDialog, setShowBookingWarningDialog] = useState(false);
+  const [showDeleteWarningDialog, setShowDeleteWarningDialog] = useState(false);
+  const [pendingCalendarSave, setPendingCalendarSave] = useState<{
+    dateStr: string;
+    status: string;
+    notes: string;
+  } | null>(null);
+  const handleSaveCalendarEvent = async () => {
+    if (!user || !selectedDate) return;
+
+    // Use local date to avoid timezone issues
+    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+    // Check if there's an accepted booking for this date
+    const existingBooking = getBookingRequestForDate(selectedDate);
+    const currentEvent = getEventForDate(selectedDate);
+
+    // If there's an accepted booking and we're changing the status, warn the user
+    const isBookedStatus = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+    if (existingBooking && isBookedStatus) {
+      setPendingCalendarSave({
+        dateStr,
+        status: eventStatus,
+        notes: eventNotes
+      });
+      setShowBookingWarningDialog(true);
+      return;
+    }
+    await saveCalendarEventDirect(dateStr, eventStatus, eventNotes);
+  };
+  const saveCalendarEventDirect = async (dateStr: string, status: string, notes: string) => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('calendar_events').upsert({
+        profile_id: user.id,
+        event_date: dateStr,
+        status: status,
+        notes: notes
+      }, {
+        onConflict: 'profile_id,event_date'
+      });
+      if (error) throw error;
+      await loadCalendarEvents();
+      setEventNotes("");
+      toast({
+        title: "Success",
+        description: "Calendar updated!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleConfirmBookingOverwrite = async () => {
+    if (!user || !pendingCalendarSave || !selectedDate) return;
+    setIsSaving(true);
+    try {
+      // Update the accepted booking request to rejected status
+      const existingBooking = getBookingRequestForDate(selectedDate);
+      if (existingBooking) {
+        const {
+          error: updateError
+        } = await supabase.from('booking_requests').update({
+          status: 'rejected'
+        }).eq('id', existingBooking.id);
+        if (updateError) throw updateError;
+      }
+
+      // Save the calendar event
+      await saveCalendarEventDirect(pendingCalendarSave.dateStr, pendingCalendarSave.status, pendingCalendarSave.notes);
+
+      // Reload booking requests
+      await loadBookingRequests();
+      setShowBookingWarningDialog(false);
+      setPendingCalendarSave(null);
+      toast({
+        title: "Updated",
+        description: "Calendar updated and booking request marked as rejected."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteCalendarEvent = async () => {
+    if (!user || !selectedDate) return;
+
+    // Check if there's an accepted booking for this date
+    const existingBooking = getBookingRequestForDate(selectedDate);
+    if (existingBooking) {
+      setShowDeleteWarningDialog(true);
+      return;
+    }
+    await deleteCalendarEventDirect();
+  };
+  const deleteCalendarEventDirect = async () => {
+    if (!user || !selectedDate) return;
+    setIsSaving(true);
+    try {
+      // Use local date to avoid timezone issues
+      const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+      const {
+        error
+      } = await supabase.from('calendar_events').delete().eq('profile_id', user.id).eq('event_date', dateStr);
+      if (error) throw error;
+      await loadCalendarEvents();
+      setSelectedDate(undefined);
+      toast({
+        title: "Success",
+        description: "Event deleted!"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleConfirmDeleteWithBooking = async () => {
+    if (!user || !selectedDate) return;
+    setIsSaving(true);
+    try {
+      // Update the booking request to rejected
+      const existingBooking = getBookingRequestForDate(selectedDate);
+      if (existingBooking) {
+        const {
+          error: updateError
+        } = await supabase.from('booking_requests').update({
+          status: 'rejected'
+        }).eq('id', existingBooking.id);
+        if (updateError) throw updateError;
+      }
+
+      // Delete the calendar event
+      await deleteCalendarEventDirect();
+
+      // Reload booking requests
+      await loadBookingRequests();
+      setShowDeleteWarningDialog(false);
+      toast({
+        title: "Deleted",
+        description: "Calendar event deleted and booking request marked as rejected."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const getEventForDate = (date: Date) => {
+    // Use local date to avoid timezone issues
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return calendarEvents.find((event) => event.event_date === dateStr);
+  };
+
+  // Booking request functions
+  // Accepting a request now means sending a priced offer. The booking is confirmed (and the
+  // calendar marked busy, server-side) when the organizer accepts the offer.
+  const handleAcceptBooking = (request: any) => {
+    setOfferBooking(request);
+    setOfferDialogOpen(true);
+  };
+  const handleDeclineBooking = async (requestId: string) => {
+    setIsSaving(true);
+    try {
+      const {
+        error
+      } = await supabase.from('booking_requests').update({
+        status: 'rejected'
+      }).eq('id', requestId);
+      if (error) throw error;
+      await loadBookingRequests();
+      toast({
+        title: "Success",
+        description: "Booking request rejected."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteBookingRequest = async (requestId: string) => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from('booking_requests').delete().eq('id', requestId);
+      if (error) throw error;
+      await loadBookingRequests();
+      setShowBookingDetailDialog(false);
+      toast({
+        title: "Deleted",
+        description: "Booking request deleted successfully."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-my-account');
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      // Invalidate any local session
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch {}
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch {}
+      try { localStorage.clear(); } catch {}
+
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted."
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete account.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  if (isLoading) {
+    return <div className="min-h-screen md:ml-64 bg-card flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading profile...</p>
+                            </div>
+      </div>;
+  }
+  return <div className={`min-h-screen md:ml-64 bg-background`}>
+      <Navigation 
+        mobileTitle={getMobileTitle()} 
+        mobileBackPath={getMobileBackPath()}
+        onMobileBack={activeTab === "settings" && settingsSection !== "main" ? () => {
+          setSettingsSection("main");
+        } : undefined}
+      />
+      
+      <div className={`pt-14 md:pt-8 ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8 bg-background" : "pb-6 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
+        <div className={`container mx-auto max-w-4xl ${activeTab === "settings" ? "px-0 md:px-0" : "px-4 md:px-0"}`}>
+          {activeTab !== "profile"}
+              {/* Profile Tab */}
+              {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
+                    {/* Hero Header: Cover + overlapping avatar/name/meta — responsive (owner view) */}
+                    {!isAdmin && (
+                      <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
+                        <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
+                          {/* Spacer to keep name from overlapping top-right action buttons on tablet */}
+                          <div className="absolute top-0 right-0 h-12 md:h-14 w-full pointer-events-none" />
+                          {profile?.cover_url ? (
+                            <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                          ) : (
+                            <div
+                              className="absolute inset-0"
+                              style={{ background: getCoverGradient(profile?.cover_theme) }}
+                            />
+
+                          )}
+                          {/* Smooth premium fade into the page background */}
+                          <div
+                            className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
+                            style={{
+                              background:
+                                "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+                            }}
+                          />
+
+
+                          {/* Cover edit controls (top-right) */}
+                          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors"
+                                >
+                                  <Palette className="h-3.5 w-3.5" />
+                                  Theme
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent align="end" className="w-64 p-3 rounded-lg">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
+                                <div className="grid grid-cols-5 gap-2">
+                                  {COVER_THEMES.map((theme) => {
+                                    const selected = profile?.cover_theme === theme.id;
+                                    return (
+                                      <button
+                                        key={theme.id}
+                                        type="button"
+                                        onClick={() => handleSelectCoverTheme(theme.id)}
+                                        title={theme.label}
+                                        aria-label={theme.label}
+                                        className={`relative h-10 w-10 rounded-lg border-2 transition-all ${selected ? 'border-accent ring-2 ring-accent/40' : 'border-border hover:border-accent/60'}`}
+                                        style={{ background: theme.gradient }}
+                                      >
+                                        {selected && (
+                                          <Check className="absolute inset-0 m-auto h-4 w-4 text-white drop-shadow" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                {profile?.cover_theme && !profile?.cover_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSelectCoverTheme('')}
+                                    className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                  >
+                                    Reset theme
+                                  </button>
+                                )}
+                              </PopoverContent>
+                            </Popover>
+                            <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                              <Camera className="h-3.5 w-3.5" />
+                              {profile?.cover_url ? 'Change cover' : 'Add cover'}
+                            </label>
+                            <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
+                            {profile?.cover_url && (
+                              <button
+                                type="button"
+                                onClick={handleRemoveCover}
+                                disabled={isUploadingCover}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
+                                aria-label="Remove cover"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Verified badge — bottom-right corner */}
+                          {profile?.is_verified && (
+                            <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
+                              <VerifiedBadge size="md" />
+                            </div>
+                          )}
+
+                        </div>
+
+                        {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
+                        <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                          <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
+                            <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                              <AvatarImage src={profile?.avatar_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                                <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <label htmlFor="avatar-upload" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
+                              <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                            </label>
+                            <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                              {formData.stageName}
+                            </h1>
+                            <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                              {formData.specialization && <span className="font-medium">{translateSpecialization(formData.specialization)}</span>}
+                              {formData.specialization && formData.county && <span className="opacity-70">•</span>}
+                              {formData.county && <span className="truncate">{formData.county}</span>}
+                              {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                            </div>
+                            {/* Owner view: Followers + Following, same visual language as the public profile */}
+                            <SocialStats
+                              className="mt-1.5 md:mt-2 flex-nowrap"
+                              followersCount={followersCount}
+                              followingCount={followingCount}
+                              onFollowersClick={() => setShowFollowersDialog(true)}
+                              onFollowingClick={() => setShowFollowingDialog(true)}
+                            />
+                          </div>
+
+                        </div>
+
+
+                        {/* Stats card row */}
+                        <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Events</span>
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">
+                                {profile?.created_at
+                                  ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
+                                  : '—'}
+                              </span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Member since</span>
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-center px-1">
+                            <div className="flex items-center gap-1.5 md:gap-2">
+                              <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <span className="text-base md:text-2xl font-bold text-foreground">
+                                {formData.careerStartYear
+                                  ? (() => {
+                                      const yrs = Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear));
+                                      const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                                      const unit = isRo
+                                        ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                                        : (yrs === 1 ? 'year' : 'years');
+                                      return `${yrs} ${unit}`;
+                                    })()
+                                  : '—'}
+                              </span>
+                            </div>
+                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experience</span>
+                          </div>
+                        </div>
+
+
+
+                      </div>
+                    )}
+
+                    {/* Admin account header — same component as the public admin profile */}
+                    {isAdmin && (
+                      <OfficialProfileHeader
+                        name={formData.stageName}
+                        avatarUrl={profile?.avatar_url}
+                        coverUrl={profile?.cover_url}
+                        coverTheme={profile?.cover_theme}
+                        plan={profile?.plan}
+                        followersCount={followersCount}
+                        followingCount={followingCount}
+                        onFollowersClick={() => setShowFollowersDialog(true)}
+                        onFollowingClick={() => setShowFollowingDialog(true)}
+                        avatarExtra={
+                          <>
+                            <label htmlFor="avatar-upload-admin" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer z-10">
+                              <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                            </label>
+                            <input id="avatar-upload-admin" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                          </>
+                        }
+                        coverExtra={
+                          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
+                            <label htmlFor="cover-upload-admin" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                              <Camera className="h-3.5 w-3.5" />
+                              {profile?.cover_url ? 'Change cover' : 'Add cover'}
+                            </label>
+                            <input id="cover-upload-admin" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
+                            {profile?.cover_url && (
+                              <button
+                                type="button"
+                                onClick={handleRemoveCover}
+                                disabled={isUploadingCover}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
+                                aria-label="Remove cover"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        }
+                      />
+                    )}
+
+
+
+
+                    {/* Tabs Section */}
+                    <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
+                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
+                        {!isAdmin && (
+                          <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                            <span className="hidden lg:inline">Details</span>
+                            <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                          </TabsTrigger>
+                        )}
+                        <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                          <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                          <span className="hidden lg:inline">Posts</span>
+                          <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                        </TabsTrigger>
+                        <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                          <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                          <span className="hidden lg:inline">Announcements</span>
+                          <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                        </TabsTrigger>
+                        {!isAdmin && (
+                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                            <span className="hidden lg:inline">Gallery</span>
+                            <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                          </TabsTrigger>
+                        )}
+                        {!isAdmin && (
+                          <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <CalendarIcon strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                            <span className="hidden lg:inline">Calendar</span>
+                            <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                          </TabsTrigger>
+                        )}
+                      </TabsList>
+
+                      {/* Details Tab */}
+                      {!isAdmin && <TabsContent value="details" className="space-y-4 md:space-y-8">
+                        {/* Bio/Description */}
+                        <div className="group">
+                          <div className="flex items-center justify-between mb-4">
+                            <SectionHeaderWithUsage
+                              icon={<User className="h-5 w-5 text-accent" />}
+                              title="About"
+                            />
+                            {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
+                                <Edit2 className="h-4 w-4" />
+                              </Button>}
+                          </div>
+
+                          {editingField === 'bio' ? <div className="space-y-2">
+                              <Textarea value={formData.bio} onChange={(e) => {
+                    if (e.target.value.length <= 200) {
+                      setFormData({
+                        ...formData,
+                        bio: e.target.value
+                      });
+                    }
+                  }} placeholder="Tell us about yourself, your musical journey, your style..." className="min-h-[120px]" maxLength={200} />
+                              <div className="flex items-center justify-between">
+                                <span className={`text-xs ${formData.bio.length >= 200 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                  {formData.bio.length}/200 characters
+                                </span>
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </div> : <div>
+                              {formData.bio ? <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+                                  {formData.bio}
+                                </p> : <p className="text-muted-foreground italic text-sm">No description added yet</p>}
+                            </div>}
+                        </div>
+
+                        {/* Instrument Section for Instrumentalists */}
+                        {formData.specialization?.toLowerCase() === 'instrumentalist' &&
+              <>
+                            <Separator />
+                            <div className="group">
+                              {(() => {
+                    const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
+                    const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
+                    const handleInstrumentsChange = (instruments: string) => {
+                      setFormData({ ...formData, instruments });
+                      supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                        if (!error) {
+                          toast({ title: "Saved", description: "Instrument updated!" });
+                        }
+                      });
+                    };
+                    return instrumentName ?
+                    <div className="flex items-center gap-2">
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
+                                    <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
+                                      <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                                      {instrumentName}
+                                      <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Badge>
+                                  </div> :
+
+                    <div className="flex items-center gap-2">
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument:"
+                                    />
+
+                                    <InstrumentSelector
+                        instruments={formData.instruments}
+                        onInstrumentsChange={handleInstrumentsChange} />
+
+                                  </div>;
+
+                  })()}
+                            </div>
+                          </>
+              }
+
+                        {/* Number of members — Bands only */}
+                        {formData.specialization?.toLowerCase() === 'band' && <>
+                            <Separator />
+                            <div className="group">
+                              <div className="flex items-center justify-between mb-3">
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Members:"
+                                />
+
+                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>}
+                              </div>
+                              {editingField === 'bandMembers' ? <div className="space-y-2">
+                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className="max-w-[160px]" />
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => saveField('bandMembers')} disabled={isSaving}>
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div> : formData.bandMembers ? <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                                    {formData.bandMembers} members
+                                  </Badge> : <p className="text-muted-foreground italic text-sm">Not specified</p>}
+                            </div>
+                          </>}
+
+
+                        <Separator />
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
+                          {/* Music Genres */}
+                          <div className="group">
+                            <div className="flex items-center justify-between mb-4">
+                              <SectionHeaderWithUsage
+                                icon={<Music className="h-5 w-5 text-accent" />}
+                                title="Music Genres"
+                              />
+
+                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>}
+                            </div>
+                            {editingField === 'genres' ? <div className="space-y-3">
+                                {/* Selected genres */}
+                                <div className="flex flex-wrap gap-2 min-h-[32px]">
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80" onClick={() => {
+                        const genres = formData.musicGenres.split(',').map((g) => g.trim()).filter((g) => g);
+                        const newGenres = genres.filter((g) => g !== genre.trim());
+                        setFormData({
+                          ...formData,
+                          musicGenres: newGenres.join(', ')
+                        });
+                      }}>
+                                      {genreLabel(genre.trim())}
+                                      <X className="h-3 w-3 ml-1" />
+                                    </Badge>)}
+                                </div>
+                                
+                                {/* Available genres to add */}
+                                {(() => {
+                      const ALL_GENRES = MUSIC_GENRES;
+                      const selectedSet = new Set(formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || []);
+                      const isAtLimit = selectedSet.size >= 5;
+                      const availableGenres = ALL_GENRES.filter((genre) => !selectedSet.has(genre));
+                      const VISIBLE_COUNT = 12;
+                      const visibleGenres = availableGenres.slice(0, VISIBLE_COUNT);
+                      const hasMore = availableGenres.length > VISIBLE_COUNT;
+
+                      const genreBadge = (genre: string) =>
+                      <Badge key={genre} variant="outline" className={cn("border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors", isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent")} onClick={() => {
+                        if (isAtLimit) return;
+                        const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
+                        if (!currentGenres.includes(genre)) {
+                          setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                        }
+                      }}>
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      {genreLabel(genre)}
+                                    </Badge>;
+
+
+                      return (
+                        <div className="space-y-2">
+                                      <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
+                                      <div className="flex flex-wrap gap-2">
+                                        {visibleGenres.map((genre) => genreBadge(genre))}
+                                        {hasMore &&
+                            <GenrePickerDialog
+                              availableGenres={availableGenres}
+                              isAtLimit={isAtLimit}
+                              onSelect={(genre) => {
+                                if (isAtLimit) return;
+                                const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
+                                if (!currentGenres.includes(genre)) {
+                                  setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
+                                }
+                              }} />
+
+                            }
+                                      </div>
+                                    </div>);
+
+                    })()}
+                                
+                                <div className="flex gap-2 pt-2">
+                                  <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
+                                    <Save className="h-3 w-3 mr-1" />
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div> : <div>
+                                <div className="flex flex-wrap gap-2">
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
+                                      {genreLabel(genre.trim())}
+                                    </Badge>)}
+                                  {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}
+                                </div>
+                              </div>}
+                          </div>
+
+
+                          {/* Estimated Prices */}
+                          <div className="group">
+                            <div className="flex items-center justify-between mb-4">
+                              <SectionHeaderWithUsage
+                                icon={<DollarSign className="h-5 w-5 text-accent" />}
+                                title="Estimated Prices"
+                              />
+
+                              {canSetEstimatedPrice(currentPlan) && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
+                                  onClick={() => setPricingDialogOpen(true)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                            {!canSetEstimatedPrice(currentPlan) ? (
+                              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <Lock className="h-4 w-4" />
+                                <span>Upgrade to Standard or Premium to display pricing</span>
+                              </div>
+                            ) : (
+                              <>
+                                <PricingEntriesEditor
+                                  key={`pricing-view-${pricingRefreshKey}`}
+                                  profileId={user?.id}
+                                  country={profile?.country}
+                                  editable={false}
+                                  maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                  onCountChange={setPricingCount}
+                                />
+                                {pricingCount >= getEstimatedPriceLimit(currentPlan) && (
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
+                                  </p>
+                                )}
+                                <Dialog
+                                  open={pricingDialogOpen}
+                                  onOpenChange={(open) => {
+                                    setPricingDialogOpen(open);
+                                    if (!open) {
+                                      setIsAddingPrice(false);
+                                      setPricingRefreshKey((k) => k + 1);
+                                    }
+                                  }}
+                                >
+                                  <DialogContent className="max-w-md rounded-lg">
+                                    <DialogHeader>
+                                      <DialogTitle>Estimated Prices</DialogTitle>
+                                    </DialogHeader>
+                                    <PricingEntriesEditor
+                                      key={`pricing-edit-${pricingDialogOpen}`}
+                                      profileId={user?.id}
+                                      country={profile?.country}
+                                      editable={true}
+                                      maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+
+                        <Separator />
+
+                        {/* Contact Information */}
+                        <div>
+                          <SectionHeaderWithUsage title="Contact Information" className="mb-4" />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+                            <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                              <Mail className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                              <div className="flex-1 text-left">
+                                <p className="text-xs md:text-sm text-muted-foreground">Email</p>
+                                <span className="text-foreground text-sm md:text-base">{formData.email}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
+                                <Phone className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                                <div className="flex-1 text-left">
+                                  <p className="text-xs md:text-sm text-muted-foreground">Phone</p>
+                                  <span className="text-foreground text-sm md:text-base">{formData.phone || 'Not set'}</span>
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Social Networks */}
+                        <div className="group">
+                          <div className="flex items-center justify-between mb-3 md:mb-4">
+                            <SectionHeaderWithUsage title="Social Networks" />
+
+                            {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
+                                <Edit2 className="h-4 w-4" />
+                              </Button>}
+                          </div>
+                          {editingField === 'social' ? <div className="space-y-3">
+                              {isFree(currentPlan) && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <AlertCircle className="h-3.5 w-3.5" />
+                                Free plan: only 1 social media link visible. Upgrade for more.
+                              </p>}
+                              {(() => {
+                                const socialLimit = getSocialLinkLimit(currentPlan);
+                                const filledCount = countFilledSocialLinks(formData);
+                                const canAddMore = (fieldValue: string) => fieldValue || filledCount < socialLimit;
+                                return <>
+                              <div className="flex items-center gap-2">
+                                <Facebook className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input value={formData.facebookUrl} onChange={(e) => setFormData({
+                      ...formData,
+                      facebookUrl: e.target.value
+                    })} placeholder="Facebook profile URL" disabled={!canAddMore(formData.facebookUrl)} />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Instagram className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input value={formData.instagramUrl} onChange={(e) => setFormData({
+                      ...formData,
+                      instagramUrl: e.target.value
+                    })} placeholder="Instagram profile URL" disabled={!canAddMore(formData.instagramUrl)} />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input value={formData.youtubeUrl} onChange={(e) => setFormData({
+                      ...formData,
+                      youtubeUrl: e.target.value
+                    })} placeholder="YouTube channel URL" disabled={!canAddMore(formData.youtubeUrl)} />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Music className="h-5 w-5 text-accent flex-shrink-0" />
+                                <Input value={formData.tiktokUrl} onChange={(e) => setFormData({
+                      ...formData,
+                      tiktokUrl: e.target.value
+                    })} placeholder="TikTok profile URL" disabled={!canAddMore(formData.tiktokUrl)} />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <svg className="h-5 w-5 text-accent flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                </svg>
+                                <Input value={formData.spotifyUrl} onChange={(e) => setFormData({
+                      ...formData,
+                      spotifyUrl: e.target.value
+                    })} placeholder="Spotify artist URL" disabled={!canAddMore(formData.spotifyUrl)} />
+                              </div>
+                              </>;
+                              })()}
+                              <div className="flex gap-2">
+                                <Button size="sm" onClick={() => saveField('social')} disabled={isSaving}>
+                                  <Save className="h-3 w-3 mr-1" />
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                  <X className="h-3 w-3 mr-1" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div> : <div>
+                              <div className="flex flex-wrap gap-2 md:gap-3">
+                                {formData.facebookUrl && <a href={formData.facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Facebook">
+                                    <Facebook className="h-5 w-5 text-accent" />
+                                  </a>}
+                                {formData.instagramUrl && <a href={formData.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Instagram">
+                                    <Instagram className="h-5 w-5 text-accent" />
+                                  </a>}
+                                {formData.youtubeUrl && <a href={formData.youtubeUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="YouTube">
+                                    <Youtube className="h-5 w-5 text-accent" />
+                                  </a>}
+                                {formData.tiktokUrl && <a href={formData.tiktokUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="TikTok">
+                                    <Music className="h-5 w-5 text-accent" />
+                                  </a>}
+                                {formData.spotifyUrl && <a href={formData.spotifyUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg border border-accent/50 hover:bg-accent/10 transition-colors" title="Spotify">
+                                    <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="currentColor">
+                                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                    </svg>
+                                  </a>}
+                                {!formData.facebookUrl && !formData.instagramUrl && !formData.youtubeUrl && !formData.tiktokUrl && !formData.spotifyUrl && <p className="text-muted-foreground italic text-sm">No social networks added yet</p>}
+                              </div>
+                            </div>}
+                         </div>
+
+                        <Separator />
+
+                        {/* Reviews entry → shared dedicated reviews page */}
+                        <ReviewsEntryRow
+                          count={reviews.length}
+                          average={getAverageRating()}
+                          onClick={() => user?.id && navigate(`/artist/${user.id}/reviews`)}
+                        />
+                      </TabsContent>}
+
+                      {/* Posts Tab */}
+                      <TabsContent value="posts" className="space-y-4">
+                        {!canCreatePosts && posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                            <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create posts and promotions</p>
+                            <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                              Upgrade
+                            </Button>
+                          </div> : (() => {
+                          // Build unified list
+                          const promoItems = announcements.filter((a) => a.is_premium).map((a) => ({
+                            ...a,
+                            __kind: 'promotion' as const,
+                            __text: a.description || '',
+                            __date: a.created_at,
+                            __mediaType: a.media_type || null,
+                            __mediaUrl: a.media_url || null,
+                          }));
+                          const postItems = posts.map((p) => ({
+                            ...p,
+                            __kind: 'post' as const,
+                            __text: p.content || '',
+                            __date: p.created_at,
+                            __mediaType: p.media_type || null,
+                            __mediaUrl: p.media_url || null,
+                          }));
+                          const merged = [...postItems, ...promoItems].sort((a, b) =>
+                            new Date(b.__date).getTime() - new Date(a.__date).getTime()
+                          );
+                          const postLimitLabel = Number.isFinite(STANDARD_POST_LIMIT) ? STANDARD_POST_LIMIT : '∞';
+                          return (
+                        <SectionShell>
+                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
+                          <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
+
+                          <SectionHeaderWithUsage
+                            icon={<FileText className="h-5 w-5 text-accent" />}
+                            title={t('dashboardPosts.title', 'Posts')}
+                            usage={`${postItems.length}/${postLimitLabel}`}
+                            info={<QuotaInfoButton kind="posts" />}
+                            action={<>
+                              <PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />
+                              {canCreatePosts ? (
+                                <Button
+                                  size="sm"
+                                  onClick={() => setShowPostDialog(true)}
+                                  className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  {t('dashboardPosts.createPost', 'Add')}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              )}
+                            </>}
+                          />
+
+                          {/* Post list */}
+                          {merged.length === 0 ? (
+                            <SectionEmptyState
+                              icon={<FileText className="h-10 w-10 opacity-50" />}
+                              title={t('dashboardPosts.empty', 'No posts yet. Add your first post!')}
+                            />
+                          ) : postsViewMode === "grid" ? (
+                            <>
+                              <PostsGrid
+                                items={merged.map((item) => ({
+                                  id: item.id,
+                                  kind: item.__kind,
+                                  text: item.__text,
+                                  mediaUrl: item.__mediaUrl,
+                                  mediaType: item.__mediaType,
+                                }))}
+                              />
+                            </>
+                          ) : (
+                            <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-1">
+                              {merged.map((item) => {
+                                const isPromo = item.__kind === 'promotion';
+                                const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
+                                const isPostPromoted = !!postPromotedUntil && new Date(postPromotedUntil).getTime() > Date.now();
+                                const expired = isPromo ? isAdExpired(item as any) : false;
+                                const daysLeft = isPromo ? getDaysRemaining(item as any) : 0;
+                                const expirationLabel = isPromo && !expired
+                                  ? `${new Date(getAdExpirationDate(item as any)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+                                  : null;
+                                return (
+                                  <FeedPostCard
+                                    key={`${item.__kind}-${item.id}`}
+                                    author={{
+                                      id: profile?.id,
+                                      stageName: profile?.stage_name || 'Artist',
+                                      avatarUrl: profile?.avatar_url,
+                                      specializationLabel: translateSpecialization(profile?.specialization),
+                                      plan: profile?.plan,
+                                    }}
+                                    content={item.__text}
+                                    createdAt={item.__date}
+                                    mediaUrl={item.__mediaUrl}
+                                    mediaType={item.__mediaType}
+                                    likes={(item as any).likes || 0}
+                                    commentsCount={(item as any).commentsCount || 0}
+                                    isLiked={(item as any).isLiked}
+                                    promoted={isPostPromoted}
+                                    shares={(item as any).shares || 0}
+                                    onOpen={() => navigate(postDetailPath(item.id, item.__kind))}
+                                    onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
+                                    onLike={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
+                                    onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
+                                    onShare={() => sharePost({ profileId: profile?.id, stageName: profile?.stage_name || 'Artist', type: isPromo ? 'announcement' : 'post' })}
+                                    metaExtra={
+                                      isPromo ? (
+                                        <>
+                                          <span>·</span>
+                                          {expired ? (
+                                            <span className="text-destructive">{t('dashboardPosts.expired', 'Expired')}</span>
+                                          ) : (
+                                            <span className="inline-flex items-center gap-1 text-accent">
+                                              <Megaphone className="h-3 w-3" />
+                                              {t('dashboardPosts.promoted', 'Promoted')}
+                                              {expirationLabel && <span className="opacity-80">· {expirationLabel}</span>}
+                                            </span>
+                                          )}
+                                        </>
+                                      ) : null
+                                    }
+                                    menu={
+                                      <PostActionsMenu
+                                        open={activePostMenu === `${item.__kind}-${item.id}`}
+                                        onOpenChange={(open) => setActivePostMenu(open ? `${item.__kind}-${item.id}` : null)}
+                                        disabled={isSaving}
+                                        actions={[
+                                          {
+                                            key: 'edit',
+                                            label: t('dashboardPosts.edit', 'Edit'),
+                                            icon: Pencil,
+                                            onSelect: () => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text }),
+                                          },
+                                          ...(!isPromo
+                                            ? [{
+                                                key: 'promote',
+                                                label: isPostPromoted
+                                                  ? t('postPromotion.managePromotion', 'Manage promotion')
+                                                  : t('postPromotion.promote', 'Promote'),
+                                                icon: Megaphone,
+                                                onSelect: () => setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil }),
+                                              }]
+                                            : []),
+                                          {
+                                            key: 'delete',
+                                            label: t('dashboardPosts.delete', 'Delete'),
+                                            icon: Trash2,
+                                            destructive: true,
+                                            onSelect: () => isPromo ? setDeleteAnnouncementId(item.id) : setDeletePostId(item.id),
+                                          },
+                                        ]}
+                                      />
+                                    }
+                                  />
+
+                                );
+                              })}
+                            </div></div>
+                          )}
+
+                          <PromotePostDialog
+                            open={!!promoteTarget}
+                            onOpenChange={(open) => { if (!open) setPromoteTarget(null); }}
+                            isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
+                            promotedUntil={promoteTarget?.promotedUntil}
+                            remaining={promotionsRemaining}
+                            isSaving={isSaving}
+                            onConfirm={() => promoteTarget && handlePromotePost(promoteTarget.id)}
+                          />
+
+                          {/* Edit dialog */}
+                          <Dialog open={!!editItem} onOpenChange={(open) => { if (!open) setEditItem(null); }}>
+                            <DialogContent className="max-w-md rounded-lg">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  {editItem?.kind === 'promotion'
+                                    ? t('dashboardPosts.editPromotion', 'Edit Promotion')
+                                    : t('dashboardPosts.editPost', 'Edit Post')}
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 mt-2">
+                                <Textarea
+                                  value={editItem?.text || ''}
+                                  onChange={(e) => setEditItem(editItem ? { ...editItem, text: e.target.value.slice(0, 200) } : null)}
+                                  rows={5}
+                                  maxLength={200}
+                                  className="rounded-lg"
+                                />
+                                <p className="text-xs text-muted-foreground text-right">{(editItem?.text || '').length}/200</p>
+                                <Button
+                                  onClick={handleSaveEditItem}
+                                  disabled={isSaving || !(editItem?.text || '').trim()}
+                                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg"
+                                >
+                                  {isSaving ? t('common.loading', 'Loading...') : t('common.save', 'Save')}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+
+                        </SectionShell>
+
+                          );
+                        })()}
+                      </TabsContent>
+
+                      {/* Announcements Tab */}
+                      <TabsContent value="announcements" className="space-y-4">
+                        {/* Locked state only when creation is blocked AND the owner has no existing announcements at all (promoted ones included). */}
+                        {!canCreateAnnouncements && announcements.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
+
+                            <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
+                            <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                              Upgrade
+                            </Button>
+                          </div> :
+                        <SectionShell>
+                          <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
+                          <SectionHeaderWithUsage
+                            icon={<Megaphone className="h-5 w-5 text-accent" />}
+                            title={t('dashboardAnnouncements.title', 'Announcements')}
+                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
+                            info={<QuotaInfoButton kind="announcements" />}
+                            action={
+                              !canCreateAnnouncements ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate('/my-plan')}
+                                  className="rounded-lg shrink-0"
+                                >
+                                  <Lock className="h-4 w-4 mr-1" />
+                                  {t('common.upgrade', 'Upgrade')}
+                                </Button>
+                              ) : (
+                              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    {t('dashboardPosts.createPost', 'Add')}
+                                  </Button>
+                                </DialogTrigger>
+                                <CreationModalShell
+                                  title={t('creationModal.announcementTitle', 'Create an announcement')}
+                                  bodyClassName="space-y-4 py-4"
+                                  meta={<>
+                                    {Number.isFinite(STANDARD_AD_LIMIT) && (
+                                      <span className="inline-flex items-center gap-1.5">
+                                        <UsagePill
+                                          icon={<Megaphone className="h-3 w-3" />}
+                                          tone={standardAdsRemaining === 0 ? "warning" : "accent"}
+                                        >
+                                          {t('creationModal.announcementsAvailable', { count: standardAdsRemaining, defaultValue: '{{count}} announcements available' })}
+                                        </UsagePill>
+                                        <QuotaInfoButton kind="announcements" />
+                                      </span>
+                                    )}
+                                    <UsagePill icon={<Clock className="h-3 w-3" />}>
+                                      {t('creationModal.validDays', { count: 7, defaultValue: 'Valid for {{count}} days' })}
+                                    </UsagePill>
+                                  </>}
+                                  footer={
+                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
+                                      {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishAnnouncement', 'Publish announcement')}
+                                    </Button>
+                                  }
+                                >
+                                  <CreationSection title={t('creationModal.description', 'Description')} className="space-y-2">
+                                    <Textarea
+                                      ref={announcementTextareaRef}
+                                      id="announcement-text-inner"
+                                      value={newAnnouncement.description}
+                                      onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value.slice(0, 200) })}
+                                      placeholder={t('creationModal.announcementPlaceholder', "Tell artists what you're looking for...")}
+                                      rows={3}
+                                      maxLength={200}
+                                      className="min-h-[88px] max-h-40 resize-none overflow-y-auto rounded-lg border-border/70 bg-background/50 p-3.5 text-sm leading-relaxed transition-colors focus-visible:ring-accent/40"
+                                    />
+                                    <p className="text-right text-xs tabular-nums text-muted-foreground">{newAnnouncement.description.length}/200</p>
+                                  </CreationSection>
+
+                                  <CreationSection title={t('creationModal.eventDetails', 'Event details')} variant="secondary" className="border-t border-border/60 pt-4">
+                                    <div className="grid gap-3">
+                                      <div>
+                                        <FieldLabel htmlFor="announcement-location-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          {t('creationModal.location', 'Location')}
+                                        </FieldLabel>
+                                        <LocationAutocomplete
+                                          id="announcement-location-inner"
+                                          value={newAnnouncement.location}
+                                          onChange={(val) => setNewAnnouncement({ ...newAnnouncement, location: val })}
+                                          country={null}
+                                          placeholder={t('creationModal.locationPlaceholder', 'Search for a location...')}
+                                          className="[&_input]:h-10 [&_input]:rounded-lg [&_input]:border-border/70 [&_input]:bg-background/50"
+                                        />
+                                      </div>
+                                      <div>
+                                        <FieldLabel htmlFor="announcement-event-date-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          {t('creationModal.eventDate', 'Event date')}
+                                        </FieldLabel>
+                                        <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="h-10 rounded-lg border-border/70 bg-background/50" />
+                                      </div>
+                                      <div>
+                                        <FieldLabel htmlFor="announcement-budget-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
+                                          <span className="inline-flex items-center gap-1">{t('creationModal.budget', 'Budget')} <Euro className="h-3.5 w-3.5 text-muted-foreground" /></span>
+                                        </FieldLabel>
+                                        <Input id="announcement-budget-inner" type="number" inputMode="numeric" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder={t('creationModal.budgetPlaceholder', 'e.g. 500')} className="h-10 rounded-lg border-border/70 bg-background/50" />
+                                      </div>
+                                    </div>
+                                  </CreationSection>
+                                </CreationModalShell>
+
+                              </Dialog>
+                              )
+                            }
+                          />
+                          <div id="announcements-list">
+                            <div className="space-y-2">
+                            {announcements.filter((a) => !a.is_premium).map((announcement) => (
+                              <AnnouncementManagementCard
+                                key={announcement.id}
+                                announcement={announcement}
+                                disabled={isSaving}
+                                actions={[
+                                  {
+                                    key: "delete",
+                                    label: t("userDashboard.delete", "Delete"),
+                                    icon: Trash2,
+                                    destructive: true,
+                                    onSelect: () => setDeleteAnnouncementId(announcement.id),
+                                  },
+                                ]}
+                              />
+                            ))}
+                            {announcements.filter((a) => !a.is_premium).length === 0 && (
+                              <SectionEmptyState
+                                icon={<Megaphone className="h-10 w-10 opacity-50" />}
+                                title="No announcements yet"
+                              />
+                            )}
+                            </div>
+                          </div>
+                        </SectionShell>}
+                      </TabsContent>
+
+                      {/* Gallery Tab */}
+                      {!isAdmin && <TabsContent value="gallery">
+                        <SectionShell>
+                          {/* Hidden inputs powering the inline + slots */}
+                          <Input id="gallery-upload-inline" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
+
+                          <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>{t('userDashboard.add', 'Add')}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 mt-4">
+                                <p className="text-sm text-muted-foreground">
+                                  {t('dashboardGallery.videoLinkDescription', 'Paste a YouTube, SoundCloud, Spotify or Vimeo link')}
+                                </p>
+                                <div className="space-y-3">
+                                  <div>
+                                    <Label htmlFor="gallery-video-url" className="sr-only">
+                                      {t('dashboardGallery.videoUrlLabel', 'Video link')}
+                                    </Label>
+                                    <Input
+                                      id="gallery-video-url"
+                                      type="url"
+                                      placeholder="https://www.youtube.com/watch?v=…"
+                                      value={videoUrl}
+                                      onChange={(e) => setVideoUrl(e.target.value)}
+                                    />
+                                    {videoUrl && !isSupportedEmbed(videoUrl) && (
+                                      <p className="text-xs text-destructive mt-1.5">
+                                        {t('dashboardGallery.unsupportedLink', 'Unsupported link. Use a YouTube, SoundCloud, Spotify or Vimeo URL.')}
+                                      </p>
+                                    )}
+                                    {videoUrl && isSupportedEmbed(videoUrl) && (
+                                      <p className="text-xs text-muted-foreground mt-1.5">
+                                        {t('dashboardGallery.detectedProvider', 'Detected: {{provider}}. The clip stays on the artist\'s account — we only embed it.', { provider: providerLabel(getEmbedInfo(videoUrl)!.provider) })}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <Button
+                                    onClick={handleAddVideo}
+                                    disabled={!videoUrl || !isSupportedEmbed(videoUrl) || isSaving}
+                                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                                  >
+                                    {isSaving ? t('common.creating', 'Adding…') : t('dashboardGallery.embedLink', 'Embed link')}
+                                  </Button>
+                                  <p className="text-xs text-muted-foreground text-center">
+                                    {t('dashboardGallery.streamedDirectly', 'Streamed directly from the source — no file is uploaded to our servers.')}
+                                  </p>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          {galleryOverLimit && (
+                            <div
+                              className="flex items-start gap-3 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm"
+                              role="alert"
+                            >
+                              <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                              <div className="space-y-1">
+                                <p className="font-medium text-destructive">
+                                  Your gallery exceeds your current plan limits
+                                </p>
+                                <p className="text-muted-foreground">
+                                  Items marked with a lock are hidden from your public profile but stay saved.
+                                  Move them earlier, delete others or upgrade to show them again.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Photos section */}
+                          <SectionHeaderWithUsage
+                            icon={<ImageIcon className="h-5 w-5 text-accent" />}
+                            title={t('dashboardGallery.photos', 'Photos')}
+                            usage={`${imagesUsed}/${STANDARD_IMAGE_LIMIT}`}
+                          />
+
+
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                            {galleryItems.filter((item) => item.type === 'image').map((item, idx, arr) => {
+                              const hidden = galleryHiddenIds.has(item.id);
+                              return (
+                                <div key={item.id} className="relative group">
+                                  <div
+                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer relative"
+                                    onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
+                                    title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
+                                  >
+                                    <img src={item.url} alt="Gallery item" className={`w-full h-full object-cover hover:scale-110 transition-transform duration-300 ${hidden ? 'grayscale' : ''}`} />
+                                    {hidden && (
+                                      <div className="pointer-events-none absolute inset-0 bg-background/35">
+                                        <div className="absolute bottom-2 left-2 rounded-full bg-background/85 p-1.5 shadow-md" aria-label={t('dashboardGallery.inactive', 'Inactive')}>
+                                          <Lock className="h-3.5 w-3.5 text-foreground" />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="absolute bottom-2 right-2 flex gap-1">
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveEarlier', 'Move earlier')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'image', -1); }} disabled={isSaving || idx === 0}>
+                                      <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveLater', 'Move later')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'image', 1); }} disabled={isSaving || idx === arr.length - 1}>
+                                      <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                    id: item.id,
+                                    url: item.url,
+                                    type: item.type
+                                  }); }} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                            {imagesUsed < STANDARD_IMAGE_LIMIT && (
+                              <button
+                                type="button"
+                                aria-label={t('dashboardGallery.photos', 'Photos')}
+                                onClick={() => document.getElementById('gallery-upload-inline')?.click()}
+                                disabled={isSaving}
+                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                              >
+                                <Plus className="h-8 w-8 text-accent" />
+                              </button>
+                            )}
+                          </div>
+
+
+                          {/* Videos section */}
+                          <SectionHeaderWithUsage
+                            icon={<VideoIcon className="h-5 w-5 text-accent" />}
+                            title={t('dashboardGallery.videos', 'Videos')}
+                            usage={`${videosUsed}/${STANDARD_VIDEO_LIMIT}`}
+                          />
+
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                            {galleryItems.filter((item) => item.type === 'video').map((item, idx, arr) => {
+                              const hidden = galleryHiddenIds.has(item.id);
+                              const info = getEmbedInfo(item.url);
+                              return (
+                                <div key={item.id} className="relative group">
+                                  <div
+                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
+                                    onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
+                                    title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
+                                  >
+                                    {info?.thumbnail ? (
+                                      <img src={info.thumbnail} alt="" className={`absolute inset-0 w-full h-full object-cover ${hidden ? 'grayscale opacity-70' : 'opacity-80'}`} />
+                                    ) : null}
+                                    <Play className={`relative h-12 w-12 text-white drop-shadow-lg ${hidden ? 'opacity-40' : ''}`} />
+                                    {info && info.provider !== 'direct' && (
+                                      <span className="absolute bottom-1 left-1 text-[10px] uppercase tracking-wide bg-black/70 text-white px-1.5 py-0.5 rounded">
+                                        {providerLabel(info.provider)}
+                                      </span>
+                                    )}
+                                    {hidden && (
+                                      <div className="pointer-events-none absolute inset-0 bg-background/35">
+                                        <div className="absolute bottom-2 left-2 rounded-full bg-background/85 p-1.5 shadow-md" aria-label={t('dashboardGallery.inactive', 'Inactive')}>
+                                          <Lock className="h-3.5 w-3.5 text-foreground" />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="absolute bottom-2 right-2 flex gap-1">
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveEarlier', 'Move earlier')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'video', -1); }} disabled={isSaving || idx === 0}>
+                                      <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button size="icon" variant="secondary" className="h-7 w-7 shadow-md" aria-label={t('dashboardGallery.moveLater', 'Move later')} onClick={(e) => { e.stopPropagation(); moveGalleryItem(item.id, 'video', 1); }} disabled={isSaving || idx === arr.length - 1}>
+                                      <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <Button size="icon" variant="destructive" className="absolute top-2 right-2 h-8 w-8 shadow-md" onClick={(e) => { e.stopPropagation(); setDeleteGalleryItem({
+                                    id: item.id,
+                                    url: item.url,
+                                    type: item.type
+                                  }); }} disabled={isSaving}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                            {videosUsed < STANDARD_VIDEO_LIMIT && (
+                              <button
+                                type="button"
+                                aria-label={t('dashboardGallery.videos', 'Videos')}
+                                onClick={() => setShowGalleryDialog(true)}
+                                disabled={isSaving}
+                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                              >
+                                <Plus className="h-8 w-8 text-accent" />
+                              </button>
+                            )}
+                          </div>
+
+                        </SectionShell>
+
+                      </TabsContent>}
+
+                      {/* Calendar Tab */}
+                      {!isAdmin && <TabsContent value="calendar">
+                        <div>
+                          <SectionHeaderWithUsage
+                            icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+                            title="My Calendar"
+                            className="mb-4"
+                            action={isPremium(currentPlan) ? (
+                              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
+                                <BarChart3 className="h-4 w-4" />
+                                Statistics
+                              </Button>
+                            ) : undefined}
+                          />
+                          <AvailabilityCalendarLayout>
+                            <ArtistAvailabilityCalendar selected={selectedDate} onSelect={(date) => {
+                      if (!date) {
+                        setSelectedDate(undefined);
+                        setUserChangedStatus(false);
+                        setEventStatus('available');
+                        setEventNotes("");
+                        return;
+                      }
+                      if (selectedDate) {
+                        const currentDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                        const nextDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        if (currentDateStr === nextDateStr) return;
+                      }
+                      setSelectedDate(date);
+                      setUserChangedStatus(false);
+                      const event = getEventForDate(date);
+                      if (event) {
+                        const status = event.status;
+                        if (status === 'busy' || status === 'booked') {
+                          setEventStatus('available');
+                        } else {
+                          setEventStatus(status);
+                        }
+                        setEventNotes(event.notes || "");
+                      } else {
+                        setEventStatus('available');
+                        setEventNotes("");
+                      }
+                    }} busyDates={calendarEvents.filter((e) => e.status === 'busy' || e.status === 'booked').map((e) => parseYMDToLocalDate(e.event_date))} blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))} />
+                            
+                            {/* Date Details Form */}
+                            {(() => {
+                              const detailsNode = selectedDate ? (() => {
+                                const isPastDate = selectedDate < new Date(new Date().setHours(0, 0, 0, 0));
+                                const pastEvent = isPastDate ? getEventForDate(selectedDate) : null;
+                                
+                                if (isPastDate) {
+                                  // Read-only view for past dates
+                                  return <div>
+                                    <h4 className="font-semibold text-foreground mb-3">
+                                      {selectedDate.toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                      })}
+                                    </h4>
+                                    {pastEvent ? (
+                                      <div className="space-y-3">
+                                        <div>
+                                          <Label>Status</Label>
+                                          <div className={`mt-1 px-3 py-2 rounded-md border text-sm ${
+                                            pastEvent.status === 'busy' || pastEvent.status === 'booked'
+                                              ? 'bg-destructive/10 text-destructive border-destructive/30'
+                                              : pastEvent.status === 'blocked'
+                                              ? 'bg-muted text-muted-foreground border-border'
+                                              : calendarAvailabilityStyles.availableSurface
+                                          }`}>
+                                            {pastEvent.status === 'busy' || pastEvent.status === 'booked' ? 'Booked' : pastEvent.status === 'blocked' ? 'Unavailable' : 'Available'}
+                                          </div>
+                                        </div>
+                                        {pastEvent.notes && (
+                                          <div>
+                                            <Label>Details</Label>
+                                            <div className="mt-1 px-3 py-2 rounded-md border bg-secondary/50 text-sm text-muted-foreground whitespace-pre-wrap">
+                                              {pastEvent.notes}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-muted-foreground">No events recorded for this date.</p>
+                                    )}
+                                  </div>;
+                                }
+                                
+                                // Editable view for today and future dates
+                                return <div>
+                                  <h4 className="font-semibold text-foreground mb-3">
+                                    {selectedDate.toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                                  </h4>
+                                  <div className="space-y-3">
+                                    <div>
+                                      <Label>Status</Label>
+                                      {(() => {
+                            const currentEvent = getEventForDate(selectedDate);
+                            const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                            const showAsBooked = isBooked && !userChangedStatus;
+                            return <Select value={showAsBooked ? 'busy' : eventStatus} onValueChange={(v) => {
+                              if (v !== 'busy') {
+                                setEventStatus(v as 'available' | 'blocked');
+                                setUserChangedStatus(true);
+                                if (isBooked) {
+                                  setEventNotes("");
+                                }
+                              }
+                            }}>
+                                            <SelectTrigger className={showAsBooked ? "text-destructive" : eventStatus === 'available' ? calendarAvailabilityStyles.availableText : ""}>
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {isBooked && !userChangedStatus && <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
+                                                  Booked
+                                                </SelectItem>}
+                                              <SelectItem value="available">Available</SelectItem>
+                                              <SelectItem value="blocked">Unavailable</SelectItem>
+                                            </SelectContent>
+                                          </Select>;
+                          })()}
+                                    </div>
+                                    
+                                    {/* Show booked events list if date has bookings */}
+                                    {(() => {
+                          const currentEvent = getEventForDate(selectedDate);
+                          const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
+                          if (isBooked && currentEvent?.notes && !userChangedStatus) {
+                            return <BookedEventsList notes={currentEvent.notes} isSaving={isSaving} onUpdateNotes={async (newNotes: string) => {
+                              setIsSaving(true);
+                              try {
+                                const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                                const oldNotes = currentEvent.notes ?? "";
+                                const oldEvents = parseBookedEvents(oldNotes);
+                                const newEvents = parseBookedEvents(newNotes);
+                                const newKeys = new Set(newEvents.map(getBookedEventKey));
+                                const removedEvents = oldEvents.filter((e) => !newKeys.has(getBookedEventKey(e)));
+
+                                // First, update the calendar notes
+                                const {
+                                  error
+                                } = await supabase.from('calendar_events').update({
+                                  notes: newNotes
+                                }).eq('profile_id', user!.id).eq('event_date', dateStr);
+                                if (error) throw error;
+
+                                // If a booked time slot was deleted, mark the matching accepted request as rejected
+                                const rejectedCount = await rejectAcceptedBookingRequestsForBookedEvents(dateStr, removedEvents);
+                                await loadCalendarEvents();
+                                if (rejectedCount > 0) {
+                                  await loadBookingRequests();
+                                }
+                                setEventNotes(newNotes);
+                                toast({
+                                  title: "Success",
+                                  description: rejectedCount > 0 ? "Event updated and the related request was marked as rejected." : "Event details updated."
+                                });
+                              } catch (error: any) {
+                                toast({
+                                  title: "Error",
+                                  description: error.message,
+                                  variant: "destructive"
+                                });
+                              } finally {
+                                setIsSaving(false);
+                              }
+                            }} />;
+                          }
+                          return <div>
+                                          <Label>Notes (optional)</Label>
+                                          <Textarea value={eventNotes} onChange={(e) => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
+                                        </div>;
+                        })()}
+                                    <div className="flex gap-2">
+                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
+                                        {isSaving ? "Saving..." : "Save"}
+                                      </Button>
+                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>}
+                                    </div>
+                                  </div>
+                                </div>;
+                              })() : null;
+
+                              if (isMobile) {
+                                return (
+                                  <Dialog open={!!selectedDate} onOpenChange={(open) => {
+                                    if (!open) {
+                                      setSelectedDate(undefined);
+                                      setUserChangedStatus(false);
+                                      setEventStatus('available');
+                                      setEventNotes("");
+                                    }
+                                  }}>
+                                    <DialogContent className="max-w-md rounded-lg p-4">
+                                      <DialogHeader className="sr-only">
+                                        <DialogTitle>Date details</DialogTitle>
+                                      </DialogHeader>
+                                      {detailsNode}
+                                    </DialogContent>
+                                  </Dialog>
+                                );
+                              }
+
+                              return (
+                                <div className="w-full lg:min-w-0 lg:w-auto">
+                                  {detailsNode ? <Card className="p-4 h-full">{detailsNode}</Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                    <p className="text-sm text-center">Select a date to set availability</p>
+                                  </div>}
+                                </div>
+                              );
+                            })()}
+
+                            
+                          </AvailabilityCalendarLayout>
+
+                          {/* Booking Requests Section */}
+                          <div className="mt-8 pt-8 border-t border-border">
+                            <div className="flex items-center justify-between mb-4 gap-2">
+                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                <CalendarIcon className="h-5 w-5 text-accent" />
+                                Booking Requests
+                                {(() => {
+                                  const todayStr = new Date().toISOString().split("T")[0];
+                                  const newCount = bookingRequests.filter(
+                                    (r) => r.status === "pending" && r.event_date >= todayStr
+                                  ).length;
+                                  return newCount > 0 ? (
+                                    <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                      {newCount}
+                                    </Badge>
+                                  ) : null;
+                                })()}
+                              </h3>
+                              {bookingRequests.length > 0 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="rounded-lg text-accent hover:text-accent"
+                                  onClick={() => navigate("/booking-requests")}
+                                >
+                                  See all
+                                </Button>
+                              )}
+                            </div>
+                            
+                            {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
+                                <CardContent className="p-8 text-center">
+                                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                                  <p className="text-muted-foreground">No booking requests yet</p>
+                                </CardContent>
+                              </Card> : <div className="space-y-3">
+                                {bookingRequests.map((request) => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
+                      setSelectedBookingRequest(request);
+                      setShowBookingDetailDialog(true);
+                    }}>
+                                    <CardContent className="p-4">
+                                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+                                        <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                                              <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
+                                              <Badge className={request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : request.status === 'offered' ? 'bg-accent/15 text-accent border-accent/30' : request.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
+                                                {request.status === 'pending' ? 'Pending' : request.status === 'offered' ? 'Offer sent' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
+                                              </Badge>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                              <span>{(() => {
+                                    const [year, month, day] = request.event_date.split('-').map(Number);
+                                    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+                                      weekday: 'short',
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    });
+                                  })()}</span>
+                                              {request.event_type && <>
+                                                  <span>·</span>
+                                                  <span>{request.event_type}</span>
+                                                </>}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
+                                            <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90">
+                                              Send offer
+                                            </Button>
+                                            <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1 md:flex-none">
+                                              Decline
+                                            </Button>
+                                          </div>}
+                                      </div>
+                                    </CardContent>
+                                  </Card>)}
+                              </div>}
+                          </div>
+
+                          {/* Sent Booking Requests (requests this artist sent to other artists) */}
+                          <div className="mt-8 pt-8 border-t border-border">
+                            {(() => {
+                              const todayD = new Date();
+                              todayD.setHours(0, 0, 0, 0);
+                              const parseYMD = (s?: string | null) => {
+                                if (!s) return null;
+                                const [y, m, d] = String(s).split('-').map(Number);
+                                return new Date(y, m - 1, d);
+                              };
+                              const sentPending = sentBookingRequests.filter((b) => b.status === 'pending' || b.status === 'offered').length;
+                              const sentConfirmed = sentBookingRequests.filter((b) => {
+                                const d = parseYMD(b.event_end_date || b.event_date);
+                                return b.status === 'accepted' && d && d >= todayD;
+                              }).length;
+                              const sentCompleted = sentBookingRequests.filter((b) => {
+                                const d = parseYMD(b.event_end_date || b.event_date);
+                                return b.status === 'accepted' && d && d < todayD;
+                              }).length;
+                              const sentCancelled = sentBookingRequests.filter((b) => b.status === 'rejected').length;
+                              const goSent = (f?: string) =>
+                                navigate(`/booking-requests?tab=sent${f ? `&filter=${f}` : ''}`);
+                              return (
+                                <>
+                                  <div className="flex items-center justify-between mb-4 gap-2">
+                                    <h3 className="text-xl font-display font-bold flex items-center gap-2">
+                                      <CalendarCheck className="h-5 w-5 text-accent" />
+                                      My Bookings
+                                    </h3>
+                                    {sentBookingRequests.length > 0 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="rounded-lg text-accent hover:text-accent"
+                                        onClick={() => goSent()}
+                                      >
+                                        See all
+                                      </Button>
+                                    )}
+                                  </div>
+
+                                  {sentBookingRequests.length === 0 ? (
+                                    <Card className="border-2 border-dashed border-border/50">
+                                      <CardContent className="p-8 text-center">
+                                        <CalendarCheck className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                                        <p className="text-muted-foreground">You haven't sent any booking requests yet</p>
+                                      </CardContent>
+                                    </Card>
+                                  ) : (
+                                    <div className="grid grid-cols-2 gap-2.5">
+                                      {[
+                                        { key: 'pending', label: 'Pending', value: sentPending, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+                                        { key: 'accepted', label: 'Confirmed', value: sentConfirmed, icon: Check, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                                        { key: 'completed', label: 'Completed', value: sentCompleted, icon: CalendarCheck, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
+                                        { key: 'rejected', label: 'Cancelled', value: sentCancelled, icon: X, tone: 'text-destructive', bg: 'bg-destructive/10' },
+                                      ].map((b) => (
+                                        <button
+                                          key={b.key}
+                                          onClick={() => goSent(b.key)}
+                                          className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5 text-left hover:border-accent/40 transition"
+                                        >
+                                          <div className="flex flex-col min-w-0">
+                                            <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
+                                              {b.value}
+                                            </span>
+                                            <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground truncate">
+                                              {b.label}
+                                            </span>
+                                          </div>
+                                          <div className={`p-1.5 rounded-md ${b.bg} shrink-0`}>
+                                            <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
+                                          </div>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+
+
+
+                          {/* Booking Request Detail Dialog */}
+                          <BookingDetailsDialog
+                            open={showBookingDetailDialog}
+                            onOpenChange={setShowBookingDetailDialog}
+                            booking={selectedBookingRequest}
+                            viewer="artist"
+                            counterpartName={selectedBookingRequest?.requester_name || ""}
+                            artistName={profile?.stage_name || 'Artist'}
+                            onOffer={() => selectedBookingRequest && handleAcceptBooking(selectedBookingRequest)}
+                            onArtistDecline={async (id) => {
+                              await handleDeclineBooking(id);
+                              const { data } = await supabase.from('booking_requests').select('*').eq('id', id).maybeSingle();
+                              if (data) setSelectedBookingRequest(data);
+                            }}
+                            onDelete={handleDeleteBookingRequest}
+                            onChanged={loadBookingRequests}
+                          />
+
+                          <BookingOfferDialog
+                            open={offerDialogOpen}
+                            onOpenChange={setOfferDialogOpen}
+                            booking={offerBooking}
+                            onSent={() => {
+                              setShowBookingDetailDialog(false);
+                              loadBookingRequests();
+                            }}
+                          />
+                        </div>
+                      </TabsContent>}
+                    </Tabs>
+                </div>}
+
+              {/* Messages Tab */}
+              {activeTab === "messages" && <Card className="border-2 border-accent/30 shadow-[var(--shadow-gold)]">
+                  <CardContent className="p-8">
+                    <div className="text-center py-12">
+                      <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <h2 className="text-2xl font-display font-bold mb-2">Messages</h2>
+                      <p className="text-muted-foreground">Coming soon - message system for booking inquiries</p>
+                    </div>
+                  </CardContent>
+                </Card>}
+
+
+              {/* Settings Tab */}
+              {activeTab === "settings" && <SettingsTab formData={{ email: formData.email }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} activeSection={settingsSection} onSectionChange={setSettingsSection} />}
+        </div>
+      </div>
+
+      {/* Image Cropper Modal */}
+      {showCropper && imageSrc && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-2xl w-full">
+            <h3 className="text-xl font-bold text-foreground mb-4">Crop Profile Picture</h3>
+            
+            <div className="relative w-full h-[400px] bg-black rounded-lg overflow-hidden mb-4">
+              <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/70">…</div>}>
+                <Cropper image={imageSrc} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} cropShape="rect" showGrid={true} />
+              </Suspense>
+            </div>
+            
+            <div className="space-y-2 mb-4">
+              <Label>Zoom: {zoom.toFixed(1)}x</Label>
+              <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => {
+            setShowCropper(false);
+            setImageSrc(null);
+          }}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveAvatar} disabled={isSaving} className="bg-accent text-accent-foreground">
+                {isSaving ? "Saving..." : "Save Picture"}
+              </Button>
+            </div>
+          </div>
+        </div>}
+
+      {/* Cover Cropper Modal */}
+      {showCoverCropper && coverImageSrc && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-3xl w-full">
+            <h3 className="text-xl font-bold text-foreground mb-1">Adjust cover photo</h3>
+            <p className="text-sm text-muted-foreground mb-4">Drag to reposition and zoom to center your cover image.</p>
+
+            <div className="relative w-full h-[320px] bg-black rounded-lg overflow-hidden mb-4">
+              <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/70">…</div>}>
+                <Cropper
+                  image={coverImageSrc}
+                  crop={coverCrop}
+                  zoom={coverZoom}
+                  aspect={16 / 6}
+                  onCropChange={setCoverCrop}
+                  onZoomChange={setCoverZoom}
+                  onCropComplete={(_area: Area, pixels: Area) => setCoverCroppedAreaPixels(pixels)}
+                  cropShape="rect"
+                  showGrid={true}
+                  objectFit="horizontal-cover"
+                />
+              </Suspense>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <Label>Zoom: {coverZoom.toFixed(1)}x</Label>
+              <input type="range" min={1} max={3} step={0.1} value={coverZoom} onChange={(e) => setCoverZoom(parseFloat(e.target.value))} className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent" />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => {
+                setShowCoverCropper(false);
+                setCoverImageSrc(null);
+              }}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveCover} disabled={isUploadingCover} className="bg-accent text-accent-foreground">
+                {isUploadingCover ? "Saving..." : "Save cover"}
+              </Button>
+            </div>
+          </div>
+        </div>}
+
+
+
+      {/* Booking Overwrite Warning Dialog */}
+      <AlertDialog open={showBookingWarningDialog} onOpenChange={setShowBookingWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingCalendarSave?.status === 'available' ? 'Mark as Available?' : 'Mark as Unavailable?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingCalendarSave?.status === 'available' ? 'This date has an accepted booking. Marking it as available will reject the booking request. The requester may need to be notified separately.' : 'This date has an accepted booking. Marking it as unavailable will reject the booking request. The requester may need to be notified separately.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+            setShowBookingWarningDialog(false);
+            setPendingCalendarSave(null);
+          }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmBookingOverwrite} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
+              {isSaving ? "Updating..." : pendingCalendarSave?.status === 'available' ? "Yes, Mark Available" : "Yes, Mark Unavailable"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete with Booking Warning Dialog */}
+      <AlertDialog open={showDeleteWarningDialog} onOpenChange={setShowDeleteWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Date with Accepted Booking?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This date has an accepted booking request. Deleting this calendar entry will mark the booking as rejected. The requester may need to be notified separately. Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteWarningDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDeleteWithBooking} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={isSaving}>
+              {isSaving ? "Deleting..." : "Yes, Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Review Confirmation Dialog */}
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(open) => !open && setDeleteReviewId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Review</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this review? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteReviewId && handleDeleteReview(deleteReviewId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Post Confirmation Dialog */}
+      <AlertDialog open={!!deletePostId} onOpenChange={(open) => !open && setDeletePostId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Post</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this post? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deletePostId && handleDeletePost(deletePostId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Announcement Confirmation Dialog */}
+      <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this announcement? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteAnnouncementId && handleDeleteAnnouncement(deleteAnnouncementId)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
+      {/* Delete Gallery Item Confirmation Dialog */}
+      <AlertDialog open={!!deleteGalleryItem} onOpenChange={(open) => !open && setDeleteGalleryItem(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleteGalleryItem?.type === 'video' ? 'Video' : 'Photo'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this {deleteGalleryItem?.type === 'video' ? 'video' : 'photo'}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteGalleryItem && handleDeleteGalleryItem(deleteGalleryItem.id, deleteGalleryItem.url, deleteGalleryItem.type)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Following Dialog */}
+      <Dialog open={showFollowingDialog} onOpenChange={setShowFollowingDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent" />
+              Following ({followingCount})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {followingArtists.length === 0 ?
+          <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p> :
+          followingArtists.map((artist) =>
+          <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowingDialog(false);navigate(`/artist/${artist.id}`);}}>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={artist.avatar_url} />
+                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(artist.specialization)} · {artist.county}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setUnfollowTargetId(artist.id); }}>
+                    Following
+                  </Button>
+                </div>
+          )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unfollow Confirmation */}
+      <AlertDialog open={!!unfollowTargetId} onOpenChange={(open) => { if (!open) setUnfollowTargetId(null); }}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unfollow Artist</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to unfollow this artist? You can follow them again later.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!user || !unfollowTargetId) return;
+              await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', unfollowTargetId);
+              setFollowingArtists((prev) => prev.filter((a) => a.id !== unfollowTargetId));
+              setFollowingCount((prev) => prev - 1);
+              setUnfollowTargetId(null);
+            }}>Unfollow</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Followers Dialog */}
+      <Dialog open={showFollowersDialog} onOpenChange={setShowFollowersDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-accent" />
+              Followers ({followersCount})
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+            {followersList.length === 0 ?
+          <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p> :
+          followersList.map((follower) =>
+          <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowersDialog(false);navigate(`/artist/${follower.id}`);}}>
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={follower.avatar_url} />
+                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{follower.stage_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(follower.specialization)} · {follower.county}</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="shrink-0 text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setRemoveFollowerTargetId(follower.id); }}>
+                    Remove
+                  </Button>
+                </div>
+          )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Follower Confirmation */}
+      <AlertDialog open={!!removeFollowerTargetId} onOpenChange={(open) => { if (!open) setRemoveFollowerTargetId(null); }}>
+        <AlertDialogContent className="rounded-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Follower</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to remove this follower? They will no longer follow you but can follow you again later.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+              if (!user || !removeFollowerTargetId) return;
+              await supabase.from('followers').delete().eq('artist_id', user.id).eq('follower_id', removeFollowerTargetId);
+              setFollowersList((prev) => prev.filter((f) => f.id !== removeFollowerTargetId));
+              setFollowersCount((prev) => prev - 1);
+              setRemoveFollowerTargetId(null);
+            }}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <PostComposerDialog
+        open={showPostDialog}
+        onOpenChange={setShowPostDialog}
+        onPublished={async () => { await loadPosts(); }}
+      />
+      <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
+      <CommentsDialog
+        open={!!commentsTarget}
+        onOpenChange={(open) => { if (!open) setCommentsTarget(null); }}
+        targetType={commentsTarget?.type ?? "post"}
+        targetId={commentsTarget?.id ?? null}
+        currentUserId={user?.id ?? null}
+        isAdmin={isAdmin}
+        onCountChange={(count) => {
+          if (!commentsTarget) return;
+          if (commentsTarget.type === "post") {
+            setPosts((prev) => prev.map((p) => p.id === commentsTarget.id ? { ...p, commentsCount: count } : p));
+          } else {
+            setAnnouncements((prev) => prev.map((a) => a.id === commentsTarget.id ? { ...a, commentsCount: count } : a));
+          }
+        }}
+      />
+    </div>;
+};
+export default Dashboard;
