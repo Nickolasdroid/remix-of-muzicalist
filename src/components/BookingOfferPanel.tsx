@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { FileSignature, Loader2, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -66,7 +66,8 @@ const BookingOfferPanel = ({
   const [location, setLocation] = useState("");
   const [agree, setAgree] = useState(false);
   const detailsRef = useRef<ContractDetailsFormHandle>(null);
-  const lang = i18n.language || "ro";
+  const { i18n } = useTranslation();
+  const lang = i18n.language || i18n.resolvedLanguage || "ro";
 
   const status = booking.status;
   const hasPrice = booking.offer_price != null;

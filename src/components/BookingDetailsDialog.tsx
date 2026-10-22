@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Lock, Mail, MoreHorizontal, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -91,7 +91,8 @@ const BookingDetailsDialog = ({
   const [contact, setContact] = useState<{ email: string | null; phone: string | null } | null>(null);
   const [confirmAction, setConfirmAction] = useState<PendingAction>(null);
   const [working, setWorking] = useState(false);
-  const lang = i18n.language || "ro";
+  const { i18n } = useTranslation();
+  const lang = i18n.language || i18n.resolvedLanguage || "ro";
 
   const status = booking?.status;
   const statusKey = booking ? bookingStatusKey(booking) : "pending";

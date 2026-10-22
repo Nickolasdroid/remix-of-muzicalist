@@ -28,6 +28,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
+import BookingRequestDialog, { resolveBookingEndDate, type AvailabilityTone } from "@/components/BookingRequestDialog";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
 
@@ -189,6 +190,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   } | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [submittingBooking, setSubmittingBooking] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [checkingReviewEligibility, setCheckingReviewEligibility] = useState(false);
@@ -707,32 +709,30 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return h * 60 + m;
     };
     const s1 = toMinutes(start1);
-    const e1 = toMinutes(end1);
+    let e1 = toMinutes(end1);
     const s2 = toMinutes(start2);
-    const e2 = toMinutes(end2);
+    let e2 = toMinutes(end2);
+    // A slot that ends at or before its start runs past midnight
+    if (e1 <= s1) e1 += 24 * 60;
+    if (e2 <= s2) e2 += 24 * 60;
     // Overlap if one starts before the other ends and ends after the other starts
     return s1 < e2 && e1 > s2;
   };
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !id) return;
-    const endDate = bookingForm.endDate || selectedDate;
+    if (submittingBooking) return;
+    // Overnight events (end time before start time) end the next day automatically
+    const endDate = resolveBookingEndDate(selectedDate, bookingForm);
     const isSameDay = endDate.toDateString() === selectedDate.toDateString();
 
-    // Validate that end time is after start time (only if same day)
-    if (bookingForm.startTime && bookingForm.endTime && isSameDay) {
-      const [startHour, startMin] = bookingForm.startTime.split(':').map(Number);
-      const [endHour, endMin] = bookingForm.endTime.split(':').map(Number);
-      const startMinutes = startHour * 60 + startMin;
-      const endMinutes = endHour * 60 + endMin;
-      if (endMinutes <= startMinutes) {
-        toast({
-          title: "Invalid Time",
-          description: "End time must be after start time.",
-          variant: "destructive"
-        });
-        return;
-      }
+    if (!!bookingForm.startTime !== !!bookingForm.endTime) {
+      toast({
+        title: "Invalid Time",
+        description: "Choose both the start and the end time.",
+        variant: "destructive"
+      });
+      return;
     }
 
     // Check for time slot conflicts on busy dates
@@ -761,6 +761,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         }
       }
     }
+    setSubmittingBooking(true);
     try {
       // Include time interval and end date in the message
       const startDateStr = selectedDate.toLocaleDateString('en-US', {
@@ -818,6 +819,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         description: "Failed to send booking request. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setSubmittingBooking(false);
     }
   };
   const getExperienceYears = () => {
@@ -2337,118 +2340,29 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </Dialog>
 
               {/* Booking Dialog */}
-              <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
-                <DialogContent className="sm:max-w-[500px] rounded-lg [&>button]:p-1 [&>button_svg]:h-5 [&>button_svg]:w-5">
-                  <DialogHeader className="pb-2">
-                    <DialogTitle className="text-lg font-medium">
-                      {selectedDate && selectedDate.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                    </DialogTitle>
-                    {selectedDate && (() => {
-                      const events = getEventsForDate(selectedDate);
-                      const blocked = isBlockedDate(selectedDate);
-                      const busy = isBusyDate(selectedDate);
-                      const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
-                      const hasSlots = slots.length > 0;
-                      let label = "Available";
-                      let cls: string = calendarAvailabilityStyles.availableBadge;
-                      if (blocked) {
-                        label = "Unavailable";
-                        cls = "bg-muted text-muted-foreground";
-                      } else if (busy && hasSlots && canUseTimeIntervals(artist?.plan)) {
-                        label = `Partially booked · ${slots.length} slot${slots.length > 1 ? "s" : ""} taken`;
-                        cls = "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30";
-                      } else if (busy) {
-                        label = "Fully booked";
-                        cls = "bg-destructive text-destructive-foreground";
-                      }
-                      return (
-                        <div className="pt-1">
-                          <Badge className={cls}>{label}</Badge>
-                        </div>
-                      );
-                    })()}
-                  </DialogHeader>
-                  <form onSubmit={handleBookingSubmit} className="space-y-4">
-                    {canUseTimeIntervals(artist?.plan) && (
-                    <>
-                    <div className="space-y-2">
-                      <Label>Start Time</Label>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 text-sm text-muted-foreground">
-                          {selectedDate?.toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                        </div>
-                        <div className="flex-1">
-                          <TimeSelector id="startTime" value={bookingForm.startTime} onChange={(value) => setBookingForm({
-                        ...bookingForm,
-                        startTime: value
-                      })} placeholder="Start time" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>End Time</Label>
-                      <div className="flex items-center gap-2">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="flex-1 justify-start text-left font-normal">
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {bookingForm.endDate ? bookingForm.endDate.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          }) : selectedDate?.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={bookingForm.endDate || selectedDate} onSelect={(date) => setBookingForm({
-                          ...bookingForm,
-                          endDate: date || null
-                        })} disabled={(date) => date < (selectedDate || new Date())} initialFocus className="p-3 pointer-events-auto" />
-                          </PopoverContent>
-                        </Popover>
-                        <div className="flex-1">
-                          <TimeSelector id="endTime" value={bookingForm.endTime} onChange={(value) => setBookingForm({
-                        ...bookingForm,
-                        endTime: value
-                      })} placeholder="End time" />
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Select a different date if the event extends to the next day
-                      </p>
-                    </div>
-                    </>
-                    )}
-                    <div className="space-y-2">
-                      <Label htmlFor="eventType">Event Type</Label>
-                      <Input id="eventType" placeholder="e.g., Wedding, Corporate Event, Birthday" value={bookingForm.eventType} onChange={(e) => setBookingForm({
-                    ...bookingForm,
-                    eventType: e.target.value
-                  })} required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Additional Details</Label>
-                      <Textarea id="message" placeholder="Tell us more about your event..." value={bookingForm.message} onChange={(e) => setBookingForm({
-                    ...bookingForm,
-                    message: e.target.value
-                  })} rows={1} className="resize-none min-h-10 h-10" />
-                    </div>
-                    <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                      Send Booking Request
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <BookingRequestDialog
+                open={bookingDialogOpen}
+                onOpenChange={setBookingDialogOpen}
+                date={selectedDate}
+                artistName={artist.stage_name}
+                artistAvatarUrl={artist.avatar_url}
+                availability={(() => {
+                  if (!selectedDate) return { label: "Available", tone: "green" as AvailabilityTone };
+                  const events = getEventsForDate(selectedDate);
+                  const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
+                  if (isBlockedDate(selectedDate)) return { label: "Unavailable", tone: "muted" as AvailabilityTone };
+                  if (isBusyDate(selectedDate) && slots.length > 0 && canUseTimeIntervals(artist?.plan)) {
+                    return { label: "Partially booked", tone: "amber" as AvailabilityTone };
+                  }
+                  if (isBusyDate(selectedDate)) return { label: "Fully booked", tone: "red" as AvailabilityTone };
+                  return { label: "Available", tone: "green" as AvailabilityTone };
+                })()}
+                allowTimes={canUseTimeIntervals(artist?.plan)}
+                form={bookingForm}
+                setForm={setBookingForm}
+                onSubmit={handleBookingSubmit}
+                submitting={submittingBooking}
+              />
           </div>
         </div>
       </div>
