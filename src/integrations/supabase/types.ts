@@ -2668,6 +2668,7 @@ export type Database = {
         Returns: boolean
       }
       can_review_artist: { Args: { _profile_id: string }; Returns: string }
+      cancel_booking_request: { Args: { _booking_id: string }; Returns: string }
       change_case_priority: {
         Args: {
           _case_id: string
