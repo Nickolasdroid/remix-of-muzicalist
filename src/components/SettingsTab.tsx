@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, BookOpenCheck, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText, Check, X as XIcon, Loader2 } from "lucide-react";
+import { LogOut, Trash2, Lock, CheckCircle, ShieldCheck, Shield, Eye, EyeOff, User, UserX, AtSign, Monitor, Flag, Paperclip, ChevronRight, Mail, Languages, Settings2, Megaphone, ChevronDown, Search, Sun, Moon, MessageCircle, HelpCircle, Info, Bell, BookOpenCheck, Star, Heart, MessageSquare, UserPlus, Calendar, CalendarX, CreditCard, FileText, FileSignature, Check, X as XIcon, Loader2 } from "lucide-react";
 import BillingSection from "@/components/BillingSection";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -22,9 +22,10 @@ import { getCountryName } from "@/lib/countryFlags";
 import VerificationCard from "@/components/VerificationCard";
 import ReportProblemForm from "@/components/ReportProblemForm";
 import BlockedUsersPanel from "@/components/BlockedUsersPanel";
+import ContractDetailsForm from "@/components/ContractDetailsForm";
 
 
-export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification" | "rules";
+export type SettingSection = "main" | "account" | "system" | "email" | "password" | "language" | "theme" | "promotion" | "comments" | "notifications" | "report" | "logout" | "delete" | "help" | "about" | "billing" | "edit_profile" | "profile_visibility" | "blocked_users" | "mentions_tags" | "display_settings" | "privacy_policy" | "terms_of_service" | "verification" | "rules" | "contract_details";
 
 export type NotificationPreferenceKey =
   | "reviews"
@@ -1445,6 +1446,7 @@ const SettingsTab = ({
         ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "billing", label: "Billing & Subscription", icon: CreditCard },
+        { id: "contract_details", label: "Contract Details", icon: FileSignature },
       ],
     },
     {
@@ -1550,6 +1552,21 @@ const SettingsTab = ({
         </div>
       ),
       edit_profile: <EditProfilePanel />,
+      contract_details: (
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {accountType === "artist"
+                ? "The details that appear on the contracts generated when an organizer accepts your offer. Optional: without them, contracts use the name from your profile."
+                : "The details that appear on the contracts generated when you accept an artist's offer."}
+            </p>
+          </div>
+          <Separator />
+          <div className="max-w-2xl">
+            <ContractDetailsForm showSaveButton variant={accountType === "artist" ? "artist" : "organizer"} />
+          </div>
+        </div>
+      ),
 
       profile_visibility: (
         <ComingSoonPanel

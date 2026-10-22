@@ -144,6 +144,7 @@ const Dashboard = () => {
     terms_of_service: "Terms of Service",
     verification: "Identity Verification",
     rules: "Rules",
+    contract_details: "Contract Details",
   };
 
   const getMobileTitle = () => {

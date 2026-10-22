@@ -2,6 +2,8 @@
 // Status rules live in the database (send_booking_offer / respond_to_booking_offer RPCs);
 // these helpers only format and explain.
 
+import { MUZICALIST_LOGO_DATA_URI } from "@/lib/contractLogo";
+
 export type BookingStatus = "pending" | "offered" | "accepted" | "rejected" | string;
 
 export interface BookingOfferFields {
@@ -59,6 +61,9 @@ const ERROR_TEXT: Record<string, string> = {
   OFFER_INVALID_CURRENCY: "Please choose a currency.",
   OFFER_NOTE_TOO_LONG: "The note must be 500 characters or fewer.",
   BOOKING_REQUIRES_ACCEPTED_OFFER: "Send an offer with a price. The booking is confirmed when the organizer accepts it.",
+  CONTRACT_TERMS_NOT_ACCEPTED: "Please confirm that you agree to the contract terms.",
+  CONTRACT_LOCATION_REQUIRED: "Please enter where the event takes place.",
+  CONTRACT_DETAILS_REQUIRED: "Please fill in your contract details (name and address).",
 };
 
 /** Maps a Supabase/RPC error to a user-facing English sentence (translated by the RO dictionary). */
@@ -151,15 +156,16 @@ export const printBookingConfirmation = (
 <title>${escapeHtml(L.title)} ${escapeHtml(ref)}</title>
 <style>
   *{box-sizing:border-box} body{font-family:Inter,Arial,sans-serif;color:#1d1b26;margin:0;padding:40px;max-width:720px}
-  .brand{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#6d28d9}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#9a6c08}
+  .brand img{width:40px;height:40px;object-fit:contain}
   h1{font-size:26px;margin:8px 0 2px} .ref{color:#5c5a66;font-size:14px;margin-bottom:28px}
   table{width:100%;border-collapse:collapse} td{padding:10px 0;border-bottom:1px solid #e5e2ec;vertical-align:top;font-size:15px}
   td.k{width:38%;color:#5c5a66} td.v{font-weight:600;white-space:pre-wrap}
   .foot{margin-top:28px;font-size:12px;color:#5c5a66;line-height:1.5}
-  button{margin-top:24px;padding:10px 18px;border:0;border-radius:8px;background:#6d28d9;color:#fff;font-size:14px;cursor:pointer}
+  button{margin-top:24px;padding:10px 18px;border:0;border-radius:8px;background:#9a6c08;color:#fff;font-size:14px;cursor:pointer}
   @media print{button{display:none} body{padding:0}}
 </style></head><body>
-<div class="brand">Muzicalist</div>
+<div class="brand"><img src="${MUZICALIST_LOGO_DATA_URI}" alt="Muzicalist"><span>Muzicalist</span></div>
 <h1>${escapeHtml(L.title)}</h1>
 <div class="ref">${escapeHtml(L.number)} ${escapeHtml(ref)}</div>
 <table>${rows
