@@ -28,6 +28,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
+import DateAvailabilityDialog from "@/components/DateAvailabilityDialog";
 import BookingRequestDialog, { resolveBookingEndDate, type AvailabilityTone } from "@/components/BookingRequestDialog";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
@@ -503,15 +504,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return eventDate.getDate() === date.getDate() && eventDate.getMonth() === date.getMonth() && eventDate.getFullYear() === date.getFullYear();
     });
   };
-  const extractTimeFromNotes = (notes: string | null) => {
-    if (!notes) return null;
-    const timeMatch = notes.match(/Time:\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})\s*-\s*(?:[\w\s,]+\s+)?(\d{1,2}:\d{2})/i);
-    if (timeMatch) {
-      return { startTime: timeMatch[1], endTime: timeMatch[2] };
-    }
-    return null;
-  };
-
   // Parse all time slots from notes that can contain multiple events separated by ---
   const extractAllTimeSlotsFromNotes = (notes: string | null): {
     startTime: string;
@@ -735,26 +727,27 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       return;
     }
 
-    // Check for time slot conflicts on busy dates
-    if (bookingForm.startTime && bookingForm.endTime) {
-      const event = getEventForDate(selectedDate);
-      if (event && (event.status === 'busy' || event.status === 'booked')) {
-        const existingTime = extractTimeFromNotes(event.notes);
-        if (existingTime) {
-          // Check if requested time overlaps with existing busy time
-          if (doTimeSlotsOverlap(bookingForm.startTime, bookingForm.endTime, existingTime.startTime, existingTime.endTime)) {
-            toast({
-              title: "Time Slot Conflict",
-              description: `This time slot overlaps with an existing booking (${existingTime.startTime} - ${existingTime.endTime}). Please select a different time.`,
-              variant: "destructive"
-            });
-            return;
-          }
-        } else {
-          // No specific time in notes means the entire day is booked
+    // Check for time slot conflicts on busy dates (every booked slot of the day)
+    const dayEvents = getEventsForDate(selectedDate).filter((ev) => ev.status === 'busy' || ev.status === 'booked');
+    if (dayEvents.length > 0) {
+      const busySlots = dayEvents.flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes));
+      if (busySlots.length === 0) {
+        // No specific time in notes means the entire day is booked
+        toast({
+          title: "Date Unavailable",
+          description: "This date is fully booked. Please select a different date.",
+          variant: "destructive"
+        });
+        return;
+      }
+      if (bookingForm.startTime && bookingForm.endTime) {
+        // The request may continue after midnight: only the part on this day can clash here
+        const requestEnd = isSameDay ? bookingForm.endTime : "23:59";
+        const clash = busySlots.find((slot) => doTimeSlotsOverlap(bookingForm.startTime, requestEnd, slot.startTime, slot.endTime));
+        if (clash) {
           toast({
-            title: "Date Unavailable",
-            description: "This date is fully booked. Please select a different date.",
+            title: "Time Slot Conflict",
+            description: `This time slot overlaps with an existing booking (${clash.startTime} - ${clash.endTime === "23:59" ? "00:00" : clash.endTime}). Please select a different time.`,
             variant: "destructive"
           });
           return;
@@ -2218,72 +2211,21 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </Tabs>
 
               {/* Date Availability Detail Dialog */}
-              <Dialog open={dateDetailDialogOpen} onOpenChange={setDateDetailDialogOpen}>
-                <DialogContent className="sm:max-w-[400px]">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-display flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5 text-accent" />
-                      Date Availability
-                    </DialogTitle>
-                    <DialogDescription>
-                      {selectedDate?.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                    </DialogDescription>
-                  </DialogHeader>
-                  {selectedDate && (() => {
-                const events = getEventsForDate(selectedDate);
-                const isBusy = isBusyDate(selectedDate);
-                const isBlocked = isBlockedDate(selectedDate);
-
-                // Collect all time slots from all events on this date
-                const allTimeSlots = events.flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
-                const hasTimeSlots = allTimeSlots.length > 0;
-                return <div className="space-y-4 mt-2">
-                        {/* Busy Time Slots */}
-                        {isBusy && hasTimeSlots && <div className="space-y-3">
-                            <h4 className="font-semibold text-foreground flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-destructive" />
-                              Booked Time Slots ({allTimeSlots.length})
-                            </h4>
-                            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                              {allTimeSlots.map((slot, index) => <div key={index} className="py-2 px-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                                  <div className="flex items-center justify-center gap-3">
-                                    <p className="text-lg font-bold text-destructive">{slot.startTime}</p>
-                                    <span className="text-muted-foreground">—</span>
-                                    <p className="text-lg font-bold text-destructive">{slot.endTime}</p>
-                                  </div>
-                                </div>)}
-                            </div>
-                          </div>}
-
-                        {/* No specific time - booked all day */}
-                        {isBusy && !hasTimeSlots && <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-center">
-                            <Clock className="h-6 w-6 text-destructive mx-auto mb-2" />
-                            <p className="text-sm font-medium text-foreground">
-                              Booked for the entire day
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              00:00 — 23:59
-                            </p>
-                          </div>}
-
-                        {/* Unavailable day */}
-                        {isBlocked && <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
-                            <p className="text-sm text-muted-foreground">
-                              The artist has marked this day as unavailable.
-                            </p>
-                          </div>}
-
-                        {/* Request Different Time Button - only for busy dates with specific time slots */}
-                        {isBusy && hasTimeSlots && !isOwnProfile && <div className="pt-2">
-                            <p className="text-xs text-muted-foreground text-center mb-3">
-                              You can still request a different time slot on this day.
-                            </p>
-                            <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
+              {selectedDate && (() => {
+                const slots = getEventsForDate(selectedDate).flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
+                const busy = isBusyDate(selectedDate);
+                const state = isBlockedDate(selectedDate) ? "blocked" : busy && slots.length > 0 ? "partial" : "full";
+                return (
+                  <DateAvailabilityDialog
+                    open={dateDetailDialogOpen}
+                    onOpenChange={setDateDetailDialogOpen}
+                    date={selectedDate}
+                    artistName={artist.stage_name}
+                    artistAvatarUrl={artist.avatar_url}
+                    state={state}
+                    slots={slots}
+                    canRequest={state === "partial" && !isOwnProfile}
+                    onRequest={() => {
                       if (!currentUserId) {
                         toast({
                           title: "Authentication Required",
@@ -2294,15 +2236,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       }
                       setDateDetailDialogOpen(false);
                       setBookingDialogOpen(true);
-                    }}>
-                              <CalendarIcon className="h-4 w-4 mr-2" />
-                              Request Different Time
-                            </Button>
-                          </div>}
-                      </div>;
+                    }}
+                  />
+                );
               })()}
-                </DialogContent>
-              </Dialog>
 
               <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
                 <DialogContent className="rounded-lg w-[calc(100%-2rem)] sm:max-w-[460px] gap-0 p-5 sm:p-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] overflow-x-hidden">

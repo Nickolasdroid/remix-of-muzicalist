@@ -2653,4 +2653,10 @@ export const RO_TEXT: Record<string, string> = {
   "Send booking request": "Trimite cererea de rezervare",
   "Choose both the start and the end time.": "Alege atât ora de început, cât și ora de sfârșit.",
   "18th Birthday": "Majorat",
+  "Availability": "Disponibilitate",
+  "Availability for the selected day": "Disponibilitatea pentru ziua selectată",
+  "Booked hours": "Ore rezervate",
+  "The artist is booked for the whole day.": "Artistul este rezervat toată ziua.",
+  "The other hours of this day are free. You can send a request for a different time.": "Celelalte ore din această zi sunt libere. Poți trimite o cerere pentru alt interval.",
+  "Request another time": "Solicită alt interval orar",
 };
