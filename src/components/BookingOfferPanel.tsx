@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, Clock, FileSignature, Loader2, Pencil, Printer, Tag } from "lucide-react";
+import { useRef, useState } from "react";
+import { FileSignature, Loader2, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import i18n from "@/i18n";
 import { Button } from "@/components/ui/button";
@@ -23,68 +23,57 @@ import {
   offerErrorText,
   printBookingConfirmation,
 } from "@/lib/bookingOffers";
-import { BookingContract, CONTRACT_COLUMNS, openContractWindow } from "@/lib/contracts";
+import { BookingContract, openContractWindow } from "@/lib/contracts";
 
 interface BookingOfferPanelProps {
   booking: BookingOfferFields;
-  /** Who is looking at the booking */
   viewer: "artist" | "requester";
-  /** Artist stage name, used on the printable confirmation (older bookings without a contract) */
+  /** Artist stage name (contract preview + confirmation for older bookings) */
   artistName: string;
-  /** Artist only: open the offer dialog to edit the current offer */
-  onEditOffer?: () => void;
-  /** Called after the requester accepted or declined */
+  contract: BookingContract | null;
+  contractLoaded: boolean;
+  /** Artist: open the offer dialog (send or edit) */
+  onOffer?: () => void;
+  /** Artist: decline a pending request (asks for confirmation) */
+  onArtistDecline?: () => void;
+  /** Artist: withdraw an open offer */
+  onArtistWithdraw?: () => void;
+  /** Reload after the organizer accepted or declined */
   onChanged?: () => void;
 }
 
+const goldBtn = "w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold";
+const ghostBtn = "flex-1 rounded-lg border-border bg-transparent hover:bg-secondary";
+
 /**
- * Shows the offer attached to a booking request and the actions that go with it:
- * - requester: accept (contract details + event location + agreement checkbox) / decline
- * - artist: see the offer status, edit an open offer
- * - both: open the contract once the booking is confirmed
+ * The price card in the booking dialog: the offer and the one or two actions that fit
+ * the current state, for whoever is looking.
  */
-const BookingOfferPanel = ({ booking, viewer, artistName, onEditOffer, onChanged }: BookingOfferPanelProps) => {
+const BookingOfferPanel = ({
+  booking,
+  viewer,
+  artistName,
+  contract,
+  contractLoaded,
+  onOffer,
+  onArtistDecline,
+  onArtistWithdraw,
+  onChanged,
+}: BookingOfferPanelProps) => {
   const { toast } = useToast();
-  const [busy, setBusy] = useState<"accept" | "decline" | null>(null);
+  const [busy, setBusy] = useState<"accept" | "decline" | "withdraw" | null>(null);
   const [acceptOpen, setAcceptOpen] = useState(false);
   const [location, setLocation] = useState("");
   const [agree, setAgree] = useState(false);
-  const [contract, setContract] = useState<BookingContract | null>(null);
-  const [contractChecked, setContractChecked] = useState(false);
   const detailsRef = useRef<ContractDetailsFormHandle>(null);
   const lang = i18n.language || "ro";
 
-  const isOpen = booking.status === "offered";
-  const isConfirmed = booking.status === "accepted";
+  const status = booking.status;
+  const hasPrice = booking.offer_price != null;
+  const price = hasPrice ? formatMoney(booking.offer_price, booking.offer_currency, lang) : null;
 
-  useEffect(() => {
-    let cancelled = false;
-    setContract(null);
-    setContractChecked(false);
-    if (!isConfirmed) return;
-    (async () => {
-      const { data } = await (supabase as any)
-        .from("booking_contracts")
-        .select(CONTRACT_COLUMNS)
-        .eq("booking_request_id", booking.id)
-        .maybeSingle();
-      if (cancelled) return;
-      setContract((data as BookingContract) || null);
-      setContractChecked(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [booking.id, isConfirmed]);
-
-  if (booking.offer_price == null) return null;
-  const price = formatMoney(booking.offer_price, booking.offer_currency, lang);
-
-  const openAccept = () => {
-    setAgree(false);
-    setLocation("");
-    setAcceptOpen(true);
-  };
+  const popupBlocked = () =>
+    toast({ title: "Pop-up blocked", description: "Allow pop-ups for this site to open the document.", variant: "destructive" });
 
   const respond = async (accept: boolean) => {
     if (accept) {
@@ -121,14 +110,24 @@ const BookingOfferPanel = ({ booking, viewer, artistName, onEditOffer, onChanged
     onChanged?.();
   };
 
-  const popupBlocked = () =>
-    toast({
-      title: "Pop-up blocked",
-      description: "Allow pop-ups for this site to open the document.",
-      variant: "destructive",
-    });
+  const withdraw = async () => {
+    setBusy("withdraw");
+    try {
+      await onArtistWithdraw?.();
+    } finally {
+      setBusy(null);
+    }
+  };
 
-  const handlePreviewContract = () => {
+  const openContract = () => {
+    if (contract) {
+      if (!openContractWindow(contract)) popupBlocked();
+    } else if (!printBookingConfirmation(booking, artistName, lang)) {
+      popupBlocked();
+    }
+  };
+
+  const previewContract = () => {
     const now = new Date().toISOString();
     const draft: BookingContract = {
       id: "—",
@@ -154,87 +153,134 @@ const BookingOfferPanel = ({ booking, viewer, artistName, onEditOffer, onChanged
     if (!openContractWindow(draft, { preview: true })) popupBlocked();
   };
 
-  const handleOpenContract = () => {
-    if (contract) {
-      if (!openContractWindow(contract)) popupBlocked();
-      return;
-    }
-    // Bookings confirmed before contracts existed: simple confirmation
-    if (!printBookingConfirmation(booking, artistName, lang)) popupBlocked();
-  };
-
-  return (
-    <div className="rounded-lg border border-accent/30 bg-accent/5 p-3 space-y-3">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <Label className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1">
-            <Tag className="h-3 w-3" />
-            {isConfirmed ? "Agreed price" : "Offer"}
-          </Label>
-          <p className="text-xl font-semibold text-foreground mt-1 notranslate" translate="no">
-            {price}
-          </p>
+  // Pending request, no price yet
+  if (status === "pending") {
+    if (viewer === "requester") {
+      return (
+        <div className="rounded-xl border border-border bg-card/60 px-4 py-3.5 text-sm text-muted-foreground">
+          The artist hasn't sent an offer yet. You'll get a notification when they do.
         </div>
-        {isConfirmed ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-500 mt-1">
-            <BadgeCheck className="h-4 w-4" />
-            Confirmed
-          </span>
-        ) : isOpen ? (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-500 mt-1">
-            <Clock className="h-4 w-4" />
-            {viewer === "artist" ? "Waiting for the organizer" : "Waiting for your answer"}
-          </span>
-        ) : null}
-      </div>
-
-      {booking.offer_note && (
-        <p className="text-sm text-foreground whitespace-pre-wrap notranslate" translate="no" data-user-content="true">
-          {booking.offer_note}
+      );
+    }
+    return (
+      <div className="rounded-xl border border-accent/35 bg-gradient-to-b from-accent/[0.08] to-accent/[0.02] p-4">
+        <p className="text-sm text-foreground/90">
+          Send a price offer. The booking is confirmed when the organizer accepts it.
         </p>
-      )}
-
-      {booking.status === "rejected" && booking.declined_by === "requester" && (
-        <p className="text-sm text-muted-foreground">
-          {viewer === "artist" ? "The organizer declined this offer." : "You declined this offer."}
-        </p>
-      )}
-
-      {isOpen && viewer === "requester" && (
-        <div className="flex gap-2">
-          <Button
-            className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-            onClick={openAccept}
-            disabled={busy !== null}
-          >
-            Accept offer
+        <div className="mt-3 flex gap-2">
+          <Button className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold" onClick={onOffer}>
+            Send offer
           </Button>
-          <Button variant="outline" className="flex-1 rounded-lg" onClick={() => respond(false)} disabled={busy !== null}>
-            {busy === "decline" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          <Button variant="outline" className={ghostBtn} onClick={onArtistDecline}>
             Decline
           </Button>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {isOpen && viewer === "artist" && onEditOffer && (
-        <Button variant="outline" size="sm" className="rounded-lg" onClick={onEditOffer}>
-          <Pencil className="h-3.5 w-3.5 mr-1.5" />
-          Edit offer
-        </Button>
-      )}
+  // Older confirmed bookings without a price: nothing to show
+  if (!hasPrice) return null;
 
-      {isConfirmed && contractChecked && (
-        <Button variant="outline" size="sm" className="rounded-lg" onClick={handleOpenContract}>
-          {contract ? <FileSignature className="h-3.5 w-3.5 mr-1.5" /> : <Printer className="h-3.5 w-3.5 mr-1.5" />}
-          {contract ? (
+  const cancelled = status === "rejected";
+  const caption =
+    status === "accepted"
+      ? "Agreed price"
+      : status === "offered"
+        ? viewer === "artist"
+          ? "Your offer"
+          : "Offer from the artist"
+        : "Offer";
+
+  let cancelledLine: string | null = null;
+  if (cancelled) {
+    const byMe = (booking.declined_by === "requester") === (viewer === "requester");
+    cancelledLine = byMe
+      ? "You cancelled this booking."
+      : viewer === "artist"
+        ? "Cancelled by the organizer."
+        : "Cancelled by the artist.";
+  }
+
+  return (
+    <>
+      <div
+        className={
+          cancelled
+            ? "rounded-xl border border-border bg-card/60 p-4"
+            : "rounded-xl border border-accent/35 bg-gradient-to-b from-accent/[0.08] to-accent/[0.02] p-4"
+        }
+      >
+        <p className="text-xs text-muted-foreground">
+          <span>{caption}</span>
+          {status === "offered" && viewer === "artist" && (
             <>
-              Contract <span className="ml-1 notranslate" translate="no">{contract.contract_number}</span>
+              <span> · </span>
+              <span>waiting for the organizer's answer</span>
             </>
-          ) : (
-            "Booking confirmation"
           )}
-        </Button>
-      )}
+        </p>
+        <p
+          className={`mt-0.5 text-[26px] font-bold leading-tight tracking-tight notranslate ${cancelled ? "text-muted-foreground line-through decoration-1" : "text-foreground"}`}
+          translate="no"
+        >
+          {price}
+        </p>
+        {booking.offer_note && (
+          <p className="mt-1.5 text-sm text-foreground/85 whitespace-pre-wrap notranslate" translate="no" data-user-content="true">
+            {booking.offer_note}
+          </p>
+        )}
+        {cancelledLine && <p className="mt-2 text-sm text-muted-foreground">{cancelledLine}</p>}
+
+        {status === "offered" && viewer === "requester" && (
+          <div className="mt-3 flex gap-2">
+            <Button
+              className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+              onClick={() => {
+                setAgree(false);
+                setLocation("");
+                setAcceptOpen(true);
+              }}
+              disabled={busy !== null}
+            >
+              Accept offer
+            </Button>
+            <Button variant="outline" className={ghostBtn} onClick={() => respond(false)} disabled={busy !== null}>
+              {busy === "decline" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Decline
+            </Button>
+          </div>
+        )}
+
+        {status === "offered" && viewer === "artist" && (
+          <div className="mt-3 flex gap-2">
+            <Button variant="outline" className={ghostBtn} onClick={onOffer} disabled={busy !== null}>
+              Edit offer
+            </Button>
+            <Button variant="outline" className={ghostBtn} onClick={withdraw} disabled={busy !== null}>
+              {busy === "withdraw" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Withdraw offer
+            </Button>
+          </div>
+        )}
+
+        {status === "accepted" && contractLoaded && (
+          <Button className={`${goldBtn} mt-3`} onClick={openContract}>
+            {contract ? <FileSignature className="h-4 w-4 mr-2" /> : <Printer className="h-4 w-4 mr-2" />}
+            {contract ? (
+              <>
+                <span>View contract</span>
+                <span className="ml-2 font-medium opacity-70 notranslate" translate="no">
+                  {contract.contract_number}
+                </span>
+              </>
+            ) : (
+              <span>Booking confirmation</span>
+            )}
+          </Button>
+        )}
+      </div>
 
       <Dialog open={acceptOpen} onOpenChange={(o) => busy === null && setAcceptOpen(o)}>
         <DialogContent className="max-w-lg rounded-lg max-h-[90vh] overflow-y-auto">
@@ -268,7 +314,7 @@ const BookingOfferPanel = ({ booking, viewer, artistName, onEditOffer, onChanged
 
             <Separator />
 
-            <Button variant="outline" size="sm" className="rounded-lg" type="button" onClick={handlePreviewContract}>
+            <Button variant="outline" size="sm" className="rounded-lg" type="button" onClick={previewContract}>
               <FileSignature className="h-3.5 w-3.5 mr-1.5" />
               Read the contract
             </Button>
@@ -296,7 +342,7 @@ const BookingOfferPanel = ({ booking, viewer, artistName, onEditOffer, onChanged
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

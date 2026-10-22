@@ -64,6 +64,7 @@ const ERROR_TEXT: Record<string, string> = {
   CONTRACT_TERMS_NOT_ACCEPTED: "Please confirm that you agree to the contract terms.",
   CONTRACT_LOCATION_REQUIRED: "Please enter where the event takes place.",
   CONTRACT_DETAILS_REQUIRED: "Please fill in your contract details (name and address).",
+  BOOKING_HAS_CONTRACT: "This booking has a contract and can't be deleted. You can cancel it instead.",
 };
 
 /** Maps a Supabase/RPC error to a user-facing English sentence (translated by the RO dictionary). */

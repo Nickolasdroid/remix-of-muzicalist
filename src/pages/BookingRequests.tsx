@@ -5,37 +5,10 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Calendar as CalendarIcon,
-  ArrowLeft,
-  Loader2,
-  Mail,
-  Phone,
-  Trash2,
-} from "lucide-react";
-import BookingContactInfo from "@/components/BookingContactInfo";
+import { Calendar as CalendarIcon, ArrowLeft, Loader2 } from "lucide-react";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
-import BookingOfferPanel from "@/components/BookingOfferPanel";
+import BookingDetailsDialog from "@/components/BookingDetailsDialog";
 import { BOOKING_OFFER_COLUMNS } from "@/lib/bookingOffers";
 
 // Private contact columns are excluded on purpose (see get_booking_contact RPC).
@@ -199,7 +172,6 @@ const BookingRequests = () => {
       return;
     }
     toast({ title: "Booking declined" });
-    setOpen(false);
     load();
   };
 
@@ -379,179 +351,30 @@ const BookingRequests = () => {
         </div>
       </main>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md rounded-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5 text-accent" />
-              Booking Request Details
-            </DialogTitle>
-          </DialogHeader>
-          {selected && (() => {
-            const cat = categorize(selected);
-            const artist = isUserView ? artistProfiles[selected.profile_id] : null;
-            return (
-              <div className="space-y-4 mt-2">
-                <div className="flex items-center justify-between">
-                  <Badge className={statusBadgeClass(cat)}>{statusLabel(cat, selected)}</Badge>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        disabled={isSaving}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="rounded-lg">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {isUserView ? "Cancel Booking Request" : "Delete Booking Request"}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {isUserView
-                            ? "Are you sure you want to cancel this booking request? This action cannot be undone."
-                            : "Are you sure you want to permanently delete this booking request? This action cannot be undone."}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(selected.id)}
-                          className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          {isUserView ? "Cancel Request" : "Delete"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {isUserView ? "Artist" : "Requester"}
-                    </Label>
-                    <p className="font-semibold text-foreground mt-1">
-                      {isUserView ? artist?.stage_name || "Artist" : selected.requester_name}
-                    </p>
-                  </div>
-
-                  <BookingOfferPanel
-                    booking={selected}
-                    viewer={isUserView ? "requester" : "artist"}
-                    artistName={
-                      artistProfiles[selected.profile_id]?.stage_name ||
-                      (isUserView ? "Artist" : artistProfiles[viewerId || ""]?.stage_name || "Artist")
-                    }
-                    onEditOffer={() => setOfferDialogOpen(true)}
-                    onChanged={load}
-                  />
-
-                  <BookingContactInfo bookingId={selected.id} status={selected.status} />
-
-
-                  <div>
-                    <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                      Event Date
-                    </Label>
-                    <p className="text-foreground mt-1 flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-accent" />
-                      {(() => {
-                        const [year, month, day] = selected.event_date.split("-").map(Number);
-                        return new Date(year, month - 1, day).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        });
-                      })()}
-                    </p>
-                  </div>
-
-                  {selected.message && selected.message.startsWith("Time:") && (
-                    <div>
-                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                        Time Interval
-                      </Label>
-                      <p className="text-foreground mt-1 flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4 text-accent" />
-                        {selected.message.split("\n")[0].replace("Time: ", "")}
-                      </p>
-                    </div>
-                  )}
-
-                  {selected.event_type && (
-                    <div>
-                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                        Event Type
-                      </Label>
-                      <p className="text-foreground mt-1">{selected.event_type}</p>
-                    </div>
-                  )}
-
-                  {selected.message && (
-                    <div>
-                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                        Message
-                      </Label>
-                      <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">
-                        "
-                        {selected.message.startsWith("Time:")
-                          ? selected.message.split("\n").slice(1).join("\n").trim() ||
-                            "No additional message"
-                          : selected.message}
-                        "
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <Label className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {isUserView ? "Sent" : "Received"}
-                    </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {new Date(selected.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                {!isUserView && (selected.status === "pending" || selected.status === "offered") && (
-                  <div className="flex gap-2">
-                    {selected.status === "pending" && (
-                      <Button
-                        className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
-                        onClick={() => setOfferDialogOpen(true)}
-                        disabled={isSaving}
-                      >
-                        Send offer
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      className="flex-1 rounded-lg"
-                      onClick={() => declineRequest(selected.id)}
-                      disabled={isSaving}
-                    >
-                      {selected.status === "offered" ? "Withdraw offer" : "Decline"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
+      <BookingDetailsDialog
+        open={open}
+        onOpenChange={setOpen}
+        booking={selected}
+        viewer={isUserView ? "requester" : "artist"}
+        counterpartName={
+          selected
+            ? isUserView
+              ? artistProfiles[selected.profile_id]?.stage_name || "Artist"
+              : selected.requester_name
+            : ""
+        }
+        counterpartAvatarUrl={selected && isUserView ? artistProfiles[selected.profile_id]?.avatar_url : null}
+        artistName={
+          selected
+            ? artistProfiles[selected.profile_id]?.stage_name ||
+              (isUserView ? "Artist" : artistProfiles[viewerId || ""]?.stage_name || "Artist")
+            : "Artist"
+        }
+        onOffer={() => setOfferDialogOpen(true)}
+        onArtistDecline={declineRequest}
+        onDelete={handleDelete}
+        onChanged={load}
+      />
 
       <BookingOfferDialog
         open={offerDialogOpen}

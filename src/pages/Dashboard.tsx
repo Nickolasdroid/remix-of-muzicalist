@@ -81,7 +81,7 @@ import PostComposerDialog from "@/components/post/PostComposerDialog";
 import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
-import BookingOfferPanel from "@/components/BookingOfferPanel";
+import BookingDetailsDialog from "@/components/BookingDetailsDialog";
 const Dashboard = () => {
   const {
     toast
@@ -3300,146 +3300,22 @@ const Dashboard = () => {
 
 
                           {/* Booking Request Detail Dialog */}
-                          <Dialog open={showBookingDetailDialog} onOpenChange={setShowBookingDetailDialog}>
-                            <DialogContent className="max-w-md rounded-lg">
-                              <DialogHeader>
-                                <DialogTitle className="flex items-center gap-2">
-                                  <CalendarIcon className="h-5 w-5 text-accent" />
-                                  Booking Request Details
-                                </DialogTitle>
-                              </DialogHeader>
-                              {selectedBookingRequest && <div className="space-y-4 mt-2">
-                                  <div className="flex items-center justify-between">
-                                    <Badge className={selectedBookingRequest.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : selectedBookingRequest.status === 'offered' ? 'bg-accent/15 text-accent border-accent/30' : selectedBookingRequest.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
-                                      {selectedBookingRequest.status === 'pending' ? 'Pending' : selectedBookingRequest.status === 'offered' ? 'Offer sent' : selectedBookingRequest.status === 'accepted' ? 'Accepted' : 'Declined'}
-                                    </Badge>
-                                    <AlertDialog>
-                                      <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" disabled={isSaving}>
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Delete Booking Request</AlertDialogTitle>
-                                          <AlertDialogDescription>
-                                            Are you sure you want to permanently delete this booking request? This action cannot be undone.
-                                          </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => handleDeleteBookingRequest(selectedBookingRequest.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                            Delete
-                                          </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                      </AlertDialogContent>
-                                    </AlertDialog>
-                                  </div>
-
-                                  <Separator />
-
-                                  <div className="space-y-3">
-                                    <div>
-                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Requester</Label>
-                                      <p className="font-semibold text-foreground mt-1">{selectedBookingRequest.requester_name}</p>
-                                    </div>
-
-                                    <BookingOfferPanel
-                                      booking={selectedBookingRequest}
-                                      viewer="artist"
-                                      artistName={profile?.stage_name || 'Artist'}
-                                      onEditOffer={() => handleAcceptBooking(selectedBookingRequest)}
-                                    />
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                      <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Email</Label>
-                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1 break-all">
-                                          <Mail className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                          {selectedBookingRequest.requester_email}
-                                        </p>
-                                      </div>
-                                      <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Phone</Label>
-                                        <p className="text-sm text-foreground mt-1 flex items-center gap-1">
-                                          <Phone className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                                          {selectedBookingRequest.requester_phone}
-                                        </p>
-                                      </div>
-                                    </div>
-
-                                    <div>
-                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Date</Label>
-                                      <p className="text-foreground mt-1 flex items-center gap-2">
-                                        <CalendarIcon className="h-4 w-4 text-accent" />
-                                        {(() => {
-                              const [year, month, day] = selectedBookingRequest.event_date.split('-').map(Number);
-                              return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              });
-                            })()}
-                                      </p>
-                                    </div>
-
-                                    {/* Parse and display time interval separately */}
-                                    {selectedBookingRequest.message && selectedBookingRequest.message.startsWith('Time:') && <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Time Interval</Label>
-                                        <p className="text-foreground mt-1 flex items-center gap-2">
-                                          <CalendarIcon className="h-4 w-4 text-accent" />
-                                          {selectedBookingRequest.message.split('\n')[0].replace('Time: ', '')}
-                                        </p>
-                                      </div>}
-
-                                    {selectedBookingRequest.event_type && <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Event Type</Label>
-                                        <p className="text-foreground mt-1">{selectedBookingRequest.event_type}</p>
-                                      </div>}
-
-                                    {selectedBookingRequest.message && <div>
-                                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Message</Label>
-                                        <p className="text-foreground mt-1 p-3 bg-muted/50 rounded-lg italic">
-                                          "{selectedBookingRequest.message.startsWith('Time:') ? selectedBookingRequest.message.split('\n').slice(1).join('\n').trim() || 'No additional message' : selectedBookingRequest.message}"
-                                        </p>
-                                      </div>}
-
-                                    <div>
-                                      <Label className="text-xs text-muted-foreground uppercase tracking-wide">Received</Label>
-                                      <p className="text-sm text-muted-foreground mt-1">
-                                        {new Date(selectedBookingRequest.created_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                                      </p>
-                                    </div>
-                                  </div>
-
-
-
-                                  <div className="flex gap-2">
-                                    {(selectedBookingRequest.status === 'pending' || selectedBookingRequest.status === 'offered') && <>
-                                      {selectedBookingRequest.status === 'pending' && <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => {
-                            handleAcceptBooking(selectedBookingRequest);
-                            setShowBookingDetailDialog(false);
-                          }} disabled={isSaving}>
-                                          Send offer
-                                        </Button>}
-                                      <Button variant="outline" className="flex-1" onClick={() => {
-                            handleDeclineBooking(selectedBookingRequest.id);
-                            setShowBookingDetailDialog(false);
-                          }} disabled={isSaving}>
-                                          {selectedBookingRequest.status === 'offered' ? 'Withdraw offer' : 'Decline'}
-                                        </Button>
-                                    </>}
-                                  </div>
-                                </div>}
-                            </DialogContent>
-                          </Dialog>
+                          <BookingDetailsDialog
+                            open={showBookingDetailDialog}
+                            onOpenChange={setShowBookingDetailDialog}
+                            booking={selectedBookingRequest}
+                            viewer="artist"
+                            counterpartName={selectedBookingRequest?.requester_name || ""}
+                            artistName={profile?.stage_name || 'Artist'}
+                            onOffer={() => selectedBookingRequest && handleAcceptBooking(selectedBookingRequest)}
+                            onArtistDecline={async (id) => {
+                              await handleDeclineBooking(id);
+                              const { data } = await supabase.from('booking_requests').select('*').eq('id', id).maybeSingle();
+                              if (data) setSelectedBookingRequest(data);
+                            }}
+                            onDelete={handleDeleteBookingRequest}
+                            onChanged={loadBookingRequests}
+                          />
 
                           <BookingOfferDialog
                             open={offerDialogOpen}
