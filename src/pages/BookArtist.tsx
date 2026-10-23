@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
+import { isDayFullyBooked } from "@/lib/calendarSlots";
 import { BookingRequestFields, findSlotClash, resolveBookingEndDate, type BookingRequestForm } from "@/components/BookingRequestDialog";
 
 interface ArtistLite {
@@ -117,6 +118,10 @@ const BookArtist = () => {
 
   const isBusyDate = (d: Date) => busyDates.some((b) => b.toDateString() === d.toDateString());
   const isBlockedDate = (d: Date) => blockedDates.some((b) => b.toDateString() === d.toDateString());
+  const hasFreeHours = (d: Date) => {
+    const ev = events.find((e) => parseYMDToLocalDate(e.event_date).toDateString() === d.toDateString());
+    return !!ev && !isDayFullyBooked(extractAllTimeSlotsFromNotes(ev.notes));
+  };
   const getEventForDate = (d: Date) =>
     events.find((e) => parseYMDToLocalDate(e.event_date).toDateString() === d.toDateString());
 
@@ -206,7 +211,7 @@ const BookArtist = () => {
   const selectedEvent = selectedDate ? getEventForDate(selectedDate) : null;
   const selectedSlots = selectedEvent ? extractAllTimeSlotsFromNotes(selectedEvent.notes) : [];
   const selectedBlocked = !!selectedDate && isBlockedDate(selectedDate);
-  const selectedFullyBooked = !!selectedDate && isBusyDate(selectedDate) && selectedSlots.length === 0;
+  const selectedFullyBooked = !!selectedDate && isBusyDate(selectedDate) && isDayFullyBooked(selectedSlots);
 
   return (
     <div className="min-h-screen bg-background">
@@ -248,8 +253,13 @@ const BookArtist = () => {
                   "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
                 day_today: "bg-emerald-500/30 text-foreground",
               }}
-              modifiers={{ busy: busyDates, blocked: blockedDates }}
+              modifiers={{
+                busy: busyDates.filter((d) => !hasFreeHours(d)),
+                partial: busyDates.filter((d) => hasFreeHours(d)),
+                blocked: blockedDates,
+              }}
               modifiersClassNames={{
+                partial: "bg-amber-500/80 text-black hover:bg-amber-500/80 hover:text-black",
                 busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
                 blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80",
               }}
@@ -259,6 +269,7 @@ const BookArtist = () => {
             <div className="w-full flex flex-wrap justify-center gap-3 text-xs">
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500" />Available</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-destructive/70" />Booked</div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-500/80" />Partially booked</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted/80" />Unavailable</div>
             </div>
 

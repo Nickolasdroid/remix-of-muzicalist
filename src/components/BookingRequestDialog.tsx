@@ -125,6 +125,8 @@ export const BookingRequestFields = ({
     return s.charAt(0).toUpperCase() + s.slice(1);
   })();
   const shortDate = (d: Date) => d.toLocaleDateString(locale, { day: "numeric", month: "short" });
+  /** "vin. 24 oct." */
+  const dayLabel = (d: Date) => d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
 
   const end = resolveBookingEndDate(date, form);
   const multiDay = !!form.endDate && form.endDate.toDateString() !== date.toDateString();
@@ -132,6 +134,25 @@ export const BookingRequestFields = ({
   const timesMissing = !form.startTime || !form.endTime;
   const clash = findSlotClash(date, form, busySlots);
   const sortedBusy = [...busySlots].sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
+  const dayCount = multiDay
+    ? Math.round((new Date(form.endDate!).setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000) + 1
+    : 1;
+
+  const endDayPicker = (
+    <PopoverContent className="w-auto p-0" align="start">
+      <Calendar
+        mode="single"
+        selected={form.endDate || undefined}
+        onSelect={(d) => {
+          setForm({ ...form, endDate: d || null });
+          setMultiDayOpen(false);
+        }}
+        disabled={(d) => d <= date}
+        initialFocus
+        className="p-3 pointer-events-auto"
+      />
+    </PopoverContent>
+  );
 
   return (
     <form onSubmit={onSubmit} className={className ?? "space-y-4"}>
@@ -157,28 +178,48 @@ export const BookingRequestFields = ({
           </div>
         )}
 
-        {(
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label htmlFor="startTime" className="text-xs text-muted-foreground font-normal">From</Label>
-              <TimeSelector
-                id="startTime"
-                value={form.startTime}
-                onChange={(v) => setForm({ ...form, startTime: v })}
-                placeholder="--:--"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="endTime" className="text-xs text-muted-foreground font-normal">Until</Label>
-              <TimeSelector
-                id="endTime"
-                value={form.endTime}
-                onChange={(v) => setForm({ ...form, endTime: v })}
-                placeholder="--:--"
-              />
-            </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <Label htmlFor="startTime" className="flex h-5 items-center gap-1 text-xs text-muted-foreground font-normal">
+              <span>{multiDay ? "Starts" : "From"}</span>
+              {multiDay && (
+                <span className="notranslate text-foreground/80" translate="no">· {dayLabel(date)}</span>
+              )}
+            </Label>
+            <TimeSelector
+              id="startTime"
+              value={form.startTime}
+              onChange={(v) => setForm({ ...form, startTime: v })}
+              placeholder="--:--"
+            />
           </div>
-        )}
+          <div className="space-y-1">
+            <Label htmlFor="endTime" className="flex h-5 items-center gap-1 text-xs text-muted-foreground font-normal">
+              <span>{multiDay ? "Ends" : "Until"}</span>
+              {multiDay && (
+                <Popover open={multiDayOpen} onOpenChange={setMultiDayOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="notranslate rounded px-1 text-accent hover:bg-accent/10"
+                      translate="no"
+                      aria-label="Change the end day"
+                    >
+                      · {dayLabel(form.endDate!)} ▾
+                    </button>
+                  </PopoverTrigger>
+                  {endDayPicker}
+                </Popover>
+              )}
+            </Label>
+            <TimeSelector
+              id="endTime"
+              value={form.endTime}
+              onChange={(v) => setForm({ ...form, endTime: v })}
+              placeholder="--:--"
+            />
+          </div>
+        </div>
 
         {clash && (
           <p className="flex items-start gap-1.5 rounded-lg bg-destructive/10 px-2.5 py-2 text-xs text-destructive">
@@ -202,17 +243,27 @@ export const BookingRequestFields = ({
         )}
 
         {multiDay ? (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <CalendarRange className="h-3.5 w-3.5 shrink-0" />
-            <span>Multi-day event</span>
-            <button
-              type="button"
-              className="ml-auto inline-flex items-center gap-1 hover:text-foreground"
-              onClick={() => setForm({ ...form, endDate: null })}
-            >
-              <X className="h-3.5 w-3.5" />
-              <span>Remove</span>
-            </button>
+          // A multi-day event runs continuously from the start time on the first day
+          // to the end time on the last day; every day in between is fully booked.
+          <div className="rounded-lg border border-accent/30 bg-accent/[0.07] px-3 py-2.5 text-xs">
+            <div className="flex items-center gap-2">
+              <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
+              <span className="font-semibold text-foreground">
+                <span>Multi-day event</span>
+                <span className="notranslate" translate="no"> · {dayCount}</span> <span>days</span>
+              </span>
+              <button
+                type="button"
+                className="ml-auto inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                onClick={() => setForm({ ...form, endDate: null })}
+              >
+                <X className="h-3.5 w-3.5" />
+                <span>Single day</span>
+              </button>
+            </div>
+            <p className="mt-1.5 pl-[22px] text-muted-foreground notranslate tabular-nums" translate="no">
+              {dayLabel(date)}, {form.startTime || "--:--"} → {dayLabel(form.endDate!)}, {form.endTime || "--:--"}
+            </p>
           </div>
         ) : !timesMissing && (
           // Optional, only once the times are set: for festivals and other multi-day events
@@ -226,19 +277,7 @@ export const BookingRequestFields = ({
                 <span>Spans several days? Choose the end day</span>
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={form.endDate || undefined}
-                onSelect={(d) => {
-                  setForm({ ...form, endDate: d || null });
-                  setMultiDayOpen(false);
-                }}
-                disabled={(d) => d <= date}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
+            {endDayPicker}
           </Popover>
         )}
       </div>

@@ -4,8 +4,11 @@ import { Calendar } from "@/components/ui/calendar";
 interface ArtistAvailabilityCalendarProps {
   selected?: Date;
   onSelect: (date: Date | undefined) => void;
+  /** Fully booked days */
   busyDates: Date[];
   blockedDates: Date[];
+  /** Days with bookings but still some free hours */
+  partialDates?: Date[];
   disablePastDates?: boolean;
 }
 
@@ -23,6 +26,7 @@ export const calendarAvailabilityStyles = {
 
 const legendItems = [
   { label: "Booked", swatch: "bg-destructive/70" },
+  { label: "Partially booked", swatch: "bg-amber-500/80" },
   { label: "Unavailable", swatch: "bg-muted/80" },
   { label: "Available", swatch: calendarAvailabilityStyles.availableSwatch },
 ];
@@ -37,7 +41,7 @@ function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
       }
     >
       {desktop && <h4 className="mb-3 font-semibold text-foreground">Legend</h4>}
-      <div className={desktop ? "flex flex-col gap-3" : "flex justify-between gap-2"}>
+      <div className={desktop ? "flex flex-col gap-3" : "flex flex-wrap justify-between gap-x-3 gap-y-2"}>
         {legendItems.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <span
@@ -59,6 +63,7 @@ export function ArtistAvailabilityCalendar({
   onSelect,
   busyDates,
   blockedDates,
+  partialDates = [],
   disablePastDates = false,
 }: ArtistAvailabilityCalendarProps) {
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
@@ -74,10 +79,12 @@ export function ArtistAvailabilityCalendar({
           day_selected: calendarAvailabilityStyles.availableDay,
           day_today: calendarAvailabilityStyles.availableToday,
         }}
-        modifiers={{ busy: busyDates, blocked: blockedDates }}
+        modifiers={{ busy: busyDates, partial: partialDates, blocked: blockedDates }}
         modifiersClassNames={{
           busy:
             "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
+          partial:
+            "bg-amber-500/80 text-black hover:bg-amber-500/80 hover:text-black",
           blocked:
             "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80",
         }}

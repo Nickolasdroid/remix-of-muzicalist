@@ -29,6 +29,7 @@ import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarChe
 import CommentsDialog from "@/components/CommentsDialog";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import DateAvailabilityDialog from "@/components/DateAvailabilityDialog";
+import { isDayFullyBooked } from "@/lib/calendarSlots";
 import BookingRequestDialog, { findSlotClash, resolveBookingEndDate, type AvailabilityTone } from "@/components/BookingRequestDialog";
 import { Send } from "lucide-react";
 import { sharePost } from "@/lib/sharePost";
@@ -535,6 +536,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     return slots;
   };
   const isOwnProfile = currentUserId === id;
+  /** A busy day whose bookings still leave free hours (shown amber, can be requested) */
+  const hasFreeHours = (date: Date) =>
+    isBusyDate(date) && !isDayFullyBooked(getEventsForDate(date).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes)));
   const handlePostLike = async (postId: string) => {
     if (!currentUserId) {
       toast({
@@ -2160,7 +2164,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         <ArtistAvailabilityCalendar
                           selected={selectedDate}
                           onSelect={handleDateSelect}
-                          busyDates={getBusyDates()}
+                          busyDates={getBusyDates().filter((d) => !hasFreeHours(d))}
+                          partialDates={getBusyDates().filter((d) => hasFreeHours(d))}
                           blockedDates={getBlockedDates()}
                           disablePastDates
                         />
@@ -2176,8 +2181,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           day: 'numeric'
                         })}
                               </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? "bg-destructive text-destructive-foreground" : calendarAvailabilityStyles.availableBadge}>
-                                {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? "Booked" : "Available"}
+                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? (hasFreeHours(selectedDate) ? "bg-amber-500/80 text-black hover:bg-amber-500/80" : "bg-destructive text-destructive-foreground") : calendarAvailabilityStyles.availableBadge}>
+                                {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? (hasFreeHours(selectedDate) ? "Partially booked" : "Booked") : "Available"}
                               </Badge>
                             </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
                               <p className="text-sm text-center">Select a date to send a booking request</p>
@@ -2194,7 +2199,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               {selectedDate && (() => {
                 const slots = getEventsForDate(selectedDate).flatMap((event) => extractAllTimeSlotsFromNotes(event.notes));
                 const busy = isBusyDate(selectedDate);
-                const state = isBlockedDate(selectedDate) ? "blocked" : busy && slots.length > 0 ? "partial" : "full";
+                const state = isBlockedDate(selectedDate) ? "blocked" : busy && !isDayFullyBooked(slots) ? "partial" : "full";
                 return (
                   <DateAvailabilityDialog
                     open={dateDetailDialogOpen}
@@ -2268,7 +2273,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   const events = getEventsForDate(selectedDate);
                   const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                   if (isBlockedDate(selectedDate)) return { label: "Unavailable", tone: "muted" as AvailabilityTone };
-                  if (isBusyDate(selectedDate) && slots.length > 0) {
+                  if (isBusyDate(selectedDate) && !isDayFullyBooked(slots)) {
                     return { label: "Partially booked", tone: "amber" as AvailabilityTone };
                   }
                   if (isBusyDate(selectedDate)) return { label: "Fully booked", tone: "red" as AvailabilityTone };

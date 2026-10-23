@@ -2669,4 +2669,9 @@ export const RO_TEXT: Record<string, string> = {
   "The artist is booked for the whole day. Choose another date.": "Artistul este rezervat toată ziua. Alege altă dată.",
   "Booking calendar: receive requests with exact date and time": "Calendar de rezervări: primești cereri cu dată și oră exactă",
   "Spans several days? Choose the end day": "Se întinde pe mai multe zile? Alege ziua de final",
+  "Starts": "Începe",
+  "Ends": "Se termină",
+  "Single day": "O singură zi",
+  "days": "zile",
+  "Change the end day": "Schimbă ziua de final",
 };

@@ -82,6 +82,7 @@ import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
 import BookingDetailsDialog from "@/components/BookingDetailsDialog";
+import { isDayFullyBooked, parseSlotsFromNotes } from "@/lib/calendarSlots";
 const Dashboard = () => {
   const {
     toast
@@ -2952,7 +2953,7 @@ const Dashboard = () => {
                         setEventStatus('available');
                         setEventNotes("");
                       }
-                    }} busyDates={calendarEvents.filter((e) => e.status === 'busy' || e.status === 'booked').map((e) => parseYMDToLocalDate(e.event_date))} blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))} />
+                    }} busyDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))} partialDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && !isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))} blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))} />
                             
                             {/* Date Details Form */}
                             {(() => {
