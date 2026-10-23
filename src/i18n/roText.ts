@@ -2668,4 +2668,5 @@ export const RO_TEXT: Record<string, string> = {
   "The artist has marked this day as unavailable. Choose another date.": "Artistul a marcat această zi ca indisponibilă. Alege altă dată.",
   "The artist is booked for the whole day. Choose another date.": "Artistul este rezervat toată ziua. Alege altă dată.",
   "Booking calendar: receive requests with exact date and time": "Calendar de rezervări: primești cereri cu dată și oră exactă",
+  "Spans several days? Choose the end day": "Se întinde pe mai multe zile? Alege ziua de final",
 };

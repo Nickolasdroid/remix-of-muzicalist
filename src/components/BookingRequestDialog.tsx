@@ -214,12 +214,16 @@ export const BookingRequestFields = ({
               <span>Remove</span>
             </button>
           </div>
-        ) : (
+        ) : !timesMissing && (
+          // Optional, only once the times are set: for festivals and other multi-day events
           <Popover open={multiDayOpen} onOpenChange={setMultiDayOpen}>
             <PopoverTrigger asChild>
-              <button type="button" className="flex items-center gap-2 text-xs text-accent hover:underline">
+              <button
+                type="button"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
+              >
                 <CalendarRange className="h-3.5 w-3.5" />
-                <span>The event lasts several days</span>
+                <span>Spans several days? Choose the end day</span>
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
