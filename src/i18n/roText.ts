@@ -2663,9 +2663,9 @@ export const RO_TEXT: Record<string, string> = {
   "This time overlaps with a booking": "Intervalul se suprapune cu o rezervare",
   "Choose another time.": "Alege alt interval.",
   "This time overlaps with a booking. Choose another time.": "Intervalul se suprapune cu o rezervare. Alege alt interval.",
-  "Calendar: booking requests by day & time intervals": "Calendar: cereri de rezervare pe zile și intervale orare",
   "Choose the start and end time of the event.": "Alege ora de început și ora de sfârșit a evenimentului.",
   "Pick a date above to start your booking request.": "Alege o dată din calendar ca să începi cererea de rezervare.",
   "The artist has marked this day as unavailable. Choose another date.": "Artistul a marcat această zi ca indisponibilă. Alege altă dată.",
   "The artist is booked for the whole day. Choose another date.": "Artistul este rezervat toată ziua. Alege altă dată.",
+  "Booking calendar: receive requests with exact date and time": "Calendar de rezervări: primești cereri cu dată și oră exactă",
 };
