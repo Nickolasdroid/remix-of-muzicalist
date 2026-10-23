@@ -140,10 +140,10 @@ export const canPost = (plan?: string | null): boolean => {
   return getPlan(plan) !== 'Free';
 };
 
-/** Whether the plan supports time interval bookings */
-export const canUseTimeIntervals = (plan?: string | null): boolean => {
-  return getPlan(plan) === 'Premium';
-};
+/**
+ * Booking by time interval is available on every plan (the time goes into the offer and
+ * the contract), so there is no plan check for it anymore.
+ */
 
 /**
  * Get the first N social links that have values, respecting plan limit.

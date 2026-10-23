@@ -49,7 +49,7 @@ import InstagramZoomPreview from "@/components/InstagramZoomPreview";
 import ImageLightbox from "@/components/ImageLightbox";
 import { PricingEntriesDisplay } from "@/components/PricingEntriesEditor";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, canUseTimeIntervals, computeGalleryVisibility } from "@/lib/planLimits";
+import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isFree as isPlanFree, getVideoLimit, getImageLimit, computeGalleryVisibility } from "@/lib/planLimits";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
@@ -702,10 +702,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     const endDate = resolveBookingEndDate(selectedDate, bookingForm);
     const isSameDay = endDate.toDateString() === selectedDate.toDateString();
 
-    if (!!bookingForm.startTime !== !!bookingForm.endTime) {
+    if (!bookingForm.startTime || !bookingForm.endTime) {
       toast({
         title: "Invalid Time",
-        description: "Choose both the start and the end time.",
+        description: "Choose the start and end time of the event.",
         variant: "destructive"
       });
       return;
@@ -2268,13 +2268,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   const events = getEventsForDate(selectedDate);
                   const slots = events.flatMap((e) => extractAllTimeSlotsFromNotes(e.notes));
                   if (isBlockedDate(selectedDate)) return { label: "Unavailable", tone: "muted" as AvailabilityTone };
-                  if (isBusyDate(selectedDate) && slots.length > 0 && canUseTimeIntervals(artist?.plan)) {
+                  if (isBusyDate(selectedDate) && slots.length > 0) {
                     return { label: "Partially booked", tone: "amber" as AvailabilityTone };
                   }
                   if (isBusyDate(selectedDate)) return { label: "Fully booked", tone: "red" as AvailabilityTone };
                   return { label: "Available", tone: "green" as AvailabilityTone };
                 })()}
-                allowTimes={canUseTimeIntervals(artist?.plan)}
                 form={bookingForm}
                 setForm={setBookingForm}
                 onSubmit={handleBookingSubmit}
