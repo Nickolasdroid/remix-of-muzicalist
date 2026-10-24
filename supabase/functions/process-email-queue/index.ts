@@ -52,11 +52,22 @@ function parseJwtClaims(token: string): Record<string, unknown> | null {
   }
 }
 
+// A message as returned by read_email_batch.
+type QueueMessage = {
+  msg_id: number
+  read_ct?: number | null
+  enqueued_at?: string | null
+  message: Record<string, unknown>
+}
+
 // Move a message to the dead letter queue and log the reason.
+// The client is created without a Database generic, so the helper must accept
+// the same loose client type; ReturnType<typeof createClient> (no type argument)
+// resolves the schema to `never` and breaks every query inside this helper.
 async function moveToDlq(
-  supabase: ReturnType<typeof createClient>,
+  supabase: ReturnType<typeof createClient<any>>,
   queue: string,
-  msg: { msg_id: number; message: Record<string, unknown> },
+  msg: QueueMessage,
   reason: string
 ): Promise<void> {
   const payload = msg.message
@@ -156,12 +167,12 @@ Deno.serve(async (req) => {
     const messageIds = Array.from(
       new Set(
         messages
-          .map((msg) =>
+          .map((msg: QueueMessage) =>
             msg?.message?.message_id && typeof msg.message.message_id === 'string'
               ? msg.message.message_id
               : null
           )
-          .filter((id): id is string => Boolean(id))
+          .filter((id: unknown): id is string => Boolean(id))
       )
     )
     const failedAttemptsByMessageId = new Map<string, number>()
