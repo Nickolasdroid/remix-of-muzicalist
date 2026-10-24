@@ -24,11 +24,12 @@ export const calendarAvailabilityStyles = {
     "bg-calendar-available/10 text-calendar-available border-calendar-available/30",
 } as const;
 
+// Ordered from most to least bookable; on phones they sit two per row
 const legendItems = [
-  { label: "Booked", swatch: "bg-destructive/70" },
-  { label: "Partially booked", swatch: "bg-amber-500/80" },
-  { label: "Unavailable", swatch: "bg-muted/80" },
   { label: "Available", swatch: calendarAvailabilityStyles.availableSwatch },
+  { label: "Partially booked", swatch: "bg-amber-500/80" },
+  { label: "Booked", swatch: "bg-destructive/70" },
+  { label: "Unavailable", swatch: "bg-muted/80" },
 ];
 
 function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
@@ -41,7 +42,7 @@ function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
       }
     >
       {desktop && <h4 className="mb-3 font-semibold text-foreground">Legend</h4>}
-      <div className={desktop ? "flex flex-col gap-3" : "flex flex-wrap justify-between gap-x-3 gap-y-2"}>
+      <div className={desktop ? "flex flex-col gap-3" : "grid grid-cols-2 gap-x-4 gap-y-2.5"}>
         {legendItems.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <span

@@ -266,10 +266,10 @@ const BookArtist = () => {
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
             />
 
-            <div className="w-full flex flex-wrap justify-center gap-3 text-xs">
+            <div className="grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 text-xs sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-3">
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500" />Available</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-destructive/70" />Booked</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-500/80" />Partially booked</div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-destructive/70" />Booked</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted/80" />Unavailable</div>
             </div>
 
