@@ -317,8 +317,8 @@ Deno.serve(async (req) => {
     }
 
     // Link event row to profile if possible
-    if ("customer" in (event.data.object as Record<string, unknown>)) {
-      const obj = event.data.object as { customer?: string | { id: string } };
+    const obj = event.data.object as { customer?: string | { id: string } };
+    if ("customer" in obj) {
       const customerId = typeof obj.customer === "string" ? obj.customer : obj.customer?.id;
       if (customerId) {
         const profileId = await findProfileIdByCustomer(customerId);
