@@ -25,7 +25,7 @@ const PostMediaFrame = ({ url, type, alt = "Post media", onClick, className }: P
     <div
       onClick={onClick}
       className={cn(
-        "mt-2 w-full flex items-center justify-center overflow-hidden bg-muted/30",
+        "mt-2 w-full flex items-center justify-center overflow-hidden",
         onClick && "cursor-pointer",
         className
       )}

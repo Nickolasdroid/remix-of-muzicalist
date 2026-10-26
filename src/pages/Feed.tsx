@@ -1,3 +1,4 @@
+import PostActions from "@/components/PostActions";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
@@ -467,7 +468,7 @@ const Feed = () => {
               item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
-                  <div className="px-3.5 pt-3 pb-1">
+                  <div className="px-3.5 pt-3 pb-0">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Link to={`/artist/${item.profile_id}`}>
@@ -533,57 +534,20 @@ const Feed = () => {
                       />
                     </div>
 
-                    <ExpandableText text={item.content} className="mt-3 my-[5px]" />
+                    <ExpandableText text={item.content} className="mt-2" />
                   </div>
                   
                   {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Announcement media" onClick={() => setMediaPreview({
                     url: item.media_url!,
                     type: item.media_type === "video" ? "video" : "image"
                   })} />}
-                  <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
-                    <div className="flex items-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleLike(item.id)}
-                        aria-label={item.isLiked ? "Unlike promotion" : "Like promotion"}
-                        aria-pressed={item.isLiked}
-                        className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                      >
-                        <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
-                      </Button>
-                      <LikeCountButton count={item.likes} targetId={item.id} targetType="announcement" />
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setCommentsTarget({ id: item.id, type: "announcement" })}
-                          aria-label="Comment"
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                        >
-                          <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                        </Button>
-                        {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "announcement" })}
-                        aria-label="Share"
-                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                      >
-                        <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
-                      </Button>
-                    </div>
-                  </div>
+                  <PostActions isLiked={item.isLiked} onLike={() => handleLike(item.id)} onComment={() => setCommentsTarget({ id: item.id, type: "announcement" })} onShare={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "announcement" })} likes={item.likes} likeTargetId={item.id} likeTargetType="announcement" commentsCount={item.commentsCount} />
 
                 </Card>
               ) : (
                 /* Regular Post Card */
                 <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
-                <div className="px-3.5 pt-3 pb-1">
+                <div className="px-3.5 pt-3 pb-0">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(item.profile.plan)}`}>
@@ -661,52 +625,14 @@ const Feed = () => {
                   </div>
 
                   {/* Posts are limited to 200 chars at creation — always render the full text, no "more" control. */}
-                  <ExpandableText text={item.content} maxLength={200} className="mt-3 my-[5px]" mentions={item.mentions} />
+                  <ExpandableText text={item.content} maxLength={200} className="mt-2" mentions={item.mentions} />
                 </div>
                 
                 {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
             url: item.media_url!,
             type: item.media_type === "video" ? "video" : "image"
           })} />}
-                <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
-                  <div className="flex items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleLike(item.id)}
-                      aria-label={item.isLiked ? "Unlike post" : "Like post"}
-                      aria-pressed={item.isLiked}
-                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${item.isLiked ? "text-destructive" : "text-muted-foreground"}`}
-                    >
-                      <Heart className={`lucide lucide-heart !h-7 !w-7 ${item.isLiked ? "fill-current" : ""}`} />
-                    </Button>
-                    <LikeCountButton count={item.likes} targetId={item.id} />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <div className="flex items-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setCommentsTarget({ id: item.id, type: "post" })}
-                        aria-label="Comment"
-                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                      >
-                        <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                      </Button>
-                      {item.commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{item.commentsCount}</span>}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "post" })}
-                      aria-label="Share"
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                    >
-                      <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
-                    </Button>
-                  </div>
-                </div>
+                <PostActions isLiked={item.isLiked} onLike={() => handleLike(item.id)} onComment={() => setCommentsTarget({ id: item.id, type: "post" })} onShare={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "post" })} likes={item.likes} likeTargetId={item.id} commentsCount={item.commentsCount} />
 
               </Card>
               )

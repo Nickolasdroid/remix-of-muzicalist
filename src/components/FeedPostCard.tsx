@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Heart, MessageCircle, Send, Globe } from "lucide-react";
+import PostActions from "@/components/PostActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,7 +83,7 @@ const FeedPostCard = ({
   const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   return (
     <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
-      <div className="px-3.5 pt-3 pb-1">
+      <div className="px-3.5 pt-3 pb-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(author.plan as any)}`}>
@@ -143,7 +144,7 @@ const FeedPostCard = ({
             onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
             className={onOpen ? "cursor-pointer" : undefined}
           >
-            <ExpandableText text={content} maxLength={200} className="mt-3 my-[5px]" mentions={mentions} />
+            <ExpandableText text={content} maxLength={200} className="mt-2" mentions={mentions} />
           </div>
           </div>
         )}
@@ -154,38 +155,7 @@ const FeedPostCard = ({
       )}
 
 
-      <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
-        <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onLike}
-            aria-label={isLiked ? "Unlike post" : "Like post"}
-            aria-pressed={isLiked}
-            className={`${actionBtnClass} ${isLiked ? "text-destructive" : "text-muted-foreground"}`}
-          >
-            <Heart className={`!h-7 !w-7 ${isLiked ? "fill-current" : ""}`} />
-          </Button>
-          {likes > 0 && (postId
-            ? <LikeCountButton count={likes} targetId={postId} />
-            : <span className="text-lg font-semibold text-foreground -ml-1">{likes}</span>)}
-        </div>
-
-        <div className="flex items-center gap-1">
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={onComment} aria-label="Comment" className={actionBtnClass}>
-              <MessageCircle className="!w-7 !h-7" />
-            </Button>
-            {commentsCount > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{commentsCount}</span>}
-          </div>
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={onShare} aria-label="Share" className={actionBtnClass}>
-              <Send className="!w-7 !h-7 rotate-[20deg]" />
-            </Button>
-            {!!shares && shares > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{shares}</span>}
-          </div>
-        </div>
-      </div>
+      <PostActions isLiked={isLiked} onLike={onLike} onComment={onComment} onShare={onShare} likes={likes} likeTargetId={postId} commentsCount={commentsCount} shares={shares} />
     </Card>
   );
 };

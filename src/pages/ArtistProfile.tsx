@@ -1,3 +1,4 @@
+import PostActions from "@/components/PostActions";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
@@ -1761,7 +1762,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         const promo = item as typeof promotions[0];
                         return (
                           <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
-                                <div className="px-3.5 pt-3 pb-1">
+                                <div className="px-3.5 pt-3 pb-0">
                                   <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                       <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
@@ -1807,49 +1808,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                                       ]}
                                     />
                                   </div>
-                                  <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(promo.id, "promotion")); }}><ExpandableText text={promo.description} className="mt-3" /></div>
+                                  <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(promo.id, "promotion")); }}><ExpandableText text={promo.description} className="mt-2" /></div>
                                 </div>
                                 {promo.media_url &&
                             <PostMediaFrame url={promo.media_url} type={promo.media_type} alt="Promotion media" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })} />
                             }
-                              <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
-                                <div className="flex items-center">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleAnnouncementLike(promo.id)}
-                                    aria-label={(promo as any).isLiked ? "Unlike promotion" : "Like promotion"}
-                                    aria-pressed={(promo as any).isLiked}
-                                    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${(promo as any).isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
-                                  >
-                                    <Heart className={`lucide lucide-heart !h-7 !w-7 ${(promo as any).isLiked ? 'fill-current' : ''}`} />
-                                  </Button>
-                                  <LikeCountButton count={(promo as any).likes || 0} targetId={promo.id} targetType="announcement" />
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <div className="flex items-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => setCommentsTarget({ id: promo.id, type: "announcement" })}
-                                      aria-label="Comment"
-                                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                                    >
-                                      <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                    </Button>
-                                    {((promo as any).commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{(promo as any).commentsCount}</span>}
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "announcement" })}
-                                    aria-label="Share"
-                                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                                  >
-                                    <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
-                                  </Button>
-                                </div>
-                              </div>
+                              <PostActions isLiked={(promo as any).isLiked} onLike={() => handleAnnouncementLike(promo.id)} onComment={() => setCommentsTarget({ id: promo.id, type: "announcement" })} onShare={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "announcement" })} likes={(promo as any).likes || 0} likeTargetId={promo.id} likeTargetType="announcement" commentsCount={(promo as any).commentsCount} />
 
                               </Card>);
 
@@ -1859,7 +1823,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       return (
                         <Card key={post.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                             {/* Header */}
-                            <div className="px-3.5 pt-3 pb-1">
+                            <div className="px-3.5 pt-3 pb-0">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
@@ -1919,7 +1883,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                               {/* Content */}
                               {/* Posts are limited to 200 chars at creation — always render the full text, no "more" control. */}
-                              <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(post.id)); }}><ExpandableText text={post.content} maxLength={200} className="mt-3" /></div>
+                              <div className="cursor-pointer" onClick={(e) => { if (!(e.target as HTMLElement).closest("a,button")) navigate(postDetailPath(post.id)); }}><ExpandableText text={post.content} maxLength={200} className="mt-2" /></div>
                             </div>
                             
                             {/* Media */}
@@ -1929,45 +1893,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           })} />}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
-                              <div className="flex items-center">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handlePostLike(post.id)}
-                                  aria-label={post.isLiked ? "Unlike post" : "Like post"}
-                                  aria-pressed={post.isLiked}
-                                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0 ${post.isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
-                                >
-                                  <Heart className={`lucide lucide-heart !h-7 !w-7 ${post.isLiked ? 'fill-current' : ''}`} />
-                                </Button>
-                                <LikeCountButton count={post.likes} targetId={post.id} />
-                              </div>
-
-                              <div className="flex items-center gap-1">
-                                <div className="flex items-center">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setCommentsTarget({ id: post.id, type: "post" })}
-                                    aria-label="Comment"
-                                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                                  >
-                                    <MessageCircle className="lucide lucide-message-circle !w-7 !h-7" />
-                                  </Button>
-                                  {(post.commentsCount || 0) > 0 && <span className="text-sm font-semibold text-foreground -ml-1">{post.commentsCount}</span>}
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "post" })}
-                                  aria-label="Share"
-                                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 h-10 w-10 rounded-full hover:bg-transparent hover:text-inherit active:bg-transparent text-muted-foreground mx-0 my-0 px-0 py-0"
-                                >
-                                  <Send className="lucide lucide-share-2 !w-7 !h-7 rotate-[20deg]" />
-                                </Button>
-                              </div>
-                            </div>
+                            <PostActions isLiked={post.isLiked} onLike={() => handlePostLike(post.id)} onComment={() => setCommentsTarget({ id: post.id, type: "post" })} onShare={() => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type: "post" })} likes={post.likes} likeTargetId={post.id} commentsCount={post.commentsCount} />
 
                           </Card>);
 
