@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { CalendarDays, Clock, MapPin, Music2, Users, Wallet } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
@@ -7,13 +7,10 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { cn, formatSmartDate } from "@/lib/utils";
 import {
-  COLLAB_TYPE_LABEL,
   CollabType,
   MyAvailability,
   OpportunitySeeking,
   formatOpportunityBudget,
-  instrumentLabel,
-  seekingLabel,
   formatPlace,
 } from "@/lib/opportunities";
 
@@ -64,13 +61,13 @@ interface OpportunityCardProps {
   onAuthorClick?: () => void;
 }
 
-const SEEKING_TAG: Record<OpportunitySeeking, string> = {
-  DJ: "Looking for a DJ",
-  Band: "Looking for a band",
-  Singer: "Looking for a singer",
-  Instrumentalist: "Looking for an instrumentalist",
-  MC: "Looking for an MC",
+
+const COLLAB_PHRASE: Record<CollabType, [en: string, ro: string]> = {
+  one_event: ["one event", "un singur eveniment"],
+  replacement: ["stand-in", "înlocuire"],
+  permanent: ["joins the band", "permanent în trupă"],
 };
+const collabPhrase = (c: CollabType, lang: string) => COLLAB_PHRASE[c][lang.startsWith("ro") ? 1 : 0];
 
 const AVAILABILITY: Record<MyAvailability, { text: string; tone: string }> = {
   available: { text: "You're available on this date", tone: "text-emerald-500" },
@@ -80,14 +77,6 @@ const AVAILABILITY: Record<MyAvailability, { text: string; tone: string }> = {
   blocked: { text: "You marked this date as unavailable", tone: "text-muted-foreground" },
 };
 
-const Meta = ({ icon, children, user = true }: { icon: ReactNode; children: ReactNode; user?: boolean }) => (
-  <div className="flex items-center gap-2 min-w-0 text-[13.5px] text-foreground/85">
-    <span className="text-accent shrink-0">{icon}</span>
-    <span className={cn("truncate", user && "notranslate")} translate={user ? "no" : undefined}>
-      {children}
-    </span>
-  </div>
-);
 
 /** An opportunity in the feed: who, what, when, where, for how much, and how to answer. */
 const OpportunityCard = ({
@@ -125,7 +114,6 @@ const OpportunityCard = ({
     : null;
   const budget = formatOpportunityBudget(o, lang);
   const place = formatPlace(o.city, o.county);
-  const role = [seekingLabel(o.seeking, lang), o.role_detail ? instrumentLabel(o.role_detail, lang) : null].filter(Boolean);
 
   return (
     <article className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 space-y-3 shadow-sm">
@@ -162,14 +150,6 @@ const OpportunityCard = ({
             <span className="shrink-0">{formatSmartDate(o.created_at)}</span>
           </div>
         </div>
-        <span
-          className={cn(
-            "shrink-0 rounded-full px-2.5 py-1 text-[11.5px] font-semibold whitespace-nowrap",
-            isGig ? "bg-accent/15 text-accent" : "bg-sky-400/15 text-sky-300",
-          )}
-        >
-          {isGig ? SEEKING_TAG[o.seeking] : "Looking for a collaborator"}
-        </span>
         {menu}
       </div>
 
@@ -177,24 +157,36 @@ const OpportunityCard = ({
         {o.title}
       </h3>
 
-      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-        {(!isGig || o.role_detail) && (
-          <Meta icon={<Music2 className="h-4 w-4" />}>{role.join(" · ")}</Meta>
-        )}
-        {!isGig && o.collab_type && (
-          <Meta icon={<Users className="h-4 w-4" />} user={false}>
-            {COLLAB_TYPE_LABEL[o.collab_type]}
-          </Meta>
-        )}
-        {dateText && <Meta icon={<CalendarDays className="h-4 w-4" />}>{dateText}</Meta>}
-        {o.start_time && o.end_time && (
-          <Meta icon={<Clock className="h-4 w-4" />}>
-            {o.start_time} – {o.end_time}
-          </Meta>
-        )}
-        {place && <Meta icon={<MapPin className="h-4 w-4" />}>{place}</Meta>}
-        {budget && <Meta icon={<Wallet className="h-4 w-4" />}>{budget}</Meta>}
-      </div>
+      {(dateText || place) && (
+        <div className="space-y-1.5 text-[13.5px] text-foreground/85">
+          {dateText && (
+            <p className="flex items-center gap-2 min-w-0">
+              <CalendarDays className="h-4 w-4 shrink-0 text-accent" />
+              <span className="truncate notranslate tabular-nums" translate="no">
+                {dateText}
+                {o.start_time && o.end_time && ` · ${o.start_time} – ${o.end_time}`}
+              </span>
+            </p>
+          )}
+          {place && (
+            <p className="flex items-center gap-2 min-w-0">
+              <MapPin className="h-4 w-4 shrink-0 text-accent" />
+              <span className="truncate notranslate" translate="no">
+                {place}
+                {!isGig && o.collab_type && (
+                  <span className="text-muted-foreground"> · {collabPhrase(o.collab_type, lang)}</span>
+                )}
+              </span>
+            </p>
+          )}
+        </div>
+      )}
+
+      {budget && (
+        <p className="text-[15px] font-bold text-accent notranslate tabular-nums" translate="no">
+          {budget}
+        </p>
+      )}
 
       {o.description && (
         <ExpandableText text={o.description} className="text-[13.5px] text-foreground/80" />

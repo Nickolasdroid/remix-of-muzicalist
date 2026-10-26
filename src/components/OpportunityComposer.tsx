@@ -115,6 +115,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [budgetMax, setBudgetMax] = useState("");
   const [currency, setCurrency] = useState("RON");
   const [details, setDetails] = useState("");
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [titleEdited, setTitleEdited] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -137,6 +138,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setBudgetMax("");
     setCurrency("RON");
     setDetails("");
+    setDetailsOpen(false);
     setTitle("");
     setTitleEdited(false);
   }, [open]);
@@ -172,7 +174,10 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
 
   const minN = amountOrNull(budgetMin);
   const maxN = amountOrNull(budgetMax);
-  const budgetInvalid = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
+  const budgetReversed = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
+  // A range that wide is almost always a typo (e.g. 1.800 typed as 180.000)
+  const budgetTooWide = budgetMode === "range" && !!minN && maxN != null && maxN > minN * 20;
+  const budgetInvalid = budgetReversed || budgetTooWide;
   const timesHalf = !!startTime !== !!endTime;
   const multiDay = !!eventOn && !!eventEndOn && eventEndOn > eventOn;
   const overnight = !multiDay && !!startTime && !!endTime && endTime <= startTime;
@@ -549,6 +554,36 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         )}
 
         <div>
+          <div className="flex items-baseline justify-between gap-2 mb-1.5">
+            <label htmlFor="opp-title" className="text-sm font-medium text-foreground">
+              Title
+            </label>
+            {titleEdited && suggestedTitle && (
+              <button
+                type="button"
+                onClick={() => setTitleEdited(false)}
+                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Use the suggested title
+              </button>
+            )}
+          </div>
+          <Input
+            id="opp-title"
+            maxLength={120}
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setTitleEdited(true);
+            }}
+            placeholder="Filled in from your choices"
+            className="h-10 rounded-lg notranslate"
+            translate="no"
+          />
+        </div>
+
+        <div>
           <FieldLabel optional optionalLabel="Optional">
             {isGig ? "Budget" : "Fee"}
           </FieldLabel>
@@ -597,12 +632,16 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               No budget
             </Chip>
           </div>
-          {budgetInvalid && (
+          {budgetReversed && (
             <p className="mt-1.5 text-xs text-destructive">The minimum budget can't be higher than the maximum.</p>
+          )}
+          {budgetTooWide && (
+            <p className="mt-1.5 text-xs text-destructive">The maximum can be at most 20 times the minimum. Check the amounts.</p>
           )}
         </div>
 
-        <div>
+        {detailsOpen || details ? (
+          <div>
           <div className="flex items-baseline justify-between gap-2 mb-1.5">
             <label htmlFor="opp-details" className="text-sm font-medium text-foreground">
               Details
@@ -613,6 +652,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </div>
           <Textarea
             id="opp-details"
+            autoFocus={detailsOpen && !details}
             rows={3}
             maxLength={DETAILS_MAX}
             value={details}
@@ -624,57 +664,28 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             }
             className="resize-none rounded-lg"
           />
-        </div>
-
-        <div>
-          <div className="flex items-baseline justify-between gap-2 mb-1.5">
-            <label htmlFor="opp-title" className="text-sm font-medium text-foreground">
-              Title
-            </label>
-            {titleEdited && suggestedTitle && (
-              <button
-                type="button"
-                onClick={() => setTitleEdited(false)}
-                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Use the suggested title
-              </button>
-            )}
           </div>
-          <Input
-            id="opp-title"
-            maxLength={120}
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              setTitleEdited(true);
-            }}
-            placeholder="Filled in from your choices"
-            className="h-10 rounded-lg notranslate"
-            translate="no"
-          />
-          <p className="mt-1 text-[11px] text-muted-foreground">Filled in from your choices. You can change it.</p>
-        </div>
+
+        ) : (
+          <button
+            type="button"
+            onClick={() => setDetailsOpen(true)}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            <span>+ Add details</span> <span className="text-muted-foreground/70">(<span>optional</span>)</span>
+          </button>
+        )}
 
         </div>
 
-        <div className="flex gap-2 rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground leading-relaxed">
-          <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Info className="h-3.5 w-3.5 shrink-0" />
           <span>
-            <span>
-              {isGig
-                ? "The announcement stays open until the event date or until you accept an offer."
-                : "Musicians answer you by message."}
-            </span>
-            {isArtist && (
-              <>
-                {" "}
-                <span>It uses 1 announcement from your plan.</span>
-              </>
-            )}
+            {isGig
+              ? "Open until the event date or until you accept an offer."
+              : "Answered by message · uses 1 announcement from your plan."}
           </span>
-        </div>
+        </p>
       </CreationModalShell>
     </Dialog>
   );

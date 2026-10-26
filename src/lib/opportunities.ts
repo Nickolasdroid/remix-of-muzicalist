@@ -49,10 +49,6 @@ const isRo = (lang: string) => (lang || "ro").toLowerCase().startsWith("ro");
 const lowerFirst = (s: string) =>
   s.length > 1 && s[1] === s[1].toLowerCase() && s[1] !== s[1].toUpperCase() ? s[0].toLowerCase() + s.slice(1) : s;
 
-const shortDate = (ymd: string, lang: string) => {
-  const [y, m, d] = ymd.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(isRo(lang) ? "ro-RO" : "en-GB", { day: "numeric", month: "short" });
-};
 
 export interface OpportunityTitleInput {
   kind: OpportunityKind;
@@ -74,25 +70,23 @@ const eventTypePhrase = (type: string, lang: string) => {
 
 /**
  * Suggested title, in the language the author writes in. The author can edit it.
- *   gig:    "DJ pentru nuntă în Florești" / "DJ for a wedding in Florești"
- *   collab: "Tobe pentru nuntă, 14 nov. · Cluj" / "Drums for a wedding, 14 Nov · Cluj"
+ * Date, hours and place are shown next to it on the card, so they are not repeated here.
+ *   gig:    "DJ pentru nuntă" / "DJ for a wedding"
+ *   collab: "Tobe pentru nuntă", "Saxofon pentru o înlocuire la botez", "Tobe permanent în trupă"
  */
 export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): string => {
   if (!o.seeking) return "";
   const ro = isRo(lang);
   const instrument = (o.roleDetail || "").trim();
   const role = instrument ? instrumentLabel(instrument, lang) : seekingLabel(o.seeking, lang);
-  const place = (o.city || "").trim() || (o.county || "").trim();
   const type = (o.eventType || "").trim();
 
   if (o.kind === "gig") {
     let title = role;
     if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
-    if (place) title += ro ? ` în ${place}` : ` in ${place}`;
     return title.slice(0, 120);
   }
 
-  const date = o.eventOn ? shortDate(o.eventOn, lang) : "";
   let title = role;
   switch (o.collabType) {
     case "replacement":
@@ -106,8 +100,6 @@ export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): st
       if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
       else title += ro ? " pentru un eveniment" : " for one event";
   }
-  if (date && o.collabType !== "permanent") title += `, ${date}`;
-  if (place) title += ` · ${place}`;
   return title.slice(0, 120);
 };
 

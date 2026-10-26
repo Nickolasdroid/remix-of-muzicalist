@@ -14,18 +14,18 @@ describe("buildOpportunityTitle", () => {
   it("builds a Romanian event title", () => {
     expect(
       buildOpportunityTitle({ kind: "gig", seeking: "DJ", eventType: "Wedding", city: "Florești", county: "Cluj" }, "ro"),
-    ).toBe("DJ pentru nuntă în Florești");
+    ).toBe("DJ pentru nuntă");
   });
 
-  it("uses the county when there is no town, and keeps acronyms", () => {
+  it("keeps acronyms", () => {
     expect(buildOpportunityTitle({ kind: "gig", seeking: "Band", eventType: "TV / Film Production", county: "Iași" }, "ro")).toBe(
-      "Formație pentru producție TV / Film în Iași",
+      "Formație pentru producție TV / Film",
     );
     expect(buildOpportunityTitle({ kind: "gig", seeking: "Band", eventType: "TV / Film Production", county: "Iași" }, "en")).toBe(
-      "Band for a TV / Film Production in Iași",
+      "Band for a TV / Film Production",
     );
     expect(buildOpportunityTitle({ kind: "gig", seeking: "Band", eventType: "18th Birthday", county: "Iași" }, "ro")).toBe(
-      "Formație pentru majorat în Iași",
+      "Formație pentru majorat",
     );
   });
 
@@ -35,12 +35,12 @@ describe("buildOpportunityTitle", () => {
         { kind: "gig", seeking: "Instrumentalist", roleDetail: "Saxofonist", eventType: "Aniversarea firmei", county: "Cluj" },
         "ro",
       ),
-    ).toBe("Saxofonist pentru aniversarea firmei în Cluj");
+    ).toBe("Saxofonist pentru aniversarea firmei");
   });
 
   it("builds an English event title", () => {
     expect(buildOpportunityTitle({ kind: "gig", seeking: "DJ", eventType: "Wedding", city: "Florești", county: "Cluj" }, "en")).toBe(
-      "DJ for a wedding in Florești",
+      "DJ for a wedding",
     );
   });
 
@@ -50,7 +50,7 @@ describe("buildOpportunityTitle", () => {
         { kind: "collab", seeking: "Instrumentalist", roleDetail: "Tobe", collabType: "one_event", eventOn: "2026-11-14", county: "Cluj" },
         "ro",
       ),
-    ).toBe("Tobe pentru un eveniment, 14 nov. · Cluj");
+    ).toBe("Tobe pentru un eveniment");
     expect(buildOpportunityTitle({ kind: "collab", seeking: "Singer", collabType: "permanent", eventOn: "2026-11-14" }, "ro")).toBe(
       "Solist vocal permanent în trupă",
     );
@@ -62,13 +62,13 @@ describe("buildOpportunityTitle", () => {
         { kind: "collab", seeking: "Instrumentalist", roleDetail: "Drums", collabType: "one_event", eventType: "Wedding", eventOn: "2026-11-14", county: "Cluj" },
         "ro",
       ),
-    ).toBe("Tobe pentru nuntă, 14 nov. · Cluj");
+    ).toBe("Tobe pentru nuntă");
     expect(
       buildOpportunityTitle({ kind: "collab", seeking: "Instrumentalist", roleDetail: "Saxophone", collabType: "replacement", eventType: "Baptism" }, "ro"),
     ).toBe("Saxofon pentru o înlocuire la botez");
     expect(
       buildOpportunityTitle({ kind: "gig", seeking: "Instrumentalist", roleDetail: "Cimbalom", eventType: "Wedding", county: "Cluj" }, "ro"),
-    ).toBe("Țambal pentru nuntă în Cluj");
+    ).toBe("Țambal pentru nuntă");
   });
 
   it("is empty until something is chosen", () => {

@@ -1,19 +1,16 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Ban, CalendarDays, CheckCircle2, ChevronRight, Clock, MapPin, Megaphone, Music2, Trash2, Wallet } from "lucide-react";
+import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import PostActionsMenu, { type PostAction } from "@/components/PostActionsMenu";
 import { isAdExpired } from "@/lib/adExpiration";
 import { formatMoney } from "@/lib/bookingOffers";
 import {
-  OpportunitySeeking,
   formatOpportunityBudget,
   formatPlace,
-  instrumentLabel,
   opportunityDaysLeft,
-  seekingLabel,
 } from "@/lib/opportunities";
 import { cn } from "@/lib/utils";
 
@@ -33,13 +30,6 @@ interface GigStats {
   accepted: { artist: string; price: number; currency: string } | null;
 }
 
-const SEEKING_TAG: Record<OpportunitySeeking, string> = {
-  DJ: "Looking for a DJ",
-  Band: "Looking for a band",
-  Singer: "Looking for a singer",
-  Instrumentalist: "Looking for an instrumentalist",
-  MC: "Looking for an MC",
-};
 
 type Tab = "active" | "ended";
 
@@ -148,7 +138,6 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       : null;
     const place = formatPlace(a.city, a.county);
     const budget = formatOpportunityBudget(a, lang);
-    const role = a.role_detail ? `${seekingLabel(a.seeking, lang)} · ${instrumentLabel(a.role_detail, lang)}` : null;
 
     const actions: PostAction[] = [
       ...(open ? [{ key: "close", label: "Close announcement", icon: Ban, onSelect: () => onClose(a.id) }] : []),
@@ -226,14 +215,6 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           {status === "expired" && (
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11.5px] font-semibold text-muted-foreground">Expired</span>
           )}
-          <span
-            className={cn(
-              "truncate rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold",
-              isGig ? "bg-accent/15 text-accent" : "bg-sky-400/15 text-sky-300",
-            )}
-          >
-            {isGig ? SEEKING_TAG[a.seeking as OpportunitySeeking] : "Looking for a collaborator"}
-          </span>
           <div className="ml-auto shrink-0">
             <PostActionsMenu actions={actions} disabled={disabled} />
           </div>
@@ -243,38 +224,28 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           {a.title}
         </p>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[13px] text-foreground/85">
-          {role && (
-            <span className="flex min-w-0 items-center gap-2">
-              <Music2 className="h-3.5 w-3.5 shrink-0 text-accent" />
-              <span className="truncate notranslate" translate="no">{role}</span>
-            </span>
-          )}
-          {dateText && (
-            <span className="flex min-w-0 items-center gap-2">
-              <CalendarDays className="h-3.5 w-3.5 shrink-0 text-accent" />
-              <span className="truncate notranslate" translate="no">{dateText}</span>
-            </span>
-          )}
-          {a.start_time && a.end_time && (
-            <span className="flex min-w-0 items-center gap-2">
-              <Clock className="h-3.5 w-3.5 shrink-0 text-accent" />
-              <span className="truncate notranslate tabular-nums" translate="no">{a.start_time} – {a.end_time}</span>
-            </span>
-          )}
-          {place && (
-            <span className="flex min-w-0 items-center gap-2">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-accent" />
-              <span className="truncate notranslate" translate="no">{place}</span>
-            </span>
-          )}
-          {budget && (
-            <span className="flex min-w-0 items-center gap-2">
-              <Wallet className="h-3.5 w-3.5 shrink-0 text-accent" />
-              <span className="truncate notranslate" translate="no">{budget}</span>
-            </span>
-          )}
-        </div>
+        {(dateText || place) && (
+          <div className="space-y-1 text-[13px] text-foreground/85">
+            {dateText && (
+              <p className="flex min-w-0 items-center gap-2">
+                <CalendarDays className="h-3.5 w-3.5 shrink-0 text-accent" />
+                <span className="truncate notranslate tabular-nums" translate="no">
+                  {dateText}
+                  {a.start_time && a.end_time && ` · ${a.start_time} – ${a.end_time}`}
+                </span>
+              </p>
+            )}
+            {place && (
+              <p className="flex min-w-0 items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-accent" />
+                <span className="truncate notranslate" translate="no">{place}</span>
+              </p>
+            )}
+          </div>
+        )}
+        {budget && (
+          <p className="text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">{budget}</p>
+        )}
 
         <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5 text-[12.5px] text-muted-foreground">
           <span className="min-w-0">

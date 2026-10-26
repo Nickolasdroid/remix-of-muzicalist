@@ -2800,4 +2800,9 @@ export const RO_TEXT: Record<string, string> = {
   "Ended": "Încheiate",
   "No active announcements": "Niciun anunț activ",
   "No ended announcements": "Niciun anunț încheiat",
+  "+ Add details": "+ Adaugă detalii",
+  "optional": "opțional",
+  "Open until the event date or until you accept an offer.": "Activ până la data evenimentului sau până accepți o ofertă.",
+  "Answered by message · uses 1 announcement from your plan.": "Răspunsuri prin mesaj · consumă 1 anunț din abonament.",
+  "The maximum can be at most 20 times the minimum. Check the amounts.": "Maximul poate fi cel mult de 20 de ori minimul. Verifică sumele.",
 };
