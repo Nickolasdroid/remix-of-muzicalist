@@ -2780,4 +2780,5 @@ export const RO_TEXT: Record<string, string> = {
   "What do you want to show your fans and organizers?": "Ce vrei să le arăți fanilor și organizatorilor?",
   "Post text": "Textul postării",
   "Photo selected": "Fotografie selectată",
+  "Still to fill in:": "Mai ai de completat:",
 };

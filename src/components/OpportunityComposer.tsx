@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { CalendarDays, Info, Loader2, RotateCcw } from "lucide-react";
+import { CalendarDays, Info, Loader2, Moon, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,16 @@ import {
 } from "@/lib/opportunities";
 
 const DETAILS_MAX = 1000;
+
+const MISSING_LABEL: Record<string, [en: string, ro: string]> = {
+  seeking: ["who you're looking for", "pe cine cauți"],
+  instrument: ["instrument", "instrumentul"],
+  eventType: ["event type", "tipul evenimentului"],
+  date: ["date", "data"],
+  place: ["place", "localitatea"],
+  times: ["hours", "intervalul orar"],
+  title: ["title", "titlul"],
+};
 
 interface OpportunityComposerProps {
   open: boolean;
@@ -133,7 +143,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const showRole = seeking === "Instrumentalist";
   // Event type: always for events; for collaborations unless it's a permanent place in the band
   const showEventType = isGig || collabType !== "permanent";
-  const eventOnYmd = eventOn ? toYMD(eventOn) : null;
+  // Date and hours: for events and one-off collaborations (not for a permanent place in the band)
+  const needsSchedule = showEventType;
+  const eventOnYmd = eventOn && (kind === "gig" || collabType !== "permanent") ? toYMD(eventOn) : null;
 
   const suggestedTitle = buildOpportunityTitle(
     {
@@ -163,13 +175,15 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const maxN = amountOrNull(budgetMax);
   const budgetInvalid = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
   const timesHalf = !!startTime !== !!endTime;
+  const overnight = !!startTime && !!endTime && endTime <= startTime;
 
   const missing: string[] = [];
   if (!seeking) missing.push("seeking");
   if (!place.county) missing.push("place");
   if (showEventType && !eventType.trim()) missing.push("eventType");
   if (showRole && !roleDetail.trim()) missing.push("instrument");
-  if (isGig && !eventOn) missing.push("date");
+  if (needsSchedule && !eventOn) missing.push("date");
+  if (needsSchedule && (!startTime || !endTime)) missing.push("times");
   if (title.trim().length < 3) missing.push("title");
   const canSubmit = missing.length === 0 && !budgetInvalid && !timesHalf && !saving && !blockedReason;
 
@@ -205,8 +219,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         county: place.county,
         city: place.city,
         event_on: eventOnYmd,
-        start_time: startTime && endTime ? startTime : null,
-        end_time: startTime && endTime ? endTime : null,
+        start_time: needsSchedule && startTime && endTime ? startTime : null,
+        end_time: needsSchedule && startTime && endTime ? endTime : null,
         ...budget,
         // Legacy columns, still read by older views of announcements
         location: formatPlace(place.city, place.county) || null,
@@ -282,6 +296,40 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     />
   );
 
+  /** Date, place and hours (hours required: artists check them against their calendar) */
+  const scheduleBlock = (placeLabelText: string) => (
+    <div className="rounded-xl bg-card p-3 space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <FieldLabel htmlFor="opp-date">Date</FieldLabel>
+          {datePicker}
+        </div>
+        <div>
+          <FieldLabel htmlFor="opp-place">{placeLabelText}</FieldLabel>
+          {placePicker}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <FieldLabel htmlFor="opp-start">From</FieldLabel>
+          <TimeSelector id="opp-start" value={startTime} onChange={setStartTime} placeholder="--:--" />
+        </div>
+        <div>
+          <FieldLabel htmlFor="opp-end">Until</FieldLabel>
+          <TimeSelector id="opp-end" value={endTime} onChange={setEndTime} placeholder="--:--" />
+        </div>
+      </div>
+      {timesHalf ? (
+        <p className="text-xs text-destructive">Choose both the start and the end time.</p>
+      ) : overnight ? (
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Moon className="h-3.5 w-3.5" />
+          <span>Ends the next day</span>
+        </p>
+      ) : null}
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <CreationModalShell
@@ -306,6 +354,14 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               Publish announcement
             </Button>
             {blockedReason && <p className="text-xs text-center text-destructive">{blockedReason}</p>}
+            {!blockedReason && missing.length > 0 && (
+              <p className="text-xs text-center text-muted-foreground">
+                <span>Still to fill in:</span>{" "}
+                <span className="notranslate" translate="no">
+                  {missing.map((m) => MISSING_LABEL[m][lang.startsWith("ro") ? 1 : 0]).join(", ")}
+                </span>
+              </p>
+            )}
           </div>
         }
       >
@@ -407,33 +463,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
             </div>
 
-            <div className="rounded-xl bg-card p-3 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <FieldLabel htmlFor="opp-date">Date</FieldLabel>
-                  {datePicker}
-                </div>
-                <div>
-                  <FieldLabel htmlFor="opp-place">County / town</FieldLabel>
-                  {placePicker}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <FieldLabel htmlFor="opp-start" optional optionalLabel="Optional">
-                    From
-                  </FieldLabel>
-                  <TimeSelector id="opp-start" value={startTime} onChange={setStartTime} placeholder="--:--" />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="opp-end" optional optionalLabel="Optional">
-                    Until
-                  </FieldLabel>
-                  <TimeSelector id="opp-end" value={endTime} onChange={setEndTime} placeholder="--:--" />
-                </div>
-              </div>
-              {timesHalf && <p className="text-xs text-destructive">Choose both the start and the end time.</p>}
-            </div>
+            {scheduleBlock("County / town")}
           </>
         ) : (
           <>
@@ -453,18 +483,14 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
                 <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <FieldLabel htmlFor="opp-date" optional optionalLabel="Optional">
-                  Date
-                </FieldLabel>
-                {datePicker}
-              </div>
+            {needsSchedule ? (
+              scheduleBlock("Area")
+            ) : (
               <div>
                 <FieldLabel htmlFor="opp-place">Area</FieldLabel>
                 {placePicker}
               </div>
-            </div>
+            )}
           </>
         )}
 
