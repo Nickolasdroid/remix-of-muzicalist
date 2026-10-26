@@ -206,7 +206,8 @@ const AnnouncementList = ({
         id: a.profile_id,
         name: p.stage_name || "Artist",
         avatarUrl: p.avatar_url,
-        subtitle: [spec, p.county].filter(Boolean).join(" · "),
+        specialization: spec,
+        county: p.county,
         plan: p.plan,
         verified: isAdminAuthor,
       };
@@ -218,7 +219,7 @@ const AnnouncementList = ({
       id: a.profile_id,
       name: first ? `${first}${lastInitial ? ` ${lastInitial}.` : ""}` : p.stage_name || "Organizer",
       avatarUrl: p.avatar_url,
-      subtitle: "Organizer",
+      specialization: "Organizer",
       subtitleTranslatable: true,
       plan: p.plan,
     };
@@ -410,7 +411,7 @@ const AnnouncementList = ({
           id: a.profile_id,
           stageName: author.name,
           avatarUrl: author.avatarUrl,
-          specializationLabel: author.subtitle.split(" · ")[0],
+          specializationLabel: author.specialization || undefined,
           plan: author.plan,
           verified: author.verified,
         }}

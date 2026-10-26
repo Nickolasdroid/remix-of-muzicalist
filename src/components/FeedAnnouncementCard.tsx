@@ -2,11 +2,9 @@ import { ReactNode } from "react";
 import { MapPin, Calendar, Euro } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import AnnouncementTypeBadge, { type AnnouncementKind } from "@/components/AnnouncementTypeBadge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText from "@/components/ExpandableText";
 import PostMediaFrame from "@/components/PostMediaFrame";
-import VerifiedBadge from "@/components/VerifiedBadge";
-import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
+import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { formatSmartDate } from "@/lib/utils";
 import { useAdminIds } from "@/hooks/useAdminIds";
 
@@ -78,39 +76,23 @@ const FeedAnnouncementCard = ({
     <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
       <div className="px-3.5 pt-3 pb-1">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(author.plan as any)}`}>
-              <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={onAuthorClick}>
-                <AvatarImage src={author.avatarUrl || undefined} alt={author.stageName} />
-                <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                  {(author.stageName || "A").charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3
-                  className="font-medium text-foreground cursor-pointer hover:underline notranslate truncate"
-                  data-user-content="true"
-                  data-no-translate="true"
-                  translate="no"
-                  onClick={onAuthorClick}
-                >
-                  {author.stageName}
-                </h3>
-                {isVerified && <VerifiedBadge size="sm" />}
-                {titleExtra}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{author.specializationLabel || "User"}</span>
-                <span>·</span>
-                <span>{formatSmartDate(createdAt)}</span>
+          <CardAuthorHeader
+            name={author.stageName}
+            avatarUrl={author.avatarUrl}
+            plan={author.plan}
+            verified={isVerified}
+            specialization={author.specializationLabel || "User"}
+            time={formatSmartDate(createdAt)}
+            onClick={onAuthorClick}
+            nameExtra={titleExtra}
+            extra={
+              <>
                 <span>·</span>
                 <AnnouncementTypeBadge kind={kind} promoted={promoted} />
                 {metaExtra}
-              </div>
-            </div>
-          </div>
+              </>
+            }
+          />
 
           {menu}
         </div>

@@ -3,11 +3,9 @@ import { Globe } from "lucide-react";
 import PostActions from "@/components/PostActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ExpandableText, { TextMention } from "@/components/ExpandableText";
 import PostMediaFrame from "@/components/PostMediaFrame";
-import VerifiedBadge from "@/components/VerifiedBadge";
-import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
+import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { formatSmartDate } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useAdminIds } from "@/hooks/useAdminIds";
@@ -17,6 +15,7 @@ export interface FeedPostAuthor {
   stageName: string;
   avatarUrl?: string | null;
   specializationLabel?: string;
+  county?: string | null;
   plan?: string | null;
   verified?: boolean;
 }
@@ -81,50 +80,28 @@ const FeedPostCard = ({
     <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
       <div className="px-3.5 pt-3 pb-0">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(author.plan as any)}`}>
-              <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={onAuthorClick}>
-                <AvatarImage src={author.avatarUrl || undefined} alt={author.stageName} />
-                <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                  {(author.stageName || "A").charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h3
-                  className="font-medium text-foreground cursor-pointer hover:underline notranslate truncate"
-                  data-user-content="true"
-                  data-no-translate="true"
-                  translate="no"
-                  onClick={onAuthorClick}
-                >
-                  {author.stageName}
-                </h3>
-                {isVerified && <VerifiedBadge size="sm" />}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-                {author.specializationLabel && (
-                  <>
-                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{author.specializationLabel}</span>
-                    <span>·</span>
-                  </>
-                )}
-                <span>{formatSmartDate(createdAt)}</span>
+          <CardAuthorHeader
+            name={author.stageName}
+            avatarUrl={author.avatarUrl}
+            plan={author.plan}
+            verified={isVerified}
+            specialization={author.specializationLabel}
+            county={author.county}
+            time={formatSmartDate(createdAt)}
+            onClick={onAuthorClick}
+            extra={
+              <>
                 <span>·</span>
                 <Globe className="h-3 w-3" />
                 {promoted && (
-                  <>
-                    <span>·</span>
-                    <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                      {t("postPromotion.promoted", "Promoted")}
-                    </Badge>
-                  </>
+                  <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                    {t("postPromotion.promoted", "Promoted")}
+                  </Badge>
                 )}
                 {metaExtra}
-              </div>
-            </div>
-          </div>
+              </>
+            }
+          />
 
           {menu}
         </div>

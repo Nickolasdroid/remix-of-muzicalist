@@ -2421,6 +2421,7 @@ const Dashboard = () => {
                                       stageName: profile?.stage_name || 'Artist',
                                       avatarUrl: profile?.avatar_url,
                                       specializationLabel: translateSpecialization(profile?.specialization),
+                                      county: profile?.county,
                                       plan: profile?.plan,
                                     }}
                                     content={item.__text}

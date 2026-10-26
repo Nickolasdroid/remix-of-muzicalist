@@ -90,7 +90,7 @@ const PostDetail = () => {
       const likeTable = isPromo ? "announcement_likes" : "post_likes";
       const likeCol = isPromo ? "announcement_id" : "post_id";
       const [authorRes, likesRes, mineRes, commentsRes] = await Promise.all([
-        supabase.from("profiles").select("id, stage_name, avatar_url, specialization, plan").eq("id", base.profileId).maybeSingle(),
+        supabase.from("profiles").select("id, stage_name, avatar_url, specialization, plan, county").eq("id", base.profileId).maybeSingle(),
         (supabase as any).from(likeTable).select(likeCol, { count: "exact", head: true }).eq(likeCol, id),
         uid ? (supabase as any).from(likeTable).select(likeCol).eq(likeCol, id).eq("user_id", uid) : Promise.resolve({ data: [] }),
         (supabase as any).from("comments").select("id", { count: "exact", head: true }).eq(likeCol, id),
@@ -172,7 +172,7 @@ const PostDetail = () => {
         )}
         {status === "ready" && item && author && (
           <FeedPostCard
-            author={{ id: author.id, stageName: author.stage_name || "Artist", avatarUrl: author.avatar_url, specializationLabel: translateSpecialization(author.specialization), plan: author.plan }}
+            author={{ id: author.id, stageName: author.stage_name || "Artist", avatarUrl: author.avatar_url, specializationLabel: translateSpecialization(author.specialization), county: (author as any).county, plan: author.plan }}
             content={item.content}
             createdAt={item.createdAt}
             mediaUrl={item.mediaUrl}

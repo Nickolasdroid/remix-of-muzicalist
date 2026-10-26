@@ -1,10 +1,8 @@
 import { ReactNode } from "react";
 import { CalendarDays, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CardAuthorHeader from "@/components/CardAuthorHeader";
 import ExpandableText from "@/components/ExpandableText";
-import VerifiedBadge from "@/components/VerifiedBadge";
-import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { cn, formatSmartDate } from "@/lib/utils";
 import {
   CollabType,
@@ -45,8 +43,11 @@ interface OpportunityCardProps {
     id?: string;
     name: string;
     avatarUrl?: string | null;
-    /** "Organizer" or "DJ · Cluj" */
-    subtitle: string;
+    /** Chip text: "Organizer", "DJ" */
+    specialization?: string | null;
+    county?: string | null;
+    /** Legacy: "DJ · Cluj" (split into chip and county) */
+    subtitle?: string;
     /** Translate the subtitle (true for "Organizer") */
     subtitleTranslatable?: boolean;
     plan?: string | null;
@@ -117,39 +118,18 @@ const OpportunityCard = ({
 
   return (
     <article className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 space-y-3 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`p-0.5 rounded-full shrink-0 ${getAvatarOutlineClasses(author.plan as any)}`}>
-          <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={onAuthorClick}>
-            <AvatarImage src={author.avatarUrl || undefined} alt={author.name} />
-            <AvatarFallback className="bg-accent/10 text-accent font-semibold">
-              {(author.name || "?").charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <button
-              type="button"
-              onClick={onAuthorClick}
-              className="font-semibold text-sm text-foreground truncate hover:underline notranslate"
-              translate="no"
-              data-user-content="true"
-            >
-              {author.name}
-            </button>
-            {author.verified && <VerifiedBadge size="sm" />}
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
-            <span
-              className={cn("truncate", !author.subtitleTranslatable && "notranslate")}
-              translate={author.subtitleTranslatable ? undefined : "no"}
-            >
-              {author.subtitle}
-            </span>
-            <span>·</span>
-            <span className="shrink-0">{formatSmartDate(o.created_at)}</span>
-          </div>
-        </div>
+      <div className="flex items-start justify-between gap-2">
+        <CardAuthorHeader
+          name={author.name}
+          avatarUrl={author.avatarUrl}
+          plan={author.plan}
+          verified={author.verified}
+          specialization={author.specialization ?? author.subtitle?.split(" · ")[0]}
+          specializationTranslatable={author.subtitleTranslatable}
+          county={author.county ?? author.subtitle?.split(" · ")[1]}
+          time={formatSmartDate(o.created_at)}
+          onClick={onAuthorClick}
+        />
         {menu}
       </div>
 

@@ -1,4 +1,5 @@
 import PostActions from "@/components/PostActions";
+import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
 import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Send, Calendar, MapPin, DollarSign, ArrowRight, Plus, Megaphone } from "lucide-react";
@@ -55,6 +56,7 @@ interface FeedItem {
     avatar_url: string | null;
     specialization: string | null;
     plan: string;
+    county?: string | null;
   };
   isLiked: boolean;
   isSaved: boolean;
@@ -155,7 +157,7 @@ const Feed = () => {
           .from('posts')
           // `posts` has two FKs to `profiles` (author + introduced artist), so the
           // author embed must be disambiguated explicitly by constraint name.
-          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, post_kind, subject_profile_id, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan)`)
+          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, post_kind, subject_profile_id, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan, county)`)
           .order('created_at', { ascending: false })
           .range(from, to),
         supabase
@@ -259,6 +261,7 @@ const Feed = () => {
           avatar_url: a.profiles?.avatar_url || null,
           specialization: a.profiles?.specialization || null,
           plan: a.profiles?.plan || 'Free',
+          county: a.profiles?.county || null,
         },
         isLiked: userPromoLikes.has(a.id),
         isSaved: false,
@@ -470,38 +473,20 @@ const Feed = () => {
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                   <div className="px-3.5 pt-3 pb-0">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Link to={`/artist/${item.profile_id}`}>
-                          <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(item.profile.plan)}`}>
-                            <Avatar className="w-10 h-10 cursor-pointer border-2 border-background">
-                              <AvatarImage src={item.profile.avatar_url || ""} alt={item.profile.stage_name} />
-                              <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                {item.profile.stage_name.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        </Link>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <Link to={`/artist/${item.profile_id}`}>
-                              <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                                {item.profile.stage_name}
-                              </h3>
-                            </Link>
-                            {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
-
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
-                            <span>·</span>
-                            <span>{formatDate(item.created_at)}</span>
-                            <span>·</span>
-                            <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                              Promotion
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
+                      <CardAuthorHeader
+                      name={item.profile.stage_name}
+                      avatarUrl={item.profile.avatar_url}
+                      plan={item.profile.plan}
+                      verified={adminIds.has(item.profile_id)}
+                      specialization={getSpecializationLabel(item.profile.specialization, item.profile_id)}
+                      county={item.profile.county}
+                      time={formatDate(item.created_at)}
+                      onClick={() => navigate(`/artist/${item.profile_id}`)}
+                      extra={<>
+                        <span>·</span>
+                        <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                      </>}
+                    />
                       
                       <PostActionsMenu
                         open={openMenuId === `announcement-${item.id}`}
@@ -549,40 +534,25 @@ const Feed = () => {
                 <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                 <div className="px-3.5 pt-3 pb-0">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(item.profile.plan)}`}>
-                        <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={() => navigate(`/artist/${item.profile_id}`)}>
-                          <AvatarImage src={item.profile.avatar_url || undefined} alt={item.profile.stage_name} />
-                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                            {item.profile.stage_name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-foreground cursor-pointer hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no" onClick={() => navigate(`/artist/${item.profile_id}`)}>
-                            {item.profile.stage_name}
-                          </h3>
-                          {adminIds.has(item.profile_id) && <VerifiedBadge size="sm" />}
-
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
-                          <span>·</span>
-                          <span>{formatDate(item.created_at)}</span>
-                          <span>·</span>
-                          <Globe className="h-3 w-3" />
-                          {item.promoted && (
-                            <>
-                              <span>·</span>
-                              <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                {t("postPromotion.promoted", "Promoted")}
-                              </Badge>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <CardAuthorHeader
+                      name={item.profile.stage_name}
+                      avatarUrl={item.profile.avatar_url}
+                      plan={item.profile.plan}
+                      verified={adminIds.has(item.profile_id)}
+                      specialization={getSpecializationLabel(item.profile.specialization, item.profile_id)}
+                      county={item.profile.county}
+                      time={formatDate(item.created_at)}
+                      onClick={() => navigate(`/artist/${item.profile_id}`)}
+                      extra={<>
+                        <span>·</span>
+                        <Globe className="h-3 w-3" />
+                        {item.promoted && (
+                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
+                            {t("postPromotion.promoted", "Promoted")}
+                          </Badge>
+                        )}
+                      </>}
+                    />
                     
                     <PostActionsMenu
                       open={openMenuId === `post-${item.id}`}

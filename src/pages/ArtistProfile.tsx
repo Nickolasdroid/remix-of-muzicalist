@@ -1,5 +1,6 @@
 import PostActions from "@/components/PostActions";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
+import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
@@ -1735,29 +1736,18 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                                 <div className="px-3.5 pt-3 pb-0">
                                   <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
-                                        <Avatar className="w-10 h-10 border-2 border-background">
-                                          <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
-                                          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                            {artist?.stage_name?.charAt(0) || 'A'}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                      </div>
-                                      <div>
-                                        <div className="flex items-center gap-2">
-                                          <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</h3>
-
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                          <span>{translateSpecialization(artist?.specialization) || "User"}</span>
-                                          <span>·</span>
-                                          <span>{formatSmartDate(promo.created_at)}</span>
-                                          <span>·</span>
-                                          <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
-                                        </div>
-                                      </div>
-                                    </div>
+                                    <CardAuthorHeader
+                                      name={artist?.stage_name || ""}
+                                      avatarUrl={artist?.avatar_url}
+                                      plan={artist?.plan}
+                                      specialization={translateSpecialization(artist?.specialization) || "User"}
+                                      county={artist?.county}
+                                      time={formatSmartDate(promo.created_at)}
+                                      extra={<>
+                                        <span>·</span>
+                                        <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">Promotion</Badge>
+                                      </>}
+                                    />
                                     <PostActionsMenu
                                       actions={[
                                         {
@@ -1796,39 +1786,23 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                             {/* Header */}
                             <div className="px-3.5 pt-3 pb-0">
                               <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
-                                    <Avatar className="w-10 h-10 border-2 border-background">
-                                      <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
-                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                        {artist?.stage_name?.charAt(0) || 'A'}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <h3 className="font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                                        {artist?.stage_name}
-                                      </h3>
-
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <span>{translateSpecialization(artist?.specialization) || "User"}</span>
-                                      <span>·</span>
-                                      <span>{formatDate(post.created_at)}</span>
-                                      <span>·</span>
-                                      <Globe className="h-3 w-3" />
-                                      {!!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now() && (
-                                        <>
-                                          <span>·</span>
+                                <CardAuthorHeader
+                                      name={artist?.stage_name || ""}
+                                      avatarUrl={artist?.avatar_url}
+                                      plan={artist?.plan}
+                                      specialization={translateSpecialization(artist?.specialization) || "User"}
+                                      county={artist?.county}
+                                      time={formatDate(post.created_at)}
+                                      extra={<>
+                                        <span>·</span>
+                                        <Globe className="h-3 w-3" />
+                                        {!!post.promoted_until && new Date(post.promoted_until).getTime() > Date.now() && (
                                           <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                                             {t("postPromotion.promoted", "Promoted")}
                                           </Badge>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
+                                        )}
+                                      </>}
+                                    />
                                 
                                 <PostActionsMenu
                                   actions={[
