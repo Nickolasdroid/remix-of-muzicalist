@@ -446,7 +446,7 @@ const Feed = () => {
       <Navigation />
       
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-3 px-3 sm:px-0">
           <h1 className="sr-only">Musical Community Feed</h1>
 
           <StoriesBar currentUserId={currentUserId} canPublish={canCreate} />
@@ -466,8 +466,8 @@ const Feed = () => {
             </Card>) : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
-                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-                  <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
+                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                  <div className="px-3.5 pt-3 pb-1">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Link to={`/artist/${item.profile_id}`}>
@@ -491,7 +491,7 @@ const Feed = () => {
 
                           </div>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
+                            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                             <span>·</span>
                             <span>{formatDate(item.created_at)}</span>
                             <span>·</span>
@@ -540,7 +540,7 @@ const Feed = () => {
                     url: item.media_url!,
                     type: item.media_type === "video" ? "video" : "image"
                   })} />}
-                  <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                  <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
                     <div className="flex items-center">
                       <Button
                         variant="ghost"
@@ -582,8 +582,8 @@ const Feed = () => {
                 </Card>
               ) : (
                 /* Regular Post Card */
-                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-                <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-[6px] py-[3px]">
+                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                <div className="px-3.5 pt-3 pb-1">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(item.profile.plan)}`}>
@@ -603,7 +603,7 @@ const Feed = () => {
 
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
+                          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{getSpecializationLabel(item.profile.specialization, item.profile_id)}</span>
                           <span>·</span>
                           <span>{formatDate(item.created_at)}</span>
                           <span>·</span>
@@ -668,7 +668,7 @@ const Feed = () => {
             url: item.media_url!,
             type: item.media_type === "video" ? "video" : "image"
           })} />}
-                <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
                   <div className="flex items-center">
                     <Button
                       variant="ghost"

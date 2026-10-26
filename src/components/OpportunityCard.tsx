@@ -128,7 +128,7 @@ const OpportunityCard = ({
   const role = [seekingLabel(o.seeking, lang), o.role_detail ? instrumentLabel(o.role_detail, lang) : null].filter(Boolean);
 
   return (
-    <article className="bg-background px-4 sm:px-2 py-3 space-y-3">
+    <article className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 space-y-3 shadow-sm">
       <div className="flex items-center gap-3">
         <div className={`p-0.5 rounded-full shrink-0 ${getAvatarOutlineClasses(author.plan as any)}`}>
           <Avatar className="w-10 h-10 cursor-pointer border-2 border-background" onClick={onAuthorClick}>

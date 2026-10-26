@@ -162,7 +162,7 @@ const OfficialProfileView = ({
             action={<div className="flex items-center gap-2"><PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />{postsToolbar}</div>}
             className="mb-4"
           />
-          <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+          <div className="w-full">
             <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
               {posts.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">
@@ -206,7 +206,7 @@ const OfficialProfileView = ({
 
         <TabsContent value="announcements">
           {announcementsToolbar}
-          <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+          <div className="w-full">
             <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
               {announcements.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">

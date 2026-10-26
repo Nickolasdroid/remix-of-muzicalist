@@ -1726,7 +1726,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         )}
                       </Card> :
 
-                <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+                <div className="w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
                       {(() => {
                     const promotions = announcements.filter((a) => a.is_premium && !isAdExpired(a)).map((a) => ({
@@ -1760,8 +1760,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       if (item.type === 'promotion') {
                         const promo = item as typeof promotions[0];
                         return (
-                          <Card key={`promo-${promo.id}`} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-                                <div className="p-4 pb-0 px-[6px] py-[3px]">
+                          <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                                <div className="px-3.5 pt-3 pb-1">
                                   <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                       <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
@@ -1812,7 +1812,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                                 {promo.media_url &&
                             <PostMediaFrame url={promo.media_url} type={promo.media_type} alt="Promotion media" onClick={() => setMediaPreview({ url: promo.media_url!, type: promo.media_type === "video" ? "video" : "image" })} />
                             }
-                              <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                              <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
                                 <div className="flex items-center">
                                   <Button
                                     variant="ghost"
@@ -1857,9 +1857,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                       const post = item as typeof postItems[0];
                       return (
-                        <Card key={post.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
+                        <Card key={post.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                             {/* Header */}
-                            <div className="p-4 pb-0 px-[6px] py-[3px]">
+                            <div className="px-3.5 pt-3 pb-1">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
@@ -1929,7 +1929,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           })} />}
 
                             {/* Actions */}
-                            <div className="flex items-center gap-2 px-2 py-0 mt-1">
+                            <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
                               <div className="flex items-center">
                                 <Button
                                   variant="ghost"
@@ -2010,11 +2010,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         )}
                       </Card> :
 
-                <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
+                <div className="w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-3 md:space-y-4">
-                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
+                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                             {/* Header */}
-                            <div className="p-4 pb-0 px-[6px] py-[3px]">
+                            <div className="px-3.5 pt-3 pb-1">
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>

@@ -81,8 +81,8 @@ const FeedPostCard = ({
   const adminIds = useAdminIds();
   const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   return (
-    <Card className="text-card-foreground overflow-hidden shadow-sm my-0 border-solid rounded-none border-secondary bg-background border-0">
-      <div className="p-4 pb-0 border-black border-none shadow-none rounded-none px-4 sm:px-[6px] py-[3px]">
+    <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+      <div className="px-3.5 pt-3 pb-1">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(author.plan as any)}`}>
@@ -109,7 +109,7 @@ const FeedPostCard = ({
               <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
                 {author.specializationLabel && (
                   <>
-                    <span>{author.specializationLabel}</span>
+                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{author.specializationLabel}</span>
                     <span>·</span>
                   </>
                 )}
@@ -154,7 +154,7 @@ const FeedPostCard = ({
       )}
 
 
-      <div className="flex items-center gap-2 px-4 sm:px-2 py-0 mt-1">
+      <div className="flex items-center gap-2 px-1.5 pb-1.5 mt-1">
         <div className="flex items-center">
           <Button
             variant="ghost"

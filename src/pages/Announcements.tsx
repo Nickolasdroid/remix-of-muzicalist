@@ -451,10 +451,10 @@ const Announcements = () => {
       <Navigation />
       
       <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-1">
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-3 px-3 sm:px-0">
           <h1 className="sr-only">Opportunities</h1>
           {currentUserId && (
-            <div className="flex gap-1.5 overflow-x-auto px-4 sm:px-2 pt-2 pb-2 scrollbar-none">
+            <div className="flex gap-1.5 overflow-x-auto pt-2 scrollbar-none">
               {([
                 { k: "all", label: "All" },
                 ...(isArtistViewer ? [{ k: "forMe", label: "For me" }] : []),
