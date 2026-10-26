@@ -57,6 +57,7 @@ const shortDate = (ymd: string, lang: string) => {
 export interface OpportunityTitleInput {
   kind: OpportunityKind;
   seeking: OpportunitySeeking | null;
+  /** Instrument (English name from the instrument list, or free text) */
   roleDetail?: string | null;
   eventType?: string | null;
   city?: string | null;
@@ -65,25 +66,28 @@ export interface OpportunityTitleInput {
   collabType?: CollabType | null;
 }
 
+/** "nuntă" / "a wedding" for a sentence; free text as typed. */
+const eventTypePhrase = (type: string, lang: string) => {
+  if (isRo(lang)) return lowerFirst(eventTypeRo(type));
+  return isKnownEventType(type) ? `a ${lowerFirst(type)}` : type;
+};
+
 /**
  * Suggested title, in the language the author writes in. The author can edit it.
  *   gig:    "DJ pentru nuntă în Florești" / "DJ for a wedding in Florești"
- *   collab: "Tobe pentru un eveniment, 14 nov." / "Drums for one event, 14 Nov"
+ *   collab: "Tobe pentru nuntă, 14 nov. · Cluj" / "Drums for a wedding, 14 Nov · Cluj"
  */
 export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): string => {
   if (!o.seeking) return "";
   const ro = isRo(lang);
-  const role = (o.roleDetail || "").trim() || seekingLabel(o.seeking, lang);
+  const instrument = (o.roleDetail || "").trim();
+  const role = instrument ? instrumentLabel(instrument, lang) : seekingLabel(o.seeking, lang);
   const place = (o.city || "").trim() || (o.county || "").trim();
+  const type = (o.eventType || "").trim();
 
   if (o.kind === "gig") {
-    const type = (o.eventType || "").trim();
     let title = role;
-    if (type) {
-      const typeText = ro ? eventTypeRo(type) : type;
-      if (ro) title += ` pentru ${lowerFirst(typeText)}`;
-      else title += ` for ${isKnownEventType(type) ? `a ${lowerFirst(typeText)}` : typeText}`;
-    }
+    if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
     if (place) title += ro ? ` în ${place}` : ` in ${place}`;
     return title.slice(0, 120);
   }
@@ -93,15 +97,17 @@ export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): st
   switch (o.collabType) {
     case "replacement":
       title += ro ? " pentru o înlocuire" : " for a stand-in";
+      if (type) title += ro ? ` la ${eventTypePhrase(type, lang)}` : ` at ${eventTypePhrase(type, lang)}`;
       break;
     case "permanent":
       title += ro ? " permanent în trupă" : " to join the band";
       break;
     default:
-      title += ro ? " pentru un eveniment" : " for one event";
+      if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
+      else title += ro ? " pentru un eveniment" : " for one event";
   }
   if (date && o.collabType !== "permanent") title += `, ${date}`;
-  if (place) title += ro ? ` · ${place}` : ` · ${place}`;
+  if (place) title += ` · ${place}`;
   return title.slice(0, 120);
 };
 
@@ -244,3 +250,72 @@ export const myAvailabilityFor = (
   }
   return "partial";
 };
+
+/** Romanian names of the instruments in the shared instrument list. */
+export const INSTRUMENT_RO: Record<string, string> = {
+  "Acoustic Guitar": "Chitară acustică",
+  "Electric Guitar": "Chitară electrică",
+  "Bass Guitar": "Chitară bas",
+  "Classical Guitar": "Chitară clasică",
+  "Violin": "Vioară",
+  "Viola": "Violă",
+  "Cello": "Violoncel",
+  "Double Bass": "Contrabas",
+  "Harp": "Harpă",
+  "Ukulele": "Ukulele",
+  "Banjo": "Banjo",
+  "Mandolin": "Mandolină",
+  "Balalaika": "Balalaică",
+  "Sitar": "Sitar",
+  "Oud": "Oud",
+  "Piano": "Pian",
+  "Keyboard": "Clape",
+  "Synthesizer": "Sintetizator",
+  "Organ": "Orgă",
+  "Accordion": "Acordeon",
+  "Harpsichord": "Clavecin",
+  "Electric Piano": "Pian electric",
+  "Flute": "Flaut",
+  "Clarinet": "Clarinet",
+  "Saxophone": "Saxofon",
+  "Oboe": "Oboi",
+  "Bassoon": "Fagot",
+  "Recorder": "Flaut drept",
+  "Piccolo": "Piccolo",
+  "Pan Flute": "Nai",
+  "Harmonica": "Muzicuță",
+  "Trumpet": "Trompetă",
+  "Trombone": "Trombon",
+  "French Horn": "Corn francez",
+  "Tuba": "Tubă",
+  "Cornet": "Cornet",
+  "Euphonium": "Eufoniu",
+  "Flugelhorn": "Flugelhorn",
+  "Drums": "Tobe",
+  "Percussion": "Percuție",
+  "Cajon": "Cajon",
+  "Congas": "Conga",
+  "Bongos": "Bongos",
+  "Djembe": "Djembe",
+  "Timpani": "Timpane",
+  "Marimba": "Marimbă",
+  "Xylophone": "Xilofon",
+  "Vibraphone": "Vibrafon",
+  "Tambourine": "Tamburină",
+  "Triangle": "Triunghi",
+  "Drum Machine": "Drum machine",
+  "Sampler": "Sampler",
+  "MIDI Controller": "Controller MIDI",
+  "Bagpipes": "Cimpoi",
+  "Didgeridoo": "Didgeridoo",
+  "Tabla": "Tabla",
+  "Nai": "Nai",
+  "Cimbalom": "Țambal",
+  "Cobza": "Cobză",
+  "Țambal": "Țambal",
+};
+
+/** Instrument name in the given language; free text is returned as typed. */
+export function instrumentLabel(name: string, lang = "ro"): string {
+  return isRo(lang) ? INSTRUMENT_RO[name] || name : name;
+}

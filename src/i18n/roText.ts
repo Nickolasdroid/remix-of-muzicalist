@@ -2768,4 +2768,7 @@ export const RO_TEXT: Record<string, string> = {
   "Artist booked": "Artist rezervat",
   "sent you an offer for your announcement": "ți-a trimis o ofertă pentru anunțul tău",
   "chose another artist for this event.": "a ales alt artist pentru acest eveniment.",
+  "Instrument": "Instrument",
+  "Choose the instrument": "Alege instrumentul",
+  "Which instrument?": "Ce instrument?",
 };

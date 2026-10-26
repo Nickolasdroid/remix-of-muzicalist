@@ -12,6 +12,7 @@ import {
   MyAvailability,
   OpportunitySeeking,
   formatOpportunityBudget,
+  instrumentLabel,
   seekingLabel,
   formatPlace,
 } from "@/lib/opportunities";
@@ -117,7 +118,7 @@ const OpportunityCard = ({
     : null;
   const budget = formatOpportunityBudget(o, lang);
   const place = formatPlace(o.city, o.county);
-  const role = [seekingLabel(o.seeking, lang), o.role_detail].filter(Boolean);
+  const role = [seekingLabel(o.seeking, lang), o.role_detail ? instrumentLabel(o.role_detail, lang) : null].filter(Boolean);
 
   return (
     <article className="bg-background px-4 sm:px-2 py-3 space-y-3">
@@ -170,7 +171,7 @@ const OpportunityCard = ({
       </h3>
 
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-        {!isGig && (
+        {(!isGig || o.role_detail) && (
           <Meta icon={<Music2 className="h-4 w-4" />}>{role.join(" · ")}</Meta>
         )}
         {!isGig && o.collab_type && (

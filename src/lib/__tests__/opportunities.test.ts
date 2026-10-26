@@ -56,6 +56,21 @@ describe("buildOpportunityTitle", () => {
     );
   });
 
+  it("uses the Romanian instrument name and the event type for collaborations", () => {
+    expect(
+      buildOpportunityTitle(
+        { kind: "collab", seeking: "Instrumentalist", roleDetail: "Drums", collabType: "one_event", eventType: "Wedding", eventOn: "2026-11-14", county: "Cluj" },
+        "ro",
+      ),
+    ).toBe("Tobe pentru nuntă, 14 nov. · Cluj");
+    expect(
+      buildOpportunityTitle({ kind: "collab", seeking: "Instrumentalist", roleDetail: "Saxophone", collabType: "replacement", eventType: "Baptism" }, "ro"),
+    ).toBe("Saxofon pentru o înlocuire la botez");
+    expect(
+      buildOpportunityTitle({ kind: "gig", seeking: "Instrumentalist", roleDetail: "Cimbalom", eventType: "Wedding", county: "Cluj" }, "ro"),
+    ).toBe("Țambal pentru nuntă în Cluj");
+  });
+
   it("is empty until something is chosen", () => {
     expect(buildOpportunityTitle({ kind: "gig", seeking: null }, "ro")).toBe("");
   });

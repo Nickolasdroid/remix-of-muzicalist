@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, X, Search, Music2 } from "lucide-react";
 import { getInstrumentIcon } from "@/lib/instrumentIcons";
 
-const INSTRUMENTS = [
+export const INSTRUMENTS = [
   // Strings
   "Acoustic Guitar", "Electric Guitar", "Bass Guitar", "Classical Guitar", "Violin", "Viola", "Cello", "Double Bass", "Harp", "Ukulele", "Banjo", "Mandolin", "Balalaika", "Sitar", "Oud",
   // Keyboard

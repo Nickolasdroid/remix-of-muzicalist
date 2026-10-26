@@ -13,6 +13,7 @@ import { CreationModalShell, FieldLabel } from "@/components/dashboard/CreationM
 import EventTypePicker from "@/components/EventTypePicker";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import TimeSelector from "@/components/TimeSelector";
+import { INSTRUMENTS } from "@/components/InstrumentSelector";
 import { useToast } from "@/hooks/use-toast";
 import { CURRENCIES } from "@/lib/currencies";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ import {
   buildOpportunityTitle,
   formatOpportunityBudget,
   formatPlace,
+  instrumentLabel,
   opportunityErrorText,
   parseRomanianPlace,
 } from "@/lib/opportunities";
@@ -85,6 +87,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [kind, setKind] = useState<OpportunityKind>("gig");
   const [seeking, setSeeking] = useState<OpportunitySeeking | null>(null);
   const [roleDetail, setRoleDetail] = useState("");
+  const [otherInstrument, setOtherInstrument] = useState(false);
   const [collabType, setCollabType] = useState<CollabType>("one_event");
   const [eventType, setEventType] = useState("");
   const [eventOn, setEventOn] = useState<Date | undefined>();
@@ -107,6 +110,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setKind("gig");
     setSeeking(null);
     setRoleDetail("");
+    setOtherInstrument(false);
     setCollabType("one_event");
     setEventType("");
     setEventOn(undefined);
@@ -125,7 +129,10 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const place = useMemo(() => parseRomanianPlace(placeLabel), [placeLabel]);
   const isGig = kind === "gig";
   const seekingOptions = isGig ? GIG_SEEKING : COLLAB_SEEKING;
-  const showRole = !isGig || seeking === "Instrumentalist";
+  // The instrument is asked only for instrumentalists
+  const showRole = seeking === "Instrumentalist";
+  // Event type: always for events; for collaborations unless it's a permanent place in the band
+  const showEventType = isGig || collabType !== "permanent";
   const eventOnYmd = eventOn ? toYMD(eventOn) : null;
 
   const suggestedTitle = buildOpportunityTitle(
@@ -133,7 +140,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       kind,
       seeking,
       roleDetail: showRole ? roleDetail : null,
-      eventType: isGig ? eventType : null,
+      eventType: showEventType ? eventType : null,
       city: place.city,
       county: place.county,
       eventOn: eventOnYmd,
@@ -160,7 +167,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const missing: string[] = [];
   if (!seeking) missing.push("seeking");
   if (!place.county) missing.push("place");
-  if (isGig && !eventType.trim()) missing.push("eventType");
+  if (showEventType && !eventType.trim()) missing.push("eventType");
+  if (showRole && !roleDetail.trim()) missing.push("instrument");
   if (isGig && !eventOn) missing.push("date");
   if (title.trim().length < 3) missing.push("title");
   const canSubmit = missing.length === 0 && !budgetInvalid && !timesHalf && !saving && !blockedReason;
@@ -193,7 +201,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         seeking,
         role_detail: showRole ? roleDetail.trim() || null : null,
         collab_type: isGig ? null : collabType,
-        event_type: isGig ? eventType.trim() : null,
+        event_type: showEventType ? eventType.trim() : null,
         county: place.county,
         city: place.city,
         event_on: eventOnYmd,
@@ -326,11 +334,24 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </div>
         )}
 
+        {/* Remount per kind: the page translator keeps translations per text node,
+            so reused nodes would keep the other form's labels */}
+        <div key={kind} className="space-y-5">
         <div>
           <FieldLabel>{isGig ? "What are you looking for" : "Who are you looking for"}</FieldLabel>
           <div className="flex flex-wrap gap-1.5">
             {seekingOptions.map((s) => (
-              <Chip key={s} on={seeking === s} onClick={() => setSeeking(s)}>
+              <Chip
+                key={s}
+                on={seeking === s}
+                onClick={() => {
+                  setSeeking(s);
+                  if (s !== "Instrumentalist") {
+                    setRoleDetail("");
+                    setOtherInstrument(false);
+                  }
+                }}
+              >
                 {SEEKING_LABEL[s]}
               </Chip>
             ))}
@@ -339,17 +360,43 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
 
         {showRole && (
           <div>
-            <FieldLabel htmlFor="opp-role" optional optionalLabel="Optional">
-              Instrument / role
-            </FieldLabel>
-            <Input
-              id="opp-role"
-              maxLength={80}
-              value={roleDetail}
-              onChange={(e) => setRoleDetail(e.target.value)}
-              placeholder="e.g. Drums, saxophone, keys"
-              className="h-10 rounded-lg"
-            />
+            <FieldLabel htmlFor="opp-role">Instrument</FieldLabel>
+            <Select
+              value={otherInstrument ? "__other" : roleDetail || undefined}
+              onValueChange={(v) => {
+                if (v === "__other") {
+                  setOtherInstrument(true);
+                  setRoleDetail("");
+                } else {
+                  setOtherInstrument(false);
+                  setRoleDetail(v);
+                }
+              }}
+            >
+              <SelectTrigger id="opp-role" className="h-10 rounded-lg">
+                <SelectValue placeholder="Choose the instrument" />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                {INSTRUMENTS.map((i) => (
+                  <SelectItem key={i} value={i}>
+                    <span className="notranslate" translate="no">
+                      {instrumentLabel(i, lang)}
+                    </span>
+                  </SelectItem>
+                ))}
+                <SelectItem value="__other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+            {otherInstrument && (
+              <Input
+                autoFocus
+                maxLength={80}
+                value={roleDetail}
+                onChange={(e) => setRoleDetail(e.target.value)}
+                placeholder="Which instrument?"
+                className="mt-2 h-10 rounded-lg"
+              />
+            )}
           </div>
         )}
 
@@ -400,6 +447,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
                 ))}
               </div>
             </div>
+            {showEventType && (
+              <div>
+                <FieldLabel htmlFor="opp-event-type">Event type</FieldLabel>
+                <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <FieldLabel htmlFor="opp-date" optional optionalLabel="Optional">
@@ -522,6 +575,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             translate="no"
           />
           <p className="mt-1 text-[11px] text-muted-foreground">Filled in from your choices. You can change it.</p>
+        </div>
+
         </div>
 
         <div className="flex gap-2 rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground leading-relaxed">
