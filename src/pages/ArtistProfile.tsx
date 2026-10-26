@@ -1760,7 +1760,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       if (item.type === 'promotion') {
                         const promo = item as typeof promotions[0];
                         return (
-                          <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+                          <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                                 <div className="px-3.5 pt-3 pb-1">
                                   <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
@@ -1857,7 +1857,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                       const post = item as typeof postItems[0];
                       return (
-                        <Card key={post.id} className="overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+                        <Card key={post.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                             {/* Header */}
                             <div className="px-3.5 pt-3 pb-1">
                               <div className="flex items-start justify-between">
@@ -2012,7 +2012,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
-                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                             {/* Header */}
                             <div className="px-3.5 pt-3 pb-1">
                               <div className="flex items-start justify-between">

@@ -81,7 +81,7 @@ const FeedPostCard = ({
   const adminIds = useAdminIds();
   const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   return (
-    <Card className="text-card-foreground overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+    <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
       <div className="px-3.5 pt-3 pb-1">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 min-w-0">

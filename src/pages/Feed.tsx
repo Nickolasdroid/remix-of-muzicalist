@@ -466,7 +466,7 @@ const Feed = () => {
             </Card>) : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
-                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                   <div className="px-3.5 pt-3 pb-1">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -582,7 +582,7 @@ const Feed = () => {
                 </Card>
               ) : (
                 /* Regular Post Card */
-                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
+                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
                 <div className="px-3.5 pt-3 pb-1">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
