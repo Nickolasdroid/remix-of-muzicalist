@@ -29,6 +29,7 @@ import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import OpportunityComposer from "@/components/OpportunityComposer";
+import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
@@ -2599,36 +2600,19 @@ const Dashboard = () => {
                             onPublished={handleOpportunityPublished}
                           />
                           <div id="announcements-list">
-                            <div className="space-y-2">
-                            {announcements.filter((a) => !a.is_premium).map((announcement) => (
-                              <AnnouncementManagementCard
-                                key={announcement.id}
-                                announcement={announcement}
-                                disabled={isSaving}
-                                actions={[
-                                  ...(announcement.kind && !isAdExpired(announcement) ? [{
-                                    key: "close",
-                                    label: "Close announcement",
-                                    icon: Ban,
-                                    onSelect: () => handleCloseAnnouncement(announcement.id),
-                                  }] : []),
-                                  {
-                                    key: "delete",
-                                    label: t("userDashboard.delete", "Delete"),
-                                    icon: Trash2,
-                                    destructive: true,
-                                    onSelect: () => setDeleteAnnouncementId(announcement.id),
-                                  },
-                                ]}
-                              />
-                            ))}
-                            {announcements.filter((a) => !a.is_premium).length === 0 && (
-                              <SectionEmptyState
-                                icon={<Megaphone className="h-10 w-10 opacity-50" />}
-                                title="No announcements yet"
-                              />
-                            )}
-                            </div>
+                            <OwnerAnnouncementsList
+                              announcements={announcements}
+                              isArtist
+                              disabled={isSaving}
+                              onClose={handleCloseAnnouncement}
+                              onDelete={(id) => setDeleteAnnouncementId(id)}
+                              empty={
+                                <SectionEmptyState
+                                  icon={<Megaphone className="h-10 w-10 opacity-50" />}
+                                  title="No announcements yet"
+                                />
+                              }
+                            />
                           </div>
                         </SectionShell>}
                       </TabsContent>

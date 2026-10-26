@@ -19,6 +19,7 @@ import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, C
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { ORGANIZER_OPEN_LIMIT } from "@/lib/opportunities";
 import OpportunityComposer from "@/components/OpportunityComposer";
+import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
@@ -519,7 +520,7 @@ const UserDashboard = () => {
                   />
 
 
-                  <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">
+                  <div>
                     {!canPublish && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
@@ -528,38 +529,22 @@ const UserDashboard = () => {
                     )}
 
 
-                    {announcements.length > 0 ? (
-                      <div className="mt-3 space-y-2">
-                        {announcements.slice(0, 3).map((ad) => (
-                          <AnnouncementManagementCard
-                            key={ad.id}
-                            announcement={ad}
-                            actions={[
-                                  ...(ad.kind && !isAdExpired(ad) ? [{
-                                    key: "close",
-                                    label: "Close announcement",
-                                    icon: Ban,
-                                    onSelect: () => handleCloseAnnouncement(ad.id),
-                                  }] : []),
-                              {
-                                key: "delete",
-                                label: t("userDashboard.delete", "Delete"),
-                                icon: Trash2,
-                                destructive: true,
-                                onSelect: () => setDeleteAnnouncementId(ad.id),
-                              },
-                            ]}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="mt-3 rounded-lg border border-dashed border-border/60 bg-background/20 p-4 text-center">
-                        <Megaphone className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/60" />
-                        <p className="text-sm text-muted-foreground">No announcements yet</p>
-                        <p className="text-xs text-muted-foreground/70 mt-0.5">Publish your first one to reach artists.</p>
-                      </div>
-                    )}
-                  </Card>
+                    <div className="mt-3">
+                      <OwnerAnnouncementsList
+                        announcements={announcements}
+                        isArtist={false}
+                        onClose={handleCloseAnnouncement}
+                        onDelete={(id) => setDeleteAnnouncementId(id)}
+                        empty={
+                          <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-4 text-center">
+                          <Megaphone className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/60" />
+                          <p className="text-sm text-muted-foreground">No announcements yet</p>
+                          <p className="text-xs text-muted-foreground/70 mt-0.5">Publish your first one to reach artists.</p>
+                        </div>
+                        }
+                      />
+                    </div>
+                  </div>
 
                   <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
                     <AlertDialogContent className="rounded-lg">
