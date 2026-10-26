@@ -4,6 +4,7 @@
 // once a lawyer has checked the clauses.
 
 import { MUZICALIST_LOGO_DATA_URI } from "@/lib/contractLogo";
+import { eventTypeRo } from "@/lib/eventTypes";
 
 export type EntityType = "individual" | "pfa" | "ii" | "if" | "srl" | "other_company";
 
@@ -161,7 +162,7 @@ export const renderContractHtml = (c: BookingContract, opts: { preview?: boolean
     [
       "Art. 2. Obiectul contractului",
       [
-        `2.1. Prestatorul se obligă să susțină un program artistic${t.event_type ? ` pentru evenimentul de tip <b>${esc(t.event_type)}</b>` : ""} organizat de Beneficiar, la data de <b>${esc(dateText)}</b>${t.time ? `, în intervalul orar <b>${esc(t.time)}</b>` : ""}, în locația <b>${v(t.location)}</b>.`,
+        `2.1. Prestatorul se obligă să susțină un program artistic${t.event_type ? ` pentru evenimentul de tip <b>${esc(eventTypeRo(t.event_type))}</b>` : ""} organizat de Beneficiar, la data de <b>${esc(dateText)}</b>${t.time ? `, în intervalul orar <b>${esc(t.time)}</b>` : ""}, în locația <b>${v(t.location)}</b>.`,
         ...(t.offer_note ? [`2.2. Detaliile prestației, conform ofertei acceptate: ${esc(t.offer_note)}`] : []),
       ],
     ],

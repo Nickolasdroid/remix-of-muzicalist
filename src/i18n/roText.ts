@@ -2675,4 +2675,8 @@ export const RO_TEXT: Record<string, string> = {
   "days": "zile",
   "Change the end day": "Schimbă ziua de final",
   "Organizer": "Organizator",
+  "Choose the type of event": "Alege tipul evenimentului",
+  "Most booked": "Cele mai rezervate",
+  "All event types": "Toate tipurile de evenimente",
+  "Describe the event (e.g. Company anniversary)": "Descrie evenimentul (ex. Aniversarea firmei)",
 };

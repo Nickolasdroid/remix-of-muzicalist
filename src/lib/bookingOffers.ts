@@ -3,6 +3,7 @@
 // these helpers only format and explain.
 
 import { MUZICALIST_LOGO_DATA_URI } from "@/lib/contractLogo";
+import { eventTypeRo } from "@/lib/eventTypes";
 
 export type BookingStatus = "pending" | "offered" | "accepted" | "rejected" | string;
 
@@ -147,7 +148,7 @@ export const printBookingConfirmation = (
     [L.organizer, booking.requester_name],
     [L.date, dateText],
     [L.time, time],
-    [L.type, booking.event_type],
+    [L.type, ro ? eventTypeRo(booking.event_type) : booking.event_type],
     [L.price, formatMoney(booking.offer_price, booking.offer_currency, lang)],
     [L.note, booking.offer_note],
     [L.confirmed, confirmed],

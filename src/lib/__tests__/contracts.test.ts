@@ -61,6 +61,7 @@ describe("contracts", () => {
     expect(html).toContain("Ion &lt;Pop&gt;");
     expect(html).not.toContain("Ion <Pop>");
     expect(html).toContain("Sala Regal, Cluj");
+    expect(html).toContain("evenimentul de tip <b>Nuntă</b>");
     expect(html).toContain("18:00 - 23:00");
     expect(html).toMatch(/2\.500\s*RON|2500\s*RON/);
     expect(html).toContain("14 noiembrie 2026");

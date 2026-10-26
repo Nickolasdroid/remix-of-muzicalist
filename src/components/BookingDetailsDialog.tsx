@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import BookingOfferPanel from "@/components/BookingOfferPanel";
 import { BookingOfferFields, offerErrorText } from "@/lib/bookingOffers";
 import { BookingContract, CONTRACT_COLUMNS } from "@/lib/contracts";
+import { isKnownEventType } from "@/lib/eventTypes";
 import {
   bookingStatusKey,
   bookingStatusLabel,
@@ -247,9 +248,13 @@ const BookingDetailsDialog = ({
             {booking.event_type && (
               <div className="flex gap-3 items-center">
                 <PartyPopper className="h-[18px] w-[18px] text-accent shrink-0" />
-                <p className="text-[15px] font-medium text-foreground truncate notranslate" translate="no" data-user-content="true">
-                  {booking.event_type}
-                </p>
+                {isKnownEventType(booking.event_type) ? (
+                  <p className="text-[15px] font-medium text-foreground truncate">{booking.event_type}</p>
+                ) : (
+                  <p className="text-[15px] font-medium text-foreground truncate notranslate" translate="no" data-user-content="true">
+                    {booking.event_type}
+                  </p>
+                )}
               </div>
             )}
             <div className="flex gap-3">

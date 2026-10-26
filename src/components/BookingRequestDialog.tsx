@@ -10,6 +10,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import TimeSelector from "@/components/TimeSelector";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { COMMON_EVENT_TYPES, EVENT_TYPES, isKnownEventType } from "@/lib/eventTypes";
 
 export interface BookingRequestForm {
   name: string;
@@ -49,7 +60,7 @@ const toneClass: Record<AvailabilityTone, string> = {
 };
 
 /** Suggestions shown under the event type field (English keys, shown translated). */
-const QUICK_EVENT_TYPES = ["Wedding", "Baptism", "18th Birthday", "Birthday Party", "Corporate Event", "Private Party"];
+const OTHER_EVENT_TYPES = EVENT_TYPES.filter((t) => !COMMON_EVENT_TYPES.includes(t) && t !== "Other");
 
 const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
@@ -117,7 +128,9 @@ export const BookingRequestFields = ({
   className?: string;
 }) => {
   const [multiDayOpen, setMultiDayOpen] = useState(false);
-  const [pickedType, setPickedType] = useState<string | null>(null);
+  // "Other" lets the organizer describe the event; the description is stored as the type
+  const [otherType, setOtherType] = useState(() => !!form.eventType && !isKnownEventType(form.eventType));
+  const selectedType = otherType ? "Other" : isKnownEventType(form.eventType) ? form.eventType : "";
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
   const locale = lang.startsWith("ro") ? "ro-RO" : "en-GB";
@@ -287,36 +300,51 @@ export const BookingRequestFields = ({
       {/* Event type */}
       <div className="space-y-1.5">
         <Label htmlFor="eventType">Event type</Label>
-        <Input
-          id="eventType"
-          placeholder="e.g., Wedding, Corporate Event, Birthday"
-          value={form.eventType}
-          onChange={(e) => {
-            setPickedType(null);
-            setForm({ ...form, eventType: e.target.value });
+        <Select
+          value={selectedType}
+          onValueChange={(v) => {
+            if (v === "Other") {
+              setOtherType(true);
+              setForm({ ...form, eventType: "" });
+            } else {
+              setOtherType(false);
+              setForm({ ...form, eventType: v });
+            }
           }}
-          required
-        />
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {QUICK_EVENT_TYPES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              // The label is translated on the page; store exactly what the visitor sees
-              onClick={(e) => {
-                setPickedType(t);
-                setForm({ ...form, eventType: (e.currentTarget.textContent || t).trim() });
-              }}
-              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                pickedType === t
-                  ? "border-accent bg-accent/15 text-accent"
-                  : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+        >
+          <SelectTrigger id="eventType">
+            <SelectValue placeholder="Choose the type of event" />
+          </SelectTrigger>
+          <SelectContent className="max-h-80">
+            <SelectGroup>
+              <SelectLabel className="text-xs font-normal text-muted-foreground">Most booked</SelectLabel>
+              {COMMON_EVENT_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+            <SelectSeparator />
+            <SelectGroup>
+              <SelectLabel className="text-xs font-normal text-muted-foreground">All event types</SelectLabel>
+              {OTHER_EVENT_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+              <SelectItem value="Other">Other</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {otherType && (
+          <Input
+            autoFocus
+            maxLength={80}
+            placeholder="Describe the event (e.g. Company anniversary)"
+            value={form.eventType}
+            onChange={(e) => setForm({ ...form, eventType: e.target.value })}
+          />
+        )}
       </div>
 
       {/* Details */}
