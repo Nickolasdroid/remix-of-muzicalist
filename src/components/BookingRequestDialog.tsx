@@ -30,6 +30,8 @@ interface BookingRequestDialogProps {
   date: Date | undefined;
   artistName: string;
   artistAvatarUrl?: string | null;
+  /** Under the artist's name, e.g. "DJ · Maramureș" */
+  artistSubtitle?: string | null;
   availability: { label: string; tone: AvailabilityTone };
   form: BookingRequestForm;
   setForm: (f: BookingRequestForm) => void;
@@ -361,6 +363,7 @@ const BookingRequestDialog = ({
   date,
   artistName,
   artistAvatarUrl,
+  artistSubtitle,
   availability,
   form,
   setForm,
@@ -385,7 +388,9 @@ const BookingRequestDialog = ({
             <DialogTitle className="text-[17px] font-semibold leading-tight truncate notranslate" translate="no">
               {artistName}
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">Booking request</p>
+            {artistSubtitle && (
+              <p className="text-sm text-muted-foreground truncate notranslate" translate="no">{artistSubtitle}</p>
+            )}
             <DialogDescription className="sr-only">Send a booking request to this artist</DialogDescription>
           </div>
           <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${toneClass[availability.tone]}`}>

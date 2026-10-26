@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, Lock, Mail, MoreHorizontal, Phone } from "lucide-react";
+import { CalendarDays, Lock, Mail, MoreHorizontal, PartyPopper, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,6 +47,8 @@ export interface BookingDetailsDialogProps {
   /** The other party */
   counterpartName: string;
   counterpartAvatarUrl?: string | null;
+  /** Shown under the artist's name when the organizer is looking, e.g. "DJ · Maramureș" */
+  counterpartSubtitle?: string | null;
   /** Artist stage name (contract fallback for older bookings) */
   artistName: string;
   /** Artist: open the offer dialog (new offer or edit) */
@@ -79,6 +81,7 @@ const BookingDetailsDialog = ({
   viewer,
   counterpartName,
   counterpartAvatarUrl,
+  counterpartSubtitle,
   artistName,
   onOffer,
   onArtistDecline,
@@ -224,7 +227,11 @@ const BookingDetailsDialog = ({
               <DialogTitle className="text-[17px] font-semibold leading-tight truncate notranslate" translate="no">
                 {counterpartName}
               </DialogTitle>
-              {booking.event_type && <p className="text-sm text-muted-foreground truncate">{booking.event_type}</p>}
+              {viewer === "artist" ? (
+                <p className="text-sm text-muted-foreground truncate">Organizer</p>
+              ) : counterpartSubtitle ? (
+                <p className="text-sm text-muted-foreground truncate notranslate" translate="no">{counterpartSubtitle}</p>
+              ) : null}
               <DialogDescription className="sr-only">Booking details</DialogDescription>
             </div>
             <span
@@ -236,7 +243,16 @@ const BookingDetailsDialog = ({
 
           {/* Body */}
           <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4">
-            <div className="flex gap-3 rounded-xl bg-card px-3.5 py-3">
+            <div className="rounded-xl bg-card px-3.5 py-3 space-y-2.5">
+            {booking.event_type && (
+              <div className="flex gap-3 items-center">
+                <PartyPopper className="h-[18px] w-[18px] text-accent shrink-0" />
+                <p className="text-[15px] font-medium text-foreground truncate notranslate" translate="no" data-user-content="true">
+                  {booking.event_type}
+                </p>
+              </div>
+            )}
+            <div className="flex gap-3">
               <CalendarDays className="h-[18px] w-[18px] text-accent mt-0.5 shrink-0" />
               <div className="min-w-0">
                 <p className="text-[15px] text-foreground notranslate" translate="no">{when.date}</p>
@@ -252,6 +268,7 @@ const BookingDetailsDialog = ({
                   </p>
                 )}
               </div>
+            </div>
             </div>
 
             <BookingOfferPanel

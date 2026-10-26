@@ -10,6 +10,7 @@ import { Calendar as CalendarIcon, ArrowLeft, Loader2 } from "lucide-react";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
 import BookingDetailsDialog from "@/components/BookingDetailsDialog";
 import { BOOKING_OFFER_COLUMNS } from "@/lib/bookingOffers";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
 // Private contact columns are excluded on purpose (see get_booking_contact RPC).
 const BOOKING_REQUEST_COLUMNS =
@@ -32,7 +33,9 @@ const BookingRequests = () => {
   const [loading, setLoading] = useState(true);
   const [receivedRequests, setReceivedRequests] = useState<any[]>([]);
   const [sentRequests, setSentRequests] = useState<any[]>([]);
-  const [artistProfiles, setArtistProfiles] = useState<Record<string, { stage_name?: string | null; avatar_url?: string | null }>>({});
+  const [artistProfiles, setArtistProfiles] = useState<
+    Record<string, { stage_name?: string | null; avatar_url?: string | null; specialization?: string | null; county?: string | null }>
+  >({});
   const [selected, setSelected] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -93,7 +96,7 @@ const BookingRequests = () => {
     if (artistIds.length > 0) {
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, stage_name, avatar_url")
+        .select("id, stage_name, avatar_url, specialization, county")
         .in("id", artistIds);
       const map: Record<string, any> = {};
       (profiles || []).forEach((p: any) => (map[p.id] = p));
@@ -364,6 +367,16 @@ const BookingRequests = () => {
             : ""
         }
         counterpartAvatarUrl={selected && isUserView ? artistProfiles[selected.profile_id]?.avatar_url : null}
+        counterpartSubtitle={
+          selected && isUserView
+            ? [
+                translateSpecialization(artistProfiles[selected.profile_id]?.specialization),
+                artistProfiles[selected.profile_id]?.county,
+              ]
+                .filter(Boolean)
+                .join(" · ")
+            : null
+        }
         artistName={
           selected
             ? artistProfiles[selected.profile_id]?.stage_name ||

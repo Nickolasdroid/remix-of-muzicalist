@@ -12,6 +12,8 @@ interface DateAvailabilityDialogProps {
   date: Date | undefined;
   artistName: string;
   artistAvatarUrl?: string | null;
+  /** Under the artist's name, e.g. "DJ · Maramureș" */
+  artistSubtitle?: string | null;
   state: DateAvailabilityState;
   slots: { startTime: string; endTime: string }[];
   /** Show "Request another time" (busy day with known slots, not the artist's own profile) */
@@ -49,6 +51,7 @@ const DateAvailabilityDialog = ({
   date,
   artistName,
   artistAvatarUrl,
+  artistSubtitle,
   state,
   slots,
   canRequest,
@@ -78,7 +81,9 @@ const DateAvailabilityDialog = ({
             <DialogTitle className="text-[17px] font-semibold leading-tight truncate notranslate" translate="no">
               {artistName}
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">Availability</p>
+            {artistSubtitle && (
+              <p className="text-sm text-muted-foreground truncate notranslate" translate="no">{artistSubtitle}</p>
+            )}
             <DialogDescription className="sr-only">Availability for the selected day</DialogDescription>
           </div>
           <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${toneClass[state]}`}>

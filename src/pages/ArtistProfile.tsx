@@ -2207,6 +2207,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     date={selectedDate}
                     artistName={artist.stage_name}
                     artistAvatarUrl={artist.avatar_url}
+                    artistSubtitle={[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}
                     state={state}
                     slots={slots}
                     canRequest={state === "partial" && !isOwnProfile}
@@ -2268,6 +2269,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 date={selectedDate}
                 artistName={artist.stage_name}
                 artistAvatarUrl={artist.avatar_url}
+                artistSubtitle={[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}
                 availability={(() => {
                   if (!selectedDate) return { label: "Available", tone: "green" as AvailabilityTone };
                   const events = getEventsForDate(selectedDate);

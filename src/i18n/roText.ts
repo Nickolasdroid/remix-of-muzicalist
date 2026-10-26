@@ -2674,4 +2674,5 @@ export const RO_TEXT: Record<string, string> = {
   "Single day": "O singură zi",
   "days": "zile",
   "Change the end day": "Schimbă ziua de final",
+  "Organizer": "Organizator",
 };
