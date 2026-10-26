@@ -422,7 +422,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             <p className="text-sm text-muted-foreground">
               {isGig
                 ? "You receive priced offers from available artists."
-                : "Find musicians for an event, a stand-in or your band."}
+                : "Find musicians for your event."}
             </p>
             {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
           </div>

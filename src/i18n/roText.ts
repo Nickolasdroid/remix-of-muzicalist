@@ -2808,4 +2808,5 @@ export const RO_TEXT: Record<string, string> = {
   "Locality": "Localitate",
   "Single amount": "O singură sumă",
   "+ Range": "+ Interval",
+  "Find musicians for your event.": "Găsește muzicieni pentru evenimentul tău.",
 };
