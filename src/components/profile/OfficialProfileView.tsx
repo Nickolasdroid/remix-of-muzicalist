@@ -2,7 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, type ReactNode } from "react";
 import { FileText, Megaphone } from "lucide-react";
 import FeedPostCard from "@/components/FeedPostCard";
-import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
+import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import { PostsGrid, PostsViewSwitcher, usePostsViewMode } from "@/components/post/PostsView";
@@ -208,32 +208,17 @@ const OfficialProfileView = ({
           {announcementsToolbar}
           <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
             <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
-              {announcements.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">
-                  <Megaphone className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-muted-foreground">No announcements yet.</p>
-                </div>
-              ) : (
-                announcements.map((a) => (
-                  <FeedAnnouncementCard
-                    key={a.id}
-                    author={author}
-                    createdAt={a.created_at}
-                    description={a.description}
-                    location={a.location}
-                    eventDate={a.event_date}
-                    budget={a.budget}
-                    kind={a.is_premium ? "promotion" : "announcement"}
-                    mediaUrl={a.media_url}
-                    mediaType={a.media_type}
-                    menu={renderAnnouncementMenu?.(a)}
-                    onMediaClick={() =>
-                      a.media_url &&
-                      onMediaClick?.({ url: a.media_url, type: a.media_type === "video" ? "video" : "image" })
-                    }
-                  />
-                ))
-              )}
+              <AnnouncementList
+                announcements={announcements as any[]}
+                profile={profile as any}
+                onMediaClick={(m) => onMediaClick?.(m)}
+                empty={
+                  <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">
+                    <Megaphone className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                    <p className="text-muted-foreground">No announcements yet.</p>
+                  </div>
+                }
+              />
             </div>
           </div>
         </TabsContent>

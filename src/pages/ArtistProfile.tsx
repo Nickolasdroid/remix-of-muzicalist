@@ -1,4 +1,5 @@
 import PostActions from "@/components/PostActions";
+import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
@@ -385,7 +386,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         sessionRes,
       ] = await Promise.all([
         supabase.from('announcements')
-          .select('id, title, description, date, created_at, is_premium, media_url, media_type, location, event_date, budget')
+          .select('*')
           .eq('profile_id', id)
           .order('is_premium', { ascending: false })
           .order('created_at', { ascending: false }),
@@ -1152,43 +1153,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               title="Announcements"
               className="mb-3"
             />
-            <div className="space-y-3">
-              {activeAnnouncements.map((announcement) => <Card key={announcement.id} className="overflow-hidden rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm">
-                  <div className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10 border-2 border-background">
-                        <AvatarImage src={artist.avatar_url || undefined} alt={artist.first_name} />
-                        <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                          {artist.first_name?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <h3 className="font-medium text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                          {artist.first_name} {artist.last_name}
-                        </h3>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-                          <span>User</span>
-                          <span>·</span>
-                          <span>{formatSmartDate(announcement.created_at)}</span>
-                          <span>·</span>
-                          <AnnouncementTypeBadge kind={announcement.is_premium ? "promotion" : "announcement"} />
-                        </div>
-                      </div>
-                    </div>
-                    {announcement.kind && announcement.title && (
-                      <p className="mt-3 font-semibold text-foreground notranslate" translate="no" data-user-content="true">{announcement.title}</p>
-                    )}
-                    {announcement.description && (
-                      <ExpandableText text={announcement.description} className="mt-3 text-sm" />
-                    )}
-                  </div>
-
-                  {announcement.is_premium && announcement.media_url && <PostMediaFrame url={announcement.media_url} type={announcement.media_type} alt="Announcement media" className="mt-0" onClick={() => setMediaPreview({
-                url: announcement.media_url!,
-                type: announcement.media_type === "video" ? "video" : "image"
-              })} />}
-                </Card>)}
-            </div>
+            <AnnouncementList
+                        announcements={activeAnnouncements}
+                        profile={artist}
+                        onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
+                        onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
+                        onMediaClick={(m) => setMediaPreview(m)}
+                      />
           </div>}
 
           {/* Media Preview Dialog */}
@@ -1938,95 +1909,19 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
-                      {announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length > 0 ? announcements.filter((a) => !a.is_premium && !isAdExpired(a)).map((announcement) => <Card key={announcement.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
-                            {/* Header */}
-                            <div className="px-3.5 pt-3 pb-1">
-                              <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(artist?.plan)}`}>
-                                    <Avatar className="w-10 h-10 border-2 border-background">
-                                      <AvatarImage src={artist?.avatar_url || undefined} alt={artist?.stage_name} />
-                                      <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                                        {artist?.stage_name?.charAt(0) || 'A'}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <h3 className="font-medium text-foreground">
-                                        <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist?.stage_name}</span>
-                                      </h3>
-
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <span>{translateSpecialization(artist?.specialization) || "User"}</span>
-                                      <span>·</span>
-                                      <span>{formatSmartDate(announcement.created_at)}</span>
-                                      <span>·</span>
-                                      <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
-                                           Announcement
-                                         </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <PostActionsMenu
-                                  actions={[
-                                    {
-                                      key: 'report',
-                                      label: t('dashboardPosts.report', 'Report'),
-                                      icon: Flag,
-                                      onSelect: () => {
-                                        if (!currentUserId) { navigate("/login"); return; }
-                                        setReportTarget({ id: announcement.id, type: "announcement" });
-                                      },
-                                    },
-                                    ...(isOwnProfile ? [{
-                                      key: 'delete',
-                                      label: t('dashboardPosts.delete', 'Delete'),
-                                      icon: Trash2,
-                                      destructive: true,
-                                      onSelect: () => setDeleteAnnouncementId(announcement.id),
-                                    }] : []),
-                                  ]}
-                                />
-                              </div>
-
-                              {/* Content */}
-                              {announcement.kind && announcement.title && (
-                                <p className="mt-3 font-semibold text-foreground notranslate" translate="no" data-user-content="true">{announcement.title}</p>
-                              )}
-                              {announcement.description && (
-                                <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
-                              )}
-                              {(announcement.location || announcement.event_date || announcement.budget) && (
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
-                                  {announcement.location && (
-                                    <span className="flex items-center gap-1">
-                                      <MapPin className="h-3 w-3" />
-                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.location}</span>
-                                    </span>
-                                  )}
-                                  {announcement.event_date && (
-                                    <span className="flex items-center gap-1">
-                                      <CalendarIcon className="h-3 w-3" />
-                                      {formatDateNoYear(announcement.event_date)}
-                                    </span>
-                                  )}
-                                  {announcement.budget && (
-                                    <span className="flex items-center gap-1">
-                                      <Euro className="h-3 w-3" />
-                                      <span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{announcement.budget}</span>
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                          </Card>) : <Card className="p-8 text-center">
-                          <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                          <p className="text-muted-foreground">No announcements yet.</p>
-                        </Card>}
+                      <AnnouncementList
+                        announcements={announcements.filter((a) => !a.is_premium && !isAdExpired(a))}
+                        profile={artist}
+                        onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
+                        onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
+                        onMediaClick={(m) => setMediaPreview(m)}
+                        empty={
+                          <Card className="p-8 text-center">
+                            <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                            <p className="text-muted-foreground">No announcements yet.</p>
+                          </Card>
+                        }
+                      />
                     </div>
                   </div>
                 }
