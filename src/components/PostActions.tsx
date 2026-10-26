@@ -80,7 +80,7 @@ const PostActions = ({
         aria-label="Share"
         className={cn(iconBtn, "-mr-2 text-foreground/80 hover:text-foreground")}
       >
-        <Send className="h-[22px] w-[22px]" strokeWidth={1.75} />
+        <Send className="h-[22px] w-[22px] rotate-[20deg]" strokeWidth={1.75} />
       </button>
       {!!shares && shares > 0 && <span className={cn(count, "pl-1 text-foreground/80")}>{shares}</span>}
     </div>
