@@ -2817,4 +2817,6 @@ export const RO_TEXT: Record<string, string> = {
   "e.g. 800": "ex. 800",
   "How it will appear": "Așa va apărea",
   "Choose who you're looking for and the event type": "Alege pe cine cauți și tipul evenimentului",
+  "Artists reply with a price offer. The announcement stays open until the event date or until you accept one.": "Artiștii răspund cu o ofertă de preț. Anunțul rămâne activ până la data evenimentului sau până accepți una.",
+  "Musicians answer you by message. It uses 1 announcement from your plan.": "Muzicienii îți răspund prin mesaj. Se consumă 1 anunț din abonament.",
 };
