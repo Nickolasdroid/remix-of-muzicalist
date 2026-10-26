@@ -2783,4 +2783,5 @@ export const RO_TEXT: Record<string, string> = {
   "Still to fill in:": "Mai ai de completat:",
   "The last day can't be before the first day.": "Ultima zi nu poate fi înaintea primei zile.",
   "An event can last at most 31 days.": "Un eveniment poate dura cel mult 31 de zile.",
+  "Find musicians for an event, a stand-in or your band.": "Găsește muzicieni pentru un eveniment, o înlocuire sau trupa ta.",
 };

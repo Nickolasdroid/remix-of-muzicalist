@@ -94,7 +94,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
   const locale = lang.startsWith("ro") ? "ro-RO" : "en-GB";
 
-  const [kind, setKind] = useState<OpportunityKind>("gig");
+  // The account decides the kind: organizers look for an artist (priced offers),
+  // artists look for a collaborator (answered by message)
+  const kind: OpportunityKind = isArtist ? "collab" : "gig";
   const [seeking, setSeeking] = useState<OpportunitySeeking | null>(null);
   const [roleDetail, setRoleDetail] = useState("");
   const [otherInstrument, setOtherInstrument] = useState(false);
@@ -120,7 +122,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   // Fresh form every time the dialog opens
   useEffect(() => {
     if (!open) return;
-    setKind("gig");
     setSeeking(null);
     setRoleDetail("");
     setOtherInstrument(false);
@@ -168,12 +169,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   useEffect(() => {
     if (!titleEdited) setTitle(suggestedTitle);
   }, [suggestedTitle, titleEdited]);
-
-  const switchKind = (k: OpportunityKind) => {
-    setKind(k);
-    const options = k === "gig" ? GIG_SEEKING : COLLAB_SEEKING;
-    if (seeking && !options.includes(seeking)) setSeeking(null);
-  };
 
   const minN = amountOrNull(budgetMin);
   const maxN = amountOrNull(budgetMax);
@@ -415,12 +410,14 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <CreationModalShell
-        title="New announcement"
+        title={isGig ? "Looking for an artist" : "Looking for a collaborator"}
         bodyClassName="space-y-5 py-4"
         meta={
           <div className="w-full space-y-2">
             <p className="text-sm text-muted-foreground">
-              {isGig ? "You receive priced offers from available artists." : "Find musicians for your projects."}
+              {isGig
+                ? "You receive priced offers from available artists."
+                : "Find musicians for an event, a stand-in or your band."}
             </p>
             {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
           </div>
@@ -447,31 +444,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </div>
         }
       >
-        {isArtist && (
-          <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-card p-1" role="tablist">
-            {(["gig", "collab"] as OpportunityKind[]).map((k) => (
-              <button
-                key={k}
-                type="button"
-                role="tab"
-                aria-selected={kind === k}
-                onClick={() => switchKind(k)}
-                className={cn(
-                  "rounded-lg px-2 py-2 text-sm leading-tight transition-colors",
-                  kind === k
-                    ? "bg-accent/15 text-accent font-semibold ring-1 ring-accent/40"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {k === "gig" ? "Looking for an artist" : "Looking for a collaborator"}
-                <span className="block text-[11px] font-normal opacity-80 mt-0.5">
-                  {k === "gig" ? "for an event" : "artists only"}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Remount per kind: the page translator keeps translations per text node,
             so reused nodes would keep the other form's labels */}
         <div key={kind} className="space-y-5">
