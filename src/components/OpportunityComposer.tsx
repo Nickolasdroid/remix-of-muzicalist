@@ -186,12 +186,13 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     : 1;
 
   const missing: string[] = [];
+  // Same order as the form
   if (!seeking) missing.push("seeking");
-  if (!place.county) missing.push("place");
-  if (showEventType && !eventType.trim()) missing.push("eventType");
   if (showRole && !roleDetail.trim()) missing.push("instrument");
+  if (showEventType && !eventType.trim()) missing.push("eventType");
   if (needsSchedule && !eventOn) missing.push("date");
   if (needsSchedule && (!startTime || !endTime)) missing.push("times");
+  if (!place.county) missing.push("place");
   if (title.trim().length < 3) missing.push("title");
   const canSubmit = missing.length === 0 && !budgetInvalid && !timesHalf && !saving && !blockedReason;
 
@@ -331,15 +332,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   /** Date, place and hours (hours required: artists check them against their calendar) */
   const scheduleBlock = (placeLabelText: string) => (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <FieldLabel htmlFor="opp-date">Date</FieldLabel>
-          {datePicker}
-        </div>
-        <div>
-          <FieldLabel htmlFor="opp-place">{placeLabelText}</FieldLabel>
-          {placePicker}
-        </div>
+      <div>
+        <FieldLabel htmlFor="opp-date">Date</FieldLabel>
+        {datePicker}
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -409,6 +404,11 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </Popover>
         )
       )}
+
+      <div>
+        <FieldLabel htmlFor="opp-place">{placeLabelText}</FieldLabel>
+        {placePicker}
+      </div>
     </div>
   );
 
