@@ -171,9 +171,31 @@ const Announcements = () => {
 
   const availabilityFor = (a: any): MyAvailability | null => {
     if (!isArtistViewer || a.kind !== 'gig' || !a.event_on) return null;
-    const day = myCalendar.get(a.event_on);
-    const slots = parseSlotsFromNotes(day?.notes);
-    return myAvailabilityFor(day, slots, isDayFullyBooked(slots), a.start_time, a.end_time);
+    const check = (ymd: string, start?: string | null, end?: string | null) => {
+      const day = myCalendar.get(ymd);
+      const slots = parseSlotsFromNotes(day?.notes);
+      return myAvailabilityFor(day, slots, isDayFullyBooked(slots), start, end);
+    };
+    if (!a.event_end_on || a.event_end_on <= a.event_on) return check(a.event_on, a.start_time, a.end_time);
+    // Several days: first day from the start time, middle days whole, last day until the end time.
+    // The worst day decides.
+    const rank: MyAvailability[] = ['available', 'partial', 'clash', 'busy', 'blocked'];
+    let worst: MyAvailability = 'available';
+    const [y, m, d] = a.event_on.split('-').map(Number);
+    const cursor = new Date(y, m - 1, d);
+    const last = a.event_end_on;
+    for (let i = 0; i < 32; i++) {
+      const ymd = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}-${String(cursor.getDate()).padStart(2, '0')}`;
+      if (ymd > last) break;
+      const first = i === 0;
+      const isLast = ymd === last;
+      const start = a.start_time ? (first ? a.start_time : '00:00') : null;
+      const end = a.end_time ? (isLast ? a.end_time : '23:59') : null;
+      const r = check(ymd, start, end);
+      if (rank.indexOf(r) > rank.indexOf(worst)) worst = r;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    return worst;
   };
 
   const authorFor = (a: any) => {
@@ -343,6 +365,7 @@ const Announcements = () => {
                       profile_id: currentUserId,
                       requester_name: author.name,
                       event_date: a.event_on,
+                      event_end_date: a.event_end_on || a.event_on,
                       event_type: a.event_type,
                       status: mine?.status || "pending",
                       offer_price: mine?.offer_price ?? null,

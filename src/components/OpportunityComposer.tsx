@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { CalendarDays, Info, Loader2, Moon, RotateCcw } from "lucide-react";
+import { CalendarDays, CalendarRange, Info, Loader2, Moon, RotateCcw, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -102,6 +102,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [eventType, setEventType] = useState("");
   const [eventOn, setEventOn] = useState<Date | undefined>();
   const [dateOpen, setDateOpen] = useState(false);
+  // Last day of an event that lasts several days (undefined = a single day)
+  const [eventEndOn, setEventEndOn] = useState<Date | undefined>();
+  const [endDayOpen, setEndDayOpen] = useState(false);
   const [placeLabel, setPlaceLabel] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -124,6 +127,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setCollabType("one_event");
     setEventType("");
     setEventOn(undefined);
+    setEventEndOn(undefined);
     setPlaceLabel("");
     setStartTime("");
     setEndTime("");
@@ -175,7 +179,11 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const maxN = amountOrNull(budgetMax);
   const budgetInvalid = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
   const timesHalf = !!startTime !== !!endTime;
-  const overnight = !!startTime && !!endTime && endTime <= startTime;
+  const multiDay = !!eventOn && !!eventEndOn && eventEndOn > eventOn;
+  const overnight = !multiDay && !!startTime && !!endTime && endTime <= startTime;
+  const dayCount = multiDay
+    ? Math.round((new Date(eventEndOn!).setHours(0, 0, 0, 0) - new Date(eventOn!).setHours(0, 0, 0, 0)) / 86400000) + 1
+    : 1;
 
   const missing: string[] = [];
   if (!seeking) missing.push("seeking");
@@ -219,6 +227,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         county: place.county,
         city: place.city,
         event_on: eventOnYmd,
+        event_end_on: needsSchedule && multiDay ? toYMD(eventEndOn!) : null,
         start_time: needsSchedule && startTime && endTime ? startTime : null,
         end_time: needsSchedule && startTime && endTime ? endTime : null,
         ...budget,
@@ -275,6 +284,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           selected={eventOn}
           onSelect={(d) => {
             setEventOn(d || undefined);
+            if (!d || (eventEndOn && eventEndOn <= d)) setEventEndOn(undefined);
             setDateOpen(false);
           }}
           disabled={(d) => d < today}
@@ -294,6 +304,28 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       placeholder="Search a town..."
       className="[&_input]:h-10 [&_input]:rounded-lg"
     />
+  );
+
+  const dayLabel = (d: Date) => {
+    const t = d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  };
+
+  const endDayPicker = (
+    <PopoverContent className="w-auto p-0" align="start">
+      <Calendar
+        mode="single"
+        selected={eventEndOn}
+        defaultMonth={eventEndOn || eventOn}
+        onSelect={(d) => {
+          setEventEndOn(d || undefined);
+          setEndDayOpen(false);
+        }}
+        disabled={(d) => !eventOn || d <= eventOn || d.getTime() > eventOn.getTime() + 30 * 86400000}
+        initialFocus
+        className="p-3 pointer-events-auto"
+      />
+    </PopoverContent>
   );
 
   /** Date, place and hours (hours required: artists check them against their calendar) */
@@ -327,6 +359,56 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           <span>Ends the next day</span>
         </p>
       ) : null}
+
+      {multiDay ? (
+        // Runs continuously from the start time on the first day to the end time on the last day
+        <div className="rounded-lg border border-accent/30 bg-accent/[0.07] px-3 py-2.5 text-xs">
+          <div className="flex items-center gap-2">
+            <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
+            <span className="font-semibold text-foreground">
+              <span>Multi-day event</span>
+              <span className="notranslate" translate="no"> · {dayCount}</span> <span>days</span>
+            </span>
+            <button
+              type="button"
+              className="ml-auto inline-flex shrink-0 whitespace-nowrap items-center gap-1 text-muted-foreground hover:text-foreground"
+              onClick={() => setEventEndOn(undefined)}
+            >
+              <X className="h-3.5 w-3.5" />
+              <span>Single day</span>
+            </button>
+          </div>
+          <p className="mt-1.5 pl-[22px] text-muted-foreground notranslate tabular-nums" translate="no">
+            {dayLabel(eventOn!)}, {startTime || "--:--"} → {dayLabel(eventEndOn!)}, {endTime || "--:--"}
+          </p>
+          <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
+            <PopoverTrigger asChild>
+              <button type="button" className="mt-1.5 pl-[22px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
+                Change the end day
+              </button>
+            </PopoverTrigger>
+            {endDayPicker}
+          </Popover>
+        </div>
+      ) : (
+        eventOn &&
+        startTime &&
+        endTime && (
+          // Optional, once the date and hours are set: festivals and other multi-day events
+          <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
+              >
+                <CalendarRange className="h-3.5 w-3.5" />
+                <span>Spans several days? Choose the end day</span>
+              </button>
+            </PopoverTrigger>
+            {endDayPicker}
+          </Popover>
+        )
+      )}
     </div>
   );
 

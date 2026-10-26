@@ -29,6 +29,8 @@ export interface OpportunityCardData {
   county?: string | null;
   city?: string | null;
   event_on?: string | null;
+  /** Last day when the event lasts several days */
+  event_end_on?: string | null;
   start_time?: string | null;
   end_time?: string | null;
   budget_mode?: string | null;
@@ -102,17 +104,22 @@ const OpportunityCard = ({
   const locale = lang.startsWith("ro") ? "ro-RO" : "en-GB";
   const isGig = o.kind === "gig";
 
-  const dateText = (() => {
-    if (!o.event_on) return null;
-    const [y, m, d] = o.event_on.split("-").map(Number);
+  const fmtDay = (ymd: string, withYear: boolean) => {
+    const [y, m, d] = ymd.split("-").map(Number);
     const s = new Date(y, m - 1, d).toLocaleDateString(locale, {
       weekday: "short",
       day: "numeric",
       month: "short",
-      year: "numeric",
+      ...(withYear ? { year: "numeric" as const } : {}),
     });
     return s.charAt(0).toUpperCase() + s.slice(1);
-  })();
+  };
+  const multiDay = !!o.event_on && !!o.event_end_on && o.event_end_on > o.event_on;
+  const dateText = !o.event_on
+    ? null
+    : multiDay
+      ? `${fmtDay(o.event_on, false)} – ${fmtDay(o.event_end_on!, false)}`
+      : fmtDay(o.event_on, true);
   const expiresText = o.expires_at
     ? new Date(new Date(o.expires_at).getTime() - 60_000).toLocaleDateString(locale, { day: "numeric", month: "short" })
     : null;

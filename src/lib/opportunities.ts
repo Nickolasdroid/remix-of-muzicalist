@@ -181,6 +181,8 @@ const ERROR_TEXT: Record<string, string> = {
   OPPORTUNITY_TITLE_REQUIRED: "Add a title of at least 3 characters.",
   OPPORTUNITY_FIELDS_REQUIRED: "Fill in the required fields.",
   OPPORTUNITY_DATE_PASSED: "The event date has already passed.",
+  OPPORTUNITY_END_BEFORE_START: "The last day can't be before the first day.",
+  OPPORTUNITY_TOO_LONG: "An event can last at most 31 days.",
   OPPORTUNITY_BUDGET_INVALID: "The minimum budget can't be higher than the maximum.",
   OPPORTUNITY_COLLAB_ARTISTS_ONLY: "Only artists can look for collaborators.",
   USER_ANNOUNCEMENT_GIG_ONLY: "Only artists can look for collaborators.",
