@@ -109,6 +109,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [budgetMode, setBudgetMode] = useState<BudgetMode>("range");
+  // One amount by default; "+ range" shows min and max
+  const [budgetRange, setBudgetRange] = useState(false);
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
   const [currency, setCurrency] = useState("RON");
@@ -130,6 +132,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setStartTime("");
     setEndTime("");
     setBudgetMode("range");
+    setBudgetRange(false);
     setBudgetMin("");
     setBudgetMax("");
     setCurrency("RON");
@@ -148,7 +151,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const needsSchedule = showEventType;
   const eventOnYmd = eventOn && (kind === "gig" || collabType !== "permanent") ? toYMD(eventOn) : null;
 
-  const suggestedTitle = buildOpportunityTitle(
+  // Suggest a title only once it can say something useful ("Solist pentru nuntă", not "Solist pentru un eveniment")
+  const titleReady =
+    !!seeking &&
+    (!showRole || !!roleDetail.trim()) &&
+    (showEventType ? !!eventType.trim() : true);
+  const suggestedTitle = !titleReady ? "" : buildOpportunityTitle(
     {
       kind,
       seeking,
@@ -167,7 +175,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   }, [suggestedTitle, titleEdited]);
 
   const minN = amountOrNull(budgetMin);
-  const maxN = amountOrNull(budgetMax);
+  // A single amount is stored as min = max
+  const maxN = budgetRange ? amountOrNull(budgetMax) : minN;
   const budgetReversed = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
   // A range that wide is almost always a typo (e.g. 1.800 typed as 180.000)
   const budgetTooWide = budgetMode === "range" && !!minN && maxN != null && maxN > minN * 20;
@@ -324,7 +333,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
 
   /** Date, place and hours (hours required: artists check them against their calendar) */
   const scheduleBlock = (placeLabelText: string) => (
-    <div className="rounded-xl bg-card p-3 space-y-3">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <FieldLabel htmlFor="opp-date">Date</FieldLabel>
@@ -516,7 +525,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
             </div>
 
-            {scheduleBlock("County / town")}
+            {scheduleBlock("Locality")}
           </>
         ) : (
           <>
@@ -537,10 +546,10 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               </div>
             )}
             {needsSchedule ? (
-              scheduleBlock("Area")
+              scheduleBlock("Locality")
             ) : (
               <div>
-                <FieldLabel htmlFor="opp-place">Area</FieldLabel>
+                <FieldLabel htmlFor="opp-place">Locality</FieldLabel>
                 {placePicker}
               </div>
             )}
@@ -582,23 +591,25 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             {isGig ? "Budget" : "Fee"}
           </FieldLabel>
           {budgetMode === "range" && (
-            <div className="grid grid-cols-[1fr_1fr_88px] gap-2">
+            <div className={cn("grid gap-2", budgetRange ? "grid-cols-[1fr_1fr_88px]" : "grid-cols-[1fr_88px]")}>
               <Input
                 inputMode="decimal"
-                aria-label="Minimum"
-                placeholder={isGig ? "Min." : "Amount"}
+                aria-label={budgetRange ? "Minimum" : "Amount"}
+                placeholder={budgetRange ? "Min." : "Amount"}
                 value={budgetMin}
                 onChange={(e) => setBudgetMin(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
                 className="h-10 rounded-lg"
               />
-              <Input
-                inputMode="decimal"
-                aria-label="Maximum"
-                placeholder="Max."
-                value={budgetMax}
-                onChange={(e) => setBudgetMax(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
-                className="h-10 rounded-lg"
-              />
+              {budgetRange && (
+                <Input
+                  inputMode="decimal"
+                  aria-label="Maximum"
+                  placeholder="Max."
+                  value={budgetMax}
+                  onChange={(e) => setBudgetMax(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
+                  className="h-10 rounded-lg"
+                />
+              )}
               <Select value={currency} onValueChange={setCurrency}>
                 <SelectTrigger className="h-10 rounded-lg" aria-label="Currency">
                   <SelectValue />
@@ -613,17 +624,21 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               </Select>
             </div>
           )}
-          <div className={cn("flex flex-wrap gap-1.5", budgetMode === "range" && "mt-2")}>
-            {budgetMode !== "range" && (
-              <Chip on={false} onClick={() => setBudgetMode("range")}>
-                Set an amount
-              </Chip>
+          <div className={cn("flex flex-wrap items-center gap-1.5", budgetMode === "range" && "mt-2")}>
+            {budgetMode === "range" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setBudgetRange(!budgetRange);
+                  setBudgetMax("");
+                }}
+                className="mr-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                {budgetRange ? "Single amount" : "+ Range"}
+              </button>
             )}
             <Chip on={budgetMode === "negotiable"} onClick={() => setBudgetMode(budgetMode === "negotiable" ? "range" : "negotiable")}>
               Negotiable
-            </Chip>
-            <Chip on={budgetMode === "none"} onClick={() => setBudgetMode(budgetMode === "none" ? "range" : "none")}>
-              No budget
             </Chip>
           </div>
           {budgetReversed && (
