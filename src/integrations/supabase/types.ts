@@ -188,55 +188,103 @@ export type Database = {
       announcements: {
         Row: {
           budget: string | null
+          budget_currency: string | null
+          budget_max: number | null
+          budget_min: number | null
+          budget_mode: string | null
+          city: string | null
+          collab_type: string | null
+          county: string | null
           created_at: string
           date: string
           description: string
+          end_time: string | null
           event_date: string | null
           event_end_on: string | null
+          event_on: string | null
+          event_type: string | null
+          expires_at: string | null
           id: string
           is_premium: boolean
+          kind: string | null
           location: string | null
           media_type: string | null
           media_url: string | null
           profile_id: string
           promoted_at: string | null
           promoted_until: string | null
+          role_detail: string | null
+          seeking: string | null
+          start_time: string | null
+          status: string
           title: string
           updated_at: string
         }
         Insert: {
           budget?: string | null
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          budget_mode?: string | null
+          city?: string | null
+          collab_type?: string | null
+          county?: string | null
           created_at?: string
           date?: string
           description: string
+          end_time?: string | null
           event_date?: string | null
           event_end_on?: string | null
+          event_on?: string | null
+          event_type?: string | null
+          expires_at?: string | null
           id?: string
           is_premium?: boolean
+          kind?: string | null
           location?: string | null
           media_type?: string | null
           media_url?: string | null
           profile_id: string
           promoted_at?: string | null
           promoted_until?: string | null
+          role_detail?: string | null
+          seeking?: string | null
+          start_time?: string | null
+          status?: string
           title: string
           updated_at?: string
         }
         Update: {
           budget?: string | null
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          budget_mode?: string | null
+          city?: string | null
+          collab_type?: string | null
+          county?: string | null
           created_at?: string
           date?: string
           description?: string
+          end_time?: string | null
           event_date?: string | null
           event_end_on?: string | null
+          event_on?: string | null
+          event_type?: string | null
+          expires_at?: string | null
           id?: string
           is_premium?: boolean
+          kind?: string | null
           location?: string | null
           media_type?: string | null
           media_url?: string | null
           profile_id?: string
           promoted_at?: string | null
           promoted_until?: string | null
+          role_detail?: string | null
+          seeking?: string | null
+          start_time?: string | null
+          status?: string
           title?: string
           updated_at?: string
         }
@@ -308,6 +356,7 @@ export type Database = {
       }
       booking_requests: {
         Row: {
+          announcement_id: string | null
           confirmed_at: string | null
           created_at: string
           declined_by: string | null
@@ -330,6 +379,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          announcement_id?: string | null
           confirmed_at?: string | null
           created_at?: string
           declined_by?: string | null
@@ -352,6 +402,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          announcement_id?: string | null
           confirmed_at?: string | null
           created_at?: string
           declined_by?: string | null
@@ -373,7 +424,15 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "booking_requests_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       calendar_events: {
         Row: {
@@ -2909,6 +2968,13 @@ export type Database = {
         }[]
       }
       get_admin_user_ids: { Args: never; Returns: string[] }
+      get_announcement_offer_counts: {
+        Args: { _ids: string[] }
+        Returns: {
+          announcement_id: string
+          offers: number
+        }[]
+      }
       get_artist_country_counts: {
         Args: never
         Returns: {

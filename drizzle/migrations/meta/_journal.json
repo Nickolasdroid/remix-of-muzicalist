@@ -64,6 +64,13 @@
       "when": 1793019793766,
       "tag": "0008_opportunities_event_end_on",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793042139153,
+      "tag": "0009_oportunitati_complet",
+      "breakpoints": true
     }
   ]
 }
