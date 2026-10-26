@@ -35,7 +35,6 @@ import {
   parseRomanianPlace,
 } from "@/lib/opportunities";
 
-const DETAILS_MAX = 1000;
 
 const MISSING_LABEL: Record<string, [en: string, ro: string]> = {
   seeking: ["who you're looking for", "pe cine cauți"],
@@ -114,8 +113,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
   const [currency, setCurrency] = useState("RON");
-  const [details, setDetails] = useState("");
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [titleEdited, setTitleEdited] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -137,8 +134,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setBudgetMin("");
     setBudgetMax("");
     setCurrency("RON");
-    setDetails("");
-    setDetailsOpen(false);
     setTitle("");
     setTitleEdited(false);
   }, [open]);
@@ -217,7 +212,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         profile_id: user.id,
         title: title.trim(),
         date: toYMD(new Date()),
-        description: details.trim(),
+        description: "",
         is_premium: false,
         kind,
         seeking,
@@ -640,41 +635,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           )}
         </div>
 
-        {detailsOpen || details ? (
-          <div>
-          <div className="flex items-baseline justify-between gap-2 mb-1.5">
-            <label htmlFor="opp-details" className="text-sm font-medium text-foreground">
-              Details
-            </label>
-            <span className="text-[11px] text-muted-foreground/70 tabular-nums">
-              {details.length}/{DETAILS_MAX}
-            </span>
-          </div>
-          <Textarea
-            id="opp-details"
-            autoFocus={detailsOpen && !details}
-            rows={3}
-            maxLength={DETAILS_MAX}
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            placeholder={
-              isGig
-                ? "Number of guests, music style, equipment available at the venue…"
-                : "Repertoire, rehearsals, what equipment they should bring…"
-            }
-            className="resize-none rounded-lg"
-          />
-          </div>
-
-        ) : (
-          <button
-            type="button"
-            onClick={() => setDetailsOpen(true)}
-            className="text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            <span>+ Add details</span> <span className="text-muted-foreground/70">(<span>optional</span>)</span>
-          </button>
-        )}
 
         </div>
 
