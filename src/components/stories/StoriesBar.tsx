@@ -84,7 +84,7 @@ const StoriesBar = ({ currentUserId, canPublish }: StoriesBarProps) => {
 
   return (
     <>
-      <div className="flex gap-3 overflow-x-auto px-3 py-3 border-b border-border/40 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-3 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* Own bubble: view own stories, or add one */}
         {(hasOwn || showAddBubble) && currentUserId && (
           <div className="flex flex-col items-center gap-1 w-[72px] shrink-0">
