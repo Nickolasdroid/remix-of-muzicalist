@@ -57,6 +57,13 @@
       "when": 1792692856561,
       "tag": "0007_booking_cancel_request",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793019793766,
+      "tag": "0008_opportunities_event_end_on",
+      "breakpoints": true
     }
   ]
 }

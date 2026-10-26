@@ -192,6 +192,7 @@ export type Database = {
           date: string
           description: string
           event_date: string | null
+          event_end_on: string | null
           id: string
           is_premium: boolean
           location: string | null
@@ -209,6 +210,7 @@ export type Database = {
           date?: string
           description: string
           event_date?: string | null
+          event_end_on?: string | null
           id?: string
           is_premium?: boolean
           location?: string | null
@@ -226,6 +228,7 @@ export type Database = {
           date?: string
           description?: string
           event_date?: string | null
+          event_end_on?: string | null
           id?: string
           is_premium?: boolean
           location?: string | null
@@ -3289,6 +3292,16 @@ export type Database = {
         }[]
       }
       self_downgrade_to_free: { Args: never; Returns: undefined }
+      send_announcement_offer: {
+        Args: {
+          _accept_terms?: boolean
+          _announcement_id: string
+          _currency: string
+          _note?: string
+          _price: number
+        }
+        Returns: string
+      }
       send_booking_offer: {
         Args: {
           _accept_terms?: boolean
