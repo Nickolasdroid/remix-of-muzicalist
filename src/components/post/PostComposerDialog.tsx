@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Clock, Image as ImageIcon, Images, Play, Replace, Video as VideoIcon, X } from "lucide-react";
+import { Image as ImageIcon, Video as VideoIcon, X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
-import { CreationModalShell, UsagePill } from "@/components/dashboard/CreationModal";
+import { CreationModalShell } from "@/components/dashboard/CreationModal";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ interface PostComposerDialogProps {
   onPublished?: () => void | Promise<void>;
 }
 
-const MAX_LENGTH = 200;
+const MAX_LENGTH = 500;
 
 /**
  * The single, shared "Create a post" composer used everywhere an artist can
@@ -200,157 +200,144 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     .filter(Boolean)
     .join(" · ");
 
+  const used = content.length;
+  const ringPct = Math.min(100, Math.round((used / MAX_LENGTH) * 100));
+  const nearLimit = used >= MAX_LENGTH * 0.9;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <CreationModalShell
-        title={t("postComposer.title", "Create a post")}
+        title="New post"
+        bodyClassName="space-y-0 pt-4 pb-0"
         footer={
-          <Button
-            type="button"
-            className="w-full rounded-lg bg-accent text-accent-foreground transition-colors hover:bg-accent/90"
-            onClick={handlePublish}
-            disabled={isPublishing || uploadProgress !== null || !isValid || !canCreate || postsRemaining <= 0}
-          >
-            {isPublishing ? t("creationModal.publishing", "Publishing...") : t("creationModal.publishPost", "Publish post")}
-          </Button>
+          <div className="space-y-3">
+            {Number.isFinite(postsRemaining) && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className={postsRemaining === 0 ? "font-semibold text-destructive tabular-nums" : "font-semibold text-foreground tabular-nums"}>
+                  {postsRemaining}
+                </span>
+                <span>{postsRemaining === 1 ? "post left" : "posts left"}</span>
+                <span>·</span>
+                <span>resets at renewal</span>
+                <QuotaInfoButton kind="posts" />
+              </div>
+            )}
+            <Button
+              type="button"
+              className="h-11 w-full rounded-lg bg-accent font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+              onClick={handlePublish}
+              disabled={isPublishing || uploadProgress !== null || !isValid || !canCreate || postsRemaining <= 0}
+            >
+              {isPublishing ? "Publishing..." : "Publish"}
+            </Button>
+          </div>
         }
       >
-        {/* Artist header */}
+        {/* Author */}
         <div className="flex items-center gap-3">
-          <Avatar className="h-11 w-11 border border-border/70">
+          <Avatar className="h-11 w-11 border border-accent/60">
             <AvatarImage src={profile?.avatar_url || undefined} alt={artistName} />
-            <AvatarFallback className="bg-muted text-sm font-semibold">{artistName.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-accent/10 text-sm font-semibold text-accent">{artistName.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground">{artistName}</p>
-            {metaLine && <p className="truncate text-xs text-muted-foreground">{metaLine}</p>}
+            <p className="truncate text-[15px] font-semibold text-foreground notranslate" translate="no">{artistName}</p>
+            {metaLine && <p className="truncate text-xs text-muted-foreground notranslate" translate="no">{metaLine}</p>}
           </div>
         </div>
 
         {!canCreate && (
-          <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm text-muted-foreground">
-            {t("postComposer.planRequired", "Posts are available with a Standard or Premium plan.")}
+          <div className="mt-3 rounded-lg bg-muted/30 p-3 text-sm text-muted-foreground">
+            Posts are available with a Standard or Premium plan.
           </div>
         )}
 
-        {/* Text */}
-        <div className="space-y-1.5">
-          <Textarea
-            ref={textareaRef}
-            value={content}
-            onChange={(event) => setContent(event.target.value.slice(0, MAX_LENGTH))}
-            placeholder={t("creationModal.postPlaceholder", "Write something about your post...")}
-            maxLength={MAX_LENGTH}
-            className="min-h-[88px] max-h-[220px] resize-none overflow-y-auto rounded-lg border-border/70 bg-background/50 p-4 text-base leading-relaxed transition-colors focus-visible:ring-accent/40"
-          />
+        {/* Text: the main thing, no box around it */}
+        <Textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(event) => setContent(event.target.value.slice(0, MAX_LENGTH))}
+          placeholder="What do you want to show your fans and organizers?"
+          maxLength={MAX_LENGTH}
+          aria-label="Post text"
+          className="mt-4 min-h-[110px] max-h-[40dvh] resize-none overflow-y-auto border-0 bg-transparent px-0 py-1 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
 
-          <p className="text-right text-xs tabular-nums text-muted-foreground">{content.length}/{MAX_LENGTH}</p>
-        </div>
+        <Input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => handleMediaInput(event, "image")} />
+        <Input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={(event) => handleMediaInput(event, "video")} />
 
-        {/* Media */}
-        <section className="space-y-3 border-t border-border/60 pt-5">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {t("postComposer.addToPost", "Add to your post")}
-          </h3>
+        {uploadProgress !== null && (
+          <div className="mt-3 space-y-2.5 rounded-xl bg-card p-4">
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <span className="font-medium text-foreground">
+                {uploadKind === "video" ? "Uploading video…" : "Uploading image…"}
+              </span>
+              <span className="tabular-nums text-muted-foreground">{uploadProgress}%</span>
+            </div>
+            <Progress value={uploadProgress} />
+          </div>
+        )}
 
-          {!mediaUrl && uploadProgress === null && (
-            <div className="grid grid-cols-2 gap-3">
-              <Button
+        {mediaUrl && uploadProgress === null && (
+          <div className="relative mt-3 overflow-hidden rounded-xl bg-muted/30">
+            {mediaType === "image" ? (
+              <img src={mediaUrl} alt="Photo selected" className="max-h-[340px] w-full object-cover" />
+            ) : (
+              <video src={mediaUrl} controls playsInline className="max-h-[340px] w-full bg-black object-contain" />
+            )}
+            <button
+              type="button"
+              aria-label="Remove"
+              className="absolute right-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full bg-black/65 text-white transition-colors hover:bg-black/80"
+              onClick={() => { setMediaUrl(""); setMediaType(""); }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+            {mediaType === "image" && (
+              <button
                 type="button"
-                variant="outline"
-                className="h-auto flex-col gap-2 rounded-lg border-border/70 bg-background/30 py-4 transition-colors hover:border-accent/50 hover:bg-muted/40"
+                className="absolute bottom-2.5 left-2.5 rounded-full bg-black/65 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black/80"
                 onClick={() => imageInputRef.current?.click()}
               >
-                <ImageIcon className="h-5 w-5 text-accent" />
-                {t("creationModal.photo", "Photo")}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-auto flex-col gap-2 rounded-lg border-border/70 bg-background/30 py-4 transition-colors hover:border-accent/50 hover:bg-muted/40"
-                onClick={() => videoInputRef.current?.click()}
+                Change
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Toolbar */}
+        <div className="mt-3 flex items-center gap-2 border-t border-border/60 py-3">
+          <button
+            type="button"
+            disabled={uploadProgress !== null}
+            onClick={() => imageInputRef.current?.click()}
+            className="inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-2 text-sm text-foreground/90 transition-colors hover:bg-muted disabled:opacity-50"
+          >
+            <ImageIcon className="h-4 w-4 text-accent" />
+            Photo
+          </button>
+          <button
+            type="button"
+            disabled={uploadProgress !== null}
+            onClick={() => videoInputRef.current?.click()}
+            className="inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-2 text-sm text-foreground/90 transition-colors hover:bg-muted disabled:opacity-50"
+          >
+            <VideoIcon className="h-4 w-4 text-accent" />
+            Video
+          </button>
+          {used > 0 && (
+            <div className="ml-auto flex items-center gap-2">
+              <span className={`text-xs tabular-nums ${nearLimit ? "text-amber-400" : "text-muted-foreground"}`}>
+                {used} / {MAX_LENGTH}
+              </span>
+              <span
+                aria-hidden
+                className="grid h-5 w-5 place-items-center rounded-full"
+                style={{ background: `conic-gradient(hsl(var(--accent)) ${ringPct}%, hsl(var(--border)) ${ringPct}% 100%)` }}
               >
-                <VideoIcon className="h-5 w-5 text-accent" />
-                {t("creationModal.video", "Video")}
-              </Button>
+                <span className="h-3.5 w-3.5 rounded-full bg-background" />
+              </span>
             </div>
           )}
-
-          <Input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => handleMediaInput(event, "image")} />
-          <Input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={(event) => handleMediaInput(event, "video")} />
-
-          {uploadProgress !== null && (
-            <div className="space-y-2.5 rounded-lg border border-border/70 bg-background/30 p-4">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="font-medium text-foreground">
-                  {uploadKind === "video"
-                    ? t("creationModal.uploadingVideo", "Uploading video…")
-                    : t("creationModal.uploadingImage", "Uploading image…")}
-                </span>
-                <span className="tabular-nums text-muted-foreground">{uploadProgress}%</span>
-              </div>
-              <Progress value={uploadProgress} />
-            </div>
-          )}
-
-          {mediaUrl && uploadProgress === null && (
-            <div className="overflow-hidden rounded-lg border border-border/70 bg-background/30">
-              <div className="relative flex max-h-[320px] items-center justify-center bg-muted/30">
-                {mediaType === "image" ? (
-                  <img src={mediaUrl} alt={t("postComposer.photoSelected", "Photo selected")} className="max-h-[320px] w-full object-contain" />
-                ) : (
-                  <video src={mediaUrl} controls playsInline className="max-h-[320px] w-full bg-black object-contain" />
-                )}
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="secondary"
-                  aria-label={t("creationModal.removeMedia", "Remove")}
-                  className="absolute right-2 top-2 h-8 w-8 rounded-full opacity-90 transition-opacity hover:opacity-100"
-                  onClick={() => { setMediaUrl(""); setMediaType(""); }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2">
-                {mediaType === "image"
-                  ? <ImageIcon className="h-4 w-4 text-accent" />
-                  : <Play className="h-4 w-4 text-accent" />}
-                <span className="mr-auto text-xs text-muted-foreground">
-                  {mediaType === "image"
-                    ? t("postComposer.photoSelected", "Photo selected")
-                    : t("postComposer.videoSelected", "Video selected")}
-                </span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  className="rounded-lg text-muted-foreground"
-                  onClick={() => (mediaType === "image" ? imageInputRef.current : videoInputRef.current)?.click()}
-                >
-                  <Replace className="mr-1.5 h-4 w-4" />
-                  {t("creationModal.changeMedia", "Change")}
-                </Button>
-              </div>
-            </div>
-          )}
-
-        </section>
-
-        {/* Quota */}
-        <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-5">
-          {Number.isFinite(postsRemaining) && (
-            <UsagePill
-              icon={<Images className="h-3.5 w-3.5" />}
-              tone={postsRemaining === 0 ? "warning" : "accent"}
-            >
-              {t("creationModal.postsAvailable", { count: postsRemaining, defaultValue: "{{count}} posts available" })}
-            </UsagePill>
-          )}
-          <UsagePill icon={<Clock className="h-3.5 w-3.5" />}>
-            {t("creationModal.resetsAtRenewal", "Resets at renewal")}
-          </UsagePill>
-          <QuotaInfoButton kind="posts" />
         </div>
       </CreationModalShell>
     </Dialog>

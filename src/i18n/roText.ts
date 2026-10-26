@@ -2771,4 +2771,13 @@ export const RO_TEXT: Record<string, string> = {
   "Instrument": "Instrument",
   "Choose the instrument": "Alege instrumentul",
   "Which instrument?": "Ce instrument?",
+  "New post": "Postare nouă",
+  "post left": "postare rămasă",
+  "posts left": "postări rămase",
+  "resets at renewal": "se resetează la reînnoire",
+  "Publishing...": "Se publică...",
+  "Posts are available with a Standard or Premium plan.": "Postările sunt disponibile în abonamentele Standard și Premium.",
+  "What do you want to show your fans and organizers?": "Ce vrei să le arăți fanilor și organizatorilor?",
+  "Post text": "Textul postării",
+  "Photo selected": "Fotografie selectată",
 };
