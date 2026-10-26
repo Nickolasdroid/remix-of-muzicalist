@@ -633,11 +633,7 @@ const UserDashboard = () => {
                 onOpenChange={setShowAnnouncementDialog}
                 isArtist={false}
                 blockedReason={!canPublish ? "You already have 5 open announcements. Close one or wait for an event to pass." : null}
-                meta={
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
-                    <span>Free for organizers</span>
-                  </span>
-                }
+                meta={<span className="text-accent">Free for organizers</span>}
                 onPublished={() => loadAnnouncements()}
               />
 

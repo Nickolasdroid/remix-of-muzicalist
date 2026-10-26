@@ -6,6 +6,7 @@ interface TimeSelectorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   id?: string;
+  triggerClassName?: string;
 }
 
 // Half-hour steps: 48 options instead of 144, easy to scroll on a phone
@@ -24,7 +25,7 @@ const timeOptions = generateTimeOptions();
 /** Where the list opens when nothing is chosen yet: most events start in the evening */
 const OPEN_AT = "18:00";
 
-const TimeSelector = ({ value, onChange, placeholder = "Select time", id }: TimeSelectorProps) => {
+const TimeSelector = ({ value, onChange, placeholder = "Select time", id, triggerClassName }: TimeSelectorProps) => {
   const [open, setOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +42,7 @@ const TimeSelector = ({ value, onChange, placeholder = "Select time", id }: Time
 
   return (
     <Select value={value} onValueChange={onChange} open={open} onOpenChange={setOpen}>
-      <SelectTrigger id={id} className="w-full">
+      <SelectTrigger id={id} className={triggerClassName ?? "w-full"}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent ref={contentRef} className="max-h-60">

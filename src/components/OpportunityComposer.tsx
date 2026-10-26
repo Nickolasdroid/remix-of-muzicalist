@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { CalendarDays, CalendarRange, Info, Loader2, Moon, RotateCcw, X } from "lucide-react";
+import { ArrowRight, CalendarDays, CalendarRange, ChevronRight, Clock, Info, Loader2, MapPin, Moon, Music2, PartyPopper, Pencil, RotateCcw, Wallet, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreationModalShell, FieldLabel } from "@/components/dashboard/CreationModal";
+import { CreationModalShell } from "@/components/dashboard/CreationModal";
 import EventTypePicker from "@/components/EventTypePicker";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import TimeSelector from "@/components/TimeSelector";
@@ -115,6 +115,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [currency, setCurrency] = useState("RON");
   const [title, setTitle] = useState("");
   const [titleEdited, setTitleEdited] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Fresh form every time the dialog opens
@@ -136,6 +137,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setCurrency("RON");
     setTitle("");
     setTitleEdited(false);
+    setEditingTitle(false);
   }, [open]);
 
   const place = useMemo(() => parseRomanianPlace(placeLabel), [placeLabel]);
@@ -261,52 +263,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       })()
     : null;
 
-  const datePicker = (
-    <Popover open={dateOpen} onOpenChange={setDateOpen}>
-      <PopoverTrigger asChild>
-        <button
-          id="opp-date"
-          type="button"
-          className="flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm"
-        >
-          {longDate ? (
-            <span className="truncate notranslate" translate="no">
-              {longDate}
-            </span>
-          ) : (
-            <span className="text-muted-foreground">Choose a date</span>
-          )}
-          <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          selected={eventOn}
-          onSelect={(d) => {
-            setEventOn(d || undefined);
-            if (!d || (eventEndOn && eventEndOn <= d)) setEventEndOn(undefined);
-            setDateOpen(false);
-          }}
-          disabled={(d) => d < today}
-          initialFocus
-          className="p-3 pointer-events-auto"
-        />
-      </PopoverContent>
-    </Popover>
-  );
-
-  const placePicker = (
-    <LocationAutocomplete
-      id="opp-place"
-      value={placeLabel}
-      onChange={setPlaceLabel}
-      country="Romania"
-      placeholder="Search a town..."
-      className="[&_input]:h-10 [&_input]:rounded-lg"
-    />
-  );
-
   const dayLabel = (d: Date) => {
     const t = d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
     return t.charAt(0).toUpperCase() + t.slice(1);
@@ -329,103 +285,61 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     </PopoverContent>
   );
 
-  /** Date, place and hours (hours required: artists check them against their calendar) */
-  const scheduleBlock = (placeLabelText: string) => (
-    <div className="space-y-4">
-      <div>
-        <FieldLabel htmlFor="opp-date">Date</FieldLabel>
-        {datePicker}
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <FieldLabel htmlFor="opp-start">From</FieldLabel>
-          <TimeSelector id="opp-start" value={startTime} onChange={setStartTime} placeholder="--:--" />
-        </div>
-        <div>
-          <FieldLabel htmlFor="opp-end">Until</FieldLabel>
-          <TimeSelector id="opp-end" value={endTime} onChange={setEndTime} placeholder="--:--" />
-        </div>
-      </div>
-      {timesHalf ? (
-        <p className="text-xs text-destructive">Choose both the start and the end time.</p>
-      ) : overnight ? (
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Moon className="h-3.5 w-3.5" />
-          <span>Ends the next day</span>
-        </p>
-      ) : null}
-
-      {multiDay ? (
-        // Runs continuously from the start time on the first day to the end time on the last day
-        <div className="rounded-lg border border-accent/30 bg-accent/[0.07] px-3 py-2.5 text-xs">
-          <div className="flex items-center gap-2">
-            <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
-            <span className="font-semibold text-foreground">
-              <span>Multi-day event</span>
-              <span className="notranslate" translate="no"> · {dayCount}</span> <span>days</span>
-            </span>
-            <button
-              type="button"
-              className="ml-auto inline-flex shrink-0 whitespace-nowrap items-center gap-1 text-muted-foreground hover:text-foreground"
-              onClick={() => setEventEndOn(undefined)}
-            >
-              <X className="h-3.5 w-3.5" />
-              <span>Single day</span>
-            </button>
-          </div>
-          <p className="mt-1.5 pl-[22px] text-muted-foreground notranslate tabular-nums" translate="no">
-            {dayLabel(eventOn!)}, {startTime || "--:--"} → {dayLabel(eventEndOn!)}, {endTime || "--:--"}
-          </p>
-          <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
-            <PopoverTrigger asChild>
-              <button type="button" className="mt-1.5 pl-[22px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
-                Change the end day
-              </button>
-            </PopoverTrigger>
-            {endDayPicker}
-          </Popover>
-        </div>
-      ) : (
-        eventOn &&
-        startTime &&
-        endTime && (
-          // Optional, once the date and hours are set: festivals and other multi-day events
-          <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
-              >
-                <CalendarRange className="h-3.5 w-3.5" />
-                <span>Spans several days? Choose the end day</span>
-              </button>
-            </PopoverTrigger>
-            {endDayPicker}
-          </Popover>
-        )
-      )}
-
-      <div>
-        <FieldLabel htmlFor="opp-place">{placeLabelText}</FieldLabel>
-        {placePicker}
-      </div>
-    </div>
+  // Rows inside a card, like phone settings: icon, small label, value
+  const ROW = "flex w-full items-center gap-3 px-3.5 py-3 text-left";
+  const LIST = "rounded-xl border border-border/70 bg-card divide-y divide-border/70";
+  const ROW_TRIGGER =
+    "h-auto w-full rounded-none border-0 bg-transparent px-3.5 py-3 text-left focus:ring-0 focus:ring-offset-0 [&>svg]:-rotate-90";
+  const icon = (node: ReactNode) => (
+    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">{node}</span>
   );
+  const rowText = (label: string, value: ReactNode, placeholder?: string) => (
+    <span className="min-w-0 flex-1">
+      <span className="block text-[11.5px] leading-tight text-muted-foreground">{label}</span>
+      {value ? (
+        <span className="block truncate text-[14.5px] font-medium text-foreground notranslate" translate="no">
+          {value}
+        </span>
+      ) : (
+        <span className="block truncate text-[14.5px] text-muted-foreground">{placeholder}</span>
+      )}
+    </span>
+  );
+  const step = (n: number, text: string, optional = false) => (
+    <p className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">
+      <span className="tabular-nums">{n}</span> · <span>{text}</span>
+      {optional && (
+        <span className="ml-1 font-medium normal-case tracking-normal">
+          (<span>optional</span>)
+        </span>
+      )}
+    </p>
+  );
+
+  const placeText = formatPlace(place.city, place.county);
+  const previewLine = [
+    eventOn ? (multiDay ? `${dayLabel(eventOn)} – ${dayLabel(eventEndOn!)}` : dayLabel(eventOn)) : null,
+    startTime && endTime ? `${startTime} – ${endTime}` : startTime ? `${startTime} – …` : null,
+    placeText || null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <CreationModalShell
         title={isGig ? "Looking for an artist" : "Looking for a collaborator"}
-        bodyClassName="space-y-5 py-4"
+        bodyClassName="space-y-6 py-4"
         meta={
-          <div className="w-full space-y-2">
-            <p className="text-sm text-muted-foreground">
-              {isGig
-                ? "You receive priced offers from available artists."
-                : "Find musicians for your event."}
-            </p>
-            {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
-          </div>
+          <p className="text-sm text-muted-foreground">
+            <span>{isGig ? "You receive priced offers from available artists." : "Find musicians for your event."}</span>
+            {meta && (
+              <>
+                {" · "}
+                <span className="inline-flex items-center gap-1 align-middle">{meta}</span>
+              </>
+            )}
+          </p>
         }
         footer={
           <div className="space-y-2">
@@ -451,171 +365,356 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       >
         {/* Remount per kind: the page translator keeps translations per text node,
             so reused nodes would keep the other form's labels */}
-        <div key={kind} className="space-y-5">
-        <div>
-          <FieldLabel>{isGig ? "What are you looking for" : "Who are you looking for"}</FieldLabel>
-          <div className="flex flex-wrap gap-1.5">
-            {seekingOptions.map((s) => (
-              <Chip
-                key={s}
-                on={seeking === s}
-                onClick={() => {
-                  setSeeking(s);
-                  if (s !== "Instrumentalist") {
-                    setRoleDetail("");
-                    setOtherInstrument(false);
-                  }
-                }}
-              >
-                {SEEKING_LABEL[s]}
-              </Chip>
-            ))}
-          </div>
-        </div>
-
-        {showRole && (
-          <div>
-            <FieldLabel htmlFor="opp-role">Instrument</FieldLabel>
-            <Select
-              value={otherInstrument ? "__other" : roleDetail || undefined}
-              onValueChange={(v) => {
-                if (v === "__other") {
-                  setOtherInstrument(true);
-                  setRoleDetail("");
-                } else {
-                  setOtherInstrument(false);
-                  setRoleDetail(v);
-                }
-              }}
-            >
-              <SelectTrigger id="opp-role" className="h-10 rounded-lg">
-                <SelectValue placeholder="Choose the instrument" />
-              </SelectTrigger>
-              <SelectContent className="max-h-72">
-                {INSTRUMENTS.map((i) => (
-                  <SelectItem key={i} value={i}>
-                    <span className="notranslate" translate="no">
-                      {instrumentLabel(i, lang)}
-                    </span>
-                  </SelectItem>
-                ))}
-                <SelectItem value="__other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-            {otherInstrument && (
-              <Input
-                autoFocus
-                maxLength={80}
-                value={roleDetail}
-                onChange={(e) => setRoleDetail(e.target.value)}
-                placeholder="Which instrument?"
-                className="mt-2 h-10 rounded-lg"
-              />
-            )}
-          </div>
-        )}
-
-        <div>
-          <FieldLabel htmlFor="opp-event-type">Event type</FieldLabel>
-          <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
-        </div>
-
-        {scheduleBlock("Locality")}
-
-        <div>
-          <div className="flex items-baseline justify-between gap-2 mb-1.5">
-            <label htmlFor="opp-title" className="text-sm font-medium text-foreground">
-              Title
-            </label>
-            {titleEdited && suggestedTitle && (
-              <button
-                type="button"
-                onClick={() => setTitleEdited(false)}
-                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Use the suggested title
-              </button>
-            )}
-          </div>
-          <Input
-            id="opp-title"
-            maxLength={120}
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              setTitleEdited(true);
-            }}
-            placeholder="Filled in from your choices"
-            className="h-10 rounded-lg notranslate"
-            translate="no"
-          />
-        </div>
-
-        <div>
-          <FieldLabel optional optionalLabel="Optional">
-            {isGig ? "Budget" : "Fee"}
-          </FieldLabel>
-          {budgetMode === "range" && (
-            <div className={cn("grid gap-2", budgetRange ? "grid-cols-[1fr_1fr_88px]" : "grid-cols-[1fr_88px]")}>
-              <Input
-                inputMode="decimal"
-                aria-label={budgetRange ? "Minimum" : "Amount"}
-                placeholder={budgetRange ? "Min." : "Amount"}
-                value={budgetMin}
-                onChange={(e) => setBudgetMin(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
-                className="h-10 rounded-lg"
-              />
-              {budgetRange && (
-                <Input
-                  inputMode="decimal"
-                  aria-label="Maximum"
-                  placeholder="Max."
-                  value={budgetMax}
-                  onChange={(e) => setBudgetMax(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
-                  className="h-10 rounded-lg"
-                />
-              )}
-              <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="h-10 rounded-lg" aria-label="Currency">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-72">
-                  {CURRENCIES.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>
-                      {c.code}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <div key={kind} className="space-y-6">
+          {/* 1 · Who */}
+          <section>
+            {step(1, isGig ? "What are you looking for" : "Who are you looking for")}
+            <div className="flex flex-wrap gap-1.5">
+              {seekingOptions.map((s) => (
+                <Chip
+                  key={s}
+                  on={seeking === s}
+                  onClick={() => {
+                    setSeeking(s);
+                    if (s !== "Instrumentalist") {
+                      setRoleDetail("");
+                      setOtherInstrument(false);
+                    }
+                  }}
+                >
+                  {SEEKING_LABEL[s]}
+                </Chip>
+              ))}
             </div>
-          )}
-          <div className={cn("flex flex-wrap items-center gap-1.5", budgetMode === "range" && "mt-2")}>
-            {budgetMode === "range" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setBudgetRange(!budgetRange);
-                  setBudgetMax("");
-                }}
-                className="mr-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-              >
-                {budgetRange ? "Single amount" : "+ Range"}
-              </button>
+            {showRole && (
+              <div className={cn(LIST, "mt-3")}>
+                <Select
+                  value={otherInstrument ? "__other" : roleDetail || undefined}
+                  onValueChange={(v) => {
+                    if (v === "__other") {
+                      setOtherInstrument(true);
+                      setRoleDetail("");
+                    } else {
+                      setOtherInstrument(false);
+                      setRoleDetail(v);
+                    }
+                  }}
+                >
+                  <SelectTrigger id="opp-role" className={ROW_TRIGGER}>
+                    <span className="flex min-w-0 items-center gap-3">
+                      {icon(<Music2 className="h-4 w-4" />)}
+                      {rowText(
+                        "Instrument",
+                        roleDetail && !otherInstrument ? instrumentLabel(roleDetail, lang) : otherInstrument ? "Other" : null,
+                        "Choose the instrument",
+                      )}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    {INSTRUMENTS.map((i) => (
+                      <SelectItem key={i} value={i}>
+                        <span className="notranslate" translate="no">
+                          {instrumentLabel(i, lang)}
+                        </span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                {otherInstrument && (
+                  <div className="px-3.5 py-2.5">
+                    <Input
+                      autoFocus
+                      maxLength={80}
+                      value={roleDetail}
+                      onChange={(e) => setRoleDetail(e.target.value)}
+                      placeholder="Which instrument?"
+                      className="h-9 rounded-lg"
+                    />
+                  </div>
+                )}
+              </div>
             )}
-            <Chip on={budgetMode === "negotiable"} onClick={() => setBudgetMode(budgetMode === "negotiable" ? "range" : "negotiable")}>
-              Negotiable
-            </Chip>
-          </div>
-          {budgetReversed && (
-            <p className="mt-1.5 text-xs text-destructive">The minimum budget can't be higher than the maximum.</p>
-          )}
-          {budgetTooWide && (
-            <p className="mt-1.5 text-xs text-destructive">The maximum can be at most 20 times the minimum. Check the amounts.</p>
-          )}
-        </div>
+          </section>
 
+          {/* 2 · The event */}
+          <section>
+            {step(2, "The event")}
+            <div className={LIST}>
+              <EventTypePicker
+                id="opp-event-type"
+                value={eventType}
+                onChange={setEventType}
+                icon={icon(<PartyPopper className="h-4 w-4" />)}
+                label="Type"
+                triggerClassName={ROW_TRIGGER}
+                otherInputClassName="mx-3.5 mb-3 h-9 w-[calc(100%-1.75rem)]"
+              />
 
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger asChild>
+                  <button id="opp-date" type="button" className={ROW}>
+                    {icon(<CalendarDays className="h-4 w-4" />)}
+                    {rowText("Date", longDate, "Choose a date")}
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={eventOn}
+                    onSelect={(d) => {
+                      setEventOn(d || undefined);
+                      if (!d || (eventEndOn && eventEndOn <= d)) setEventEndOn(undefined);
+                      setDateOpen(false);
+                    }}
+                    disabled={(d) => d < today}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <div className={ROW}>
+                {icon(<Clock className="h-4 w-4" />)}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[11.5px] leading-tight text-muted-foreground">Hours</span>
+                  <span className="mt-1 flex items-center gap-2">
+                    <TimeSelector
+                      id="opp-start"
+                      value={startTime}
+                      onChange={setStartTime}
+                      placeholder="From"
+                      triggerClassName="h-8 w-[92px] rounded-md border-border/70 bg-background/60 px-2.5 text-[14px] tabular-nums"
+                    />
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    <TimeSelector
+                      id="opp-end"
+                      value={endTime}
+                      onChange={setEndTime}
+                      placeholder="Until"
+                      triggerClassName="h-8 w-[92px] rounded-md border-border/70 bg-background/60 px-2.5 text-[14px] tabular-nums"
+                    />
+                  </span>
+                </span>
+              </div>
+
+              <div className={cn(ROW, "relative")}>
+                {icon(<MapPin className="h-4 w-4" />)}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[11.5px] leading-tight text-muted-foreground">Locality</span>
+                  <LocationAutocomplete
+                    id="opp-place"
+                    value={placeLabel}
+                    onChange={setPlaceLabel}
+                    country="Romania"
+                    placeholder="Search a town..."
+                    className="[&_input]:h-7 [&_input]:border-0 [&_input]:bg-transparent [&_input]:pl-0 [&_input]:text-[14.5px] [&_input]:font-medium [&_input]:shadow-none [&_input]:focus-visible:ring-0 [&_input]:focus-visible:ring-offset-0 [&_.lucide-map-pin]:hidden"
+                  />
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-2 space-y-2">
+              {timesHalf ? (
+                <p className="text-xs text-destructive">Choose both the start and the end time.</p>
+              ) : overnight ? (
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Moon className="h-3.5 w-3.5" />
+                  <span>Ends the next day</span>
+                </p>
+              ) : null}
+
+              {multiDay ? (
+                <div className="rounded-lg border border-accent/30 bg-accent/[0.07] px-3 py-2.5 text-xs">
+                  <div className="flex items-center gap-2">
+                    <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
+                    <span className="font-semibold text-foreground">
+                      <span>Multi-day event</span>
+                      <span className="notranslate" translate="no"> · {dayCount}</span> <span>days</span>
+                    </span>
+                    <button
+                      type="button"
+                      className="ml-auto inline-flex shrink-0 whitespace-nowrap items-center gap-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => setEventEndOn(undefined)}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      <span>Single day</span>
+                    </button>
+                  </div>
+                  <p className="mt-1.5 pl-[22px] text-muted-foreground notranslate tabular-nums" translate="no">
+                    {dayLabel(eventOn!)}, {startTime || "--:--"} → {dayLabel(eventEndOn!)}, {endTime || "--:--"}
+                  </p>
+                  <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
+                    <PopoverTrigger asChild>
+                      <button type="button" className="mt-1.5 pl-[22px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
+                        Change the end day
+                      </button>
+                    </PopoverTrigger>
+                    {endDayPicker}
+                  </Popover>
+                </div>
+              ) : (
+                eventOn &&
+                startTime &&
+                endTime && (
+                  <Popover open={endDayOpen} onOpenChange={setEndDayOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2"
+                      >
+                        <CalendarRange className="h-3.5 w-3.5" />
+                        <span>Spans several days? Choose the end day</span>
+                      </button>
+                    </PopoverTrigger>
+                    {endDayPicker}
+                  </Popover>
+                )
+              )}
+            </div>
+          </section>
+
+          {/* 3 · Money */}
+          <section>
+            {step(3, isGig ? "Budget" : "Fee", true)}
+            {budgetMode === "range" ? (
+              <div className={LIST}>
+                <div className={ROW}>
+                  {icon(<Wallet className="h-4 w-4" />)}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[11.5px] leading-tight text-muted-foreground">
+                      {budgetRange ? "From – to" : "Amount"}
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-2">
+                      <Input
+                        inputMode="decimal"
+                        aria-label={budgetRange ? "Minimum" : "Amount"}
+                        placeholder={budgetRange ? "Min." : "e.g. 800"}
+                        value={budgetMin}
+                        onChange={(e) => setBudgetMin(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
+                        className="h-7 min-w-0 flex-1 border-0 bg-transparent px-0 text-[14.5px] font-medium shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                      {budgetRange && (
+                        <>
+                          <span className="text-muted-foreground">–</span>
+                          <Input
+                            inputMode="decimal"
+                            aria-label="Maximum"
+                            placeholder="Max."
+                            value={budgetMax}
+                            onChange={(e) => setBudgetMax(e.target.value.replace(/[^\d.,]/g, "").slice(0, 9))}
+                            className="h-7 min-w-0 flex-1 border-0 bg-transparent px-0 text-[14.5px] font-medium shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                          />
+                        </>
+                      )}
+                    </span>
+                  </span>
+                  <Select value={currency} onValueChange={setCurrency}>
+                    <SelectTrigger className="h-8 w-[84px] shrink-0 rounded-full border-border/70 px-3 text-[13px]" aria-label="Currency">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className={LIST}>
+                <div className={ROW}>
+                  {icon(<Wallet className="h-4 w-4" />)}
+                  {rowText(isGig ? "Budget" : "Fee", "Negotiable")}
+                </div>
+              </div>
+            )}
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {budgetMode === "range" && (
+                <Chip
+                  on={budgetRange}
+                  onClick={() => {
+                    setBudgetRange(!budgetRange);
+                    setBudgetMax("");
+                  }}
+                >
+                  {budgetRange ? "Single amount" : "+ Range"}
+                </Chip>
+              )}
+              <Chip on={budgetMode === "negotiable"} onClick={() => setBudgetMode(budgetMode === "negotiable" ? "range" : "negotiable")}>
+                Negotiable
+              </Chip>
+            </div>
+            {budgetReversed && (
+              <p className="mt-1.5 text-xs text-destructive">The minimum budget can't be higher than the maximum.</p>
+            )}
+            {budgetTooWide && (
+              <p className="mt-1.5 text-xs text-destructive">The maximum can be at most 20 times the minimum. Check the amounts.</p>
+            )}
+          </section>
+
+          {/* Preview: the title, editable */}
+          <section>
+            <p className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">How it will appear</p>
+            <div className="rounded-xl border border-dashed border-accent/45 bg-accent/[0.05] px-3.5 py-3">
+              {editingTitle ? (
+                <Input
+                  id="opp-title"
+                  autoFocus
+                  maxLength={120}
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    setTitleEdited(true);
+                  }}
+                  onBlur={() => setEditingTitle(false)}
+                  onKeyDown={(e) => e.key === "Enter" && setEditingTitle(false)}
+                  className="h-9 rounded-lg text-[15px] font-bold notranslate"
+                  translate="no"
+                />
+              ) : (
+                <div className="flex items-start gap-2">
+                  <p
+                    className={cn(
+                      "min-w-0 flex-1 text-[16px] font-bold leading-snug",
+                      title ? "text-foreground notranslate" : "text-muted-foreground font-medium text-[14px]",
+                    )}
+                    translate={title ? "no" : undefined}
+                  >
+                    {title || "Choose who you're looking for and the event type"}
+                  </p>
+                  {title && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingTitle(true)}
+                      className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-accent hover:underline"
+                    >
+                      <Pencil className="h-3 w-3" />
+                      Edit
+                    </button>
+                  )}
+                </div>
+              )}
+              {previewLine && (
+                <p className="mt-1 text-[12.5px] text-muted-foreground notranslate tabular-nums" translate="no">
+                  {previewLine}
+                </p>
+              )}
+              {titleEdited && suggestedTitle && title !== suggestedTitle && !editingTitle && (
+                <button
+                  type="button"
+                  onClick={() => setTitleEdited(false)}
+                  className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Use the suggested title
+                </button>
+              )}
+            </div>
+          </section>
         </div>
 
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

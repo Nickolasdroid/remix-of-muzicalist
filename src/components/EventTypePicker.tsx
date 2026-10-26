@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,10 +21,15 @@ interface EventTypePickerProps {
   id?: string;
   value: string;
   onChange: (value: string) => void;
+  /** Row look: icon and small label above the value */
+  icon?: ReactNode;
+  label?: string;
+  triggerClassName?: string;
+  otherInputClassName?: string;
 }
 
 /** Event type from the shared list ("Most booked" first), or a short description for "Other". */
-const EventTypePicker = ({ id, value, onChange }: EventTypePickerProps) => {
+const EventTypePicker = ({ id, value, onChange, icon, label, triggerClassName, otherInputClassName }: EventTypePickerProps) => {
   const [other, setOther] = useState(!!value && !isKnownEventType(value));
   const selected = other ? "Other" : value || undefined;
 
@@ -41,8 +47,20 @@ const EventTypePicker = ({ id, value, onChange }: EventTypePickerProps) => {
           }
         }}
       >
-        <SelectTrigger id={id} className="h-10 rounded-lg">
-          <SelectValue placeholder="Choose the type of event" />
+        <SelectTrigger id={id} className={cn("h-10 rounded-lg", triggerClassName)}>
+          {icon ? (
+            <span className="flex min-w-0 items-center gap-3 text-left">
+              {icon}
+              <span className="min-w-0">
+                {label && <span className="block text-[11.5px] leading-tight text-muted-foreground">{label}</span>}
+                <span className="block truncate text-[14.5px] font-medium">
+                  <SelectValue placeholder="Choose the type of event" />
+                </span>
+              </span>
+            </span>
+          ) : (
+            <SelectValue placeholder="Choose the type of event" />
+          )}
         </SelectTrigger>
         <SelectContent className="max-h-80">
           <SelectGroup>
@@ -72,7 +90,7 @@ const EventTypePicker = ({ id, value, onChange }: EventTypePickerProps) => {
           placeholder="Describe the event (e.g. Company anniversary)"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 rounded-lg"
+          className={cn("h-10 rounded-lg", otherInputClassName)}
         />
       )}
     </div>

@@ -2588,15 +2588,13 @@ const Dashboard = () => {
                             isArtist
                             blockedReason={standardAdsUsed >= STANDARD_AD_LIMIT ? "You have used all the announcements in your plan for this period." : null}
                             meta={Number.isFinite(STANDARD_AD_LIMIT) ? (
-                              <span className="inline-flex items-center gap-1.5">
-                                <UsagePill
-                                  icon={<Megaphone className="h-3 w-3" />}
-                                  tone={standardAdsRemaining === 0 ? "warning" : "accent"}
-                                >
-                                  {t('creationModal.announcementsAvailable', { count: standardAdsRemaining, defaultValue: '{{count}} announcements available' })}
-                                </UsagePill>
+                              <>
+                                <span className={standardAdsRemaining === 0 ? "text-destructive" : "text-accent"}>
+                                  <span className="tabular-nums">{standardAdsRemaining}</span>{" "}
+                                  <span>{standardAdsRemaining === 1 ? "announcement left" : "announcements left"}</span>
+                                </span>
                                 <QuotaInfoButton kind="announcements" />
-                              </span>
+                              </>
                             ) : undefined}
                             onPublished={handleOpportunityPublished}
                           />

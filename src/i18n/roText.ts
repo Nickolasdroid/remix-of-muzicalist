@@ -2809,4 +2809,12 @@ export const RO_TEXT: Record<string, string> = {
   "Single amount": "O singură sumă",
   "+ Range": "+ Interval",
   "Find musicians for your event.": "Găsește muzicieni pentru evenimentul tău.",
+  "announcement left": "anunț rămas",
+  "announcements left": "anunțuri rămase",
+  "The event": "Evenimentul",
+  "Hours": "Ora",
+  "From – to": "De la – până la",
+  "e.g. 800": "ex. 800",
+  "How it will appear": "Așa va apărea",
+  "Choose who you're looking for and the event type": "Alege pe cine cauți și tipul evenimentului",
 };
