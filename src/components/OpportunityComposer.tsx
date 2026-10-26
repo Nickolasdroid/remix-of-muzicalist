@@ -19,8 +19,6 @@ import { cn } from "@/lib/utils";
 import {
   BudgetMode,
   COLLAB_SEEKING,
-  COLLAB_TYPE_LABEL,
-  COLLAB_TYPES,
   CollabType,
   GIG_SEEKING,
   OpportunityKind,
@@ -98,7 +96,8 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [seeking, setSeeking] = useState<OpportunitySeeking | null>(null);
   const [roleDetail, setRoleDetail] = useState("");
   const [otherInstrument, setOtherInstrument] = useState(false);
-  const [collabType, setCollabType] = useState<CollabType>("one_event");
+  // Collaborations are always for one event (a stand-in or a band place is said in the title)
+  const collabType: CollabType = "one_event";
   const [eventType, setEventType] = useState("");
   const [eventOn, setEventOn] = useState<Date | undefined>();
   const [dateOpen, setDateOpen] = useState(false);
@@ -124,7 +123,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setSeeking(null);
     setRoleDetail("");
     setOtherInstrument(false);
-    setCollabType("one_event");
     setEventType("");
     setEventOn(undefined);
     setEventEndOn(undefined);
@@ -145,11 +143,10 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const seekingOptions = isGig ? GIG_SEEKING : COLLAB_SEEKING;
   // The instrument is asked only for instrumentalists
   const showRole = seeking === "Instrumentalist";
-  // Event type: always for events; for collaborations unless it's a permanent place in the band
-  const showEventType = isGig || collabType !== "permanent";
-  // Date and hours: for events and one-off collaborations (not for a permanent place in the band)
-  const needsSchedule = showEventType;
-  const eventOnYmd = eventOn && (kind === "gig" || collabType !== "permanent") ? toYMD(eventOn) : null;
+  // Every announcement is for an event: type, date, place and hours
+  const showEventType = true;
+  const needsSchedule = true;
+  const eventOnYmd = eventOn ? toYMD(eventOn) : null;
 
   // Suggest a title only once it can say something useful ("Solist pentru nuntă", not "Solist pentru un eveniment")
   const titleReady =
@@ -518,43 +515,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </div>
         )}
 
-        {isGig ? (
-          <>
-            <div>
-              <FieldLabel htmlFor="opp-event-type">Event type</FieldLabel>
-              <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
-            </div>
+        <div>
+          <FieldLabel htmlFor="opp-event-type">Event type</FieldLabel>
+          <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
+        </div>
 
-            {scheduleBlock("Locality")}
-          </>
-        ) : (
-          <>
-            <div>
-              <FieldLabel>Collaboration type</FieldLabel>
-              <div className="flex flex-wrap gap-1.5">
-                {COLLAB_TYPES.map((c) => (
-                  <Chip key={c} on={collabType === c} onClick={() => setCollabType(c)}>
-                    {COLLAB_TYPE_LABEL[c]}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-            {showEventType && (
-              <div>
-                <FieldLabel htmlFor="opp-event-type">Event type</FieldLabel>
-                <EventTypePicker id="opp-event-type" value={eventType} onChange={setEventType} />
-              </div>
-            )}
-            {needsSchedule ? (
-              scheduleBlock("Locality")
-            ) : (
-              <div>
-                <FieldLabel htmlFor="opp-place">Locality</FieldLabel>
-                {placePicker}
-              </div>
-            )}
-          </>
-        )}
+        {scheduleBlock("Locality")}
 
         <div>
           <div className="flex items-baseline justify-between gap-2 mb-1.5">

@@ -153,7 +153,7 @@ const OpportunityCard = ({
               <MapPin className="h-4 w-4 shrink-0 text-accent" />
               <span className="truncate notranslate" translate="no">
                 {place}
-                {!isGig && o.collab_type && (
+                {!isGig && o.collab_type && o.collab_type !== "one_event" && (
                   <span className="text-muted-foreground"> · {collabPhrase(o.collab_type, lang)}</span>
                 )}
               </span>
