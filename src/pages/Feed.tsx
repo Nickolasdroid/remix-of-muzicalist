@@ -446,7 +446,7 @@ const Feed = () => {
       <Navigation />
       
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-3 px-3 sm:px-0">
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
           <h1 className="sr-only">Musical Community Feed</h1>
 
           <StoriesBar currentUserId={currentUserId} canPublish={canCreate} />
@@ -466,7 +466,7 @@ const Feed = () => {
             </Card>) : filtered.map(item =>
               item.type === "announcement" ? (
                 /* Promotion Card */
-                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
                   <div className="px-3.5 pt-3 pb-1">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -582,7 +582,7 @@ const Feed = () => {
                 </Card>
               ) : (
                 /* Regular Post Card */
-                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-none border-x-0 border-y border-border/70 bg-card sm:rounded-2xl sm:border-x shadow-sm">
                 <div className="px-3.5 pt-3 pb-1">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">

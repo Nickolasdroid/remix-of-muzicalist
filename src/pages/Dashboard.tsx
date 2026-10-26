@@ -2402,7 +2402,7 @@ const Dashboard = () => {
                               />
                             </>
                           ) : (
-                            <div><div className="w-full max-w-[500px] mx-auto space-y-3">
+                            <div className="-mx-4 md:mx-0"><div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-3">
                               {merged.map((item) => {
                                 const isPromo = item.__kind === 'promotion';
                                 const postPromotedUntil = item.__kind === 'post' ? ((item as any).promoted_until || null) : null;
