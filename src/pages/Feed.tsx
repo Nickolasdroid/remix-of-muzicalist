@@ -534,7 +534,7 @@ const Feed = () => {
                       />
                     </div>
 
-                    <ExpandableText text={item.content} className="mt-2" />
+                    <ExpandableText text={item.content} className="mt-2 text-[15px] leading-normal" />
                   </div>
                   
                   {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Announcement media" onClick={() => setMediaPreview({
@@ -625,7 +625,7 @@ const Feed = () => {
                   </div>
 
                   {/* Posts are limited to 200 chars at creation — always render the full text, no "more" control. */}
-                  <ExpandableText text={item.content} maxLength={200} className="mt-2" mentions={item.mentions} />
+                  <ExpandableText text={item.content} maxLength={200} className="mt-2 text-[15px] leading-normal" mentions={item.mentions} />
                 </div>
                 
                 {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
