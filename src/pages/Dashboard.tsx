@@ -28,10 +28,11 @@ import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
+import OpportunityComposer from "@/components/OpportunityComposer";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
-import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, ChevronLeft, ChevronRight, Ban } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -1003,59 +1004,27 @@ const Dashboard = () => {
       e.target.value = "";
     }
   };
-  const handleAddAnnouncement = async () => {
-    if (!user || !newAnnouncement.description) return;
-    if (standardAdsUsed >= STANDARD_AD_LIMIT) {
-      toast({ title: "Limit reached", description: `You can only create ${STANDARD_AD_LIMIT} announcements per billing period. Your counter resets at the next renewal.`, variant: "destructive" });
+  const handleOpportunityPublished = async ({ id }: { id: string }) => {
+    if (!user) return;
+    // Record usage for this billing period.
+    await (supabase as any).from('consumed_ad_slots').insert({
+      profile_id: user.id,
+      is_premium: false,
+      announcement_id: id,
+    });
+    await loadAnnouncements();
+  };
+
+  const handleCloseAnnouncement = async (id: string) => {
+    const { error } = await (supabase as any).from('announcements').update({ status: 'closed' }).eq('id', id);
+    if (error) {
+      toast({ title: "Error", description: "Failed to close the announcement.", variant: "destructive" });
       return;
     }
-    setIsSaving(true);
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      const { data: inserted, error } = await supabase.from('announcements').insert({
-        profile_id: user.id,
-        title: "Announcement",
-        date: todayDate,
-        description: newAnnouncement.description,
-        is_premium: false,
-        media_url: newAnnouncement.mediaUrl || null,
-        media_type: newAnnouncement.mediaType || null,
-        location: newAnnouncement.location || null,
-        event_date: newAnnouncement.eventDate || null,
-        budget: newAnnouncement.budget || null
-      }).select('id').single();
-      if (error) throw error;
-      // Record usage for this billing period.
-      await (supabase as any).from('consumed_ad_slots').insert({
-        profile_id: user.id,
-        is_premium: false,
-        announcement_id: inserted?.id ?? null,
-      });
-      await loadAnnouncements();
-      setNewAnnouncement({
-        description: "",
-        isPremium: false,
-        mediaUrl: "",
-        mediaType: "",
-        location: "",
-        eventDate: "",
-        budget: ""
-      });
-      setShowAnnouncementDialog(false);
-      toast({
-        title: "Success",
-        description: "Announcement added!"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    await loadAnnouncements();
+    toast({ title: "Announcement closed", description: "It no longer appears in Opportunities." });
   };
+
   const handleDeleteAnnouncement = async (id: string) => {
     setIsSaving(true);
     try {
@@ -2600,86 +2569,34 @@ const Dashboard = () => {
                                   {t('common.upgrade', 'Upgrade')}
                                 </Button>
                               ) : (
-                              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                                <DialogTrigger asChild>
-                                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0">
-                                    <Plus className="h-4 w-4 mr-1" />
-                                    {t('dashboardPosts.createPost', 'Add')}
-                                  </Button>
-                                </DialogTrigger>
-                                <CreationModalShell
-                                  title={t('creationModal.announcementTitle', 'Create an announcement')}
-                                  bodyClassName="space-y-4 py-4"
-                                  meta={<>
-                                    {Number.isFinite(STANDARD_AD_LIMIT) && (
-                                      <span className="inline-flex items-center gap-1.5">
-                                        <UsagePill
-                                          icon={<Megaphone className="h-3 w-3" />}
-                                          tone={standardAdsRemaining === 0 ? "warning" : "accent"}
-                                        >
-                                          {t('creationModal.announcementsAvailable', { count: standardAdsRemaining, defaultValue: '{{count}} announcements available' })}
-                                        </UsagePill>
-                                        <QuotaInfoButton kind="announcements" />
-                                      </span>
-                                    )}
-                                    <UsagePill icon={<Clock className="h-3 w-3" />}>
-                                      {t('creationModal.validDays', { count: 7, defaultValue: 'Valid for {{count}} days' })}
-                                    </UsagePill>
-                                  </>}
-                                  footer={
-                                    <Button onClick={handleAddAnnouncement} disabled={isSaving || !newAnnouncement.description} className="w-full h-11 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-medium">
-                                      {isSaving ? t('creationModal.publishing', 'Publishing...') : t('creationModal.publishAnnouncement', 'Publish announcement')}
-                                    </Button>
-                                  }
-                                >
-                                  <CreationSection title={t('creationModal.description', 'Description')} className="space-y-2">
-                                    <Textarea
-                                      ref={announcementTextareaRef}
-                                      id="announcement-text-inner"
-                                      value={newAnnouncement.description}
-                                      onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value.slice(0, 200) })}
-                                      placeholder={t('creationModal.announcementPlaceholder', "Tell artists what you're looking for...")}
-                                      rows={3}
-                                      maxLength={200}
-                                      className="min-h-[88px] max-h-40 resize-none overflow-y-auto rounded-lg border-border/70 bg-background/50 p-3.5 text-sm leading-relaxed transition-colors focus-visible:ring-accent/40"
-                                    />
-                                    <p className="text-right text-xs tabular-nums text-muted-foreground">{newAnnouncement.description.length}/200</p>
-                                  </CreationSection>
-
-                                  <CreationSection title={t('creationModal.eventDetails', 'Event details')} variant="secondary" className="border-t border-border/60 pt-4">
-                                    <div className="grid gap-3">
-                                      <div>
-                                        <FieldLabel htmlFor="announcement-location-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
-                                          {t('creationModal.location', 'Location')}
-                                        </FieldLabel>
-                                        <LocationAutocomplete
-                                          id="announcement-location-inner"
-                                          value={newAnnouncement.location}
-                                          onChange={(val) => setNewAnnouncement({ ...newAnnouncement, location: val })}
-                                          country={null}
-                                          placeholder={t('creationModal.locationPlaceholder', 'Search for a location...')}
-                                          className="[&_input]:h-10 [&_input]:rounded-lg [&_input]:border-border/70 [&_input]:bg-background/50"
-                                        />
-                                      </div>
-                                      <div>
-                                        <FieldLabel htmlFor="announcement-event-date-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
-                                          {t('creationModal.eventDate', 'Event date')}
-                                        </FieldLabel>
-                                        <Input id="announcement-event-date-inner" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={(e) => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="h-10 rounded-lg border-border/70 bg-background/50" />
-                                      </div>
-                                      <div>
-                                        <FieldLabel htmlFor="announcement-budget-inner" optional optionalLabel={t('creationModal.optional', 'Optional')}>
-                                          <span className="inline-flex items-center gap-1">{t('creationModal.budget', 'Budget')} <Euro className="h-3.5 w-3.5 text-muted-foreground" /></span>
-                                        </FieldLabel>
-                                        <Input id="announcement-budget-inner" type="number" inputMode="numeric" min="0" max="999999999" value={newAnnouncement.budget} onChange={(e) => { const val = e.target.value.replace(/[^0-9]/g, ''); if (Number(val) <= 999999999 || val === '') setNewAnnouncement({ ...newAnnouncement, budget: val }); }} placeholder={t('creationModal.budgetPlaceholder', 'e.g. 500')} className="h-10 rounded-lg border-border/70 bg-background/50" />
-                                      </div>
-                                    </div>
-                                  </CreationSection>
-                                </CreationModalShell>
-
-                              </Dialog>
+                              <Button
+                                size="sm"
+                                onClick={() => setShowAnnouncementDialog(true)}
+                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                {t('dashboardPosts.createPost', 'Add')}
+                              </Button>
                               )
                             }
+                          />
+                          <OpportunityComposer
+                            open={showAnnouncementDialog}
+                            onOpenChange={setShowAnnouncementDialog}
+                            isArtist
+                            blockedReason={standardAdsUsed >= STANDARD_AD_LIMIT ? "You have used all the announcements in your plan for this period." : null}
+                            meta={Number.isFinite(STANDARD_AD_LIMIT) ? (
+                              <span className="inline-flex items-center gap-1.5">
+                                <UsagePill
+                                  icon={<Megaphone className="h-3 w-3" />}
+                                  tone={standardAdsRemaining === 0 ? "warning" : "accent"}
+                                >
+                                  {t('creationModal.announcementsAvailable', { count: standardAdsRemaining, defaultValue: '{{count}} announcements available' })}
+                                </UsagePill>
+                                <QuotaInfoButton kind="announcements" />
+                              </span>
+                            ) : undefined}
+                            onPublished={handleOpportunityPublished}
                           />
                           <div id="announcements-list">
                             <div className="space-y-2">
@@ -2689,6 +2606,12 @@ const Dashboard = () => {
                                 announcement={announcement}
                                 disabled={isSaving}
                                 actions={[
+                                  ...(announcement.kind && !isAdExpired(announcement) ? [{
+                                    key: "close",
+                                    label: "Close announcement",
+                                    icon: Ban,
+                                    onSelect: () => handleCloseAnnouncement(announcement.id),
+                                  }] : []),
                                   {
                                     key: "delete",
                                     label: t("userDashboard.delete", "Delete"),

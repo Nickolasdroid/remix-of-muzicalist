@@ -10,6 +10,11 @@ export interface ManagedAnnouncement {
   created_at: string;
   date: string;
   is_premium: boolean;
+  /** Opportunities (structured announcements) */
+  kind?: string | null;
+  title?: string | null;
+  status?: string | null;
+  expires_at?: string | null;
 }
 
 interface AnnouncementManagementCardProps {
@@ -44,18 +49,37 @@ const AnnouncementManagementCard = ({
       )}
     >
       <div className="min-w-0 flex-1">
-        <p
-          className="text-sm text-foreground line-clamp-2 notranslate"
-          data-user-content="true"
-          data-no-translate="true"
-          translate="no"
-        >
-          {announcement.description}
-        </p>
+        {announcement.kind && announcement.title && (
+          <p
+            className="text-sm font-semibold text-foreground line-clamp-1 notranslate"
+            data-user-content="true"
+            data-no-translate="true"
+            translate="no"
+          >
+            {announcement.title}
+          </p>
+        )}
+        {announcement.description && (
+          <p
+            className={cn(
+              "text-sm line-clamp-2 notranslate",
+              announcement.kind ? "text-muted-foreground" : "text-foreground",
+            )}
+            data-user-content="true"
+            data-no-translate="true"
+            translate="no"
+          >
+            {announcement.description}
+          </p>
+        )}
         <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
           <span>{formatSmartDate(announcement.created_at)}</span>
           <span>·</span>
-          {expired ? (
+          {announcement.kind && announcement.status === "filled" ? (
+            <span className="text-emerald-500">Artist booked</span>
+          ) : announcement.kind && announcement.status === "closed" ? (
+            <span>Closed</span>
+          ) : expired ? (
             <span className="text-destructive">{t("common.expired", "Expired")}</span>
           ) : (
             <span className="inline-flex items-center gap-1">

@@ -105,6 +105,9 @@ interface Announcement {
   location: string | null;
   event_date: string | null;
   budget: string | null;
+  kind?: string | null;
+  status?: string | null;
+  expires_at?: string | null;
   likes?: number;
   isLiked?: boolean;
   commentsCount?: number;
@@ -1171,7 +1174,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         </div>
                       </div>
                     </div>
-                    <ExpandableText text={announcement.description} className="mt-3 text-sm" />
+                    {announcement.kind && announcement.title && (
+                      <p className="mt-3 font-semibold text-foreground notranslate" translate="no" data-user-content="true">{announcement.title}</p>
+                    )}
+                    {announcement.description && (
+                      <ExpandableText text={announcement.description} className="mt-3 text-sm" />
+                    )}
                   </div>
 
                   {announcement.is_premium && announcement.media_url && <PostMediaFrame url={announcement.media_url} type={announcement.media_type} alt="Announcement media" className="mt-0" onClick={() => setMediaPreview({
@@ -2059,7 +2067,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                               </div>
 
                               {/* Content */}
-                              <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
+                              {announcement.kind && announcement.title && (
+                                <p className="mt-3 font-semibold text-foreground notranslate" translate="no" data-user-content="true">{announcement.title}</p>
+                              )}
+                              {announcement.description && (
+                                <ExpandableText text={announcement.description} className="mt-3 my-[5px]" />
+                              )}
                               {(announcement.location || announcement.event_date || announcement.budget) && (
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 mb-1 text-xs text-muted-foreground">
                                   {announcement.location && (

@@ -23,11 +23,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CURRENCIES } from "@/lib/currencies";
 import { BookingOfferFields, OFFER_NOTE_MAX, offerErrorText } from "@/lib/bookingOffers";
+import { opportunityErrorText } from "@/lib/opportunities";
 
 interface BookingOfferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   booking: BookingOfferFields | null;
+  /** Answering an event announcement: the booking request is created with the offer */
+  announcementId?: string | null;
   onSent?: () => void;
 }
 
@@ -35,7 +38,7 @@ interface BookingOfferDialogProps {
  * Artist side: send (or update) a priced offer for a booking request.
  * The booking becomes confirmed only when the organizer accepts the offer.
  */
-const BookingOfferDialog = ({ open, onOpenChange, booking, onSent }: BookingOfferDialogProps) => {
+const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSent }: BookingOfferDialogProps) => {
   const { toast } = useToast();
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("RON");
@@ -91,16 +94,22 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, onSent }: BookingOffe
   const handleSend = async () => {
     if (!booking || !priceValid || !acceptTerms || saving) return;
     setSaving(true);
-    const { error } = await (supabase as any).rpc("send_booking_offer", {
-      _booking_id: booking.id,
+    const offer = {
       _price: Math.round(priceNumber * 100) / 100,
       _currency: currency,
       _note: note.trim() || null,
       _accept_terms: true,
-    });
+    };
+    const { error } = announcementId
+      ? await (supabase as any).rpc("send_announcement_offer", { _announcement_id: announcementId, ...offer })
+      : await (supabase as any).rpc("send_booking_offer", { _booking_id: booking.id, ...offer });
     setSaving(false);
     if (error) {
-      toast({ title: "Offer not sent", description: offerErrorText(error), variant: "destructive" });
+      toast({
+        title: "Offer not sent",
+        description: opportunityErrorText(error) || offerErrorText(error),
+        variant: "destructive",
+      });
       return;
     }
     toast({

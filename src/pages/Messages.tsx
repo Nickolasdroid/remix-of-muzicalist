@@ -71,6 +71,9 @@ interface AnnouncementContext {
   profile_id?: string;
   date?: string;
   is_premium?: boolean;
+  /** Opportunities: own expiry (event day / 30 days for collaborations) */
+  kind?: string | null;
+  expires_at?: string | null;
 }
 
 const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => (
@@ -143,7 +146,7 @@ const Messages = () => {
     const fetchAd = async () => {
       const { data } = await supabase
         .from('announcements')
-        .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
+        .select('*')
         .eq('id', adId)
         .maybeSingle();
       if (data) {
@@ -262,7 +265,7 @@ const Messages = () => {
       if (conv.announcement_id) {
         const { data: adData } = await supabase
           .from('announcements')
-          .select('id, title, description, location, event_date, budget, profile_id, date, is_premium')
+          .select('*')
           .eq('id', conv.announcement_id)
           .maybeSingle();
         announcement_context = adData;
@@ -523,7 +526,13 @@ const Messages = () => {
     // Ad is expired
     const adDate = conv.announcement_context.date;
     if (!adDate) return false;
-    return isAdExpired({ date: adDate, is_premium: !!conv.announcement_context.is_premium });
+    // Opportunities stay open for chat until they expire, even after an artist is chosen
+    return isAdExpired({
+      date: adDate,
+      is_premium: !!conv.announcement_context.is_premium,
+      kind: conv.announcement_context.kind,
+      expires_at: conv.announcement_context.expires_at,
+    });
   })();
 
   const UnreadBadge = ({ count }: { count: number }) => count > 0 ? (

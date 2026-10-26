@@ -15,8 +15,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
+import { ORGANIZER_OPEN_LIMIT } from "@/lib/opportunities";
+import OpportunityComposer from "@/components/OpportunityComposer";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
@@ -67,11 +69,20 @@ const UserDashboard = () => {
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
 
-  // Announcement limits
-  const STANDARD_AD_LIMIT = 1;
-  const AD_COOLDOWN_DAYS = 30;
-  const standardAdsUsed = announcements.filter(a => !a.is_premium).length;
+  // Announcement limits: organizers post event announcements for free, up to 5 open at a time
+  const STANDARD_AD_LIMIT = ORGANIZER_OPEN_LIMIT;
+  const standardAdsUsed = announcements.filter(a => a.kind === 'gig' && !isAdExpired(a)).length;
   const standardAdsRemaining = STANDARD_AD_LIMIT - standardAdsUsed;
+
+  // Opened from the Opportunities page
+  useEffect(() => {
+    if (searchParams.get('new') === 'announcement') {
+      setShowAnnouncementDialog(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete('new');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
@@ -307,38 +318,14 @@ const UserDashboard = () => {
     }
   };
 
-  const handleAddAnnouncement = async () => {
-    if (!user || !newAnnouncement.description) return;
-    if (standardAdsRemaining <= 0) {
-      toast({ title: t("common.error"), description: "You can only post 1 announcement.", variant: "destructive" });
+  const handleCloseAnnouncement = async (id: string) => {
+    const { error } = await (supabase as any).from('announcements').update({ status: 'closed' }).eq('id', id);
+    if (error) {
+      toast({ title: "Error", description: "Failed to close the announcement.", variant: "destructive" });
       return;
     }
-    setIsSaving(true);
-    try {
-      const todayDate = new Date().toISOString().split('T')[0];
-      const { error } = await supabase.from('announcements').insert({
-        profile_id: user.id,
-        title: "Announcement",
-        date: todayDate,
-        description: newAnnouncement.description,
-        is_premium: false,
-        media_url: newAnnouncement.mediaUrl || null,
-        media_type: newAnnouncement.mediaType || null,
-        location: newAnnouncement.location || null,
-        event_date: newAnnouncement.eventDate || null,
-        budget: newAnnouncement.budget || null
-      });
-      if (error) throw error;
-      
-      await loadAnnouncements();
-      setNewAnnouncement({ description: "", isPremium: false, mediaUrl: "", mediaType: "", location: "", eventDate: "", budget: "" });
-      setShowAnnouncementDialog(false);
-      toast({ title: t("common.success"), description: "Announcement posted successfully!" });
-    } catch (error: any) {
-      toast({ title: t("common.error"), description: entitlementErrorMessage(error), variant: "destructive" });
-    } finally {
-      setIsSaving(false);
-    }
+    await loadAnnouncements();
+    toast({ title: "Announcement closed", description: "It no longer appears in Opportunities." });
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
@@ -439,18 +426,6 @@ const UserDashboard = () => {
           }).length;
           const cancelledBookings = bookings.filter(b => b.status === 'rejected').length;
 
-          // Cooldown
-          const oldestStandard = announcements
-            .filter(a => !a.is_premium)
-            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0];
-          let cooldownDaysRemaining = 0;
-          let cooldownDate: Date | null = null;
-          if (oldestStandard && standardAdsRemaining <= 0) {
-            const created = new Date(oldestStandard.created_at);
-            cooldownDate = new Date(created);
-            cooldownDate.setDate(cooldownDate.getDate() + AD_COOLDOWN_DAYS);
-            cooldownDaysRemaining = Math.max(0, Math.ceil((cooldownDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-          }
           const canPublish = standardAdsRemaining > 0;
 
           const goToBookings = (filter?: string) => {
@@ -545,11 +520,10 @@ const UserDashboard = () => {
 
 
                   <Card className="rounded-lg border-border/60 bg-card/60 backdrop-blur-sm p-3">
-                    {!canPublish && cooldownDate && (
+                    {!canPublish && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
-                        Next slot in <span className="font-medium text-foreground">{cooldownDaysRemaining}d</span>
-                        <span>· {cooldownDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+                        <span>You have 5 open announcements. A slot frees up when an event passes or you close one.</span>
                       </p>
                     )}
 
@@ -561,6 +535,12 @@ const UserDashboard = () => {
                             key={ad.id}
                             announcement={ad}
                             actions={[
+                                  ...(ad.kind && !isAdExpired(ad) ? [{
+                                    key: "close",
+                                    label: "Close announcement",
+                                    icon: Ban,
+                                    onSelect: () => handleCloseAnnouncement(ad.id),
+                                  }] : []),
                               {
                                 key: "delete",
                                 label: t("userDashboard.delete", "Delete"),
@@ -663,56 +643,18 @@ const UserDashboard = () => {
 
 
               {/* ===== Announcement Dialog ===== */}
-
-              <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
-                <DialogContent className="max-w-md rounded-lg">
-                  <DialogHeader>
-                    <DialogTitle>{t("userDashboard.createAd")}</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex items-center gap-2 mt-3 flex-wrap">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/50 border border-border text-xs font-medium text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      <span>{t("userDashboard.adValidity", "Valid 15 days")}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <Label htmlFor="announcement-text-user">{t("userDashboard.description", "Announcement Text")}</Label>
-                      <Textarea
-                        id="announcement-text-user"
-                        value={newAnnouncement.description}
-                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, description: e.target.value.slice(0, 200) })}
-                        placeholder={t("userDashboard.descriptionPlaceholder", "Write your announcement here...")}
-                        rows={4}
-                        maxLength={200}
-                        className="mt-2"
-                      />
-                      <p className="text-xs text-muted-foreground text-right mt-1">{newAnnouncement.description.length}/200</p>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="announcement-location-user">Location (optional)</Label>
-                        <Input id="announcement-location-user" value={newAnnouncement.location} onChange={e => setNewAnnouncement({ ...newAnnouncement, location: e.target.value })} placeholder="e.g. New York, NY" className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="announcement-event-date-user">Event Date (optional)</Label>
-                        <Input id="announcement-event-date-user" type="date" min={new Date().toISOString().split('T')[0]} value={newAnnouncement.eventDate} onChange={e => setNewAnnouncement({ ...newAnnouncement, eventDate: e.target.value })} className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="announcement-budget-user">Budget (optional)</Label>
-                        <Input id="announcement-budget-user" value={newAnnouncement.budget} onChange={e => setNewAnnouncement({ ...newAnnouncement, budget: e.target.value })} placeholder="e.g. $500" className="mt-1" />
-                      </div>
-                    </div>
-                    <Button
-                      onClick={handleAddAnnouncement}
-                      disabled={isSaving || !newAnnouncement.description}
-                      className="w-full rounded-lg bg-accent text-accent-foreground"
-                    >
-                      {isSaving ? t("common.creating", "Adding...") : t("userDashboard.postAd", "Add Announcement")}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <OpportunityComposer
+                open={showAnnouncementDialog}
+                onOpenChange={setShowAnnouncementDialog}
+                isArtist={false}
+                blockedReason={!canPublish ? "You already have 5 open announcements. Close one or wait for an event to pass." : null}
+                meta={
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
+                    <span>Free for organizers</span>
+                  </span>
+                }
+                onPublished={() => loadAnnouncements()}
+              />
 
               {user && (
                 <>
