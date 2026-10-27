@@ -47,6 +47,8 @@ interface OpportunityComposerProps {
 }
 
 
+const MAX_AMOUNT = 100_000;
+
 const toYMD = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
@@ -153,7 +155,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const budgetReversed = budgetMode === "range" && minN != null && maxN != null && minN > maxN;
   // A range that wide is almost always a typo (e.g. 1.800 typed as 180.000)
   const budgetTooWide = budgetMode === "range" && !!minN && maxN != null && maxN > minN * 20;
-  const budgetInvalid = budgetReversed || budgetTooWide;
+  // A realistic ceiling for one event (also keeps the value inside the database column)
+  const amountTooHigh = minN != null && minN > MAX_AMOUNT;
+  const budgetInvalid = budgetReversed || budgetTooWide || amountTooHigh;
   const timesHalf = !!startTime !== !!endTime;
   const multiDay = !!eventOn && !!eventEndOn && eventEndOn > eventOn;
   const overnight = !multiDay && !!startTime && !!endTime && endTime <= startTime;
@@ -506,6 +510,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
                 </SelectContent>
               </Select>
             </div>
+            {amountTooHigh && (
+              <p className="text-xs text-destructive">
+                <span>The amount can be at most</span>{" "}
+                <span className="notranslate" translate="no">{MAX_AMOUNT.toLocaleString(locale)}</span>.
+              </p>
+            )}
           </div>
 
           <div className="pt-1.5">

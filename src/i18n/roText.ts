@@ -2821,4 +2821,6 @@ export const RO_TEXT: Record<string, string> = {
   "Musicians answer you by message. It uses 1 announcement from your plan.": "Muzicienii îți răspund prin mesaj. Se consumă 1 anunț din abonament.",
   "Choose": "Alege",
   "Will appear as:": "Va apărea ca:",
+  "The amount can be at most": "Suma poate fi de cel mult",
+  "The amount is too large.": "Suma este prea mare.",
 };

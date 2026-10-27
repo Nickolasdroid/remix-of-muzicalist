@@ -175,6 +175,7 @@ const ERROR_TEXT: Record<string, string> = {
   OPPORTUNITY_DATE_PASSED: "The event date has already passed.",
   OPPORTUNITY_END_BEFORE_START: "The last day can't be before the first day.",
   OPPORTUNITY_TOO_LONG: "An event can last at most 31 days.",
+  "numeric field overflow": "The amount is too large.",
   OPPORTUNITY_BUDGET_INVALID: "The minimum budget can't be higher than the maximum.",
   OPPORTUNITY_COLLAB_ARTISTS_ONLY: "Only artists can look for collaborators.",
   USER_ANNOUNCEMENT_GIG_ONLY: "Only artists can look for collaborators.",
