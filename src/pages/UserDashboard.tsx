@@ -326,7 +326,7 @@ const UserDashboard = () => {
       return;
     }
     await loadAnnouncements();
-    toast({ title: "Announcement closed", description: "It no longer appears in Opportunities." });
+    toast({ title: "Announcement closed", description: "It no longer appears in Announcements." });
   };
 
   const handleDeleteAnnouncement = async (id: string) => {

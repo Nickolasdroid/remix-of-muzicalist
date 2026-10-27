@@ -233,7 +233,7 @@ const AnnouncementList = ({
       return;
     }
     onUpdated?.(id, { status: "closed" });
-    toast({ title: "Announcement closed", description: "It no longer appears in Opportunities." });
+    toast({ title: "Announcement closed", description: "It no longer appears in Announcements." });
   };
 
   const deleteAnnouncement = async (id: string) => {
@@ -478,7 +478,7 @@ const AnnouncementList = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Close this announcement?</AlertDialogTitle>
             <AlertDialogDescription>
-              It no longer appears in Opportunities and artists can't send new offers. Offers you already received stay in
+              It no longer appears in Announcements and artists can't send new offers. Offers you already received stay in
               your bookings.
             </AlertDialogDescription>
           </AlertDialogHeader>

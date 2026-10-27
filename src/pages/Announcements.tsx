@@ -159,7 +159,7 @@ const Announcements = () => {
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
-        title="Opportunities | Muzicalist"
+        title="Announcements | Muzicalist"
         description="Latest artist promotions and announcements from musicians and event organizers worldwide on Muzicalist."
         path="/announcements"
       />
@@ -167,7 +167,7 @@ const Announcements = () => {
       
       <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
-          <h1 className="sr-only">Opportunities</h1>
+          <h1 className="sr-only">Announcements</h1>
           {currentUserId && (
             <div className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-2 scrollbar-none">
               {([
