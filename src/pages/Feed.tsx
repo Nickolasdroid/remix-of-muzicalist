@@ -479,7 +479,6 @@ const Feed = () => {
                       plan={item.profile.plan}
                       verified={adminIds.has(item.profile_id)}
                       specialization={getSpecializationLabel(item.profile.specialization, item.profile_id)}
-                      county={item.profile.county}
                       time={formatDate(item.created_at)}
                       onClick={() => navigate(`/artist/${item.profile_id}`)}
                       extra={<>
@@ -540,7 +539,6 @@ const Feed = () => {
                       plan={item.profile.plan}
                       verified={adminIds.has(item.profile_id)}
                       specialization={getSpecializationLabel(item.profile.specialization, item.profile_id)}
-                      county={item.profile.county}
                       time={formatDate(item.created_at)}
                       onClick={() => navigate(`/artist/${item.profile_id}`)}
                       extra={<>

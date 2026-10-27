@@ -86,7 +86,6 @@ const FeedPostCard = ({
             plan={author.plan}
             verified={isVerified}
             specialization={author.specializationLabel}
-            county={author.county}
             time={formatSmartDate(createdAt)}
             onClick={onAuthorClick}
             extra={

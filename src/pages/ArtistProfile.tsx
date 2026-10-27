@@ -1741,7 +1741,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                                       avatarUrl={artist?.avatar_url}
                                       plan={artist?.plan}
                                       specialization={translateSpecialization(artist?.specialization) || "User"}
-                                      county={artist?.county}
                                       time={formatSmartDate(promo.created_at)}
                                       extra={<>
                                         <span>·</span>
@@ -1791,7 +1790,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                                       avatarUrl={artist?.avatar_url}
                                       plan={artist?.plan}
                                       specialization={translateSpecialization(artist?.specialization) || "User"}
-                                      county={artist?.county}
                                       time={formatDate(post.created_at)}
                                       extra={<>
                                         <span>·</span>
