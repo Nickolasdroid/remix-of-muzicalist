@@ -104,7 +104,6 @@ const Dashboard = () => {
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
   const [profile, setProfile] = useState<any>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [isAddingPrice, setIsAddingPrice] = useState(false);
   const [pricingCount, setPricingCount] = useState(0);
   const [pricingDialogOpen, setPricingDialogOpen] = useState(false);
   const [pricingRefreshKey, setPricingRefreshKey] = useState(0);
@@ -2125,13 +2124,14 @@ const Dashboard = () => {
 
                           {/* Estimated Prices */}
                           <div className="group">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between mb-3">
                               <SectionHeaderWithUsage
                                 icon={<DollarSign className="h-5 w-5 text-accent" />}
                                 title="Estimated Prices"
+                                usage={canSetEstimatedPrice(currentPlan) ? `${pricingCount}/${getEstimatedPriceLimit(currentPlan)}` : undefined}
                               />
 
-                              {canSetEstimatedPrice(currentPlan) && (
+                              {canSetEstimatedPrice(currentPlan) && pricingCount > 0 && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -2156,26 +2156,17 @@ const Dashboard = () => {
                                   editable={false}
                                   maxEntries={getEstimatedPriceLimit(currentPlan)}
                                   onCountChange={setPricingCount}
+                                  onAdd={() => setPricingDialogOpen(true)}
                                 />
-                                {pricingCount >= getEstimatedPriceLimit(currentPlan) && (
-                                  <p className="text-xs text-muted-foreground mt-2">
-                                    You reached the limit of {getEstimatedPriceLimit(currentPlan)} prices for your plan.
-                                  </p>
-                                )}
                                 <Dialog
                                   open={pricingDialogOpen}
                                   onOpenChange={(open) => {
                                     setPricingDialogOpen(open);
-                                    if (!open) {
-                                      setIsAddingPrice(false);
-                                      setPricingRefreshKey((k) => k + 1);
-                                    }
+                                    if (!open) setPricingRefreshKey((k) => k + 1);
                                   }}
                                 >
-                                  <DialogContent className="max-w-md rounded-lg">
-                                    <DialogHeader>
-                                      <DialogTitle>Estimated Prices</DialogTitle>
-                                    </DialogHeader>
+                                  <DialogContent className="max-w-md rounded-2xl">
+                                    <DialogTitle className="sr-only">Estimated Prices</DialogTitle>
                                     <PricingEntriesEditor
                                       key={`pricing-edit-${pricingDialogOpen}`}
                                       profileId={user?.id}

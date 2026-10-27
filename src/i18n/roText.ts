@@ -2828,4 +2828,8 @@ export const RO_TEXT: Record<string, string> = {
   "Replies to": "Răspunsuri la",
   "Show all": "Arată tot",
   "this announcement": "acest anunț",
+  "Add your first price": "Adaugă primul preț",
+  "What you usually charge per event type. Organizers see them on your profile.": "Cât ceri de obicei pe tip de eveniment. Organizatorii le văd pe profilul tău.",
+  "Add the price": "Adaugă prețul",
+  "You already have a price for this event type": "Ai deja un preț pentru acest tip de eveniment",
 };

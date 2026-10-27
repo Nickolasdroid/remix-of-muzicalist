@@ -3,12 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Save, X } from "lucide-react";
+import { DollarSign, Loader2, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
-import { EVENT_TYPES } from "@/lib/eventTypes";
+import EventTypePicker from "@/components/EventTypePicker";
 import { CURRENCIES } from "@/lib/currencies";
 import { getCurrencyForCountry } from "@/lib/countryCurrencies";
+import { cn } from "@/lib/utils";
 
 export interface PricingEntry {
   id: string;
@@ -22,62 +23,86 @@ interface Props {
   profileId: string;
   country?: string | null;
   editable: boolean;
-  onClose?: () => void;
-  isAdding?: boolean;
-  onAddingChange?: (v: boolean) => void;
   maxEntries?: number;
   onCountChange?: (count: number) => void;
+  /** View mode: opens the editor (shows the "+ Add" chip) */
+  onAdd?: () => void;
 }
 
 const MAX_AMOUNT = 9999999;
 
-export default function PricingEntriesEditor({ profileId, country, editable, onClose, isAdding: isAddingProp, onAddingChange, maxEntries, onCountChange }: Props) {
+const formatAmount = (n: number, lang: string) =>
+  Number(n).toLocaleString(lang.startsWith("ro") ? "ro-RO" : "en-GB", { maximumFractionDigits: 2 });
+
+/** Gold filled tag: "Wedding  3.500 RON" (same look as the announcement price). */
+const PriceChip = ({ entry, lang }: { entry: PricingEntry; lang: string }) => (
+  <span className="inline-flex items-baseline gap-1.5 rounded-full bg-accent/15 px-3 py-1.5 leading-none">
+    <span className="text-[12.5px] font-medium text-accent/80">{entry.event_type}</span>
+    <span className="text-[13.5px] font-bold text-accent notranslate tabular-nums" translate="no">
+      {formatAmount(entry.amount, lang)} {entry.currency}
+    </span>
+  </span>
+);
+
+export default function PricingEntriesEditor({ profileId, country, editable, maxEntries, onCountChange, onAdd }: Props) {
   const { toast } = useToast();
+  const { i18n } = useTranslation();
+  const lang = i18n.language || i18n.resolvedLanguage || "ro";
+  const ro = lang.startsWith("ro");
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [isAddingState, setIsAddingState] = useState(false);
-  const isAdding = isAddingProp !== undefined ? isAddingProp : isAddingState;
-  const setIsAdding = (v: boolean) => {
-    if (onAddingChange) onAddingChange(v);
-    else setIsAddingState(v);
-  };
 
   const defaultCurrency = getCurrencyForCountry(country || undefined) || "EUR";
-
-  const [newAmount, setNewAmount] = useState<string>("");
-  const [newCurrency, setNewCurrency] = useState<string>(defaultCurrency);
-  const [newEventType, setNewEventType] = useState<string>("");
+  const [newAmount, setNewAmount] = useState("");
+  const [newCurrency, setNewCurrency] = useState(defaultCurrency);
+  const [newEventType, setNewEventType] = useState("");
+  const [pickerKey, setPickerKey] = useState(0);
 
   useEffect(() => {
     setNewCurrency(defaultCurrency);
   }, [defaultCurrency]);
 
-  const load = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("pricing_entries" as any)
-      .select("*")
-      .eq("profile_id", profileId)
-      .order("created_at", { ascending: true });
-    if (!error && data) setEntries(data as unknown as PricingEntry[]);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    load();
+    let alive = true;
+    (async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("pricing_entries" as any)
+        .select("*")
+        .eq("profile_id", profileId)
+        .order("created_at", { ascending: true });
+      if (!alive) return;
+      if (!error && data) setEntries(data as unknown as PricingEntry[]);
+      setLoading(false);
+    })();
+    return () => {
+      alive = false;
+    };
   }, [profileId]);
 
   useEffect(() => {
     onCountChange?.(entries.length);
   }, [entries.length, onCountChange]);
 
+  const atLimit = maxEntries !== undefined && entries.length >= maxEntries;
+  const left = maxEntries !== undefined ? Math.max(0, maxEntries - entries.length) : null;
+
   const addEntry = async () => {
-    if (maxEntries !== undefined && entries.length >= maxEntries) {
+    if (atLimit) {
       toast({ title: "Limit reached", description: `You can save up to ${maxEntries} prices.`, variant: "destructive" });
       return;
     }
-    const amountNum = Number(newAmount);
+    const eventType = newEventType.trim();
+    if (!eventType) {
+      toast({ title: "Select event type", variant: "destructive" });
+      return;
+    }
+    if (entries.some((e) => e.event_type.toLowerCase() === eventType.toLowerCase())) {
+      toast({ title: "You already have a price for this event type", variant: "destructive" });
+      return;
+    }
+    const amountNum = Number(newAmount.replace(/\D/g, ""));
     if (!newAmount || isNaN(amountNum) || amountNum <= 0) {
       toast({ title: "Invalid price", description: "Enter a valid amount.", variant: "destructive" });
       return;
@@ -86,23 +111,10 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
       toast({ title: "Amount too large", description: `Maximum is ${MAX_AMOUNT.toLocaleString()}.`, variant: "destructive" });
       return;
     }
-    if (!newCurrency) {
-      toast({ title: "Select currency", variant: "destructive" });
-      return;
-    }
-    if (!newEventType) {
-      toast({ title: "Select event type", variant: "destructive" });
-      return;
-    }
     setSaving(true);
     const { data, error } = await supabase
       .from("pricing_entries" as any)
-      .insert({
-        profile_id: profileId,
-        amount: amountNum,
-        currency: newCurrency,
-        event_type: newEventType,
-      })
+      .insert({ profile_id: profileId, amount: amountNum, currency: newCurrency, event_type: eventType })
       .select()
       .single();
     setSaving(false);
@@ -113,7 +125,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
     setEntries((prev) => [...prev, data as unknown as PricingEntry]);
     setNewAmount("");
     setNewEventType("");
-    setIsAdding(false);
+    setPickerKey((k) => k + 1);
   };
 
   const deleteEntry = async (id: string) => {
@@ -126,122 +138,154 @@ export default function PricingEntriesEditor({ profileId, country, editable, onC
   };
 
   if (loading) {
-    return <p className="text-muted-foreground text-sm">Loading...</p>;
+    return (
+      <div className="flex justify-center py-3">
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
+  // Dashboard section: gold tags + "+ Add"
+  if (!editable) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        {entries.map((e) => (
+          <PriceChip key={e.id} entry={e} lang={lang} />
+        ))}
+        {onAdd && !atLimit && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-accent/50 px-3 py-1.5 text-[13px] font-semibold leading-none text-accent transition-colors hover:bg-accent/10"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>{entries.length ? "Add" : "Add your first price"}</span>
+          </button>
+        )}
+        {!onAdd && entries.length === 0 && <p className="text-muted-foreground italic text-sm">No prices added yet</p>}
+      </div>
+    );
+  }
+
+  // Dialog body: saved prices, then the add form
   return (
-    <div className="space-y-3">
-      {entries.length > 0 ? (
+    <div>
+      <div className="mb-4 flex flex-col items-center gap-2 text-center">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/15">
+          <DollarSign className="h-5 w-5 text-accent" />
+        </div>
+        <h2 className="text-lg font-bold">Estimated Prices</h2>
+        <p className="text-[13px] leading-snug text-muted-foreground">
+          What you usually charge per event type. Organizers see them on your profile.
+        </p>
+      </div>
+
+      {entries.length > 0 && (
         <ul className="space-y-2">
           {entries.map((e) => (
-            <li
-              key={e.id}
-              className="flex items-center justify-between gap-2 p-2 rounded-md bg-secondary/40"
-            >
-              <div className="text-sm md:text-base">
-                <span className="font-semibold text-foreground">{e.event_type}</span>
-                <span className="text-muted-foreground"> — </span>
-                <span className="font-semibold text-foreground">
-                  {Number(e.amount).toLocaleString()} {e.currency}
-                </span>
-              </div>
-              {editable && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => deleteEntry(e.id)}
-                  aria-label="Delete pricing entry"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
+            <li key={e.id} className="flex items-center gap-2 rounded-xl bg-secondary/50 py-2 pl-3 pr-1">
+              <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">{e.event_type}</span>
+              <span className="shrink-0 text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">
+                {formatAmount(e.amount, lang)} {e.currency}
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 shrink-0 p-0 text-muted-foreground hover:text-destructive"
+                onClick={() => deleteEntry(e.id)}
+                aria-label="Delete pricing entry"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </li>
           ))}
         </ul>
-      ) : (
-        <p className="text-muted-foreground italic text-sm">No prices added yet</p>
       )}
 
-      {editable && !isAdding && isAddingProp === undefined && (maxEntries === undefined || entries.length < maxEntries) && (
-        <Button size="sm" variant="outline" onClick={() => setIsAdding(true)}>
-          <Plus className="h-3 w-3 mr-1" />
-          Add price
-        </Button>
-      )}
+      {!atLimit ? (
+        <div className={cn(entries.length > 0 && "mt-4 border-t border-border pt-1")}>
+          <label className="mb-1.5 mt-3 block text-[13.5px] font-semibold">Event type</label>
+          <EventTypePicker
+            key={pickerKey}
+            value={newEventType}
+            onChange={setNewEventType}
+            triggerClassName="h-11 rounded-lg bg-background data-[placeholder]:text-muted-foreground"
+            otherInputClassName="h-11 rounded-lg"
+          />
 
-      {editable && isAdding && (
-        <div className="space-y-2 pt-2 border-t border-border">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <label className="mb-1.5 mt-4 block text-[13.5px] font-semibold">Price</label>
+          <div className="flex">
             <Input
-              type="number"
+              type="text"
               inputMode="numeric"
-              min={0}
-              max={MAX_AMOUNT}
-              step="1"
-              placeholder="Amount"
+              placeholder={ro ? "ex. 1.500" : "e.g. 1,500"}
               value={newAmount}
               onChange={(e) => {
-                const v = e.target.value;
-                if (v === "") return setNewAmount("");
-                const n = Number(v);
-                if (isNaN(n)) return;
-                if (n > MAX_AMOUNT) return setNewAmount(String(MAX_AMOUNT));
-                if (n < 0) return setNewAmount("0");
-                setNewAmount(v);
+                const digits = e.target.value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 7);
+                setNewAmount(digits ? Number(digits).toLocaleString(ro ? "ro-RO" : "en-GB") : "");
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addEntry();
+              }}
+              className="h-11 flex-1 rounded-r-none bg-background text-[15px] tabular-nums notranslate"
+              translate="no"
             />
             <Select value={newCurrency} onValueChange={setNewCurrency}>
-              <SelectTrigger>
-                <SelectValue placeholder="Currency" />
+              <SelectTrigger className="h-11 w-[100px] rounded-l-none border-l-0 bg-background font-semibold notranslate" translate="no">
+                <SelectValue>{newCurrency}</SelectValue>
               </SelectTrigger>
               <SelectContent className="max-h-72">
                 {CURRENCIES.map((c) => (
-                  <SelectItem key={c.code} value={c.code}>
-                    {c.code} — {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={newEventType} onValueChange={setNewEventType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Event type" />
-              </SelectTrigger>
-              <SelectContent className="max-h-72">
-                {EVENT_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                  <SelectItem key={c.code} value={c.code} className="notranslate" translate="no">
+                    {c.code} <span className="text-muted-foreground">· {c.name}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={async () => { await addEntry(); }} disabled={saving}>
-              <Save className="h-3 w-3 mr-1" />
-              Save
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setIsAdding(false);
-                setNewAmount("");
-                setNewEventType("");
-                setNewCurrency(defaultCurrency);
-              }}
-            >
-              <X className="h-3 w-3 mr-1" />
-              Cancel
-            </Button>
-          </div>
+
+          <Button
+            className="mt-5 h-12 w-full rounded-xl text-[15px] font-bold"
+            onClick={addEntry}
+            disabled={saving}
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <span>Add the price</span>}
+          </Button>
+          {left != null && (
+            <p className="mt-2.5 text-center text-xs text-muted-foreground">
+              {entries.length === 0 ? (
+                <span key="max">
+                  <span>{ro ? "Poți adăuga până la" : "You can add up to"}</span>{" "}
+                  <span className="notranslate" translate="no">
+                    {maxEntries} {ro ? (maxEntries === 1 ? "preț" : "prețuri") : maxEntries === 1 ? "price" : "prices"}
+                  </span>
+                </span>
+              ) : (
+                <span key="left" className="notranslate" translate="no">
+                  {ro
+                    ? `Mai poți adăuga ${left} ${left === 1 ? "preț" : "prețuri"}`
+                    : `You can add ${left} more ${left === 1 ? "price" : "prices"}`}
+                </span>
+              )}
+            </p>
+          )}
         </div>
+      ) : (
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          <span className="notranslate" translate="no">
+            {ro
+              ? `Ai atins limita de ${maxEntries} prețuri pentru planul tău.`
+              : `You reached the limit of ${maxEntries} prices for your plan.`}
+          </span>
+        </p>
       )}
     </div>
   );
 }
 
 export function PricingEntriesDisplay({ profileId }: { profileId: string }) {
+  const { i18n } = useTranslation();
+  const lang = i18n.language || i18n.resolvedLanguage || "ro";
   const [entries, setEntries] = useState<PricingEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -265,13 +309,7 @@ export function PricingEntriesDisplay({ profileId }: { profileId: string }) {
   return (
     <div className="flex flex-wrap gap-2">
       {entries.map((e) => (
-        <Badge
-          key={e.id}
-          variant="outline"
-          className="border-accent/50 text-accent text-xs md:text-sm px-2 md:px-3 py-0.5 md:py-1"
-        >
-          {e.event_type}: {Number(e.amount).toLocaleString()} {e.currency}
-        </Badge>
+        <PriceChip key={e.id} entry={e} lang={lang} />
       ))}
     </div>
   );
