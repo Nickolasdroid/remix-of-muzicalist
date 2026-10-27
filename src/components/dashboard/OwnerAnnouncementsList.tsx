@@ -10,7 +10,6 @@ import { formatMoney } from "@/lib/bookingOffers";
 import {
   formatOpportunityBudget,
   formatPlace,
-  opportunityDaysLeft,
 } from "@/lib/opportunities";
 import { cn } from "@/lib/utils";
 
@@ -130,7 +129,10 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       a.status === "filled" ? "filled" : a.status === "closed" ? "closed" : open ? "open" : "expired";
     const stats = gigStats[a.id];
     const msgCount = messages[a.id] || 0;
-    const daysLeft = opportunityDaysLeft(a);
+    // Last day it takes answers (expires_at is midnight after the event day)
+    const untilText = a.expires_at
+      ? new Date(new Date(a.expires_at).getTime() - 60_000).toLocaleDateString(locale, { day: "numeric", month: "short" })
+      : null;
     const dateText = a.event_on
       ? a.event_end_on && a.event_end_on > a.event_on
         ? `${fmtDay(a.event_on)} – ${fmtDay(a.event_end_on)}`
@@ -185,7 +187,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         ) : (
           <span>No messages yet</span>
         );
-      link = msgCount > 0 ? { label: "See the messages", to: "/messages" } : { label: "See in Opportunities", to: "/announcements" };
+      link = msgCount > 0 ? { label: "See the messages", to: "/messages" } : { label: "See announcement", to: "/announcements" };
     }
 
     return (
@@ -201,6 +203,11 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11.5px] font-semibold text-emerald-500">
               <span className="h-1.5 w-1.5 rounded-full bg-current" />
               Active
+            </span>
+          )}
+          {status === "open" && untilText && (
+            <span className="truncate text-xs text-muted-foreground notranslate" translate="no">
+              {lang.startsWith("ro") ? "până pe" : "until"} {untilText}
             </span>
           )}
           {status === "filled" && (
@@ -247,17 +254,9 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           <p className="text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">{budget}</p>
         )}
 
-        <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5 text-[12.5px] text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5 text-[12.5px] text-muted-foreground whitespace-nowrap">
           <span className="min-w-0">
             {summary}
-            {status === "open" && (
-              <>
-                <span> · </span>
-                <span>open for</span>{" "}
-                <span className="tabular-nums">{daysLeft}</span>{" "}
-                <span>{daysLeft === 1 ? "more day" : "more days"}</span>
-              </>
-            )}
           </span>
           {link && (
             <button
