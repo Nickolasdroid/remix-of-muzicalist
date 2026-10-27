@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { CalendarDays, CalendarRange, Loader2, Megaphone, Moon, Pencil } from "lucide-react";
+import { CalendarDays, CalendarRange, Loader2, Megaphone, Moon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [currency, setCurrency] = useState("RON");
   const [title, setTitle] = useState("");
   const [titleEdited, setTitleEdited] = useState(false);
-  const [editingTitle, setEditingTitle] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Fresh form every time the dialog opens
@@ -113,7 +112,6 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     setCurrency("RON");
     setTitle("");
     setTitleEdited(false);
-    setEditingTitle(false);
   }, [open]);
 
   const place = useMemo(() => parseRomanianPlace(placeLabel), [placeLabel]);
@@ -521,34 +519,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             </Button>
           </div>
 
-          {blockedReason ? (
-            <p className="text-center text-xs text-destructive">{blockedReason}</p>
-          ) : editingTitle ? (
-            <Input
-              id="opp-title"
-              autoFocus
-              maxLength={120}
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                setTitleEdited(true);
-              }}
-              onBlur={() => setEditingTitle(false)}
-              onKeyDown={(e) => e.key === "Enter" && setEditingTitle(false)}
-              className="h-9 text-center text-sm font-semibold notranslate"
-              translate="no"
-            />
-          ) : title ? (
-            <button
-              type="button"
-              onClick={() => setEditingTitle(true)}
-              className="mx-auto flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <span>Will appear as:</span>
-              <b className="text-foreground notranslate" translate="no">{title}</b>
-              <Pencil className="h-3 w-3" />
-            </button>
-          ) : null}
+          {blockedReason && <p className="text-center text-xs text-destructive">{blockedReason}</p>}
         </div>
       </DialogContent>
     </Dialog>
