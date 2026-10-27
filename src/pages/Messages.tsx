@@ -119,6 +119,8 @@ const Messages = () => {
   const adId = searchParams.get("adId");
   const tabParam = searchParams.get("tab");
   const subParam = searchParams.get("sub");
+  // Opened from a dashboard announcement: show only the replies to that announcement
+  const [forAd, setForAd] = useState<string | null>(searchParams.get("forAd"));
 
   useEffect(() => {
     if (tabParam === 'announcements') setActiveTab('announcements');
@@ -641,7 +643,9 @@ const Messages = () => {
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   // Requests: ads I posted, others applied to
-                  const requestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
+                  const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
+                  const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
+                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context?.title : null;
                   // Applications: ads others posted, I applied to
                   const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
                   const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
@@ -661,6 +665,18 @@ const Messages = () => {
                         Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
+                    {forAd && adsSubTab === 'requests' && (
+                      <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2 text-xs text-muted-foreground">
+                        <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
+                        <span className="min-w-0 flex-1 truncate">
+                          <span>Replies to</span>{" "}
+                          <span className="font-medium text-foreground notranslate" translate="no">{forAdTitle || "this announcement"}</span>
+                        </span>
+                        <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
+                          Show all
+                        </button>
+                      </div>
+                    )}
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                       <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
                       <p>{adsSubTab === 'requests' ? 'No requests yet' : 'No applications yet'}</p>
@@ -838,7 +854,9 @@ const Messages = () => {
               ) : activeTab === 'announcements' ? (
                 (() => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
-                  const requestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
+                  const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
+                  const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
+                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context?.title : null;
                   const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
                   const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
 
@@ -857,6 +875,18 @@ const Messages = () => {
                         Applications<UnreadBadge count={applicationsUnreadTotal} />
                       </button>
                     </div>
+                    {forAd && adsSubTab === 'requests' && (
+                      <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2 text-xs text-muted-foreground">
+                        <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
+                        <span className="min-w-0 flex-1 truncate">
+                          <span>Replies to</span>{" "}
+                          <span className="font-medium text-foreground notranslate" translate="no">{forAdTitle || "this announcement"}</span>
+                        </span>
+                        <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
+                          Show all
+                        </button>
+                      </div>
+                    )}
                     {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
                       <p>{adsSubTab === 'requests' ? 'No requests yet' : 'No applications yet'}</p>
                       <p className="text-xs mt-1">{adsSubTab === 'requests' ? 'When someone applies to your ad, it will appear here' : 'When you apply to an ad, it will appear here'}</p>

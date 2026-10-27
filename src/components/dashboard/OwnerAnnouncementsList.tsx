@@ -187,7 +187,8 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         ) : (
           <span>No messages yet</span>
         );
-      link = msgCount > 0 ? { label: "See the messages", to: "/messages" } : { label: "See announcement", to: "/announcements" };
+      // Replies to a collaboration live in Messages → Announcements → Requests, filtered to this one
+      link = { label: "See replies", to: `/messages?tab=announcements&sub=requests&forAd=${a.id}` };
     }
 
     return (

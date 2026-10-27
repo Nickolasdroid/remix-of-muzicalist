@@ -2824,4 +2824,8 @@ export const RO_TEXT: Record<string, string> = {
   "The amount can be at most": "Suma poate fi de cel mult",
   "The amount is too large.": "Suma este prea mare.",
   "See announcement": "Vezi anunțul",
+  "See replies": "Vezi răspunsurile",
+  "Replies to": "Răspunsuri la",
+  "Show all": "Arată tot",
+  "this announcement": "acest anunț",
 };
