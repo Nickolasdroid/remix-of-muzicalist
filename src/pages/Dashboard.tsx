@@ -2602,6 +2602,7 @@ const Dashboard = () => {
                             <OwnerAnnouncementsList
                               announcements={announcements}
                               isArtist
+                              listClassName="-mx-4 md:mx-0"
                               disabled={isSaving}
                               onClose={handleCloseAnnouncement}
                               onDelete={(id) => setDeleteAnnouncementId(id)}

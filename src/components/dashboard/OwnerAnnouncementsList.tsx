@@ -21,6 +21,8 @@ interface OwnerAnnouncementsListProps {
   onClose: (id: string) => void;
   onDelete: (id: string) => void;
   empty?: ReactNode;
+  /** Wrapper of the cards, to match the posts list width */
+  listClassName?: string;
 }
 
 interface GigStats {
@@ -36,7 +38,7 @@ type Tab = "active" | "ended";
  * The owner's announcements in the dashboards: what each one asks for, its status,
  * what came in (offers or messages) and where to go next. Active and ended are split.
  */
-const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, empty }: OwnerAnnouncementsListProps) => {
+const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, empty, listClassName }: OwnerAnnouncementsListProps) => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
@@ -302,7 +304,9 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       </div>
 
       {shown.length > 0 ? (
-        <div className="space-y-3">{shown.map(renderCard)}</div>
+        <div className={listClassName}>
+          <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-3">{shown.map(renderCard)}</div>
+        </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">
           <Megaphone className="mx-auto mb-2 h-6 w-6 opacity-60" />
