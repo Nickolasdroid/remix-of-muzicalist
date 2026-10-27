@@ -46,6 +46,7 @@ interface OpportunityCardProps {
     /** Chip text: "Organizer", "DJ" */
     specialization?: string | null;
     county?: string | null;
+    country?: string | null;
     /** Legacy: "DJ · Cluj" (split into chip and county) */
     subtitle?: string;
     /** Translate the subtitle (true for "Organizer") */
@@ -127,6 +128,7 @@ const OpportunityCard = ({
           specialization={author.specialization ?? author.subtitle?.split(" · ")[0]}
           specializationTranslatable={author.subtitleTranslatable}
           county={author.county ?? author.subtitle?.split(" · ")[1]}
+          country={author.country}
           time={formatSmartDate(o.created_at)}
           onClick={onAuthorClick}
         />

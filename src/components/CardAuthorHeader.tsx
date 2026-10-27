@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { getAvatarOutlineClasses } from "@/lib/subscriptionStyles";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,8 @@ interface CardAuthorHeaderProps {
   /** Translate the chip text (true for fixed labels like "Organizer") */
   specializationTranslatable?: boolean;
   county?: string | null;
+  /** Shown as a flag after the county */
+  country?: string | null;
   /** "34m ago", "Aug 8" */
   time: string;
   /** Rendered after the time (globe, promotion badge…) */
@@ -36,6 +39,7 @@ const CardAuthorHeader = ({
   specialization,
   specializationTranslatable,
   county,
+  country,
   time,
   extra,
   nameExtra,
@@ -79,8 +83,9 @@ const CardAuthorHeader = ({
           </span>
         )}
         {county && (
-          <span className="notranslate" translate="no">
+          <span className="inline-flex items-center gap-1 notranslate" translate="no">
             {county}
+            {country && <CountryFlagIcon country={country} className="h-3 w-4 shrink-0 rounded-[2px]" />}
           </span>
         )}
         {(specialization || county) && <span>·</span>}

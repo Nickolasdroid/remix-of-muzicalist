@@ -37,6 +37,7 @@ export interface AnnouncementAuthorProfile {
   avatar_url?: string | null;
   specialization?: string | null;
   county?: string | null;
+  country?: string | null;
   plan?: string | null;
 }
 
@@ -208,6 +209,7 @@ const AnnouncementList = ({
         avatarUrl: p.avatar_url,
         specialization: spec,
         county: p.county,
+        country: p.country,
         plan: p.plan,
         verified: isAdminAuthor,
       };
