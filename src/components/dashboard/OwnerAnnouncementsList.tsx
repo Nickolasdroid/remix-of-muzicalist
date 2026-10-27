@@ -254,7 +254,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           </div>
         )}
         {budget && (
-          <p className="text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">{budget}</p>
+          <p className="inline-flex w-fit items-center rounded-full bg-accent/15 px-3 py-1.5 text-[14px] font-bold leading-none text-accent notranslate tabular-nums" translate="no">{budget}</p>
         )}
 
         <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5 text-[12.5px] text-muted-foreground whitespace-nowrap">

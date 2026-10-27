@@ -165,7 +165,7 @@ const OpportunityCard = ({
       )}
 
       {budget && (
-        <p className="text-[15px] font-bold text-accent notranslate tabular-nums" translate="no">
+        <p className="inline-flex w-fit items-center rounded-full bg-accent/15 px-3 py-1.5 text-[14px] font-bold leading-none text-accent notranslate tabular-nums" translate="no">
           {budget}
         </p>
       )}
