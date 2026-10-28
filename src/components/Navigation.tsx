@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { canGoBackInApp, goBack, isRootPath, parentPathFor } from "@/lib/backNavigation";
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
 import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
@@ -337,6 +338,16 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
+  // Back arrow: pages with their own title, and every page that isn't a main
+  // destination (bottom bar / menu). It goes to the previous page inside the
+  // app; opened from a link, it goes to the logical parent instead of leaving.
+  const showMobileBack = !!mobileTitle || !!onMobileBack || (!isRootPath(location.pathname) && (!!user || canGoBackInApp()));
+  const handleMobileBack = () => {
+    if (onMobileBack) return onMobileBack();
+    const fallback = typeof mobileBackPath === 'string' ? mobileBackPath : parentPathFor(location.pathname, !!user);
+    goBack(navigate, fallback);
+  };
+
   const showBottomNav = !!user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings'));
 
   return (
@@ -366,20 +377,11 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className={`flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
-          {mobileTitle ? (
+          {showMobileBack ? (
             <button
-              className="p-2 text-foreground/80 hover:text-accent transition-colors"
-              onClick={() => {
-                if (onMobileBack) {
-                  onMobileBack();
-                } else if (typeof mobileBackPath === 'number') {
-                  navigate(mobileBackPath);
-                } else if (mobileBackPath) {
-                  navigate(mobileBackPath);
-                } else {
-                  navigate(-1);
-                }
-              }}
+              className="-ml-1 p-2 text-foreground/80 hover:text-accent transition-colors"
+              aria-label={t('common.back', 'Back')}
+              onClick={handleMobileBack}
             >
               <ArrowLeft className="h-6 w-6" />
             </button>
@@ -523,6 +525,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 </Link>
               )}
             </>
+          ) : showMobileBack ? (
+            <Link to="/" className="ml-1 flex items-center" aria-label="Muzicalist">
+              <img src={logo} alt="Muzicalist" className="h-8 w-8 object-contain" />
+            </Link>
           ) : null}
 
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}

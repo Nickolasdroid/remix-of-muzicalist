@@ -1,4 +1,5 @@
 import PostActions from "@/components/PostActions";
+import { goBack } from "@/lib/backNavigation";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -1172,7 +1173,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
   const isPremium = artist.plan === 'Premium';
   const isStandard = artist.plan === 'Standard';
-  const goBackFromReviews = () => (window.history.length > 1 ? navigate(-1) : navigate(`/artist/${artist.slug ?? id}`));
+  const goBackFromReviews = () => goBack(navigate, `/artist/${artist.slug ?? id}`);
   const openReviewDialog = async () => {
     if (!currentUserId) {
       toast({ title: "Login Required", description: "Please log in or create an account to write a review." });

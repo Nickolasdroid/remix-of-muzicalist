@@ -1,10 +1,15 @@
 import * as React from "react";
+import { useModalOpenState } from "@/lib/modalHistory";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-const AlertDialog = AlertDialogPrimitive.Root;
+/** Root that also closes on the phone's back button (see modalHistory). */
+const AlertDialog = ({ open, defaultOpen, onOpenChange, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) => {
+  const [isOpen, setOpen] = useModalOpenState(open, defaultOpen, onOpenChange);
+  return <AlertDialogPrimitive.Root open={isOpen} onOpenChange={setOpen} {...props} />;
+};
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 

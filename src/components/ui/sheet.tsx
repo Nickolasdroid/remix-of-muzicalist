@@ -1,11 +1,16 @@
 import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { useModalOpenState } from "@/lib/modalHistory";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Sheet = SheetPrimitive.Root;
+/** Root that also closes on the phone's back button (see modalHistory). */
+const Sheet = ({ open, defaultOpen, onOpenChange, ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) => {
+  const [isOpen, setOpen] = useModalOpenState(open, defaultOpen, onOpenChange);
+  return <SheetPrimitive.Root open={isOpen} onOpenChange={setOpen} {...props} />;
+};
 
 const SheetTrigger = SheetPrimitive.Trigger;
 

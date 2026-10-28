@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useCloseOnBack } from "@/lib/modalHistory";
+import { goBack } from "@/lib/backNavigation";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -575,13 +578,23 @@ const Messages = () => {
     setDeleteDialogOpen(true);
   };
   const handleMobileBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate("/");
-    }
+    goBack(navigate, user ? "/feed" : "/");
   };
   const conversationActive = !!(selectedConversation || pendingArtist);
+  // Phone back closes the open chat and returns to the list (like the arrow in the chat header).
+  // A chat opened straight from a profile/announcement ("Message" button) goes
+  // back to that page instead, as before.
+  const isMobile = useIsMobile();
+  const [openedDirectly, setOpenedDirectly] = useState(!!(artistId || adId));
+  const wasActiveRef = useRef(conversationActive);
+  useEffect(() => {
+    if (wasActiveRef.current && !conversationActive) setOpenedDirectly(false);
+    wasActiveRef.current = conversationActive;
+  }, [conversationActive]);
+  useCloseOnBack(isMobile && conversationActive && !openedDirectly, () => {
+    setSelectedConversation(null);
+    setPendingArtist(null);
+  });
   if (loading && !user) {
     return <div className="min-h-screen md:ml-64 bg-background">
         <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { goBack } from "@/lib/backNavigation";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -146,7 +147,7 @@ const ArtistAnalytics = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(-1)}
+            onClick={() => goBack(navigate, "/dashboard")}
             className="-ml-2"
           >
             <ArrowLeft className="h-4 w-4 mr-1.5" />

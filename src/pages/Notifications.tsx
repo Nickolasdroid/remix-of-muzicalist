@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, TouchEvent } from "react";
+import { goBack } from "@/lib/backNavigation";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -543,7 +544,7 @@ const Notifications = () => {
     <div className="min-h-screen bg-background">
       <Navigation
         mobileTitle="Notifications"
-        onMobileBack={() => (window.history.length > 1 ? navigate(-1) : navigate("/"))}
+        onMobileBack={() => goBack(navigate, "/feed")}
       />
       <main className="md:ml-64 pt-16 md:pt-2 pb-6 md:pb-8">
         <div className="max-w-3xl mx-auto md:p-6 md:px-4">

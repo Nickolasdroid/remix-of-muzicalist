@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useCloseOnBack } from "@/lib/modalHistory";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import SmoothVideoPlayer from "./SmoothVideoPlayer";
 import ImageLightbox from "./ImageLightbox";
@@ -15,6 +16,7 @@ interface InstagramZoomPreviewProps {
 }
 
 const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => {
+  useCloseOnBack(!!media && media.type === "video", onClose);
   if (!media) return null;
 
   // Images use the single standardized viewer (same as the profile picture viewer)

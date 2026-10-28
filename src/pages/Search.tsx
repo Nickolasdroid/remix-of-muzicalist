@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { Link, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
@@ -166,7 +167,7 @@ const Search = () => {
                 setSearchQuery("");
                 setSuggestions([]);
                 inputRef.current?.blur();
-                navigate(-1);
+                goBack(navigate, "/feed");
               }}
               className="flex-shrink-0 h-10 w-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-muted/80 transition-colors"
               aria-label="Back"

@@ -1,10 +1,14 @@
 import * as React from "react";
+import { useModalOpenState } from "@/lib/modalHistory";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/utils";
 
-const Drawer = ({ shouldScaleBackground = true, ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) =>
-<DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />;
+const Drawer = ({ shouldScaleBackground = true, open, onOpenChange, ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) => {
+  // Closes on the phone's back button too (see modalHistory).
+  const [isOpen, setOpen] = useModalOpenState(open, (props as { defaultOpen?: boolean }).defaultOpen, onOpenChange);
+  return <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} open={isOpen} onOpenChange={setOpen} {...props} />;
+};
 
 Drawer.displayName = "Drawer";
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
@@ -86,7 +87,7 @@ const BookArtist = () => {
       if (!mounted) return;
       if (!artistData) {
         toast({ title: "Artist not found", variant: "destructive" });
-        navigate(-1);
+        goBack(navigate, "/artists");
         return;
       }
       setArtist(artistData as ArtistLite);
@@ -215,9 +216,9 @@ const BookArtist = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation mobileTitle="Book Artist" mobileBackPath={-1} />
+      <Navigation mobileTitle="Book Artist" mobileBackPath={`/artist/${id}`} />
       <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4 -ml-2 hidden md:inline-flex">
+        <Button variant="ghost" size="sm" onClick={() => goBack(navigate, `/artist/${id}`)} className="mb-4 -ml-2 hidden md:inline-flex">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
 

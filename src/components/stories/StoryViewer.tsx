@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useCloseOnBack } from "@/lib/modalHistory";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -29,6 +30,7 @@ const firstUnseenIndex = (group: StoryGroup, seen: Set<string>) => {
 };
 
 const StoryViewer = ({ groups, startGroupIndex, currentUserId, onSeen, onDeleted, onClose }: StoryViewerProps) => {
+  useCloseOnBack(true, onClose);
   const { i18n } = useTranslation();
   const seenRef = useRef<Set<string>>(new Set());
   const [groupIndex, setGroupIndex] = useState(startGroupIndex);

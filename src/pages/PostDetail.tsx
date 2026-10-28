@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { goBack as goBackInApp } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, FileX, Flag, Loader2, Trash2 } from "lucide-react";
@@ -109,8 +110,7 @@ const PostDetail = () => {
   useEffect(() => { if (id) trackActivityEvent("post_view"); }, [id]);
 
   const goBack = () => {
-    if (window.history.state?.idx > 0) navigate(-1);
-    else navigate(author ? `/artist/${author.id}` : "/feed");
+    goBackInApp(navigate, author ? `/artist/${author.id}` : "/feed");
   };
 
   const handleLike = async () => {

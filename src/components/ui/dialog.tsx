@@ -1,10 +1,15 @@
 import * as React from "react";
+import { useModalOpenState } from "@/lib/modalHistory";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const Dialog = DialogPrimitive.Root;
+/** Root that also closes on the phone's back button (see modalHistory). */
+const Dialog = ({ open, defaultOpen, onOpenChange, ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) => {
+  const [isOpen, setOpen] = useModalOpenState(open, defaultOpen, onOpenChange);
+  return <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen} {...props} />;
+};
 
 const DialogTrigger = DialogPrimitive.Trigger;
 

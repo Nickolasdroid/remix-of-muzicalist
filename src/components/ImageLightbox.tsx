@@ -1,4 +1,5 @@
 import { X, ImageOff } from "lucide-react";
+import { useCloseOnBack } from "@/lib/modalHistory";
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
@@ -14,6 +15,7 @@ const MAX_SCALE = 5;
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
 const ImageLightbox = ({ src, alt = "Full size preview", onClose }: ImageLightboxProps) => {
+  useCloseOnBack(!!src, onClose);
   const [scale, setScale] = useState(1);
   const [tx, setTx] = useState(0);
   const [ty, setTy] = useState(0);
