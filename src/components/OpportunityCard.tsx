@@ -10,6 +10,7 @@ import {
   OpportunitySeeking,
   formatOpportunityBudget,
   formatPlace,
+  opportunityDisplayTitle,
 } from "@/lib/opportunities";
 
 export interface OpportunityCardData {
@@ -136,7 +137,7 @@ const OpportunityCard = ({
       </div>
 
       <h3 className="text-base font-bold leading-snug text-foreground notranslate" translate="no" data-user-content="true">
-        {o.title}
+        {opportunityDisplayTitle(o, lang)}
       </h3>
 
       {(dateText || place) && (

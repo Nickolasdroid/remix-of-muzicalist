@@ -8,7 +8,7 @@ import PostActionsMenu, { type PostAction } from "@/components/PostActionsMenu";
 import { isAdExpired } from "@/lib/adExpiration";
 import { formatMoney } from "@/lib/bookingOffers";
 import {
-  formatOpportunityBudget,
+  opportunityDisplayTitle, formatOpportunityBudget,
   formatPlace,
 } from "@/lib/opportunities";
 import { cn } from "@/lib/utils";
@@ -231,7 +231,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         </div>
 
         <p className="text-[15px] font-bold leading-snug text-foreground notranslate" translate="no" data-user-content="true">
-          {a.title}
+          {opportunityDisplayTitle(a, lang)}
         </p>
 
         {(dateText || place) && (

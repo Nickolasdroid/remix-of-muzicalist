@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { opportunityDisplayTitle } from "@/lib/opportunities";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCloseOnBack } from "@/lib/modalHistory";
 import { goBack } from "@/lib/backNavigation";
@@ -79,10 +80,12 @@ interface AnnouncementContext {
   expires_at?: string | null;
 }
 
-const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => (
+const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => {
+  const { i18n } = useTranslation();
+  return (
   <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
     <p className="text-xs font-semibold text-accent mb-1">Regarding Announcement</p>
-    <p className="text-sm font-medium text-foreground pr-4 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.title}</p>
+    <p className="text-sm font-medium text-foreground pr-4 notranslate" data-user-content="true" data-no-translate="true" translate="no">{opportunityDisplayTitle(ad as any, i18n.language || "ro")}</p>
     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.description}</p>
     {(ad.location || ad.event_date || ad.budget) && (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
@@ -92,7 +95,8 @@ const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () =>
       </div>
     )}
   </div>
-);
+  );
+};
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
@@ -101,8 +105,10 @@ const Messages = () => {
     toast
   } = useToast();
   const {
-    t
+    t,
+    i18n
   } = useTranslation();
+  const adTitle = (ad?: AnnouncementContext | null) => (ad ? opportunityDisplayTitle(ad as any, i18n.language || "ro") : "");
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -658,7 +664,7 @@ const Messages = () => {
                   // Requests: ads I posted, others applied to
                   const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
                   const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
-                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context?.title : null;
+                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context : null;
                   // Applications: ads others posted, I applied to
                   const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
                   const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
@@ -683,7 +689,7 @@ const Messages = () => {
                         <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
                         <span className="min-w-0 flex-1 truncate">
                           <span>Replies to</span>{" "}
-                          <span className="font-medium text-foreground notranslate" translate="no">{forAdTitle || "this announcement"}</span>
+                          <span className="font-medium text-foreground notranslate" translate="no">{adTitle(forAdTitle) || "this announcement"}</span>
                         </span>
                         <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
                           Show all
@@ -711,7 +717,7 @@ const Messages = () => {
                             </span>}
                           </div>
                           <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                            {conv.announcement_context?.title || "Ad conversation"}
+                            {adTitle(conv.announcement_context) || "Ad conversation"}
                           </p>
                         </div>
                       </div>;
@@ -869,7 +875,7 @@ const Messages = () => {
                   const adConvs = conversations.filter(c => !!c.announcement_id);
                   const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
                   const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
-                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context?.title : null;
+                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context : null;
                   const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
                   const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
 
@@ -893,7 +899,7 @@ const Messages = () => {
                         <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
                         <span className="min-w-0 flex-1 truncate">
                           <span>Replies to</span>{" "}
-                          <span className="font-medium text-foreground notranslate" translate="no">{forAdTitle || "this announcement"}</span>
+                          <span className="font-medium text-foreground notranslate" translate="no">{adTitle(forAdTitle) || "this announcement"}</span>
                         </span>
                         <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
                           Show all
@@ -920,7 +926,7 @@ const Messages = () => {
                             </span>}
                           </div>
                           <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                            {conv.announcement_context?.title || "Ad conversation"}
+                            {adTitle(conv.announcement_context) || "Ad conversation"}
                           </p>
                         </div>
                       </div>;

@@ -314,3 +314,36 @@ export const INSTRUMENT_RO: Record<string, string> = {
 export function instrumentLabel(name: string, lang = "ro"): string {
   return isRo(lang) ? INSTRUMENT_RO[name] || name : name;
 }
+
+/**
+ * Title to show for a stored announcement. Opportunities get their title from
+ * their fields (older ones were saved with the date and place in the title,
+ * which the card already shows on its own lines). Legacy announcements keep
+ * the title their author wrote.
+ */
+export const opportunityDisplayTitle = (
+  o: {
+    title?: string | null;
+    kind?: string | null;
+    seeking?: string | null;
+    role_detail?: string | null;
+    event_type?: string | null;
+    collab_type?: string | null;
+  },
+  lang = "ro",
+): string => {
+  if ((o.kind === "gig" || o.kind === "collab") && o.seeking) {
+    const built = buildOpportunityTitle(
+      {
+        kind: o.kind as OpportunityKind,
+        seeking: o.seeking as OpportunitySeeking,
+        roleDetail: o.role_detail,
+        eventType: o.event_type,
+        collabType: (o.collab_type as CollabType | null) ?? null,
+      },
+      lang,
+    );
+    if (built) return built;
+  }
+  return o.title || "";
+};

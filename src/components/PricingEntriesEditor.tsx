@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Loader2, Plus, Trash2 } from "lucide-react";
+import { DollarSign, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import EventTypePicker from "@/components/EventTypePicker";
@@ -58,6 +58,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
   const [newCurrency, setNewCurrency] = useState(defaultCurrency);
   const [newEventType, setNewEventType] = useState("");
   const [pickerKey, setPickerKey] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     setNewCurrency(defaultCurrency);
@@ -88,8 +89,24 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
   const atLimit = maxEntries !== undefined && entries.length >= maxEntries;
   const left = maxEntries !== undefined ? Math.max(0, maxEntries - entries.length) : null;
 
-  const addEntry = async () => {
-    if (atLimit) {
+  const resetForm = () => {
+    setEditingId(null);
+    setNewAmount("");
+    setNewEventType("");
+    setNewCurrency(defaultCurrency);
+    setPickerKey((k) => k + 1);
+  };
+
+  const startEdit = (e: PricingEntry) => {
+    setEditingId(e.id);
+    setNewEventType(e.event_type);
+    setNewAmount(Number(e.amount).toLocaleString(ro ? "ro-RO" : "en-GB", { maximumFractionDigits: 0 }));
+    setNewCurrency(e.currency);
+    setPickerKey((k) => k + 1);
+  };
+
+  const saveEntry = async () => {
+    if (!editingId && atLimit) {
       toast({ title: "Limit reached", description: `You can save up to ${maxEntries} prices.`, variant: "destructive" });
       return;
     }
@@ -98,7 +115,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
       toast({ title: "Select event type", variant: "destructive" });
       return;
     }
-    if (entries.some((e) => e.event_type.toLowerCase() === eventType.toLowerCase())) {
+    if (entries.some((e) => e.id !== editingId && e.event_type.toLowerCase() === eventType.toLowerCase())) {
       toast({ title: "You already have a price for this event type", variant: "destructive" });
       return;
     }
@@ -112,20 +129,22 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
       return;
     }
     setSaving(true);
-    const { data, error } = await supabase
-      .from("pricing_entries" as any)
-      .insert({ profile_id: profileId, amount: amountNum, currency: newCurrency, event_type: eventType })
-      .select()
-      .single();
+    const values = { amount: amountNum, currency: newCurrency, event_type: eventType };
+    const { data, error } = editingId
+      ? await supabase.from("pricing_entries" as any).update(values).eq("id", editingId).select().single()
+      : await supabase
+          .from("pricing_entries" as any)
+          .insert({ profile_id: profileId, ...values })
+          .select()
+          .single();
     setSaving(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
-    setEntries((prev) => [...prev, data as unknown as PricingEntry]);
-    setNewAmount("");
-    setNewEventType("");
-    setPickerKey((k) => k + 1);
+    const saved = data as unknown as PricingEntry;
+    setEntries((prev) => (editingId ? prev.map((x) => (x.id === editingId ? saved : x)) : [...prev, saved]));
+    resetForm();
   };
 
   const deleteEntry = async (id: string) => {
@@ -135,6 +154,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
       return;
     }
     setEntries((prev) => prev.filter((e) => e.id !== id));
+    if (editingId === id) resetForm();
   };
 
   if (loading) {
@@ -183,11 +203,25 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
       {entries.length > 0 && (
         <ul className="space-y-2">
           {entries.map((e) => (
-            <li key={e.id} className="flex items-center gap-2 rounded-xl bg-secondary/50 py-2 pl-3 pr-1">
-              <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">{e.event_type}</span>
-              <span className="shrink-0 text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">
-                {formatAmount(e.amount, lang)} {e.currency}
-              </span>
+            <li
+              key={e.id}
+              className={cn(
+                "flex items-center gap-1 rounded-xl bg-secondary/50 py-1 pr-1 ring-1 ring-transparent transition-colors",
+                editingId === e.id && "bg-accent/10 ring-accent/50",
+              )}
+            >
+              <button
+                type="button"
+                onClick={() => (editingId === e.id ? resetForm() : startEdit(e))}
+                className="flex min-w-0 flex-1 items-center gap-2 py-1 pl-3 text-left"
+                aria-label="Edit price"
+              >
+                <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">{e.event_type}</span>
+                <span className="shrink-0 text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">
+                  {formatAmount(e.amount, lang)} {e.currency}
+                </span>
+                <Pencil className="ml-1 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              </button>
               <Button
                 size="sm"
                 variant="ghost"
@@ -202,8 +236,11 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
         </ul>
       )}
 
-      {!atLimit ? (
+      {!atLimit || editingId ? (
         <div className={cn(entries.length > 0 && "mt-4 border-t border-border pt-1")}>
+          {editingId && (
+            <p className="mt-3 text-[13px] font-semibold text-accent">Edit price</p>
+          )}
           <label className="mb-1.5 mt-3 block text-[13.5px] font-semibold">Event type</label>
           <EventTypePicker
             key={pickerKey}
@@ -225,7 +262,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
                 setNewAmount(digits ? Number(digits).toLocaleString(ro ? "ro-RO" : "en-GB") : "");
               }}
               onKeyDown={(e) => {
-                if (e.key === "Enter") addEntry();
+                if (e.key === "Enter") saveEntry();
               }}
               className="h-11 flex-1 rounded-r-none bg-background text-[15px] tabular-nums notranslate"
               translate="no"
@@ -246,12 +283,24 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
 
           <Button
             className="mt-5 h-12 w-full rounded-xl text-[15px] font-bold"
-            onClick={addEntry}
+            onClick={saveEntry}
             disabled={saving}
           >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <span>Add the price</span>}
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span key={editingId ? "save" : "add"}>{editingId ? "Save changes" : "Add the price"}</span>
+            )}
           </Button>
-          {left != null && (
+          {editingId ? (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="mx-auto mt-2 block text-[13px] font-medium text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+          ) : left != null && (
             <p className="mt-2.5 text-center text-xs text-muted-foreground">
               {entries.length === 0 ? (
                 <span key="max">

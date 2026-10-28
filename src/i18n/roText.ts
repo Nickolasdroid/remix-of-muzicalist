@@ -2832,4 +2832,5 @@ export const RO_TEXT: Record<string, string> = {
   "What you usually charge per event type. Organizers see them on your profile.": "Cât ceri de obicei pe tip de eveniment. Organizatorii le văd pe profilul tău.",
   "Add the price": "Adaugă prețul",
   "You already have a price for this event type": "Ai deja un preț pentru acest tip de eveniment",
+  "Edit price": "Modifică prețul",
 };
