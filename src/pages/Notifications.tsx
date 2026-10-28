@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, TouchEvent } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -140,6 +141,7 @@ const notificationTypeToPrefKey = (t: string): string | null => {
 };
 
 const Notifications = () => {
+  usePageTitle("Notifications");
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isMobile = useIsMobile();

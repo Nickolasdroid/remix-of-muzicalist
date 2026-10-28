@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -27,23 +28,26 @@ export function formatLocalDateToYMD(date: Date): string {
  * - "Mon DD" for dates in the current year (no year shown)
  * - "Mon DD, YYYY" for dates from previous years
  */
-export function formatSmartDate(dateString: string): string {
+export function formatSmartDate(dateString: string, lang: string = i18next.language || "ro"): string {
+  const ro = lang.startsWith("ro");
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  // Romanian is written out here (not left to the page translator), so the
+  // card never flashes "2h ago" before switching language.
+  if (diffMinutes < 1) return ro ? "Acum" : "Just now";
+  if (diffMinutes < 60) return ro ? `${diffMinutes} min` : `${diffMinutes}m ago`;
+  if (diffHours < 24) return ro ? `${diffHours} h` : `${diffHours}h ago`;
+  if (diffDays < 7) return ro ? `${diffDays} z` : `${diffDays}d ago`;
+  const locale = ro ? "ro-RO" : "en-US";
   const isCurrentYear = date.getFullYear() === now.getFullYear();
   if (isCurrentYear) {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
   }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /**

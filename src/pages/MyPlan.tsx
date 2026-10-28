@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const MyPlan = () => {
+  usePageTitle("My Plan");
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { toast } = useToast();

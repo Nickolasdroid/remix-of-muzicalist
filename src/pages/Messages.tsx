@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { opportunityDisplayTitle } from "@/lib/opportunities";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCloseOnBack } from "@/lib/modalHistory";
@@ -109,6 +110,7 @@ const Messages = () => {
     i18n
   } = useTranslation();
   const adTitle = (ad?: AnnouncementContext | null) => (ad ? opportunityDisplayTitle(ad as any, i18n.language || "ro") : "");
+  usePageTitle("Messages");
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);

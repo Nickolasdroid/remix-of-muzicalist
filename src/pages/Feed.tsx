@@ -417,25 +417,23 @@ const Feed = () => {
   const formatDate = formatSmartDate;
 
   if (loading) {
+    // Same frame as the loaded feed, so nothing jumps when the posts arrive.
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
         <Navigation />
-        <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-12`}>
-          <div className="max-w-2xl mx-auto">
-            <h1 className="text-4xl font-display font-bold text-foreground mb-8">Posts</h1>
-            <div className="space-y-6">
-              {[1, 2, 3].map(i => <Card key={i} className="overflow-hidden border-border/40 animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-muted" />
-                      <div className="space-y-2">
-                        <div className="h-4 w-32 bg-muted rounded" />
-                        <div className="h-3 w-24 bg-muted rounded" />
-                      </div>
-                    </div>
-                    <div className="h-20 bg-muted rounded" />
-                  </CardContent>
-                </Card>)}
-            </div>
+        <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
+          <div className="max-w-[500px] mx-auto space-y-2 sm:space-y-3" aria-busy="true">
+            {[1, 2, 3].map(i => <div key={i} className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 animate-pulse">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-full bg-muted" />
+                  <div className="space-y-2">
+                    <div className="h-3.5 w-32 bg-muted rounded" />
+                    <div className="h-3 w-20 bg-muted rounded" />
+                  </div>
+                </div>
+                <div className="h-3.5 w-11/12 bg-muted rounded mb-2" />
+                <div className="h-3.5 w-2/3 bg-muted rounded mb-3" />
+                <div className="-mx-3.5 h-56 bg-muted" />
+              </div>)}
           </div>
         </div>
       </div>;

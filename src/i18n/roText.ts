@@ -2833,4 +2833,6 @@ export const RO_TEXT: Record<string, string> = {
   "Add the price": "Adaugă prețul",
   "You already have a price for this event type": "Ai deja un preț pentru acest tip de eveniment",
   "Edit price": "Modifică prețul",
+  "Post": "Postare",
+  "Members": "Membri",
 };

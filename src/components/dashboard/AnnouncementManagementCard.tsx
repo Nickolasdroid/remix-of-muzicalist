@@ -73,7 +73,7 @@ const AnnouncementManagementCard = ({
           </p>
         )}
         <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{formatSmartDate(announcement.created_at)}</span>
+          <span className="notranslate" translate="no">{formatSmartDate(announcement.created_at)}</span>
           <span>·</span>
           {announcement.kind && announcement.status === "filled" ? (
             <span className="text-emerald-500">Artist booked</span>

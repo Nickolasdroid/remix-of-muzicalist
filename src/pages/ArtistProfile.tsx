@@ -1,4 +1,6 @@
 import PostActions from "@/components/PostActions";
+import { bandMembersLabel } from "@/lib/bandMembers";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import CardAuthorHeader from "@/components/CardAuthorHeader";
@@ -171,6 +173,7 @@ const enrichReviewsWithAvatars = async (reviews: Review[]): Promise<Review[]> =>
 
 const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews" } = {}) => {
   const isReviewsView = view === "reviews";
+  usePageTitle(isReviewsView ? "Reviews" : null);
   const { t } = useTranslation();
   const adminIds = useAdminIds();
 
@@ -1534,10 +1537,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       <div className="flex items-center gap-2">
                         <SectionHeaderWithUsage
                           icon={<Users className="h-5 w-5 text-accent" />}
-                          title="Members:"
+                          title="Members"
                         />
                         <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-                          {artist.band_members} members
+                          <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
                         </Badge>
                       </div>
                     </>

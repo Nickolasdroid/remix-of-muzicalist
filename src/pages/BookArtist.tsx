@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, Link } from "react-router-dom";
@@ -39,6 +40,7 @@ const extractAllTimeSlotsFromNotes = (notes: string | null) => {
 };
 
 const BookArtist = () => {
+  usePageTitle("Book Artist");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();

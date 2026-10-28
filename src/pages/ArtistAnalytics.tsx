@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -9,6 +10,7 @@ import { ArrowLeft, BarChart3, Calendar, CheckCircle, XCircle, Clock, Ban } from
 import { isPremium } from "@/lib/planLimits";
 
 const ArtistAnalytics = () => {
+  usePageTitle("Statistics");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({

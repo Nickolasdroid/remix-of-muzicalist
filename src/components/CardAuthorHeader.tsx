@@ -89,7 +89,7 @@ const CardAuthorHeader = ({
           </span>
         )}
         {(specialization || county) && <span>·</span>}
-        <span className="shrink-0">{time}</span>
+        <span className="shrink-0 notranslate" translate="no">{time}</span>
         {extra}
       </div>
     </div>

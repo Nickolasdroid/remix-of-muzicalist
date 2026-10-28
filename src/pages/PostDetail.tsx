@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack as goBackInApp } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -52,6 +53,7 @@ const PostDetail = () => {
   const [params] = useSearchParams();
   const kind: Kind = params.get("kind") === "promotion" ? "promotion" : "post";
   const isPromo = kind === "promotion";
+  usePageTitle(isPromo ? "Promotion" : "Post");
   const navigate = useNavigate();
   const { t } = useTranslation();
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { formatDateNoYear, formatSmartDate, sanitizeFileName } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SettingsTab, { SettingSection } from "@/components/SettingsTab";
@@ -42,6 +43,7 @@ const UserDashboard = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'settings' ? 'settings' : 'profile';
+  usePageTitle(activeTab === "settings" ? "Settings" : "Profile");
   const [settingsSection, setSettingsSection] = useState<SettingSection>('main');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

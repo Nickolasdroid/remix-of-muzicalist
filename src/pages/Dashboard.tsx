@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { bandMembersLabel } from "@/lib/bandMembers";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
@@ -110,6 +112,7 @@ const Dashboard = () => {
   const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
   const [responseRate, setResponseRate] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+  usePageTitle(activeTab === "settings" ? "Settings" : "Profile");
   const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
 
   // Force admins to allowed sections only
@@ -1997,7 +2000,7 @@ const Dashboard = () => {
                               <div className="flex items-center justify-between mb-3">
                                 <SectionHeaderWithUsage
                                   icon={<Users className="h-5 w-5 text-accent" />}
-                                  title="Members:"
+                                  title="Members"
                                 />
 
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
@@ -2017,7 +2020,7 @@ const Dashboard = () => {
                                     </Button>
                                   </div>
                                 </div> : formData.bandMembers ? <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
-                                    {formData.bandMembers} members
+                                    <span className="notranslate" translate="no">{bandMembersLabel(formData.bandMembers, i18n.language || "ro")}</span>
                                   </Badge> : <p className="text-muted-foreground italic text-sm">Not specified</p>}
                             </div>
                           </>}
