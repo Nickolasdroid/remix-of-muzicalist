@@ -32,6 +32,7 @@ import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
+import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
@@ -1864,6 +1865,8 @@ const Dashboard = () => {
 
 
 
+
+                    {!isAdmin && <ProfileViewsCard plan={currentPlan} />}
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">

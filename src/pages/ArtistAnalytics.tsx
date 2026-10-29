@@ -6,7 +6,8 @@ import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BarChart3, Calendar, CheckCircle, XCircle, Clock, Ban } from "lucide-react";
+import { ArrowLeft, BarChart3, Calendar, CheckCircle, XCircle, Clock, Ban, Eye } from "lucide-react";
+import { fetchMyProfileViews } from "@/lib/profileViews";
 import { isPremium } from "@/lib/planLimits";
 
 const ArtistAnalytics = () => {
@@ -20,6 +21,7 @@ const ArtistAnalytics = () => {
     rejectedRequests: 0,
     bookedEvents: 0,
     blockedDates: 0,
+    profileViews: 0,
   });
 
   useEffect(() => {
@@ -60,6 +62,8 @@ const ArtistAnalytics = () => {
         .select("status")
         .eq("profile_id", userId);
 
+      const views = await fetchMyProfileViews();
+
       const totalRequests = requests?.length || 0;
       const pendingRequests = requests?.filter((r) => r.status === "pending" || r.status === "offered").length || 0;
       const acceptedRequests = requests?.filter((r) => r.status === "accepted").length || 0;
@@ -75,6 +79,7 @@ const ArtistAnalytics = () => {
         rejectedRequests,
         bookedEvents,
         blockedDates,
+        profileViews: views?.last30 ?? 0,
       });
     } catch (error) {
       console.error("Failed to load analytics:", error);
@@ -84,6 +89,13 @@ const ArtistAnalytics = () => {
   };
 
   const statCards = [
+    {
+      label: "Profile Views (30 days)",
+      value: stats.profileViews,
+      icon: Eye,
+      color: "text-accent",
+      bg: "bg-accent/10",
+    },
     {
       label: "Total Requests",
       value: stats.totalRequests,

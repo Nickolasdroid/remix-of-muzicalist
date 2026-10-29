@@ -6,6 +6,7 @@ import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
+import { recordProfileView } from "@/lib/profileViews";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import { useTranslation } from "react-i18next";
@@ -329,6 +330,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     checkAuth();
   }, []);
   useEffect(() => { if (id && view !== "reviews") trackActivityEvent("artist_profile_view"); }, [id, view]);
+  // Count the visit for the artist's own view counter (server dedupes per visitor per day).
+  useEffect(() => { if (artist?.id && view !== "reviews") recordProfileView(artist.id); }, [artist?.id, view]);
 
   useEffect(() => {
     const fetchArtistData = async () => {
