@@ -629,6 +629,15 @@ interface ArtistRating {
 interface ArtistReviewCount {
   [key: string]: number;
 }
+
+/** Empty state per category: the leaderboard only lists artists with at least one review. */
+const EMPTY_COPY: Record<string, { title: string; cta: string; path: string }> = {
+  singers: { title: "No reviewed singers yet", cta: "See all singers", path: "Singers" },
+  instrumentalists: { title: "No reviewed instrumentalists yet", cta: "See all instrumentalists", path: "Instrumentalists" },
+  djs: { title: "No reviewed DJs yet", cta: "See all DJs", path: "DJs" },
+  bands: { title: "No reviewed bands yet", cta: "See all bands", path: "Bands" },
+};
+
 const Leaderboard = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -796,7 +805,7 @@ const Leaderboard = () => {
 
   return <div className="min-h-screen md:ml-64 bg-background relative">
       <SEO title="Top Rated Artists — Leaderboard | Muzicalist" description="See the highest-rated musical artists on Muzicalist, ranked by client reviews and engagement. Find proven performers for your next event." path="/leaderboard" />
-      <Navigation />
+      <Navigation hideMobileNotifications />
       
       <div className="relative z-10 pt-16 md:pt-8 pb-6 md:pb-20 px-0">
         <div className="px-4 md:container md:mx-auto">
@@ -818,9 +827,9 @@ const Leaderboard = () => {
               {isMobile ? (
                 <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
                   <DrawerTrigger asChild>
-                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
-                      {selectedCounty}
-                      <ChevronDown className="ml-2 h-4 w-4" />
+                    <Button variant="outline" className="h-10 w-auto min-w-[180px] justify-between px-4 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0" />
                     </Button>
                   </DrawerTrigger>
                   <DrawerContent className="px-4 pb-6">
@@ -850,9 +859,9 @@ const Leaderboard = () => {
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-auto min-w-[180px] justify-between">
-                      {selectedCounty}
-                      <ChevronDown className="ml-2 h-4 w-4" />
+                    <Button variant="outline" className="h-10 w-auto min-w-[180px] justify-between px-4 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
+                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
@@ -870,19 +879,19 @@ const Leaderboard = () => {
           <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
               <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
-              <TabsTrigger value="singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
+              <TabsTrigger value="singers" aria-label="Singers" title="Singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Mic className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Singers</span>
                 </TabsTrigger>
-                <TabsTrigger value="instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
+                <TabsTrigger value="instrumentalists" aria-label="Instrumentalists" title="Instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Guitar className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Instrumentalists</span>
                 </TabsTrigger>
-                <TabsTrigger value="djs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
+                <TabsTrigger value="djs" aria-label="DJs" title="DJs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <Headphones className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">DJs</span>
                 </TabsTrigger>
-                <TabsTrigger value="bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
+                <TabsTrigger value="bands" aria-label="Bands" title="Bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
                   <BandIcon size={20} className="h-5 w-5 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Bands</span>
                 </TabsTrigger>
@@ -1026,9 +1035,24 @@ const Leaderboard = () => {
                     <Loader2 className="h-5 w-5 animate-spin text-accent" />
                   </div>
                 )}
-              </> : <div className="text-center py-16">
-                <p className="text-lg md:text-xl text-muted-foreground">No artists found in this category</p>
-              </div>}
+              </> : (
+                <div className="flex flex-col items-center px-6 py-14 text-center">
+                  <div className="mb-4 rounded-2xl bg-accent/10 p-3">
+                    <Trophy className="h-7 w-7 text-accent" aria-hidden="true" />
+                  </div>
+                  <p className="text-base md:text-lg font-semibold text-foreground">{EMPTY_COPY[selectedCategory]?.title ?? "No reviewed artists yet"}</p>
+                  <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+                    The leaderboard ranks artists by verified reviews from completed bookings.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-5 h-10 px-4 border-accent/20 hover:bg-accent/10 hover:border-accent"
+                    onClick={() => navigate(`/categories/${EMPTY_COPY[selectedCategory]?.path ?? "Singers"}${selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : ""}`)}
+                  >
+                    {EMPTY_COPY[selectedCategory]?.cta ?? "See all artists"}
+                  </Button>
+                </div>
+              )}
           </div>
         </div>
       </div>
