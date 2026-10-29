@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { getCountryName } from "@/lib/countryFlags";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
@@ -179,7 +180,7 @@ const Search = () => {
               <Input
                 ref={inputRef}
                 type="search"
-                placeholder={isAIMode ? "E.g. rock band for a wedding in Cluj" : "Search artists..."}
+                placeholder={isAIMode ? "E.g. rock band for a wedding" : "Search artists..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
@@ -238,28 +239,23 @@ const Search = () => {
           </form>
           )}
 
-          {/* Search mode: by name or ask AI */}
-          <div className="px-4 md:px-0 mt-2 md:mt-3 mb-4">
-            <div role="tablist" aria-label="Search mode" className="inline-flex rounded-full bg-muted p-1">
-              {[
-                { ai: false, label: "By name", icon: SearchIcon },
-                { ai: true, label: "Ask AI", icon: Sparkles },
-              ].map((opt) => (
-                <button
-                  key={opt.label}
-                  type="button"
-                  role="tab"
-                  aria-selected={isAIMode === opt.ai}
-                  onClick={() => { if (isAIMode !== opt.ai) toggleAIMode(); }}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs md:text-sm font-medium transition-colors ${
-                    isAIMode === opt.ai ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <opt.icon className="h-3.5 w-3.5" aria-hidden="true" />
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+          {/* AI search on/off */}
+          <div className="px-4 md:px-0 mt-3 mb-4">
+            <label
+              htmlFor="ai-search-switch"
+              className={`inline-flex cursor-pointer items-center gap-2.5 rounded-full border px-3 py-1.5 transition-colors ${
+                isAIMode ? "border-accent/40 bg-accent/10" : "border-border bg-muted/40 hover:bg-muted"
+              }`}
+            >
+              <Sparkles className={`h-4 w-4 ${isAIMode ? "text-accent" : "text-muted-foreground"}`} aria-hidden="true" />
+              <span className={`text-sm font-medium ${isAIMode ? "text-foreground" : "text-muted-foreground"}`}>AI Search</span>
+              <Switch
+                id="ai-search-switch"
+                checked={isAIMode}
+                onCheckedChange={(on) => { if (on !== isAIMode) toggleAIMode(); }}
+                className="h-5 w-9 data-[state=checked]:bg-accent data-[state=unchecked]:bg-muted-foreground/40 [&>span]:h-4 [&>span]:w-4 [&>span]:bg-white [&>span]:data-[state=checked]:translate-x-4"
+              />
+            </label>
           </div>
 
           {/* AI Response */}
