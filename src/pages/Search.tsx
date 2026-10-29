@@ -158,8 +158,8 @@ const Search = () => {
 
       {/* Mobile: Custom search header */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background md:hidden">
-          <form onSubmit={handleSubmit} className="flex items-center gap-3 h-16 px-3">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 h-14 px-4">
             <button
               type="button"
               onClick={() => {
@@ -169,17 +169,17 @@ const Search = () => {
                 inputRef.current?.blur();
                 goBack(navigate, "/feed");
               }}
-              className="flex-shrink-0 h-10 w-10 rounded-full bg-muted flex items-center justify-center text-foreground hover:bg-muted/80 transition-colors"
+              className="-ml-1 flex-shrink-0 p-2 text-foreground/80 hover:text-accent transition-colors"
               aria-label="Back"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-6 w-6" />
             </button>
             <div className="relative flex-1">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
                 ref={inputRef}
                 type="search"
-                placeholder={isAIMode ? "AI Search..." : "Search artists..."}
+                placeholder={isAIMode ? "E.g. rock band for a wedding in Cluj" : "Search artists..."}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onFocus={() => setIsFocused(true)}
@@ -202,7 +202,7 @@ const Search = () => {
         </div>
       )}
       
-      <main className="pt-16 pb-20 md:pt-2 md:pb-8 md:pl-64">
+      <main className="pt-14 pb-20 md:pt-2 md:pb-8 md:pl-64">
         <div className="max-w-2xl mx-auto py-2 md:py-8 px-0">
           {/* Desktop Search Input */}
           {!isMobile && (
@@ -238,18 +238,29 @@ const Search = () => {
           </form>
           )}
 
-          {/* AI Toggle */}
-          <button
-            onClick={toggleAIMode}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all mb-4 ${
-              isAIMode
-                ? "bg-accent/15 text-accent border border-accent/30"
-                : "bg-muted/50 text-muted-foreground hover:bg-muted border border-transparent"
-            }`}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span data-no-translate>AI Search {isAIMode ? "ON" : "OFF"}</span>
-          </button>
+          {/* Search mode: by name or ask AI */}
+          <div className="px-4 md:px-0 mt-2 md:mt-3 mb-4">
+            <div role="tablist" aria-label="Search mode" className="inline-flex rounded-full bg-muted p-1">
+              {[
+                { ai: false, label: "By name", icon: SearchIcon },
+                { ai: true, label: "Ask AI", icon: Sparkles },
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  type="button"
+                  role="tab"
+                  aria-selected={isAIMode === opt.ai}
+                  onClick={() => { if (isAIMode !== opt.ai) toggleAIMode(); }}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs md:text-sm font-medium transition-colors ${
+                    isAIMode === opt.ai ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <opt.icon className="h-3.5 w-3.5" aria-hidden="true" />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* AI Response */}
           {isAIMode && (aiResponse || aiArtists.length > 0) && (
