@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, Lock, Mail, MoreHorizontal, PartyPopper, Phone } from "lucide-react";
+import { CalendarDays, Lock, Mail, PartyPopper, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -137,13 +130,13 @@ const BookingDetailsDialog = ({
     return new Date(y, m - 1, d) >= today;
   })();
 
-  // ••• menu
-  const menu: { key: PendingAction; label: string }[] = [];
+  // Footer action: at most one (cancel or delete), shown as a plain text button, confirmed in a dialog.
+  let secondaryAction: { key: Exclude<PendingAction, null>; label: string } | null = null;
   if (viewer === "artist") {
-    if (status === "accepted" && isFuture) menu.push({ key: "artist_cancel", label: "Cancel booking" });
-    if (contractLoaded && !contract && status !== "accepted") menu.push({ key: "delete", label: "Delete request" });
+    if (status === "accepted" && isFuture) secondaryAction = { key: "artist_cancel", label: "Cancel booking" };
+    else if (contractLoaded && !contract && status !== "accepted") secondaryAction = { key: "delete", label: "Delete request" };
   } else if (status === "pending" || status === "offered" || (status === "accepted" && isFuture)) {
-    menu.push({ key: "requester_cancel", label: status === "accepted" ? "Cancel booking" : "Cancel request" });
+    secondaryAction = { key: "requester_cancel", label: status === "accepted" ? "Cancel booking" : "Cancel request" };
   }
 
   const confirmCopy: Record<Exclude<PendingAction, null>, { title: string; body: string; cta: string }> = {
@@ -351,25 +344,14 @@ const BookingDetailsDialog = ({
                 </>
               )}
             </span>
-            {menu.length > 0 && (
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" aria-label="More actions">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-lg">
-                  {menu.map((m) => (
-                    <DropdownMenuItem
-                      key={m.key}
-                      className="text-destructive focus:text-destructive"
-                      onSelect={() => setConfirmAction(m.key)}
-                    >
-                      {m.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {secondaryAction && (
+              <button
+                type="button"
+                onClick={() => setConfirmAction(secondaryAction.key)}
+                className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
+              >
+                {secondaryAction.label}
+              </button>
             )}
           </div>
         </DialogContent>
