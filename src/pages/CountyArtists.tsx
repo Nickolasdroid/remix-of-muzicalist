@@ -103,7 +103,7 @@ const CountyArtists = () => {
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO title={`${county} — Musical Artists for Hire | Muzicalist`} description={`Find and book singers, bands, DJs and instrumentalists in ${county}. Compare profiles, reviews, prices and availability on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}`} />
-      <Navigation mobileTitle={county} mobileBackPath="/counties" />
+      <Navigation mobileTitle={county} mobileBackPath="/counties" hideMobileNotifications />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
         <div className="hidden md:flex items-center justify-between mb-6 md:mb-8">

@@ -88,7 +88,7 @@ const CountySpecializationArtists = () => {
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO title={`${specialization} in ${county} — Book Now | Muzicalist`} description={`Browse and book the best ${specialization?.toLowerCase()} in ${county}. See reviews, prices and availability, then send a booking request on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}/${encodeURIComponent(specialization ?? "")}`} />
-      <Navigation mobileTitle={county} mobileBackPath={`/counties/${county}`} />
+      <Navigation mobileTitle={county} mobileBackPath={`/counties/${county}`} hideMobileNotifications />
       
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-6 md:pb-20">
         <div className="hidden md:flex items-center justify-between mb-6 md:mb-8">

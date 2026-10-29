@@ -359,7 +359,7 @@ const CategoryArtists = () => {
         description={`Browse and book the best ${category?.toLowerCase()} on Muzicalist. Compare profiles, reviews, prices and availability, then send a booking request in minutes.`}
         path={`/categories/${encodeURIComponent(category ?? "")}`}
       />
-      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} />
+      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
         <div className={`${currentUserId ? "hidden" : "flex"} md:flex items-center justify-between mb-4 md:mb-12`}>

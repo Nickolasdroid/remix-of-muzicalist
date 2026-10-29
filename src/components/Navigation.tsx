@@ -37,6 +37,11 @@ interface NavigationProps {
   mobileAction?: React.ReactNode;
   /** Extra mobile header action shown before the notifications bell (e.g. a filter icon). */
   mobileExtraAction?: React.ReactNode;
+  /**
+   * Hides the mobile notifications bell for signed-in users. Used on artist list pages so
+   * the header doesn't pull attention away from the profiles; guests keep login/register.
+   */
+  hideMobileNotifications?: boolean;
 }
 
 /** Reserves body space for the fixed mobile bottom bar while it is rendered. */
@@ -49,7 +54,7 @@ const BottomNavSpacer = ({ active }: { active: boolean }) => {
   return null;
 };
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction, hideMobileNotifications }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -536,7 +541,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
           <div className="ml-auto flex shrink-0 items-center gap-1" aria-label={!user && !mobileAction ? t('navigation.authActions', 'Authentication') : undefined}>
             {!mobileAction && mobileExtraAction}
-            {mobileAction ? mobileAction : user ? (
+            {mobileAction ? mobileAction : user && hideMobileNotifications ? null : user ? (
               <button
                 onClick={() => navigate('/notifications')}
                 onMouseEnter={() => preloadForPath('/notifications')}
