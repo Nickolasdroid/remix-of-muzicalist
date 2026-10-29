@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
 import { ArrowLeft, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
@@ -111,17 +112,37 @@ const FilterContent = ({
   </div>
 );
 
-const FilterButton = (props: FilterButtonProps) => {
+/** Filters that narrow the list (sorting is not counted). */
+const activeFilterCount = (props: FilterButtonProps) =>
+  [props.filterCountry, props.filterCounty].filter((v) => v && v !== "all").length;
+
+/**
+ * Mobile: a filter icon in the top bar (next to the bell) that opens a drawer.
+ * Desktop: the outlined "Filter" button with a popover, in the page header row.
+ */
+const FilterButton = (props: FilterButtonProps & { placement: "header" | "page"; mobileInHeader: boolean }) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
+    // Signed-in: icon in the top bar next to the bell. Guests: the top bar holds the
+    // login/register buttons, so the outlined button stays on the page.
+    if ((props.placement === "header") !== props.mobileInHeader) return null;
     return (
       <Drawer>
         <DrawerTrigger asChild>
-          <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-            <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-            Filter
-          </Button>
+          {props.mobileInHeader ? (
+            <HeaderFilterTrigger activeCount={activeFilterCount(props)} />
+          ) : (
+            <Button variant="outline" size="sm" className="text-xs h-9 px-3">
+              <Filter className="h-3 w-3 mr-1" />
+              Filter
+              {activeFilterCount(props) > 0 && (
+                <span className="ml-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
+                  {activeFilterCount(props)}
+                </span>
+              )}
+            </Button>
+          )}
         </DrawerTrigger>
         <DrawerContent className="px-4 pb-6">
           <DrawerHeader className="text-left px-0">
@@ -133,6 +154,8 @@ const FilterButton = (props: FilterButtonProps) => {
       </Drawer>
     );
   }
+
+  if (props.placement !== "page") return null;
 
   return (
     <Popover>
@@ -327,6 +350,8 @@ const CategoryArtists = () => {
     return result;
   }, [artists, filterCountry, filterCounty, sortOrder]);
 
+  const filterProps = { filterCountry, setFilterCountry, filterCounty, setFilterCounty, sortOrder, setSortOrder, countries: availableCountries, counties: filteredCounties };
+
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO
@@ -334,10 +359,10 @@ const CategoryArtists = () => {
         description={`Browse and book the best ${category?.toLowerCase()} on Muzicalist. Compare profiles, reviews, prices and availability, then send a booking request in minutes.`}
         path={`/categories/${encodeURIComponent(category ?? "")}`}
       />
-      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} />
+      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
-        <div className="flex items-center justify-between mb-8 md:mb-12">
+        <div className={`${currentUserId ? "hidden" : "flex"} md:flex items-center justify-between mb-4 md:mb-12`}>
           <Link to={currentUserId ? "/categories" : "/"} className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
@@ -349,16 +374,7 @@ const CategoryArtists = () => {
             {category}
           </h1>
 
-          <FilterButton 
-            filterCountry={filterCountry}
-            setFilterCountry={setFilterCountry}
-            filterCounty={filterCounty}
-            setFilterCounty={setFilterCounty}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-            countries={availableCountries}
-            counties={filteredCounties}
-          />
+          <FilterButton placement="page" mobileInHeader={!!currentUserId} {...filterProps} />
         </div>
 
         {urlDate && (

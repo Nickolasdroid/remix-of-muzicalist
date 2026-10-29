@@ -35,6 +35,8 @@ interface NavigationProps {
   hideMobileHeader?: boolean;
   /** Replaces the right-side mobile header actions (e.g. a page CTA). */
   mobileAction?: React.ReactNode;
+  /** Extra mobile header action shown before the notifications bell (e.g. a filter icon). */
+  mobileExtraAction?: React.ReactNode;
 }
 
 /** Reserves body space for the fixed mobile bottom bar while it is rendered. */
@@ -47,7 +49,7 @@ const BottomNavSpacer = ({ active }: { active: boolean }) => {
   return null;
 };
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -533,6 +535,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
           {/* Right: Auth buttons (logged out) or Notifications (logged in) */}
           <div className="ml-auto flex shrink-0 items-center gap-1" aria-label={!user && !mobileAction ? t('navigation.authActions', 'Authentication') : undefined}>
+            {!mobileAction && mobileExtraAction}
             {mobileAction ? mobileAction : user ? (
               <button
                 onClick={() => navigate('/notifications')}

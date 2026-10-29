@@ -5,6 +5,7 @@ import { sortByPlanPriority } from "@/lib/planLimits";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, Filter } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
@@ -111,17 +112,37 @@ const FilterContent = ({
   </div>
 );
 
-const FilterButton = (props: FilterButtonProps) => {
+/** Filters that narrow the list (sorting is not counted). */
+const activeFilterCount = (props: FilterButtonProps) =>
+  [props.filterCategory, props.filterCounty].filter((v) => v && v !== "all").length;
+
+/**
+ * Mobile: a filter icon in the top bar (next to the bell) that opens a drawer.
+ * Desktop: the outlined "Filter" button with a popover, in the page header row.
+ */
+const FilterButton = (props: FilterButtonProps & { placement: "header" | "page"; mobileInHeader: boolean }) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
+    // Signed-in: icon in the top bar next to the bell. Guests: the top bar holds the
+    // login/register buttons, so the outlined button stays on the page.
+    if ((props.placement === "header") !== props.mobileInHeader) return null;
     return (
       <Drawer>
         <DrawerTrigger asChild>
-          <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-            <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-            Filter
-          </Button>
+          {props.mobileInHeader ? (
+            <HeaderFilterTrigger activeCount={activeFilterCount(props)} />
+          ) : (
+            <Button variant="outline" size="sm" className="text-xs h-9 px-3">
+              <Filter className="h-3 w-3 mr-1" />
+              Filter
+              {activeFilterCount(props) > 0 && (
+                <span className="ml-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
+                  {activeFilterCount(props)}
+                </span>
+              )}
+            </Button>
+          )}
         </DrawerTrigger>
         <DrawerContent className="px-4 pb-6">
           <DrawerHeader className="text-left px-0">
@@ -133,6 +154,8 @@ const FilterButton = (props: FilterButtonProps) => {
       </Drawer>
     );
   }
+
+  if (props.placement !== "page") return null;
 
   return (
     <Popover>
@@ -284,13 +307,15 @@ const CountryArtists = () => {
     return result;
   }, [artists, searchTerm, filterCategory, filterCounty, sortOrder, urlDate, bookedArtistIds]);
 
+  const filterProps = { filterCategory, setFilterCategory, filterCounty, setFilterCounty, sortOrder, setSortOrder, counties };
+
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
       <SEO title={`${country} — Book Musical Artists | Muzicalist`} description={`Discover singers, bands, DJs and instrumentalists in ${country}. Compare profiles and book the perfect artist for your event on Muzicalist.`} path={`/countries/${encodeURIComponent(country ?? "")}`} />
-      <Navigation mobileTitle={displayName} mobileBackPath="/countries" />
+      <Navigation mobileTitle={displayName} mobileBackPath="/countries" mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} />
       
       <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
-        <div className="flex items-center justify-between mb-6 md:mb-8">
+        <div className={`${currentUserId ? "hidden" : "flex"} md:flex items-center justify-between mb-4 md:mb-8`}>
           <Link to="/countries" className="hidden md:block">
             <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
               <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
@@ -307,15 +332,7 @@ const CountryArtists = () => {
             <p className="md:hidden absolute left-1/2 -translate-x-1/2 text-sm text-muted-foreground pointer-events-none">
               {`${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''}`}
             </p>
-            <FilterButton 
-              filterCategory={filterCategory}
-              setFilterCategory={setFilterCategory}
-              filterCounty={filterCounty}
-              setFilterCounty={setFilterCounty}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-              counties={counties}
-            />
+            <FilterButton placement="page" mobileInHeader={!!currentUserId} {...filterProps} />
           </div>
         </div>
 
