@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import BookingRequestCard from "@/components/BookingRequestCard";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar as CalendarIcon, ArrowLeft, Loader2 } from "lucide-react";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
@@ -155,16 +155,6 @@ const BookingRequests = () => {
   }, [requests]);
 
 
-  const formatDate = (dateStr: string) => {
-    const [year, month, day] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   const declineRequest = async (id: string) => {
     setIsSaving(true);
     const { error } = await supabase
@@ -192,28 +182,6 @@ const BookingRequests = () => {
     setOpen(false);
     load();
   };
-
-  const statusBadgeClass = (cat: string) =>
-    cat === "pending"
-      ? "bg-yellow-500/20 text-yellow-600 border-yellow-500/30 rounded-lg"
-      : cat === "accepted"
-      ? "bg-emerald-500/20 text-emerald-500 border-emerald-500/30 rounded-lg"
-      : cat === "completed"
-      ? "bg-blue-500/20 text-blue-500 border-blue-500/30 rounded-lg"
-      : "bg-destructive/20 text-destructive border-destructive/30 rounded-lg";
-
-  const statusLabel = (cat: string, r?: any) =>
-    r?.status === "offered"
-      ? isUserView
-        ? "Offer received"
-        : "Offer sent"
-      : cat === "pending"
-      ? "Pending"
-      : cat === "accepted"
-      ? "Confirmed"
-      : cat === "completed"
-      ? "Completed"
-      : "Cancelled";
 
   const setFilter = (f: FilterKey) => {
     const next = new URLSearchParams(searchParams);
@@ -317,7 +285,7 @@ const BookingRequests = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {filtered.map((request) => {
                 const cat = categorize(request);
                 const artist = isUserView ? artistProfiles[request.profile_id] : null;
@@ -325,30 +293,16 @@ const BookingRequests = () => {
                   ? artist?.stage_name || "Artist"
                   : request.requester_name;
                 return (
-                  <Card
+                  <BookingRequestCard
                     key={request.id}
-                    className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer rounded-lg"
+                    booking={request}
+                    viewer={isUserView ? "requester" : "artist"}
+                    counterpartName={primaryName}
                     onClick={() => {
                       setSelected(request);
                       setOpen(true);
                     }}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <p className="font-semibold text-foreground truncate">{primaryName}</p>
-                        <Badge className={statusBadgeClass(cat)}>{statusLabel(cat, request)}</Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{formatDate(request.event_date)}</span>
-                        {request.event_type && (
-                          <>
-                            <span>·</span>
-                            <span>{request.event_type}</span>
-                          </>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  />
                 );
               })}
             </div>

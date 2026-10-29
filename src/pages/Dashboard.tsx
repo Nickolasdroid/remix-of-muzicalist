@@ -33,6 +33,8 @@ import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManag
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
+import BookingRequestCard from "@/components/BookingRequestCard";
+import { sortBookingsForPreview } from "@/lib/bookingDisplay";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
@@ -3074,50 +3076,29 @@ const Dashboard = () => {
                                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
-                              </Card> : <div className="space-y-3">
-                                {bookingRequests.map((request) => <Card key={request.id} className="border-border/50 hover:border-accent/50 transition-colors cursor-pointer" onClick={() => {
-                      setSelectedBookingRequest(request);
-                      setShowBookingDetailDialog(true);
-                    }}>
-                                    <CardContent className="p-4">
-                                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
-                                        <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                                          <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 flex-wrap mb-1">
-                                              <p className="font-semibold text-foreground truncate">{request.requester_name}</p>
-                                              <Badge className={request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30' : request.status === 'offered' ? 'bg-accent/15 text-accent border-accent/30' : request.status === 'accepted' ? 'bg-green-500/20 text-green-600 border-green-500/30' : 'bg-destructive/20 text-destructive border-destructive/30'}>
-                                                {request.status === 'pending' ? 'Pending' : request.status === 'offered' ? 'Offer sent' : request.status === 'accepted' ? 'Accepted' : 'Declined'}
-                                              </Badge>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                              <span>{(() => {
-                                    const [year, month, day] = request.event_date.split('-').map(Number);
-                                    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-                                      weekday: 'short',
-                                      month: 'short',
-                                      day: 'numeric',
-                                      year: 'numeric'
-                                    });
-                                  })()}</span>
-                                              {request.event_type && <>
-                                                  <span>·</span>
-                                                  <span>{request.event_type}</span>
-                                                </>}
-                                            </div>
-                                          </div>
-                                        </div>
-                                        
-                                        {request.status === 'pending' && <div className="flex gap-2 w-full md:w-auto" onClick={(e) => e.stopPropagation()}>
-                                            <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 md:flex-none bg-accent text-accent-foreground hover:bg-accent/90">
-                                              Send offer
-                                            </Button>
-                                            <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1 md:flex-none">
-                                              Decline
-                                            </Button>
-                                          </div>}
-                                      </div>
-                                    </CardContent>
-                                  </Card>)}
+                              </Card> : <div className="space-y-2.5">
+                                {sortBookingsForPreview(bookingRequests).slice(0, 5).map((request) => (
+                                  <BookingRequestCard
+                                    key={request.id}
+                                    booking={request}
+                                    viewer="artist"
+                                    counterpartName={request.requester_name}
+                                    onClick={() => {
+                                      setSelectedBookingRequest(request);
+                                      setShowBookingDetailDialog(true);
+                                    }}
+                                    actions={request.status === 'pending' ? (
+                                      <>
+                                        <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
+                                          Send offer
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1">
+                                          Decline
+                                        </Button>
+                                      </>
+                                    ) : undefined}
+                                  />
+                                ))}
                               </div>}
                           </div>
 

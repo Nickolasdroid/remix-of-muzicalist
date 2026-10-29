@@ -35,8 +35,25 @@ export const bookingStatusLabel = (k: BookingStatusKey, viewer: "artist" | "requ
   }
 };
 
-export const bookingStatusTone = (k: BookingStatusKey): "amber" | "green" | "blue" | "red" =>
-  k === "confirmed" ? "green" : k === "completed" ? "blue" : k === "cancelled" ? "red" : "amber";
+export type BookingTone = "amber" | "green" | "blue" | "muted";
+
+/**
+ * Amber = needs the artist, blue = waiting on the organizer, green = confirmed.
+ * Completed and cancelled are closed states, so they stay neutral (never red).
+ */
+export const bookingStatusTone = (k: BookingStatusKey): BookingTone =>
+  k === "pending" ? "amber" : k === "offered" ? "blue" : k === "confirmed" ? "green" : "muted";
+
+/** Status pill colors, shared by the booking cards and the booking details dialog. */
+export const BOOKING_TONE_CLASS: Record<BookingTone, string> = {
+  amber: "bg-amber-500/15 text-amber-400",
+  green: "bg-emerald-500/15 text-emerald-400",
+  blue: "bg-sky-500/15 text-sky-400",
+  muted: "bg-muted text-muted-foreground",
+};
+
+/** Closed bookings (completed / cancelled) sit visually behind the ones that are still open. */
+export const isClosedBooking = (k: BookingStatusKey) => k === "completed" || k === "cancelled";
 
 /** Request messages start with "Time: <start> - <end>" — returns the rest. */
 export const messageWithoutTime = (message?: string | null) => {
@@ -89,3 +106,18 @@ export const formatBookingWhen = (
     endsOn: end ? end.toLocaleDateString(locale, { day: "numeric", month: "short" }) : null,
   };
 };
+
+const PREVIEW_ORDER: Record<BookingStatusKey, number> = { pending: 0, offered: 1, confirmed: 2, completed: 3, cancelled: 4 };
+
+/**
+ * Dashboard preview order: requests waiting for the artist first, then open offers and
+ * confirmed events (soonest first), then closed ones (most recent first).
+ */
+export const sortBookingsForPreview = <T extends Pick<BookingOfferFields, "status" | "event_date" | "event_end_date">>(list: T[]): T[] =>
+  [...list].sort((a, b) => {
+    const ka = bookingStatusKey(a);
+    const kb = bookingStatusKey(b);
+    if (PREVIEW_ORDER[ka] !== PREVIEW_ORDER[kb]) return PREVIEW_ORDER[ka] - PREVIEW_ORDER[kb];
+    const cmp = a.event_date.localeCompare(b.event_date);
+    return isClosedBooking(ka) ? -cmp : cmp;
+  });

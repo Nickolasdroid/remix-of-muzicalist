@@ -35,6 +35,7 @@ import {
   bookingStatusKey,
   bookingStatusLabel,
   bookingStatusTone,
+  BOOKING_TONE_CLASS,
   formatBookingWhen,
   messageWithoutTime,
 } from "@/lib/bookingDisplay";
@@ -64,12 +65,6 @@ export interface BookingDetailsDialogProps {
 
 type PendingAction = "artist_decline" | "artist_cancel" | "delete" | "requester_cancel" | null;
 
-const toneClass: Record<string, string> = {
-  amber: "bg-amber-500/15 text-amber-400",
-  green: "bg-emerald-500/15 text-emerald-400",
-  blue: "bg-sky-500/15 text-sky-400",
-  red: "bg-destructive/15 text-destructive",
-};
 
 /**
  * One booking, both sides. Used by the Booking Requests page and the artist Dashboard.
@@ -236,7 +231,7 @@ const BookingDetailsDialog = ({
               <DialogDescription className="sr-only">Booking details</DialogDescription>
             </div>
             <span
-              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${toneClass[bookingStatusTone(statusKey)]}`}
+              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
             >
               {bookingStatusLabel(statusKey, viewer)}
             </span>
