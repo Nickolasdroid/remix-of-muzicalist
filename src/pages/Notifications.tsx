@@ -146,6 +146,10 @@ const Notifications = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  // Notifications that were unread when this visit started (or arrived during it).
+  // They stay highlighted for this visit only; in the database they are marked read
+  // as soon as the page opens, like Facebook/Instagram.
+  const [freshIds, setFreshIds] = useState<Set<string>>(new Set());
   const [dictReady, setDictReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -187,7 +191,21 @@ const Notifications = () => {
       const { data } = await supabase
         .from("notifications").select("*").eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
-      if (data) setNotifications(data);
+      if (data) {
+        const unreadIds = data.filter((n) => !n.read_at).map((n) => n.id);
+        setFreshIds(new Set(unreadIds));
+        if (unreadIds.length > 0) {
+          const now = new Date().toISOString();
+          setNotifications(data.map((n) => (n.read_at ? n : { ...n, read_at: now })));
+          await supabase
+            .from("notifications")
+            .update({ read_at: now })
+            .eq("user_id", session.user.id)
+            .is("read_at", null);
+        } else {
+          setNotifications(data);
+        }
+      }
       setLoading(false);
     };
     init();
@@ -221,7 +239,14 @@ const Notifications = () => {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        (payload) => setNotifications((prev) => [payload.new as Notification, ...prev])
+        (payload) => {
+          // Arrived while the page is open: seen now, highlighted for this visit
+          const n = payload.new as Notification;
+          const now = new Date().toISOString();
+          setFreshIds((prev) => new Set(prev).add(n.id));
+          setNotifications((prev) => [{ ...n, read_at: n.read_at ?? now }, ...prev]);
+          if (!n.read_at) void supabase.from("notifications").update({ read_at: now }).eq("id", n.id);
+        }
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -366,7 +391,7 @@ const Notifications = () => {
           style={{ transform: `translateX(${offset}px)` }}
           className={cn(
             "relative flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-colors select-none",
-            !n.read_at
+            freshIds.has(n.id)
               ? "bg-notification-unread hover:bg-notification-unread-hover active:bg-notification-unread-hover"
               : "bg-background hover:bg-notification-unread active:bg-notification-unread-hover",
           )}
@@ -414,7 +439,7 @@ const Notifications = () => {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className={cn("text-sm leading-snug", !n.read_at ? "text-foreground" : "text-muted-foreground")}>
+            <p className={cn("text-sm leading-snug", freshIds.has(n.id) ? "text-foreground" : "text-muted-foreground")}>
               {n.actor_name &&
                 (canOpenProfile ? (
                   <button
@@ -443,7 +468,7 @@ const Notifications = () => {
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 mt-1">
-            {!n.read_at && (
+            {freshIds.has(n.id) && (
               <div className="h-2.5 w-2.5 rounded-full bg-accent" aria-label="unread" />
             )}
             {isMobile ? (

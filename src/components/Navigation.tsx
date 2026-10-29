@@ -292,8 +292,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         return;
       }
 
-      // Opening the page acknowledges the menu badge only. Individual
-      // notifications remain unread until the user opens them.
+      // Opening the page marks every notification as read (Notifications.tsx),
+      // so the badge clears here and stays clear on the next visit.
       if (location.pathname === '/notifications') {
         localStorage.setItem(`muzicalist-notifications-seen:${user.id}`, new Date().toISOString());
         setUnreadNotifications(0);
