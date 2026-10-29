@@ -25,8 +25,6 @@ import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import ExpandableText from "@/components/ExpandableText";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
-import FollowingManageDialog from "@/components/FollowingManageDialog";
-import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
 import { entitlementErrorMessage } from "@/lib/entitlements";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
@@ -493,8 +491,8 @@ const UserDashboard = () => {
                     className="mx-4 md:mx-0 mt-3 md:mt-4"
                     followersCount={followersCount}
                     followingCount={followingCount}
-                    onFollowersClick={() => setShowFollowersDialog(true)}
-                    onFollowingClick={() => setShowFollowingDialog(true)}
+                    onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
+                    onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
                   />
                 </div>
 
@@ -639,22 +637,6 @@ const UserDashboard = () => {
                 onPublished={() => loadAnnouncements()}
               />
 
-              {user && (
-                <>
-                  <FollowingManageDialog
-                    open={showFollowingDialog}
-                    onOpenChange={setShowFollowingDialog}
-                    userId={user.id}
-                    onChanged={setFollowingCount}
-                  />
-                  <FollowListDialog
-                    open={showFollowersDialog}
-                    onOpenChange={setShowFollowersDialog}
-                    profileId={user.id}
-                    mode="followers"
-                  />
-                </>
-              )}
             </>
           );
         })()}

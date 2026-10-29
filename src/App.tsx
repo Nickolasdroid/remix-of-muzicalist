@@ -47,6 +47,7 @@ const PrivacyPolicy = lazyWithPreload(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazyWithPreload(() => import("./pages/TermsOfService"));
 const AllArtists = lazyWithPreload(() => import("./pages/AllArtists"));
 const ArtistAnalytics = lazyWithPreload(() => import("./pages/ArtistAnalytics"));
+const Connections = lazyWithPreload(() => import("./pages/Connections"));
 const PlansPricing = lazyWithPreload(() => import("./pages/PlansPricing"));
 const MyPlan = lazyWithPreload(() => import("./pages/MyPlan"));
 const HelpSupport = lazyWithPreload(() => import("./pages/HelpSupport"));
@@ -165,6 +166,7 @@ const App = () => (
             <Route path="/search" element={<Search />} />
             <Route path="/artists" element={<AllArtists />} />
             <Route path="/analytics" element={<ArtistAnalytics />} />
+            <Route path="/connections/:profileId" element={<Connections />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/plans" element={<PlansPricing />} />

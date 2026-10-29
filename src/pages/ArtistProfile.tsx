@@ -61,7 +61,6 @@ import { getReviewDisplayLimit, getVisibleSocialLinks, canSetEstimatedPrice, isF
 import PostActionsMenu from "@/components/PostActionsMenu";
 import ReportContentDialog, { ReportableType } from "@/components/ReportContentDialog";
 import { getCoverGradient } from "@/lib/coverThemes";
-import FollowListDialog from "@/components/FollowListDialog";
 import SocialStats from "@/components/SocialStats";
 import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
@@ -267,7 +266,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   // resolver effect doesn't overwrite the optimistic state before the
   // insert/delete has propagated (which caused the button to revert).
   const lastFollowActionRef = useRef<number>(0);
-  const [followListMode, setFollowListMode] = useState<"followers" | "following" | null>(null);
+  // Followers / Following open on their own page (Instagram-style)
+  const openConnections = (tab: "followers" | "following") => {
+    const target = artist?.id || id;
+    if (target) navigate(`/connections/${target}?tab=${tab}`);
+  };
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
   const [responseRate, setResponseRate] = useState<number | null>(null);
@@ -985,20 +988,14 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
             isFollowing={isFollowing}
             isOwnProfile={isOwnProfile}
             onFollowToggle={handleFollowToggle}
-            onFollowersClick={() => setFollowListMode("followers")}
-            onFollowingClick={() => setFollowListMode("following")}
+            onFollowersClick={() => openConnections("followers")}
+            onFollowingClick={() => openConnections("following")}
             onPostLike={handlePostLike}
             onComments={(cid, type) => setCommentsTarget({ id: cid, type })}
             onShare={(type) => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type })}
             onMediaClick={(m) => setMediaPreview(m)}
           />
 
-          <FollowListDialog
-            open={followListMode !== null}
-            onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
-            profileId={artist.id}
-            mode={followListMode || "followers"}
-          />
 
           <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
             <AlertDialogContent className="rounded-lg">
@@ -1111,8 +1108,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               className="mx-4 md:mx-0 mt-3 md:mt-4"
               followersCount={followersCount}
               followingCount={followingCount}
-              onFollowersClick={() => setFollowListMode("followers")}
-              onFollowingClick={() => setFollowListMode("following")}
+              onFollowersClick={() => openConnections("followers")}
+              onFollowingClick={() => openConnections("following")}
               showFollowButton={!isOwnProfile}
               isFollowing={isFollowing}
               onFollowToggle={handleFollowToggle}
@@ -1134,12 +1131,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
           </div>
 
-          <FollowListDialog
-            open={followListMode !== null}
-            onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
-            profileId={artist.id}
-            mode={followListMode || "followers"}
-          />
 
           <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
             <AlertDialogContent className="rounded-lg">
@@ -1374,8 +1365,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     className="mt-1.5 md:mt-2 flex-nowrap"
                     followersCount={followersCount}
                     followingCount={followingCount}
-                    onFollowersClick={() => setFollowListMode("followers")}
-                    onFollowingClick={() => setFollowListMode("following")}
+                    onFollowersClick={() => openConnections("followers")}
+                    onFollowingClick={() => openConnections("following")}
                     showFollowButton={!isOwnProfile}
                     isFollowing={isFollowing}
                     onFollowToggle={handleFollowToggle}
@@ -2129,16 +2120,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Followers/Following List Dialog */}
-      {id && (
-        <FollowListDialog
-          open={followListMode !== null}
-          onOpenChange={(o) => { if (!o) setFollowListMode(null); }}
-          profileId={id}
-          mode={followListMode || "followers"}
-        />
-      )}
 
       {/* Unfollow Confirmation Dialog */}
       <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>

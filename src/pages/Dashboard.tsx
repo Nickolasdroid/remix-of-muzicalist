@@ -1769,8 +1769,8 @@ const Dashboard = () => {
                               className="mt-1.5 md:mt-2 flex-nowrap"
                               followersCount={followersCount}
                               followingCount={followingCount}
-                              onFollowersClick={() => setShowFollowersDialog(true)}
-                              onFollowingClick={() => setShowFollowingDialog(true)}
+                              onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
+                              onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
                             />
                           </div>
 
@@ -1832,8 +1832,8 @@ const Dashboard = () => {
                         plan={profile?.plan}
                         followersCount={followersCount}
                         followingCount={followingCount}
-                        onFollowersClick={() => setShowFollowersDialog(true)}
-                        onFollowingClick={() => setShowFollowingDialog(true)}
+                        onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
+                        onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
                         avatarExtra={
                           <>
                             <label htmlFor="avatar-upload-admin" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer z-10">
@@ -3426,111 +3426,6 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Following Dialog */}
-      <Dialog open={showFollowingDialog} onOpenChange={setShowFollowingDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-accent" />
-              Following ({followingCount})
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {followingArtists.length === 0 ?
-          <p className="text-muted-foreground text-sm text-center py-4">You're not following any artists yet.</p> :
-          followingArtists.map((artist) =>
-          <div key={artist.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowingDialog(false);navigate(`/artist/${artist.id}`);}}>
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={artist.avatar_url} />
-                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(artist.specialization)} · {artist.county}</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setUnfollowTargetId(artist.id); }}>
-                    Following
-                  </Button>
-                </div>
-          )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Unfollow Confirmation */}
-      <AlertDialog open={!!unfollowTargetId} onOpenChange={(open) => { if (!open) setUnfollowTargetId(null); }}>
-        <AlertDialogContent className="rounded-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unfollow Artist</AlertDialogTitle>
-            <AlertDialogDescription>Are you sure you want to unfollow this artist? You can follow them again later.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
-              if (!user || !unfollowTargetId) return;
-              await supabase.from('followers').delete().eq('follower_id', user.id).eq('artist_id', unfollowTargetId);
-              setFollowingArtists((prev) => prev.filter((a) => a.id !== unfollowTargetId));
-              setFollowingCount((prev) => prev - 1);
-              setUnfollowTargetId(null);
-            }}>Unfollow</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Followers Dialog */}
-      <Dialog open={showFollowersDialog} onOpenChange={setShowFollowersDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-accent" />
-              Followers ({followersCount})
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {followersList.length === 0 ?
-          <p className="text-muted-foreground text-sm text-center py-4">You don't have any followers yet.</p> :
-          followersList.map((follower) =>
-          <div key={follower.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => {setShowFollowersDialog(false);navigate(`/artist/${follower.id}`);}}>
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={follower.avatar_url} />
-                      <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{follower.stage_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{translateSpecialization(follower.specialization)} · {follower.county}</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="shrink-0 text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setRemoveFollowerTargetId(follower.id); }}>
-                    Remove
-                  </Button>
-                </div>
-          )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Remove Follower Confirmation */}
-      <AlertDialog open={!!removeFollowerTargetId} onOpenChange={(open) => { if (!open) setRemoveFollowerTargetId(null); }}>
-        <AlertDialogContent className="rounded-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove Follower</AlertDialogTitle>
-            <AlertDialogDescription>Are you sure you want to remove this follower? They will no longer follow you but can follow you again later.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
-              if (!user || !removeFollowerTargetId) return;
-              await supabase.from('followers').delete().eq('artist_id', user.id).eq('follower_id', removeFollowerTargetId);
-              setFollowersList((prev) => prev.filter((f) => f.id !== removeFollowerTargetId));
-              setFollowersCount((prev) => prev - 1);
-              setRemoveFollowerTargetId(null);
-            }}>Remove</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
       <PostComposerDialog
         open={showPostDialog}
         onOpenChange={setShowPostDialog}
