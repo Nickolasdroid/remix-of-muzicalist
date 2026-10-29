@@ -242,7 +242,7 @@ const StoryViewer = ({ groups, startGroupIndex, currentUserId, onSeen, onDeleted
               onClick={onClose}
               className="flex items-center gap-2 min-w-0"
             >
-              <Avatar className="h-8 w-8 border border-white/40">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src={group.author.avatar_url || undefined} className="object-cover" />
                 <AvatarFallback className="text-xs">{group.author.stage_name.charAt(0)}</AvatarFallback>
               </Avatar>

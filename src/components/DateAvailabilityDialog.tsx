@@ -71,7 +71,7 @@ const DateAvailabilityDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[420px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden">
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
-          <Avatar className="h-11 w-11 border border-accent/60">
+          <Avatar className="h-11 w-11">
             {artistAvatarUrl && <AvatarImage src={artistAvatarUrl} alt={artistName} />}
             <AvatarFallback className="bg-accent/10 text-accent font-semibold">
               {(artistName || "?").charAt(0).toUpperCase()}

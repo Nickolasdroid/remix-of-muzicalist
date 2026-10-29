@@ -406,7 +406,7 @@ const BookingRequestDialog = ({
       <DialogContent className="max-w-[460px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
-          <Avatar className="h-11 w-11 border border-accent/60">
+          <Avatar className="h-11 w-11">
             {artistAvatarUrl && <AvatarImage src={artistAvatarUrl} alt={artistName} />}
             <AvatarFallback className="bg-accent/10 text-accent font-semibold">
               {(artistName || "?").charAt(0).toUpperCase()}

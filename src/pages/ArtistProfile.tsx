@@ -924,7 +924,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     const renderReviewCard = (review: Review) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
       {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
       <div className="flex items-center gap-3">
-        <Avatar className="h-10 w-10 border border-accent/30 flex-shrink-0">
+        <Avatar className="h-10 w-10 flex-shrink-0">
           {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
           <AvatarFallback className="bg-accent/10 text-accent text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
@@ -1073,7 +1073,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 </div>
               <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                 <div className="relative p-1 rounded-full shadow-xl flex-shrink-0">
-                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     <AvatarImage src={artist.avatar_url || undefined} alt={`${artist.first_name || ''} ${artist.last_name || ''}`} />
                     <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
                       {artist.first_name?.[0]}{artist.last_name?.[0]}
@@ -1343,7 +1343,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   aria-label="Enlarge profile picture"
                   className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
                 >
-                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
                       <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />

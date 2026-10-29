@@ -68,7 +68,7 @@ const OfficialProfileHeader = ({
         <div
           className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(plan as any)} shadow-xl flex-shrink-0 group/avatar`}
         >
-          <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+          <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
             <AvatarImage src={avatarUrl || undefined} alt={name} />
             <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10 font-display font-bold text-2xl">
               {name.charAt(0)}

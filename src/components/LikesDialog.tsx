@@ -135,7 +135,7 @@ export const LikesDialog = ({ open, onOpenChange, targetId, targetType = "post" 
                       className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted/60 transition-colors"
                     >
                       <div className={`p-0.5 rounded-full ${getAvatarOutlineClasses(p.plan as any)}`}>
-                        <Avatar className="h-10 w-10 border-2 border-background">
+                        <Avatar className="h-10 w-10">
                           {p.avatar_url ? (
                             <AvatarImage src={p.avatar_url} alt={display} />
                           ) : (

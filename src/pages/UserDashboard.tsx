@@ -455,7 +455,7 @@ const UserDashboard = () => {
                     {/* Avatar + name + meta overlaid at bottom */}
                     <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
                       <div className="group/avatar relative p-1 rounded-full shadow-xl flex-shrink-0">
-                        <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 border-2 md:border-4 border-background">
+                        <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                           <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
                           <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
                             {profile?.first_name?.[0]}{profile?.last_name?.[0]}

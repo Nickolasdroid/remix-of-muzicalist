@@ -275,7 +275,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
       >
         {/* Author */}
         <div className="flex items-center gap-3">
-          <Avatar className="h-11 w-11 border border-accent/60">
+          <Avatar className="h-11 w-11">
             <AvatarImage src={profile?.avatar_url || undefined} alt={artistName} />
             <AvatarFallback className="bg-accent/10 text-sm font-semibold text-accent">{artistName.charAt(0)}</AvatarFallback>
           </Avatar>

@@ -282,7 +282,7 @@ const Search = () => {
                       onClick={() => trackActivityEvent("search_result_click")}
                       className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
                     >
-                      <Avatar className="h-12 w-12 border-2 border-border">
+                      <Avatar className="h-12 w-12">
                         <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                         <AvatarFallback className="bg-accent/10 text-accent">
                           <User className="h-5 w-5" />
@@ -336,7 +336,7 @@ const Search = () => {
                   onClick={() => trackActivityEvent("search_result_click")}
                   className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
                 >
-                  <Avatar className="h-12 w-12 border-2 border-border">
+                  <Avatar className="h-12 w-12">
                     <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
                     <AvatarFallback className="bg-accent/10 text-accent">
                       <User className="h-5 w-5" />

@@ -21,7 +21,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { getAvatarRingClasses } from "@/lib/subscriptionStyles";
 interface Conversation {
   id: string;
   artist_id: string;
@@ -515,7 +514,6 @@ const Messages = () => {
     const prevDate = new Date(prevMsg.created_at);
     return !isSameDay(currentDate, prevDate);
   };
-  const getPlanRingColor = (plan?: string) => getAvatarRingClasses(plan);
 
   // Compute unread counts for Announcements tab and sub-tabs
   const adConvsAll = conversations.filter(c => !!c.announcement_id);
@@ -640,7 +638,7 @@ const Messages = () => {
                 </div> : regularConvs.map(conv => {
                   const profile = getOtherProfile(conv);
                   return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
-                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                    <Avatar className={`h-10 w-10`}>
                       <AvatarImage src={profile.avatar_url || undefined} />
                       <AvatarFallback>
                         <User className="h-5 w-5" />
@@ -705,7 +703,7 @@ const Messages = () => {
                     </div> : currentList.map(conv => {
                       const profile = getOtherProfile(conv);
                       return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
-                        <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                        <Avatar className={`h-10 w-10`}>
                           <AvatarImage src={profile.avatar_url || undefined} />
                           <AvatarFallback>
                             <User className="h-5 w-5" />
@@ -736,7 +734,7 @@ const Messages = () => {
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <Avatar className={`h-10 w-10 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
+                    <Avatar className={`h-10 w-10`}>
                       <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
                       <AvatarFallback>
                         <User className="h-5 w-5" />
@@ -852,7 +850,7 @@ const Messages = () => {
                 </div> : regularConvs.map(conv => {
                   const profile = getOtherProfile(conv);
                   return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
-                    <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                    <Avatar className={`h-10 w-10`}>
                       <AvatarImage src={profile.avatar_url || undefined} />
                       <AvatarFallback>
                         <User className="h-5 w-5" />
@@ -914,7 +912,7 @@ const Messages = () => {
                     </div> : currentList.map(conv => {
                       const profile = getOtherProfile(conv);
                       return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
-                        <Avatar className={`h-10 w-10 ${getPlanRingColor(profile.plan)}`}>
+                        <Avatar className={`h-10 w-10`}>
                           <AvatarImage src={profile.avatar_url || undefined} />
                           <AvatarFallback>
                             <User className="h-5 w-5" />
@@ -952,7 +950,7 @@ const Messages = () => {
               }}>
                       <ArrowLeft className="h-5 w-5" />
                     </Button>
-                    <Avatar className={`h-9 w-9 shrink-0 ${getPlanRingColor(selectedConversation ? getOtherProfile(selectedConversation).plan : pendingArtist?.plan)}`}>
+                    <Avatar className={`h-9 w-9 shrink-0`}>
                       <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
                       <AvatarFallback>
                         <User className="h-4 w-4" />

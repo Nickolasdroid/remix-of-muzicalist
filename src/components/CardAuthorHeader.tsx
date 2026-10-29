@@ -48,7 +48,7 @@ const CardAuthorHeader = ({
 }: CardAuthorHeaderProps) => (
   <div className={cn("flex min-w-0 items-center gap-3", className)}>
     <div className={cn("shrink-0 rounded-full p-0.5", getAvatarOutlineClasses(plan as any))}>
-      <Avatar className={cn("h-10 w-10 border-2 border-background", onClick && "cursor-pointer")} onClick={onClick}>
+      <Avatar className={cn("h-10 w-10", onClick && "cursor-pointer")} onClick={onClick}>
         <AvatarImage src={avatarUrl || undefined} alt={name} />
         <AvatarFallback className="bg-muted font-semibold text-muted-foreground">{(name || "A").charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
