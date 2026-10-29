@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image as ImageIcon, Video as VideoIcon, X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
+import MobileComposerHeader from "@/components/composer/MobileComposerHeader";
+import DiscardDraftDialog from "@/components/composer/DiscardDraftDialog";
+import { useCloseOnBack } from "@/hooks/useCloseOnBack";
 import { CreationModalShell } from "@/components/dashboard/CreationModal";
 import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -107,10 +110,36 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     setUploadProgress(null);
   };
 
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const isBusy = isPublishing || uploadProgress !== null;
+  const isDirty = content.trim().length > 0 || !!mediaUrl;
+  const finishClose = () => {
+    resetDraft();
+    onOpenChange(false);
+  };
+  // Phone Back closes the composer (asks first if there is a draft)
+  const releaseHistory = useCloseOnBack(open, () => {
+    if (isBusy) return false;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return false;
+    }
+    finishClose();
+    return true;
+  });
+
   const handleOpenChange = (next: boolean) => {
-    if (!next && (isPublishing || uploadProgress !== null)) return;
-    if (!next) resetDraft();
-    onOpenChange(next);
+    if (next) {
+      onOpenChange(true);
+      return;
+    }
+    if (isBusy) return;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return;
+    }
+    releaseHistory();
+    finishClose();
   };
 
   const uploadMedia = async (file: File, kind: "image" | "video") => {
@@ -181,6 +210,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
       });
       await refreshEntitlements();
       toast({ title: t("common.success", "Success"), description: t("postComposer.created", "Post created!") });
+      releaseHistory();
       resetDraft();
       onOpenChange(false);
       await onPublished?.();
@@ -209,6 +239,16 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
       <CreationModalShell
         title="New post"
         bodyClassName="space-y-0 pt-4 pb-0"
+        mobileHeader={
+          <MobileComposerHeader
+            title="New post"
+            onCancel={() => handleOpenChange(false)}
+            actionLabel="Publish"
+            onAction={handlePublish}
+            busy={isPublishing}
+            disabled={uploadProgress !== null || !isValid || !canCreate || postsRemaining <= 0}
+          />
+        }
         footer={
           <div className="space-y-3">
             {Number.isFinite(postsRemaining) && (
@@ -224,7 +264,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             )}
             <Button
               type="button"
-              className="h-11 w-full rounded-lg bg-accent font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+              className="max-md:hidden h-11 w-full rounded-lg bg-accent font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
               onClick={handlePublish}
               disabled={isPublishing || uploadProgress !== null || !isValid || !canCreate || postsRemaining <= 0}
             >
@@ -340,6 +380,16 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
           )}
         </div>
       </CreationModalShell>
+      <DiscardDraftDialog
+        open={confirmDiscard}
+        title="Discard this post?"
+        onKeep={() => setConfirmDiscard(false)}
+        onDiscard={() => {
+          setConfirmDiscard(false);
+          releaseHistory();
+          finishClose();
+        }}
+      />
     </Dialog>
   );
 };

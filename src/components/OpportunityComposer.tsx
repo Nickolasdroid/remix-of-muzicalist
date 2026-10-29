@@ -16,6 +16,9 @@ import { INSTRUMENTS } from "@/components/InstrumentSelector";
 import { useToast } from "@/hooks/use-toast";
 import { CURRENCIES } from "@/lib/currencies";
 import { cn } from "@/lib/utils";
+import MobileComposerHeader, { FULLSCREEN_ON_MOBILE } from "@/components/composer/MobileComposerHeader";
+import DiscardDraftDialog from "@/components/composer/DiscardDraftDialog";
+import { useCloseOnBack } from "@/hooks/useCloseOnBack";
 import {
   BudgetMode,
   COLLAB_SEEKING,
@@ -179,6 +182,32 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Full-screen on phones: Back / Cancel close it, asking first when something was filled in
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const isDirty = !!(seeking || roleDetail.trim() || eventType.trim() || eventOn || placeLabel.trim() || startTime || endTime || budgetMin || budgetMax || (titleEdited && title.trim()));
+  const releaseHistory = useCloseOnBack(open, () => {
+    if (saving) return false;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return false;
+    }
+    onOpenChange(false);
+    return true;
+  });
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      onOpenChange(true);
+      return;
+    }
+    if (saving) return;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return;
+    }
+    releaseHistory();
+    onOpenChange(false);
+  };
+
   const handlePublish = async () => {
     if (!canSubmit || !seeking) return;
     setSaving(true);
@@ -223,6 +252,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       if (error) throw error;
       await onPublished({ id: data.id, kind });
       toast({ title: "Announcement published" });
+      releaseHistory();
       onOpenChange(false);
     } catch (error) {
       toast({
@@ -268,9 +298,17 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const labelCls = "text-[13.5px] font-semibold text-foreground";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
-        <div className="flex items-center gap-3 px-5 pt-5 pb-3 pr-12">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className={cn("max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col", FULLSCREEN_ON_MOBILE)}>
+        <MobileComposerHeader
+          title={isGig ? "Looking for an artist" : "Looking for a collaborator"}
+          onCancel={() => handleOpenChange(false)}
+          actionLabel="Publish"
+          onAction={handlePublish}
+          disabled={!canSubmit}
+          busy={saving}
+        />
+        <div className="flex items-center gap-3 px-5 pt-5 pb-3 pr-12 max-md:sr-only">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-accent/60 bg-accent/10 text-accent">
             <Megaphone className="h-5 w-5" />
           </span>
@@ -288,7 +326,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         </div>
 
         {/* Every field the same: label above, same height, same spacing */}
-        <div key={kind} className="flex-1 overflow-y-auto px-5 pt-2 pb-5 space-y-3.5">
+        <div key={kind} className="flex-1 overflow-y-auto px-5 pt-2 max-md:pt-4 pb-5 max-md:pb-[calc(1.25rem+env(safe-area-inset-bottom))] space-y-3.5">
           <div className="space-y-1.5">
             <Label htmlFor="opp-seeking" className={labelCls}>
               {isGig ? "What are you looking for" : "Who are you looking for"}
@@ -518,7 +556,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             )}
           </div>
 
-          <div className="pt-1.5">
+          <div className="pt-1.5 max-md:hidden">
             <Button
               onClick={handlePublish}
               disabled={!canSubmit}
@@ -532,6 +570,16 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           {blockedReason && <p className="text-center text-xs text-destructive">{blockedReason}</p>}
         </div>
       </DialogContent>
+      <DiscardDraftDialog
+        open={confirmDiscard}
+        title="Discard this announcement?"
+        onKeep={() => setConfirmDiscard(false)}
+        onDiscard={() => {
+          setConfirmDiscard(false);
+          releaseHistory();
+          onOpenChange(false);
+        }}
+      />
     </Dialog>
   );
 };

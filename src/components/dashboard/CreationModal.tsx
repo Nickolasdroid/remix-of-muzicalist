@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { FULLSCREEN_ON_MOBILE } from "@/components/composer/MobileComposerHeader";
 
 /**
  * Shared visual shell for Muzicalist content-creation modals
@@ -17,17 +18,24 @@ interface CreationModalShellProps {
   children: React.ReactNode;
   className?: string;
   bodyClassName?: string;
+  /**
+   * Phone top bar (Cancel · title · Publish). When given, the composer is full-screen
+   * below md and this bar replaces the dialog header there.
+   */
+  mobileHeader?: React.ReactNode;
 }
 
-export const CreationModalShell = ({ title, meta, footer, children, className, bodyClassName }: CreationModalShellProps) => (
+export const CreationModalShell = ({ title, meta, footer, children, className, bodyClassName, mobileHeader }: CreationModalShellProps) => (
   <DialogContent
     className={cn(
       "p-0 gap-0 overflow-hidden overflow-x-hidden rounded-lg !w-[calc(100vw-32px)] !max-w-[480px]",
       "max-h-[92dvh] flex flex-col",
+      mobileHeader && FULLSCREEN_ON_MOBILE,
       className
     )}
   >
-    <DialogHeader className="px-5 pt-5 pb-4 border-b border-border/60 space-y-2 text-left">
+    {mobileHeader}
+    <DialogHeader className={cn("px-5 pt-5 pb-4 border-b border-border/60 space-y-2 text-left", mobileHeader && "max-md:sr-only")}>
       <DialogTitle className="text-base sm:text-lg font-semibold pr-8">{title}</DialogTitle>
       {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
     </DialogHeader>
@@ -35,7 +43,7 @@ export const CreationModalShell = ({ title, meta, footer, children, className, b
     <div className={cn("flex-1 overflow-y-auto overscroll-contain px-5 py-5 space-y-6", bodyClassName)}>{children}</div>
 
     {footer && (
-      <div className="px-5 py-4 border-t border-border/60 bg-background">{footer}</div>
+      <div className="px-5 py-4 border-t border-border/60 bg-background safe-area-bottom">{footer}</div>
     )}
   </DialogContent>
 );
