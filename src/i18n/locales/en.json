@@ -73,7 +73,11 @@
     "myPlan": "My Plan",
     "adminDashboard": "Admin Dashboard",
     "logOutQuestion": "Log out?",
-    "logOutDescription": "Are you sure you want to log out of your account?"
+    "logOutDescription": "Are you sure you want to log out of your account?",
+    "discover": "Discover",
+    "account": "Account",
+    "helpSupport": "Help & Support",
+    "upgrade": "Upgrade"
   },
   "footer": {
     "quickLinks": "Quick Links",

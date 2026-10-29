@@ -74,7 +74,11 @@
     "myPlan": "Planul meu",
     "adminDashboard": "Panou admin",
     "logOutQuestion": "Te deconectezi?",
-    "logOutDescription": "Sigur vrei să te deconectezi de la contul tău?"
+    "logOutDescription": "Sigur vrei să te deconectezi de la contul tău?",
+    "discover": "Descoperă",
+    "account": "Cont",
+    "helpSupport": "Ajutor și suport",
+    "upgrade": "Upgrade"
   },
   "footer": {
     "quickLinks": "Linkuri rapide",

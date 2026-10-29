@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { canGoBackInApp, goBack, isRootPath, parentPathFor } from "@/lib/backNavigation";
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
+import { getPlan } from "@/lib/planLimits";
 import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -27,6 +28,42 @@ import { getCurrentLanguage, translateTextsSync } from "@/i18n";
 import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
 import { Button } from "./ui/button";
+
+/** One row of the mobile side menu: icon + label, optional trailing badge, chevron. */
+const MobileMenuRow = ({
+  to,
+  icon: Icon,
+  label,
+  active,
+  first,
+  trailing,
+  onNavigate,
+}: {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  active: boolean;
+  first?: boolean;
+  trailing?: React.ReactNode;
+  onNavigate: () => void;
+}) => (
+  <Link
+    to={to}
+    onClick={onNavigate}
+    className={`flex items-center justify-between gap-3 px-4 py-4 border-b border-border ${first ? 'border-t' : ''} active:bg-accent/10 transition-colors ${
+      active ? 'text-accent' : 'text-foreground'
+    }`}
+  >
+    <div className="flex items-center gap-3 min-w-0">
+      <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-accent' : 'text-muted-foreground'}`} />
+      <span className="text-sm font-semibold truncate">{label}</span>
+    </div>
+    <div className="flex items-center gap-2 shrink-0">
+      {trailing}
+      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+    </div>
+  </Link>
+);
 
 interface NavigationProps {
   mobileTitle?: string;
@@ -408,95 +445,95 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 </Link>
               </div>
 
-              {/* Main navigation - Instagram-style list */}
-              <div className="flex-1 overflow-y-auto">
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link) => {
-                  const active = isActive(link.to.split('?')[0]);
-                  return (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                        active ? 'text-accent' : 'text-foreground'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <link.icon className={`h-5 w-5 ${active ? 'text-accent' : 'text-muted-foreground'}`} />
-                        <span className="text-sm font-semibold">{link.label}</span>
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    </Link>
-                  );
-                })}
+              {/* Main navigation - Instagram-style list, grouped: Discover / Account, logout at the bottom */}
+              <div className="flex-1 overflow-y-auto flex flex-col">
+                <p className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t('navigation.discover', 'Discover')}
+                </p>
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link, i) => (
+                  <MobileMenuRow
+                    key={link.to}
+                    to={link.to}
+                    icon={link.icon}
+                    label={link.label}
+                    active={isActive(link.to.split('?')[0])}
+                    first={i === 0}
+                    onNavigate={() => setMobileMenuOpen(false)}
+                  />
+                ))}
 
-                {/* My Plan (only for artist accounts) */}
+                <p className="px-4 pt-6 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t('navigation.account', 'Account')}
+                </p>
+
+                {/* My Plan (only for artist accounts): shows the current plan, Free gets an Upgrade nudge */}
                 {user && userType === 'artist' && (
-                  <Link
+                  <MobileMenuRow
                     to="/my-plan"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                      isActive('/my-plan') ? 'text-accent' : 'text-foreground'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Crown className={`h-5 w-5 ${isActive('/my-plan') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">{t('navigation.myPlan', 'My Plan')}</span>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </Link>
+                    icon={Crown}
+                    label={t('navigation.myPlan', 'My Plan')}
+                    active={isActive('/my-plan')}
+                    first
+                    onNavigate={() => setMobileMenuOpen(false)}
+                    trailing={(() => {
+                      const plan = getPlan(profile?.plan);
+                      return plan === 'Free' ? (
+                        <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">
+                          {t('navigation.upgrade', 'Upgrade')}
+                        </span>
+                      ) : (
+                        <span className={`notranslate rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan === 'Premium' ? 'bg-amber-500/15 text-amber-400' : 'bg-accent/15 text-accent'}`} translate="no">
+                          {plan}
+                        </span>
+                      );
+                    })()}
+                  />
                 )}
 
                 {/* Admin Dashboard (admin only) */}
                 {user && (userType as string) === 'admin' && (
-                  <Link
+                  <MobileMenuRow
                     to="/admin/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                      isActive('/admin/dashboard') ? 'text-accent' : 'text-foreground'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Shield className={`h-5 w-5 ${isActive('/admin/dashboard') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">{t('navigation.adminDashboard', 'Admin Dashboard')}</span>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </Link>
+                    icon={Shield}
+                    label={t('navigation.adminDashboard', 'Admin Dashboard')}
+                    active={isActive('/admin/dashboard')}
+                    first={userType !== 'artist'}
+                    onNavigate={() => setMobileMenuOpen(false)}
+                  />
                 )}
 
-                {/* Settings (only when logged in) */}
                 {user && (
-                  <Link
+                  <MobileMenuRow
                     to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-4 py-4 border-b border-border active:bg-accent/10 transition-colors ${
-                      location.search.includes('tab=settings') ? 'text-accent' : 'text-foreground'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Settings className={`h-5 w-5 ${location.search.includes('tab=settings') ? 'text-accent' : 'text-muted-foreground'}`} />
-                      <span className="text-sm font-semibold">{t('navigation.settings')}</span>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </Link>
+                    icon={Settings}
+                    label={t('navigation.settings')}
+                    active={location.search.includes('tab=settings')}
+                    first={userType !== 'artist' && (userType as string) !== 'admin'}
+                    onNavigate={() => setMobileMenuOpen(false)}
+                  />
                 )}
 
+                <MobileMenuRow
+                  to="/help"
+                  icon={HelpCircle}
+                  label={t('navigation.helpSupport', 'Help & Support')}
+                  active={isActive('/help')}
+                  onNavigate={() => setMobileMenuOpen(false)}
+                />
 
-
-                {/* Logout */}
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setLogoutConfirmOpen(true);
-                  }}
-                  className="w-full flex items-center justify-between px-4 py-4 border-b border-border text-destructive active:bg-destructive/10 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <LogOut className="h-5 w-5 text-destructive" />
+                {/* Logout: an action, not a page, so no chevron; kept apart at the bottom */}
+                <div className="mt-auto pt-8 safe-area-bottom">
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setLogoutConfirmOpen(true);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-4 border-t border-border text-destructive active:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
                     <span className="text-sm font-semibold">{t('navigation.logout')}</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-destructive/60" />
-                </button>
+                  </button>
+                </div>
               </div>
 
             </SheetContent>
