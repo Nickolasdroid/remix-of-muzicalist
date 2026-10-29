@@ -108,7 +108,7 @@ const ManageSubscriptionCard = () => {
 
         <div className="rounded-lg border border-accent/20 bg-accent/5 p-4 mb-4">
           <p className="text-sm text-foreground leading-relaxed">
-            You are currently on the <span className="font-semibold">Free plan</span>. Upgrade to a paid subscription to unlock more features: publish posts and announcements, display your pricing, get priority in search results, analytics, and more.
+            You are currently on the <span className="font-semibold">Free plan</span>. Upgrade to a paid subscription to unlock more features: publish posts and announcements, upload more photos and videos, get priority in search results, analytics, and more.
           </p>
         </div>
 

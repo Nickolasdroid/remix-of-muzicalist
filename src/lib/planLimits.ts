@@ -47,7 +47,7 @@ export const getVideoLimit = (plan?: string | null): number => {
   switch (getPlan(plan)) {
     case 'Premium': return 5;
     case 'Standard': return 3;
-    default: return 0; // Free cannot upload videos
+    default: return 1; // Free: 1 video so organizers can see the act
   }
 };
 
@@ -121,19 +121,14 @@ export const getSocialLinkLimit = (plan?: string | null): number => {
 /** Reviews are a platform-level feature: never limited by plan (null = unlimited). */
 export const getReviewDisplayLimit = (_plan?: string | null): number | null => null;
 
-/** Whether the plan can set estimated pricing */
-export const canSetEstimatedPrice = (plan?: string | null): boolean => {
-  return getPlan(plan) !== 'Free';
-};
+/**
+ * Estimated pricing is available on every plan: organizers need prices to
+ * book, so hiding them on Free hurts the whole marketplace.
+ */
+export const canSetEstimatedPrice = (_plan?: string | null): boolean => true;
 
 /** Maximum number of estimated pricing entries an artist can save */
-export const getEstimatedPriceLimit = (plan?: string | null): number => {
-  switch (getPlan(plan)) {
-    case 'Premium': return 3;
-    case 'Standard': return 3;
-    default: return 0;
-  }
-};
+export const getEstimatedPriceLimit = (_plan?: string | null): number => 3;
 
 /** Whether the plan can post (posts, ads, promotions) */
 export const canPost = (plan?: string | null): boolean => {
