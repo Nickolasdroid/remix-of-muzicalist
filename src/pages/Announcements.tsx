@@ -50,7 +50,7 @@ const Announcements = () => {
   const [isPromoting, setIsPromoting] = useState(false);
   const promotionsRemaining = promotionLimit - promotionsUsed;
   // Opportunities
-  type FeedFilter = "all" | "forMe" | "gig" | "collab";
+  type FeedFilter = "all" | "gig" | "collab";
   const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
   const [mySpecialization, setMySpecialization] = useState<string | null>(null);
   const [isArtistViewer, setIsArtistViewer] = useState(false);
@@ -172,9 +172,9 @@ const Announcements = () => {
             <div className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-2 scrollbar-none">
               {([
                 { k: "all", label: "All" },
-                ...(isArtistViewer ? [{ k: "forMe", label: "For me" }] : []),
-                { k: "gig", label: "Events" },
-                { k: "collab", label: "Collaborations" },
+                // Same names as the two announcement types in the composer
+                { k: "gig", label: "Artist wanted" },
+                { k: "collab", label: "Collaborator wanted" },
               ] as { k: FeedFilter; label: string }[]).map((f) => (
                 <button
                   key={f.k}
@@ -214,14 +214,15 @@ const Announcements = () => {
           const isGuest = !currentUserId;
           const GUEST_PREVIEW_COUNT = 2;
           const filteredBase = announcements.filter(a => !isAdExpired(a)).filter((a) => {
-            if (feedFilter === "all") return true;
             if (feedFilter === "gig") return a.kind === "gig";
             if (feedFilter === "collab") return a.kind === "collab";
-            // For me: events looking for my specialization, and collaborations (artists only)
-            return a.profile_id !== currentUserId && (
-              (a.kind === "gig" && !!mySpecialization && a.seeking === mySpecialization) || a.kind === "collab"
-            );
+            return true;
           });
+          // "Artist wanted": events looking for the viewer's own specialization come first
+          if (feedFilter === "gig" && mySpecialization) {
+            const matches = (a: (typeof filteredBase)[number]) => (a.seeking === mySpecialization ? 0 : 1);
+            filteredBase.sort((x, y) => matches(x) - matches(y));
+          }
           const filteredAnnouncements = isGuest ? filteredBase.slice(0, GUEST_PREVIEW_COUNT) : filteredBase;
           return filteredAnnouncements.length === 0 ? (
             <EmptyState
