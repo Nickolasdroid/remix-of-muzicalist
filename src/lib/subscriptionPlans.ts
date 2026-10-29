@@ -8,6 +8,10 @@
  * Update this file to change pricing/features/descriptions everywhere.
  */
 
+/**
+ * Plan cards list only what a plan includes (no crossed-out rows); every line
+ * must match the real limits in planLimits.ts / public.plan_limits.
+ */
 export type PlanFeature = {
   text: string;
   included: boolean;
@@ -40,13 +44,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: '1 visible social media link', included: true },
       { text: 'Eligible for Leaderboard rankings', included: true },
       { text: 'Browse Posts & Announcements (opportunities)', included: true },
-      { text: 'Cannot publish posts', included: false },
-      { text: 'Cannot publish announcements', included: false },
-      { text: 'Display your estimated pricing publicly', included: false },
-      { text: 'Eligible for social media promotion opportunities', included: false },
-      { text: 'Limited visibility in search results', included: false },
-      { text: 'Performance analytics (profile views, booking requests, engagement)', included: false },
-      { text: 'Eligible for homepage featuring', included: false },
     ],
     tagline: 'Perfect for getting started and exploring the platform',
     cta: 'Current Plan',
@@ -60,20 +57,19 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     description: 'Get discovered. Attract more clients. Grow your bookings.',
     features: [
       { text: 'Standard Artist Badge', included: true },
-      { text: 'Gallery: up to 10 images & 2 videos', included: true },
+      { text: 'Gallery: up to 10 images & 3 videos', included: true },
       { text: 'Display your music genres', included: true },
       { text: 'Unlimited messaging, direct contact & artist connections', included: true },
       { text: 'Publish up to 15 posts/month', included: true },
-      { text: 'Publish 5 announcements + 2 post promotions/month', included: true },
+      { text: 'Publish up to 5 announcements/month', included: true },
+      { text: 'Promotions: 2 posts + 1 announcement/month', included: true },
       { text: 'Booking calendar: receive requests with exact date and time', included: true },
       { text: 'Display your estimated pricing publicly', included: true },
-      { text: 'Up to 3 visible social links', included: true },
+      { text: 'All 5 social links visible', included: true },
       { text: 'Eligible for Leaderboard rankings', included: true },
       { text: 'Appear in Posts & Announcements (opportunities)', included: true },
       { text: 'Priority placement in search results', included: true },
       { text: 'Eligible for social media promotion opportunities', included: true },
-      { text: 'Performance analytics (profile views, booking requests, engagement)', included: false },
-      { text: 'Eligible for homepage featuring', included: false },
     ],
     tagline: 'Designed to help you gain more exposure and consistent booking opportunities',
     cta: 'Upgrade',
@@ -89,13 +85,13 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Premium Artist Badge', included: true },
       { text: 'Gallery: up to 15 images & 5 videos', included: true },
       { text: 'Display your music genres', included: true },
-      
       { text: 'Publish up to 30 posts/month', included: true },
-      { text: 'Publish 10 announcements + 5 post promotions/month', included: true },
+      { text: 'Publish up to 10 announcements/month', included: true },
+      { text: 'Promotions: 5 posts + 3 announcements/month', included: true },
       { text: 'Unlimited messaging, direct contact & artist connections', included: true },
       { text: 'Booking calendar: receive requests with exact date and time', included: true },
       { text: 'Display your estimated pricing publicly', included: true },
-      { text: 'Unlimited visible social links', included: true },
+      { text: 'All 5 social links visible', included: true },
       { text: 'Eligible for Leaderboard rankings', included: true },
       { text: 'Priority visibility in Posts & Announcements (opportunities)', included: true },
       { text: 'Top placement in search results', included: true },
