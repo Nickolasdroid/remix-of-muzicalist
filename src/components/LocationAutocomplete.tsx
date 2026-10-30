@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Loader2, MapPin, X } from "lucide-react";
+
+/** Few enough that the list never needs its own scrollbar. */
+const MAX_RESULTS = 6;
 import { cn } from "@/lib/utils";
 import { getCountryCode } from "@/lib/countryFlags";
 import { romanianLocalities } from "@/data/romanianLocalities";
@@ -101,7 +104,7 @@ const getRomanianSuggestions = (q: string): PhotonFeature[] => {
     if (exactOrPrefix.length >= 8) break;
   }
 
-  const matches = [...exactOrPrefix, ...contains].slice(0, 8).map((locality) => ({
+  const matches = [...exactOrPrefix, ...contains].slice(0, MAX_RESULTS).map((locality) => ({
     properties: {
       osm_id: locality.idx,
       osm_type: "local",
@@ -131,6 +134,13 @@ const LocationAutocomplete = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const listRef = useRef<HTMLDivElement>(null);
+  // When the list opens near the bottom of a dialog/page, bring it into view
+  useEffect(() => {
+    if (!open) return;
+    const t = window.setTimeout(() => listRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 50);
+    return () => window.clearTimeout(t);
+  }, [open, results.length]);
   const containerRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const justSelectedRef = useRef(false);
@@ -199,7 +209,7 @@ const LocationAutocomplete = ({
           return normalizeSearch(name).includes(qNorm);
         });
         if (refined.length > 0) {
-          setResults(refined.slice(0, 8));
+          setResults(refined.slice(0, MAX_RESULTS));
           setOpen(true);
           setActiveIndex(-1);
           setLoading(false);
@@ -252,7 +262,7 @@ const LocationAutocomplete = ({
           filtered = inCountry.length > 0 ? inCountry : baseFeatures;
         }
 
-        const sliced = filtered.slice(0, 8);
+        const sliced = filtered.slice(0, MAX_RESULTS);
         suggestionCache.set(cacheKey, sliced);
         setResults(sliced);
         setOpen(true);
@@ -331,27 +341,33 @@ const LocationAutocomplete = ({
         ) : null}
       </div>
 
+      {/* In the page flow (not floating), so a dialog or page scrolls to show it instead of
+          clipping it; no inner scrollbar. */}
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border bg-popover text-popover-foreground shadow-md overflow-hidden">
+        <div
+          ref={listRef}
+          className="mt-1.5 w-full rounded-lg border border-border bg-popover text-popover-foreground shadow-md overflow-hidden"
+        >
           {results.length === 0 && !loading ? (
-            <div className="px-3 py-2 text-sm text-muted-foreground">No locations found</div>
+            <div className="px-3 py-2.5 text-sm text-muted-foreground">No locations found</div>
           ) : (
-            <ul className="max-h-64 overflow-y-auto py-1">
+            <ul className="py-1" role="listbox">
               {results.map((r, idx) => {
                 const label = formatLabel(r);
+                const active = activeIndex === idx;
                 return (
-                  <li key={featureKey(r, idx)}>
+                  <li key={featureKey(r, idx)} role="option" aria-selected={active}>
                     <button
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSelect(r)}
                       onMouseEnter={() => setActiveIndex(idx)}
                       className={cn(
-                        "w-full text-left px-3 py-2 text-sm flex items-start gap-2",
-                        activeIndex === idx ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                        "w-full text-left px-3 py-2.5 text-sm flex items-center gap-2.5 transition-colors",
+                        active ? "bg-muted text-foreground" : "text-foreground/90 hover:bg-muted/60"
                       )}
                     >
-                      <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                      <MapPin className={cn("h-4 w-4 shrink-0", active ? "text-accent" : "text-muted-foreground")} />
                       <span className="truncate">{label}</span>
                     </button>
                   </li>
