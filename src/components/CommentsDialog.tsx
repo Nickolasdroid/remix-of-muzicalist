@@ -287,7 +287,7 @@ const CommentsDialog = ({
   const renderComment = (c: CommentRow, isReply = false) => {
     const canDelete = currentUserId === c.user_id || isAdmin;
     return (
-      <div key={c.id} className="flex gap-2 group">
+      <div key={c.id} className="flex gap-3 group">
         <Link to={`/artist/${c.user_id}`} className="flex-shrink-0">
           <Avatar className={isReply ? "w-7 h-7" : "w-8 h-8"}>
             <AvatarImage src={c.profile?.avatar_url || ""} alt={c.profile?.stage_name || "User"} />
@@ -296,49 +296,39 @@ const CommentsDialog = ({
             </AvatarFallback>
           </Avatar>
         </Link>
+        {/* Instagram-style: no bubble; name + time, text, then actions. Like on the right. */}
         <div className="flex-1 min-w-0">
-          <Link
-            to={`/artist/${c.user_id}`}
-            className="text-xs font-semibold hover:underline block mb-1 notranslate"
-            data-user-content="true"
-            data-no-translate="true"
-            translate="no"
-          >
-            {c.profile?.stage_name || "User"}
-          </Link>
-          <div className="bg-muted rounded-lg px-3 py-2">
-            <p
-              className="text-sm break-words whitespace-pre-wrap notranslate"
+          <div className="flex items-baseline gap-2">
+            <Link
+              to={`/artist/${c.user_id}`}
+              className="truncate text-[13px] font-semibold text-foreground hover:underline notranslate"
               data-user-content="true"
               data-no-translate="true"
               translate="no"
             >
-              {c.content}
-            </p>
+              {c.profile?.stage_name || "User"}
+            </Link>
+            <span className="shrink-0 text-[11px] text-muted-foreground notranslate" translate="no">{formatSmartDate(c.created_at)}</span>
           </div>
-          <div className="flex items-center gap-3 mt-1 px-1">
-            <span className="text-[11px] text-muted-foreground notranslate" translate="no">{formatSmartDate(c.created_at)}</span>
+          <p
+            className="mt-0.5 text-sm leading-snug text-foreground/90 break-words whitespace-pre-wrap notranslate"
+            data-user-content="true"
+            data-no-translate="true"
+            translate="no"
+          >
+            {c.content}
+          </p>
+          <div className="mt-1 flex items-center gap-4">
             <button
               onClick={() => startReply(c)}
               className="text-[11px] font-semibold text-muted-foreground hover:text-foreground"
             >
               Reply
             </button>
-            <button
-              onClick={() => toggleLike(c)}
-              className={cn(
-                "text-[11px] font-semibold flex items-center gap-1 transition-colors",
-                c.liked_by_me ? "text-red-500" : "text-muted-foreground hover:text-foreground"
-              )}
-              aria-label={c.liked_by_me ? "Unlike comment" : "Like comment"}
-            >
-              <Heart className={cn("h-3 w-3", c.liked_by_me && "fill-current")} />
-              {(c.likes_count || 0) > 0 && <span>{c.likes_count}</span>}
-            </button>
             {canDelete && (
               <button
                 onClick={() => setDeleteConfirmId(c.id)}
-                className="text-[11px] text-muted-foreground hover:text-destructive md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                className="text-muted-foreground hover:text-destructive md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                 aria-label="Delete comment"
               >
                 <Trash2 className="h-3 w-3" />
@@ -346,6 +336,17 @@ const CommentsDialog = ({
             )}
           </div>
         </div>
+        <button
+          onClick={() => toggleLike(c)}
+          className={cn(
+            "flex shrink-0 flex-col items-center gap-0.5 self-start pt-1 transition-colors",
+            c.liked_by_me ? "text-red-500" : "text-muted-foreground hover:text-foreground"
+          )}
+          aria-label={c.liked_by_me ? "Unlike comment" : "Like comment"}
+        >
+          <Heart className={cn("h-3.5 w-3.5", c.liked_by_me && "fill-current")} />
+          {(c.likes_count || 0) > 0 && <span className="text-[10px] tabular-nums">{c.likes_count}</span>}
+        </button>
       </div>
     );
   };
@@ -354,7 +355,7 @@ const CommentsDialog = ({
 
   const body = (
     <>
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-[200px]">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-[200px]">
         {loading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
