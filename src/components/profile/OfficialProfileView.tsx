@@ -27,6 +27,10 @@ export interface OfficialPost {
   created_at: string;
   media_url: string | null;
   media_type: string | null;
+  /** Several photos (posts.media jsonb) */
+  media?: unknown;
+  /** Availability post date */
+  available_on?: string | null;
   likes?: number;
   isLiked?: boolean;
   commentsCount?: number;
@@ -185,6 +189,8 @@ const OfficialProfileView = ({
                     createdAt={post.created_at}
                     mediaUrl={post.media_url}
                     mediaType={post.media_type}
+                    media={post.media}
+                    availableOn={post.available_on}
                     likes={post.likes || 0}
                     commentsCount={post.commentsCount || 0}
                     isLiked={!!post.isLiked}
@@ -193,10 +199,7 @@ const OfficialProfileView = ({
                     onLike={() => onPostLike?.(post.id)}
                     onComment={() => onComments?.(post.id, "post")}
                     onShare={() => onShare?.("post")}
-                    onMediaClick={() =>
-                      post.media_url &&
-                      onMediaClick?.({ url: post.media_url, type: post.media_type === "video" ? "video" : "image" })
-                    }
+                    onMediaClick={(it) => it && onMediaClick?.(it)}
                   />
                 ))
               )}

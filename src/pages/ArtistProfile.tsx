@@ -408,7 +408,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           .eq('profile_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('posts')
-          .select('id, profile_id, content, media_url, media_type, created_at, promoted_until')
+          .select('*')
           .eq('profile_id', id)
           .order('created_at', { ascending: false }),
         supabase.from('followers').select('follower_id').eq('artist_id', id),

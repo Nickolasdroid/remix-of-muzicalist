@@ -38,6 +38,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     features: [
       { text: 'Basic artist profile', included: true },
       { text: 'Gallery: up to 5 images & 1 video', included: true },
+      { text: 'Publish up to 3 posts/month', included: true },
       { text: 'Display your estimated pricing publicly', included: true },
       { text: 'Display your music genres', included: true },
       { text: 'Messaging, direct contact & artist connections', included: true },

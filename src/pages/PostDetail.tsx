@@ -30,6 +30,8 @@ interface DetailItem {
   createdAt: string;
   mediaUrl: string | null;
   mediaType: string | null;
+  media?: unknown;
+  availableOn?: string | null;
   promotedUntil: string | null;
   likes: number;
   isLiked: boolean;
@@ -82,11 +84,12 @@ const PostDetail = () => {
         if (error) throw error;
         if (data && data.is_premium) base = { id: data.id, profileId: data.profile_id, content: data.description || "", createdAt: data.created_at, mediaUrl: data.media_url, mediaType: data.media_type, promotedUntil: null };
       } else {
+        // "*" so newer columns (media, available_on) are read when present
         const { data, error } = await supabase.from("posts")
-          .select("id, profile_id, content, media_url, media_type, created_at, promoted_until")
+          .select("*")
           .eq("id", id).maybeSingle();
         if (error) throw error;
-        if (data) base = { id: data.id, profileId: data.profile_id, content: data.content || "", createdAt: data.created_at, mediaUrl: data.media_url, mediaType: data.media_type, promotedUntil: (data as any).promoted_until ?? null };
+        if (data) base = { id: data.id, profileId: data.profile_id, content: data.content || "", createdAt: data.created_at, mediaUrl: data.media_url, mediaType: data.media_type, media: (data as any).media, availableOn: (data as any).available_on ?? null, promotedUntil: (data as any).promoted_until ?? null };
       }
       if (!base) { setStatus("missing"); return; }
 
@@ -179,13 +182,16 @@ const PostDetail = () => {
             createdAt={item.createdAt}
             mediaUrl={item.mediaUrl}
             mediaType={item.mediaType}
+            media={item.media}
+            availableOn={item.availableOn}
+            isOwner={isOwner}
             likes={item.likes}
             commentsCount={item.commentsCount}
             isLiked={item.isLiked}
             promoted={promoted}
             postId={isPromo ? undefined : item.id}
             onAuthorClick={() => navigate(`/artist/${author.id}`)}
-            onMediaClick={() => item.mediaUrl && setMediaPreview({ url: item.mediaUrl, type: item.mediaType === "video" ? "video" : "image" })}
+            onMediaClick={(it) => it && setMediaPreview(it)}
             onLike={handleLike}
             onComment={() => setCommentsOpen(true)}
             onShare={() => sharePost({ profileId: author.id, stageName: author.stage_name || "Artist", type: isPromo ? "announcement" : "post" })}

@@ -56,7 +56,7 @@ export const getPostLimit = (plan?: string | null): number => {
   switch (getPlan(plan)) {
     case 'Premium': return 30;
     case 'Standard': return 15;
-    default: return 0; // Free cannot post
+    default: return 3; // Free: a few posts so new artists can get known
   }
 };
 
@@ -131,9 +131,13 @@ export const canSetEstimatedPrice = (_plan?: string | null): boolean => true;
 export const getEstimatedPriceLimit = (_plan?: string | null): number => 3;
 
 /** Whether the plan can post (posts, ads, promotions) */
+/** Announcements and promotions: Standard and Premium only. */
 export const canPost = (plan?: string | null): boolean => {
   return getPlan(plan) !== 'Free';
 };
+
+/** Regular posts: every plan (Free has a small monthly quota). */
+export const canPublishPosts = (plan?: string | null): boolean => getPostLimit(plan) > 0;
 
 /**
  * Booking by time interval is available on every plan (the time goes into the offer and

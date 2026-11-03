@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,7 +53,16 @@ const BookArtist = () => {
     first_name: string; last_name: string; email: string; phone: string;
   } | null>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  // "?date=YYYY-MM-DD" (e.g. from an availability post) pre-selects that day, if it isn't past
+  const [searchParams] = useSearchParams();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(() => {
+    const raw = searchParams.get("date");
+    if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return undefined;
+    const d = parseYMDToLocalDate(raw);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Number.isNaN(d.getTime()) || d < today ? undefined : d;
+  });
   const [form, setForm] = useState<BookingRequestForm>({
     name: "",
     email: "",
@@ -249,6 +258,7 @@ const BookArtist = () => {
             <Calendar
               mode="single"
               selected={selectedDate}
+              defaultMonth={selectedDate}
               onSelect={setSelectedDate}
               className="rounded-lg border border-border shadow-sm pointer-events-auto"
               classNames={{

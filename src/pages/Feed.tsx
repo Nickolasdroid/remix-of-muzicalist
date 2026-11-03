@@ -6,6 +6,9 @@ import { Heart, MessageCircle, MoreHorizontal, Flag, Globe, Trash2, Loader2, Sen
 import { useTranslation } from "react-i18next";
 import PostMediaFrame from "@/components/PostMediaFrame";
 import ExpandableText, { TextMention } from "@/components/ExpandableText";
+import PostMedia from "@/components/post/PostMedia";
+import AvailabilityBlock from "@/components/post/AvailabilityBlock";
+import { postMediaItems } from "@/lib/postMedia";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -50,6 +53,10 @@ interface FeedItem {
   content: string;
   media_url: string | null;
   media_type: string | null;
+  /** Several photos (posts.media) */
+  media?: unknown;
+  /** Availability post date */
+  availableOn?: string | null;
   created_at: string;
   profile: {
     stage_name: string;
@@ -157,7 +164,8 @@ const Feed = () => {
           .from('posts')
           // `posts` has two FKs to `profiles` (author + introduced artist), so the
           // author embed must be disambiguated explicitly by constraint name.
-          .select(`id, profile_id, content, media_url, media_type, created_at, promoted_until, post_kind, subject_profile_id, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan, county)`)
+          // "*" so newer post columns (media, available_on) are read when present
+          .select(`*, profiles!posts_profile_id_fkey!inner (stage_name, avatar_url, specialization, plan, county)`)
           .order('created_at', { ascending: false })
           .range(from, to),
         supabase
@@ -235,6 +243,8 @@ const Feed = () => {
         content: post.content,
         media_url: post.media_url,
         media_type: post.media_type,
+        media: post.media ?? null,
+        availableOn: post.available_on ?? null,
         created_at: post.created_at,
         profile: post.profiles || { stage_name: 'Unknown Artist', avatar_url: null, specialization: null, plan: 'Free' },
         isLiked: userPostLikes.has(post.id),
@@ -594,10 +604,14 @@ const Feed = () => {
                   <ExpandableText text={item.content} maxLength={200} className="mt-2 text-[15px] leading-normal" mentions={item.mentions} />
                 </div>
                 
-                {item.media_url && <PostMediaFrame url={item.media_url} type={item.media_type} alt="Post content" onClick={() => setMediaPreview({
-            url: item.media_url!,
-            type: item.media_type === "video" ? "video" : "image"
-          })} />}
+                {item.availableOn && (
+                  <AvailabilityBlock profileId={item.profile_id} date={item.availableOn} place={item.profile.county} isOwner={currentUserId === item.profile_id} />
+                )}
+                <PostMedia
+                  items={postMediaItems(item)}
+                  text={item.content}
+                  onMediaClick={(it) => setMediaPreview(it)}
+                />
                 <PostActions isLiked={item.isLiked} onLike={() => handleLike(item.id)} onComment={() => setCommentsTarget({ id: item.id, type: "post" })} onShare={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "post" })} likes={item.likes} likeTargetId={item.id} commentsCount={item.commentsCount} />
 
               </Card>

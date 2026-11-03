@@ -4,7 +4,9 @@ import PostActions from "@/components/PostActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ExpandableText, { TextMention } from "@/components/ExpandableText";
-import PostMediaFrame from "@/components/PostMediaFrame";
+import PostMedia from "@/components/post/PostMedia";
+import AvailabilityBlock from "@/components/post/AvailabilityBlock";
+import { postMediaItems, type PostMediaItem } from "@/lib/postMedia";
 import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { formatSmartDate } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -26,6 +28,12 @@ interface FeedPostCardProps {
   createdAt: string;
   mediaUrl?: string | null;
   mediaType?: string | null;
+  /** Several photos (posts.media); wins over mediaUrl/mediaType when present */
+  media?: unknown;
+  /** Availability post: the date (YYYY-MM-DD) the artist is free */
+  availableOn?: string | null;
+  /** Viewer owns the post (hides "Request offer") */
+  isOwner?: boolean;
   likes?: number;
   commentsCount?: number;
   isLiked?: boolean;
@@ -38,7 +46,7 @@ interface FeedPostCardProps {
   /** Three-dot menu element rendered in the top-right corner */
   menu?: ReactNode;
   onAuthorClick?: () => void;
-  onMediaClick?: () => void;
+  onMediaClick?: (item?: PostMediaItem) => void;
   onLike?: () => void;
   onComment?: () => void;
   onShare?: () => void;
@@ -57,6 +65,9 @@ const FeedPostCard = ({
   createdAt,
   mediaUrl,
   mediaType,
+  media,
+  availableOn,
+  isOwner = false,
   likes = 0,
   commentsCount = 0,
   isLiked = false,
@@ -112,19 +123,20 @@ const FeedPostCard = ({
             onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
             className={onOpen ? "cursor-pointer" : undefined}
           >
-            <div
-            onClick={onOpen ? (e) => { if (!(e.target as HTMLElement).closest("a,button")) onOpen(); } : undefined}
-            className={onOpen ? "cursor-pointer" : undefined}
-          >
             <ExpandableText text={content} maxLength={200} className="mt-2 text-[15px] leading-normal" mentions={mentions} />
-          </div>
           </div>
         )}
       </div>
 
-      {mediaUrl && (
-        <PostMediaFrame url={mediaUrl} type={mediaType} alt="Post content" onClick={onMediaClick} />
+      {availableOn && author.id && (
+        <AvailabilityBlock profileId={author.id} date={availableOn} place={author.county} isOwner={isOwner} />
       )}
+
+      <PostMedia
+        items={postMediaItems({ media, media_url: mediaUrl, media_type: mediaType })}
+        text={content}
+        onMediaClick={onMediaClick}
+      />
 
 
       <PostActions isLiked={isLiked} onLike={onLike} onComment={onComment} onShare={onShare} likes={likes} likeTargetId={postId} commentsCount={commentsCount} shares={shares} />

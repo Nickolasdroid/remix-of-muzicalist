@@ -69,7 +69,7 @@ import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility } from "@/lib/planLimits";
+import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, canPublishPosts } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
@@ -318,7 +318,7 @@ const Dashboard = () => {
    * visibility of content the owner already created. A downgrade blocks new
    * creation but never hides historical Posts / Announcements.
    */
-  const canCreatePosts = isAdmin || canPost(currentPlan);
+  const canCreatePosts = isAdmin || canPublishPosts(currentPlan);
   const canCreateAnnouncements = isAdmin || canPost(currentPlan);
 
   // Gallery state
@@ -2350,6 +2350,8 @@ const Dashboard = () => {
                             __date: p.created_at,
                             __mediaType: p.media_type || null,
                             __mediaUrl: p.media_url || null,
+                            __media: (p as any).media ?? null,
+                            __availableOn: (p as any).available_on ?? null,
                           }));
                           const merged = [...postItems, ...promoItems].sort((a, b) =>
                             new Date(b.__date).getTime() - new Date(a.__date).getTime()
@@ -2434,13 +2436,16 @@ const Dashboard = () => {
                                     createdAt={item.__date}
                                     mediaUrl={item.__mediaUrl}
                                     mediaType={item.__mediaType}
+                                    media={(item as any).__media}
+                                    availableOn={(item as any).__availableOn}
+                                    isOwner
                                     likes={(item as any).likes || 0}
                                     commentsCount={(item as any).commentsCount || 0}
                                     isLiked={(item as any).isLiked}
                                     promoted={isPostPromoted}
                                     shares={(item as any).shares || 0}
                                     onOpen={() => navigate(postDetailPath(item.id, item.__kind))}
-                                    onMediaClick={() => item.__mediaUrl && setMediaPreview({ url: item.__mediaUrl, type: item.__mediaType === 'video' ? 'video' : 'image' })}
+                                    onMediaClick={(it) => it && setMediaPreview(it)}
                                     onLike={() => isPromo ? handleAnnouncementLike(item.id) : (item.id && handlePostLike(item.id))}
                                     onComment={() => setCommentsTarget({ id: item.id, type: isPromo ? 'announcement' : 'post' })}
                                     onShare={() => sharePost({ profileId: profile?.id, stageName: profile?.stage_name || 'Artist', type: isPromo ? 'announcement' : 'post' })}
