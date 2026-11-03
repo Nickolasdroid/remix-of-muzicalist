@@ -71,6 +71,13 @@
       "when": 1793042139153,
       "tag": "0009_oportunitati_complet",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793678937759,
+      "tag": "0010_create_user_recent_places",
+      "breakpoints": true
     }
   ]
 }

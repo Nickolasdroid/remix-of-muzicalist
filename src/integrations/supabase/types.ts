@@ -2463,6 +2463,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_recent_places: {
+        Row: {
+          label: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          label: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          label?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -3254,6 +3272,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      remember_recent_place: { Args: { _label: string }; Returns: undefined }
       reopen_case: {
         Args: { _case_id: string; _reason?: string }
         Returns: {
