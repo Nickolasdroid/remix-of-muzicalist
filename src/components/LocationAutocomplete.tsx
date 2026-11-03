@@ -145,8 +145,11 @@ const topLocalitiesInCounty = (county: string, n: number): PhotonFeature[] => {
     .map(toFeature);
 };
 
-/** Recently chosen places (labels), newest first. Browser-only convenience. */
-const readRecent = (): string[] => {
+/**
+ * Recently chosen places, newest first, stored on the account (public.user_recent_places).
+ * localStorage is only a fallback for guests, or when the account copy can't be reached.
+ */
+const readLocalRecent = (): string[] => {
   try {
     const raw = localStorage.getItem(RECENT_KEY);
     const arr = raw ? JSON.parse(raw) : [];
@@ -155,13 +158,53 @@ const readRecent = (): string[] => {
     return [];
   }
 };
-const saveRecent = (label: string) => {
+const saveLocalRecent = (label: string) => {
   try {
-    const next = [label, ...readRecent().filter((l) => l !== label)].slice(0, RECENT_MAX);
+    const next = [label, ...readLocalRecent().filter((l) => l !== label)].slice(0, RECENT_MAX);
     localStorage.setItem(RECENT_KEY, JSON.stringify(next));
   } catch {
     /* storage unavailable */
   }
+};
+const clearLocalRecent = () => {
+  try {
+    localStorage.removeItem(RECENT_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+};
+
+const getUserId = async (): Promise<string | null> => {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user?.id ?? null;
+};
+
+const readRecent = async (): Promise<string[]> => {
+  const uid = await getUserId();
+  if (!uid) return readLocalRecent();
+  const { data, error } = await (supabase as any)
+    .from("user_recent_places")
+    .select("label")
+    .eq("user_id", uid)
+    .order("used_at", { ascending: false })
+    .limit(RECENT_MAX);
+  if (error) return readLocalRecent();
+  const labels = ((data as { label: string }[]) || []).map((r) => r.label);
+  // One-time move of places picked on this device before recents were saved on the account
+  const local = readLocalRecent();
+  if (local.length > 0) {
+    for (const l of [...local].reverse()) await (supabase as any).rpc("remember_recent_place", { _label: l });
+    clearLocalRecent();
+    return [...labels, ...local.filter((l) => !labels.includes(l))].slice(0, RECENT_MAX);
+  }
+  return labels;
+};
+
+const saveRecent = async (label: string) => {
+  const uid = await getUserId();
+  if (!uid) return saveLocalRecent(label);
+  const { error } = await (supabase as any).rpc("remember_recent_place", { _label: label });
+  if (error) saveLocalRecent(label);
 };
 /** "Turda, Cluj, Romania" -> a feature for display. */
 const featureFromLabel = (label: string, idx: number): PhotonFeature => {
@@ -230,6 +273,7 @@ const LocationAutocomplete = ({
   const ro = (i18n.language || "ro").startsWith("ro");
   const isRomania = (country ? getCountryCode(country) : null) === "RO";
   const internalChangeRef = useRef(false);
+  const inputFocusedRef = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
   // When the list opens near the bottom of a dialog/page, bring it into view
   useEffect(() => {
@@ -399,7 +443,7 @@ const LocationAutocomplete = ({
     justSelectedRef.current = true;
     setQuery(label);
     onChange(label);
-    saveRecent(label);
+    void saveRecent(label);
     setOpen(false);
     setResults([]);
   };
@@ -415,12 +459,15 @@ const LocationAutocomplete = ({
       if (results.length > 0) setOpen(true);
       return;
     }
-    const recent = readRecent().map(featureFromLabel);
-    setFocusGroups((g) => ({ ...g, recent }));
-    if (recent.length > 0 || focusGroups.county.length > 0) {
+    if (focusGroups.recent.length > 0 || focusGroups.county.length > 0) {
       setActiveIndex(-1);
       setOpen(true);
     }
+    void readRecent().then((labels) => {
+      const recent = labels.map(featureFromLabel);
+      setFocusGroups((g) => ({ ...g, recent }));
+      if (recent.length > 0) setOpen((o) => o || inputFocusedRef.current);
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -462,8 +509,14 @@ const LocationAutocomplete = ({
             }
             if (e.target.value.trim().length < 2) openFocusSuggestions();
           }}
-          onFocus={openFocusSuggestions}
-          onBlur={() => setTouched(true)}
+          onFocus={() => {
+            inputFocusedRef.current = true;
+            openFocusSuggestions();
+          }}
+          onBlur={() => {
+            inputFocusedRef.current = false;
+            setTouched(true);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
