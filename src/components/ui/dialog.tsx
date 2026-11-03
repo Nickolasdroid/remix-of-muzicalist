@@ -6,8 +6,9 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** Root that also closes on the phone's back button (see modalHistory). */
-const Dialog = ({ open, defaultOpen, onOpenChange, ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) => {
-  const [isOpen, setOpen] = useModalOpenState(open, defaultOpen, onOpenChange);
+type DialogProps = React.ComponentProps<typeof DialogPrimitive.Root> & { manageHistory?: boolean };
+const Dialog = ({ open, defaultOpen, onOpenChange, manageHistory = true, ...props }: DialogProps) => {
+  const [isOpen, setOpen] = useModalOpenState(open, defaultOpen, onOpenChange, manageHistory);
   return <DialogPrimitive.Root open={isOpen} onOpenChange={setOpen} {...props} />;
 };
 
