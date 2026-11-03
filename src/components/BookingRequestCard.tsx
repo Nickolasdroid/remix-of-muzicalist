@@ -103,7 +103,7 @@ const BookingRequestCard = ({
                 </span>
               )}
               {hasPrice && (
-                <span className={statusKey === "cancelled" ? "tabular-nums line-through text-muted-foreground" : "font-semibold text-foreground tabular-nums"}>
+                <span className={statusKey === "cancelled" ? "tabular-nums text-muted-foreground" : "font-semibold text-foreground tabular-nums"}>
                   {formatMoney(booking.offer_price, booking.offer_currency, lang)}
                 </span>
               )}
