@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { bandMembersLabel } from "@/lib/bandMembers";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import ReviewsEntryRow from "@/components/ReviewsEntryRow";
@@ -34,7 +34,7 @@ import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
-import { sortBookingsForPreview } from "@/lib/bookingDisplay";
+import { sortBookingsForPreview, isClosedBooking, bookingStatusKey } from "@/lib/bookingDisplay";
 import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
@@ -455,6 +455,13 @@ const Dashboard = () => {
     } = await (supabase as any).rpc('get_my_calendar_events');
     if (data) setCalendarEvents(data);
   };
+  // Dashboard preview: only what still needs attention (new, offer sent, upcoming confirmed).
+  // Cancelled and past bookings stay under "See all".
+  const activePreview = useMemo(
+    () => sortBookingsForPreview(bookingRequests.filter((r) => !isClosedBooking(bookingStatusKey(r)))),
+    [bookingRequests]
+  );
+
   const loadBookingRequests = async () => {
     if (!user) return;
     const {
@@ -3076,8 +3083,16 @@ const Dashboard = () => {
                                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
-                              </Card> : <div className="space-y-2.5">
-                                {sortBookingsForPreview(bookingRequests).slice(0, 5).map((request) => (
+                              </Card> : activePreview.length === 0 ? (
+                                <div className="rounded-xl border border-dashed border-border/60 px-4 py-6 text-center">
+                                  <p className="text-sm font-medium text-foreground">No active requests</p>
+                                  <p className="mt-1 text-xs text-muted-foreground">Cancelled and past requests are in your history.</p>
+                                  <Button variant="ghost" size="sm" className="mt-2 rounded-lg text-accent hover:text-accent" onClick={() => navigate("/booking-requests")}>
+                                    View history
+                                  </Button>
+                                </div>
+                              ) : <div className="space-y-2.5">
+                                {activePreview.slice(0, 5).map((request) => (
                                   <BookingRequestCard
                                     key={request.id}
                                     booking={request}

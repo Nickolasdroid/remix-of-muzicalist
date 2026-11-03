@@ -88,7 +88,7 @@ const BookingRequestCard = ({
         <div className={`min-w-0 flex-1 ${closed ? "opacity-70" : ""}`}>
           <div className="flex items-start justify-between gap-2">
             <p className="truncate font-semibold text-foreground">{booking.event_type || "Event"}</p>
-            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
+            <span className={`md:hidden shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
               {bookingStatusLabel(statusKey, viewer)}
             </span>
           </div>
@@ -103,7 +103,7 @@ const BookingRequestCard = ({
                 </span>
               )}
               {hasPrice && (
-                <span className="font-semibold text-foreground tabular-nums">
+                <span className={statusKey === "cancelled" ? "tabular-nums line-through text-muted-foreground" : "font-semibold text-foreground tabular-nums"}>
                   {formatMoney(booking.offer_price, booking.offer_currency, lang)}
                 </span>
               )}
@@ -111,7 +111,13 @@ const BookingRequestCard = ({
           )}
         </div>
 
-        <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground/60 transition-colors group-hover:text-accent md:block" aria-hidden="true" />
+        {/* Desktop: status sits on the right, next to the chevron, so the row reads left-to-right */}
+        <div className="hidden md:flex shrink-0 items-center gap-3">
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
+            {bookingStatusLabel(statusKey, viewer)}
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground/60 transition-colors group-hover:text-accent" aria-hidden="true" />
+        </div>
       </div>
 
       {actions && (
