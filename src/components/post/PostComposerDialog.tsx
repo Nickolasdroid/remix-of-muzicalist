@@ -235,7 +235,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const nearLimit = used >= MAX_LENGTH * 0.9;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <CreationModalShell
         title="New post"
         bodyClassName="space-y-0 pt-4 pb-0"

@@ -298,7 +298,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const labelCls = "text-[13.5px] font-semibold text-foreground";
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <DialogContent className={cn("max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col", FULLSCREEN_ON_MOBILE)}>
         <MobileComposerHeader
           title={isGig ? "Looking for an artist" : "Looking for a collaborator"}

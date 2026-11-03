@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
+import { useCloseOnBack as useModalCloseOnBack } from "@/lib/modalHistory";
 
 /**
  * Makes the phone/browser Back button close a full-screen composer instead of leaving
@@ -10,35 +11,8 @@ import { useCallback, useEffect, useRef } from "react";
  * so the extra entry is removed.
  */
 export function useCloseOnBack(open: boolean, onBack: () => boolean) {
-  const pushed = useRef(false);
-  const ignoreNextPop = useRef(false);
-  const onBackRef = useRef(onBack);
-  onBackRef.current = onBack;
-
-  const push = () => {
-    window.history.pushState({ ...(window.history.state ?? {}), mzComposer: true }, "");
-    pushed.current = true;
-  };
-
-  useEffect(() => {
-    if (!open) return;
-    if (!pushed.current) push();
-    const onPop = () => {
-      if (ignoreNextPop.current) {
-        ignoreNextPop.current = false;
-        return;
-      }
-      pushed.current = false;
-      if (!onBackRef.current()) push();
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, [open]);
-
-  return useCallback(() => {
-    if (!pushed.current) return;
-    pushed.current = false;
-    ignoreNextPop.current = true;
-    window.history.back();
-  }, []);
+  useModalCloseOnBack(open, onBack);
+  // The shared manager releases entries when `open` becomes false, including
+  // nested discard confirmations. Never start a second asynchronous traversal.
+  return useCallback(() => {}, []);
 }
