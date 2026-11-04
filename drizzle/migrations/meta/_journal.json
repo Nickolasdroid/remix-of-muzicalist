@@ -85,6 +85,13 @@
       "when": 1793678953647,
       "tag": "0011_restrict_recent_places_direct_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793799469607,
+      "tag": "0012_posts_media_availability_and_free_limits",
+      "breakpoints": true
     }
   ]
 }

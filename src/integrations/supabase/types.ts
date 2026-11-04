@@ -1822,9 +1822,13 @@ export type Database = {
       }
       posts: {
         Row: {
+          available_from: string | null
+          available_on: string | null
+          available_until: string | null
           content: string
           created_at: string
           id: string
+          media: Json | null
           media_type: string | null
           media_url: string | null
           post_kind: string
@@ -1835,9 +1839,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          available_from?: string | null
+          available_on?: string | null
+          available_until?: string | null
           content: string
           created_at?: string
           id?: string
+          media?: Json | null
           media_type?: string | null
           media_url?: string | null
           post_kind?: string
@@ -1848,9 +1856,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          available_from?: string | null
+          available_on?: string | null
+          available_until?: string | null
           content?: string
           created_at?: string
           id?: string
+          media?: Json | null
           media_type?: string | null
           media_url?: string | null
           post_kind?: string
