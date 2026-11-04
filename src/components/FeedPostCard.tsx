@@ -134,7 +134,7 @@ const FeedPostCard = ({
       </div>
 
       {availableOn && author.id && (
-        <AvailabilityBlock profileId={author.id} date={availableOn} from={availableFrom} until={availableUntil} place={author.county} isOwner={isOwner} />
+        <AvailabilityBlock profileId={author.id} date={availableOn} from={availableFrom} until={availableUntil} isOwner={isOwner} />
       )}
 
       <PostMedia

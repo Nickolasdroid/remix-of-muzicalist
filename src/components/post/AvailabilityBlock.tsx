@@ -11,7 +11,7 @@ const parseYMD = (s: string) => {
 };
 
 /**
- * "Available on <date> · <hours>" strip of an availability post, with a button that opens
+ * "Available on <date> · <hours>" strip (no place: the artist can mention it in the text) of an availability post, with a button that opens
  * the booking request for that date and time. It checks the artist's calendar: when the
  * day (or the announced hours) got booked or blocked, it shows "Booked" and hides the button.
  */
@@ -20,14 +20,12 @@ const AvailabilityBlock = ({
   date,
   from,
   until,
-  place,
   isOwner,
 }: {
   profileId: string;
   date: string;
   from?: string | null;
   until?: string | null;
-  place?: string | null;
   isOwner?: boolean;
 }) => {
   const navigate = useNavigate();
@@ -77,7 +75,6 @@ const AvailabilityBlock = ({
         <p className={`text-sm font-semibold leading-snug first-letter:uppercase notranslate ${closed ? "text-muted-foreground" : "text-foreground"}`} translate="no">
           {label}
           {hours ? ` · ${hours}` : ""}
-          {place ? ` · ${place}` : ""}
         </p>
       </div>
       {!closed && !isOwner && (

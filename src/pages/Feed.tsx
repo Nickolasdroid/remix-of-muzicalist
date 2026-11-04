@@ -609,7 +609,7 @@ const Feed = () => {
                 </div>
                 
                 {item.availableOn && (
-                  <AvailabilityBlock profileId={item.profile_id} date={item.availableOn} from={item.availableFrom} until={item.availableUntil} place={item.profile.county} isOwner={currentUserId === item.profile_id} />
+                  <AvailabilityBlock profileId={item.profile_id} date={item.availableOn} from={item.availableFrom} until={item.availableUntil} isOwner={currentUserId === item.profile_id} />
                 )}
                 <PostMedia
                   items={postMediaItems(item)}
