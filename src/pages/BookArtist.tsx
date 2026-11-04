@@ -67,8 +67,9 @@ const BookArtist = () => {
     name: "",
     email: "",
     phone: "",
-    startTime: "",
-    endTime: "",
+    // "?from=HH:MM&until=HH:MM" (availability post) pre-fills the hours
+    startTime: /^\d{2}:\d{2}$/.test(searchParams.get("from") || "") ? searchParams.get("from")! : "",
+    endTime: /^\d{2}:\d{2}$/.test(searchParams.get("until") || "") ? searchParams.get("until")! : "",
     endDate: null,
     eventType: "",
     message: "",

@@ -31,6 +31,8 @@ export interface OfficialPost {
   media?: unknown;
   /** Availability post date */
   available_on?: string | null;
+  available_from?: string | null;
+  available_until?: string | null;
   likes?: number;
   isLiked?: boolean;
   commentsCount?: number;
@@ -191,6 +193,8 @@ const OfficialProfileView = ({
                     mediaType={post.media_type}
                     media={post.media}
                     availableOn={post.available_on}
+                    availableFrom={post.available_from}
+                    availableUntil={post.available_until}
                     likes={post.likes || 0}
                     commentsCount={post.commentsCount || 0}
                     isLiked={!!post.isLiked}

@@ -32,6 +32,8 @@ interface DetailItem {
   mediaType: string | null;
   media?: unknown;
   availableOn?: string | null;
+  availableFrom?: string | null;
+  availableUntil?: string | null;
   promotedUntil: string | null;
   likes: number;
   isLiked: boolean;
@@ -89,7 +91,7 @@ const PostDetail = () => {
           .select("*")
           .eq("id", id).maybeSingle();
         if (error) throw error;
-        if (data) base = { id: data.id, profileId: data.profile_id, content: data.content || "", createdAt: data.created_at, mediaUrl: data.media_url, mediaType: data.media_type, media: (data as any).media, availableOn: (data as any).available_on ?? null, promotedUntil: (data as any).promoted_until ?? null };
+        if (data) base = { id: data.id, profileId: data.profile_id, content: data.content || "", createdAt: data.created_at, mediaUrl: data.media_url, mediaType: data.media_type, media: (data as any).media, availableOn: (data as any).available_on ?? null, availableFrom: (data as any).available_from ?? null, availableUntil: (data as any).available_until ?? null, promotedUntil: (data as any).promoted_until ?? null };
       }
       if (!base) { setStatus("missing"); return; }
 
@@ -184,6 +186,8 @@ const PostDetail = () => {
             mediaType={item.mediaType}
             media={item.media}
             availableOn={item.availableOn}
+            availableFrom={item.availableFrom}
+            availableUntil={item.availableUntil}
             isOwner={isOwner}
             likes={item.likes}
             commentsCount={item.commentsCount}

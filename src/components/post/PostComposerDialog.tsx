@@ -7,6 +7,8 @@ import LinkEmbed from "@/components/post/LinkEmbed";
 import { findEmbed } from "@/lib/mediaEmbeds";
 import { MAX_POST_PHOTOS, type PostMediaItem } from "@/lib/postMedia";
 import { formatLocalDateToYMD, parseYMDToLocalDate } from "@/lib/utils";
+import TimeSelector from "@/components/TimeSelector";
+import { clashingSlot, fetchPublicCalendar, isDayUnpickable, type CalendarDay } from "@/lib/availability";
 import { Dialog } from "@/components/ui/dialog";
 import MobileComposerHeader from "@/components/composer/MobileComposerHeader";
 import DiscardDraftDialog from "@/components/composer/DiscardDraftDialog";
@@ -52,6 +54,8 @@ interface PostDraft {
   content: string;
   items: PostMediaItem[];
   availableOn: string | null;
+  availableFrom?: string;
+  availableUntil?: string;
 }
 
 /**
@@ -80,6 +84,11 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   // "I'm available" post: the free date (YYYY-MM-DD)
   const [availableOn, setAvailableOn] = useState<string | null>(null);
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
+  // Optional hours of the availability (both or neither)
+  const [availableFrom, setAvailableFrom] = useState("");
+  const [availableUntil, setAvailableUntil] = useState("");
+  // The artist's own calendar: booked/blocked days can't be announced as free
+  const [myCalendar, setMyCalendar] = useState<Map<string, CalendarDay>>(new Map());
   const [draftRestored, setDraftRestored] = useState(false);
   const hasVideo = items.some((i) => i.type === "video");
   const photoCount = items.filter((i) => i.type === "image").length;
@@ -90,7 +99,9 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const postsUsed = typeof entitlements?.usage?.posts === "number" ? entitlements.usage.posts : 0;
   const postsRemaining = Number.isFinite(postLimit) ? Math.max(postLimit - postsUsed, 0) : Number.POSITIVE_INFINITY;
   const canCreate = isAdmin || canPublishPosts(profile?.plan);
-  const isValid = content.trim().length > 0 || !!availableOn;
+  const hoursHalf = !!availableFrom !== !!availableUntil; // one time without the other
+  const hoursClash = !!availableOn && !!availableFrom && !!availableUntil && !!clashingSlot(myCalendar.get(availableOn), availableFrom, availableUntil);
+  const isValid = (content.trim().length > 0 || !!availableOn) && !hoursHalf && !hoursClash;
 
   useEffect(() => {
     if (!open) return;
@@ -114,6 +125,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             setContent((c) => c || d.content || "");
             setItems((cur) => (cur.length ? cur : Array.isArray(d.items) ? d.items : []));
             setAvailableOn((cur) => cur ?? d.availableOn ?? null);
+            setAvailableFrom((cur) => cur || d.availableFrom || "");
+            setAvailableUntil((cur) => cur || d.availableUntil || "");
             setDraftRestored(true);
           }
         } catch {
@@ -142,7 +155,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     const t = window.setTimeout(() => {
       try {
         if (content.trim() || items.length || availableOn) {
-          localStorage.setItem(draftKey(userId), JSON.stringify({ content, items, availableOn } satisfies PostDraft));
+          localStorage.setItem(draftKey(userId), JSON.stringify({ content, items, availableOn, availableFrom, availableUntil } satisfies PostDraft));
         } else {
           localStorage.removeItem(draftKey(userId));
         }
@@ -151,7 +164,17 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
       }
     }, 400);
     return () => window.clearTimeout(t);
-  }, [open, userId, content, items, availableOn]);
+  }, [open, userId, content, items, availableOn, availableFrom, availableUntil]);
+
+  // Load the artist's calendar when the date picker is first needed
+  useEffect(() => {
+    if (!open || !userId) return;
+    let active = true;
+    fetchPublicCalendar(userId).then((cal) => active && setMyCalendar(cal));
+    return () => {
+      active = false;
+    };
+  }, [open, userId]);
 
   const clearSavedDraft = () => {
     try {
@@ -165,6 +188,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
     setContent("");
     setItems([]);
     setAvailableOn(null);
+    setAvailableFrom("");
+    setAvailableUntil("");
     setDraftRestored(false);
     setUploadProgress(null);
   };
@@ -280,7 +305,13 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
           media_type: items[0]?.type ?? null,
           // New columns are only sent when used, so plain posts work everywhere
           ...(items.length > 1 ? { media: items } : {}),
-          ...(availableOn ? { post_kind: "availability", available_on: availableOn } : {}),
+          ...(availableOn
+            ? {
+                post_kind: "availability",
+                available_on: availableOn,
+                ...(availableFrom && availableUntil ? { available_from: availableFrom, available_until: availableUntil } : {}),
+              }
+            : {}),
         } as any)
         .select("id")
         .single();
@@ -317,6 +348,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
 
   const dateLocale = (i18n.language || "ro").startsWith("ro") ? "ro-RO" : "en-GB";
   const embed = findEmbed(content);
+  const clash = availableOn && availableFrom && availableUntil ? clashingSlot(myCalendar.get(availableOn), availableFrom, availableUntil) : null;
   const used = content.length;
   const ringPct = Math.min(100, Math.round((used / MAX_LENGTH) * 100));
   const nearLimit = used >= MAX_LENGTH * 0.9;
@@ -420,11 +452,33 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             <button
               type="button"
               aria-label="Remove date"
-              onClick={() => setAvailableOn(null)}
+              onClick={() => {
+                setAvailableOn(null);
+                setAvailableFrom("");
+                setAvailableUntil("");
+              }}
               className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
+        )}
+
+        {availableOn && (
+          <div className="mt-2.5">
+            <p className="mb-1.5 text-xs text-muted-foreground">Hours (optional, leave empty for the whole day)</p>
+            <div className="grid grid-cols-2 gap-2.5">
+              <TimeSelector id="avail-from" value={availableFrom} onChange={setAvailableFrom} placeholder="From" triggerClassName="h-10 w-full rounded-lg bg-card" />
+              <TimeSelector id="avail-until" value={availableUntil} onChange={setAvailableUntil} placeholder="Until" triggerClassName="h-10 w-full rounded-lg bg-card" />
+            </div>
+            {hoursHalf && <p className="mt-1.5 text-xs text-amber-400">Choose both the start and the end time.</p>}
+            {availableFrom && availableUntil && clash && (
+              <p className="mt-1.5 text-xs text-amber-400">
+                <span>You already have a booking at</span>{" "}
+                <span className="notranslate" translate="no">{clash.startTime}–{clash.endTime}</span>
+                <span>. Choose hours that don't overlap.</span>
+              </p>
+            )}
           </div>
         )}
 
@@ -528,7 +582,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
                   setAvailableOn(d ? formatLocalDateToYMD(d) : null);
                   setAvailabilityOpen(false);
                 }}
-                disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0)) || isDayUnpickable(myCalendar.get(formatLocalDateToYMD(d)))}
                 className="p-3 pointer-events-auto"
               />
             </PopoverContent>

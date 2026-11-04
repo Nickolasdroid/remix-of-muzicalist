@@ -32,6 +32,9 @@ interface FeedPostCardProps {
   media?: unknown;
   /** Availability post: the date (YYYY-MM-DD) the artist is free */
   availableOn?: string | null;
+  /** Optional hours of the availability ("HH:MM") */
+  availableFrom?: string | null;
+  availableUntil?: string | null;
   /** Viewer owns the post (hides "Request offer") */
   isOwner?: boolean;
   likes?: number;
@@ -67,6 +70,8 @@ const FeedPostCard = ({
   mediaType,
   media,
   availableOn,
+  availableFrom,
+  availableUntil,
   isOwner = false,
   likes = 0,
   commentsCount = 0,
@@ -129,7 +134,7 @@ const FeedPostCard = ({
       </div>
 
       {availableOn && author.id && (
-        <AvailabilityBlock profileId={author.id} date={availableOn} place={author.county} isOwner={isOwner} />
+        <AvailabilityBlock profileId={author.id} date={availableOn} from={availableFrom} until={availableUntil} place={author.county} isOwner={isOwner} />
       )}
 
       <PostMedia

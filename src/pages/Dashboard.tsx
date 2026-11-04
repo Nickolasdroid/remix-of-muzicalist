@@ -2352,6 +2352,8 @@ const Dashboard = () => {
                             __mediaUrl: p.media_url || null,
                             __media: (p as any).media ?? null,
                             __availableOn: (p as any).available_on ?? null,
+                            __availableFrom: (p as any).available_from ?? null,
+                            __availableUntil: (p as any).available_until ?? null,
                           }));
                           const merged = [...postItems, ...promoItems].sort((a, b) =>
                             new Date(b.__date).getTime() - new Date(a.__date).getTime()
@@ -2438,6 +2440,8 @@ const Dashboard = () => {
                                     mediaType={item.__mediaType}
                                     media={(item as any).__media}
                                     availableOn={(item as any).__availableOn}
+                                    availableFrom={(item as any).__availableFrom}
+                                    availableUntil={(item as any).__availableUntil}
                                     isOwner
                                     likes={(item as any).likes || 0}
                                     commentsCount={(item as any).commentsCount || 0}

@@ -57,6 +57,8 @@ interface FeedItem {
   media?: unknown;
   /** Availability post date */
   availableOn?: string | null;
+  availableFrom?: string | null;
+  availableUntil?: string | null;
   created_at: string;
   profile: {
     stage_name: string;
@@ -245,6 +247,8 @@ const Feed = () => {
         media_type: post.media_type,
         media: post.media ?? null,
         availableOn: post.available_on ?? null,
+        availableFrom: post.available_from ?? null,
+        availableUntil: post.available_until ?? null,
         created_at: post.created_at,
         profile: post.profiles || { stage_name: 'Unknown Artist', avatar_url: null, specialization: null, plan: 'Free' },
         isLiked: userPostLikes.has(post.id),
@@ -605,7 +609,7 @@ const Feed = () => {
                 </div>
                 
                 {item.availableOn && (
-                  <AvailabilityBlock profileId={item.profile_id} date={item.availableOn} place={item.profile.county} isOwner={currentUserId === item.profile_id} />
+                  <AvailabilityBlock profileId={item.profile_id} date={item.availableOn} from={item.availableFrom} until={item.availableUntil} place={item.profile.county} isOwner={currentUserId === item.profile_id} />
                 )}
                 <PostMedia
                   items={postMediaItems(item)}

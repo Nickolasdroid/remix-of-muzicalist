@@ -42,3 +42,31 @@ describe("embedSrc", () => {
     expect(src).toContain("start=90");
   });
 });
+
+import { availabilityState, isDayUnpickable } from "@/lib/availability";
+
+describe("availabilityState", () => {
+  it("is free on an empty or available day", () => {
+    expect(availabilityState(undefined)).toBe("free");
+    expect(availabilityState({ status: "available", slots: [] }, "18:00", "02:00")).toBe("free");
+  });
+  it("is taken on blocked or all-day bookings", () => {
+    expect(availabilityState({ status: "blocked", slots: [] })).toBe("taken");
+    expect(availabilityState({ status: "booked", slots: [] }, "18:00", "23:00")).toBe("taken");
+  });
+  it("checks only the announced interval on partly booked days", () => {
+    const day = { status: "booked", slots: [{ startTime: "12:00", endTime: "16:00" }] };
+    expect(availabilityState(day, "18:00", "02:00")).toBe("free");
+    expect(availabilityState(day, "15:00", "20:00")).toBe("taken");
+    expect(availabilityState(day)).toBe("free");
+  });
+  it("handles intervals past midnight", () => {
+    const day = { status: "booked", slots: [{ startTime: "22:00", endTime: "03:00" }] };
+    expect(availabilityState(day, "18:00", "23:00")).toBe("taken");
+    expect(availabilityState(day, "10:00", "14:00")).toBe("free");
+  });
+  it("blocks picking fully booked or unavailable days", () => {
+    expect(isDayUnpickable({ status: "blocked", slots: [] })).toBe(true);
+    expect(isDayUnpickable({ status: "booked", slots: [{ startTime: "12:00", endTime: "16:00" }] })).toBe(false);
+  });
+});
