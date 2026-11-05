@@ -2845,7 +2845,6 @@ export const RO_TEXT: Record<string, string> = {
   "artists only": "doar pentru artiști",
   "What are you looking for": "Ce cauți",
   "Who are you looking for": "Pe cine cauți",
-  "MC / Host": "MC / Prezentator",
   "Instrument / role": "Instrument / rol",
   "e.g. Drums, saxophone, keys": "ex. Tobe, saxofon, clape",
   "County / town": "Județ / localitate",

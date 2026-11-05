@@ -7,14 +7,14 @@
 import { eventTypeRo, isKnownEventType } from "@/lib/eventTypes";
 
 export type OpportunityKind = "gig" | "collab";
-export type OpportunitySeeking = "DJ" | "Band" | "Singer" | "Instrumentalist" | "MC";
+export type OpportunitySeeking = "DJ" | "Band" | "Singer" | "Instrumentalist";
 export type CollabType = "one_event" | "replacement" | "permanent";
 export type BudgetMode = "range" | "negotiable" | "none";
 export type OpportunityStatus = "open" | "filled" | "closed";
 
-/** What an organizer can look for. MC is only offered for collaborations. */
+/** What an organizer / artist can look for (musicians only). */
 export const GIG_SEEKING: OpportunitySeeking[] = ["DJ", "Band", "Singer", "Instrumentalist"];
-export const COLLAB_SEEKING: OpportunitySeeking[] = ["DJ", "Singer", "Instrumentalist", "MC"];
+export const COLLAB_SEEKING: OpportunitySeeking[] = ["DJ", "Singer", "Instrumentalist"];
 export const COLLAB_TYPES: CollabType[] = ["one_event", "replacement", "permanent"];
 
 /** English UI labels (translated by the RO dictionary on screen). */
@@ -23,7 +23,6 @@ export const SEEKING_LABEL: Record<OpportunitySeeking, string> = {
   Band: "Band",
   Singer: "Singer",
   Instrumentalist: "Instrumentalist",
-  MC: "MC / Host",
 };
 
 export const COLLAB_TYPE_LABEL: Record<CollabType, string> = {
@@ -37,7 +36,6 @@ const SEEKING_RO: Record<OpportunitySeeking, string> = {
   Band: "Formație",
   Singer: "Solist vocal",
   Instrumentalist: "Instrumentist",
-  MC: "MC / Prezentator",
 };
 
 /** Romanian/English label by language, for text stored with the announcement (the title). */
@@ -332,7 +330,8 @@ export const opportunityDisplayTitle = (
   },
   lang = "ro",
 ): string => {
-  if ((o.kind === "gig" || o.kind === "collab") && o.seeking) {
+  // Rows with a role no longer offered (e.g. the old "MC / Host") fall back to their stored title
+  if ((o.kind === "gig" || o.kind === "collab") && o.seeking && o.seeking in SEEKING_LABEL) {
     const built = buildOpportunityTitle(
       {
         kind: o.kind as OpportunityKind,
