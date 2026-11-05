@@ -10,7 +10,7 @@ import {
   MyAvailability,
   OpportunitySeeking,
   formatOpportunityBudget,
-  formatPlace,
+  formatPlaceWithCountry,
   opportunityDisplayTitle,
 } from "@/lib/opportunities";
 
@@ -118,7 +118,7 @@ const OpportunityCard = ({
     ? new Date(new Date(o.expires_at).getTime() - 60_000).toLocaleDateString(locale, { day: "numeric", month: "short" })
     : null;
   const budget = formatOpportunityBudget(o, lang);
-  const place = formatPlace(o.city, o.county);
+  const place = formatPlaceWithCountry(o.city, o.county, lang);
 
   return (
     <article className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 space-y-3 shadow-sm">

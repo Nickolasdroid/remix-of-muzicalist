@@ -120,6 +120,16 @@ export const parseRomanianPlace = (label: string): { city: string | null; county
 export const formatPlace = (city?: string | null, county?: string | null) =>
   [city, county].map((s) => (s || "").trim()).filter((s, i, arr) => s && arr.indexOf(s) === i).join(", ");
 
+/**
+ * Place shown on cards, with the country, so viewers from abroad know where it is:
+ * "Câmpeni, Alba, România". Events and collaborations are published in Romania only for now
+ * (the composer searches Romanian towns), so the country is not stored per row yet.
+ */
+export const formatPlaceWithCountry = (city?: string | null, county?: string | null, lang = "ro") => {
+  const place = formatPlace(city, county);
+  return place ? `${place}, ${isRo(lang) ? "România" : "Romania"}` : "";
+};
+
 export interface OpportunityBudget {
   budget_mode?: BudgetMode | string | null;
   budget_min?: number | string | null;
