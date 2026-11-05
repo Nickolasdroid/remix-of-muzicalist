@@ -99,7 +99,7 @@ const Feed = () => {
   // One feed, several views: ?f=posts | gig | collab | available (default: everything)
   type FeedFilter = "all" | "posts" | "gig" | "collab" | "available";
   const rawFilter = searchParams.get("f");
-  const filter: FeedFilter = rawFilter === "posts" || rawFilter === "gig" || rawFilter === "collab" || rawFilter === "available" ? rawFilter : "all";
+  const requestedFilter: FeedFilter = rawFilter === "posts" || rawFilter === "gig" || rawFilter === "collab" || rawFilter === "available" ? rawFilter : "all";
   const setFilter = (f: FeedFilter) => {
     const next = new URLSearchParams(searchParams);
     if (f === "all") next.delete("f");
@@ -113,6 +113,10 @@ const Feed = () => {
   const [chipsAtEnd, setChipsAtEnd] = useState(false);
   // Who is looking, for the personal order of "All"
   const [viewer, setViewer] = useState<{ isArtist: boolean; specialization: string | null; county: string | null } | null>(null);
+  // Filters depend on who is looking: artists look for gigs and collaborators, organizers for
+  // artists. A link with a filter the viewer doesn't have opens "All" instead of an empty view.
+  const filterChoices: FeedFilter[] = !viewer ? ["all", "posts"] : viewer.isArtist ? ["all", "posts", "gig", "collab"] : ["all", "posts", "available"];
+  const filter: FeedFilter = viewer && !filterChoices.includes(requestedFilter) ? "all" : requestedFilter;
   // Open opportunities mixed into "All" for artists
   const [opportunities, setOpportunities] = useState<any[]>([]);
   // Stories stay Standard/Premium; posts are open to every artist plan
@@ -587,7 +591,7 @@ const Feed = () => {
                 { k: "gig", label: "Events" },
                 { k: "collab", label: "Collaborations" },
                 { k: "available", label: "Free to book" },
-              ] as { k: FeedFilter; label: string }[]).map((f) => (
+              ] as { k: FeedFilter; label: string }[]).filter((f) => filterChoices.includes(f.k)).map((f) => (
                 <button
                   key={f.k}
                   type="button"
@@ -804,6 +808,18 @@ const Feed = () => {
           )}
         </div>
       </div>
+
+      {/* Organizers: the + creates an event announcement ("looking for an artist") */}
+      {viewer && !viewer.isArtist && (
+        <Button
+          onClick={() => navigate('/user-dashboard?new=announcement')}
+          size="icon"
+          aria-label="Create announcement"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      )}
 
       {canCreate && filter !== "gig" && filter !== "collab" && (
         <Button
