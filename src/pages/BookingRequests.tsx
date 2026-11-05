@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +32,7 @@ const BookingRequests = () => {
   usePageTitle("Booking Requests");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [receivedRequests, setReceivedRequests] = useState<any[]>([]);
@@ -135,6 +137,7 @@ const BookingRequests = () => {
   };
 
 
+  const ro = (i18n.language || i18n.resolvedLanguage || "ro").startsWith("ro");
   const isArtistViewer = viewerRole === "artist";
   // Sent view = user account, or artist looking at the "Sent" tab
   const isSentView = !isArtistViewer || tab === "sent";
@@ -225,46 +228,56 @@ const BookingRequests = () => {
             </h1>
           </div>
 
+          {/* Main switch: which list (full width, like the profile tabs) */}
           {isArtistViewer && (
-            <div className="flex gap-2 mb-4">
+            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl border border-border bg-card p-1" role="tablist">
               {([
-                { k: "received", label: "Received", n: receivedRequests.length },
-                { k: "sent", label: "Sent", n: sentRequests.length },
-              ] as { k: "received" | "sent"; label: string; n: number }[]).map((t) => (
-                <Button
+                { k: "received", ro: "Primite", en: "Received", n: receivedRequests.length },
+                { k: "sent", ro: "Trimise", en: "Sent", n: sentRequests.length },
+              ] as { k: "received" | "sent"; ro: string; en: string; n: number }[]).map((t) => (
+                <button
                   key={t.k}
-                  size="sm"
-                  variant={tab === t.k ? "default" : "outline"}
-                  className="rounded-lg"
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === t.k}
                   onClick={() => setTab(t.k)}
+                  className={`rounded-lg py-2 text-sm transition-colors ${
+                    tab === t.k ? "bg-foreground/[0.08] font-semibold text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  {t.label}
-                  <span className="ml-2 text-xs opacity-70">{t.n}</span>
-                </Button>
+                  <span className="notranslate" translate="no">{ro ? t.ro : t.en}</span>
+                  <span className="ml-1.5 tabular-nums text-xs opacity-70">{t.n}</span>
+                </button>
               ))}
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2 mb-6">
-
+          {/* Status filter: small chips on one scrolling row; empty statuses are hidden */}
+          <div className="mb-5 -mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {([
-              { k: "all", label: "All" },
-              { k: "pending", label: "Pending" },
-              { k: "accepted", label: "Confirmed" },
-              { k: "completed", label: "Completed" },
-              { k: "rejected", label: "Cancelled" },
-            ] as { k: FilterKey; label: string }[]).map((f) => (
-              <Button
-                key={f.k}
-                size="sm"
-                variant={filter === f.k ? "default" : "outline"}
-                className="rounded-lg"
-                onClick={() => setFilter(f.k)}
-              >
-                {f.label}
-                <span className="ml-2 text-xs opacity-70">{counts[f.k]}</span>
-              </Button>
-            ))}
+              { k: "all", ro: "Toate", en: "All" },
+              { k: "pending", ro: "În așteptare", en: "Pending" },
+              { k: "accepted", ro: "Confirmate", en: "Confirmed" },
+              { k: "completed", ro: "Finalizate", en: "Completed" },
+              { k: "rejected", ro: "Anulate", en: "Cancelled" },
+            ] as { k: FilterKey; ro: string; en: string }[])
+              .filter((f) => f.k === "all" || f.k === filter || counts[f.k] > 0)
+              .map((f) => (
+                <button
+                  key={f.k}
+                  type="button"
+                  aria-pressed={filter === f.k}
+                  onClick={() => setFilter(f.k)}
+                  className={`shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] transition-colors ${
+                    filter === f.k
+                      ? "border-accent bg-accent/15 font-semibold text-accent"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="notranslate" translate="no">{ro ? f.ro : f.en}</span>
+                  <span className="ml-1.5 tabular-nums opacity-70">{counts[f.k]}</span>
+                </button>
+              ))}
           </div>
 
           {loading ? (

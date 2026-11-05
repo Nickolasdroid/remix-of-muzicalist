@@ -221,13 +221,14 @@ const BookingDetailsDialog = ({
               ) : counterpartSubtitle ? (
                 <p className="text-sm text-muted-foreground truncate notranslate" translate="no">{counterpartSubtitle}</p>
               ) : null}
+              {/* Status under the name, so the subtitle keeps its full width */}
+              <span
+                className={`mt-1.5 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
+              >
+                {bookingStatusLabel(statusKey, viewer)}
+              </span>
               <DialogDescription className="sr-only">Booking details</DialogDescription>
             </div>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
-            >
-              {bookingStatusLabel(statusKey, viewer)}
-            </span>
           </div>
 
           {/* Body */}
