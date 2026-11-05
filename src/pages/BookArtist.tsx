@@ -40,7 +40,7 @@ const extractAllTimeSlotsFromNotes = (notes: string | null) => {
 };
 
 const BookArtist = () => {
-  usePageTitle("Book Artist");
+  usePageTitle("Availability");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -228,7 +228,7 @@ const BookArtist = () => {
 
   return (
     <div className="min-h-screen bg-background md:ml-64">
-      <Navigation mobileTitle="Book Artist" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
+      <Navigation mobileTitle="Availability" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
       <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => goBack(navigate, `/artist/${id}`)} className="mb-4 -ml-2 hidden md:inline-flex">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back

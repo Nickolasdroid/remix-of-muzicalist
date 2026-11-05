@@ -1439,7 +1439,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
-                    Book Artist
+                    Check availability
                   </Button>
                   <Button
                     onClick={() => {
