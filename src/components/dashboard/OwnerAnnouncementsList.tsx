@@ -190,7 +190,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           <span>No messages yet</span>
         );
       // Replies to a collaboration live in Messages → Announcements → Requests, filtered to this one
-      link = { label: "See replies", to: `/messages?tab=announcements&sub=requests&forAd=${a.id}` };
+      link = { label: "See replies", to: `/messages?forAd=${a.id}` };
     }
 
     return (

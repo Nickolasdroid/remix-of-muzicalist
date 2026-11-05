@@ -84,7 +84,7 @@ const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () =>
   const { i18n } = useTranslation();
   return (
   <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
-    <p className="text-xs font-semibold text-accent mb-1">Regarding Announcement</p>
+    <p className="text-xs font-semibold text-accent mb-1 flex items-center gap-1"><Megaphone className="h-3 w-3" /><span>{ad.kind === "gig" ? "About the event" : "About the collaboration"}</span></p>
     <p className="text-sm font-medium text-foreground pr-4 notranslate" data-user-content="true" data-no-translate="true" translate="no">{opportunityDisplayTitle(ad as any, i18n.language || "ro")}</p>
     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.description}</p>
     {(ad.location || ad.event_date || ad.budget) && (
@@ -121,21 +121,13 @@ const Messages = () => {
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'conversations' | 'announcements'>('conversations');
-  const [adsSubTab, setAdsSubTab] = useState<'requests' | 'applications'>('requests');
   const [announcementContext, setAnnouncementContext] = useState<AnnouncementContext | null>(null);
   const messagesCache = useRef<Record<string, Message[]>>({});
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
-  const tabParam = searchParams.get("tab");
-  const subParam = searchParams.get("sub");
   // Opened from a dashboard announcement: show only the replies to that announcement
   const [forAd, setForAd] = useState<string | null>(searchParams.get("forAd"));
 
-  useEffect(() => {
-    if (tabParam === 'announcements') setActiveTab('announcements');
-    if (subParam === 'applications' || subParam === 'requests') setAdsSubTab(subParam);
-  }, [tabParam, subParam]);
   useEffect(() => {
     const checkAuth = async () => {
       const {
@@ -199,10 +191,6 @@ const Messages = () => {
   }, [user, selectedConversation?.id]);
   useEffect(() => {
     if (!user || !artistId || loading) return;
-    // If coming from an ad, switch to ads tab
-    if (adId) {
-      setActiveTab('announcements');
-    }
     handleArtistContact();
   }, [user, artistId, loading, conversations]);
   useEffect(() => {
@@ -327,7 +315,6 @@ const Messages = () => {
       const existingAdConv = conversations.find(c => c.announcement_id === adId);
       if (existingAdConv) {
         setSelectedConversation(existingAdConv);
-        setActiveTab('announcements');
         setPendingArtist(null);
         return;
       }
@@ -515,18 +502,62 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
 
-  // Compute unread counts for Announcements tab and sub-tabs
-  const adConvsAll = conversations.filter(c => !!c.announcement_id);
-  const adsUnreadTotal = adConvsAll.reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
-  const requestsUnreadTotal = adConvsAll
-    .filter(c => c.announcement_context?.profile_id === user?.id)
-    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
-  const applicationsUnreadTotal = adConvsAll
-    .filter(c => c.announcement_context?.profile_id !== user?.id)
-    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
-  const conversationsUnreadTotal = conversations
-    .filter(c => !c.announcement_id)
-    .reduce((sum, c) => sum + (unreadCounts[c.id] || 0), 0);
+  // One inbox, like Facebook / Instagram. Conversations about an event or collaboration
+  // carry a megaphone line with its title; ?forAd= narrows the list to the replies to one.
+  const renderConversationList = () => {
+    const forAdContext = forAd ? conversations.find(c => c.announcement_id === forAd)?.announcement_context : null;
+    const list = forAd ? conversations.filter(c => c.announcement_id === forAd) : conversations;
+    return <>
+      {forAd && (
+        <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2.5">
+          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 py-1 pl-2.5 pr-1 text-xs text-accent">
+            <Megaphone className="h-3.5 w-3.5 shrink-0" />
+            <span className="min-w-0 truncate">
+              <span>{forAdContext?.kind === "gig" ? "Event" : "Collaboration"}</span>
+              <span>: </span>
+              <span className="font-medium notranslate" translate="no">{adTitle(forAdContext)}</span>
+            </span>
+            <button type="button" onClick={() => setForAd(null)} aria-label="Show all conversations" className="grid h-5 w-5 shrink-0 place-items-center rounded-full hover:bg-accent/20">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </span>
+        </div>
+      )}
+      {list.length === 0 ? <div className="p-4 text-center text-muted-foreground">
+          {forAd ? "No replies yet" : "No conversations yet"}
+        </div> : list.map(conv => {
+        const profile = getOtherProfile(conv);
+        const isAd = !!conv.announcement_id;
+        return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(isAd ? conv.announcement_context || null : null); }}>
+            <Avatar className={`h-10 w-10`}>
+              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarFallback>
+                <User className="h-5 w-5" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-left flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
+                {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
+                  {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
+                </span>}
+                <span className="ml-auto shrink-0 text-xs text-muted-foreground notranslate" translate="no">
+                  {new Date(conv.updated_at).toLocaleDateString()}
+                </span>
+              </div>
+              {isAd && (
+                <p className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+                  <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" aria-label={conv.announcement_context?.kind === "gig" ? "Event" : "Collaboration"} />
+                  <span className="truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                    {adTitle(conv.announcement_context) || (conv.announcement_context?.kind === "gig" ? "Event" : "Collaboration")}
+                  </span>
+                </p>
+              )}
+            </div>
+          </div>;
+      })}
+    </>;
+  };
 
   // Check if ad conversation is locked (ad deleted or expired)
   const isAdConversationLocked = (() => {
@@ -615,117 +646,10 @@ const Messages = () => {
         <div className="hidden md:grid md:grid-cols-3 h-screen">
           {/* Conversations List */}
           <div className="md:col-span-1 p-0 overflow-hidden bg-background border-r border-border">
-            <div className="flex border-b border-border">
-              <button
-                onClick={() => setActiveTab('conversations')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Conversations<UnreadBadge count={conversationsUnreadTotal} />
-              </button>
-              <button
-                onClick={() => setActiveTab('announcements')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Announcements<UnreadBadge count={adsUnreadTotal} />
-              </button>
-            </div>
-            <ScrollArea className="h-[calc(100%-45px)]">
-              {activeTab === 'conversations' ? (
-                (() => {
-                  const regularConvs = conversations.filter(c => !c.announcement_id);
-                  return regularConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-                  No conversations yet
-                </div> : regularConvs.map(conv => {
-                  const profile = getOtherProfile(conv);
-                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
-                    <Avatar className={`h-10 w-10`}>
-                      <AvatarImage src={profile.avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-left flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
-                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                        </span>}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(conv.updated_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>;
-                });
-                })()
-              ) : activeTab === 'announcements' ? (
-                (() => {
-                  const adConvs = conversations.filter(c => !!c.announcement_id);
-                  // Requests: ads I posted, others applied to
-                  const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
-                  const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
-                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context : null;
-                  // Applications: ads others posted, I applied to
-                  const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
-                  const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
-
-                  return <>
-                    <div className="flex border-b border-border/50 bg-muted/30">
-                      <button
-                        onClick={() => setAdsSubTab('requests')}
-                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        Requests<UnreadBadge count={requestsUnreadTotal} />
-                      </button>
-                      <button
-                        onClick={() => setAdsSubTab('applications')}
-                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        Applications<UnreadBadge count={applicationsUnreadTotal} />
-                      </button>
-                    </div>
-                    {forAd && adsSubTab === 'requests' && (
-                      <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2 text-xs text-muted-foreground">
-                        <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
-                        <span className="min-w-0 flex-1 truncate">
-                          <span>Replies to</span>{" "}
-                          <span className="font-medium text-foreground notranslate" translate="no">{adTitle(forAdTitle) || "this announcement"}</span>
-                        </span>
-                        <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
-                          Show all
-                        </button>
-                      </div>
-                    )}
-                    {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-                      <Megaphone className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                      <p>{adsSubTab === 'requests' ? 'No requests yet' : 'No applications yet'}</p>
-                      <p className="text-xs mt-1">{adsSubTab === 'requests' ? 'When someone applies to your ad, it will appear here' : 'When you apply to an ad, it will appear here'}</p>
-                    </div> : currentList.map(conv => {
-                      const profile = getOtherProfile(conv);
-                      return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
-                        <Avatar className={`h-10 w-10`}>
-                          <AvatarImage src={profile.avatar_url || undefined} />
-                          <AvatarFallback>
-                            <User className="h-5 w-5" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="text-left flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
-                            {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                            </span>}
-                          </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                            {adTitle(conv.announcement_context) || "Ad conversation"}
-                          </p>
-                        </div>
-                      </div>;
-                    })}
-                    </>;
-                  })()
-                ) : null}
-              </ScrollArea>
+            <h1 className="flex h-[49px] items-center border-b border-border px-4 text-base font-semibold">Messages</h1>
+            <ScrollArea className="h-[calc(100%-49px)]">
+              {renderConversationList()}
+            </ScrollArea>
             </div>
 
           {/* Messages Area */}
@@ -808,7 +732,7 @@ const Messages = () => {
                 {/* Input */}
                 {isAdConversationLocked ? (
                   <div className="p-4 border-t border-border text-center text-sm text-muted-foreground">
-                    This ad has been deleted or has expired. You can no longer send messages.
+                    {selectedConversation?.announcement_context?.kind === "gig" ? "This event has ended or was deleted. You can no longer send messages." : "This collaboration has ended or was deleted. You can no longer send messages."}
                   </div>
                 ) : (
                 <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
@@ -827,113 +751,8 @@ const Messages = () => {
         {/* Mobile: Full-width conversation list */}
         <div className="md:hidden h-full">
           <div className="p-0 overflow-hidden bg-background h-full border-t border-border">
-            <div className="flex border-b border-border">
-              <button
-                onClick={() => setActiveTab('conversations')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'conversations' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Conversations<UnreadBadge count={conversationsUnreadTotal} />
-              </button>
-              <button
-                onClick={() => setActiveTab('announcements')}
-                className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors ${activeTab === 'announcements' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Announcements<UnreadBadge count={adsUnreadTotal} />
-              </button>
-            </div>
-            <div className="overflow-hidden h-[calc(100%-45px)]">
-              {activeTab === 'conversations' ? (
-                (() => {
-                  const regularConvs = conversations.filter(c => !c.announcement_id);
-                  return regularConvs.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-                  No conversations yet
-                </div> : regularConvs.map(conv => {
-                  const profile = getOtherProfile(conv);
-                  return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(null); }}>
-                    <Avatar className={`h-10 w-10`}>
-                      <AvatarImage src={profile.avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-left flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
-                        {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                          {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                        </span>}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(conv.updated_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>;
-                });
-                })()
-              ) : activeTab === 'announcements' ? (
-                (() => {
-                  const adConvs = conversations.filter(c => !!c.announcement_id);
-                  const allRequestConvs = adConvs.filter(c => c.announcement_context?.profile_id === user?.id);
-                  const requestConvs = forAd ? allRequestConvs.filter(c => c.announcement_id === forAd) : allRequestConvs;
-                  const forAdTitle = forAd ? allRequestConvs.find(c => c.announcement_id === forAd)?.announcement_context : null;
-                  const applicationConvs = adConvs.filter(c => c.announcement_context?.profile_id !== user?.id);
-                  const currentList = adsSubTab === 'requests' ? requestConvs : applicationConvs;
-
-                  return <>
-                    <div className="flex border-b border-border/50 bg-muted/30">
-                      <button
-                        onClick={() => setAdsSubTab('requests')}
-                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'requests' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        Requests<UnreadBadge count={requestsUnreadTotal} />
-                      </button>
-                      <button
-                        onClick={() => setAdsSubTab('applications')}
-                        className={`flex-1 py-2 text-xs font-medium text-center transition-colors ${adsSubTab === 'applications' ? 'text-foreground border-b-2 border-accent' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        Applications<UnreadBadge count={applicationsUnreadTotal} />
-                      </button>
-                    </div>
-                    {forAd && adsSubTab === 'requests' && (
-                      <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2 text-xs text-muted-foreground">
-                        <Megaphone className="h-3.5 w-3.5 shrink-0 text-accent" />
-                        <span className="min-w-0 flex-1 truncate">
-                          <span>Replies to</span>{" "}
-                          <span className="font-medium text-foreground notranslate" translate="no">{adTitle(forAdTitle) || "this announcement"}</span>
-                        </span>
-                        <button type="button" onClick={() => setForAd(null)} className="shrink-0 font-medium text-accent hover:underline">
-                          Show all
-                        </button>
-                      </div>
-                    )}
-                    {currentList.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-                      <p>{adsSubTab === 'requests' ? 'No requests yet' : 'No applications yet'}</p>
-                      <p className="text-xs mt-1">{adsSubTab === 'requests' ? 'When someone applies to your ad, it will appear here' : 'When you apply to an ad, it will appear here'}</p>
-                    </div> : currentList.map(conv => {
-                      const profile = getOtherProfile(conv);
-                      return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(conv.announcement_context || null); }}>
-                        <Avatar className={`h-10 w-10`}>
-                          <AvatarImage src={profile.avatar_url || undefined} />
-                          <AvatarFallback>
-                            <User className="h-5 w-5" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="text-left flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">{profile.stage_name}</p>
-                            {unreadCounts[conv.id] > 0 && <span className="flex-shrink-0 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
-                              {unreadCounts[conv.id] > 9 ? '9+' : unreadCounts[conv.id]}
-                            </span>}
-                          </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                            {adTitle(conv.announcement_context) || "Ad conversation"}
-                          </p>
-                        </div>
-                      </div>;
-                    })}
-                    </>;
-                  })()
-                ) : null}
+            <div className="h-full overflow-y-auto">
+              {renderConversationList()}
             </div>
           </div>
 
@@ -1024,7 +843,7 @@ const Messages = () => {
                 {/* Input */}
                 {isAdConversationLocked ? (
                   <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-background">
-                    This ad has been deleted or has expired. You can no longer send messages.
+                    {selectedConversation?.announcement_context?.kind === "gig" ? "This event has ended or was deleted. You can no longer send messages." : "This collaboration has ended or was deleted. You can no longer send messages."}
                   </div>
                 ) : (
                 <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-background">
