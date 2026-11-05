@@ -1936,15 +1936,15 @@ const Dashboard = () => {
                           <span className="hidden lg:inline">Posts</span>
                         </TabsTrigger>
                         {!isAdmin && (
-                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Gallery</span>
-                          </TabsTrigger>
-                        )}
-                        {!isAdmin && (
                           <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                             <span className="hidden lg:inline">Reviews</span>
+                          </TabsTrigger>
+                        )}
+                        {!isAdmin && (
+                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                            <span className="hidden lg:inline">Gallery</span>
                           </TabsTrigger>
                         )}
                       </TabsList>}
