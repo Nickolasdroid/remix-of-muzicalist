@@ -113,7 +113,7 @@ const RightContent = () => (
         Connect with verified organizers and turn opportunities into confirmed events.
       </p>
 
-      <Link to="/announcements" className="mt-2 inline-block">
+      <Link to="/feed?f=gig" className="mt-2 inline-block">
         <Button
           size="sm"
           className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
@@ -158,7 +158,7 @@ const MobileCard = ({ type }: { type: "feed" | "events" }) => {
         </div>
         <p className="text-foreground/90 text-base font-normal">Browse real event requests, apply quickly, and secure new bookings.</p>
         <p className="text-foreground/90 text-base font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
-        <Link to="/announcements">
+        <Link to="/feed?f=gig">
           <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
             Explore Announcements
           </Button>

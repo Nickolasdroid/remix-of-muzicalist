@@ -19,6 +19,7 @@ const ROOT_PATHS = new Set([
   "/",
   "/feed",
   "/announcements",
+  "/booking-requests",
   "/messages",
   "/search",
   "/dashboard",

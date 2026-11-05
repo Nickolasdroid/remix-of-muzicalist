@@ -30,7 +30,12 @@ interface MediaPreview {
   url: string;
   type: "image" | "video";
 }
-const Announcements = () => {
+/**
+ * Announcements list. As a page (legacy /announcements) or embedded in the feed under the
+ * "Artist wanted" / "Collaborator wanted" filters (`embeddedKind`): then it renders only the
+ * list, its infinite scroll and the create button, without its own header or filter chips.
+ */
+const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -51,7 +56,8 @@ const Announcements = () => {
   const promotionsRemaining = promotionLimit - promotionsUsed;
   // Opportunities
   type FeedFilter = "all" | "gig" | "collab";
-  const [feedFilter, setFeedFilter] = useState<FeedFilter>("all");
+  const [feedFilterState, setFeedFilter] = useState<FeedFilter>("all");
+  const feedFilter: FeedFilter = embeddedKind ?? feedFilterState;
   const [mySpecialization, setMySpecialization] = useState<string | null>(null);
   const [isArtistViewer, setIsArtistViewer] = useState(false);
 
@@ -109,6 +115,8 @@ const Announcements = () => {
             country
           )
         `);
+      // Embedded in the feed: only that kind, filtered in the query so pages stay full
+      if (embeddedKind) query = (query as any).eq("kind", embeddedKind);
 
       const { data, error } = await query
         .order("created_at", { ascending: false })
@@ -143,9 +151,11 @@ const Announcements = () => {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, embeddedKind]);
 
   useEffect(() => {
+    setPage(0);
+    setHasMore(true);
     fetchAnnouncements(0);
   }, [fetchAnnouncements]);
 
@@ -157,18 +167,20 @@ const Announcements = () => {
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
-      <SEO
-        title="Announcements | Muzicalist"
-        description="Latest artist promotions and announcements from musicians and event organizers worldwide on Muzicalist."
-        path="/announcements"
-      />
-      <Navigation />
+  return <div className={embeddedKind ? "" : `min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+      {!embeddedKind && (
+        <SEO
+          title="Announcements | Muzicalist"
+          description="Latest artist promotions and announcements from musicians and event organizers worldwide on Muzicalist."
+          path="/announcements"
+        />
+      )}
+      {!embeddedKind && <Navigation />}
       
-      <div className={`container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
+      <div className={embeddedKind ? "" : `container mx-auto pt-16 ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
-          <h1 className="sr-only">Announcements</h1>
-          {currentUserId && (
+          {!embeddedKind && <h1 className="sr-only">Announcements</h1>}
+          {currentUserId && !embeddedKind && (
             <div className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-2 scrollbar-none">
               {([
                 { k: "all", label: "All" },

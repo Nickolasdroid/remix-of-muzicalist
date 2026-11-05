@@ -3,7 +3,7 @@ import { canGoBackInApp, goBack, isRootPath, parentPathFor } from "@/lib/backNav
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
 import { getPlan } from "@/lib/planLimits";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, CalendarCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
@@ -131,6 +131,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   });
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [unreadCount, setUnreadCount] = useState(0);
+  // Bookings waiting for me: new requests (artist) or offers to accept (organizer)
+  const [bookingActionCount, setBookingActionCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
@@ -346,12 +348,33 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     setUnreadNotifications(0);
   }, [location.pathname, notificationSeenKey, user]);
 
+  useEffect(() => {
+    if (!user) {
+      setBookingActionCount(0);
+      return;
+    }
+    let active = true;
+    (async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const [received, offers] = await Promise.all([
+        userType === 'user'
+          ? Promise.resolve({ count: 0 })
+          : supabase.from('booking_requests').select('id', { count: 'exact', head: true }).eq('profile_id', user.id).eq('status', 'pending').gte('event_date', today),
+        supabase.from('booking_requests').select('id', { count: 'exact', head: true }).eq('requester_user_id', user.id).neq('profile_id', user.id).eq('status', 'offered').gte('event_date', today),
+      ]);
+      if (active) setBookingActionCount(((received as { count?: number | null }).count || 0) + ((offers as { count?: number | null }).count || 0));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user, userType, location.pathname]);
+
   // Determine dashboard path based on user type
   const dashboardPath = userType === 'user' ? '/user-dashboard' : '/dashboard';
   
   const sidebarLinks = [
     { to: '/feed', icon: Home, label: t('navigation.home') },
-    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements') },
+    { to: '/booking-requests', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), badge: bookingActionCount },
     { to: '/categories', icon: Users, label: t('navigation.categories') },
     { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
     { to: '/countries', icon: Globe, label: t('navigation.countries', 'Countries') },
@@ -376,7 +399,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
     { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
-    { to: '/announcements', icon: Megaphone, label: t('navigation.announcements'), showBadge: false },
+    // Announcements now live in the feed (filters); this slot goes to bookings, the core action
+    { to: user ? '/booking-requests' : '/login', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), showBadge: false, badgeCount: bookingActionCount },
     { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
     { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
@@ -450,7 +474,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <p className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t('navigation.discover', 'Discover')}
                 </p>
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/announcements').map((link, i) => (
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/booking-requests').map((link, i) => (
                   <MobileMenuRow
                     key={link.to}
                     to={link.to}
@@ -628,6 +652,11 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
+                  {!item.showBadge && (item as { badgeCount?: number }).badgeCount ? (
+                    <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
+                      {((item as { badgeCount?: number }).badgeCount ?? 0) > 9 ? '9+' : (item as { badgeCount?: number }).badgeCount}
+                    </span>
+                  ) : null}
                 </div>
               </Link>
             ))}

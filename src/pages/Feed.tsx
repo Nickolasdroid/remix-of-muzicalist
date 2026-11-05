@@ -41,6 +41,9 @@ import { sharePost } from "@/lib/sharePost";
 import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import StoriesBar from "@/components/stories/StoriesBar";
+import Announcements from "@/pages/Announcements";
+import AnnouncementList from "@/components/opportunities/AnnouncementList";
+import { canPublishPosts } from "@/lib/planLimits";
 
 const POSTS_PER_PAGE = 10;
 
@@ -91,7 +94,28 @@ interface MediaPreview {
 
 const Feed = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // One feed, several views: ?f=posts | gig | collab | available (default: everything)
+  type FeedFilter = "all" | "posts" | "gig" | "collab" | "available";
+  const rawFilter = searchParams.get("f");
+  const filter: FeedFilter = rawFilter === "posts" || rawFilter === "gig" || rawFilter === "collab" || rawFilter === "available" ? rawFilter : "all";
+  const setFilter = (f: FeedFilter) => {
+    const next = new URLSearchParams(searchParams);
+    if (f === "all") next.delete("f");
+    else next.set("f", f);
+    next.delete("post");
+    setSearchParams(next, { replace: true });
+    window.scrollTo({ top: 0 });
+  };
+  // Keep the active filter chip visible: scroll only the chip row, only when the filter changes
+  const chipsRef = useRef<HTMLDivElement>(null);
+  // Who is looking, for the personal order of "All"
+  const [viewer, setViewer] = useState<{ isArtist: boolean; specialization: string | null; county: string | null } | null>(null);
+  // Open opportunities mixed into "All" for artists
+  const [opportunities, setOpportunities] = useState<any[]>([]);
+  // Stories stay Standard/Premium; posts are open to every artist plan
+  const [canCreateStories, setCanCreateStories] = useState(false);
   const { t } = useTranslation();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,10 +158,14 @@ const Feed = () => {
         setCurrentUserId(session.user.id);
         const { data: prof } = await supabase
           .from('profiles')
-          .select('plan, specialization, billing, subscription_current_period_end')
+          .select('plan, specialization, billing, subscription_current_period_end, county')
           .eq('id', session.user.id)
           .maybeSingle();
+        setViewer({ isArtist: !!prof?.specialization, specialization: prof?.specialization ?? null, county: (prof as any)?.county ?? null });
         if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
+          setCanCreateStories(true);
+        }
+        if (prof?.specialization && canPublishPosts(prof.plan)) {
           setCanCreate(true);
         }
         if (prof?.specialization) {
@@ -152,6 +180,13 @@ const Feed = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    const row = chipsRef.current;
+    const chip = row?.querySelector<HTMLElement>('[data-active="true"]');
+    if (!row || !chip) return;
+    row.scrollLeft = chip.offsetLeft - (row.clientWidth - chip.offsetWidth) / 2;
+  }, [filter, currentUserId]);
 
   const [showComposer, setShowComposer] = useState(false);
 
@@ -325,6 +360,37 @@ const Feed = () => {
     fetchPosts(0);
   }, [fetchPosts]);
 
+  // Open "Artist wanted" / "Collaborator wanted" announcements for the artist's "All" view,
+  // the ones for their specialization and county first.
+  useEffect(() => {
+    if (!viewer?.isArtist || !currentUserId) return;
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("announcements")
+        .select(`*, profiles!inner (avatar_url, stage_name, first_name, last_name, county, specialization, plan, country)`)
+        .in("kind", ["gig", "collab"])
+        .neq("profile_id", currentUserId)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (!active) return;
+      const score = (a: any) => {
+        const mine = a.kind === "gig" && a.seeking === viewer.specialization;
+        const near = !!viewer.county && a.county === viewer.county;
+        if (mine && near) return 0;
+        if (mine) return 1;
+        if (a.kind === "gig" && near) return 2;
+        if (a.kind === "collab" && near) return 3;
+        return 4;
+      };
+      const open = ((data as any[]) || []).filter((a) => !isAdExpired(a));
+      setOpportunities(open.map((a) => ({ ...a, type: "announcement" })).sort((x, y) => score(x) - score(y)).slice(0, 8));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [viewer, currentUserId]);
+
   const loadMorePosts = useCallback(async () => {
     const nextPage = page + 1;
     setPage(nextPage);
@@ -430,6 +496,39 @@ const Feed = () => {
 
   const formatDate = formatSmartDate;
 
+  const todayYmd = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  })();
+  const isOpenAvailability = (item: FeedItem) => item.type === "post" && !!item.availableOn && item.availableOn >= todayYmd;
+
+  /** The loaded feed narrowed to the chosen view, in the viewer's order. */
+  function viewFeed(items: FeedItem[]): FeedItem[] {
+    if (filter === "posts") return items.filter((i) => i.type === "post");
+    if (filter === "available") return items.filter(isOpenAvailability);
+    // Organizers: open dates of artists from the first page come first. Only the first page
+    // is reordered, so items loaded later never jump above what was already seen.
+    if (viewer && !viewer.isArtist) {
+      const head = items.slice(0, POSTS_PER_PAGE * 2);
+      const boosted = [...head.filter(isOpenAvailability), ...head.filter((i) => !isOpenAvailability(i))];
+      return [...boosted, ...items.slice(head.length)];
+    }
+    return items;
+  }
+
+  /** "All" for artists: one matching opportunity after every 3 feed items, never two in a row. */
+  function withOpportunities(items: FeedItem[]): ({ item: FeedItem } | { opp: any })[] {
+    const out: ({ item: FeedItem } | { opp: any })[] = [];
+    const opps = filter === "all" ? opportunities : [];
+    let o = 0;
+    items.forEach((item, i) => {
+      out.push({ item });
+      if ((i + 1) % 3 === 0 && o < opps.length) out.push({ opp: opps[o++] });
+    });
+    return out;
+  }
+
+
   if (loading) {
     // Same frame as the loaded feed, so nothing jumps when the posts arrive.
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
@@ -465,13 +564,46 @@ const Feed = () => {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
           <h1 className="sr-only">Musical Community Feed</h1>
 
-          <StoriesBar currentUserId={currentUserId} canPublish={canCreate} />
+          <StoriesBar currentUserId={currentUserId} canPublish={canCreateStories} />
+
+          {currentUserId && (
+            <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-1 scrollbar-none" role="tablist" aria-label="Feed filter">
+              {([
+                { k: "all", label: "All" },
+                { k: "posts", label: "Posts" },
+                { k: "gig", label: "Artist wanted" },
+                { k: "collab", label: "Collaborator wanted" },
+                { k: "available", label: "Available artists" },
+              ] as { k: FeedFilter; label: string }[]).map((f) => (
+                <button
+                  key={f.k}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === f.k}
+                  data-active={filter === f.k ? "true" : undefined}
+                  onClick={() => setFilter(f.k)}
+                  className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
+                    filter === f.k ? "border-accent bg-accent/15 text-accent font-medium" : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {(filter === "gig" || filter === "collab") && <Announcements key={filter} embeddedKind={filter} />}
           
-          {(() => {
-            const filteredAll = feedItems;
+          {filter !== "gig" && filter !== "collab" && (() => {
+            const filteredAll = viewFeed(feedItems);
             const GUEST_PREVIEW_COUNT = 2;
             const isGuest = !currentUserId;
             const filtered = isGuest ? filteredAll.slice(0, GUEST_PREVIEW_COUNT) : filteredAll;
+            if (filtered.length === 0 && !loadError && filter !== "all") {
+              return <Card className="p-8 text-center">
+                <p className="text-muted-foreground">{filter === "available" ? "No artists have announced free dates yet." : "No posts yet."}</p>
+              </Card>;
+            }
             return filtered.length === 0 ? (loadError ? <Card className="p-8 text-center space-y-3">
               <p className="text-muted-foreground">Couldn't load the feed right now.</p>
               <Button variant="outline" onClick={() => { setLoadError(false); setHasMore(true); setPage(0); setLoading(true); fetchPosts(0); }}>
@@ -479,7 +611,16 @@ const Feed = () => {
               </Button>
             </Card> : <Card className="p-8 text-center">
               <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
-            </Card>) : filtered.map(item =>
+            </Card>) : withOpportunities(filtered).map(entry => "opp" in entry ? (
+              <AnnouncementList
+                key={`opp-${entry.opp.id}`}
+                announcements={[entry.opp]}
+                legacyApply
+                onMediaClick={setMediaPreview}
+                onDeleted={(id) => setOpportunities((list) => list.filter((x) => x.id !== id))}
+                onUpdated={(id, patch) => setOpportunities((list) => list.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
+              />
+            ) : ((item: FeedItem) =>
               item.type === "announcement" ? (
                 /* Promotion Card */
                 <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
@@ -619,11 +760,11 @@ const Feed = () => {
                 <PostActions isLiked={item.isLiked} onLike={() => handleLike(item.id)} onComment={() => setCommentsTarget({ id: item.id, type: "post" })} onShare={() => sharePost({ profileId: item.profile_id, stageName: item.profile.stage_name, type: "post" })} likes={item.likes} likeTargetId={item.id} commentsCount={item.commentsCount} />
 
               </Card>
-              )
+              ))(entry.item)
             )
           })()}
           
-          {currentUserId ? (
+          {filter === "gig" || filter === "collab" ? null : currentUserId ? (
             <div ref={loadMoreRef} className="py-4 flex justify-center">
               {isLoadingMore && (
                 <div className="flex items-center gap-2 text-muted-foreground">
@@ -646,7 +787,7 @@ const Feed = () => {
         </div>
       </div>
 
-      {canCreate && (
+      {canCreate && filter !== "gig" && filter !== "collab" && (
         <Button
           onClick={() => setShowComposer(true)}
           size="icon"

@@ -70,7 +70,8 @@ const COLLAB_PHRASE: Record<CollabType, [en: string, ro: string]> = {
   replacement: ["stand-in", "înlocuire"],
   permanent: ["joins the band", "permanent în trupă"],
 };
-const collabPhrase = (c: CollabType, lang: string) => COLLAB_PHRASE[c][lang.startsWith("ro") ? 1 : 0];
+// Unknown values (old or hand-edited rows) render nothing instead of breaking the card
+const collabPhrase = (c: CollabType, lang: string) => COLLAB_PHRASE[c]?.[lang.startsWith("ro") ? 1 : 0] ?? "";
 
 const AVAILABILITY: Record<MyAvailability, { text: string; tone: string }> = {
   available: { text: "You're available on this date", tone: "text-emerald-500" },

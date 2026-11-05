@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import AutoTranslatePageText from "./components/AutoTranslatePageText";
 import ScrollToTop from "./components/ScrollToTop";
@@ -147,7 +147,8 @@ const App = () => (
             <Route path="/counties" element={<Counties />} />
             <Route path="/counties/:county" element={<CountyArtists />} />
             <Route path="/counties/:county/:specialization" element={<CountySpecializationArtists />} />
-            <Route path="/announcements" element={<Announcements />} />
+            {/* Announcements are a feed filter now; old links keep working */}
+            <Route path="/announcements" element={<Navigate to="/feed?f=gig" replace />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
